@@ -56,6 +56,21 @@ class PasswordlessIdp<THandle> {
   /// Verifies the login code and finishes the login process in one step.
   ///
   /// Returns an [AuthSuccess] with the authentication tokens.
+  ///
+  /// When [transaction] is `null` (the default, and the path used by
+  /// [PasswordlessIdpBaseEndpoint]), the login request is consumed in an
+  /// isolated committed transaction *before* the subsequent steps
+  /// (handle deserialization, user resolution, token issuance) run in a
+  /// separate transaction. This guarantees single-use semantics: even if a
+  /// later step fails, the verification code cannot be replayed.
+  ///
+  /// When a caller-provided [transaction] is given, all steps — including
+  /// request consumption — execute within that transaction (or a savepoint).
+  /// If the caller's transaction is rolled back, the request deletion is
+  /// also rolled back, so the verification code may still be valid.
+  /// This is intentional: it allows advanced integrators to compose
+  /// `finishLogin` with other operations under a single atomic boundary,
+  /// at the cost of managing single-use guarantees themselves.
   Future<AuthSuccess> finishLogin(
     final Session session, {
     required final UuidValue loginRequestId,

@@ -166,7 +166,12 @@ class PasswordlessIdpConfig<THandle>
     final decodedHandle = _decodeSerializedHandle(handle);
     try {
       return proto.Protocol().deserialize<THandle>(decodedHandle);
-    } catch (_) {
+    } on FormatException {
+      throw FormatException('Invalid passwordless handle.', handle);
+    } on TypeError {
+      throw FormatException('Invalid passwordless handle.', handle);
+    } on DeserializationTypeNotFoundException catch (e) {
+      if (e.type == THandle) rethrow;
       throw FormatException('Invalid passwordless handle.', handle);
     }
   };

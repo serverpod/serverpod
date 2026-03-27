@@ -1260,6 +1260,59 @@ void main() {
         },
       );
 
+      group(
+        'Given passwordless provider with unsupported default handle type',
+        () {
+          late PasswordlessIdpTestFixture<_UnsupportedDefaultHandle>
+          unsupportedFixture;
+
+          setUp(() async {
+            session = sessionBuilder.build();
+            verificationCode = const Uuid().v4().toString();
+
+            unsupportedFixture = PasswordlessIdpTestFixture(
+              config: PasswordlessIdpConfig<_UnsupportedDefaultHandle>(
+                secretHashPepper: 'pepper',
+                resolveAuthUserId:
+                    (
+                      final Session session, {
+                      required final _UnsupportedDefaultHandle handle,
+                      required final Transaction? transaction,
+                    }) async {
+                      throw UnimplementedError();
+                    },
+                loginVerificationCodeGenerator: () => verificationCode,
+              ),
+            );
+          });
+
+          tearDown(() async {
+            await unsupportedFixture.tearDown(session);
+          });
+
+          test(
+            'when startLogin is called then it surfaces the unsupported default deserializer error',
+            () async {
+              final result = unsupportedFixture.passwordlessIdp.startLogin(
+                session,
+                handle: handle,
+              );
+
+              await expectLater(
+                result,
+                throwsA(
+                  isA<DeserializationTypeNotFoundException>().having(
+                    (final e) => e.type,
+                    'type',
+                    _UnsupportedDefaultHandle,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
       group('Given passwordless provider with custom handle serialization', () {
         late PasswordlessIdpTestFixture<_TestHandle> customFixture;
         late _TestHandle deliveredCustomHandle;
@@ -1710,4 +1763,8 @@ final class _TestHandle {
   final String value;
 
   const _TestHandle(this.value);
+}
+
+final class _UnsupportedDefaultHandle {
+  const _UnsupportedDefaultHandle();
 }

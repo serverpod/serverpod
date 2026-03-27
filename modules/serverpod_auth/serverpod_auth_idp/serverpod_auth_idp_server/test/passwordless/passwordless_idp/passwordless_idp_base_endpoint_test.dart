@@ -109,6 +109,33 @@ void main() {
         intHandleToUserId[42] = (await authUsers.create(session)).id;
       });
 
+      tearDown(() async {
+        await session.db.transaction((final transaction) async {
+          await Future.wait([
+            GenericPasswordlessLoginRequest.db.deleteWhere(
+              session,
+              where: (final _) => Constant.bool(true),
+              transaction: transaction,
+            ),
+            RateLimitedRequestAttempt.db.deleteWhere(
+              session,
+              where: (final t) => t.domain.equals('passwordless'),
+              transaction: transaction,
+            ),
+            SecretChallenge.db.deleteWhere(
+              session,
+              where: (final _) => Constant.bool(true),
+              transaction: transaction,
+            ),
+            AuthUser.db.deleteWhere(
+              session,
+              where: (final _) => Constant.bool(true),
+              transaction: transaction,
+            ),
+          ]);
+        });
+      });
+
       test(
         'when using explicit String base endpoint then it resolves the String provider and keeps String handle semantics',
         () async {
