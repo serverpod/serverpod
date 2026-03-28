@@ -136,10 +136,12 @@ void main() {
           generatedFiles: generatedFiles,
         );
       },
-      createServer: (dillPath) async {
-        factoryCalls.add('createServer:$dillPath');
-        return factoryServer;
-      },
+      createServer:
+          (String dillPath, {List<String> extraArgs = const []}) async {
+            final suffix = extraArgs.isEmpty ? '' : '(${extraArgs.join(',')})';
+            factoryCalls.add('createServer:$dillPath$suffix');
+            return factoryServer;
+          },
       initialServer: server,
       generatedDirPaths: {'/generated'},
     );
@@ -607,6 +609,88 @@ void main() {
         factoryServer.simulateExit(42);
 
         await expectLater(session.done, completion(42));
+      },
+    );
+  });
+
+  group('Given applyMigration is called and compilation succeeds', () {
+    test(
+      'when applyMigration is called, '
+      'then it does a full compile, stops the server, '
+      'and creates a new server with --apply-migrations',
+      () async {
+        await session.applyMigration();
+
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(server.calls, ['stop']);
+        expect(factoryCalls, [
+          'createServer:/out.dill(--apply-migrations)',
+        ]);
+      },
+    );
+  });
+
+  group('Given applyMigration is called and compilation fails', () {
+    setUp(() {
+      compiler.nextCompileResult = _failResult();
+    });
+
+    test(
+      'when applyMigration is called, '
+      'then it throws and does not restart the server',
+      () async {
+        await expectLater(
+          session.applyMigration(),
+          throwsA(isA<StateError>()),
+        );
+
+        expect(compiler.calls, ['reset', 'compile', 'reject']);
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+  });
+
+  group('Given applyMigration is called twice', () {
+    test(
+      'when called twice, '
+      'then each call passes --apply-migrations independently',
+      () async {
+        await session.applyMigration();
+
+        // The factory always returns factoryServer, which is now the
+        // current server. Clear call logs and call again.
+        factoryCalls.clear();
+        compiler.calls.clear();
+
+        await session.applyMigration();
+
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(factoryServer.calls, ['stop']);
+        expect(factoryCalls, [
+          'createServer:/out.dill(--apply-migrations)',
+        ]);
+      },
+    );
+  });
+
+  group('Given applyMigration is called after dispose', () {
+    test(
+      'when applyMigration is called, '
+      'then it throws a StateError with disposed message',
+      () async {
+        await session.dispose();
+
+        expect(
+          session.applyMigration,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
       },
     );
   });

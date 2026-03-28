@@ -153,6 +153,13 @@ class MicrosoftIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterMicrosoftAccountCreated?.call(
+        session,
+        authUser,
+        microsoftAccount,
+        transaction: transaction,
+      );
     }
 
     return (

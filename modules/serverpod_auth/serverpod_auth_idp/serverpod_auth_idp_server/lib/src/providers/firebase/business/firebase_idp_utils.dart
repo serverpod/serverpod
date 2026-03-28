@@ -110,6 +110,13 @@ class FirebaseIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterFirebaseAccountCreated?.call(
+        session,
+        authUser,
+        firebaseAccount,
+        transaction: transaction,
+      );
     }
 
     return (

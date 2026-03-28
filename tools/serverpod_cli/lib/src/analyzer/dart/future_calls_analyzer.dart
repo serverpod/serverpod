@@ -16,7 +16,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 /// Cached analysis result for a single future call file.
@@ -148,7 +148,7 @@ class FutureCallsAnalyzer {
     }
 
     changedFiles ??= {};
-    await _refreshContextForFiles(changedFiles);
+    await refreshAnalysisContext(collection, changedFiles);
 
     // On the first run, mark every Dart file as changed so the single
     // code path handles both first and subsequent runs.
@@ -194,7 +194,8 @@ class FutureCallsAnalyzer {
           SourceSpanSeverityException(
             'FutureCall analysis skipped due to invalid Dart syntax. Please '
             'review and correct the syntax errors.'
-            '\nFile: $path',
+            '\nFile: $path'
+            '\n${maybeDartErrors.join('\n')}',
             null,
             severity: SourceSpanSeverity.error,
           ),
@@ -354,16 +355,6 @@ class FutureCallsAnalyzer {
     }
 
     return futureCallDefinitions;
-  }
-
-  Future<void> _refreshContextForFiles(Set<String> changedFiles) async {
-    for (var context in collection.contexts) {
-      for (var changedFile in changedFiles) {
-        var file = File(changedFile);
-        context.changeFile(p.normalize(file.absolute.path));
-      }
-      await context.applyPendingFileChanges();
-    }
   }
 
   bool _isFutureCallFile(File file) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -18,6 +20,17 @@ typedef GetExtraGitHubInfoCallback =
       Session session, {
       required GitHubAccountDetails accountDetails,
       required String accessToken,
+      required Transaction? transaction,
+    });
+
+/// Callback to be invoked after a new GitHub account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterGitHubAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      GitHubAccount githubAccount, {
       required Transaction? transaction,
     });
 
@@ -66,12 +79,20 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// [GitHubAccountDetails.userIdentifier]. Keep operations lightweight.
   final GetExtraGitHubInfoCallback? getExtraGitHubInfoCallback;
 
+  /// Callback to be invoked after a new GitHub account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the GitHub
+  /// account has been created and linked.
+  final AfterGitHubAccountCreatedFunction? onAfterGitHubAccountCreated;
+
   /// Creates a new instance of [GitHubIdpConfig].
   GitHubIdpConfig({
     required this.clientId,
     required this.clientSecret,
     this.githubAccountDetailsValidation = validateGitHubAccountDetails,
     this.getExtraGitHubInfoCallback,
+    this.onAfterGitHubAccountCreated,
   }) : oauth2Config = OAuth2PkceServerConfig(
          tokenEndpointUrl: Uri.https('github.com', '/login/oauth/access_token'),
          clientId: clientId,
@@ -149,6 +170,7 @@ class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
   GitHubIdpConfigFromPasswords({
     super.githubAccountDetailsValidation,
     super.getExtraGitHubInfoCallback,
+    super.onAfterGitHubAccountCreated,
   }) : super(
          clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
          clientSecret: Serverpod.instance.getPasswordOrThrow(

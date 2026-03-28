@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
@@ -439,19 +440,23 @@ Future<int> _startWatchSession({
       return result.dillOutput ?? initialDill;
     }
 
-    serverProcessFactory = (String dillPath) async {
-      final serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        dartExecutable: compiler!.dartExecutable,
-        enableVmService: true,
-        vmServiceInfoFile: vmServiceInfoFile,
-        onReloadRequested: onReloadRequested,
-      );
-      await serverProcess.start(dillPath: dillPath);
-      await serverProcess.connectToVmService();
-      return serverProcess;
-    };
+    serverProcessFactory =
+        (
+          String dillPath, {
+          List<String> extraArgs = const [],
+        }) async {
+          final serverProcess = ServerProcess(
+            serverDir: serverDir,
+            serverArgs: [...serverArgs, ...extraArgs],
+            dartExecutable: compiler!.dartExecutable,
+            enableVmService: true,
+            vmServiceInfoFile: vmServiceInfoFile,
+            onReloadRequested: onReloadRequested,
+          );
+          await serverProcess.start(dillPath: dillPath);
+          await serverProcess.connectToVmService();
+          return serverProcess;
+        };
 
     initialServerProcess = await serverProcessFactory(initialDill);
   }
@@ -463,6 +468,24 @@ Future<int> _startWatchSession({
     initialServer: initialServerProcess,
     generatedDirPaths: generatedDirPaths,
   );
+
+  // Start MCP socket server for AI agent integration.
+  // Only available when using the built-in compiler (not --no-fes), since all
+  // current MCP tools require the compiler and process lifecycle.
+  McpSocketServer? mcpSocket;
+  if (!noFes) {
+    mcpSocket = McpSocketServer(
+      socketPath: p.join(serverpodToolDir, 'mcp.sock'),
+    );
+    try {
+      await mcpSocket.start();
+      mcpSocket.connect(onApplyMigration: session.applyMigration);
+      log.info('MCP server listening on ${mcpSocket.socketPath}');
+    } on SocketException catch (e) {
+      log.warning('Failed to start MCP server: $e');
+      mcpSocket = null;
+    }
+  }
 
   final fileChangeSub = watcher.onFilesChanged
       .asyncMapBuffer(
@@ -478,6 +501,7 @@ Future<int> _startWatchSession({
 
   // Clean up.
   await fileChangeSub.cancel();
+  await mcpSocket?.close();
   await session.dispose();
 
   return exitCode;

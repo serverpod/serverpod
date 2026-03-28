@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -23,6 +24,17 @@ typedef GetExtraGoogleInfoCallback =
       Session session, {
       required GoogleAccountDetails accountDetails,
       required String accessToken,
+      required Transaction? transaction,
+    });
+
+/// Callback to be invoked after a new Google account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterGoogleAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      GoogleAccount googleAccount, {
       required Transaction? transaction,
     });
 
@@ -54,11 +66,19 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// information from Google APIs.
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
+  /// Callback to be invoked after a new Google account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Google
+  /// account has been created and linked.
+  final AfterGoogleAccountCreatedFunction? onAfterGoogleAccountCreated;
+
   /// Creates a new instance of [GoogleIdpConfig].
   const GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,
+    this.onAfterGoogleAccountCreated,
   });
 
   /// Default validation function for extracted Google account details.
@@ -95,6 +115,7 @@ class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
   GoogleIdpConfigFromPasswords({
     super.googleAccountDetailsValidation,
     super.getExtraGoogleInfoCallback,
+    super.onAfterGoogleAccountCreated,
   }) : super(
          clientSecret: GoogleClientSecret.fromJsonString(
            Serverpod.instance.getPasswordOrThrow('googleClientSecret'),

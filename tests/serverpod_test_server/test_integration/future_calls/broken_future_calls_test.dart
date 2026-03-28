@@ -35,8 +35,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: 1);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: data.toString(),
             time: DateTime.now().toUtc(),
@@ -44,8 +43,8 @@ void main() {
           );
 
           server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -92,8 +91,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i == 1 ? '{}' : data.toString(),
             time: DateTime.now().toUtc(),
@@ -101,8 +99,8 @@ void main() {
           );
 
           if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -180,8 +178,7 @@ void main() {
           final data = SimpleData(num: i);
 
           final name = 'TestCall$i';
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i == 1 ? '{}' : data.toString(),
             time: DateTime.now().toUtc(),
@@ -189,8 +186,8 @@ void main() {
           );
 
           if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -270,8 +267,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i >= 2 ? '{}' : data.toString(),
             time: DateTime.now().toUtc(),
@@ -279,8 +275,8 @@ void main() {
           );
 
           if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -356,8 +352,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i >= 2 ? '{}' : data.toString(),
             time: DateTime.now().toUtc(),
@@ -365,8 +360,8 @@ void main() {
           );
 
           if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -417,8 +412,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i >= 2 ? '{}' : data.toString(),
             time: DateTime.now().toUtc(),
@@ -426,8 +420,8 @@ void main() {
           );
 
           if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -470,8 +464,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: data.toString(),
             time: DateTime.now().toUtc(),
@@ -479,8 +472,8 @@ void main() {
           );
 
           if (i == 2) server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 
@@ -534,8 +527,7 @@ void main() {
           final name = 'TestCall$i';
           final data = SimpleData(num: i);
 
-          final entry = FutureCallEntry(
-            id: i,
+          var entry = FutureCallEntry(
             name: name,
             serializedObject: i == 2 ? data.toString() : '{}',
             time: DateTime.now().toUtc(),
@@ -543,8 +535,8 @@ void main() {
           );
 
           server.registerFutureCall(_SimpleFutureCall(), name);
+          entry = await FutureCallEntry.db.insertRow(session, entry);
           futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
         }
       });
 

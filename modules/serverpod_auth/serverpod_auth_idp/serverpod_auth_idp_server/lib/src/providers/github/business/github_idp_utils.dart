@@ -145,6 +145,13 @@ class GitHubIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterGitHubAccountCreated?.call(
+        session,
+        authUser,
+        githubAccount,
+        transaction: transaction,
+      );
     }
 
     return (
