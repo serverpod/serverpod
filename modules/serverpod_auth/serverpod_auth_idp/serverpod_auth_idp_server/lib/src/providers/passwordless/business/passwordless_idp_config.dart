@@ -98,6 +98,13 @@ class PasswordlessIdpConfig<THandle>
   final String Function() loginVerificationCodeGenerator;
 
   /// Rate limit for login requests.
+  ///
+  /// Each call to [PasswordlessIdp.startLogin] that passes the rate limit check
+  /// records one attempt in a **separate committed transaction** before the
+  /// rest of `startLogin` runs. If a later step in the same `startLogin` fails
+  /// (for example [sendLoginVerificationCode] throws, or the database
+  /// transaction rolls back), that attempt **still counts** toward this limit
+  /// for the serialized handle.
   final RateLimit loginRequestRateLimit;
 
   /// Callback for sending login verification codes.
@@ -110,6 +117,11 @@ class PasswordlessIdpConfig<THandle>
   ///
   /// This is optional. If `null`, no verification code will be delivered.
   /// This allows integrators to deliver codes through other channels.
+  ///
+  /// The callback runs inside the same database transaction as the created
+  /// login request. If it throws, that transaction rolls back and no pending
+  /// request row is left, but the login attempt recorded for
+  /// [loginRequestRateLimit] is **not** rolled back (see [loginRequestRateLimit]).
   final SendPasswordlessVerificationCodeFunction<THandle>?
   sendLoginVerificationCode;
 

@@ -137,6 +137,9 @@ class PasswordlessIdpLoginUtil<THandle> {
 
   /// Verifies the login code and completes the login in a single step.
   ///
+  /// Expired requests are rejected (and removed) before running Argon2 hash
+  /// verification on the code.
+  ///
   /// Returns the request data on success after deleting the request row within
   /// [transaction]. Once that transaction commits, the request cannot be
   /// reused.
@@ -167,13 +170,6 @@ class PasswordlessIdpLoginUtil<THandle> {
       throw PasswordlessLoginNotFoundException();
     }
 
-    if (!await _hashUtil.validateHashFromString(
-      secret: verificationCode,
-      hashString: challenge.challengeCodeHash,
-    )) {
-      throw PasswordlessLoginInvalidException();
-    }
-
     if (_isExpired(request)) {
       await _requestStore.deleteById(
         session,
@@ -181,6 +177,13 @@ class PasswordlessIdpLoginUtil<THandle> {
         transaction: transaction,
       );
       throw PasswordlessLoginExpiredException();
+    }
+
+    if (!await _hashUtil.validateHashFromString(
+      secret: verificationCode,
+      hashString: challenge.challengeCodeHash,
+    )) {
+      throw PasswordlessLoginInvalidException();
     }
 
     final deleted = await _requestStore.deleteById(

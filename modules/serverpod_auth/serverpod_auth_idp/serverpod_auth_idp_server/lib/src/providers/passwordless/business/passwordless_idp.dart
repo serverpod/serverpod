@@ -112,6 +112,12 @@ class PasswordlessIdp<THandle> {
   /// Starts the login process.
   ///
   /// Returns the login request ID.
+  ///
+  /// Rate limiting for new login requests is applied per serialized handle; see
+  /// [PasswordlessIdpConfig.loginRequestRateLimit]. Passing the check records an
+  /// attempt before the rest of the flow completes. If sending the verification
+  /// code or another step fails afterward, that attempt may still count toward
+  /// the limit even though no login request remains in the database.
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,

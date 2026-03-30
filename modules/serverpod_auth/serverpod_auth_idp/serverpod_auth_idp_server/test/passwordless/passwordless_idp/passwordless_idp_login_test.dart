@@ -828,6 +828,33 @@ void main() {
         );
 
         test(
+          'when finishLogin is called after expiration with an invalid verification code then it throws PasswordlessLoginException with reason "expired"',
+          () async {
+            await withClock(
+              Clock.fixed(clock.now().add(const Duration(minutes: 2))),
+              () async {
+                final result = fixture.passwordlessIdp.finishLogin(
+                  session,
+                  loginRequestId: requestId,
+                  verificationCode: '$deliveredVerificationCode-wrong',
+                );
+
+                await expectLater(
+                  result,
+                  throwsA(
+                    isA<PasswordlessLoginException>().having(
+                      (final e) => e.reason,
+                      'reason',
+                      PasswordlessLoginExceptionReason.expired,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+
+        test(
           'when finishLogin is called for an expired request then the request is cleaned up',
           () async {
             await withClock(
