@@ -36,12 +36,15 @@ class DefaultValueRestriction extends ValueRestriction {
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
-      return _idTypeDefaultValidation(
-        definition.tableName!,
-        field.type,
-        value,
-        span,
-      );
+      return [
+        ..._validateImmutableNonConstantDefault(definition, value, span),
+        ..._idTypeDefaultValidation(
+          definition.tableName!,
+          field.type,
+          value,
+          span,
+        ),
+      ];
     }
 
     var errors = <SourceSpanSeverityException>[];
