@@ -160,6 +160,23 @@ test:
           expect(config, isA<ServerSideSessionsConfig>());
         },
       );
+
+      test(
+        'when constructing ServerSideSessionsConfigFromPasswords with onSessionCreated then callback is stored correctly.',
+        () {
+          Future<void> onSessionCreated(
+            final Session session, {
+            required final UuidValue authUserId,
+            required final UuidValue serverSideSessionId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = ServerSideSessionsConfigFromPasswords(
+            onSessionCreated: onSessionCreated,
+          );
+          expect(config.onSessionCreated, same(onSessionCreated));
+        },
+      );
     },
   );
 }
