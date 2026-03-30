@@ -118,6 +118,23 @@ test:
           expect(config, isA<JwtConfig>());
         },
       );
+
+      test(
+        'when constructing JwtConfigFromPasswords with onRefreshTokenCreated then callback is stored correctly.',
+        () {
+          Future<void> onRefreshTokenCreated(
+            final Session session, {
+            required final UuidValue authUserId,
+            required final UuidValue refreshTokenId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = JwtConfigFromPasswords(
+            onRefreshTokenCreated: onRefreshTokenCreated,
+          );
+          expect(config.onRefreshTokenCreated, same(onRefreshTokenCreated));
+        },
+      );
     },
   );
 
