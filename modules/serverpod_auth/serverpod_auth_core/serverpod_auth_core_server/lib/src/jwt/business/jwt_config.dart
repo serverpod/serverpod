@@ -210,6 +210,7 @@ class JwtConfigFromPasswords extends JwtConfig {
     super.refreshTokenRotatingSecretSaltLength,
     super.extraClaimsProvider,
     super.fallbackVerificationAlgorithms,
+    super.onRefreshTokenCreated,
   }) : super(
          refreshTokenHashPepper: Serverpod.instance.getPasswordOrThrow(
            'jwtRefreshTokenHashPepper',

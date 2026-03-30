@@ -293,6 +293,78 @@ void main() async {
   );
 
   group(
+    'Given a table model with non-persistent fields and a check constraint on the table',
+    () {
+      setUp(() async {
+        await session.db.unsafeExecute(
+          'ALTER TABLE unique_data_with_non_persist '
+          'ADD CONSTRAINT check_number_not_99 CHECK (number != 99)',
+        );
+      });
+
+      tearDown(() async {
+        await session.db.unsafeExecute(
+          'ALTER TABLE unique_data_with_non_persist '
+          'DROP CONSTRAINT IF EXISTS check_number_not_99',
+        );
+        await UniqueDataWithNonPersist.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
+      });
+
+      test(
+        'when inserting a batch without a transaction where one row violates '
+        'the check constraint then no rows are inserted (atomic rollback).',
+        () async {
+          var data = <UniqueDataWithNonPersist>[
+            UniqueDataWithNonPersist(
+              number: 1,
+              email: 'a@serverpod.dev',
+              extra: 'extra-a',
+            ),
+            UniqueDataWithNonPersist(
+              number: 99,
+              email: 'b@serverpod.dev',
+              extra: 'extra-b',
+            ),
+            UniqueDataWithNonPersist(
+              number: 3,
+              email: 'c@serverpod.dev',
+              extra: 'extra-c',
+            ),
+          ];
+
+          await expectLater(
+            UniqueDataWithNonPersist.db.insert(
+              session,
+              data,
+              ignoreConflicts: true,
+            ),
+            throwsA(
+              isA<DatabaseQueryException>().having(
+                (e) => e.code,
+                'code',
+                PgErrorCode.checkViolation,
+              ),
+            ),
+          );
+
+          var allRows = await UniqueDataWithNonPersist.db.find(session);
+          expect(
+            allRows,
+            isEmpty,
+            reason:
+                'The insert without a transaction should be atomic: '
+                'a mid-batch failure must roll back all previously '
+                'inserted rows.',
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a model with non-persistent fields and a batch of more than 100 entries',
     () {
       test(

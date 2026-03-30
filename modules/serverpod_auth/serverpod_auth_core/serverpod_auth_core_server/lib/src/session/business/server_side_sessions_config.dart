@@ -104,6 +104,7 @@ class ServerSideSessionsConfigFromPasswords extends ServerSideSessionsConfig {
     super.sessionKeyHashSaltLength,
     super.defaultSessionLifetime,
     super.defaultSessionInactivityTimeout,
+    super.onSessionCreated,
   }) : super(
          sessionKeyHashPepper: Serverpod.instance.getPasswordOrThrow(
            'serverSideSessionKeyHashPepper',

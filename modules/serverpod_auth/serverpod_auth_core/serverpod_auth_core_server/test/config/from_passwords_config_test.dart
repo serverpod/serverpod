@@ -118,6 +118,23 @@ test:
           expect(config, isA<JwtConfig>());
         },
       );
+
+      test(
+        'when constructing JwtConfigFromPasswords with onRefreshTokenCreated then callback is stored correctly.',
+        () {
+          Future<void> onRefreshTokenCreated(
+            final Session session, {
+            required final UuidValue authUserId,
+            required final UuidValue refreshTokenId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = JwtConfigFromPasswords(
+            onRefreshTokenCreated: onRefreshTokenCreated,
+          );
+          expect(config.onRefreshTokenCreated, same(onRefreshTokenCreated));
+        },
+      );
     },
   );
 
@@ -158,6 +175,23 @@ test:
         () {
           final config = ServerSideSessionsConfigFromPasswords();
           expect(config, isA<ServerSideSessionsConfig>());
+        },
+      );
+
+      test(
+        'when constructing ServerSideSessionsConfigFromPasswords with onSessionCreated then callback is stored correctly.',
+        () {
+          Future<void> onSessionCreated(
+            final Session session, {
+            required final UuidValue authUserId,
+            required final UuidValue serverSideSessionId,
+            required final Transaction? transaction,
+          }) async {}
+
+          final config = ServerSideSessionsConfigFromPasswords(
+            onSessionCreated: onSessionCreated,
+          );
+          expect(config.onSessionCreated, same(onSessionCreated));
         },
       );
     },
