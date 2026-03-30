@@ -17,6 +17,7 @@ import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/util/database_util.dart';
 import 'package:serverpod/src/generated/database/enum_serialization.dart';
 import 'package:serverpod/src/generated/log_level.dart';
 import 'package:uuid/uuid.dart';
@@ -175,15 +176,21 @@ class PostgresDatabaseConnection
     if (ignoreConflicts &&
         rows.length > 1 &&
         _hasNonPersistedFields(session, rows)) {
-      return [
-        for (var row in rows)
-          await insert<T>(
-            session,
-            [row],
-            transaction: transaction,
-            ignoreConflicts: ignoreConflicts,
-          ).then((results) => results.firstOrNull),
-      ].whereType<T>().toList();
+      // Wrap in a transaction or savepoint to ensure the per-row inserts are
+      // atomic as a whole.
+      return DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (tx) async => [
+          for (var row in rows)
+            await insert<T>(
+              session,
+              [row],
+              transaction: tx,
+              ignoreConflicts: ignoreConflicts,
+            ).then((results) => results.firstOrNull),
+        ].whereType<T>().toList(),
+      );
     }
 
     var table = rows.first.table;
