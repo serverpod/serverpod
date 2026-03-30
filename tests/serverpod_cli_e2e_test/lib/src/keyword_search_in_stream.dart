@@ -19,7 +19,7 @@ class KeywordSearchInStream {
   bool _searching = true;
 
   KeywordSearchInStream({
-    this.timeout = const Duration(seconds: 60),
+    this.timeout = const Duration(seconds: 30),
     required this.keywords,
   });
 
