@@ -599,6 +599,33 @@ void main() {
         );
       },
     );
+
+    test(
+      'when any expression is used and order by is built then output is a valid SQL query.',
+      () {
+        final table = TableWithColumnOverride();
+        var relationTable = TableWithExplicitManyRelation(
+          tableName: table.tableName,
+          relationAlias: 'friends',
+        );
+
+        final query =
+            DeleteQueryBuilder(
+                  table: table,
+                )
+                .withWhere(relationTable.manyRelation.any())
+                .withReturn(Returning.all)
+                .withOrderBy([
+                  Order(column: table.userAge),
+                ])
+                .build();
+
+        expect(
+          query,
+          'WITH "where_any_user_friends_user_0" AS (SELECT "user"."id" AS "user.id" FROM "user" LEFT JOIN "user" AS "user_friends_user" ON "user"."id" = "user_friends_user"."friend_id" WHERE "user_friends_user"."friend_id" IS NOT NULL GROUP BY "user"."id") , deleted_rows AS (DELETE FROM "user" WHERE "user"."id" IN (SELECT "where_any_user_friends_user_0"."user.id" FROM "where_any_user_friends_user_0") RETURNING "user"."id" AS "user.id", "user"."user_name" AS "user.userName", "user"."user_age" AS "user.userAge") SELECT * FROM deleted_rows ORDER BY "user.userAge" ASC NULLS LAST',
+        );
+      },
+    );
   });
 
   group('Given many relation joining on non-id column with explicit names', () {
@@ -643,6 +670,7 @@ class TableWithExplicitColumn extends Table<int?> {
 
 class TableWithExplicitManyRelation extends Table<int?> {
   final String _relationAlias;
+
   TableWithExplicitManyRelation({
     String? relationAlias,
     required super.tableName,
@@ -650,6 +678,7 @@ class TableWithExplicitManyRelation extends Table<int?> {
   }) : _relationAlias = relationAlias ?? '';
 
   ManyRelation<TableWithExplicitManyRelation>? _manyRelation;
+
   ManyRelation<TableWithExplicitManyRelation> get manyRelation {
     if (_manyRelation != null) return _manyRelation!;
 
@@ -710,6 +739,7 @@ class TableWithManyRelationOnNonId extends Table<int?> {
   }
 
   ManyRelation<TableWithManyRelationOnNonId>? _manyRelation;
+
   ManyRelation<TableWithManyRelationOnNonId> get manyRelation {
     if (_manyRelation != null) return _manyRelation!;
 

@@ -566,25 +566,37 @@ class DeleteQueryBuilder {
     var subQueries = _SubQueries.gatherSubQueries(where: _where);
     var using = _buildUsingQuery(where: _where);
     var where = _buildWhereQuery(where: _where, subQueries: subQueries);
+    var orderBy = _buildOrderByQuery(orderBy: _orderBy, truncateAliases: true);
+
+    var subQuery = '';
+    if (subQueries != null) subQuery += 'WITH ${subQueries.buildQueries()} ';
 
     var deleteQuery = '';
-    if (subQueries != null) deleteQuery += 'WITH ${subQueries.buildQueries()} ';
     deleteQuery += 'DELETE FROM "${_table.tableName}"';
     if (using != null) deleteQuery += ' USING ${using.using}';
     if (where != null) deleteQuery += ' WHERE $where';
     if (using != null) deleteQuery += ' AND ${using.where}';
     if (_returningStatement != null) deleteQuery += _returningStatement!;
 
-    var orderBy = _buildDeleteOrderByQuery(_orderBy);
-    if (orderBy == null) {
-      return deleteQuery;
-    }
-    // Wrap the delete query so the returned rows can be ordered.
     var query = '';
-    var deletedRowsAlias = 'deleted_rows';
-    query += 'WITH $deletedRowsAlias AS ($deleteQuery)';
-    query += ' SELECT * FROM $deletedRowsAlias';
-    query += ' ORDER BY $orderBy';
+
+    // If no ORDER BY clause is needed, return only the DELETE query with subqueries if any
+    if (orderBy == null) {
+      query = subQuery + deleteQuery;
+    } else {
+      var deletedRowsAlias = 'deleted_rows';
+      var orderQuery = 'SELECT * FROM $deletedRowsAlias ORDER BY $orderBy';
+
+      // If no subqueries, wrap the delete query so the returned rows can be ordered.
+      if (subQueries == null) {
+        query = 'WITH $deletedRowsAlias AS ($deleteQuery)';
+      } else {
+        // If there are subqueries, chain the deletedRowsAlias CTE
+        query = '$subQuery, $deletedRowsAlias AS ($deleteQuery)';
+      }
+      query += ' $orderQuery';
+    }
+
     return query;
   }
 }
@@ -1114,8 +1126,12 @@ class _SubQueries {
   }
 }
 
-String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
-  if (orderBy == null) {
+String? _buildOrderByQuery({
+  List<Order>? orderBy,
+  _SubQueries? subQueries,
+  bool truncateAliases = false,
+}) {
+  if (orderBy == null || orderBy.isEmpty) {
     return null;
   }
 
@@ -1128,34 +1144,13 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
         if (column is ColumnCount) {
           str = _formatOrderByCount(index, subQueries, orderDescending);
         } else {
-          str = '$column';
+          str = truncateAliases
+              ? '"${truncateIdentifier(column.fieldQueryAlias, DatabaseConstants.pgsqlMaxNameLimitation)}"'
+              : '$column';
           str += orderDescending ? ' DESC NULLS FIRST' : ' ASC NULLS LAST';
         }
 
         return str;
-      })
-      .join(', ');
-}
-
-String? _buildDeleteOrderByQuery(List<Order>? orderBy) {
-  if (orderBy == null || orderBy.isEmpty) {
-    return null;
-  }
-
-  return orderBy
-      .map((order) {
-        var column = order.column;
-
-        var alias = truncateIdentifier(
-          column.fieldQueryAlias,
-          DatabaseConstants.pgsqlMaxNameLimitation,
-        );
-
-        var direction = order.orderDescending
-            ? 'DESC NULLS FIRST'
-            : 'ASC NULLS LAST';
-
-        return '"$alias" $direction';
       })
       .join(', ');
 }

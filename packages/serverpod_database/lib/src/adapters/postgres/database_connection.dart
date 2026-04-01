@@ -459,14 +459,11 @@ class PostgresDatabaseConnection
     orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
-    var query =
-        DeleteQueryBuilder(
-              table: table,
-            )
-            .withReturn(Returning.all)
-            .withWhere(where)
-            .withOrderBy(orderByList)
-            .build();
+    var query = DeleteQueryBuilder(table: table)
+        .withReturn(Returning.all)
+        .withWhere(where)
+        .withOrderBy(orderByList)
+        .build();
 
     return await _deserializedMappedQuery(
       session,
