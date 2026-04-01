@@ -79,6 +79,11 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         authKeyProvider = JwtAuthKeyProvider(
           getAuthInfo: () async => authInfo,
           onRefreshAuthInfo: updateSignedInUser,
+          // In case the storage implements caching, invalidate the cache and
+          // ensure that the latest auth from the storage is used. This is
+          // required for web if another tab has rotated the refresh token,
+          // since the storage is shared between tabs.
+          invalidateCachedAuthInfo: restore,
           refreshEndpoint: caller.client
               .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide IconAlignment;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../localization/sign_in_localization_provider.dart';
 import 'apple_sign_in_style.dart';
 
 /// A styled button for Apple Sign-In.
@@ -62,6 +63,7 @@ class AppleSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.appleSignInTexts;
     final buttonStyle = AppleSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -77,7 +79,7 @@ class AppleSignInButton extends StatelessWidget {
       ),
       child: SignInWithAppleButton(
         onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-        text: _getButtonText(),
+        text: texts.signInButton ?? _getButtonText(),
         height: buttonStyle.size.height,
         style: style,
         borderRadius: buttonStyle.borderRadius,

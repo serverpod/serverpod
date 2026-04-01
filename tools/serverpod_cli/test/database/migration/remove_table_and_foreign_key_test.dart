@@ -58,7 +58,11 @@ void main() {
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       test(
         'then the generated SQL should contain DROP TABLE child_entity CASCADE.',

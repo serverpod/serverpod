@@ -116,6 +116,13 @@ class GoogleIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterGoogleAccountCreated?.call(
+        session,
+        authUser,
+        googleAccount,
+        transaction: transaction,
+      );
     }
 
     return (

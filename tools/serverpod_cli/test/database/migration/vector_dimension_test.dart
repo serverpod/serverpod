@@ -56,6 +56,7 @@ void main() {
 
       group('when SQL is generated', () {
         late var sql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );

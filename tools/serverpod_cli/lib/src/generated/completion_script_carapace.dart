@@ -65,6 +65,10 @@ commands:
     exclusiveFlags:
       - [stdio, no-stdio]
 
+  - name: mcp
+    flags:
+      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+
   - name: create-migration
     flags:
       -f, --force: "Creates the migration even if there are warnings or information that may be destroyed."

@@ -3,6 +3,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../serverpod_database.dart' hide Protocol;
 import '../util/stderr_util.dart';
 
+/// The current schema version of the database definition.
+const currentSchemaVersion = 2;
+
 /// Analyzes the structure of [Database]s.
 abstract class DatabaseAnalyzer {
   /// The [Database] to analyze.
@@ -14,6 +17,7 @@ abstract class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
   Future<DatabaseDefinition> analyze() async {
     return DatabaseDefinition(
+      schemaVersion: currentSchemaVersion,
       name: await getCurrentDatabaseName(),
       moduleName: 'analyzer',
       tables: await getTableDefinitions(),

@@ -11,7 +11,9 @@ import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/commands/mcp.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -113,9 +115,11 @@ ServerpodCommandRunner buildCommandRunner() {
     GenerateCommand(),
     GeneratePubspecsCommand(),
     LanguageServerCommand(),
+    McpCommand(),
     CreateMigrationCommand(),
     CreateRepairMigrationCommand(),
     RunCommand(),
+    StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
   ]);
@@ -123,5 +127,5 @@ ServerpodCommandRunner buildCommandRunner() {
 
 Future<void> _preExit() async {
   _analytics.cleanUp();
-  await log.flush();
+  await closeLogger();
 }

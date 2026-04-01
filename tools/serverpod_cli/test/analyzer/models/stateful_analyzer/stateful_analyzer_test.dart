@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
@@ -422,6 +423,241 @@ and neither is this line
         reportedErrors?.errors.single.message,
         contains('invalid datatype "(String)"'),
       );
+    },
+  );
+
+  test(
+    'Given a valid model and reportIssuesForPaths containing only that model path, '
+    'when validateAll is called, '
+    'then the notifier is called once with an empty collector.',
+    () {
+      const pathInScope = 'lib/src/model/in_scope.yaml';
+      var yamlInScope = ModelSourceBuilder()
+          .withFileName('in_scope')
+          .withYaml(
+            '''
+          class: Valid
+          fields:
+            name: String
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathInScope))
+          .build();
+
+      var notified = <Uri>[];
+      var statefulAnalyzer = StatefulAnalyzer(
+        config,
+        [yamlInScope],
+        (uri, collector) {
+          notified.add(uri);
+          expect(collector.errors, isEmpty);
+        },
+      );
+
+      statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
+
+      expect(notified, [Uri(path: pathInScope)]);
+    },
+  );
+
+  test(
+    'Given two models containing a hint-severity issue and reportIssuesForPaths containing only one model path, '
+    'when validateAll is called '
+    'then only the in-scope model is notified.',
+    () {
+      const pathInScope = 'lib/src/model/in_scope.yaml';
+      var yamlInScope = ModelSourceBuilder()
+          .withYaml(
+            '''
+class: Example1
+table: example1
+fields:
+  id: UuidValue?, defaultModel=random
+''',
+          )
+          .withYamlSourceUri(Uri(path: pathInScope))
+          .build();
+
+      const pathOutOfScope = 'lib/src/model/out_of_scope.yaml';
+      var yamlOutOfScope = ModelSourceBuilder()
+          .withFileName('out')
+          .withYaml(
+            '''
+class: Example2
+table: example2
+fields:
+  id: UuidValue?, defaultModel=random
+''',
+          )
+          .withYamlSourceUri(Uri(path: pathOutOfScope))
+          .build();
+
+      var notified = <Uri>[];
+      var statefulAnalyzer = StatefulAnalyzer(
+        config,
+        [yamlInScope, yamlOutOfScope],
+        (uri, collector) {
+          notified.add(uri);
+          expect(collector.errors, isNotEmpty);
+        },
+      );
+
+      statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
+
+      expect(notified, hasLength(1));
+      expect(notified.single.toFilePath(windows: false), pathInScope);
+    },
+  );
+
+  test(
+    'Given two models containing an info-severity issue and reportIssuesForPaths containing only one model path, '
+    'when validateAll is called, '
+    'then only the in-scope model is notified.',
+    () {
+      const pathInScope = 'lib/src/model/in_scope.yaml';
+
+      var yamlInScope = ModelSourceBuilder()
+          .withFileName('in_scope')
+          .withYaml(
+            '''
+          class: Valid
+          fields:
+            name: String
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathInScope))
+          .build();
+
+      const pathOutOfScope = 'lib/src/model/out_of_scope.yaml';
+      var yamlOutOfScope = ModelSourceBuilder()
+          .withFileName('out')
+          .withYaml(
+            '''
+class: Example2
+fields:
+  my_field: String
+''',
+          )
+          .withYamlSourceUri(Uri(path: pathOutOfScope))
+          .build();
+
+      var notified = <Uri>[];
+      var statefulAnalyzer = StatefulAnalyzer(
+        config,
+        [yamlInScope, yamlOutOfScope],
+        (uri, collector) {
+          notified.add(uri);
+        },
+      );
+
+      statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
+
+      expect(notified, [Uri(path: pathInScope)]);
+    },
+  );
+
+  test(
+    'Given two models containing an error-severity issue and reportIssuesForPaths containing only one model path, '
+    'when validateAll is called, '
+    'then both the in-scope and out-of-scope models are notified.',
+    () {
+      const pathInScope = 'lib/src/model/in_scope.yaml';
+      var yamlInScope = ModelSourceBuilder()
+          .withFileName('in_scope')
+          .withYaml(
+            '''
+          class: Valid
+          fields:
+            name: String
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathInScope))
+          .build();
+
+      const pathOutOfScope = 'lib/src/model/out_of_scope.yaml';
+      var yamlOutOfScope = ModelSourceBuilder()
+          .withFileName('out')
+          .withYaml(
+            '''
+          class: Example2
+          fields:
+            name: (String)
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathOutOfScope))
+          .build();
+
+      var notified = <Uri>[];
+      var statefulAnalyzer = StatefulAnalyzer(
+        config,
+        [yamlInScope, yamlOutOfScope],
+        (uri, collector) {
+          notified.add(uri);
+        },
+      );
+
+      statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
+
+      expect(notified, hasLength(2));
+      expect(notified, contains(Uri(path: pathOutOfScope)));
+      expect(notified, contains(Uri(path: pathInScope)));
+    },
+  );
+
+  test(
+    'Given a project without the database feature and two models where reportIssuesForPaths contains only the path for the model with no table, '
+    'when validateAll is called, '
+    'then the out-of-scope model is still notified with a warning.',
+    () {
+      const pathInScope = 'lib/src/model/in_scope.yaml';
+      var configNoDatabase = GeneratorConfigBuilder()
+          .withEnabledFeatures([])
+          .build();
+
+      var yamlInScope = ModelSourceBuilder()
+          .withFileName('in_scope')
+          .withYaml(
+            '''
+          class: Valid
+          fields:
+            name: String
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathInScope))
+          .build();
+
+      const pathOutOfScope = 'lib/src/model/out_of_scope.yaml';
+      var yamlOutOfScope = ModelSourceBuilder()
+          .withFileName('out')
+          .withYaml(
+            '''
+          class: Example2
+          table: example2
+          fields:
+            name: String
+          ''',
+          )
+          .withYamlSourceUri(Uri(path: pathOutOfScope))
+          .build();
+
+      var errors = <SourceSpanSeverityException>[];
+      var statefulAnalyzer = StatefulAnalyzer(
+        configNoDatabase,
+        [yamlInScope, yamlOutOfScope],
+        (uri, collector) {
+          for (var error in collector.errors) {
+            if (error is SourceSpanSeverityException) {
+              errors.add(error);
+            }
+          }
+        },
+      );
+
+      statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
+
+      expect(errors, isNotEmpty);
+      expect(errors, hasLength(1));
+      expect(errors.single.severity, SourceSpanSeverity.warning);
     },
   );
 }

@@ -31,6 +31,7 @@ export 'src/google/common/style.dart';
 export 'src/google/google_auth_controller.dart';
 export 'src/google/google_sign_in_service.dart';
 export 'src/google/google_sign_in_widget.dart';
+export 'src/localization/sign_in_localization_provider.dart';
 export 'src/microsoft/microsoft_auth_controller.dart';
 export 'src/microsoft/microsoft_sign_in_button.dart';
 export 'src/microsoft/microsoft_sign_in_service.dart';

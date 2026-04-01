@@ -173,8 +173,8 @@ void main() {
     initializeLoggerWith(testLogger);
   });
 
-  tearDownAll(() {
-    resetLogger();
+  tearDownAll(() async {
+    await closeLogger();
   });
 
   late TestFixture fixture;

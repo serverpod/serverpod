@@ -37,7 +37,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'',
+            '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'::text',
           );
         },
       );
@@ -76,7 +76,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'',
+            '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'::text',
           );
         },
       );

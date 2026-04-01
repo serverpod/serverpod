@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -34,9 +35,7 @@ class FutureCallManager {
   final Session _logSession;
   final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
-
   final FutureCallConfig _config;
-
   final SerializationManager _serializationManager;
 
   final _futureCalls = <String, FutureCall>{};
@@ -44,10 +43,14 @@ class FutureCallManager {
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
+  final Duration _heartbeatInterval;
 
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
   bool _hasPendingStart = false;
+
+  /// Collection of active claim heartbeat timers.
+  final List<Timer> _heartbeatTimers = [];
 
   /// Creates a new [FutureCallManager]. Typically, this is instantiated
   /// internally by the [Serverpod].
@@ -59,6 +62,8 @@ class FutureCallManager {
   /// - [internalSession]: A session used internally for database operations.
   /// - [sessionProvider]: A function to create sessions for executing future calls.
   /// - [initializeFutureCall]: A function to initialize a [FutureCall] with its name.
+  /// - [heartbeatInterval]: The interval for updating future call claims with a heartbeat
+  /// to keep them alive. Defaults to 30 seconds.
   FutureCallManager(
     this._config,
     this._serializationManager, {
@@ -67,11 +72,13 @@ class FutureCallManager {
     required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
+    Duration? heartbeatInterval,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
-       _initializeFutureCall = initializeFutureCall {
+       _initializeFutureCall = initializeFutureCall,
+       _heartbeatInterval = heartbeatInterval ?? const Duration(minutes: 1) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -195,6 +202,7 @@ class FutureCallManager {
     await _scanner.stop();
     await _scheduler.drain();
     if (unregisterAll) _futureCalls.clear();
+    _heartbeatTimers.forEach(_cancelHeartbeatTimer);
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to
@@ -223,11 +231,120 @@ class FutureCallManager {
     _scheduler.addTaskCallbacks(callbacks.nonNulls.toList());
   }
 
+  /// Collection of active claim heartbeat timers used for testing purposes.
+  @visibleForTesting
+  List<Timer> get heartbeatTimers => _heartbeatTimers;
+
+  void _cancelHeartbeatTimer(Timer timer) {
+    _heartbeatTimers.remove(timer..cancel());
+  }
+
+  /// Updates heartbeat for a future call claim to keep it alive.
+  /// Heartbeat is only updated if the claim is held by the
+  /// running process.
+  Future<void> _updateHeartbeat({
+    required int claimId,
+    required Timer timer,
+  }) async {
+    try {
+      final rows = await FutureCallClaimEntry.db.updateWhere(
+        _internalSession,
+        where: (t) => t.id.equals(claimId),
+        columnValues: (t) => [t.lastHeartbeatTime(DateTime.now().toUtc())],
+      );
+
+      if (rows.isEmpty) {
+        _cancelHeartbeatTimer(timer);
+      }
+    } catch (error, stackTrace) {
+      _diagnosticsService.submitFrameworkException(error, stackTrace);
+    }
+  }
+
+  /// Threshold for considering future call claims as stale.
+  /// Claims with [FutureCallClaimEntry.lastHeartbeatTime]
+  /// that are older than this threshold are considered stale.
+  DateTime get _staleClaimThreshold {
+    return DateTime.now().toUtc().subtract(
+      _heartbeatInterval * 3,
+    );
+  }
+
+  /// Attempts to claim the execution for a [FutureCallEntry].
+  /// Any stale claim for the [FutureCallEntry] is deleted to allow
+  /// re-claiming.
+  ///
+  /// Returns a [Future] that:
+  /// - resolves to a heartbeat timer if a claim was successfully inserted
+  /// - resolves to null otherwise
+  Future<Timer?> _claimFutureCallAndStartHeartbeatTimer(
+    FutureCallEntry futureCallEntry,
+  ) async {
+    try {
+      final entries = await _internalSession.db.transaction(
+        (transaction) async {
+          // Delete any existing stale claim to allow re-claiming.
+          // This will throw and return eagerly if a concurrent deletion
+          // is attempted allowing the instance with the first transaction
+          // to correctly claim the future call.
+          await FutureCallClaimEntry.db.deleteWhere(
+            _internalSession,
+            transaction: transaction,
+            where: (t) =>
+                t.futureCallId.equals(futureCallEntry.id) &
+                (t.lastHeartbeatTime < _staleClaimThreshold),
+          );
+
+          final claim = FutureCallClaimEntry(
+            futureCallId: futureCallEntry.id,
+            lastHeartbeatTime: DateTime.now().toUtc(),
+          );
+
+          return await FutureCallClaimEntry.db.insert(
+            _internalSession,
+            [claim],
+            ignoreConflicts: true,
+            transaction: transaction,
+          );
+        },
+        settings: const TransactionSettings(
+          // Prevents concurrent transactions with delete and insert queries on the same entry
+          isolationLevel: IsolationLevel.repeatableRead,
+        ),
+      );
+
+      final claimId = entries.firstOrNull?.id;
+      if (claimId != null) {
+        final timer = Timer.periodic(
+          _heartbeatInterval,
+          (timer) => _updateHeartbeat(claimId: claimId, timer: timer),
+        );
+        _heartbeatTimers.add(timer);
+        return timer;
+      }
+    } catch (error, stackTrace) {
+      if (error is DatabaseQueryException &&
+          error.code == PgErrorCode.serializationFailure) {
+        return null;
+      }
+      _diagnosticsService.submitFrameworkException(error, stackTrace);
+    }
+    return null;
+  }
+
   /// Runs a [FutureCallEntry] and completes when the future call is completed.
   Future<void> _runFutureCall({
     required FutureCallEntry futureCallEntry,
     required FutureCall<SerializableModel> futureCall,
   }) async {
+    final heartbeatTimer = await _claimFutureCallAndStartHeartbeatTimer(
+      futureCallEntry,
+    );
+
+    // Claim already exists. The instance with the
+    // claim will run the call and clean up after running.
+    if (heartbeatTimer == null) return;
+
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
 
     try {
@@ -249,6 +366,12 @@ class FutureCallManager {
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
+    } finally {
+      _cancelHeartbeatTimer(heartbeatTimer);
+      await FutureCallEntry.db.deleteWhere(
+        _internalSession,
+        where: (t) => t.id.equals(futureCallEntry.id),
+      );
     }
   }
 

@@ -50,7 +50,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'emailAccountId',
@@ -79,19 +79,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_bridge_email_password_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'serverpod_auth_bridge_email_password_account',
           tableSpace: null,
           elements: [
@@ -118,7 +105,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -147,19 +134,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_bridge_external_user_id_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'serverpod_auth_bridge_external_user_id_id',
           tableSpace: null,
           elements: [
@@ -186,8 +160,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_auth_bridge_session_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -226,21 +199,7 @@ class Protocol extends _i1.SerializationManagerServer {
           matchType: null,
         ),
       ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_bridge_session_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
+      indexes: [],
       managed: true,
     ),
     ..._i3.Protocol.targetTableDefinitions,

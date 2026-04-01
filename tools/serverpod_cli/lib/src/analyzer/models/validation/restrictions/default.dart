@@ -33,23 +33,26 @@ class DefaultValueRestriction extends ValueRestriction {
     var defaultValueType = field.type.defaultValueType;
     if (defaultValueType == null) return [];
 
-    if ((definition is ModelClassDefinition) &&
-        (definition.tableName != null) &&
-        (parentNodeName == defaultPrimaryKeyName)) {
-      return _idTypeDefaultValidation(
-        definition.tableName!,
-        field.type,
-        value,
-        span,
-      );
-    }
-
     var errors = <SourceSpanSeverityException>[];
 
     // Validate immutable classes don't use non-constant default values
     errors.addAll(
       _validateImmutableNonConstantDefault(definition, value, span),
     );
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.addAll(
+        _idTypeDefaultValidation(
+          definition.tableName!,
+          field.type,
+          value,
+          span,
+        ),
+      );
+      return errors;
+    }
 
     switch (defaultValueType) {
       case DefaultValueAllowedType.dateTime:

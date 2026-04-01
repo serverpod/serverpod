@@ -62,7 +62,7 @@ class TableDefinitionBuilder {
     SupportedIdType idType, {
     bool nullableModelField = false,
   }) {
-    _columns.removeWhere((column) => column.isIdColumn);
+    _columns.removeWhere((column) => column.isPrimary);
     _columns.insert(
       0,
       ColumnDefinitionBuilder()

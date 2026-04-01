@@ -1,3 +1,32 @@
+## 3.5.0-beta.3
+
+- feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
+- feat: Ensures at-least-once semantics for future calls execution.
+- feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
+- feat: Adds `onAfterAccountCreated` callbacks to all IDPs for custom post-account creation logic. ([@kamil-matula](https://github.com/kamil-matula))
+- fix: Fixes future calls generation if models were not previously available on the project (like when running with a clean `generated` folder).
+
+## 3.5.0-beta.2
+
+- fix: Fixes time spinners not updating correctly when running the `generate` or `start` commands.
+- fix: Ensures docker compose down is run on early Ctrl-C to abort the `start --watch` command.
+- fix: Fixes incremental compiler missing changes to the generated `.dart` files when running commands in watch mode.
+
+## 3.5.0-beta.1
+
+- feat: Adds legacy client support for Email auth migrations.
+- feat: Exposes configuration options for finding and deleting broken future calls on server startup.
+- feat(EXPERIMENTAL): Introduces a new `serverpod start` command for running the server, docker and app with `--watch` flag for hot reload/restart support.
+- refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
+- refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
+- refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.5
+
+- fix: Truncates logged error messages to prevent hanging on formatter issues during code generation.
+- fix: Fixes the CLI invoking the welcome page more than once per install.
+- chore: Moves the `flutter_secure_storage` override from the workspace to the created Flutter package on a new project.
+
 ## 3.4.4
 
 - fix: Fixes Google Sign-In not handling error when invoked directly from the controller.

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../common/widgets/buttons/action_button.dart';
 import '../../../common/widgets/gaps.dart';
 import '../../../common/widgets/password_field.dart';
-import '../../../common/widgets/password_requirements.dart';
+import '../../../common/widgets/password_requirements/requirements.dart';
+import '../../../common/widgets/password_requirements/widget.dart';
 import '../../email_auth_controller.dart';
 import 'form_standard_layout.dart';
 

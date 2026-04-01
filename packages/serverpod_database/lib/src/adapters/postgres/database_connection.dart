@@ -161,15 +161,21 @@ class PostgresDatabaseConnection
     if (ignoreConflicts &&
         rows.length > 1 &&
         _hasNonPersistedFields(session, rows)) {
-      return [
-        for (var row in rows)
-          await insert<T>(
-            session,
-            [row],
-            transaction: transaction,
-            ignoreConflicts: ignoreConflicts,
-          ).then((results) => results.firstOrNull),
-      ].whereType<T>().toList();
+      // Wrap in a transaction or savepoint to ensure the per-row inserts are
+      // atomic as a whole.
+      return DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (tx) async => [
+          for (var row in rows)
+            await insert<T>(
+              session,
+              [row],
+              transaction: tx,
+              ignoreConflicts: ignoreConflicts,
+            ).then((results) => results.firstOrNull),
+        ].whereType<T>().toList(),
+      );
     }
 
     var table = rows.first.table;

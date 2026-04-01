@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/util/isolated_logger.dart';
 
 /// Singleton instance of logger.
 Logger? _logger;
@@ -25,8 +26,8 @@ void initializeLogger() {
   );
 
   _logger = Platform.isWindows
-      ? StdOutLogger(LogLevel.info, replacements: _windowsLoggerReplacements)
-      : StdOutLogger(LogLevel.info);
+      ? IsolatedLogger(LogLevel.info, replacements: _windowsLoggerReplacements)
+      : IsolatedLogger(LogLevel.info);
 }
 
 /// Initializer for logger singleton.
@@ -118,7 +119,13 @@ abstract class _SeveritySpanHelpers {
   }
 }
 
-/// Resets the logger singleton to its initial state.
-void resetLogger() {
+/// Shuts down and closes the logger, releasing any isolate resources.
+Future<void> closeLogger() async {
+  final logger = _logger;
   _logger = null;
+  if (logger == null) return;
+  await logger.flush();
+  if (logger is IsolatedLogger) {
+    await logger.close();
+  }
 }
