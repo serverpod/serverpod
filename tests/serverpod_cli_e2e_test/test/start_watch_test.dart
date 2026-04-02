@@ -252,27 +252,33 @@ fields:
       );
     });
 
-    group("when running 'serverpod start --watch --no-fes'", () {
-      setUp(() async {
-        (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
-          ['start', '--watch', '--no-fes'],
-          workingDirectory: path.join(sandboxDir, serverDir),
-          keywords: startWatchKeywords,
-        );
-      });
-
-      test(
-        'then it reaches running state.',
-        () async {
-          await expectLater(
-            streamSearch!.keywordFound,
-            completion(isTrue),
-            reason:
-                'Server did not reach "Server running." state before timeout.',
+    group(
+      "when running 'serverpod start --watch --no-fes'",
+      () {
+        setUp(() async {
+          (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
+            ['start', '--watch', '--no-fes'],
+            workingDirectory: path.join(sandboxDir, serverDir),
+            keywords: startWatchKeywords,
           );
-        },
-      );
-    });
+        });
+
+        test(
+          'then it reaches running state.',
+          () async {
+            await expectLater(
+              streamSearch!.keywordFound,
+              completion(isTrue),
+              reason:
+                  'Server did not reach "Server running." state before timeout.',
+            );
+          },
+        );
+      },
+      // This test is flaky, so we retry it 3 times to ensure it passes.
+      // Issue: https://github.com/serverpod/serverpod/issues/4903
+      retry: 3,
+    );
 
     group("when running 'serverpod start'", () {
       setUp(() async {
