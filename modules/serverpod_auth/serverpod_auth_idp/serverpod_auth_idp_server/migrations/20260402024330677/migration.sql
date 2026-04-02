@@ -35,13 +35,12 @@ volatile;
 CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "nonce" text NOT NULL,
-    "challengeId" uuid NOT NULL,
-    "loginChallengeId" uuid
+    "handle" text NOT NULL,
+    "challengeId" uuid NOT NULL
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
+CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_handle" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("handle");
 
 --
 -- ACTION CREATE FOREIGN KEY
@@ -52,37 +51,31 @@ ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
     REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
-    FOREIGN KEY("loginChallengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
 
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260205205236235', now())
+    VALUES ('serverpod_auth_idp', '20260402024330677', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260205205236235', "timestamp" = now();
+    DO UPDATE SET "version" = '20260402024330677', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20260129180959368', now())
+    VALUES ('serverpod', '20260324085808546', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129180959368', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085808546', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_core', '20260129181112269', now())
+    VALUES ('serverpod_auth_core', '20260324085844499', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129181112269', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085844499', "timestamp" = now();
 
 
 COMMIT;

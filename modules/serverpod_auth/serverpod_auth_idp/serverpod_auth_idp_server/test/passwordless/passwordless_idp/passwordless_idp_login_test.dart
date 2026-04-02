@@ -1531,7 +1531,7 @@ void main() {
             expect(authSuccess, isA<AuthSuccess>());
             expect(deliveredCustomHandle.value, equals('test-handle'));
             expect(request, isNotNull);
-            expect(request!.nonce, equals('custom:test-handle'));
+            expect(request!.handle, equals('custom:test-handle'));
 
             final attempts = await RateLimitedRequestAttempt.db.find(
               session,

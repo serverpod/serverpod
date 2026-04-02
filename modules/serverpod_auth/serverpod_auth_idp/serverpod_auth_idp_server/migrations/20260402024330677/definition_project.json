@@ -652,7 +652,7 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "nonce",
+          "name": "handle",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -684,12 +684,12 @@
       "indexes": [
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_nonce",
+          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_handle",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
-              "definition": "nonce"
+              "definition": "handle"
             }
           ],
           "type": "btree",
@@ -1190,12 +1190,12 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod",
-      "version": "20260129180959368"
+      "version": "20260324085808546"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_core",
-      "version": "20260129181112269"
+      "version": "20260324085844499"
     }
   ],
   "migrationApiVersion": 1

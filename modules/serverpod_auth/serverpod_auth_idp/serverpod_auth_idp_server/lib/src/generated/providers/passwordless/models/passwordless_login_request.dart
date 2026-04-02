@@ -21,7 +21,7 @@ abstract class GenericPasswordlessLoginRequest
   GenericPasswordlessLoginRequest._({
     this.id,
     DateTime? createdAt,
-    required this.nonce,
+    required this.handle,
     required this.challengeId,
     this.challenge,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -29,7 +29,7 @@ abstract class GenericPasswordlessLoginRequest
   factory GenericPasswordlessLoginRequest({
     _i1.UuidValue? id,
     DateTime? createdAt,
-    required String nonce,
+    required String handle,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
   }) = _GenericPasswordlessLoginRequestImpl;
@@ -44,7 +44,7 @@ abstract class GenericPasswordlessLoginRequest
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      nonce: jsonSerialization['nonce'] as String,
+      handle: jsonSerialization['handle'] as String,
       challengeId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),
@@ -66,12 +66,10 @@ abstract class GenericPasswordlessLoginRequest
   /// The time when this request was created.
   DateTime createdAt;
 
-  /// Opaque identifier for this login attempt.
-  ///
-  /// This can be a serialized login handle (e.g., email), a hash (e.g., phoneHash),
-  /// or any other deterministic value that the configured provider can resolve to
-  /// an auth user.
-  String nonce;
+  /// Serialized login handle for this pending request (e.g., email), a hash
+  /// (e.g., phoneHash), or any other deterministic value the provider can
+  /// resolve to an auth user.
+  String handle;
 
   _i1.UuidValue challengeId;
 
@@ -87,7 +85,7 @@ abstract class GenericPasswordlessLoginRequest
   GenericPasswordlessLoginRequest copyWith({
     _i1.UuidValue? id,
     DateTime? createdAt,
-    String? nonce,
+    String? handle,
     _i1.UuidValue? challengeId,
     _i2.SecretChallenge? challenge,
   });
@@ -97,7 +95,7 @@ abstract class GenericPasswordlessLoginRequest
       '__className__': 'serverpod_auth_idp.GenericPasswordlessLoginRequest',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
-      'nonce': nonce,
+      'handle': handle,
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
     };
@@ -147,13 +145,13 @@ class _GenericPasswordlessLoginRequestImpl
   _GenericPasswordlessLoginRequestImpl({
     _i1.UuidValue? id,
     DateTime? createdAt,
-    required String nonce,
+    required String handle,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
   }) : super._(
          id: id,
          createdAt: createdAt,
-         nonce: nonce,
+         handle: handle,
          challengeId: challengeId,
          challenge: challenge,
        );
@@ -165,14 +163,14 @@ class _GenericPasswordlessLoginRequestImpl
   GenericPasswordlessLoginRequest copyWith({
     Object? id = _Undefined,
     DateTime? createdAt,
-    String? nonce,
+    String? handle,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
   }) {
     return GenericPasswordlessLoginRequest(
       id: id is _i1.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
-      nonce: nonce ?? this.nonce,
+      handle: handle ?? this.handle,
       challengeId: challengeId ?? this.challengeId,
       challenge: challenge is _i2.SecretChallenge?
           ? challenge
@@ -191,8 +189,8 @@ class GenericPasswordlessLoginRequestUpdateTable
         value,
       );
 
-  _i1.ColumnValue<String, String> nonce(String value) => _i1.ColumnValue(
-    table.nonce,
+  _i1.ColumnValue<String, String> handle(String value) => _i1.ColumnValue(
+    table.handle,
     value,
   );
 
@@ -215,8 +213,8 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
       this,
       hasDefault: true,
     );
-    nonce = _i1.ColumnString(
-      'nonce',
+    handle = _i1.ColumnString(
+      'handle',
       this,
     );
     challengeId = _i1.ColumnUuid(
@@ -230,12 +228,10 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// The time when this request was created.
   late final _i1.ColumnDateTime createdAt;
 
-  /// Opaque identifier for this login attempt.
-  ///
-  /// This can be a serialized login handle (e.g., email), a hash (e.g., phoneHash),
-  /// or any other deterministic value that the configured provider can resolve to
-  /// an auth user.
-  late final _i1.ColumnString nonce;
+  /// Serialized login handle for this pending request (e.g., email), a hash
+  /// (e.g., phoneHash), or any other deterministic value the provider can
+  /// resolve to an auth user.
+  late final _i1.ColumnString handle;
 
   late final _i1.ColumnUuid challengeId;
 
@@ -259,7 +255,7 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
     id,
     createdAt,
-    nonce,
+    handle,
     challengeId,
   ];
 

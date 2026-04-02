@@ -19,7 +19,7 @@ class GenericPasswordlessLoginRequestStore {
       session,
       GenericPasswordlessLoginRequest(
         createdAt: clock.now(),
-        nonce: serializedHandle,
+        handle: serializedHandle,
         challengeId: challengeId,
       ),
       transaction: transaction,
@@ -35,7 +35,7 @@ class GenericPasswordlessLoginRequestStore {
   }) async {
     final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.nonce.equals(serializedHandle),
+      where: (final t) => t.handle.equals(serializedHandle),
       transaction: transaction,
     );
     await _deleteChallenges(session, deleted, transaction: transaction);
@@ -133,7 +133,7 @@ extension on GenericPasswordlessLoginRequest {
     return PasswordlessLoginRequestData(
       id: id!,
       createdAt: createdAt,
-      serializedHandle: nonce,
+      serializedHandle: handle,
       challenge: challenge,
     );
   }

@@ -136,12 +136,12 @@ CREATE UNIQUE INDEX "serverpod_auth_firebase_account_user_identifier" ON "server
 CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "nonce" text NOT NULL,
+    "handle" text NOT NULL,
     "challengeId" uuid NOT NULL
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
+CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_handle" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("handle");
 
 --
 -- Class GitHubAccount as table serverpod_auth_idp_github_account
@@ -282,6 +282,18 @@ CREATE TABLE "serverpod_future_call" (
 CREATE INDEX "serverpod_future_call_time_idx" ON "serverpod_future_call" USING btree ("time");
 CREATE INDEX "serverpod_future_call_serverId_idx" ON "serverpod_future_call" USING btree ("serverId");
 CREATE INDEX "serverpod_future_call_identifier_idx" ON "serverpod_future_call" USING btree ("identifier");
+
+--
+-- Class FutureCallClaimEntry as table serverpod_future_call_claim
+--
+CREATE TABLE "serverpod_future_call_claim" (
+    "id" bigserial PRIMARY KEY,
+    "futureCallId" bigint,
+    "lastHeartbeatTime" timestamp without time zone NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "future_call_unique_idx" ON "serverpod_future_call_claim" USING btree ("futureCallId");
 
 --
 -- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
@@ -654,6 +666,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_passkey_account"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "serverpod_future_call_claim" table
+--
+ALTER TABLE ONLY "serverpod_future_call_claim"
+    ADD CONSTRAINT "serverpod_future_call_claim_fk_0"
+    FOREIGN KEY("futureCallId")
+    REFERENCES "serverpod_future_call"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "serverpod_log" table
 --
 ALTER TABLE ONLY "serverpod_log"
@@ -734,25 +756,25 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260325221138061', now())
+    VALUES ('serverpod_auth_idp', '20260402024330677', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260325221138061', "timestamp" = now();
+    DO UPDATE SET "version" = '20260402024330677', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20260129180959368', now())
+    VALUES ('serverpod', '20260324085808546', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129180959368', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085808546', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_core', '20260129181112269', now())
+    VALUES ('serverpod_auth_core', '20260324085844499', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129181112269', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085844499', "timestamp" = now();
 
 
 COMMIT;

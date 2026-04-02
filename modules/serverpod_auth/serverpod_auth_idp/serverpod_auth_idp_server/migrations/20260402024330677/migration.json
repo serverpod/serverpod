@@ -16,7 +16,7 @@
             "name": "id",
             "columnType": 7,
             "isNullable": false,
-            "columnDefault": "gen_random_uuid_v7()",
+            "columnDefault": "random_v7",
             "dartType": "UuidValue?"
           },
           {
@@ -24,12 +24,12 @@
             "name": "createdAt",
             "columnType": 4,
             "isNullable": false,
-            "columnDefault": "CURRENT_TIMESTAMP",
+            "columnDefault": "now",
             "dartType": "DateTime"
           },
           {
             "__className__": "serverpod.ColumnDefinition",
-            "name": "nonce",
+            "name": "handle",
             "columnType": 0,
             "isNullable": false,
             "dartType": "String"
@@ -40,13 +40,6 @@
             "columnType": 7,
             "isNullable": false,
             "dartType": "UuidValue"
-          },
-          {
-            "__className__": "serverpod.ColumnDefinition",
-            "name": "loginChallengeId",
-            "columnType": 7,
-            "isNullable": true,
-            "dartType": "UuidValue?"
           }
         ],
         "foreignKeys": [
@@ -63,45 +56,17 @@
             ],
             "onUpdate": 3,
             "onDelete": 4
-          },
-          {
-            "__className__": "serverpod.ForeignKeyDefinition",
-            "constraintName": "serverpod_auth_idp_generic_passwordless_login_request_fk_1",
-            "columns": [
-              "loginChallengeId"
-            ],
-            "referenceTable": "serverpod_auth_idp_secret_challenge",
-            "referenceTableSchema": "public",
-            "referenceColumns": [
-              "id"
-            ],
-            "onUpdate": 3,
-            "onDelete": 4
           }
         ],
         "indexes": [
           {
             "__className__": "serverpod.IndexDefinition",
-            "indexName": "serverpod_auth_idp_generic_passwordless_login_request_pkey",
+            "indexName": "serverpod_auth_idp_generic_passwordless_login_request_handle",
             "elements": [
               {
                 "__className__": "serverpod.IndexElementDefinition",
                 "type": 0,
-                "definition": "id"
-              }
-            ],
-            "type": "btree",
-            "isUnique": true,
-            "isPrimary": true
-          },
-          {
-            "__className__": "serverpod.IndexDefinition",
-            "indexName": "serverpod_auth_idp_generic_passwordless_login_request_nonce",
-            "elements": [
-              {
-                "__className__": "serverpod.IndexElementDefinition",
-                "type": 0,
-                "definition": "nonce"
+                "definition": "handle"
               }
             ],
             "type": "btree",

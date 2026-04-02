@@ -666,7 +666,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
-          name: 'nonce',
+          name: 'handle',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
@@ -694,12 +694,12 @@ class Protocol extends _i1.SerializationManagerServer {
       indexes: [
         _i2.IndexDefinition(
           indexName:
-              'serverpod_auth_idp_generic_passwordless_login_request_nonce',
+              'serverpod_auth_idp_generic_passwordless_login_request_handle',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'nonce',
+              definition: 'handle',
             ),
           ],
           type: 'btree',
