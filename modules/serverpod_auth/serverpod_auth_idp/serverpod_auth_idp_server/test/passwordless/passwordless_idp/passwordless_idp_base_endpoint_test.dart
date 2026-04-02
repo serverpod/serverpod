@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 
 import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
+import '../passwordless_test_config_defaults.dart';
 
 void main() {
   withServerpod(
@@ -229,7 +230,13 @@ void main() {
             handle: stringHandle,
           );
 
-          for (var i = 0; i < 3; i++) {
+          for (
+            var i = 0;
+            i <
+                passwordlessIdpConfigDefaultFieldValues
+                    .loginVerificationCodeAllowedAttempts;
+            i++
+          ) {
             await expectLater(
               stringEndpoint.finishLogin(
                 session,
