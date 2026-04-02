@@ -258,6 +258,97 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateDatabaseKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property can only be used on classes with a "table" property.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDatabase(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    const validValues = ModelDatabaseDefinition.values;
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property must be one of: ${validValues.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    ModelDatabaseDefinition? database;
+    for (var value in validValues) {
+      if (value.name == content) {
+        database = value;
+        break;
+      }
+    }
+    if (database == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property must be one of: ${validValues.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition ||
+        database == ModelDatabaseDefinition.server) {
+      return [];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var invalidScopedFields = definition.fieldsIncludingInherited.where(
+      (field) =>
+          field.shouldPersist &&
+          field.scope != ModelFieldScopeDefinition.all &&
+          field.name != defaultPrimaryKeyName,
+    );
+
+    for (var field in invalidScopedFields) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field "${field.name}" must use scope "all" when the class has "database: ${database.name}".',
+          span,
+        ),
+      );
+    }
+
+    var invalidIndexes = definition.indexesIncludingInherited.where(
+      (index) => index.type != 'btree',
+    );
+
+    for (var index in invalidIndexes) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The index "${index.name}" must use type "btree" when the class has "database: ${database.name}".',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,

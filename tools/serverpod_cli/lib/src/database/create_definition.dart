@@ -17,7 +17,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
-          classDefinition.tableName != null)
+          classDefinition.shouldGenerateTableCode(true))
         TableDefinition(
           module: moduleName,
           name: classDefinition.tableName!,

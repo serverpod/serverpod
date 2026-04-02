@@ -19,6 +19,7 @@ class ModelClassDefinitionBuilder {
   SupportedIdType? _idType;
   bool _idTypeNullable;
   bool _managedMigration;
+  ModelDatabaseDefinition _database;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
@@ -37,6 +38,7 @@ class ModelClassDefinitionBuilder {
       _fields = [],
       _subDirParts = [],
       _managedMigration = true,
+      _database = ModelDatabaseDefinition.server,
       _serverOnly = false,
       _indexes = [],
       _childClasses = [],
@@ -66,6 +68,7 @@ class ModelClassDefinitionBuilder {
       fields: _fields.map((f) => f()).toList(),
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
+      database: _database,
       tableName: _tableName,
       manageMigration: _managedMigration,
       indexes: _indexes,
@@ -114,6 +117,13 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withManagedMigration(bool isManaged) {
     _managedMigration = isManaged;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withDatabase(
+    ModelDatabaseDefinition database,
+  ) {
+    _database = database;
     return this;
   }
 

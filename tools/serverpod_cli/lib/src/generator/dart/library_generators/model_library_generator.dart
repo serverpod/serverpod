@@ -33,6 +33,12 @@ class SerializableModelLibraryGenerator {
     required this.config,
   });
 
+  String get _databaseRuntimeUrl => serverpodDatabaseRuntimeUrl(serverCode);
+
+  bool _shouldGenerateTableCode(ModelClassDefinition classDefinition) {
+    return classDefinition.shouldGenerateTableCode(serverCode);
+  }
+
   /// Generate the file for a model.
   Library generateModelLibrary(
     SerializableModelDefinition modelDefinition,
@@ -89,7 +95,9 @@ class SerializableModelLibraryGenerator {
   Library _generateModelClassLibrary(
     ModelClassDefinition classDefinition,
   ) {
-    String? tableName = classDefinition.tableName;
+    String? tableName = classDefinition.shouldGenerateTableCode(serverCode)
+        ? classDefinition.tableName
+        : null;
     var className = classDefinition.className;
     var fields = classDefinition.fieldsIncludingInherited;
     var sealedTopNode = classDefinition.sealedTopNode;
@@ -151,7 +159,7 @@ class SerializableModelLibraryGenerator {
             _buildModelImplicitClass(className, classDefinition),
         ]);
 
-        if (serverCode && tableName != null) {
+        if (_shouldGenerateTableCode(classDefinition)) {
           var idTypeReference =
               classDefinition.idField.type.reference(
                     serverCode,
@@ -168,7 +176,7 @@ class SerializableModelLibraryGenerator {
             ),
             _buildModelTableClass(
               className,
-              tableName,
+              tableName!,
               fields,
               classDefinition,
               idTypeReference,
@@ -364,7 +372,7 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (serverCode && tableName != null) {
+      if (_shouldGenerateTableCode(classDefinition)) {
         var idTypeReference =
             classDefinition.idField.type.reference(
                   serverCode,
@@ -377,7 +385,7 @@ class SerializableModelLibraryGenerator {
           TypeReference(
             (f) => f
               ..symbol = 'TableRow'
-              ..url = serverpodUrl(serverCode)
+              ..url = _databaseRuntimeUrl
               ..types.add(idTypeReference),
           ),
         );
@@ -522,7 +530,7 @@ class SerializableModelLibraryGenerator {
           );
         }
 
-        if (tableName != null) {
+        if (_shouldGenerateTableCode(classDefinition)) {
           classBuilder.methods.addAll([
             _buildModelClassIncludeMethod(
               className,
@@ -1259,7 +1267,7 @@ class SerializableModelLibraryGenerator {
         ..returns = TypeReference(
           (f) => f
             ..symbol = 'Table'
-            ..url = serverpodUrl(serverCode)
+            ..url = _databaseRuntimeUrl
             ..types.add(idTypeReference),
         )
         ..lambda = true
@@ -2109,7 +2117,7 @@ class SerializableModelLibraryGenerator {
       c.extend = TypeReference(
         (f) => f
           ..symbol = 'Table'
-          ..url = serverpodUrl(serverCode)
+          ..url = _databaseRuntimeUrl
           ..types.add(idTypeReference),
       );
 
@@ -2181,7 +2189,7 @@ class SerializableModelLibraryGenerator {
       c.extend = TypeReference(
         (t) => t
           ..symbol = 'UpdateTable'
-          ..url = serverpodUrl(serverCode)
+          ..url = _databaseRuntimeUrl
           ..types.add(refer('${className}Table')),
       );
 
@@ -2232,7 +2240,7 @@ class SerializableModelLibraryGenerator {
               ..returns = TypeReference(
                 (t) => t
                   ..symbol = 'ColumnValue'
-                  ..url = serverpodUrl(serverCode)
+                  ..url = _databaseRuntimeUrl
                   ..types.addAll([
                     field.type.reference(
                       serverCode,
@@ -2260,14 +2268,14 @@ class SerializableModelLibraryGenerator {
                 currentSharedPackageName: classDefinition.sharedPackageName,
               );
 
-              m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
+              m.body = refer('ColumnValue', _databaseRuntimeUrl).call([
                 refer('table').property(createFieldName(serverCode, field)),
                 protocolRef.call([]).property(mapRecordToJsonFuncName).call([
                   refer('value'),
                 ]),
               ]).code;
             } else {
-              m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
+              m.body = refer('ColumnValue', _databaseRuntimeUrl).call([
                 refer('table').property(createFieldName(serverCode, field)),
                 refer('value'),
               ]).code;
@@ -2289,7 +2297,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'Table'
             ..isNullable = true
-            ..url = serverpodUrl(true),
+            ..url = _databaseRuntimeUrl,
         )
         ..name = 'getRelationTable'
         ..requiredParameters.add(
@@ -2334,7 +2342,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'List'
             ..types.add(
-              refer('Column', serverpodUrl(true)),
+              refer('Column', _databaseRuntimeUrl),
             ),
         )
         ..name = name
@@ -2366,7 +2374,7 @@ class SerializableModelLibraryGenerator {
               ..type = TypeReference(
                 (t) => t
                   ..symbol = field.type.columnType
-                  ..url = serverpodUrl(true)
+                  ..url = _databaseRuntimeUrl
                   ..types.addAll(
                     field.type.isEnumType || field.type.isColumnSerializable
                         ? [
@@ -2422,7 +2430,7 @@ class SerializableModelLibraryGenerator {
               ..type = TypeReference(
                 (t) => t
                   ..symbol = 'ManyRelation'
-                  ..url = serverpodUrl(serverCode)
+                  ..url = _databaseRuntimeUrl
                   ..isNullable = true
                   ..types.add(
                     field.type.generics.first.reference(
@@ -2518,7 +2526,7 @@ class SerializableModelLibraryGenerator {
                   .assign(
                     refer(
                       'createRelationTable',
-                      serverpodUrl(true),
+                      _databaseRuntimeUrl,
                     ).call(
                       [],
                       {
@@ -2576,7 +2584,7 @@ class SerializableModelLibraryGenerator {
             ..returns = TypeReference(
               (t) => t
                 ..symbol = 'ManyRelation'
-                ..url = serverpodUrl(serverCode)
+                ..url = _databaseRuntimeUrl
                 ..types.add(
                   field.type.generics.first.reference(
                     serverCode,
@@ -2593,7 +2601,7 @@ class SerializableModelLibraryGenerator {
                   .assign(
                     refer(
                       'createRelationTable',
-                      serverpodUrl(true),
+                      _databaseRuntimeUrl,
                     ).call(
                       [],
                       {
@@ -2649,7 +2657,7 @@ class SerializableModelLibraryGenerator {
                     TypeReference(
                       (t) => t
                         ..symbol = 'ManyRelation'
-                        ..url = serverpodUrl(serverCode)
+                        ..url = _databaseRuntimeUrl
                         ..types.add(
                           field.type.generics.first.reference(
                             serverCode,
@@ -2748,7 +2756,7 @@ class SerializableModelLibraryGenerator {
     return TypeReference(
       (t) => t
         ..symbol = field.type.columnType
-        ..url = serverpodUrl(true)
+        ..url = _databaseRuntimeUrl
         ..types.addAll(
           field.type.isColumnSerializable
               ? [
@@ -2789,7 +2797,7 @@ class SerializableModelLibraryGenerator {
     return TypeReference(
       (t) => t
         ..symbol = field.type.columnType
-        ..url = serverpodUrl(true)
+        ..url = _databaseRuntimeUrl
         ..types.addAll([]),
     ).call(
       [
@@ -2811,7 +2819,7 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeObject', serverpodUrl(true));
+      c.extend = refer('IncludeObject', _databaseRuntimeUrl);
       c.name = '${className}Include';
       var relationFields = fields
           .where(
@@ -2849,7 +2857,7 @@ class SerializableModelLibraryGenerator {
     TypeReference idTypeReference,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList', serverpodUrl(true));
+      c.extend = refer('IncludeList', _databaseRuntimeUrl);
       c.name = '${className}IncludeList';
 
       c.constructors.add(_buildModelIncludeListClassConstructor(className));
@@ -2937,7 +2945,7 @@ class SerializableModelLibraryGenerator {
             ..symbol = 'Map'
             ..types.addAll([
               refer('String'),
-              refer('Include?', serverpodUrl(true)),
+              refer('Include?', _databaseRuntimeUrl),
             ]),
         )
         ..name = 'includes'
@@ -2960,7 +2968,7 @@ class SerializableModelLibraryGenerator {
           (t) => t
             ..symbol = 'Table'
             ..types.add(idTypeReference)
-            ..url = serverpodUrl(serverCode),
+            ..url = _databaseRuntimeUrl,
         )
         ..name = 'table'
         ..lambda = true
@@ -2980,7 +2988,7 @@ class SerializableModelLibraryGenerator {
             ..symbol = 'Map'
             ..types.addAll([
               refer('String'),
-              refer('Include?', serverpodUrl(true)),
+              refer('Include?', _databaseRuntimeUrl),
             ]),
         )
         ..name = 'includes'

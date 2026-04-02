@@ -38,4 +38,96 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with a table level database keyword when validating then no error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          database: client
+          fields:
+            name: String
+          ''',
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class without a table and a database keyword when validating then an error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          database: client
+          fields:
+            name: String
+          ''',
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.error);
+      expect(
+        error.message,
+        'The "database" property can only be used on classes with a "table" property.',
+      );
+    },
+  );
+
+  test(
+    'Given a client database table with a non-btree index when validating then an error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          database: client
+          fields:
+            name: String
+          indexes:
+            name_hash:
+              fields: name
+              type: hash
+          ''',
+        ).build(),
+      ];
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.error);
+      expect(
+        error.message,
+        'The index "name_hash" must use type "btree" when the class has "database: client".',
+      );
+    },
+  );
 }

@@ -30,6 +30,7 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
+    var database = _parseDatabase(documentContents);
 
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
@@ -55,6 +56,7 @@ class ModelParser {
               isImmutable: isImmutable,
               extendsClass: extendsClass,
               sourceFileName: protocolSource.yamlSourceUri.path,
+              database: database,
               tableName: tableName,
               manageMigration: manageMigration,
               fileName: outFileName,
@@ -256,6 +258,17 @@ class ModelParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static ModelDatabaseDefinition _parseDatabase(YamlMap documentContents) {
+    var database = documentContents.nodes[Keyword.database]?.value;
+    if (database is! String) return ModelDatabaseDefinition.server;
+
+    return convertToEnum(
+      value: database,
+      enumDefault: ModelDatabaseDefinition.server,
+      enumValues: ModelDatabaseDefinition.values,
+    );
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(

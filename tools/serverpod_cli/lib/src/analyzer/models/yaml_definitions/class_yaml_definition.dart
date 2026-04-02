@@ -49,6 +49,11 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.database,
+        keyRestriction: restrictions.validateDatabaseKey,
+        valueRestriction: restrictions.validateDatabase,
+      ),
+      ValidateNode(
         Keyword.managedMigration,
         valueRestriction: BooleanValueRestriction().validate,
       ),
