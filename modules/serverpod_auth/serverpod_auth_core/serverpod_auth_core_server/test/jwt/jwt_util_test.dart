@@ -168,7 +168,7 @@ void main() {
       );
 
       test(
-        'when the JWT without scopes is decoded, then it does not even contain they associated key.',
+        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
         () {
           expect(
             (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
@@ -290,7 +290,7 @@ void main() {
       );
 
       test(
-        'when two JWTs are created within the same second, then they are unique.',
+        'when two JWTs are created within the same second, then their are unique.',
         () {
           final refreshToken = _createRefreshToken();
           final jwt1 = jwtUtil.createJwt(refreshToken);
@@ -420,7 +420,7 @@ void main() {
       );
 
       test(
-        'when the JWT without scopes is decoded, then it does not even contain they associated key.',
+        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
         () {
           expect(
             (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
