@@ -91,7 +91,17 @@ class PasswordlessIdpConfig<THandle>
   /// The lifetime of login verification codes.
   final Duration loginVerificationCodeLifetime;
 
-  /// The number of allowed attempts for login verification codes.
+  /// Maximum number of recorded failed verification attempts allowed per login
+  /// request within [loginVerificationCodeLifetime].
+  ///
+  /// Counting is keyed by the pending login request id. The stored attempt
+  /// count is compared to this limit before the rest of verification runs; when
+  /// already at the limit, no additional row is recorded.
+  ///
+  /// A failed attempt is recorded when the code does not match, when the
+  /// request or challenge cannot be loaded, or when the request row is missing
+  /// after a matching code (for example concurrent completion). Successful
+  /// verification and failures due to expiration do not increase the count.
   final int loginVerificationCodeAllowedAttempts;
 
   /// Function to generate login verification codes.

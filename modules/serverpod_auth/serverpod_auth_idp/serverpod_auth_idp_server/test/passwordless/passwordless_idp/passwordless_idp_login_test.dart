@@ -413,6 +413,38 @@ void main() {
         );
 
         test(
+          'when finishLogin succeeds then it does not insert login_verify rate limit rows for that request id',
+          () async {
+            final requestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+
+            expect(
+              await _countPasswordlessLoginVerifyAttempts(
+                session,
+                loginRequestId: requestId,
+              ),
+              equals(0),
+            );
+
+            await fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            expect(
+              await _countPasswordlessLoginVerifyAttempts(
+                session,
+                loginRequestId: requestId,
+              ),
+              equals(0),
+            );
+          },
+        );
+
+        test(
           'when a login request is started and completed then a single SecretChallenge covers the full verify-and-consume lifecycle',
           () async {
             final requestId = await fixture.passwordlessIdp.startLogin(
@@ -779,6 +811,45 @@ void main() {
             );
           },
         );
+
+        test(
+          'when finishLogin is called repeatedly with the same unknown request id then failed attempts are recorded until tooManyAttempts',
+          () async {
+            final unknownId = UuidValue.withValidation(const Uuid().v4());
+
+            for (var i = 0; i < 3; i++) {
+              await expectLater(
+                fixture.passwordlessIdp.finishLogin(
+                  session,
+                  loginRequestId: unknownId,
+                  verificationCode: verificationCode,
+                ),
+                throwsA(
+                  isA<PasswordlessLoginException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    PasswordlessLoginExceptionReason.invalid,
+                  ),
+                ),
+              );
+            }
+
+            await expectLater(
+              fixture.passwordlessIdp.finishLogin(
+                session,
+                loginRequestId: unknownId,
+                verificationCode: verificationCode,
+              ),
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.tooManyAttempts,
+                ),
+              ),
+            );
+          },
+        );
       });
 
       group('Given an expired login request', () {
@@ -850,6 +921,48 @@ void main() {
                   ),
                 );
               },
+            );
+          },
+        );
+
+        test(
+          'when finishLogin is called after expiration then it does not insert login_verify rate limit rows for that request id',
+          () async {
+            expect(
+              await _countPasswordlessLoginVerifyAttempts(
+                session,
+                loginRequestId: requestId,
+              ),
+              equals(0),
+            );
+
+            await withClock(
+              Clock.fixed(clock.now().add(const Duration(minutes: 2))),
+              () async {
+                final result = fixture.passwordlessIdp.finishLogin(
+                  session,
+                  loginRequestId: requestId,
+                  verificationCode: deliveredVerificationCode,
+                );
+                await expectLater(
+                  result,
+                  throwsA(
+                    isA<PasswordlessLoginException>().having(
+                      (final e) => e.reason,
+                      'reason',
+                      PasswordlessLoginExceptionReason.expired,
+                    ),
+                  ),
+                );
+              },
+            );
+
+            expect(
+              await _countPasswordlessLoginVerifyAttempts(
+                session,
+                loginRequestId: requestId,
+              ),
+              equals(0),
             );
           },
         );
@@ -1542,15 +1655,13 @@ void main() {
               );
             });
 
-            final verificationAttempts = await RateLimitedRequestAttempt.db
-                .find(
-                  session,
-                  where: (final t) =>
-                      t.domain.equals('passwordless') &
-                      t.source.equals('login_verify') &
-                      t.nonce.equals(requestId.uuid),
-                );
-            expect(verificationAttempts, isEmpty);
+            expect(
+              await _countPasswordlessLoginVerifyAttempts(
+                session,
+                loginRequestId: requestId,
+              ),
+              equals(0),
+            );
             expect(
               await GenericPasswordlessLoginRequest.db.findById(
                 session,
@@ -1785,6 +1896,17 @@ void main() {
     },
   );
 }
+
+Future<int> _countPasswordlessLoginVerifyAttempts(
+  final Session session, {
+  required final UuidValue loginRequestId,
+}) => RateLimitedRequestAttempt.db.count(
+  session,
+  where: (final t) =>
+      t.domain.equals('passwordless') &
+      t.source.equals('login_verify') &
+      t.nonce.equals(loginRequestId.uuid),
+);
 
 final class _TestHandle {
   final String value;

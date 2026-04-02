@@ -135,24 +135,28 @@ class PasswordlessIdpLoginUtil<THandle> {
     return requestId;
   }
 
-  /// Verifies the login code and completes the login in a single step.
+  /// Verifies the login code and completes the login in one step.
   ///
-  /// Expired requests are rejected (and removed) before running Argon2 hash
-  /// verification on the code.
+  /// Expired requests are removed before Argon2 verification. Rate limiting for
+  /// failed attempts uses [PasswordlessIdpConfig.loginVerificationCodeAllowedAttempts]
+  /// and [PasswordlessIdpConfig.loginVerificationCodeLifetime]; see the former
+  /// for which outcomes count.
   ///
-  /// Returns the request data on success after deleting the request row within
-  /// [transaction]. Once that transaction commits, the request cannot be
-  /// reused.
+  /// On success, deletes the request row within [transaction]. After it commits,
+  /// that login request id cannot be reused.
   Future<PasswordlessLoginRequestData> verifyAndCompleteLogin(
     final Session session, {
     required final UuidValue loginRequestId,
     required final String verificationCode,
     required final Transaction transaction,
   }) async {
-    if (await _verifyRateLimiter.hasTooManyAttempts(
+    final maxAttempts = _config.loginVerificationCodeAllowedAttempts;
+    final attemptCount = await _verifyRateLimiter.countAttempts(
       session,
       nonce: loginRequestId,
-    )) {
+      transaction: transaction,
+    );
+    if (attemptCount >= maxAttempts) {
       throw PasswordlessLoginTooManyAttemptsException();
     }
 
@@ -161,12 +165,12 @@ class PasswordlessIdpLoginUtil<THandle> {
       requestId: loginRequestId,
       transaction: transaction,
     );
-    if (request == null) {
-      throw PasswordlessLoginNotFoundException();
-    }
-
-    final challenge = request.challenge;
-    if (challenge == null) {
+    final challenge = request?.challenge;
+    if (request == null || challenge == null) {
+      await _recordVerificationFailureAttempt(
+        session,
+        loginRequestId: loginRequestId,
+      );
       throw PasswordlessLoginNotFoundException();
     }
 
@@ -183,6 +187,10 @@ class PasswordlessIdpLoginUtil<THandle> {
       secret: verificationCode,
       hashString: challenge.challengeCodeHash,
     )) {
+      await _recordVerificationFailureAttempt(
+        session,
+        loginRequestId: loginRequestId,
+      );
       throw PasswordlessLoginInvalidException();
     }
 
@@ -192,6 +200,10 @@ class PasswordlessIdpLoginUtil<THandle> {
       transaction: transaction,
     );
     if (!deleted) {
+      await _recordVerificationFailureAttempt(
+        session,
+        loginRequestId: loginRequestId,
+      );
       throw PasswordlessLoginNotFoundException();
     }
 
@@ -202,6 +214,16 @@ class PasswordlessIdpLoginUtil<THandle> {
     return request.createdAt
         .add(_config.loginVerificationCodeLifetime)
         .isBefore(clock.now());
+  }
+
+  Future<void> _recordVerificationFailureAttempt(
+    final Session session, {
+    required final UuidValue loginRequestId,
+  }) async {
+    await _verifyRateLimiter.recordAttempt(
+      session,
+      nonce: loginRequestId,
+    );
   }
 
   // 19MiB memory cost as recommended by OWASP:
