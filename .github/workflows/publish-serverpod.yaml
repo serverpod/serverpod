@@ -32,7 +32,7 @@ jobs:
     name: Publish all packages
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Read version files
         id: versions
@@ -44,13 +44,13 @@ jobs:
           echo "insights_devtools_version=$(cat INSIGHTS_DEVTOOLS_VERSION)" >> $GITHUB_OUTPUT
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version_clean }}
           channel: 'stable'
 
       - name: Set up Dart SDK
-        uses: dart-lang/setup-dart@v1
+        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
 
       - name: Get dependencies for CLI
         run: |
