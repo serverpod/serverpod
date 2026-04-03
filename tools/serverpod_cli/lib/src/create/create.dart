@@ -51,11 +51,13 @@ Future<bool> performCreate(
   bool force, {
   required bool? interactive,
 }) async {
-  // If the name is a dot, we are upgrading an existing project
-  // Instead of creating a new one, we try to upgrade the current directory.
-  if (name == '.') {
+  var createTarget = _resolveCreateTarget(name);
+
+  if (createTarget.upgradeExistingProject) {
     return await _performUpgrade(template, interactive: interactive);
   }
+
+  name = createTarget.name;
 
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
@@ -67,10 +69,11 @@ Future<bool> performCreate(
   }
 
   var serverpodDirs = ServerpodDirectories(
-    projectDir: Directory(p.join(Directory.current.path, name)),
+    projectDir: createTarget.projectDir,
     name: name,
   );
-  if (serverpodDirs.projectDir.existsSync()) {
+  if (createTarget.createProjectDirectory &&
+      serverpodDirs.projectDir.existsSync()) {
     log.error('Project $name already exists.');
     return false;
   }
@@ -90,7 +93,11 @@ Future<bool> performCreate(
   bool success = await log.progress(
     'Creating project directories.',
     () async {
-      _createProjectDirectories(template, serverpodDirs);
+      _createProjectDirectories(
+        template,
+        serverpodDirs,
+        createProjectDirectory: createTarget.createProjectDirectory,
+      );
       return true;
     },
     newParagraph: true,
@@ -229,13 +236,29 @@ Future<bool> performCreate(
     );
 
     if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(name);
+      _logStartInstructions(createTarget.serverDirectoryInstructionPath(name));
     } else if (template == ServerpodTemplateType.mini) {
-      _logMiniStartInstructions(name);
+      _logMiniStartInstructions(
+        createTarget.serverDirectoryInstructionPath(name),
+      );
     }
   }
 
   return success;
+}
+
+_CreateTarget _resolveCreateTarget(String name) {
+  if (name == '.') {
+    if (findServerDirectory(Directory.current) != null) {
+      return _CreateTarget.upgrade();
+    }
+
+    return _CreateTarget.createInCurrentDirectory(
+      name: p.basename(p.normalize(Directory.current.path)),
+    );
+  }
+
+  return _CreateTarget.create(name: name);
 }
 
 Future<bool> _performUpgrade(
@@ -305,13 +328,13 @@ Future<bool> _performUpgrade(
       type: TextLogType.success,
     );
 
-    _logStartInstructions(name);
+    _logStartInstructions(null);
   }
 
   return success;
 }
 
-void _logMiniStartInstructions(String name) {
+void _logMiniStartInstructions(String? serverDirectoryPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -326,21 +349,25 @@ void _logMiniStartInstructions(String name) {
   );
 
   if (Platform.isWindows) {
-    log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
+    if (serverDirectoryPath != null) {
+      log.info(
+        'cd .\\${serverDirectoryPath.replaceAll('/', '\\')}\\',
+        type: TextLogType.command,
+        newParagraph: true,
+      );
+    }
     log.info(
       'dart .\\bin\\main.dart',
       type: TextLogType.command,
     );
   } else {
-    log.info(
-      'cd ${p.join(name, '${name}_server')}',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
+    if (serverDirectoryPath != null) {
+      log.info(
+        'cd $serverDirectoryPath',
+        type: TextLogType.command,
+        newParagraph: true,
+      );
+    }
     log.info(
       'dart bin/main.dart',
       type: TextLogType.command,
@@ -350,7 +377,7 @@ void _logMiniStartInstructions(String name) {
   log.info(' ');
 }
 
-void _logStartInstructions(String name) {
+void _logStartInstructions(String? serverDirectoryPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -365,11 +392,13 @@ void _logStartInstructions(String name) {
   );
 
   if (Platform.isWindows) {
-    log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
+    if (serverDirectoryPath != null) {
+      log.info(
+        'cd .\\${serverDirectoryPath.replaceAll('/', '\\')}\\',
+        type: TextLogType.command,
+        newParagraph: true,
+      );
+    }
     log.info(
       'docker compose up --build --detach',
       type: TextLogType.command,
@@ -379,11 +408,13 @@ void _logStartInstructions(String name) {
       type: TextLogType.command,
     );
   } else {
-    log.info(
-      'cd ${p.join(name, '${name}_server')}',
-      type: TextLogType.command,
-      newParagraph: true,
-    );
+    if (serverDirectoryPath != null) {
+      log.info(
+        'cd $serverDirectoryPath',
+        type: TextLogType.command,
+        newParagraph: true,
+      );
+    }
     log.info(
       'docker compose up --build --detach',
       type: TextLogType.command,
@@ -413,11 +444,60 @@ class ServerpodDirectories {
       vscodeDir = Directory(p.join(projectDir.path, '.vscode'));
 }
 
+class _CreateTarget {
+  final String name;
+  final Directory projectDir;
+  final bool createProjectDirectory;
+  final bool upgradeExistingProject;
+
+  const _CreateTarget._({
+    required this.name,
+    required this.projectDir,
+    required this.createProjectDirectory,
+    required this.upgradeExistingProject,
+  });
+
+  _CreateTarget.upgrade()
+    : this._(
+        name: '',
+        projectDir: Directory.current,
+        createProjectDirectory: false,
+        upgradeExistingProject: true,
+      );
+
+  factory _CreateTarget.create({required String name}) {
+    return _CreateTarget._(
+      name: name,
+      projectDir: Directory(p.join(Directory.current.path, name)),
+      createProjectDirectory: true,
+      upgradeExistingProject: false,
+    );
+  }
+
+  factory _CreateTarget.createInCurrentDirectory({required String name}) {
+    return _CreateTarget._(
+      name: name,
+      projectDir: Directory.current,
+      createProjectDirectory: false,
+      upgradeExistingProject: false,
+    );
+  }
+
+  String? serverDirectoryInstructionPath(String name) {
+    if (upgradeExistingProject) return null;
+    if (!createProjectDirectory) return '${name}_server';
+    return p.join(name, '${name}_server');
+  }
+}
+
 void _createProjectDirectories(
   ServerpodTemplateType template,
-  ServerpodDirectories serverpodDirs,
-) {
-  _createDirectory(serverpodDirs.projectDir);
+  ServerpodDirectories serverpodDirs, {
+  required bool createProjectDirectory,
+}) {
+  if (createProjectDirectory) {
+    _createDirectory(serverpodDirs.projectDir);
+  }
   _createDirectory(serverpodDirs.serverDir);
   _createDirectory(serverpodDirs.clientDir);
 
