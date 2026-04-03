@@ -483,10 +483,10 @@ class _CreateTarget {
     );
   }
 
-  String? serverDirectoryInstructionPath(String name) {
+  String? serverDirectoryInstructionPath(String projectName) {
     if (upgradeExistingProject) return null;
-    if (!createProjectDirectory) return '${name}_server';
-    return p.join(name, '${name}_server');
+    if (!createProjectDirectory) return '${projectName}_server';
+    return p.join(projectName, '${projectName}_server');
   }
 }
 

@@ -103,10 +103,9 @@ void main() async {
           ['create', projectName, '--mini'],
           workingDirectory: d.sandbox,
         );
-        assert(
-          result.exitCode == 0,
-          'Failed to create the serverpod mini project.',
-        );
+        if (result.exitCode != 0) {
+          fail('Failed to create the serverpod mini project.');
+        }
       });
 
       test(
