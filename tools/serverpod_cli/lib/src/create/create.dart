@@ -254,7 +254,7 @@ _CreateTarget _resolveCreateTarget(String name) {
     }
 
     return _CreateTarget.createInCurrentDirectory(
-      name: p.basename(p.normalize(Directory.current.path)),
+      name: p.basename(Directory.current.absolute.path),
     );
   }
 
