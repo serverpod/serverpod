@@ -29,7 +29,7 @@ export 'module_feature/models/my_feature_model.dart';
 export 'module_streaming_class.dart';
 export 'project_streaming_class.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

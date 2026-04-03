@@ -19,7 +19,7 @@ class PostgresDatabaseProvider implements DatabaseProvider {
 
   @override
   PostgresPoolManager createPoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     PostgresDatabaseConfig config,
   ) {

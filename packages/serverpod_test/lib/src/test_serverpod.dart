@@ -11,7 +11,7 @@ import 'package:serverpod_test/src/with_serverpod.dart';
 abstract interface class InternalTestEndpoints {
   /// Initializes the endpoints.
   void initialize(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     EndpointDispatch endpoints,
   );
 }
@@ -114,7 +114,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
-    required SerializationManagerServer serializationManager,
+    required DatabaseSerializationManager serializationManager,
     required this.isDatabaseEnabled,
     required this.testEndpoints,
     required ServerpodLoggingMode? serverpodLoggingMode,

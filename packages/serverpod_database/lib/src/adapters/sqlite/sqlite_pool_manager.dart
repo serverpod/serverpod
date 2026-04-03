@@ -19,11 +19,12 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Database configuration.
   final SqliteDatabaseConfig config;
 
-  late SerializationManagerServer _serializationManager;
+  late DatabaseSerializationManager _serializationManager;
 
   /// Access to the serialization manager.
   @override
-  SerializationManagerServer get serializationManager => _serializationManager;
+  DatabaseSerializationManager get serializationManager =>
+      _serializationManager;
 
   SqliteDatabase? _db;
 
@@ -45,7 +46,7 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Creates a new [SqlitePoolManager]. Typically, this is done automatically
   /// when starting the [Server] with SQLite configuration.
   SqlitePoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     this.config,
   ) {
     _serializationManager = serializationManager;

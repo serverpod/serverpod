@@ -22,7 +22,7 @@ abstract interface class DatabaseProvider {
 
   /// Creates a new [DatabasePoolManager] for the given parameters.
   DatabasePoolManager createPoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     covariant DatabaseConfig config,
   );

@@ -18,7 +18,8 @@ abstract class DatabaseSerializationManager extends SerializationManager {
   /// Should never be used to compare directly with the live database, since
   /// [getTargetTableDefinitions] returns the definitions from the models that
   /// can contain elements ignored on certain dialect. To correctly compare
-  /// with the live database, use [DatabaseAnalyzer.getTargetTableDefinitions].
+  /// with the live database, use dialect-adapted definition from the extension
+  /// [DatabaseAnalyzerExtensions.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
 }
 

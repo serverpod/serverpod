@@ -36,7 +36,7 @@ export 'chat_message_post.dart';
 export 'chat_read_message.dart';
 export 'chat_request_message_chunk.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

@@ -300,7 +300,7 @@ export 'types.dart';
 export 'unique_data.dart';
 export 'unique_data_with_non_persist.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

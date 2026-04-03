@@ -83,7 +83,7 @@ export 'session_log_filter.dart';
 export 'session_log_info.dart';
 export 'session_log_result.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

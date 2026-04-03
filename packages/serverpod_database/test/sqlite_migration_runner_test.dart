@@ -145,7 +145,7 @@ Future<void> _createParentChildTables(
   );
 }
 
-class _TestSerializationManager extends SerializationManagerServer {
+class _TestSerializationManager extends DatabaseSerializationManager {
   @override
   String getModuleName() => 'test';
 
