@@ -26,7 +26,7 @@ void main() async {
       });
 
       test(
-        'when create is called with dot then it creates the project in the current directory.',
+        'when create is called with dot then project is created in the current directory.',
         () async {
           var result = await runServerpod(
             ['create', '.', '--mini'],
@@ -109,7 +109,7 @@ void main() async {
       });
 
       test(
-        'when create is called with dot from the server directory then it upgrades the current project.',
+        'when create is called with dot from the server directory then current project is upgraded.',
         () async {
           var result = await runServerpod(
             ['create', '.', '--template', 'server'],

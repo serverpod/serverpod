@@ -236,10 +236,12 @@ Future<bool> performCreate(
     );
 
     if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(createTarget.serverDirectoryInstructionPath(name));
+      _logStartInstructions(
+        createTarget.relativeServerDirectoryForInstructions(name),
+      );
     } else if (template == ServerpodTemplateType.mini) {
       _logMiniStartInstructions(
-        createTarget.serverDirectoryInstructionPath(name),
+        createTarget.relativeServerDirectoryForInstructions(name),
       );
     }
   }
@@ -483,7 +485,7 @@ class _CreateTarget {
     );
   }
 
-  String? serverDirectoryInstructionPath(String projectName) {
+  String? relativeServerDirectoryForInstructions(String projectName) {
     if (upgradeExistingProject) return null;
     if (!createProjectDirectory) return '${projectName}_server';
     return p.join(projectName, '${projectName}_server');
