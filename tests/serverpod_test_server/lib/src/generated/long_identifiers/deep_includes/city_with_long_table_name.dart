@@ -581,15 +581,25 @@ class CityWithLongTableNameRepository {
   }
 
   /// Deletes all [CityWithLongTableName]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CityWithLongTableName>> delete(
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
+    _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CityWithLongTableName>(
       rows,
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -607,13 +617,22 @@ class CityWithLongTableNameRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CityWithLongTableName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
+    _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CityWithLongTableName>(
       where: where(CityWithLongTableName.t),
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

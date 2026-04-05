@@ -71,6 +71,10 @@ class JwtUtil {
       dart_jsonwebtoken.JWTKey key,
       dart_jsonwebtoken.JWTAlgorithm algorithm,
     ) = switch (_algorithm) {
+      HmacSha256JwtAlgorithmConfiguration(:final key) => (
+        key,
+        dart_jsonwebtoken.JWTAlgorithm.HS256,
+      ),
       HmacSha512JwtAlgorithmConfiguration(:final key) => (
         key,
         dart_jsonwebtoken.JWTAlgorithm.HS512,

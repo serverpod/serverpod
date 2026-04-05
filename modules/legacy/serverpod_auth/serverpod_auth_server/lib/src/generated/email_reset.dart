@@ -461,15 +461,25 @@ class EmailResetRepository {
   }
 
   /// Deletes all [EmailReset]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EmailReset>> delete(
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailReset>(
       rows,
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -487,13 +497,22 @@ class EmailResetRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<EmailReset>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmailReset>(
       where: where(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

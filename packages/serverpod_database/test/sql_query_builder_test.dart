@@ -859,11 +859,18 @@ void main() {
         var query = DeleteQueryBuilder(table: citizenTable)
             .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
             .withReturn(Returning.all)
+            .withOrderBy([
+              Order(column: ColumnString('id', citizenTable)),
+            ])
             .build();
 
         expect(
           query,
-          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" RETURNING "citizen"."id" AS "citizen.id"',
+          'WITH deleted_rows AS (DELETE FROM "citizen" USING "company" AS "citizen_company_company" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" '
+          'RETURNING "citizen"."id" AS "citizen.id") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "citizen.id" ASC NULLS LAST',
         );
       },
     );

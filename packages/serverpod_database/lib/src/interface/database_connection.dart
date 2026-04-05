@@ -145,6 +145,9 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<List<T>> delete<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   });
 
@@ -159,6 +162,9 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<List<T>> deleteWhere<T extends TableRow>(
     DatabaseSession session,
     Expression where, {
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   });
 

@@ -520,15 +520,25 @@ class ChallengeTrackerRepository {
   }
 
   /// Deletes all [ChallengeTracker]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChallengeTracker>> delete(
     _i1.DatabaseSession session,
     List<ChallengeTracker> rows, {
+    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChallengeTracker>(
       rows,
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -546,13 +556,22 @@ class ChallengeTrackerRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ChallengeTracker>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ChallengeTracker>(
       where: where(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

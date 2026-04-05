@@ -682,15 +682,25 @@ class ChangedIdTypeSelfRepository {
   }
 
   /// Deletes all [ChangedIdTypeSelf]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChangedIdTypeSelf>> delete(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChangedIdTypeSelf>(
       rows,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -708,13 +718,22 @@ class ChangedIdTypeSelfRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ChangedIdTypeSelf>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ChangedIdTypeSelf>(
       where: where(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

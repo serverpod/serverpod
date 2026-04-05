@@ -462,15 +462,25 @@ class UserNoteRepository {
   }
 
   /// Deletes all [UserNote]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserNote>> delete(
     _i1.DatabaseSession session,
     List<UserNote> rows, {
+    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserNote>(
       rows,
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -488,13 +498,22 @@ class UserNoteRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<UserNote>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
+    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<UserNote>(
       where: where(UserNote.t),
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

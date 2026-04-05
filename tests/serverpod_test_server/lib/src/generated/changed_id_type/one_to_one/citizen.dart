@@ -610,15 +610,25 @@ class CitizenIntRepository {
   }
 
   /// Deletes all [CitizenInt]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CitizenInt>> delete(
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
+    _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CitizenInt>(
       rows,
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -636,13 +646,22 @@ class CitizenIntRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CitizenInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
+    _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CitizenInt>(
       where: where(CitizenInt.t),
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

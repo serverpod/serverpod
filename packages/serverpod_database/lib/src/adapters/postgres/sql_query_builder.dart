@@ -509,6 +509,8 @@ class DeleteQueryBuilder {
   final Table _table;
   String? _returningStatement;
   Expression? _where;
+  List<Order>? _orderBy;
+  Returning? _returning;
 
   /// Creates a new [DeleteQueryBuilder].
   DeleteQueryBuilder({required Table table})
@@ -529,6 +531,7 @@ class DeleteQueryBuilder {
         _returningStatement = null;
         break;
     }
+    _returning = returning;
     return this;
   }
 
@@ -541,21 +544,59 @@ class DeleteQueryBuilder {
     return this;
   }
 
+  /// Sets the order by for the returned deleted rows.
+  ///
+  /// Order by should only include columns from the current table.
+  DeleteQueryBuilder withOrderBy(List<Order>? orderBy) {
+    _orderBy = orderBy;
+    return this;
+  }
+
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(_table.tableName, where: _where);
-
+    _validateTableReferences(
+      _table.tableName,
+      where: _where,
+    );
+    _validateDeleteOrderByAndReturning(
+      _table,
+      _orderBy,
+      _returning,
+    );
     var subQueries = _SubQueries.gatherSubQueries(where: _where);
     var using = _buildUsingQuery(where: _where);
     var where = _buildWhereQuery(where: _where, subQueries: subQueries);
+    var orderBy = _buildOrderByQuery(orderBy: _orderBy, truncateAliases: true);
+
+    var subQuery = '';
+    if (subQueries != null) subQuery += 'WITH ${subQueries.buildQueries()} ';
+
+    var deleteQuery = '';
+    deleteQuery += 'DELETE FROM "${_table.tableName}"';
+    if (using != null) deleteQuery += ' USING ${using.using}';
+    if (where != null) deleteQuery += ' WHERE $where';
+    if (using != null) deleteQuery += ' AND ${using.where}';
+    if (_returningStatement != null) deleteQuery += _returningStatement!;
 
     var query = '';
-    if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
-    query += 'DELETE FROM "${_table.tableName}"';
-    if (using != null) query += ' USING ${using.using}';
-    if (where != null) query += ' WHERE $where';
-    if (using != null) query += ' AND ${using.where}';
-    if (_returningStatement != null) query += _returningStatement!;
+
+    // If no ORDER BY clause is needed, return only the DELETE query with subqueries if any
+    if (orderBy == null) {
+      query = subQuery + deleteQuery;
+    } else {
+      var deletedRowsAlias = 'deleted_rows';
+      var orderQuery = 'SELECT * FROM $deletedRowsAlias ORDER BY $orderBy';
+
+      // If no subqueries, wrap the delete query so the returned rows can be ordered.
+      if (subQueries == null) {
+        query = 'WITH $deletedRowsAlias AS ($deleteQuery)';
+      } else {
+        // If there are subqueries, chain the deletedRowsAlias CTE
+        query = '$subQuery, $deletedRowsAlias AS ($deleteQuery)';
+      }
+      query += ' $orderQuery';
+    }
+
     return query;
   }
 }
@@ -1085,8 +1126,12 @@ class _SubQueries {
   }
 }
 
-String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
-  if (orderBy == null) {
+String? _buildOrderByQuery({
+  List<Order>? orderBy,
+  _SubQueries? subQueries,
+  bool truncateAliases = false,
+}) {
+  if (orderBy == null || orderBy.isEmpty) {
     return null;
   }
 
@@ -1099,7 +1144,9 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
         if (column is ColumnCount) {
           str = _formatOrderByCount(index, subQueries, orderDescending);
         } else {
-          str = '$column';
+          str = truncateAliases
+              ? '"${truncateIdentifier(column.fieldQueryAlias, DatabaseConstants.pgsqlMaxNameLimitation)}"'
+              : '$column';
           str += orderDescending ? ' DESC NULLS FIRST' : ' ASC NULLS LAST';
         }
 
@@ -1380,6 +1427,68 @@ void _validateTableReferences(
     var errorMessage =
         'Column references starting from other tables than "$tableName" are '
         'not supported. The following expressions need to be removed or '
+        'modified:\n${exceptionMessages.join('\n')}';
+    throw FormatException(errorMessage);
+  }
+}
+
+void _validateDeleteOrderByAndReturning(
+  Table table,
+  List<Order>? orderBy,
+  Returning? returning,
+) {
+  if (orderBy == null || orderBy.isEmpty) return;
+
+  final returnedAliases = table.columns
+      .map(
+        (column) => truncateIdentifier(
+          column.fieldQueryAlias,
+          DatabaseConstants.pgsqlMaxNameLimitation,
+        ),
+      )
+      .toSet();
+
+  List<String> exceptionMessages = [];
+
+  if (returning != Returning.all) {
+    exceptionMessages.add(
+      'Order by is not supported when returning is set to $returning.',
+    );
+  }
+
+  for (var order in orderBy) {
+    var column = order.column;
+
+    if (column is ColumnCount) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder does not support ordering returned rows by ColumnCount.',
+      );
+      continue;
+    }
+
+    if (column.table.tableName != table.tableName) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder orderBy only supports columns from "${table.tableName}".',
+      );
+      continue;
+    }
+
+    final requestedAlias = truncateIdentifier(
+      column.fieldQueryAlias,
+      DatabaseConstants.pgsqlMaxNameLimitation,
+    );
+
+    if (!returnedAliases.contains(requestedAlias)) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder orderBy only supports columns from "${table.tableName}" and its aliases. '
+        'Column $column resolves to alias "$requestedAlias", which is not present in the returned result.',
+      );
+    }
+  }
+
+  if (exceptionMessages.isNotEmpty) {
+    var errorMessage =
+        'The following expressions need to be removed or '
         'modified:\n${exceptionMessages.join('\n')}';
     throw FormatException(errorMessage);
   }

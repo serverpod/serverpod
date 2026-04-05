@@ -454,15 +454,25 @@ class ChildClassWithoutIdRepository {
   }
 
   /// Deletes all [ChildClassWithoutId]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChildClassWithoutId>> delete(
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
+    _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
     return session.db.delete<ChildClassWithoutId>(
       rows,
+      orderBy: orderBy?.call(ChildClassWithoutId.t),
+      orderByList: orderByList?.call(ChildClassWithoutId.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -480,13 +490,22 @@ class ChildClassWithoutIdRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ChildClassWithoutId>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
+    _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ChildClassWithoutId>(
       where: where(ChildClassWithoutId.t),
+      orderBy: orderBy?.call(ChildClassWithoutId.t),
+      orderByList: orderByList?.call(ChildClassWithoutId.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

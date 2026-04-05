@@ -496,15 +496,25 @@ class CloudStorageDirectUploadEntryRepository {
   }
 
   /// Deletes all [CloudStorageDirectUploadEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CloudStorageDirectUploadEntry>> delete(
     _i1.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
+    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CloudStorageDirectUploadEntry>(
       rows,
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -522,14 +532,23 @@ class CloudStorageDirectUploadEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CloudStorageDirectUploadEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
     where,
+    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CloudStorageDirectUploadEntry>(
       where: where(CloudStorageDirectUploadEntry.t),
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

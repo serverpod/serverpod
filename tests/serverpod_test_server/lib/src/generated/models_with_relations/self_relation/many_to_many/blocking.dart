@@ -531,15 +531,25 @@ class BlockingRepository {
   }
 
   /// Deletes all [Blocking]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Blocking>> delete(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Blocking>(
       rows,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -557,13 +567,22 @@ class BlockingRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Blocking>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Blocking>(
       where: where(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -488,15 +488,25 @@ class UuidDefaultPersistRepository {
   }
 
   /// Deletes all [UuidDefaultPersist]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UuidDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<UuidDefaultPersist> rows, {
+    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UuidDefaultPersist>(
       rows,
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -514,13 +524,22 @@ class UuidDefaultPersistRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<UuidDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<UuidDefaultPersist>(
       where: where(UuidDefaultPersist.t),
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

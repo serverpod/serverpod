@@ -560,15 +560,25 @@ class PasswordlessLoginRequestRepository {
   }
 
   /// Deletes all [PasswordlessLoginRequest]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<PasswordlessLoginRequest>> delete(
     _i1.DatabaseSession session,
     List<PasswordlessLoginRequest> rows, {
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<PasswordlessLoginRequest>(
       rows,
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -586,13 +596,22 @@ class PasswordlessLoginRequestRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<PasswordlessLoginRequest>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable> where,
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<PasswordlessLoginRequest>(
       where: where(PasswordlessLoginRequest.t),
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

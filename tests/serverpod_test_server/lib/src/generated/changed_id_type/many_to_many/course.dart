@@ -492,15 +492,25 @@ class CourseUuidRepository {
   }
 
   /// Deletes all [CourseUuid]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CourseUuid>> delete(
     _i1.DatabaseSession session,
     List<CourseUuid> rows, {
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CourseUuid>(
       rows,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -518,13 +528,22 @@ class CourseUuidRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CourseUuid>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CourseUuid>(
       where: where(CourseUuid.t),
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

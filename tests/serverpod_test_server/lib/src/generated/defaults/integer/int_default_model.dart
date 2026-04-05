@@ -429,15 +429,25 @@ class IntDefaultModelRepository {
   }
 
   /// Deletes all [IntDefaultModel]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<IntDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<IntDefaultModel> rows, {
+    _i1.OrderByBuilder<IntDefaultModelTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<IntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<IntDefaultModel>(
       rows,
+      orderBy: orderBy?.call(IntDefaultModel.t),
+      orderByList: orderByList?.call(IntDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -455,13 +465,22 @@ class IntDefaultModelRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<IntDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
+    _i1.OrderByBuilder<IntDefaultModelTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<IntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<IntDefaultModel>(
       where: where(IntDefaultModel.t),
+      orderBy: orderBy?.call(IntDefaultModel.t),
+      orderByList: orderByList?.call(IntDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

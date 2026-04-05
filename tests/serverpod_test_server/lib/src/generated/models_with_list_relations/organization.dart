@@ -558,15 +558,25 @@ class OrganizationRepository {
   }
 
   /// Deletes all [Organization]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Organization>> delete(
     _i1.DatabaseSession session,
     List<Organization> rows, {
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Organization>(
       rows,
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -584,13 +594,22 @@ class OrganizationRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Organization>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Organization>(
       where: where(Organization.t),
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

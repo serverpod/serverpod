@@ -509,15 +509,25 @@ class ObjectWithSparseVectorRepository {
   }
 
   /// Deletes all [ObjectWithSparseVector]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithSparseVector>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
+    _i1.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithSparseVector>(
       rows,
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -535,13 +545,22 @@ class ObjectWithSparseVectorRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectWithSparseVector>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
+    _i1.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ObjectWithSparseVector>(
       where: where(ObjectWithSparseVector.t),
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

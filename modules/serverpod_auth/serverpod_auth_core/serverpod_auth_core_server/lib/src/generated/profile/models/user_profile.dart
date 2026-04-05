@@ -669,15 +669,25 @@ class UserProfileRepository {
   }
 
   /// Deletes all [UserProfile]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserProfile>> delete(
     _i1.DatabaseSession session,
     List<UserProfile> rows, {
+    _i1.OrderByBuilder<UserProfileTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserProfile>(
       rows,
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -695,13 +705,22 @@ class UserProfileRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<UserProfile>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserProfileTable> where,
+    _i1.OrderByBuilder<UserProfileTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<UserProfile>(
       where: where(UserProfile.t),
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

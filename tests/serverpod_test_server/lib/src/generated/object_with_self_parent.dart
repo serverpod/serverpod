@@ -407,15 +407,25 @@ class ObjectWithSelfParentRepository {
   }
 
   /// Deletes all [ObjectWithSelfParent]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithSelfParent>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithSelfParent> rows, {
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithSelfParent>(
       rows,
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -433,13 +443,22 @@ class ObjectWithSelfParentRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectWithSelfParent>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

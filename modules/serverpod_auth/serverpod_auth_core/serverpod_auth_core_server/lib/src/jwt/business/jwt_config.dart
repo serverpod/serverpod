@@ -50,6 +50,13 @@ sealed class JwtAlgorithm {
     );
   }
 
+  /// Create a new HMAC SHA-256 authentication token algorithm configuration.
+  static HmacSha256JwtAlgorithmConfiguration hmacSha256(
+    final SecretKey key,
+  ) {
+    return HmacSha256JwtAlgorithmConfiguration(key: key);
+  }
+
   /// Create a new HMAC SHA-512 authentication token algorithm configuration.
   static HmacSha512JwtAlgorithmConfiguration hmacSha512(
     final SecretKey key,
@@ -62,7 +69,7 @@ sealed class JwtAlgorithm {
 class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   /// The algorithm used to sign and verify the JWT tokens.
   ///
-  /// Supported options are `HmacSha512` and `EcdsaSha512`.
+  /// Supported options are `HmacSha256`, `HmacSha512`, and `EcdsaSha512`.
   final JwtAlgorithm algorithm;
 
   /// The algorithms used to verify the JWT tokens in case the primary
@@ -257,6 +264,20 @@ final class EcdsaSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
 
   @override
   dart_jsonwebtoken.JWTKey get verificationKey => publicKey;
+}
+
+/// HMAC SHA-256 JWT algorithm configuration.
+final class HmacSha256JwtAlgorithmConfiguration implements JwtAlgorithm {
+  /// The secret key to use for the HMAC SHA-256 algorithm.
+  final SecretKey key;
+
+  /// Create a new HMAC SHA-256 JWT algorithm configuration.
+  const HmacSha256JwtAlgorithmConfiguration({
+    required this.key,
+  });
+
+  @override
+  dart_jsonwebtoken.JWTKey get verificationKey => key;
 }
 
 /// HMAC SHA-512 JWT algorithm configuration.

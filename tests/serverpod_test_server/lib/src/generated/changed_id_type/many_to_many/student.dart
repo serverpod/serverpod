@@ -488,15 +488,25 @@ class StudentUuidRepository {
   }
 
   /// Deletes all [StudentUuid]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<StudentUuid>> delete(
     _i1.DatabaseSession session,
     List<StudentUuid> rows, {
+    _i1.OrderByBuilder<StudentUuidTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<StudentUuid>(
       rows,
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -514,13 +524,22 @@ class StudentUuidRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<StudentUuid>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StudentUuidTable> where,
+    _i1.OrderByBuilder<StudentUuidTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<StudentUuid>(
       where: where(StudentUuid.t),
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -630,15 +630,25 @@ class PasskeyAccountRepository {
   }
 
   /// Deletes all [PasskeyAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<PasskeyAccount>> delete(
     _i1.DatabaseSession session,
     List<PasskeyAccount> rows, {
+    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<PasskeyAccount>(
       rows,
+      orderBy: orderBy?.call(PasskeyAccount.t),
+      orderByList: orderByList?.call(PasskeyAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -656,13 +666,22 @@ class PasskeyAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<PasskeyAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
+    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<PasskeyAccount>(
       where: where(PasskeyAccount.t),
+      orderBy: orderBy?.call(PasskeyAccount.t),
+      orderByList: orderByList?.call(PasskeyAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

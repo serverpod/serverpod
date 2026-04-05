@@ -469,15 +469,25 @@ class UserNoteWithALongNameRepository {
   }
 
   /// Deletes all [UserNoteWithALongName]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserNoteWithALongName>> delete(
     _i1.DatabaseSession session,
     List<UserNoteWithALongName> rows, {
+    _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserNoteWithALongName>(
       rows,
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -495,13 +505,22 @@ class UserNoteWithALongNameRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<UserNoteWithALongName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
+    _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<UserNoteWithALongName>(
       where: where(UserNoteWithALongName.t),
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

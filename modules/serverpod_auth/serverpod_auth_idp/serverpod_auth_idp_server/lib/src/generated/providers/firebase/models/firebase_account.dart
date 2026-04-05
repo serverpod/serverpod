@@ -583,15 +583,25 @@ class FirebaseAccountRepository {
   }
 
   /// Deletes all [FirebaseAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FirebaseAccount>> delete(
     _i1.DatabaseSession session,
     List<FirebaseAccount> rows, {
+    _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<FirebaseAccount>(
       rows,
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -609,13 +619,22 @@ class FirebaseAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<FirebaseAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FirebaseAccountTable> where,
+    _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<FirebaseAccount>(
       where: where(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

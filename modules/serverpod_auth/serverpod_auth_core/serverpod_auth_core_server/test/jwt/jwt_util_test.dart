@@ -168,7 +168,259 @@ void main() {
       );
 
       test(
-        'when the JWT without scopes is decoded, then it does not even contain they associated key.',
+        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
+        () {
+          expect(
+            (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
+              'dev.serverpod.scopeNames',
+            ),
+            isFalse,
+          );
+        },
+      );
+
+      test('when the JWT is inspected, then its `extraClaims` are empty.', () {
+        final tokenData = jwtUtil.verifyJwt(jwt);
+
+        expect(
+          tokenData.extraClaims,
+          isEmpty,
+        );
+      });
+
+      group('an access token for a refresh token with scopes defined,', () {
+        late RefreshToken refreshToken;
+        late String jwt;
+
+        setUp(() {
+          refreshToken = _createRefreshToken().copyWith(
+            scopeNames: {'a', 'b', 'c'},
+          );
+          jwt = jwtUtil.createJwt(refreshToken);
+        });
+
+        test(
+          'when the JWT data is inspected, then its `scopes` match the refresh token.',
+          () {
+            final tokenData = jwtUtil.verifyJwt(jwt);
+            expect(
+              tokenData.scopes.map((final s) => s.name),
+              containsAllInOrder({'a', 'b', 'c'}),
+            );
+          },
+        );
+
+        test(
+          'when the JWT with scopes is decoded, then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
+          () {
+            expect(
+              (dart_jsonwebtoken.JWT.decode(jwt).payload
+                  as Map)['dev.serverpod.scopeNames'],
+              ['a', 'b', 'c'],
+            );
+          },
+        );
+
+        test(
+          'when the JWT data is inspected, then its `extraClaims` are empty.',
+          () {
+            final tokenData = jwtUtil.verifyJwt(jwt);
+
+            expect(
+              tokenData.extraClaims,
+              isEmpty,
+            );
+          },
+        );
+      });
+
+      group('an access token for a refresh token with extra claims defined,', () {
+        late RefreshToken refreshToken;
+        late String jwt;
+
+        setUp(() {
+          refreshToken = _createRefreshToken().copyWith(
+            extraClaims: jsonEncode({'b': 1, 'a': 'test'}),
+          );
+          jwt = jwtUtil.createJwt(refreshToken);
+        });
+
+        test(
+          'when the JWT data is inspected, then its `extraClaims` match the refresh token ones.',
+          () {
+            final tokenData = jwtUtil.verifyJwt(jwt);
+
+            expect(
+              tokenData.extraClaims,
+              {'b': 1, 'a': 'test'},
+            );
+          },
+        );
+      });
+    });
+  });
+
+  group('Given a valid HS256 configuration and', () {
+    late JwtUtil jwtUtil;
+
+    setUp(() {
+      final jwt = Jwt(
+        config: JwtConfig(
+          algorithm: _hs256Algorithm(),
+          refreshTokenHashPepper: 'test-pepper',
+        ),
+      );
+      jwtUtil = jwt.jwtUtil;
+    });
+
+    group('a plain refresh token,', () {
+      late RefreshToken refreshToken;
+      setUp(() {
+        refreshToken = _createRefreshToken();
+      });
+
+      test(
+        'when a JWT is requested for the refresh token, then it succeeds.',
+        () {
+          expect(
+            jwtUtil.createJwt(refreshToken),
+            isNotEmpty,
+          );
+        },
+      );
+
+      test(
+        'when two JWTs are created within the same second, then their are unique.',
+        () {
+          final refreshToken = _createRefreshToken();
+          final jwt1 = jwtUtil.createJwt(refreshToken);
+          final jwt2 = jwtUtil.createJwt(refreshToken);
+          expect(jwt1, isNot(jwt2));
+        },
+      );
+    });
+
+    group('a refresh token containing a reserved claim,', () {
+      late RefreshToken refreshToken;
+      setUp(() {
+        refreshToken = _createRefreshToken().copyWith(
+          extraClaims: jsonEncode({'iss': 'foo'}),
+        );
+      });
+
+      test(
+        'when a JWT is requested for the refresh token, then it throws an error.',
+        () {
+          expect(
+            () => jwtUtil.createJwt(refreshToken),
+            throwsArgumentError,
+          );
+        },
+      );
+    });
+
+    group('a refresh token containing a claim in the Serverpod namespace,', () {
+      late RefreshToken refreshToken;
+      setUp(() {
+        refreshToken = _createRefreshToken().copyWith(
+          extraClaims: jsonEncode({'dev.serverpod.x': 'foo'}),
+        );
+      });
+
+      test(
+        'when a JWT is requested for the refresh token, then it throws an error.',
+        () {
+          expect(
+            () => jwtUtil.createJwt(refreshToken),
+            throwsArgumentError,
+          );
+        },
+      );
+    });
+
+    group('a JWT token for a plain refresh token,', () {
+      late RefreshToken refreshToken;
+      late String jwt;
+
+      setUp(() {
+        refreshToken = _createRefreshToken();
+        jwt = jwtUtil.createJwt(refreshToken);
+      });
+
+      test('when the JWT is verified, then it returns successfully.', () {
+        expect(jwtUtil.verifyJwt(jwt), isNotNull);
+      });
+
+      test(
+        'when the JWT is inspected, then its `refreshTokenId` matches the refresh token.',
+        () {
+          final tokenData = jwtUtil.verifyJwt(jwt);
+          expect(tokenData.refreshTokenId, refreshToken.id);
+        },
+      );
+
+      test(
+        'when the JWT is inspected, then its `authUserId` matches the refresh token.',
+        () {
+          final tokenData = jwtUtil.verifyJwt(jwt);
+          expect(tokenData.authUserId, refreshToken.authUserId);
+        },
+      );
+
+      test(
+        'when the JWT is decoded, then it will contain the `authUserId` as `subject`.',
+        () {
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).subject,
+            refreshToken.authUserId.toString(),
+          );
+        },
+      );
+
+      test(
+        'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
+        () {
+          expect(dart_jsonwebtoken.JWT.decode(jwt).jwtId, isNotNull);
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).jwtId,
+            isNot(refreshToken.id!.toString()),
+          );
+        },
+      );
+
+      test(
+        'when the JWT is decoded, then it contains the refresh token ID claim.',
+        () {
+          expect(
+            (dart_jsonwebtoken.JWT.decode(jwt).payload
+                as Map)['dev.serverpod.refreshTokenId'],
+            refreshToken.id!.toString(),
+          );
+        },
+      );
+
+      test(
+        'when the JWT is decoded, then it will contain no issuer per the default configuration.',
+        () {
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).issuer,
+            isNull,
+          );
+        },
+      );
+
+      test(
+        'when the JWT header is decoded, then it names the HS256 as its "alg".',
+        () {
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).header,
+            equals({'alg': 'HS256', 'typ': 'JWT'}),
+          );
+        },
+      );
+
+      test(
+        'when the JWT without scopes is decoded, then it does not even contain their associated key.',
         () {
           expect(
             (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
@@ -289,6 +541,34 @@ void main() {
   );
 
   test(
+    'Given a token issued with HMAC HS256 when validated by HMAC HS256 with different key then validation fails',
+    () {
+      final jwt = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha256(
+            SecretKey('First Key'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+        ),
+      ).jwtUtil.createJwt(_createRefreshToken());
+
+      final differentKeyHS256Util = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha256(
+            SecretKey('Second Key'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+        ),
+      ).jwtUtil;
+
+      expect(
+        () => differentKeyHS256Util.verifyJwt(jwt),
+        throwsA(isA<Exception>()),
+      );
+    },
+  );
+
+  test(
     'Given a token issued with issuer configured when decoding token then issuer is present',
     () {
       const issuer =
@@ -297,6 +577,27 @@ void main() {
       final jwt = Jwt(
         config: JwtConfig(
           algorithm: _hs512Algorithm(),
+          refreshTokenHashPepper: 'test-pepper',
+          issuer: issuer,
+        ),
+      ).jwtUtil.createJwt(_createRefreshToken());
+
+      expect(
+        dart_jsonwebtoken.JWT.decode(jwt).issuer,
+        issuer,
+      );
+    },
+  );
+
+  test(
+    'Given a HS256 token issued with issuer configured when decoding token then issuer is present',
+    () {
+      const issuer =
+          'https://github.com/serverpod/serverpod/tree/main/modules/serverpod_auth/serverpod_auth_jwt_server';
+
+      final jwt = Jwt(
+        config: JwtConfig(
+          algorithm: _hs256Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: issuer,
         ),
@@ -336,6 +637,33 @@ void main() {
     },
   );
 
+  test(
+    'Given a HS256 token when validated by a HS256 JWTUtil with a different issuer then validation fails',
+    () {
+      final initialHS256Util = Jwt(
+        config: JwtConfig(
+          algorithm: _hs256Algorithm(),
+          refreshTokenHashPepper: 'test-pepper',
+          issuer: 'some issuer',
+        ),
+      ).jwtUtil;
+      final jwt = initialHS256Util.createJwt(_createRefreshToken());
+
+      final differentIssuerHS256Util = Jwt(
+        config: JwtConfig(
+          algorithm: _hs256Algorithm(),
+          refreshTokenHashPepper: 'test-pepper',
+          issuer: 'different issuer',
+        ),
+      ).jwtUtil;
+
+      expect(
+        () => differentIssuerHS256Util.verifyJwt(jwt),
+        throwsA(isA<Exception>()),
+      );
+    },
+  );
+
   group(
     'Given a valid ES512 configuration and JWT from a plain refresh token,',
     () {
@@ -368,7 +696,7 @@ void main() {
       );
 
       test(
-        'when the JWT is decoded, then it names HS512 as its `alg.',
+        'when the JWT is decoded, then it names ES512 as its `alg`.',
         () {
           expect(
             dart_jsonwebtoken.JWT.decode(jwtToken).header,
@@ -400,6 +728,81 @@ void main() {
               algorithm: _hs512Algorithm(),
               refreshTokenHashPepper: 'test-pepper',
               fallbackVerificationAlgorithms: [_es512Algorithm()],
+            ),
+          );
+          final es512JwtUtil = jwt.jwtUtil;
+
+          final result = es512JwtUtil.verifyJwt(jwtToken);
+          expect(result.authUserId, refreshToken.authUserId);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a valid HS256 configuration and JWT from a plain refresh token,',
+    () {
+      late JwtUtil jwtUtil;
+      late RefreshToken refreshToken;
+      late String jwtToken;
+
+      setUp(() {
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: _hs256Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        jwtUtil = jwt.jwtUtil;
+
+        refreshToken = _createRefreshToken();
+        jwtToken = jwtUtil.createJwt(refreshToken);
+      });
+
+      test(
+        'when a JWT is verified, then its data is returned.',
+        () {
+          expect(
+            jwtUtil.verifyJwt(jwtToken),
+            isNotNull,
+          );
+        },
+      );
+
+      test(
+        'when the JWT is decoded, then it names HS256 as its `alg`.',
+        () {
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwtToken).header,
+            equals({'alg': 'HS256', 'typ': 'JWT'}),
+          );
+        },
+      );
+
+      test('when validated by ES512, then the validation fails.', () {
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: _es512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+        final es512JwtUtil = jwt.jwtUtil;
+
+        expectLater(
+          () => es512JwtUtil.verifyJwt(jwtToken),
+          throwsA(isA<Error>()),
+        );
+      });
+
+      test(
+        'when the configuration is changed to ES512 with the HS256 as a fallback, then the validation succeeds.',
+        () {
+          final jwt = Jwt(
+            config: JwtConfig(
+              algorithm: _es512Algorithm(),
+              refreshTokenHashPepper: 'test-pepper',
+              fallbackVerificationAlgorithms: [_hs256Algorithm()],
             ),
           );
           final es512JwtUtil = jwt.jwtUtil;
@@ -573,6 +976,12 @@ RefreshToken _createRefreshToken() {
     fixedSecret: ByteData(0),
     rotatingSecretHash: '',
     method: 'test',
+  );
+}
+
+HmacSha256JwtAlgorithmConfiguration _hs256Algorithm() {
+  return JwtAlgorithm.hmacSha256(
+    SecretKey('test-private-key-for-HS256'),
   );
 }
 

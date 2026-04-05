@@ -566,15 +566,25 @@ class ObjectWithEnumEnhancedRepository {
   }
 
   /// Deletes all [ObjectWithEnumEnhanced]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithEnumEnhanced>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
+    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithEnumEnhanced>(
       rows,
+      orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
+      orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -592,13 +602,22 @@ class ObjectWithEnumEnhancedRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectWithEnumEnhanced>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
+    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ObjectWithEnumEnhanced>(
       where: where(ObjectWithEnumEnhanced.t),
+      orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
+      orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -1154,6 +1154,10 @@ class BuildRepositoryClass {
       methodBuilder
         ..docs.add('''
 /// Deletes all [$className]s in the list and returns the deleted rows.
+///
+/// To specify the order of the returned rows use [orderBy] or [orderByList]
+/// when sorting by multiple columns.
+///
 /// This is an atomic operation, meaning that if one of the rows fail to
 /// be deleted, none of the rows will be deleted.''')
         ..name = 'delete'
@@ -1187,6 +1191,25 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter(
             (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'orderDescending'
+              ..defaultTo = const Code('false')
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
               ..type = TypeReference(
                 (b) => b
                   ..isNullable = true
@@ -1204,6 +1227,15 @@ class BuildRepositoryClass {
             .call(
               [refer('rows')],
               {
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'orderDescending': refer('orderDescending'),
                 'transaction': refer('transaction'),
               },
               [refer(className)],
@@ -1271,7 +1303,11 @@ class BuildRepositoryClass {
   Method _buildDeleteWhereMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
-        ..docs.add('/// Deletes all rows matching the [where] expression.')
+        ..docs.add('''
+/// Deletes all rows matching the [where] expression.
+///
+/// To specify the order of the returned rows use [orderBy] or [orderByList]
+/// when sorting by multiple columns.''')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
           (r) => r
@@ -1309,6 +1345,25 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'orderDescending'
+              ..defaultTo = const Code('false')
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
               ..type = TypeReference(
                 (b) => b
                   ..isNullable = true
@@ -1327,6 +1382,15 @@ class BuildRepositoryClass {
               [],
               {
                 'where': refer('where').call([refer(className).property('t')]),
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'orderDescending': refer('orderDescending'),
                 'transaction': refer('transaction'),
               },
               [refer(className)],

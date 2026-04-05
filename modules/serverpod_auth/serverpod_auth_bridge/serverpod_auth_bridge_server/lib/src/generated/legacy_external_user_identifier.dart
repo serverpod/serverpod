@@ -503,15 +503,25 @@ class LegacyExternalUserIdentifierRepository {
   }
 
   /// Deletes all [LegacyExternalUserIdentifier]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<LegacyExternalUserIdentifier>> delete(
     _i1.DatabaseSession session,
     List<LegacyExternalUserIdentifier> rows, {
+    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<LegacyExternalUserIdentifier>(
       rows,
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -529,14 +539,23 @@ class LegacyExternalUserIdentifierRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<LegacyExternalUserIdentifier>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
     where,
+    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<LegacyExternalUserIdentifier>(
       where: where(LegacyExternalUserIdentifier.t),
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

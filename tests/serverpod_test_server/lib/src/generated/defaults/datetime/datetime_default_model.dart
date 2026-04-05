@@ -486,15 +486,25 @@ class DateTimeDefaultModelRepository {
   }
 
   /// Deletes all [DateTimeDefaultModel]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DateTimeDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<DateTimeDefaultModel> rows, {
+    _i1.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<DateTimeDefaultModel>(
       rows,
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -512,13 +522,22 @@ class DateTimeDefaultModelRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<DateTimeDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
+    _i1.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultModel>(
       where: where(DateTimeDefaultModel.t),
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

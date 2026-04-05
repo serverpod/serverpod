@@ -637,15 +637,25 @@ class FacebookAccountRepository {
   }
 
   /// Deletes all [FacebookAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FacebookAccount>> delete(
     _i1.DatabaseSession session,
     List<FacebookAccount> rows, {
+    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<FacebookAccount>(
       rows,
+      orderBy: orderBy?.call(FacebookAccount.t),
+      orderByList: orderByList?.call(FacebookAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -663,13 +673,22 @@ class FacebookAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<FacebookAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
+    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<FacebookAccount>(
       where: where(FacebookAccount.t),
+      orderBy: orderBy?.call(FacebookAccount.t),
+      orderByList: orderByList?.call(FacebookAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

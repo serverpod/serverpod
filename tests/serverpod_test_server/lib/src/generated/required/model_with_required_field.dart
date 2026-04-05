@@ -455,15 +455,25 @@ class ModelWithRequiredFieldRepository {
   }
 
   /// Deletes all [ModelWithRequiredField]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ModelWithRequiredField>> delete(
     _i1.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
+    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ModelWithRequiredField>(
       rows,
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -481,13 +491,22 @@ class ModelWithRequiredFieldRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ModelWithRequiredField>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
+    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ModelWithRequiredField>(
       where: where(ModelWithRequiredField.t),
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

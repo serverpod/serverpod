@@ -560,15 +560,25 @@ class TokenMetadataRepository {
   }
 
   /// Deletes all [TokenMetadata]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<TokenMetadata>> delete(
     _i1.DatabaseSession session,
     List<TokenMetadata> rows, {
+    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<TokenMetadata>(
       rows,
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -586,13 +596,22 @@ class TokenMetadataRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<TokenMetadata>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
+    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<TokenMetadata>(
       where: where(TokenMetadata.t),
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -1159,15 +1159,25 @@ class SharedModelContainerRepository {
   }
 
   /// Deletes all [SharedModelContainer]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<SharedModelContainer>> delete(
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
+    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SharedModelContainer>(
       rows,
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -1185,13 +1195,22 @@ class SharedModelContainerRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<SharedModelContainer>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
+    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<SharedModelContainer>(
       where: where(SharedModelContainer.t),
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

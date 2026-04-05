@@ -556,15 +556,25 @@ class GitHubAccountRepository {
   }
 
   /// Deletes all [GitHubAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GitHubAccount>> delete(
     _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
+    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<GitHubAccount>(
       rows,
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -582,13 +592,22 @@ class GitHubAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<GitHubAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
+    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<GitHubAccount>(
       where: where(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

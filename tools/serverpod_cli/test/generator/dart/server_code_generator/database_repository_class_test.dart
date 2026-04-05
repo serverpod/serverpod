@@ -632,6 +632,27 @@ void main() {
           );
         });
 
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('bool orderDescending = false'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
+          );
+        });
+
         test('that takes the transaction object as an optional param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
@@ -728,6 +749,27 @@ void main() {
           expect(
             params,
             contains('WhereExpressionBuilder<${testClassName}Table> where'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('bool orderDescending = false'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
 
