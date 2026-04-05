@@ -131,19 +131,6 @@ CREATE TABLE "serverpod_auth_idp_firebase_account" (
 CREATE UNIQUE INDEX "serverpod_auth_firebase_account_user_identifier" ON "serverpod_auth_idp_firebase_account" USING btree ("userIdentifier");
 
 --
--- Class GenericPasswordlessLoginRequest as table serverpod_auth_idp_generic_passwordless_login_request
---
-CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
-    "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "handle" text NOT NULL,
-    "challengeId" uuid NOT NULL
-);
-
--- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_handle" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("handle");
-
---
 -- Class GitHubAccount as table serverpod_auth_idp_github_account
 --
 CREATE TABLE "serverpod_auth_idp_github_account" (
@@ -210,6 +197,19 @@ CREATE TABLE "serverpod_auth_idp_passkey_challenge" (
     "createdAt" timestamp without time zone NOT NULL,
     "challenge" bytea NOT NULL
 );
+
+--
+-- Class PasswordlessLoginRequest as table serverpod_auth_idp_passwordless_login_request
+--
+CREATE TABLE "serverpod_auth_idp_passwordless_login_request" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "handle" text NOT NULL,
+    "challengeId" uuid NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_passwordless_login_request_handle" ON "serverpod_auth_idp_passwordless_login_request" USING btree ("handle");
 
 --
 -- Class RateLimitedRequestAttempt as table serverpod_auth_idp_rate_limited_request_attempt
@@ -616,16 +616,6 @@ ALTER TABLE ONLY "serverpod_auth_idp_firebase_account"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_idp_generic_passwordless_login_request" table
---
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
-    FOREIGN KEY("challengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "serverpod_auth_idp_github_account" table
 --
 ALTER TABLE ONLY "serverpod_auth_idp_github_account"
@@ -662,6 +652,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_passkey_account"
     ADD CONSTRAINT "serverpod_auth_idp_passkey_account_fk_0"
     FOREIGN KEY("authUserId")
     REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "serverpod_auth_idp_passwordless_login_request" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_passwordless_login_request_fk_0"
+    FOREIGN KEY("challengeId")
+    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -756,9 +756,9 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260402024330677', now())
+    VALUES ('serverpod_auth_idp', '20260405043250967', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260402024330677', "timestamp" = now();
+    DO UPDATE SET "version" = '20260405043250967', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

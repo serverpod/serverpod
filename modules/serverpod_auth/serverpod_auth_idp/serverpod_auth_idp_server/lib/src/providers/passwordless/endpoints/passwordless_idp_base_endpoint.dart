@@ -8,20 +8,6 @@ import '../business/passwordless_idp.dart';
 /// Subclass this in your own application to expose an endpoint including all
 /// methods.
 ///
-/// `THandle` is the typed handle used by [PasswordlessIdpConfig] callbacks.
-/// The RPC boundary remains `String handle`; the framework parses that string
-/// with `deserializeHandle`, passes the parsed handle to
-/// `sendLoginVerificationCode`, stores the stable string returned by
-/// `serializeHandle`, and deserializes that stored string again before calling
-/// `resolveAuthUserId`.
-///
-/// [PasswordlessLoginExceptionReason.invalid] is used for invalid handle input
-/// during `startLogin()`, and also for invalid verification state during
-/// `finishLogin()`, such as missing requests or invalid verification codes.
-///
-/// Default string-based integrations should explicitly extend
-/// `PasswordlessIdpBaseEndpoint<String>`.
-///
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [PasswordlessIdp].
@@ -34,6 +20,7 @@ abstract class PasswordlessIdpBaseEndpoint<THandle> extends Endpoint {
   late final PasswordlessIdp<THandle> passwordlessIdp =
       AuthServices.getIdentityProvider<PasswordlessIdp<THandle>>();
 
+  /// {@template passwordless_idp_base_endpoint.finish_login}
   /// Verifies the login code and completes the login in a single step.
   ///
   /// Returns an [AuthSuccess] with the authentication tokens.
@@ -47,6 +34,7 @@ abstract class PasswordlessIdpBaseEndpoint<THandle> extends Endpoint {
   ///   too many failed verification attempts.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  /// {@endtemplate}
   Future<AuthSuccess> finishLogin(
     final Session session, {
     required final UuidValue loginRequestId,
@@ -59,6 +47,7 @@ abstract class PasswordlessIdpBaseEndpoint<THandle> extends Endpoint {
     );
   }
 
+  /// {@template passwordless_idp_base_endpoint.start_login}
   /// Starts the login process and delivers a verification code using the
   /// configured callback.
   ///
@@ -68,6 +57,7 @@ abstract class PasswordlessIdpBaseEndpoint<THandle> extends Endpoint {
   /// - [PasswordlessLoginExceptionReason.invalid] if the handle is invalid.
   /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
   ///   too many login attempts.
+  /// {@endtemplate}
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,

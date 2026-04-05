@@ -4,6 +4,7 @@ import '../../../../core.dart';
 import 'passwordless_idp_admin.dart';
 import 'passwordless_idp_config.dart';
 import 'passwordless_idp_server_exceptions.dart';
+import 'passwordless_idp_utils.dart';
 import 'utils/passwordless_idp_login_util.dart';
 import 'utils/passwordless_login_request_store.dart';
 
@@ -25,8 +26,18 @@ class PasswordlessIdp<THandle> {
   final PasswordlessIdpConfig<THandle> config;
 
   final PasswordlessIdpLoginUtil<THandle> _loginUtil;
+
   final TokenManager _tokenManager;
+
   final AuthUsers _authUsers;
+
+  PasswordlessIdp._(
+    this.config,
+    this._loginUtil,
+    this.admin,
+    this._tokenManager,
+    this._authUsers,
+  );
 
   /// Creates a new instance of [PasswordlessIdp].
   factory PasswordlessIdp(
@@ -45,32 +56,12 @@ class PasswordlessIdp<THandle> {
     );
   }
 
-  PasswordlessIdp._(
-    this.config,
-    this._loginUtil,
-    this.admin,
-    this._tokenManager,
-    this._authUsers,
-  );
-
-  /// Verifies the login code and finishes the login process in one step.
-  ///
-  /// Returns an [AuthSuccess] with the authentication tokens.
-  ///
-  /// When [transaction] is `null` (the default, and the path used by
-  /// [PasswordlessIdpBaseEndpoint]), the login request is consumed in an
-  /// isolated committed transaction *before* the subsequent steps
-  /// (handle deserialization, user resolution, token issuance) run in a
-  /// separate transaction. This guarantees single-use semantics: even if a
-  /// later step fails, the verification code cannot be replayed.
-  ///
-  /// When a caller-provided [transaction] is given, all steps — including
-  /// request consumption — execute within that transaction (or a savepoint).
-  /// If the caller's transaction is rolled back, the request deletion is
-  /// also rolled back, so the verification code may still be valid.
-  /// This is intentional: it allows advanced integrators to compose
-  /// `finishLogin` with other operations under a single atomic boundary,
-  /// at the cost of managing single-use guarantees themselves.
+  /// {@macro passwordless_idp_base_endpoint.finish_login}
+  /// When [transaction] is `null`, the verification code is consumed in a
+  /// separate committed transaction before the remaining steps, ensuring
+  /// single-use semantics even if a later step fails.
+  /// When a [transaction] is provided, all steps run within it (or a
+  /// savepoint), so single-use guarantees depend on the caller's commit.
   Future<AuthSuccess> finishLogin(
     final Session session, {
     required final UuidValue loginRequestId,
@@ -78,46 +69,41 @@ class PasswordlessIdp<THandle> {
     final Transaction? transaction,
   }) async {
     if (transaction == null) {
-      return _withReplacedServerException(() async {
-        final request = await _consumeLoginRequest(
-          session,
-          loginRequestId: loginRequestId,
-          verificationCode: verificationCode,
-        );
-
-        return session.db.transaction(
-          (final transaction) => _finishLoginFromVerifiedRequest(
+      return PasswordlessIdpUtils.withReplacedServerPasswordlessException(
+        () async {
+          final request = await _consumeLoginRequest(
             session,
-            request: request,
-            transaction: transaction,
-          ),
-        );
-      });
+            loginRequestId: loginRequestId,
+            verificationCode: verificationCode,
+          );
+
+          return session.db.transaction(
+            (final transaction) => _finishLoginFromVerifiedRequest(
+              session,
+              request: request,
+              transaction: transaction,
+            ),
+          );
+        },
+      );
     }
 
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _withReplacedServerException(
-        () => _finishLoginInTransaction(
-          session,
-          loginRequestId: loginRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        ),
-      ),
+      (final transaction) =>
+          PasswordlessIdpUtils.withReplacedServerPasswordlessException(
+            () => _finishLoginInTransaction(
+              session,
+              loginRequestId: loginRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
+          ),
     );
   }
 
-  /// Starts the login process.
-  ///
-  /// Returns the login request ID.
-  ///
-  /// Rate limiting for new login requests is applied per serialized handle; see
-  /// [PasswordlessIdpConfig.loginRequestRateLimit]. Passing the check records an
-  /// attempt before the rest of the flow completes. If sending the verification
-  /// code or another step fails afterward, that attempt may still count toward
-  /// the limit even though no login request remains in the database.
+  /// {@macro passwordless_idp_base_endpoint.start_login}
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
@@ -126,13 +112,14 @@ class PasswordlessIdp<THandle> {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => _withReplacedServerException(
-        () => _loginUtil.startLogin(
-          session,
-          handle: handle,
-          transaction: transaction,
-        ),
-      ),
+      (final transaction) =>
+          PasswordlessIdpUtils.withReplacedServerPasswordlessException(
+            () => _loginUtil.startLogin(
+              session,
+              handle: handle,
+              transaction: transaction,
+            ),
+          ),
     );
   }
 
@@ -141,34 +128,14 @@ class PasswordlessIdp<THandle> {
     required final UuidValue loginRequestId,
     required final String verificationCode,
   }) async {
-    final result = await session.db
-        .transaction<
-          ({
-            PasswordlessLoginRequestData? request,
-            PasswordlessLoginServerException? exception,
-          })
-        >((final transaction) async {
-          try {
-            return (
-              request: await _loginUtil.verifyAndCompleteLogin(
-                session,
-                loginRequestId: loginRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
-              exception: null,
-            );
-          } on PasswordlessLoginServerException catch (exception) {
-            return (request: null, exception: exception);
-          }
-        });
-
-    final exception = result.exception;
-    if (exception != null) {
-      throw exception;
-    }
-
-    return result.request!;
+    return session.db.transaction(
+      (final transaction) => _loginUtil.verifyAndCompleteLogin(
+        session,
+        loginRequestId: loginRequestId,
+        verificationCode: verificationCode,
+        transaction: transaction,
+      ),
+    );
   }
 
   Future<AuthSuccess> _finishLoginFromVerifiedRequest(
@@ -222,29 +189,5 @@ class PasswordlessIdp<THandle> {
       request: request,
       transaction: transaction,
     );
-  }
-
-  static Future<T> _withReplacedServerException<T>(
-    final Future<T> Function() fn,
-  ) async {
-    try {
-      return await fn();
-    } on PasswordlessLoginServerException catch (e) {
-      throw PasswordlessLoginException(reason: e._reason);
-    }
-  }
-}
-
-extension on PasswordlessLoginServerException {
-  PasswordlessLoginExceptionReason get _reason {
-    switch (this) {
-      case PasswordlessLoginInvalidException():
-      case PasswordlessLoginNotFoundException():
-        return PasswordlessLoginExceptionReason.invalid;
-      case PasswordlessLoginTooManyAttemptsException():
-        return PasswordlessLoginExceptionReason.tooManyAttempts;
-      case PasswordlessLoginExpiredException():
-        return PasswordlessLoginExceptionReason.expired;
-    }
   }
 }

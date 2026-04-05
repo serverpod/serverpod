@@ -16,9 +16,9 @@ import '../../../common/secret_challenge/models/secret_challenge.dart' as _i2;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
 
 /// Pending passwordless login request.
-abstract class GenericPasswordlessLoginRequest
+abstract class PasswordlessLoginRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  GenericPasswordlessLoginRequest._({
+  PasswordlessLoginRequest._({
     this.id,
     DateTime? createdAt,
     required this.handle,
@@ -26,18 +26,18 @@ abstract class GenericPasswordlessLoginRequest
     this.challenge,
   }) : createdAt = createdAt ?? DateTime.now();
 
-  factory GenericPasswordlessLoginRequest({
+  factory PasswordlessLoginRequest({
     _i1.UuidValue? id,
     DateTime? createdAt,
     required String handle,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
-  }) = _GenericPasswordlessLoginRequestImpl;
+  }) = _PasswordlessLoginRequestImpl;
 
-  factory GenericPasswordlessLoginRequest.fromJson(
+  factory PasswordlessLoginRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return GenericPasswordlessLoginRequest(
+    return PasswordlessLoginRequest(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
@@ -56,9 +56,9 @@ abstract class GenericPasswordlessLoginRequest
     );
   }
 
-  static final t = GenericPasswordlessLoginRequestTable();
+  static final t = PasswordlessLoginRequestTable();
 
-  static const db = GenericPasswordlessLoginRequestRepository._();
+  static const db = PasswordlessLoginRequestRepository._();
 
   @override
   _i1.UuidValue? id;
@@ -79,10 +79,10 @@ abstract class GenericPasswordlessLoginRequest
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
-  /// Returns a shallow copy of this [GenericPasswordlessLoginRequest]
+  /// Returns a shallow copy of this [PasswordlessLoginRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  GenericPasswordlessLoginRequest copyWith({
+  PasswordlessLoginRequest copyWith({
     _i1.UuidValue? id,
     DateTime? createdAt,
     String? handle,
@@ -92,7 +92,7 @@ abstract class GenericPasswordlessLoginRequest
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_idp.GenericPasswordlessLoginRequest',
+      '__className__': 'serverpod_auth_idp.PasswordlessLoginRequest',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'handle': handle,
@@ -106,28 +106,28 @@ abstract class GenericPasswordlessLoginRequest
     return {};
   }
 
-  static GenericPasswordlessLoginRequestInclude include({
+  static PasswordlessLoginRequestInclude include({
     _i2.SecretChallengeInclude? challenge,
   }) {
-    return GenericPasswordlessLoginRequestInclude._(challenge: challenge);
+    return PasswordlessLoginRequestInclude._(challenge: challenge);
   }
 
-  static GenericPasswordlessLoginRequestIncludeList includeList({
-    _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
+  static PasswordlessLoginRequestIncludeList includeList({
+    _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GenericPasswordlessLoginRequestTable>? orderBy,
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<GenericPasswordlessLoginRequestTable>? orderByList,
-    GenericPasswordlessLoginRequestInclude? include,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
+    PasswordlessLoginRequestInclude? include,
   }) {
-    return GenericPasswordlessLoginRequestIncludeList._(
+    return PasswordlessLoginRequestIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(GenericPasswordlessLoginRequest.t),
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(GenericPasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
       include: include,
     );
   }
@@ -140,9 +140,8 @@ abstract class GenericPasswordlessLoginRequest
 
 class _Undefined {}
 
-class _GenericPasswordlessLoginRequestImpl
-    extends GenericPasswordlessLoginRequest {
-  _GenericPasswordlessLoginRequestImpl({
+class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
+  _PasswordlessLoginRequestImpl({
     _i1.UuidValue? id,
     DateTime? createdAt,
     required String handle,
@@ -156,18 +155,18 @@ class _GenericPasswordlessLoginRequestImpl
          challenge: challenge,
        );
 
-  /// Returns a shallow copy of this [GenericPasswordlessLoginRequest]
+  /// Returns a shallow copy of this [PasswordlessLoginRequest]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  GenericPasswordlessLoginRequest copyWith({
+  PasswordlessLoginRequest copyWith({
     Object? id = _Undefined,
     DateTime? createdAt,
     String? handle,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
   }) {
-    return GenericPasswordlessLoginRequest(
+    return PasswordlessLoginRequest(
       id: id is _i1.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       handle: handle ?? this.handle,
@@ -179,9 +178,9 @@ class _GenericPasswordlessLoginRequestImpl
   }
 }
 
-class GenericPasswordlessLoginRequestUpdateTable
-    extends _i1.UpdateTable<GenericPasswordlessLoginRequestTable> {
-  GenericPasswordlessLoginRequestUpdateTable(super.table);
+class PasswordlessLoginRequestUpdateTable
+    extends _i1.UpdateTable<PasswordlessLoginRequestTable> {
+  PasswordlessLoginRequestUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -202,12 +201,10 @@ class GenericPasswordlessLoginRequestUpdateTable
   );
 }
 
-class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
-  GenericPasswordlessLoginRequestTable({super.tableRelation})
-    : super(
-        tableName: 'serverpod_auth_idp_generic_passwordless_login_request',
-      ) {
-    updateTable = GenericPasswordlessLoginRequestUpdateTable(this);
+class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
+  PasswordlessLoginRequestTable({super.tableRelation})
+    : super(tableName: 'serverpod_auth_idp_passwordless_login_request') {
+    updateTable = PasswordlessLoginRequestUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -223,7 +220,7 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
-  late final GenericPasswordlessLoginRequestUpdateTable updateTable;
+  late final PasswordlessLoginRequestUpdateTable updateTable;
 
   /// The time when this request was created.
   late final _i1.ColumnDateTime createdAt;
@@ -242,7 +239,7 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
     if (_challenge != null) return _challenge!;
     _challenge = _i1.createRelationTable(
       relationFieldName: 'challenge',
-      field: GenericPasswordlessLoginRequest.t.challengeId,
+      field: PasswordlessLoginRequest.t.challengeId,
       foreignField: _i2.SecretChallenge.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
@@ -268,10 +265,8 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class GenericPasswordlessLoginRequestInclude extends _i1.IncludeObject {
-  GenericPasswordlessLoginRequestInclude._({
-    _i2.SecretChallengeInclude? challenge,
-  }) {
+class PasswordlessLoginRequestInclude extends _i1.IncludeObject {
+  PasswordlessLoginRequestInclude._({_i2.SecretChallengeInclude? challenge}) {
     _challenge = challenge;
   }
 
@@ -281,12 +276,12 @@ class GenericPasswordlessLoginRequestInclude extends _i1.IncludeObject {
   Map<String, _i1.Include?> get includes => {'challenge': _challenge};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GenericPasswordlessLoginRequest.t;
+  _i1.Table<_i1.UuidValue?> get table => PasswordlessLoginRequest.t;
 }
 
-class GenericPasswordlessLoginRequestIncludeList extends _i1.IncludeList {
-  GenericPasswordlessLoginRequestIncludeList._({
-    _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
+class PasswordlessLoginRequestIncludeList extends _i1.IncludeList {
+  PasswordlessLoginRequestIncludeList._({
+    _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -294,23 +289,22 @@ class GenericPasswordlessLoginRequestIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(GenericPasswordlessLoginRequest.t);
+    super.where = where?.call(PasswordlessLoginRequest.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GenericPasswordlessLoginRequest.t;
+  _i1.Table<_i1.UuidValue?> get table => PasswordlessLoginRequest.t;
 }
 
-class GenericPasswordlessLoginRequestRepository {
-  const GenericPasswordlessLoginRequestRepository._();
+class PasswordlessLoginRequestRepository {
+  const PasswordlessLoginRequestRepository._();
 
-  final attachRow =
-      const GenericPasswordlessLoginRequestAttachRowRepository._();
+  final attachRow = const PasswordlessLoginRequestAttachRowRepository._();
 
-  /// Returns a list of [GenericPasswordlessLoginRequest]s matching the given query parameters.
+  /// Returns a list of [PasswordlessLoginRequest]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -332,23 +326,23 @@ class GenericPasswordlessLoginRequestRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<GenericPasswordlessLoginRequest>> find(
+  Future<List<PasswordlessLoginRequest>> find(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
+    _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GenericPasswordlessLoginRequestTable>? orderBy,
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<GenericPasswordlessLoginRequestTable>? orderByList,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
     _i1.Transaction? transaction,
-    GenericPasswordlessLoginRequestInclude? include,
+    PasswordlessLoginRequestInclude? include,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.find<GenericPasswordlessLoginRequest>(
-      where: where?.call(GenericPasswordlessLoginRequest.t),
-      orderBy: orderBy?.call(GenericPasswordlessLoginRequest.t),
-      orderByList: orderByList?.call(GenericPasswordlessLoginRequest.t),
+    return session.db.find<PasswordlessLoginRequest>(
+      where: where?.call(PasswordlessLoginRequest.t),
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -359,7 +353,7 @@ class GenericPasswordlessLoginRequestRepository {
     );
   }
 
-  /// Returns the first matching [GenericPasswordlessLoginRequest] matching the given query parameters.
+  /// Returns the first matching [PasswordlessLoginRequest] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -376,22 +370,22 @@ class GenericPasswordlessLoginRequestRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<GenericPasswordlessLoginRequest?> findFirstRow(
+  Future<PasswordlessLoginRequest?> findFirstRow(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
+    _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GenericPasswordlessLoginRequestTable>? orderBy,
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<GenericPasswordlessLoginRequestTable>? orderByList,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
     _i1.Transaction? transaction,
-    GenericPasswordlessLoginRequestInclude? include,
+    PasswordlessLoginRequestInclude? include,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findFirstRow<GenericPasswordlessLoginRequest>(
-      where: where?.call(GenericPasswordlessLoginRequest.t),
-      orderBy: orderBy?.call(GenericPasswordlessLoginRequest.t),
-      orderByList: orderByList?.call(GenericPasswordlessLoginRequest.t),
+    return session.db.findFirstRow<PasswordlessLoginRequest>(
+      where: where?.call(PasswordlessLoginRequest.t),
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -401,16 +395,16 @@ class GenericPasswordlessLoginRequestRepository {
     );
   }
 
-  /// Finds a single [GenericPasswordlessLoginRequest] by its [id] or null if no such row exists.
-  Future<GenericPasswordlessLoginRequest?> findById(
+  /// Finds a single [PasswordlessLoginRequest] by its [id] or null if no such row exists.
+  Future<PasswordlessLoginRequest?> findById(
     _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
-    GenericPasswordlessLoginRequestInclude? include,
+    PasswordlessLoginRequestInclude? include,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    return session.db.findById<GenericPasswordlessLoginRequest>(
+    return session.db.findById<PasswordlessLoginRequest>(
       id,
       transaction: transaction,
       include: include,
@@ -419,9 +413,9 @@ class GenericPasswordlessLoginRequestRepository {
     );
   }
 
-  /// Inserts all [GenericPasswordlessLoginRequest]s in the list and returns the inserted rows.
+  /// Inserts all [PasswordlessLoginRequest]s in the list and returns the inserted rows.
   ///
-  /// The returned [GenericPasswordlessLoginRequest]s will have their `id` fields set.
+  /// The returned [PasswordlessLoginRequest]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
@@ -429,149 +423,143 @@ class GenericPasswordlessLoginRequestRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
-  Future<List<GenericPasswordlessLoginRequest>> insert(
+  Future<List<PasswordlessLoginRequest>> insert(
     _i1.DatabaseSession session,
-    List<GenericPasswordlessLoginRequest> rows, {
+    List<PasswordlessLoginRequest> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
   }) async {
-    return session.db.insert<GenericPasswordlessLoginRequest>(
+    return session.db.insert<PasswordlessLoginRequest>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
     );
   }
 
-  /// Inserts a single [GenericPasswordlessLoginRequest] and returns the inserted row.
+  /// Inserts a single [PasswordlessLoginRequest] and returns the inserted row.
   ///
-  /// The returned [GenericPasswordlessLoginRequest] will have its `id` field set.
-  Future<GenericPasswordlessLoginRequest> insertRow(
+  /// The returned [PasswordlessLoginRequest] will have its `id` field set.
+  Future<PasswordlessLoginRequest> insertRow(
     _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest row, {
+    PasswordlessLoginRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<GenericPasswordlessLoginRequest>(
+    return session.db.insertRow<PasswordlessLoginRequest>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [GenericPasswordlessLoginRequest]s in the list and returns the updated rows. If
+  /// Updates all [PasswordlessLoginRequest]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<GenericPasswordlessLoginRequest>> update(
+  Future<List<PasswordlessLoginRequest>> update(
     _i1.DatabaseSession session,
-    List<GenericPasswordlessLoginRequest> rows, {
-    _i1.ColumnSelections<GenericPasswordlessLoginRequestTable>? columns,
+    List<PasswordlessLoginRequest> rows, {
+    _i1.ColumnSelections<PasswordlessLoginRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<GenericPasswordlessLoginRequest>(
+    return session.db.update<PasswordlessLoginRequest>(
       rows,
-      columns: columns?.call(GenericPasswordlessLoginRequest.t),
+      columns: columns?.call(PasswordlessLoginRequest.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [GenericPasswordlessLoginRequest]. The row needs to have its id set.
+  /// Updates a single [PasswordlessLoginRequest]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<GenericPasswordlessLoginRequest> updateRow(
+  Future<PasswordlessLoginRequest> updateRow(
     _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest row, {
-    _i1.ColumnSelections<GenericPasswordlessLoginRequestTable>? columns,
+    PasswordlessLoginRequest row, {
+    _i1.ColumnSelections<PasswordlessLoginRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<GenericPasswordlessLoginRequest>(
+    return session.db.updateRow<PasswordlessLoginRequest>(
       row,
-      columns: columns?.call(GenericPasswordlessLoginRequest.t),
+      columns: columns?.call(PasswordlessLoginRequest.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [GenericPasswordlessLoginRequest] by its [id] with the specified [columnValues].
+  /// Updates a single [PasswordlessLoginRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
-  Future<GenericPasswordlessLoginRequest?> updateById(
+  Future<PasswordlessLoginRequest?> updateById(
     _i1.DatabaseSession session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<
-      GenericPasswordlessLoginRequestUpdateTable
-    >
+    required _i1.ColumnValueListBuilder<PasswordlessLoginRequestUpdateTable>
     columnValues,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateById<GenericPasswordlessLoginRequest>(
+    return session.db.updateById<PasswordlessLoginRequest>(
       id,
-      columnValues: columnValues(GenericPasswordlessLoginRequest.t.updateTable),
+      columnValues: columnValues(PasswordlessLoginRequest.t.updateTable),
       transaction: transaction,
     );
   }
 
-  /// Updates all [GenericPasswordlessLoginRequest]s matching the [where] expression with the specified [columnValues].
+  /// Updates all [PasswordlessLoginRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  Future<List<GenericPasswordlessLoginRequest>> updateWhere(
+  Future<List<PasswordlessLoginRequest>> updateWhere(
     _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
-      GenericPasswordlessLoginRequestUpdateTable
-    >
+    required _i1.ColumnValueListBuilder<PasswordlessLoginRequestUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>
-    where,
+    required _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GenericPasswordlessLoginRequestTable>? orderBy,
-    _i1.OrderByListBuilder<GenericPasswordlessLoginRequestTable>? orderByList,
+    _i1.OrderByBuilder<PasswordlessLoginRequestTable>? orderBy,
+    _i1.OrderByListBuilder<PasswordlessLoginRequestTable>? orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateWhere<GenericPasswordlessLoginRequest>(
-      columnValues: columnValues(GenericPasswordlessLoginRequest.t.updateTable),
-      where: where(GenericPasswordlessLoginRequest.t),
+    return session.db.updateWhere<PasswordlessLoginRequest>(
+      columnValues: columnValues(PasswordlessLoginRequest.t.updateTable),
+      where: where(PasswordlessLoginRequest.t),
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(GenericPasswordlessLoginRequest.t),
-      orderByList: orderByList?.call(GenericPasswordlessLoginRequest.t),
+      orderBy: orderBy?.call(PasswordlessLoginRequest.t),
+      orderByList: orderByList?.call(PasswordlessLoginRequest.t),
       orderDescending: orderDescending,
       transaction: transaction,
     );
   }
 
-  /// Deletes all [GenericPasswordlessLoginRequest]s in the list and returns the deleted rows.
+  /// Deletes all [PasswordlessLoginRequest]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<GenericPasswordlessLoginRequest>> delete(
+  Future<List<PasswordlessLoginRequest>> delete(
     _i1.DatabaseSession session,
-    List<GenericPasswordlessLoginRequest> rows, {
+    List<PasswordlessLoginRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<GenericPasswordlessLoginRequest>(
+    return session.db.delete<PasswordlessLoginRequest>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [GenericPasswordlessLoginRequest].
-  Future<GenericPasswordlessLoginRequest> deleteRow(
+  /// Deletes a single [PasswordlessLoginRequest].
+  Future<PasswordlessLoginRequest> deleteRow(
     _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest row, {
+    PasswordlessLoginRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<GenericPasswordlessLoginRequest>(
+    return session.db.deleteRow<PasswordlessLoginRequest>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<GenericPasswordlessLoginRequest>> deleteWhere(
+  Future<List<PasswordlessLoginRequest>> deleteWhere(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>
-    where,
+    required _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<GenericPasswordlessLoginRequest>(
-      where: where(GenericPasswordlessLoginRequest.t),
+    return session.db.deleteWhere<PasswordlessLoginRequest>(
+      where: where(PasswordlessLoginRequest.t),
       transaction: transaction,
     );
   }
@@ -580,28 +568,27 @@ class GenericPasswordlessLoginRequestRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
+    _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<GenericPasswordlessLoginRequest>(
-      where: where?.call(GenericPasswordlessLoginRequest.t),
+    return session.db.count<PasswordlessLoginRequest>(
+      where: where?.call(PasswordlessLoginRequest.t),
       limit: limit,
       transaction: transaction,
     );
   }
 
-  /// Acquires row-level locks on [GenericPasswordlessLoginRequest] rows matching the [where] expression.
+  /// Acquires row-level locks on [PasswordlessLoginRequest] rows matching the [where] expression.
   Future<void> lockRows(
     _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>
-    where,
+    required _i1.WhereExpressionBuilder<PasswordlessLoginRequestTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
     _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
   }) async {
-    return session.db.lockRows<GenericPasswordlessLoginRequest>(
-      where: where(GenericPasswordlessLoginRequest.t),
+    return session.db.lockRows<PasswordlessLoginRequest>(
+      where: where(PasswordlessLoginRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
       transaction: transaction,
@@ -609,29 +596,30 @@ class GenericPasswordlessLoginRequestRepository {
   }
 }
 
-class GenericPasswordlessLoginRequestAttachRowRepository {
-  const GenericPasswordlessLoginRequestAttachRowRepository._();
+class PasswordlessLoginRequestAttachRowRepository {
+  const PasswordlessLoginRequestAttachRowRepository._();
 
-  /// Creates a relation between the given [GenericPasswordlessLoginRequest] and [SecretChallenge]
-  /// by setting the [GenericPasswordlessLoginRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
+  /// Creates a relation between the given [PasswordlessLoginRequest] and [SecretChallenge]
+  /// by setting the [PasswordlessLoginRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
   Future<void> challenge(
     _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest genericPasswordlessLoginRequest,
+    PasswordlessLoginRequest passwordlessLoginRequest,
     _i2.SecretChallenge challenge, {
     _i1.Transaction? transaction,
   }) async {
-    if (genericPasswordlessLoginRequest.id == null) {
-      throw ArgumentError.notNull('genericPasswordlessLoginRequest.id');
+    if (passwordlessLoginRequest.id == null) {
+      throw ArgumentError.notNull('passwordlessLoginRequest.id');
     }
     if (challenge.id == null) {
       throw ArgumentError.notNull('challenge.id');
     }
 
-    var $genericPasswordlessLoginRequest = genericPasswordlessLoginRequest
-        .copyWith(challengeId: challenge.id);
-    await session.db.updateRow<GenericPasswordlessLoginRequest>(
-      $genericPasswordlessLoginRequest,
-      columns: [GenericPasswordlessLoginRequest.t.challengeId],
+    var $passwordlessLoginRequest = passwordlessLoginRequest.copyWith(
+      challengeId: challenge.id,
+    );
+    await session.db.updateRow<PasswordlessLoginRequest>(
+      $passwordlessLoginRequest,
+      columns: [PasswordlessLoginRequest.t.challengeId],
       transaction: transaction,
     );
   }

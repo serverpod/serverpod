@@ -32,7 +32,7 @@ volatile;
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
+CREATE TABLE "serverpod_auth_idp_passwordless_login_request" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "handle" text NOT NULL,
@@ -40,13 +40,13 @@ CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_handle" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("handle");
+CREATE UNIQUE INDEX "serverpod_auth_idp_passwordless_login_request_handle" ON "serverpod_auth_idp_passwordless_login_request" USING btree ("handle");
 
 --
 -- ACTION CREATE FOREIGN KEY
 --
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
+ALTER TABLE ONLY "serverpod_auth_idp_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_passwordless_login_request_fk_0"
     FOREIGN KEY("challengeId")
     REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
@@ -57,9 +57,9 @@ ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260402024330677', now())
+    VALUES ('serverpod_auth_idp', '20260405043250967', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260402024330677', "timestamp" = now();
+    DO UPDATE SET "version" = '20260405043250967', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

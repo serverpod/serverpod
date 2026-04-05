@@ -3,10 +3,10 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 
-/// DB-backed request store using [GenericPasswordlessLoginRequest].
-class GenericPasswordlessLoginRequestStore {
+/// DB-backed request store using [PasswordlessLoginRequest].
+class PasswordlessLoginRequestStore {
   /// Creates a DB-backed store.
-  const GenericPasswordlessLoginRequestStore();
+  const PasswordlessLoginRequestStore();
 
   /// Creates a new request row.
   Future<UuidValue> createRequest(
@@ -15,9 +15,9 @@ class GenericPasswordlessLoginRequestStore {
     required final UuidValue challengeId,
     required final Transaction transaction,
   }) async {
-    final request = await GenericPasswordlessLoginRequest.db.insertRow(
+    final request = await PasswordlessLoginRequest.db.insertRow(
       session,
-      GenericPasswordlessLoginRequest(
+      PasswordlessLoginRequest(
         createdAt: clock.now(),
         handle: serializedHandle,
         challengeId: challengeId,
@@ -33,7 +33,7 @@ class GenericPasswordlessLoginRequestStore {
     required final String serializedHandle,
     required final Transaction transaction,
   }) async {
-    final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
+    final deleted = await PasswordlessLoginRequest.db.deleteWhere(
       session,
       where: (final t) => t.handle.equals(serializedHandle),
       transaction: transaction,
@@ -49,7 +49,7 @@ class GenericPasswordlessLoginRequestStore {
     required final UuidValue requestId,
     required final Transaction transaction,
   }) async {
-    final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
+    final deleted = await PasswordlessLoginRequest.db.deleteWhere(
       session,
       where: (final t) => t.id.equals(requestId),
       transaction: transaction,
@@ -64,7 +64,7 @@ class GenericPasswordlessLoginRequestStore {
     required final DateTime createdBefore,
     required final Transaction transaction,
   }) async {
-    final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
+    final deleted = await PasswordlessLoginRequest.db.deleteWhere(
       session,
       where: (final t) => t.createdAt < createdBefore,
       transaction: transaction,
@@ -78,11 +78,11 @@ class GenericPasswordlessLoginRequestStore {
     required final UuidValue requestId,
     required final Transaction? transaction,
   }) async {
-    final request = await GenericPasswordlessLoginRequest.db.findById(
+    final request = await PasswordlessLoginRequest.db.findById(
       session,
       requestId,
       transaction: transaction,
-      include: GenericPasswordlessLoginRequest.include(
+      include: PasswordlessLoginRequest.include(
         challenge: SecretChallenge.include(),
       ),
     );
@@ -91,7 +91,7 @@ class GenericPasswordlessLoginRequestStore {
 
   static Future<void> _deleteChallenges(
     final Session session,
-    final List<GenericPasswordlessLoginRequest> requests, {
+    final List<PasswordlessLoginRequest> requests, {
     final Transaction? transaction,
   }) async {
     final challengeIds = requests.map((final r) => r.challengeId).toSet();
@@ -128,7 +128,7 @@ class PasswordlessLoginRequestData {
   });
 }
 
-extension on GenericPasswordlessLoginRequest {
+extension on PasswordlessLoginRequest {
   PasswordlessLoginRequestData _toData() {
     return PasswordlessLoginRequestData(
       id: id!,

@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 
 import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
-import '../passwordless_test_config_defaults.dart';
 
 void main() {
   withServerpod(
@@ -113,7 +112,7 @@ void main() {
       tearDown(() async {
         await session.db.transaction((final transaction) async {
           await Future.wait([
-            GenericPasswordlessLoginRequest.db.deleteWhere(
+            PasswordlessLoginRequest.db.deleteWhere(
               session,
               where: (final _) => Constant.bool(true),
               transaction: transaction,
@@ -233,7 +232,7 @@ void main() {
           for (
             var i = 0;
             i <
-                passwordlessIdpConfigDefaultFieldValues
+                stringEndpoint.passwordlessIdp.config
                     .loginVerificationCodeAllowedAttempts;
             i++
           ) {

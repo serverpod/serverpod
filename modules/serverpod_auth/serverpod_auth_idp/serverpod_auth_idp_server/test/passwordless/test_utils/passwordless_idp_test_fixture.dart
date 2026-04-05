@@ -35,7 +35,7 @@ final class PasswordlessIdpTestFixture<THandle> {
   Future<void> tearDown(final Session session) async {
     await session.db.transaction((final transaction) async {
       await Future.wait([
-        GenericPasswordlessLoginRequest.db.deleteWhere(
+        PasswordlessLoginRequest.db.deleteWhere(
           session,
           where: (final _) => Constant.bool(true),
           transaction: transaction,

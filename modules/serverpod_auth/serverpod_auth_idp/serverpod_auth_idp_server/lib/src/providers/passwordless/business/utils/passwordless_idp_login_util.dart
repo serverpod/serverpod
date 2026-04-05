@@ -16,7 +16,7 @@ import 'passwordless_login_request_store.dart';
 class PasswordlessIdpLoginUtil<THandle> {
   final PasswordlessIdpConfig<THandle> _config;
   final Argon2HashUtil _hashUtil;
-  final GenericPasswordlessLoginRequestStore _requestStore;
+  final PasswordlessLoginRequestStore _requestStore;
   final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
   final DatabaseRateLimitedRequestAttemptUtil<UuidValue> _verifyRateLimiter;
 
@@ -24,8 +24,15 @@ class PasswordlessIdpLoginUtil<THandle> {
   PasswordlessIdpLoginUtil({
     required final PasswordlessIdpConfig<THandle> config,
   }) : _config = config,
-       _hashUtil = _createHashUtil(config),
-       _requestStore = const GenericPasswordlessLoginRequestStore(),
+       // 19MiB memory cost as recommended by OWASP:
+       // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+       _hashUtil = Argon2HashUtil(
+         hashPepper: config.secretHashPepper,
+         fallbackHashPeppers: config.fallbackSecretHashPeppers,
+         hashSaltLength: config.secretHashSaltLength,
+         parameters: Argon2HashParameters(memory: 19456),
+       ),
+       _requestStore = const PasswordlessLoginRequestStore(),
        _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
          RateLimitedRequestAttemptConfig<String>(
            domain: 'passwordless',
@@ -226,16 +233,4 @@ class PasswordlessIdpLoginUtil<THandle> {
     );
   }
 
-  // 19MiB memory cost as recommended by OWASP:
-  // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-  static Argon2HashUtil _createHashUtil(
-    final PasswordlessIdpConfig<dynamic> config,
-  ) {
-    return Argon2HashUtil(
-      hashPepper: config.secretHashPepper,
-      fallbackHashPeppers: config.fallbackSecretHashPeppers,
-      hashSaltLength: config.secretHashSaltLength,
-      parameters: Argon2HashParameters(memory: 19456),
-    );
-  }
 }

@@ -22,7 +22,10 @@ typedef OnPasswordResetCompletedFunction =
     });
 
 /// Function to be called to check whether a password matches the requirements during registration.
-typedef PasswordValidationFunction = bool Function(String password);
+typedef PasswordValidationFunction =
+    bool Function(
+      String password,
+    );
 
 /// Function for sending out the verification codes for password reset requests.
 typedef SendPasswordResetVerificationCodeFunction =

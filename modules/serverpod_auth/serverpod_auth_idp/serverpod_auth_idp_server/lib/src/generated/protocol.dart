@@ -646,70 +646,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'serverpod_auth_idp_generic_passwordless_login_request',
-      dartName: 'GenericPasswordlessLoginRequest',
-      schema: 'public',
-      module: 'serverpod_auth_idp',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: false,
-          dartType: 'UuidValue?',
-          columnDefault: 'random_v7',
-        ),
-        _i2.ColumnDefinition(
-          name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-          columnDefault: 'now',
-        ),
-        _i2.ColumnDefinition(
-          name: 'handle',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'challengeId',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: false,
-          dartType: 'UuidValue',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName:
-              'serverpod_auth_idp_generic_passwordless_login_request_fk_0',
-          columns: ['challengeId'],
-          referenceTable: 'serverpod_auth_idp_secret_challenge',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName:
-              'serverpod_auth_idp_generic_passwordless_login_request_handle',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'handle',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'serverpod_auth_idp_github_account',
       dartName: 'GitHubAccount',
       schema: 'public',
@@ -1026,6 +962,68 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_auth_idp_passwordless_login_request',
+      dartName: 'PasswordlessLoginRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+        _i2.ColumnDefinition(
+          name: 'handle',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_passwordless_login_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_passwordless_login_request_handle',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'handle',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_auth_idp_rate_limited_request_attempt',
       dartName: 'RateLimitedRequestAttempt',
       schema: 'public',
@@ -1264,8 +1262,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i37.PasswordlessLoginExceptionReason) {
       return _i37.PasswordlessLoginExceptionReason.fromJson(data) as T;
     }
-    if (t == _i38.GenericPasswordlessLoginRequest) {
-      return _i38.GenericPasswordlessLoginRequest.fromJson(data) as T;
+    if (t == _i38.PasswordlessLoginRequest) {
+      return _i38.PasswordlessLoginRequest.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
@@ -1434,9 +1432,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i38.GenericPasswordlessLoginRequest?>()) {
+    if (t == _i1.getType<_i38.PasswordlessLoginRequest?>()) {
       return (data != null
-              ? _i38.GenericPasswordlessLoginRequest.fromJson(data)
+              ? _i38.PasswordlessLoginRequest.fromJson(data)
               : null)
           as T;
     }
@@ -1525,7 +1523,7 @@ class Protocol extends _i1.SerializationManagerServer {
       _i36.PasswordlessLoginException => 'PasswordlessLoginException',
       _i37.PasswordlessLoginExceptionReason =>
         'PasswordlessLoginExceptionReason',
-      _i38.GenericPasswordlessLoginRequest => 'GenericPasswordlessLoginRequest',
+      _i38.PasswordlessLoginRequest => 'PasswordlessLoginRequest',
       _ => null,
     };
   }
@@ -1611,8 +1609,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'PasswordlessLoginException';
       case _i37.PasswordlessLoginExceptionReason():
         return 'PasswordlessLoginExceptionReason';
-      case _i38.GenericPasswordlessLoginRequest():
-        return 'GenericPasswordlessLoginRequest';
+      case _i38.PasswordlessLoginRequest():
+        return 'PasswordlessLoginRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -1745,8 +1743,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'PasswordlessLoginExceptionReason') {
       return deserialize<_i37.PasswordlessLoginExceptionReason>(data['data']);
     }
-    if (dataClassName == 'GenericPasswordlessLoginRequest') {
-      return deserialize<_i38.GenericPasswordlessLoginRequest>(data['data']);
+    if (dataClassName == 'PasswordlessLoginRequest') {
+      return deserialize<_i38.PasswordlessLoginRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1802,8 +1800,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i29.PasskeyAccount.t;
       case _i30.PasskeyChallenge:
         return _i30.PasskeyChallenge.t;
-      case _i38.GenericPasswordlessLoginRequest:
-        return _i38.GenericPasswordlessLoginRequest.t;
+      case _i38.PasswordlessLoginRequest:
+        return _i38.PasswordlessLoginRequest.t;
     }
     return null;
   }

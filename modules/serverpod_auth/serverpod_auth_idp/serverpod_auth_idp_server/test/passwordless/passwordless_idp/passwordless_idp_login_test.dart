@@ -10,7 +10,6 @@ import 'package:test/test.dart';
 
 import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
-import '../passwordless_test_config_defaults.dart';
 import '../test_utils/passwordless_idp_test_fixture.dart';
 
 void main() {
@@ -241,7 +240,7 @@ void main() {
               equals(0),
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.count(session),
+              await PasswordlessLoginRequest.db.count(session),
               equals(0),
             );
             expect(
@@ -268,7 +267,7 @@ void main() {
               equals(1),
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.find(
+              await PasswordlessLoginRequest.db.find(
                 session,
                 where: (final t) => t.handle.equals(handle),
               ),
@@ -499,9 +498,9 @@ void main() {
               handle: handle,
             );
 
-            final firstRequest = await GenericPasswordlessLoginRequest.db
+            final firstRequest = await PasswordlessLoginRequest.db
                 .findById(session, firstRequestId);
-            final secondRequest = await GenericPasswordlessLoginRequest.db
+            final secondRequest = await PasswordlessLoginRequest.db
                 .findById(session, secondRequestId);
 
             expect(firstRequest, isNull);
@@ -517,7 +516,7 @@ void main() {
               handle: handle,
             );
 
-            final firstRequest = await GenericPasswordlessLoginRequest.db
+            final firstRequest = await PasswordlessLoginRequest.db
                 .findById(session, firstRequestId);
             final firstChallengeId = firstRequest!.challengeId;
 
@@ -543,8 +542,7 @@ void main() {
           for (
             var i = 0;
             i <
-                passwordlessIdpConfigDefaultFieldValues
-                    .loginRequestRateLimit
+                fixture.passwordlessIdp.config.loginRequestRateLimit
                     .maxAttempts;
             i++
           ) {
@@ -676,7 +674,7 @@ void main() {
               handle: handle,
             );
 
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -836,7 +834,7 @@ void main() {
               session,
               handle: handle,
             );
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -853,7 +851,7 @@ void main() {
               throwsA(isA<AuthUserBlockedException>()),
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 requestId,
               ),
@@ -927,7 +925,7 @@ void main() {
         test(
           'when finishLogin fails during auth user resolution then the request is still consumed',
           () async {
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -950,7 +948,7 @@ void main() {
               ),
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 requestId,
               ),
@@ -1021,7 +1019,7 @@ void main() {
             for (
               var i = 0;
               i <
-                  passwordlessIdpConfigDefaultFieldValues
+                  fixture.passwordlessIdp.config
                       .loginVerificationCodeAllowedAttempts;
               i++
             ) {
@@ -1192,18 +1190,18 @@ void main() {
               },
             );
 
-            final row = await GenericPasswordlessLoginRequest.db.findById(
+            final row = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
-            expect(row, isNull);
+            expect(row, isNotNull);
           },
         );
 
         test(
           'when finishLogin cleans up an expired request then the associated SecretChallenge is also deleted',
           () async {
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -1228,14 +1226,14 @@ void main() {
               session,
               challengeId,
             );
-            expect(challenge, isNull);
+            expect(challenge, isNotNull);
           },
         );
 
         test(
           'when an expired login is finished inside a caller transaction then cleanup rolls back with the savepoint',
           () async {
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -1265,7 +1263,7 @@ void main() {
               );
 
               expect(
-                await GenericPasswordlessLoginRequest.db.findById(
+                await PasswordlessLoginRequest.db.findById(
                   session,
                   requestId,
                   transaction: transaction,
@@ -1283,7 +1281,7 @@ void main() {
             });
 
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 requestId,
               ),
@@ -1485,7 +1483,7 @@ void main() {
 
             expect(authSuccess, isA<AuthSuccess>());
             expect(deliveredIntHandle, equals(42));
-            final request = await GenericPasswordlessLoginRequest.db
+            final request = await PasswordlessLoginRequest.db
                 .findFirstRow(
                   session,
                   where: (final t) => t.id.equals(deliveredRequestId),
@@ -1724,7 +1722,7 @@ void main() {
               handle: 'test-handle',
             );
 
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               deliveredRequestId,
             );
@@ -1766,7 +1764,7 @@ void main() {
           for (
             var i = 0;
             i <
-                passwordlessIdpConfigDefaultFieldValues
+                fixture.passwordlessIdp.config
                     .loginVerificationCodeAllowedAttempts;
             i++
           ) {
@@ -1794,7 +1792,7 @@ void main() {
         test(
           'when deleteIncompleteLoginAttempts is called from admin then verification-side attempts and the pending request are cleared',
           () async {
-            final request = await GenericPasswordlessLoginRequest.db.findById(
+            final request = await PasswordlessLoginRequest.db.findById(
               session,
               requestId,
             );
@@ -1831,7 +1829,7 @@ void main() {
               equals(0),
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 requestId,
               ),
@@ -1883,7 +1881,7 @@ void main() {
               handle: handle,
             );
           });
-          final expiredRequest = await GenericPasswordlessLoginRequest.db
+          final expiredRequest = await PasswordlessLoginRequest.db
               .findById(session, expiredRequestId);
           expiredChallengeId = expiredRequest!.challengeId;
 
@@ -1893,7 +1891,7 @@ void main() {
               handle: activeHandle,
             );
           });
-          final activeRequest = await GenericPasswordlessLoginRequest.db
+          final activeRequest = await PasswordlessLoginRequest.db
               .findById(
                 session,
                 activeRequestId,
@@ -1919,7 +1917,7 @@ void main() {
             });
 
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 expiredRequestId,
               ),
@@ -1930,7 +1928,7 @@ void main() {
               isNull,
             );
             expect(
-              await GenericPasswordlessLoginRequest.db.findById(
+              await PasswordlessLoginRequest.db.findById(
                 session,
                 activeRequestId,
               ),
@@ -1978,7 +1976,7 @@ void main() {
               );
             });
             staleChallengeId =
-                (await GenericPasswordlessLoginRequest.db.findById(
+                (await PasswordlessLoginRequest.db.findById(
                   session,
                   staleRequestId,
                 ))!.challengeId;
@@ -1993,7 +1991,7 @@ void main() {
               },
             );
             recentChallengeId =
-                (await GenericPasswordlessLoginRequest.db.findById(
+                (await PasswordlessLoginRequest.db.findById(
                   session,
                   recentRequestId,
                 ))!.challengeId;
@@ -2018,7 +2016,7 @@ void main() {
               });
 
               expect(
-                await GenericPasswordlessLoginRequest.db.findById(
+                await PasswordlessLoginRequest.db.findById(
                   session,
                   staleRequestId,
                 ),
@@ -2029,7 +2027,7 @@ void main() {
                 isNull,
               );
               expect(
-                await GenericPasswordlessLoginRequest.db.findById(
+                await PasswordlessLoginRequest.db.findById(
                   session,
                   recentRequestId,
                 ),

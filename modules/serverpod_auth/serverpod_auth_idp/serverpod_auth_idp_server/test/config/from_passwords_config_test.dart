@@ -151,29 +151,6 @@ void main() {
     );
 
     test(
-      'when constructing PasswordlessIdpConfigFromPasswords then throws PasswordNotFoundException.',
-      () {
-        expect(
-          () => PasswordlessIdpConfigFromPasswords<String>(
-            resolveAuthUserId:
-                (
-                  final session, {
-                  required final handle,
-                  required final transaction,
-                }) async => throw UnimplementedError(),
-          ),
-          throwsA(
-            isA<PasswordNotFoundException>().having(
-              (final e) => e.key,
-              'key',
-              'passwordlessSecretHashPepper',
-            ),
-          ),
-        );
-      },
-    );
-
-    test(
       'when constructing PasskeyIdpConfigFromPasswords then throws PasswordNotFoundException.',
       () {
         expect(
@@ -199,11 +176,14 @@ void main() {
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   emailSecretHashPepper: 'xK9#mP2\$vL5nQ8wR3jF6hY1cT4bN7zA0'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -219,10 +199,36 @@ test:
         });
       });
 
-      test('when constructing EmailIdpConfigFromPasswords then succeeds.', () {
-        final config = EmailIdpConfigFromPasswords();
-        expect(config, isA<EmailIdpConfig>());
-      });
+      test(
+        'when constructing EmailIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = EmailIdpConfigFromPasswords();
+          expect(config, isA<EmailIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given missing passwordlessSecretHashPepper password',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      test(
+        'when constructing PasswordlessIdpConfigFromPasswords then throws.',
+        () {
+          expect(
+            () => PasswordlessIdpConfigFromPasswords<String>(
+              resolveAuthUserId:
+                  (
+                    final session, {
+                    required final handle,
+                    required final transaction,
+                  }) async => throw UnimplementedError(),
+            ),
+            throwsA(isA<PasswordNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -235,11 +241,14 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   passwordlessSecretHashPepper: 'pL8#nQ2\$wX5!rT9@yU3%iO7&aS1*dF4'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -281,11 +290,14 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   googleClientSecret: '{"web":{"client_id":"123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com","client_secret":"GOCSPX-abc123def456ghi789jkl012mno","redirect_uris":["http://localhost:8080/auth/google/callback"]}}'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -301,10 +313,13 @@ test:
         });
       });
 
-      test('when constructing GoogleIdpConfigFromPasswords then succeeds.', () {
-        final config = GoogleIdpConfigFromPasswords();
-        expect(config, isA<GoogleIdpConfig>());
-      });
+      test(
+        'when constructing GoogleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GoogleIdpConfigFromPasswords();
+          expect(config, isA<GoogleIdpConfig>());
+        },
+      );
     },
   );
 
@@ -317,12 +332,15 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   facebookAppId: '123456789012345'
   facebookAppSecret: 'abc123def456ghi789jkl012mno345pqr'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -357,12 +375,15 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   githubClientId: 'Ov23liABCDEFGHIJKLMN'
   githubClientSecret: '1234567890abcdef1234567890abcdef12345678'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -378,10 +399,13 @@ test:
         });
       });
 
-      test('when constructing GitHubIdpConfigFromPasswords then succeeds.', () {
-        final config = GitHubIdpConfigFromPasswords();
-        expect(config, isA<GitHubIdpConfig>());
-      });
+      test(
+        'when constructing GitHubIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GitHubIdpConfigFromPasswords();
+          expect(config, isA<GitHubIdpConfig>());
+        },
+      );
     },
   );
 
@@ -394,7 +418,9 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   appleServiceIdentifier: 'com.example.service.auth'
@@ -410,7 +436,8 @@ test:
     -----END PRIVATE KEY-----
   appleAndroidPackageIdentifier: 'com.example.app'
   appleWebRedirectUri: 'https://example.com/auth/apple/web-complete'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -426,15 +453,18 @@ test:
         });
       });
 
-      test('when constructing AppleIdpConfigFromPasswords then succeeds.', () {
-        final config = AppleIdpConfigFromPasswords();
-        expect(config, isA<AppleIdpConfig>());
-        expect(config.androidPackageIdentifier, 'com.example.app');
-        expect(
-          config.webRedirectUri,
-          'https://example.com/auth/apple/web-complete',
-        );
-      });
+      test(
+        'when constructing AppleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = AppleIdpConfigFromPasswords();
+          expect(config, isA<AppleIdpConfig>());
+          expect(config.androidPackageIdentifier, 'com.example.app');
+          expect(
+            config.webRedirectUri,
+            'https://example.com/auth/apple/web-complete',
+          );
+        },
+      );
     },
   );
 
@@ -447,12 +477,15 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   microsoftClientId: '12345678-1234-1234-1234-123456789012'
   microsoftClientSecret: 'abc~DEF123ghi456JKL789mno012PQR345stu'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
@@ -487,11 +520,14 @@ test:
       setUpAll(() async {
         originalDir = Directory.current;
         await d.dir('config', [
-          d.file('passwords.yaml', '''
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   passkeyHostname: 'auth.example.com'
-'''),
+''',
+          ),
         ]).create();
         Directory.current = d.sandbox;
 
