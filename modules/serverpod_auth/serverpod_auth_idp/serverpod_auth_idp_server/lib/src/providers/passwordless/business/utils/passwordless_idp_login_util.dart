@@ -89,6 +89,7 @@ class PasswordlessIdpLoginUtil<THandle> {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
+    required final String? handleType,
     required final Transaction transaction,
   }) async {
     final THandle typedHandle;
@@ -127,6 +128,7 @@ class PasswordlessIdpLoginUtil<THandle> {
     final requestId = await _requestStore.createRequest(
       session,
       serializedHandle: serializedHandle,
+      handleType: handleType,
       challengeId: challenge.id!,
       transaction: transaction,
     );
@@ -134,6 +136,7 @@ class PasswordlessIdpLoginUtil<THandle> {
     await _config.sendLoginVerificationCode?.call(
       session,
       handle: typedHandle,
+      handleType: handleType,
       requestId: requestId,
       verificationCode: verificationCode,
       transaction: transaction,
@@ -232,5 +235,4 @@ class PasswordlessIdpLoginUtil<THandle> {
       nonce: loginRequestId,
     );
   }
-
 }

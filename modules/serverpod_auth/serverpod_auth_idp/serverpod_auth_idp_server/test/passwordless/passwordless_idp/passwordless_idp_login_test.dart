@@ -45,6 +45,7 @@ void main() {
                 (
                   final Session session, {
                   required final String handle,
+                  required final String? handleType,
                   required final Transaction? transaction,
                 }) async {
                   final authUserId = handleToUserId[handle];
@@ -64,6 +65,7 @@ void main() {
                   required final UuidValue requestId,
                   required final String verificationCode,
                   required final Transaction? transaction,
+                  required final String? handleType,
                 }) async {
                   deliveredHandle = handle;
                   deliveredRequestId = requestId;
@@ -144,6 +146,7 @@ void main() {
                     (
                       final Session session, {
                       required final String handle,
+                      required final String? handleType,
                       required final Transaction? transaction,
                     }) async {
                       final authUserId = handleToUserId[handle];
@@ -199,6 +202,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -215,6 +219,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     throw StateError('send failed');
                   },
@@ -298,6 +303,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -401,6 +407,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -417,6 +424,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     deliveredHandle = handle;
                     deliveredRequestId = requestId;
@@ -498,10 +506,14 @@ void main() {
               handle: handle,
             );
 
-            final firstRequest = await PasswordlessLoginRequest.db
-                .findById(session, firstRequestId);
-            final secondRequest = await PasswordlessLoginRequest.db
-                .findById(session, secondRequestId);
+            final firstRequest = await PasswordlessLoginRequest.db.findById(
+              session,
+              firstRequestId,
+            );
+            final secondRequest = await PasswordlessLoginRequest.db.findById(
+              session,
+              secondRequestId,
+            );
 
             expect(firstRequest, isNull);
             expect(secondRequest, isNotNull);
@@ -516,8 +528,10 @@ void main() {
               handle: handle,
             );
 
-            final firstRequest = await PasswordlessLoginRequest.db
-                .findById(session, firstRequestId);
+            final firstRequest = await PasswordlessLoginRequest.db.findById(
+              session,
+              firstRequestId,
+            );
             final firstChallengeId = firstRequest!.challengeId;
 
             await fixture.passwordlessIdp.startLogin(
@@ -542,7 +556,10 @@ void main() {
           for (
             var i = 0;
             i <
-                fixture.passwordlessIdp.config.loginRequestRateLimit
+                fixture
+                    .passwordlessIdp
+                    .config
+                    .loginRequestRateLimit
                     .maxAttempts;
             i++
           ) {
@@ -1019,7 +1036,9 @@ void main() {
             for (
               var i = 0;
               i <
-                  fixture.passwordlessIdp.config
+                  fixture
+                      .passwordlessIdp
+                      .config
                       .loginVerificationCodeAllowedAttempts;
               i++
             ) {
@@ -1435,6 +1454,7 @@ void main() {
                   (
                     final Session session, {
                     required final int handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = intHandleToUserId[handle];
@@ -1451,6 +1471,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     deliveredIntHandle = handle;
                     deliveredRequestId = requestId;
@@ -1483,11 +1504,10 @@ void main() {
 
             expect(authSuccess, isA<AuthSuccess>());
             expect(deliveredIntHandle, equals(42));
-            final request = await PasswordlessLoginRequest.db
-                .findFirstRow(
-                  session,
-                  where: (final t) => t.id.equals(deliveredRequestId),
-                );
+            final request = await PasswordlessLoginRequest.db.findFirstRow(
+              session,
+              where: (final t) => t.id.equals(deliveredRequestId),
+            );
             expect(request, isNull);
 
             final attempts = await RateLimitedRequestAttempt.db.find(
@@ -1545,6 +1565,7 @@ void main() {
                     (
                       final Session session, {
                       required final UuidValue handle,
+                      required final String? handleType,
                       required final Transaction? transaction,
                     }) async {
                       final authUserId = handleToAuthUserId[handle];
@@ -1561,6 +1582,7 @@ void main() {
                       required final UuidValue requestId,
                       required final String verificationCode,
                       required final Transaction? transaction,
+                      required final String? handleType,
                     }) async {
                       deliveredUuidHandle = handle;
                       deliveredRequestId = requestId;
@@ -1622,6 +1644,7 @@ void main() {
                     (
                       final Session session, {
                       required final _UnsupportedDefaultHandle handle,
+                      required final String? handleType,
                       required final Transaction? transaction,
                     }) async {
                       throw UnimplementedError();
@@ -1675,6 +1698,7 @@ void main() {
                   (
                     final Session session, {
                     required final _TestHandle handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId =
@@ -1698,6 +1722,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     deliveredCustomHandle = handle;
                     deliveredRequestId = requestId;
@@ -1764,7 +1789,9 @@ void main() {
           for (
             var i = 0;
             i <
-                fixture.passwordlessIdp.config
+                fixture
+                    .passwordlessIdp
+                    .config
                     .loginVerificationCodeAllowedAttempts;
             i++
           ) {
@@ -1881,8 +1908,10 @@ void main() {
               handle: handle,
             );
           });
-          final expiredRequest = await PasswordlessLoginRequest.db
-              .findById(session, expiredRequestId);
+          final expiredRequest = await PasswordlessLoginRequest.db.findById(
+            session,
+            expiredRequestId,
+          );
           expiredChallengeId = expiredRequest!.challengeId;
 
           await withClock(Clock.fixed(cleanupTime), () async {
@@ -1891,11 +1920,10 @@ void main() {
               handle: activeHandle,
             );
           });
-          final activeRequest = await PasswordlessLoginRequest.db
-              .findById(
-                session,
-                activeRequestId,
-              );
+          final activeRequest = await PasswordlessLoginRequest.db.findById(
+            session,
+            activeRequestId,
+          );
           activeChallengeId = activeRequest!.challengeId;
         });
 
@@ -1975,11 +2003,10 @@ void main() {
                 handle: staleHandle,
               );
             });
-            staleChallengeId =
-                (await PasswordlessLoginRequest.db.findById(
-                  session,
-                  staleRequestId,
-                ))!.challengeId;
+            staleChallengeId = (await PasswordlessLoginRequest.db.findById(
+              session,
+              staleRequestId,
+            ))!.challengeId;
 
             await withClock(
               Clock.fixed(initialTime.add(const Duration(minutes: 20))),
@@ -1990,11 +2017,10 @@ void main() {
                 );
               },
             );
-            recentChallengeId =
-                (await PasswordlessLoginRequest.db.findById(
-                  session,
-                  recentRequestId,
-                ))!.challengeId;
+            recentChallengeId = (await PasswordlessLoginRequest.db.findById(
+              session,
+              recentRequestId,
+            ))!.challengeId;
           });
 
           tearDown(() async {

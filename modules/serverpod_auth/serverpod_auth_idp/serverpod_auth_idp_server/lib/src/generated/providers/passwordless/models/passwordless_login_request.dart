@@ -22,6 +22,7 @@ abstract class PasswordlessLoginRequest
     this.id,
     DateTime? createdAt,
     required this.handle,
+    this.handleType,
     required this.challengeId,
     this.challenge,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -30,6 +31,7 @@ abstract class PasswordlessLoginRequest
     _i1.UuidValue? id,
     DateTime? createdAt,
     required String handle,
+    String? handleType,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
   }) = _PasswordlessLoginRequestImpl;
@@ -45,6 +47,7 @@ abstract class PasswordlessLoginRequest
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       handle: jsonSerialization['handle'] as String,
+      handleType: jsonSerialization['handleType'] as String?,
       challengeId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),
@@ -71,6 +74,13 @@ abstract class PasswordlessLoginRequest
   /// resolve to an auth user.
   String handle;
 
+  /// Optional type tag for the handle (e.g., "email", "sms").
+  ///
+  /// Passed through to the `sendLoginVerificationCode` and
+  /// `resolveAuthUserId` callbacks so integrators can distinguish channels
+  /// without parsing the handle string.
+  String? handleType;
+
   _i1.UuidValue challengeId;
 
   /// The single verification challenge for this request.
@@ -86,6 +96,7 @@ abstract class PasswordlessLoginRequest
     _i1.UuidValue? id,
     DateTime? createdAt,
     String? handle,
+    String? handleType,
     _i1.UuidValue? challengeId,
     _i2.SecretChallenge? challenge,
   });
@@ -96,6 +107,7 @@ abstract class PasswordlessLoginRequest
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'handle': handle,
+      if (handleType != null) 'handleType': handleType,
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
     };
@@ -145,12 +157,14 @@ class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
     _i1.UuidValue? id,
     DateTime? createdAt,
     required String handle,
+    String? handleType,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
   }) : super._(
          id: id,
          createdAt: createdAt,
          handle: handle,
+         handleType: handleType,
          challengeId: challengeId,
          challenge: challenge,
        );
@@ -163,6 +177,7 @@ class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
     Object? id = _Undefined,
     DateTime? createdAt,
     String? handle,
+    Object? handleType = _Undefined,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
   }) {
@@ -170,6 +185,7 @@ class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
       id: id is _i1.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       handle: handle ?? this.handle,
+      handleType: handleType is String? ? handleType : this.handleType,
       challengeId: challengeId ?? this.challengeId,
       challenge: challenge is _i2.SecretChallenge?
           ? challenge
@@ -190,6 +206,11 @@ class PasswordlessLoginRequestUpdateTable
 
   _i1.ColumnValue<String, String> handle(String value) => _i1.ColumnValue(
     table.handle,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> handleType(String? value) => _i1.ColumnValue(
+    table.handleType,
     value,
   );
 
@@ -214,6 +235,10 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
       'handle',
       this,
     );
+    handleType = _i1.ColumnString(
+      'handleType',
+      this,
+    );
     challengeId = _i1.ColumnUuid(
       'challengeId',
       this,
@@ -229,6 +254,13 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// (e.g., phoneHash), or any other deterministic value the provider can
   /// resolve to an auth user.
   late final _i1.ColumnString handle;
+
+  /// Optional type tag for the handle (e.g., "email", "sms").
+  ///
+  /// Passed through to the `sendLoginVerificationCode` and
+  /// `resolveAuthUserId` callbacks so integrators can distinguish channels
+  /// without parsing the handle string.
+  late final _i1.ColumnString handleType;
 
   late final _i1.ColumnUuid challengeId;
 
@@ -253,6 +285,7 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
     id,
     createdAt,
     handle,
+    handleType,
     challengeId,
   ];
 

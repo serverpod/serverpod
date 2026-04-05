@@ -1026,6 +1026,13 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
+          "name": "handleType",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
           "name": "challengeId",
           "columnType": 7,
           "isNullable": false,
@@ -2827,7 +2834,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersionModel",
       "module": "serverpod_auth_idp",
-      "version": "20260405043250967"
+      "version": "20260405061652894"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

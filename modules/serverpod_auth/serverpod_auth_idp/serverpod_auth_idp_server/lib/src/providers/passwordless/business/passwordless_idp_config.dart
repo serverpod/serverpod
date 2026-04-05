@@ -32,6 +32,7 @@ typedef ResolveAuthUserIdFunction<THandle> =
     FutureOr<UuidValue> Function(
       Session session, {
       required THandle handle,
+      required String? handleType,
       required Transaction? transaction,
     });
 
@@ -40,6 +41,7 @@ typedef SendPasswordlessVerificationCodeFunction<THandle> =
     FutureOr<void> Function(
       Session session, {
       required THandle handle,
+      required String? handleType,
       required UuidValue requestId,
       required String verificationCode,
       required Transaction? transaction,

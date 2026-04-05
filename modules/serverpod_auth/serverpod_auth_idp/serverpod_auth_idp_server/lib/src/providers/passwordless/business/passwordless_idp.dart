@@ -107,6 +107,7 @@ class PasswordlessIdp<THandle> {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
+    final String? handleType,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -117,6 +118,7 @@ class PasswordlessIdp<THandle> {
             () => _loginUtil.startLogin(
               session,
               handle: handle,
+              handleType: handleType,
               transaction: transaction,
             ),
           ),
@@ -153,6 +155,7 @@ class PasswordlessIdp<THandle> {
     final authUserId = await config.resolveAuthUserId(
       session,
       handle: handle,
+      handleType: request.handleType,
       transaction: transaction,
     );
 

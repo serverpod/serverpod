@@ -61,10 +61,12 @@ abstract class PasswordlessIdpBaseEndpoint<THandle> extends Endpoint {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
+    final String? handleType,
   }) async {
     return passwordlessIdp.startLogin(
       session,
       handle: handle,
+      handleType: handleType,
     );
   }
 }

@@ -1026,6 +1026,13 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
+          "name": "handleType",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "String?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
           "name": "challengeId",
           "columnType": 7,
           "isNullable": false,

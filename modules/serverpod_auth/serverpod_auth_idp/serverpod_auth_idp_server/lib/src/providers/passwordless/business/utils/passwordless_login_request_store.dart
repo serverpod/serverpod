@@ -12,6 +12,7 @@ class PasswordlessLoginRequestStore {
   Future<UuidValue> createRequest(
     final Session session, {
     required final String serializedHandle,
+    required final String? handleType,
     required final UuidValue challengeId,
     required final Transaction transaction,
   }) async {
@@ -20,6 +21,7 @@ class PasswordlessLoginRequestStore {
       PasswordlessLoginRequest(
         createdAt: clock.now(),
         handle: serializedHandle,
+        handleType: handleType,
         challengeId: challengeId,
       ),
       transaction: transaction,
@@ -116,6 +118,9 @@ class PasswordlessLoginRequestData {
   /// Serialized handle stored with the request.
   final String serializedHandle;
 
+  /// Optional type tag for the handle (e.g., "email", "sms").
+  final String? handleType;
+
   /// The single verification challenge for this request.
   final SecretChallenge? challenge;
 
@@ -124,6 +129,7 @@ class PasswordlessLoginRequestData {
     required this.id,
     required this.createdAt,
     required this.serializedHandle,
+    this.handleType,
     required this.challenge,
   });
 }
@@ -134,6 +140,7 @@ extension on PasswordlessLoginRequest {
       id: id!,
       createdAt: createdAt,
       serializedHandle: handle,
+      handleType: handleType,
       challenge: challenge,
     );
   }

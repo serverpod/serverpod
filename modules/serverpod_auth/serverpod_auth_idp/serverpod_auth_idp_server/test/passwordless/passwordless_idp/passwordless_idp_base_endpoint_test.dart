@@ -55,6 +55,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     resolvedStringHandle = handle;
@@ -68,6 +69,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     deliveredStringHandle = handle;
                     deliveredStringRequestId = requestId;
@@ -80,6 +82,7 @@ void main() {
                   (
                     final Session session, {
                     required final int handle,
+                    required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
                     resolvedIntHandle = handle;
@@ -93,6 +96,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
+                    required final String? handleType,
                   }) async {
                     deliveredIntHandle = handle;
                     deliveredIntRequestId = requestId;
@@ -232,7 +236,9 @@ void main() {
           for (
             var i = 0;
             i <
-                stringEndpoint.passwordlessIdp.config
+                stringEndpoint
+                    .passwordlessIdp
+                    .config
                     .loginVerificationCodeAllowedAttempts;
             i++
           ) {

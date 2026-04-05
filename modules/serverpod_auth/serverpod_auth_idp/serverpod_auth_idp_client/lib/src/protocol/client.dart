@@ -354,20 +354,6 @@ abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
 /// Subclass this in your own application to expose an endpoint including all
 /// methods.
 ///
-/// `THandle` is the typed handle used by [PasswordlessIdpConfig] callbacks.
-/// The RPC boundary remains `String handle`; the framework parses that string
-/// with `deserializeHandle`, passes the parsed handle to
-/// `sendLoginVerificationCode`, stores the stable string returned by
-/// `serializeHandle`, and deserializes that stored string again before calling
-/// `resolveAuthUserId`.
-///
-/// [PasswordlessLoginExceptionReason.invalid] is used for invalid handle input
-/// during `startLogin()`, and also for invalid verification state during
-/// `finishLogin()`, such as missing requests or invalid verification codes.
-///
-/// Default string-based integrations should explicitly extend
-/// `PasswordlessIdpBaseEndpoint<String>`.
-///
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [PasswordlessIdp].
@@ -402,7 +388,10 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   /// - [PasswordlessLoginExceptionReason.invalid] if the handle is invalid.
   /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
   ///   too many login attempts.
-  _i2.Future<_i1.UuidValue> startLogin({required String handle});
+  _i2.Future<_i1.UuidValue> startLogin({
+    required String handle,
+    String? handleType,
+  });
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

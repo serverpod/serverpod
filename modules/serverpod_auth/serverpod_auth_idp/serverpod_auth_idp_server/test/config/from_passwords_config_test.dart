@@ -222,6 +222,7 @@ test:
                   (
                     final session, {
                     required final handle,
+                    required final handleType,
                     required final transaction,
                   }) async => throw UnimplementedError(),
             ),
@@ -272,6 +273,7 @@ test:
                 (
                   final session, {
                   required final handle,
+                  required final handleType,
                   required final transaction,
                 }) async => throw UnimplementedError(),
           );
