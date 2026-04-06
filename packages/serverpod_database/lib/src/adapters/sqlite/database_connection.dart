@@ -713,6 +713,27 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
   }
 
+  @override
+  Future<R> transaction<R>(
+    TransactionFunction<R> transactionFunction, {
+    required TransactionSettings settings,
+    required DatabaseSession session,
+  }) async {
+    try {
+      return await _db.writeTransaction<R>((tx) async {
+        var transaction = _SqliteTransaction(tx, session);
+        return await transactionFunction(transaction);
+      });
+    } on TransactionCancelledException catch (_) {
+      Type typeOf<X>() => X;
+
+      if (R == Null || R == typeOf<void>()) {
+        return Future.value();
+      }
+      rethrow;
+    }
+  }
+
   Future<ResultSet> _runQuery(
     DatabaseSession session,
     String query, {
@@ -1010,27 +1031,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       error: exception?.toString(),
       stackTrace: trace,
     );
-  }
-
-  @override
-  Future<R> transaction<R>(
-    TransactionFunction<R> transactionFunction, {
-    required TransactionSettings settings,
-    required DatabaseSession session,
-  }) async {
-    try {
-      return await _db.writeTransaction<R>((tx) async {
-        var transaction = _SqliteTransaction(tx, session);
-        return await transactionFunction(transaction);
-      });
-    } on TransactionCancelledException catch (_) {
-      Type typeOf<X>() => X;
-
-      if (R == Null || R == typeOf<void>()) {
-        return Future.value();
-      }
-      rethrow;
-    }
   }
 
   Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
