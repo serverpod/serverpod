@@ -17,7 +17,6 @@ import 'package:sqlparser/sqlparser.dart'
         DeleteStatement,
         InsertStatement,
         InvalidStatement,
-        RollbackStatement,
         SemicolonSeparatedStatements,
         SqlEngine,
         Statement,
@@ -616,12 +615,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var result = await _runQuery(
+    return this.query(
       session,
       query,
+      timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: null,
     );
-    return SqliteDatabaseResult(result);
   }
 
   @override
@@ -651,6 +651,33 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     QueryParameters? parameters,
   }) async {
     var (sql, params) = _convertParameters(query, parameters);
+
+    final script = _parseSqlScript(sql)
+        .where((statement) => !statement.isEmpty)
+        .where((statement) => !statement.shouldSkipInBatchQuery)
+        .toList();
+
+    if (script.length > 1 && params.isNotEmpty) {
+      throw UnsupportedError(
+        'Parameters are not supported for multiple statements in SQLite. To '
+        'run the statements atomically, use a transaction and pass the '
+        'parameters for each statement individually.',
+      );
+    }
+
+    // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
+    // 0 rows, so we need to read the affected row count via SELECT changes().
+    if (script.any((s) => s.isWriteStatement) && transaction == null) {
+      return _db.computeWithDatabase((db) async {
+        var updatedRows = 0;
+        for (final statement in script) {
+          db.execute(statement.text, params);
+          updatedRows += db.updatedRows;
+        }
+        return updatedRows;
+      });
+    }
+
     var result = await _runQuery(
       session,
       sql,
@@ -658,21 +685,15 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       transaction: transaction,
     );
 
-    // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with 0
-    // rows; use computeWithDatabase to get the actual updatedRows from SQLite.
-    final script = _parseSqlScript(sql);
-    final lastStmt = _lastParsedStatementForExecute(script);
-    if (result.isEmpty && lastStmt != null && lastStmt.isWriteStatement) {
-      if (transaction == null) {
-        return await _db.computeWithDatabase((db) async {
-          db.execute(lastStmt.text, params);
-          return db.updatedRows;
-        });
-      }
-
-      // Inside a transaction: get row count via SELECT changes().
-      return await _sqliteChangesFromTransaction(transaction);
+    // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
+    // 0 rows, so we need to read the affected row count via SELECT changes().
+    if (result.isEmpty && transaction != null) {
+      return _sqliteChangesFromTransaction(transaction);
     }
+
+    // This is required to match Postgres execute() behavior, which returns the
+    // number of rows affected by the last statement, even if it is a SELECT
+    // statement.
     return result.length;
   }
 
@@ -683,21 +704,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var result = await _runQuery(
+    return execute(
       session,
       query,
+      timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      parameters: null,
     );
-
-    // For INSERT/UPDATE/DELETE inside a transaction, result is empty; use changes().
-    if (result.isEmpty && transaction != null) {
-      final script = _parseSqlScript(query);
-      final lastStmt = _lastParsedStatementForExecute(script);
-      if (lastStmt != null && lastStmt.isWriteStatement) {
-        return await _sqliteChangesFromTransaction(transaction);
-      }
-    }
-    return result.length;
   }
 
   Future<ResultSet> _runQuery(
@@ -1227,18 +1240,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     return _ParsedSqlStatement(text: sql, ast: InvalidStatement());
   }
 
-  /// Last non-ignored statement for execute row-count logic (see
-  /// [_ParsedSqlStatement.isIgnoredForExecuteRowCount]).
-  static _ParsedSqlStatement? _lastParsedStatementForExecute(
-    List<_ParsedSqlStatement> script,
-  ) {
-    for (var i = script.length - 1; i >= 0; i--) {
-      final p = script[i];
-      if (!p.isIgnoredForExecuteRowCount) return p;
-    }
-    return null;
-  }
-
   static String _stripTrailingSemicolon(String sql) {
     var t = sql.trim();
     if (!t.endsWith(';')) return t;
@@ -1269,15 +1270,6 @@ class _ParsedSqlStatement {
   /// Skipped inside transactions to avoid recursive locks.
   bool get shouldSkipInBatchQuery =>
       ast is BeginTransactionStatement || ast is CommitStatement;
-
-  /// Ignored when picking the statement that determines the row count for
-  /// [SqliteDatabaseConnection.execute].
-  bool get isIgnoredForExecuteRowCount {
-    if (isEmpty) return true;
-    return ast is BeginTransactionStatement ||
-        ast is CommitStatement ||
-        ast is RollbackStatement;
-  }
 }
 
 /// Single-row INSERT with pre-encoded SQL literals.
@@ -1350,10 +1342,9 @@ _SqliteTransaction? _castToSqliteTransaction(Transaction? transaction) {
 /// Returns the number of rows changed by the last statement, using SQLite's
 /// `changes()` function.
 ///
-/// After INSERT/UPDATE/DELETE inside a transaction, the async driver's
-/// `execute` often yields an empty [ResultSet], so the affected row count cannot
-/// be taken from `result.length`. `SELECT changes()` matches the native SQLite
-/// count for that connection.
+/// After INSERT/UPDATE/DELETE inside a transaction, the async driver will
+/// return a [ResultSet] with 0 rows if no RETURNING is used. `SELECT changes()`
+/// matches the native SQLite count for that connection.
 Future<int> _sqliteChangesFromTransaction(Transaction transaction) async {
   final sqliteTx = _castToSqliteTransaction(transaction)!;
   final changesResult = await sqliteTx.execute('SELECT changes()', []);
