@@ -652,11 +652,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }) async {
     var (sql, params) = _convertParameters(query, parameters);
 
-    final script = _parseSqlScript(sql)
-        .where((statement) => !statement.isEmpty)
-        .where((statement) => !statement.shouldSkipInBatchQuery)
-        .toList();
-
+    final script = _parseSqlScriptForBatch(sql);
     if (script.length > 1 && params.isNotEmpty) {
       throw UnsupportedError(
         'Parameters are not supported for multiple statements in SQLite. To '
@@ -678,9 +674,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       });
     }
 
-    var result = await _runQuery(
+    var result = await _runQueryWithScript(
       session,
-      sql,
+      script,
       parameters: params,
       transaction: transaction,
     );
@@ -734,17 +730,32 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
   }
 
+  List<_ParsedSqlStatement> _parseSqlScriptForBatch(String sql) =>
+      _parseSqlScript(sql)
+          .where((statement) => !statement.isEmpty)
+          .where((statement) => !statement.shouldSkipInBatchQuery)
+          .toList();
+
   Future<ResultSet> _runQuery(
     DatabaseSession session,
     String query, {
     List<Object?>? parameters,
     Transaction? transaction,
-  }) async {
-    final script = _parseSqlScript(query)
-        .where((statement) => !statement.isEmpty)
-        .where((statement) => !statement.shouldSkipInBatchQuery)
-        .toList();
+  }) {
+    return _runQueryWithScript(
+      session,
+      _parseSqlScriptForBatch(query),
+      parameters: parameters,
+      transaction: transaction,
+    );
+  }
 
+  Future<ResultSet> _runQueryWithScript(
+    DatabaseSession session,
+    List<_ParsedSqlStatement> script, {
+    List<Object?>? parameters,
+    Transaction? transaction,
+  }) async {
     // If the query contain multiple statements and at least one of them is a
     // write statement, we must wrap it in a transaction or savepoint to ensure
     // it is executed atomically.
