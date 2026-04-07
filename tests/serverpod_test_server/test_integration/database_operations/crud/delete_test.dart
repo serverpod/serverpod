@@ -153,8 +153,7 @@ void main() async {
         deleteResult = await SimpleData.db.deleteWhere(
           session,
           where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
-          orderBy: (t) => t.num,
-          orderDescending: true,
+          orderBy: (t) => t.num.desc(),
         );
       });
 
@@ -299,8 +298,7 @@ void main() async {
         var deleted = await UniqueData.db.delete(
           session,
           inserted,
-          orderBy: (t) => t.number,
-          orderDescending: true,
+          orderBy: (t) => t.number.desc(),
         );
 
         expect(deleted, hasLength(2));

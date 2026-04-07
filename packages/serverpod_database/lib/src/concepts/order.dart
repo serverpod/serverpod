@@ -36,10 +36,12 @@ class Order implements Column {
   @override
   Type get type => column.type;
 
+  Order._({required this.column, this.orderDescending = false});
+
   /// Creates a new [Order] definition for a specific [column] and whether it
   /// should be ordered descending or ascending.
   @Deprecated('Use the helpers asc() and desc() on the column instead.')
-  Order({required this.column, this.orderDescending = false});
+  factory Order({required Column column, bool orderDescending}) = Order._;
 
   @override
   String toString() {
@@ -52,10 +54,10 @@ class Order implements Column {
 /// Extension providing ordering operations for columns.
 extension ColumnOrderingOperations<T> on Column<T> {
   /// Creates an [Order] with the column ordered ascending.
-  Order asc() => Order(column: this, orderDescending: false);
+  Order asc() => Order._(column: this, orderDescending: false);
 
   /// Creates an [Order] with the column ordered descending.
-  Order desc() => Order(column: this, orderDescending: true);
+  Order desc() => Order._(column: this, orderDescending: true);
 }
 
 /// Extension providing a method to convert a list of [Column]s to a list of [Order]s.

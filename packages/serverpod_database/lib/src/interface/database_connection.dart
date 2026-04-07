@@ -35,6 +35,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Include? include,
     Transaction? transaction,
@@ -49,6 +50,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -136,6 +138,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });
@@ -146,6 +149,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });
@@ -163,6 +167,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });

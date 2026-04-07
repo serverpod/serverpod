@@ -72,8 +72,7 @@ class BasicDatabase extends Endpoint {
       where: (t) => t.num < num,
       offset: offset,
       limit: limit,
-      orderBy: (t) => t.num,
-      orderDescending: descending,
+      orderBy: (t) => descending ? t.num.desc() : t.num.asc(),
     );
 
     return SimpleDataList(

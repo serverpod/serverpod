@@ -74,6 +74,13 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+/// Deprecation annotation for the [orderDescending] parameter.
+Expression deprecatedOrderDescendingAnnotation() {
+  return refer('Deprecated').call([
+    literalString('Use desc() on the orderBy column instead.'),
+  ]);
+}
+
 Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,

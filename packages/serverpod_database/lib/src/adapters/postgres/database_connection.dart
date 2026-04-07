@@ -40,6 +40,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Include? include,
     Transaction? transaction,
@@ -76,6 +77,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -89,6 +91,7 @@ class PostgresDatabaseConnection
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
@@ -338,6 +341,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -411,6 +415,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -426,6 +431,7 @@ class PostgresDatabaseConnection
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
     );
@@ -458,6 +464,7 @@ class PostgresDatabaseConnection
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -844,6 +851,7 @@ class PostgresDatabaseConnection
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
+          // ignore: deprecated_member_use_from_same_package
           nestedInclude.orderDescending,
         );
 

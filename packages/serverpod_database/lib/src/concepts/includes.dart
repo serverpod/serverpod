@@ -39,6 +39,7 @@ abstract class IncludeList extends Include {
   Column? orderBy;
 
   /// Whether the column should be ordered descending or ascending.
+  @Deprecated('Use desc() on the orderBy column instead.')
   bool orderDescending = false;
 
   /// The columns to order by.

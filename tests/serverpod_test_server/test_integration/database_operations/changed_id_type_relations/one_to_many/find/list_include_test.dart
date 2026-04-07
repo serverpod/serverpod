@@ -633,8 +633,7 @@ void main() async {
         stockholm.id!,
         include: City.include(
           citizens: Person.includeList(
-            orderBy: (t) => t.name,
-            orderDescending: true,
+            orderBy: (t) => t.name.desc(),
           ),
         ),
       );
@@ -915,10 +914,11 @@ void main() async {
         stockholm.id!,
         include: City.include(
           citizens: Person.includeList(
-            orderBy: (t) => t.organization.people.count(
-              (p) => p.name.ilike('A%'),
-            ),
-            orderDescending: true,
+            orderBy: (t) => t.organization.people
+                .count(
+                  (p) => p.name.ilike('A%'),
+                )
+                .desc(),
             limit: 2,
             include: Person.include(
               organization: Organization.include(

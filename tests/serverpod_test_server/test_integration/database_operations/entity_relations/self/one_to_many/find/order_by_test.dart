@@ -31,7 +31,6 @@ void main() async {
             t.kittens.count().desc(),
             t.name.asc(),
           ],
-          orderDescending: true,
         );
 
         var catNames = fetchedCats.map((e) => e.name);
@@ -56,8 +55,7 @@ void main() async {
         var fetchedCats = await Cat.db.find(
           session,
           // Order by number of kittens named Smul... in descending order
-          orderBy: (t) => t.kittens.count((k) => k.name.ilike('smul%')),
-          orderDescending: true,
+          orderBy: (t) => t.kittens.count((k) => k.name.ilike('smul%')).desc(),
         );
 
         var catNames = fetchedCats.map((e) => e.name);

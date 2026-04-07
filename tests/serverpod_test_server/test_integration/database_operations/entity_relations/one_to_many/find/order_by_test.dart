@@ -37,8 +37,7 @@ void main() async {
         var fetchedCustomers = await Customer.db.find(
           session,
           // Order by number of orders in descending order
-          orderBy: (t) => t.orders.count(),
-          orderDescending: true,
+          orderBy: (t) => t.orders.count().desc(),
         );
 
         var customerNames = fetchedCustomers.map((e) => e.name);
@@ -68,8 +67,8 @@ void main() async {
         var fetchedCustomers = await Customer.db.find(
           session,
           // Order by number of Prem orders in descending order
-          orderBy: (t) => t.orders.count((o) => o.description.ilike('prem%')),
-          orderDescending: true,
+          orderBy: (t) =>
+              t.orders.count((o) => o.description.ilike('prem%')).desc(),
         );
 
         var customerNames = fetchedCustomers.map((e) => e.name);

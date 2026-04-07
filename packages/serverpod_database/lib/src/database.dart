@@ -77,6 +77,7 @@ class Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -99,6 +100,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: resolvedTransaction,
       include: include,
@@ -127,6 +129,7 @@ class Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -148,6 +151,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: resolvedTransaction,
       include: include,
@@ -283,6 +287,7 @@ class Database {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -294,6 +299,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
@@ -345,6 +351,7 @@ class Database {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -353,6 +360,7 @@ class Database {
       rows,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
@@ -380,6 +388,7 @@ class Database {
     required Expression where,
     Column? orderBy,
     List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -388,6 +397,7 @@ class Database {
       where,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
