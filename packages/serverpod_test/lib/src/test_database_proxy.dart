@@ -54,7 +54,7 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
   }) {
@@ -88,7 +88,7 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
   }) {
@@ -110,7 +110,7 @@ class TestDatabaseProxy implements Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -159,7 +159,7 @@ class TestDatabaseProxy implements Database {
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -411,7 +411,7 @@ class TestDatabaseProxy implements Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
   }) {

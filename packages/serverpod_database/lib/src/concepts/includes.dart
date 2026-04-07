@@ -42,7 +42,7 @@ abstract class IncludeList extends Include {
   bool orderDescending = false;
 
   /// The columns to order by.
-  List<Order>? orderByList;
+  List<Column>? orderByList;
 
   /// The nested includes
   IncludeObject? include;

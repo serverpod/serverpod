@@ -101,7 +101,7 @@ abstract class _ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
 /// Attends full specification of default PG comparison operations:
 /// https://www.postgresql.org/docs/current/functions-comparison.html#FUNCTIONS-COMPARISON-OP-TABLE
 abstract class ColumnComparable<T> extends _ColumnComparableEquals<T>
-    with _ColumnComparisonDefaultOperations<T>, _ColumnOrderingOperations<T> {
+    with _ColumnComparisonDefaultOperations<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnComparable(
     super.columnName,
@@ -112,8 +112,7 @@ abstract class ColumnComparable<T> extends _ColumnComparableEquals<T>
 }
 
 /// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends _ColumnComparableEquals<E>
-    with _ColumnOrderingOperations<E> {
+class ColumnEnum<E extends Enum> extends _ColumnComparableEquals<E> {
   final EnumSerialization _serialized;
 
   ColumnEnum._(
@@ -206,8 +205,7 @@ class ColumnString extends ColumnComparable<String> {
 }
 
 /// A [Column] holding an [bool].
-class ColumnBool extends _ColumnComparableEquals<bool>
-    with _ColumnOrderingOperations<bool> {
+class ColumnBool extends _ColumnComparableEquals<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnBool(
     super.columnName,
@@ -267,7 +265,7 @@ class ColumnUuid extends ColumnComparable<UuidValue> {
 
 /// A [Column] holding [Uri].
 class ColumnUri extends _ValueOperatorColumn<Uri>
-    with _NullableColumnDefaultOperations<Uri>, _ColumnOrderingOperations<Uri> {
+    with _NullableColumnDefaultOperations<Uri> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnUri(
     super.columnName,
@@ -332,8 +330,7 @@ class ColumnCount extends _ValueOperatorColumn<int>
     with
         _ColumnDefaultOperations<int>,
         _ColumnComparisonDefaultOperations<int>,
-        _ColumnComparisonBetweenOperations<int>,
-        _ColumnOrderingOperations<int> {
+        _ColumnComparisonBetweenOperations<int> {
   /// Where expression applied to filter what is counted.
   Expression? innerWhere;
 
@@ -614,14 +611,6 @@ mixin _ColumnComparisonDefaultOperations<T> on _ValueOperatorColumn<T> {
       'Invalid type for comparison: ${other.runtimeType}, allowed types are Expression, $T or Column',
     );
   }
-}
-
-mixin _ColumnOrderingOperations<T> on _ValueOperatorColumn<T> {
-  /// Creates an [Order] with the column ordered ascending.
-  Order asc() => Order(column: this, orderDescending: false);
-
-  /// Creates an [Order] with the column ordered descending.
-  Order desc() => Order(column: this, orderDescending: true);
 }
 
 mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
