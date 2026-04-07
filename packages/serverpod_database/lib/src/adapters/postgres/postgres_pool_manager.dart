@@ -18,7 +18,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   DateTime? lastDatabaseOperationTime;
 
   /// Database configuration.
-  final DatabaseConfig config;
+  final PostgresDatabaseConfig config;
 
   late SerializationManagerServer _serializationManager;
 

@@ -21,13 +21,10 @@ class SqliteDatabaseProvider implements DatabaseProvider {
   SqlitePoolManager createPoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    DatabaseConfig config,
+    SqliteDatabaseConfig config,
   ) {
     if (runtimeParametersBuilder != null) {
       throw UnsupportedError('SQLite does not support runtime parameters.');
-    }
-    if (config is! SqliteDatabaseConfig) {
-      throw ArgumentError('Config must be a "SqliteDatabaseConfig".');
     }
     return SqlitePoolManager(
       serializationManager,
@@ -36,10 +33,7 @@ class SqliteDatabaseProvider implements DatabaseProvider {
   }
 
   @override
-  SqliteDatabaseConnection createConnection(DatabasePoolManager poolManager) {
-    if (poolManager is! SqlitePoolManager) {
-      throw ArgumentError('Pool manager must be a "SqlitePoolManager".');
-    }
+  SqliteDatabaseConnection createConnection(SqlitePoolManager poolManager) {
     return SqliteDatabaseConnection(poolManager);
   }
 

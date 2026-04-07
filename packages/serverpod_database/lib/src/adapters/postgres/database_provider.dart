@@ -21,7 +21,7 @@ class PostgresDatabaseProvider implements DatabaseProvider {
   PostgresPoolManager createPoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    DatabaseConfig config,
+    PostgresDatabaseConfig config,
   ) {
     return PostgresPoolManager(
       serializationManager,
@@ -31,10 +31,7 @@ class PostgresDatabaseProvider implements DatabaseProvider {
   }
 
   @override
-  PostgresDatabaseConnection createConnection(DatabasePoolManager poolManager) {
-    if (poolManager is! PostgresPoolManager) {
-      throw ArgumentError('Pool manager must be a "PostgresPoolManager".');
-    }
+  PostgresDatabaseConnection createConnection(PostgresPoolManager poolManager) {
     return PostgresDatabaseConnection(poolManager);
   }
 

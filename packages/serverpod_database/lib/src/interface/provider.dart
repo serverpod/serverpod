@@ -24,11 +24,13 @@ abstract interface class DatabaseProvider {
   DatabasePoolManager createPoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    DatabaseConfig config,
+    covariant DatabaseConfig config,
   );
 
   /// Creates a new [DatabaseConnection] for the given [poolManager].
-  DatabaseConnection createConnection(DatabasePoolManager poolManager);
+  DatabaseConnection createConnection(
+    covariant DatabasePoolManager poolManager,
+  );
 
   /// Creates a new [MigrationRunner].
   MigrationRunner createMigrationRunner({String? runMode});
