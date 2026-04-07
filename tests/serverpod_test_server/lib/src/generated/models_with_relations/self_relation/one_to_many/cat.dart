@@ -118,6 +118,7 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
@@ -127,7 +128,8 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Cat.t),
       include: include,
     );
@@ -311,6 +313,7 @@ class CatIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -364,6 +367,7 @@ class CatRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
@@ -375,7 +379,8 @@ class CatRepository {
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -407,6 +412,7 @@ class CatRepository {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
@@ -418,7 +424,8 @@ class CatRepository {
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -541,6 +548,7 @@ class CatRepository {
     int? offset,
     _i1.OrderByBuilder<CatTable>? orderBy,
     _i1.OrderByListBuilder<CatTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -551,7 +559,8 @@ class CatRepository {
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -567,6 +576,7 @@ class CatRepository {
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.OrderByBuilder<CatTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
@@ -575,7 +585,8 @@ class CatRepository {
       rows,
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -600,6 +611,7 @@ class CatRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.OrderByBuilder<CatTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
@@ -608,7 +620,8 @@ class CatRepository {
       where: where(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -190,6 +190,7 @@ abstract class ServerSideSession
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     ServerSideSessionInclude? include,
@@ -199,7 +200,8 @@ abstract class ServerSideSession
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ServerSideSession.t),
       include: include,
     );
@@ -483,6 +485,7 @@ class ServerSideSessionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -530,6 +533,7 @@ class ServerSideSessionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -541,7 +545,8 @@ class ServerSideSessionRepository {
       where: where?.call(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -573,6 +578,7 @@ class ServerSideSessionRepository {
     _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -584,7 +590,8 @@ class ServerSideSessionRepository {
       where: where?.call(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -709,6 +716,7 @@ class ServerSideSessionRepository {
     int? offset,
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -719,7 +727,8 @@ class ServerSideSessionRepository {
       offset: offset,
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -735,6 +744,7 @@ class ServerSideSessionRepository {
     _i1.DatabaseSession session,
     List<ServerSideSession> rows, {
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -743,7 +753,8 @@ class ServerSideSessionRepository {
       rows,
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -768,6 +779,7 @@ class ServerSideSessionRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerSideSessionTable> where,
     _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -776,7 +788,8 @@ class ServerSideSessionRepository {
       where: where(ServerSideSession.t),
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

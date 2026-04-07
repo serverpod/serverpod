@@ -147,6 +147,7 @@ abstract class CitizenInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
@@ -156,7 +157,8 @@ abstract class CitizenInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CitizenInt.t),
       include: include,
     );
@@ -368,6 +370,7 @@ class CitizenIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -417,6 +420,7 @@ class CitizenIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -428,7 +432,8 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -460,6 +465,7 @@ class CitizenIntRepository {
     _i1.WhereExpressionBuilder<CitizenIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -471,7 +477,8 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -594,6 +601,7 @@ class CitizenIntRepository {
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -604,7 +612,8 @@ class CitizenIntRepository {
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -620,6 +629,7 @@ class CitizenIntRepository {
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -628,7 +638,8 @@ class CitizenIntRepository {
       rows,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -653,6 +664,7 @@ class CitizenIntRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -661,7 +673,8 @@ class CitizenIntRepository {
       where: where(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

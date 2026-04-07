@@ -85,6 +85,7 @@ abstract class Employee
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
@@ -94,7 +95,8 @@ abstract class Employee
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Employee.t),
       include: include,
     );
@@ -194,6 +196,7 @@ class EmployeeIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -239,6 +242,7 @@ class EmployeeRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
@@ -249,7 +253,8 @@ class EmployeeRepository {
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -280,6 +285,7 @@ class EmployeeRepository {
     _i1.WhereExpressionBuilder<EmployeeTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
@@ -290,7 +296,8 @@ class EmployeeRepository {
       where: where?.call(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -410,6 +417,7 @@ class EmployeeRepository {
     int? offset,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -420,7 +428,8 @@ class EmployeeRepository {
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -436,6 +445,7 @@ class EmployeeRepository {
     _i1.DatabaseSession session,
     List<Employee> rows, {
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
@@ -444,7 +454,8 @@ class EmployeeRepository {
       rows,
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -469,6 +480,7 @@ class EmployeeRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmployeeTable> where,
     _i1.OrderByBuilder<EmployeeTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmployeeTable>? orderByList,
     _i1.Transaction? transaction,
@@ -477,7 +489,8 @@ class EmployeeRepository {
       where: where(Employee.t),
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

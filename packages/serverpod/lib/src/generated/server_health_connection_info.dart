@@ -131,6 +131,7 @@ abstract class ServerHealthConnectionInfo
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
@@ -140,7 +141,8 @@ abstract class ServerHealthConnectionInfo
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       include: include,
     );
@@ -313,6 +315,7 @@ class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -358,6 +361,7 @@ class ServerHealthConnectionInfoRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
@@ -368,7 +372,8 @@ class ServerHealthConnectionInfoRepository {
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -399,6 +404,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
@@ -409,7 +415,8 @@ class ServerHealthConnectionInfoRepository {
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -531,6 +538,7 @@ class ServerHealthConnectionInfoRepository {
     int? offset,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -541,7 +549,8 @@ class ServerHealthConnectionInfoRepository {
       offset: offset,
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -557,6 +566,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
@@ -565,7 +575,8 @@ class ServerHealthConnectionInfoRepository {
       rows,
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -590,6 +601,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
@@ -598,7 +610,8 @@ class ServerHealthConnectionInfoRepository {
       where: where(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

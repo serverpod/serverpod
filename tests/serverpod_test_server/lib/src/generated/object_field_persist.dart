@@ -99,6 +99,7 @@ abstract class ObjectFieldPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
@@ -108,7 +109,8 @@ abstract class ObjectFieldPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       include: include,
     );
@@ -201,6 +203,7 @@ class ObjectFieldPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -246,6 +249,7 @@ class ObjectFieldPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -256,7 +260,8 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -287,6 +292,7 @@ class ObjectFieldPersistRepository {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -297,7 +303,8 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -419,6 +426,7 @@ class ObjectFieldPersistRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -429,7 +437,8 @@ class ObjectFieldPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -445,6 +454,7 @@ class ObjectFieldPersistRepository {
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -453,7 +463,8 @@ class ObjectFieldPersistRepository {
       rows,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -478,6 +489,7 @@ class ObjectFieldPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -486,7 +498,8 @@ class ObjectFieldPersistRepository {
       where: where(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

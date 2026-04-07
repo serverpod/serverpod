@@ -120,6 +120,7 @@ abstract class LegacySession
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     LegacySessionInclude? include,
@@ -129,7 +130,8 @@ abstract class LegacySession
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(LegacySession.t),
       include: include,
     );
@@ -303,6 +305,7 @@ class LegacySessionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -350,6 +353,7 @@ class LegacySessionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -361,7 +365,8 @@ class LegacySessionRepository {
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -393,6 +398,7 @@ class LegacySessionRepository {
     _i1.WhereExpressionBuilder<LegacySessionTable>? where,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -404,7 +410,8 @@ class LegacySessionRepository {
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -527,6 +534,7 @@ class LegacySessionRepository {
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -537,7 +545,8 @@ class LegacySessionRepository {
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -553,6 +562,7 @@ class LegacySessionRepository {
     _i1.DatabaseSession session,
     List<LegacySession> rows, {
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -561,7 +571,8 @@ class LegacySessionRepository {
       rows,
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -586,6 +597,7 @@ class LegacySessionRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LegacySessionTable> where,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -594,7 +606,8 @@ class LegacySessionRepository {
       where: where(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

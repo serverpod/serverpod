@@ -118,6 +118,7 @@ abstract class UuidDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     UuidDefaultMixInclude? include,
@@ -127,7 +128,8 @@ abstract class UuidDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UuidDefaultMix.t),
       include: include,
     );
@@ -255,6 +257,7 @@ class UuidDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -300,6 +303,7 @@ class UuidDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -310,7 +314,8 @@ class UuidDefaultMixRepository {
       where: where?.call(UuidDefaultMix.t),
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -341,6 +346,7 @@ class UuidDefaultMixRepository {
     _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -351,7 +357,8 @@ class UuidDefaultMixRepository {
       where: where?.call(UuidDefaultMix.t),
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -471,6 +478,7 @@ class UuidDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -481,7 +489,8 @@ class UuidDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -497,6 +506,7 @@ class UuidDefaultMixRepository {
     _i1.DatabaseSession session,
     List<UuidDefaultMix> rows, {
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -505,7 +515,8 @@ class UuidDefaultMixRepository {
       rows,
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -530,6 +541,7 @@ class UuidDefaultMixRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
     _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -538,7 +550,8 @@ class UuidDefaultMixRepository {
       where: where(UuidDefaultMix.t),
       orderBy: orderBy?.call(UuidDefaultMix.t),
       orderByList: orderByList?.call(UuidDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

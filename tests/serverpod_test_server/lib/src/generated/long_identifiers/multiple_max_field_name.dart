@@ -106,6 +106,7 @@ abstract class MultipleMaxFieldName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     MultipleMaxFieldNameInclude? include,
@@ -115,7 +116,8 @@ abstract class MultipleMaxFieldName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
       include: include,
     );
@@ -297,6 +299,7 @@ class MultipleMaxFieldNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -342,6 +345,7 @@ class MultipleMaxFieldNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -352,7 +356,8 @@ class MultipleMaxFieldNameRepository {
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -383,6 +388,7 @@ class MultipleMaxFieldNameRepository {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -393,7 +399,8 @@ class MultipleMaxFieldNameRepository {
       where: where?.call(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -515,6 +522,7 @@ class MultipleMaxFieldNameRepository {
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -525,7 +533,8 @@ class MultipleMaxFieldNameRepository {
       offset: offset,
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -541,6 +550,7 @@ class MultipleMaxFieldNameRepository {
     _i1.DatabaseSession session,
     List<MultipleMaxFieldName> rows, {
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -549,7 +559,8 @@ class MultipleMaxFieldNameRepository {
       rows,
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -574,6 +585,7 @@ class MultipleMaxFieldNameRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -582,7 +594,8 @@ class MultipleMaxFieldNameRepository {
       where: where(MultipleMaxFieldName.t),
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

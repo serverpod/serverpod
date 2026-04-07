@@ -115,6 +115,7 @@ abstract class FutureCallEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
@@ -124,7 +125,8 @@ abstract class FutureCallEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
     );
@@ -280,6 +282,7 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -325,6 +328,7 @@ class FutureCallEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -335,7 +339,8 @@ class FutureCallEntryRepository {
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -366,6 +371,7 @@ class FutureCallEntryRepository {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -376,7 +382,8 @@ class FutureCallEntryRepository {
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -498,6 +505,7 @@ class FutureCallEntryRepository {
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -508,7 +516,8 @@ class FutureCallEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -524,6 +533,7 @@ class FutureCallEntryRepository {
     _i1.DatabaseSession session,
     List<FutureCallEntry> rows, {
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -532,7 +542,8 @@ class FutureCallEntryRepository {
       rows,
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -557,6 +568,7 @@ class FutureCallEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -565,7 +577,8 @@ class FutureCallEntryRepository {
       where: where(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

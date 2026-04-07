@@ -116,6 +116,7 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
@@ -125,7 +126,8 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(City.t),
       include: include,
     );
@@ -316,6 +318,7 @@ class CityIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -369,6 +372,7 @@ class CityRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -380,7 +384,8 @@ class CityRepository {
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -412,6 +417,7 @@ class CityRepository {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -423,7 +429,8 @@ class CityRepository {
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -546,6 +553,7 @@ class CityRepository {
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
     _i1.OrderByListBuilder<CityTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -556,7 +564,8 @@ class CityRepository {
       offset: offset,
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -572,6 +581,7 @@ class CityRepository {
     _i1.DatabaseSession session,
     List<City> rows, {
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -580,7 +590,8 @@ class CityRepository {
       rows,
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -605,6 +616,7 @@ class CityRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -613,7 +625,8 @@ class CityRepository {
       where: where(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

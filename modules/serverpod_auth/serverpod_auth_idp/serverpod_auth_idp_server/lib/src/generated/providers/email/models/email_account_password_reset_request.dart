@@ -162,6 +162,7 @@ abstract class EmailAccountPasswordResetRequest
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     EmailAccountPasswordResetRequestInclude? include,
@@ -171,7 +172,8 @@ abstract class EmailAccountPasswordResetRequest
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
       include: include,
     );
@@ -417,6 +419,7 @@ class EmailAccountPasswordResetRequestIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -468,6 +471,7 @@ class EmailAccountPasswordResetRequestRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -479,7 +483,8 @@ class EmailAccountPasswordResetRequestRepository {
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -511,6 +516,7 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -522,7 +528,8 @@ class EmailAccountPasswordResetRequestRepository {
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -654,6 +661,7 @@ class EmailAccountPasswordResetRequestRepository {
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -666,7 +674,8 @@ class EmailAccountPasswordResetRequestRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -682,6 +691,7 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -690,7 +700,8 @@ class EmailAccountPasswordResetRequestRepository {
       rows,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -716,6 +727,7 @@ class EmailAccountPasswordResetRequestRepository {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
     where,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -724,7 +736,8 @@ class EmailAccountPasswordResetRequestRepository {
       where: where(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

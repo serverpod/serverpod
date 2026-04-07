@@ -187,6 +187,7 @@ abstract class RefreshToken
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
     RefreshTokenInclude? include,
@@ -196,7 +197,8 @@ abstract class RefreshToken
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(RefreshToken.t),
       include: include,
     );
@@ -468,6 +470,7 @@ class RefreshTokenIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -515,6 +518,7 @@ class RefreshTokenRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -526,7 +530,8 @@ class RefreshTokenRepository {
       where: where?.call(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -558,6 +563,7 @@ class RefreshTokenRepository {
     _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -569,7 +575,8 @@ class RefreshTokenRepository {
       where: where?.call(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -692,6 +699,7 @@ class RefreshTokenRepository {
     int? offset,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -702,7 +710,8 @@ class RefreshTokenRepository {
       offset: offset,
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -718,6 +727,7 @@ class RefreshTokenRepository {
     _i1.DatabaseSession session,
     List<RefreshToken> rows, {
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -726,7 +736,8 @@ class RefreshTokenRepository {
       rows,
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -751,6 +762,7 @@ class RefreshTokenRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
@@ -759,7 +771,8 @@ class RefreshTokenRepository {
       where: where(RefreshToken.t),
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
