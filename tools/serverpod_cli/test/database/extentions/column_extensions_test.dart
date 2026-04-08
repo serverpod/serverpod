@@ -191,4 +191,102 @@ void main() {
       },
     );
   });
+
+  group('Given Decimal column definition with precision and scale', () {
+    ColumnDefinition decimalColumn = ColumnDefinition(
+      name: 'price',
+      columnType: ColumnType.decimal,
+      isNullable: false,
+      dartType: 'Decimal(10,2)',
+      decimalPrecision: 10,
+      decimalScale: 2,
+    );
+
+    test(
+      'when like checking Decimal column with same precision and scale then check returns true.',
+      () {
+        ColumnDefinition sameDecimalColumn = ColumnDefinition(
+          name: 'price',
+          columnType: ColumnType.decimal,
+          isNullable: false,
+          dartType: 'Decimal(10,2)',
+          decimalPrecision: 10,
+          decimalScale: 2,
+        );
+
+        expect(decimalColumn.like(sameDecimalColumn), isTrue);
+      },
+    );
+
+    test(
+      'when like checking Decimal column with different precision then check returns false.',
+      () {
+        ColumnDefinition differentPrecisionColumn = ColumnDefinition(
+          name: 'price',
+          columnType: ColumnType.decimal,
+          isNullable: false,
+          dartType: 'Decimal(19,2)',
+          decimalPrecision: 19,
+          decimalScale: 2,
+        );
+
+        expect(decimalColumn.like(differentPrecisionColumn), isFalse);
+      },
+    );
+
+    test(
+      'when like checking Decimal column with different scale then check returns false.',
+      () {
+        ColumnDefinition differentScaleColumn = ColumnDefinition(
+          name: 'price',
+          columnType: ColumnType.decimal,
+          isNullable: false,
+          dartType: 'Decimal(10,4)',
+          decimalPrecision: 10,
+          decimalScale: 4,
+        );
+
+        expect(decimalColumn.like(differentScaleColumn), isFalse);
+      },
+    );
+  });
+
+  group('Given unbounded Decimal column definition', () {
+    ColumnDefinition unboundedDecimalColumn = ColumnDefinition(
+      name: 'amount',
+      columnType: ColumnType.decimal,
+      isNullable: false,
+      dartType: 'Decimal',
+    );
+
+    test(
+      'when like checking with another unbounded Decimal column then check returns true.',
+      () {
+        ColumnDefinition sameUnboundedColumn = ColumnDefinition(
+          name: 'amount',
+          columnType: ColumnType.decimal,
+          isNullable: false,
+          dartType: 'Decimal',
+        );
+
+        expect(unboundedDecimalColumn.like(sameUnboundedColumn), isTrue);
+      },
+    );
+
+    test(
+      'when like checking unbounded Decimal with bounded Decimal then check returns false.',
+      () {
+        ColumnDefinition boundedColumn = ColumnDefinition(
+          name: 'amount',
+          columnType: ColumnType.decimal,
+          isNullable: false,
+          dartType: 'Decimal(10,2)',
+          decimalPrecision: 10,
+          decimalScale: 2,
+        );
+
+        expect(unboundedDecimalColumn.like(boundedColumn), isFalse);
+      },
+    );
+  });
 }

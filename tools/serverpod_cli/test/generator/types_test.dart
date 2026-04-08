@@ -668,4 +668,72 @@ void main() {
       expect(type.vectorDimension, 64);
     },
   );
+
+  test(
+    'Given a field type of Decimal without precision when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Decimal', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isFalse);
+      expect(type.decimalPrecision, isNull);
+      expect(type.decimalScale, isNull);
+    },
+  );
+
+  test(
+    'Given a field type of Decimal(10,2) when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Decimal(10,2)', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isFalse);
+      expect(type.decimalPrecision, 10);
+      expect(type.decimalScale, 2);
+    },
+  );
+
+  test(
+    'Given a field type of Decimal(19) when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Decimal(19)', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isFalse);
+      expect(type.decimalPrecision, 19);
+      expect(type.decimalScale, 0);
+    },
+  );
+
+  test(
+    'Given a field type of nullable Decimal(10,2)? when it is parsed then the correct type definition is returned.',
+    () {
+      var type = parseType('Decimal(10,2)?', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isTrue);
+      expect(type.decimalPrecision, 10);
+      expect(type.decimalScale, 2);
+    },
+  );
+
+  test(
+    'Given a Decimal without precision when databaseType is computed then it returns decimal.',
+    () {
+      var type = parseType('Decimal', extraClasses: []);
+      expect(type.databaseType, 'decimal');
+    },
+  );
+
+  test(
+    'Given a Decimal(10,2) when databaseType is computed then it returns decimal(10,2).',
+    () {
+      var type = parseType('Decimal(10,2)', extraClasses: []);
+      expect(type.databaseType, 'decimal(10,2)');
+    },
+  );
+
+  test(
+    'Given a Decimal(19) when databaseType is computed then it returns decimal(19,0).',
+    () {
+      var type = parseType('Decimal(19)', extraClasses: []);
+      expect(type.databaseType, 'decimal(19,0)');
+    },
+  );
 }
