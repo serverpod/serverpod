@@ -137,6 +137,36 @@ class ModelClassDefinitionBuilder {
     return this;
   }
 
+  ModelClassDefinitionBuilder withDecimalField(
+    String fieldName, {
+    int? precision,
+    int? scale,
+    bool nullable = false,
+    dynamic defaultModelValue,
+    dynamic defaultPersistValue,
+  }) {
+    _fields.add(
+      () {
+        var typeBuilder = TypeDefinitionBuilder()
+            .withClassName('Decimal')
+            .withNullable(nullable);
+        if (precision != null) {
+          typeBuilder = typeBuilder.withDecimalPrecision(precision);
+          typeBuilder = typeBuilder.withDecimalScale(scale ?? 0);
+        }
+        return FieldDefinitionBuilder()
+            .withName(fieldName)
+            .withType(typeBuilder.build())
+            .withDefaults(
+              defaultModelValue: defaultModelValue,
+              defaultPersistValue: defaultPersistValue,
+            )
+            .build();
+      },
+    );
+    return this;
+  }
+
   ModelClassDefinitionBuilder withVectorField(
     String fieldName, {
     int dimension = 3,

@@ -1994,6 +1994,11 @@ class SerializableModelLibraryGenerator {
         return refer(
           field.type.className,
         ).property('parse').call([literalString(defaultValue)]).code;
+      case DefaultValueAllowedType.decimal:
+        return refer(
+          field.type.className,
+          serverpodUrl(serverCode),
+        ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).constInstance([], {
@@ -2769,6 +2774,10 @@ class SerializableModelLibraryGenerator {
     ).call(constructorArgs, {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
+      if (field.type.isDecimalType && field.type.decimalPrecision != null)
+        'precision': literalNum(field.type.decimalPrecision!),
+      if (field.type.isDecimalType && field.type.decimalPrecision != null)
+        'scale': literalNum(field.type.decimalScale ?? 0),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
       if (field.hasColumnNameOverride) 'fieldName': literalString(field.name),
     });

@@ -37,6 +37,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   dartType: column.type.toString(),
                   columnDefault: _parseColumnDefault(column),
                   vectorDimension: column.type.vectorDimension,
+                  decimalPrecision: column.type.decimalPrecision,
+                  decimalScale: column.type.decimalScale,
                 ),
           ],
           foreignKeys: _createForeignKeys(classDefinition),
@@ -161,6 +163,8 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
       // BigInt is stored in as text in the database, so keep the abstract
       // default as a quoted text literal to match database introspection.
       return escapeSqlString("'${defaultPersistValue.toString()}'");
+    case DefaultValueAllowedType.decimal:
+      return defaultPersistValue.toString();
     case DefaultValueAllowedType.duration:
       // Duration is stored as bigint milliseconds in the database.
       return parseDuration(defaultPersistValue).toJson().toString();

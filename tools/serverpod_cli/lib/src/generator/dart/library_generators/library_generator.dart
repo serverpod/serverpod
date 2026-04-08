@@ -2095,6 +2095,10 @@ extension on DatabaseDefinition {
                     'columnDefault': literalString(column.columnDefault!),
                   if (column.vectorDimension != null)
                     'vectorDimension': literalNum(column.vectorDimension!),
+                  if (column.decimalPrecision != null)
+                    'decimalPrecision': literalNum(column.decimalPrecision!),
+                  if (column.decimalScale != null)
+                    'decimalScale': literalNum(column.decimalScale!),
                 },
               ),
           ]),

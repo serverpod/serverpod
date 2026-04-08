@@ -10,6 +10,8 @@ class ColumnDefinitionBuilder {
   String? _columnDefault;
   String? _dartType;
   int? _vectorDimension;
+  int? _decimalPrecision;
+  int? _decimalScale;
 
   ColumnDefinitionBuilder()
     : _name = 'name',
@@ -27,6 +29,8 @@ class ColumnDefinitionBuilder {
       columnDefault: _columnDefault,
       dartType: _dartType,
       vectorDimension: _vectorDimension,
+      decimalPrecision: _decimalPrecision,
+      decimalScale: _decimalScale,
     );
   }
 
@@ -88,6 +92,16 @@ class ColumnDefinitionBuilder {
 
   ColumnDefinitionBuilder withVectorDimension(int? dimension) {
     _vectorDimension = dimension;
+    return this;
+  }
+
+  ColumnDefinitionBuilder withDecimalPrecision(int? precision) {
+    _decimalPrecision = precision;
+    return this;
+  }
+
+  ColumnDefinitionBuilder withDecimalScale(int? scale) {
+    _decimalScale = scale;
     return this;
   }
 }

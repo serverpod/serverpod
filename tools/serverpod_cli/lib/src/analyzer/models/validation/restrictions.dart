@@ -1353,6 +1353,39 @@ class Restrictions {
       }
     }
 
+    if (fieldType.isDecimalType && fieldType.decimalPrecision != null) {
+      if (fieldType.decimalPrecision! < 1) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Invalid decimal precision "${fieldType.decimalPrecision}". '
+            'Precision must be an integer greater than 0.',
+            span,
+          ),
+        );
+      }
+      if (fieldType.decimalScale != null) {
+        if (fieldType.decimalScale! < 0) {
+          errors.add(
+            SourceSpanSeverityException(
+              'Invalid decimal scale "${fieldType.decimalScale}". '
+              'Scale must be an integer greater than or equal to 0.',
+              span,
+            ),
+          );
+        } else if (fieldType.decimalPrecision! > 0 &&
+            fieldType.decimalScale! > fieldType.decimalPrecision!) {
+          errors.add(
+            SourceSpanSeverityException(
+              'Invalid decimal scale "${fieldType.decimalScale}". '
+              'Scale must be less than or equal to precision '
+              '"${fieldType.decimalPrecision}".',
+              span,
+            ),
+          );
+        }
+      }
+    }
+
     if (fieldType.isMapType) {
       if (fieldType.generics.length == 2) {
         errors.addAll(_validateFieldDataType(fieldType.generics.first, span));

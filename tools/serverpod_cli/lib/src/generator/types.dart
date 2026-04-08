@@ -58,6 +58,14 @@ class TypeDefinition {
   /// Only populated for Vector types.
   final d.int? vectorDimension;
 
+  /// Stores the precision of Decimal type (e.g., 10 for Decimal(10,2)).
+  /// Only populated for Decimal types with explicit precision.
+  final d.int? decimalPrecision;
+
+  /// Stores the scale of Decimal type (e.g., 2 for Decimal(10,2)).
+  /// Only populated for Decimal types with explicit precision.
+  final d.int? decimalScale;
+
   EnumDefinition? enumDefinition;
 
   /// Creates an [TypeDefinition] from a given [DartType].
@@ -121,6 +129,8 @@ class TypeDefinition {
     this.projectModelDefinition,
     this.recordFieldName,
     this.vectorDimension,
+    this.decimalPrecision,
+    this.decimalScale,
   });
 
   static const recordTypeClassName = '_Record';
@@ -146,6 +156,8 @@ class TypeDefinition {
   ];
 
   bool get isVectorType => vectorClassNames.contains(className);
+
+  bool get isDecimalType => className == 'Decimal';
 
   bool get isRecordType => className == recordTypeClassName;
 
@@ -194,6 +206,8 @@ class TypeDefinition {
     required bool nullable,
     bool customClass = false,
     d.int? vectorDimension,
+    d.int? decimalPrecision,
+    d.int? decimalScale,
   }) {
     var parts = mixed.split(':');
     var classname = parts.last;
@@ -208,6 +222,8 @@ class TypeDefinition {
       url: url.isNotEmpty ? url : null,
       customClass: customClass,
       vectorDimension: vectorDimension,
+      decimalPrecision: decimalPrecision,
+      decimalScale: decimalScale,
     );
   }
 
@@ -234,6 +250,8 @@ class TypeDefinition {
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
+    decimalPrecision: decimalPrecision,
+    decimalScale: decimalScale,
   );
 
   /// Get this [TypeDefinition], but non nullable.
@@ -248,6 +266,8 @@ class TypeDefinition {
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
+    decimalPrecision: decimalPrecision,
+    decimalScale: decimalScale,
   );
 
   /// Returns this [TypeDefinition] as a named record field
@@ -262,6 +282,8 @@ class TypeDefinition {
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
     vectorDimension: vectorDimension,
+    decimalPrecision: decimalPrecision,
+    decimalScale: decimalScale,
   );
 
   static String getRef(SerializableModelDefinition model) {
@@ -347,7 +369,11 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                ([
+                  'UuidValue',
+                  'Decimal',
+                  ...vectorClassNames,
+                ]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -458,6 +484,12 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'uuid';
     if (className == 'Uri') return 'text';
     if (className == 'BigInt') return 'text';
+    if (className == 'Decimal') {
+      if (decimalPrecision != null) {
+        return 'decimal($decimalPrecision,${decimalScale ?? 0})';
+      }
+      return 'decimal';
+    }
     if (className == 'Vector') return 'vector';
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
@@ -469,6 +501,9 @@ class TypeDefinition {
   /// Get the enum name of the [ColumnType], representing this [TypeDefinition]
   /// in the database.
   String get databaseTypeEnum {
+    // databaseType for Decimal includes precision (e.g. 'decimal(10,2)'),
+    // but the enum name is always just 'decimal'.
+    if (isDecimalType) return 'decimal';
     return databaseTypeToLowerCamelCase(databaseType);
   }
 
@@ -485,6 +520,7 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'ColumnUuid';
     if (className == 'Uri') return 'ColumnUri';
     if (className == 'BigInt') return 'ColumnBigInt';
+    if (className == 'Decimal') return 'ColumnDecimal';
     if (className == 'Vector') return 'ColumnVector';
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
@@ -772,6 +808,8 @@ class TypeDefinition {
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,
       vectorDimension: vectorDimension,
+      decimalPrecision: decimalPrecision,
+      decimalScale: decimalScale,
     );
   }
 
@@ -787,6 +825,7 @@ class TypeDefinition {
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'BigInt') return ValueType.bigInt;
+    if (className == 'Decimal') return ValueType.decimal;
     if (className == 'Vector') return ValueType.vector;
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
@@ -818,6 +857,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.uuidValue;
       case ValueType.bigInt:
         return DefaultValueAllowedType.bigInt;
+      case ValueType.decimal:
+        return DefaultValueAllowedType.decimal;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
       case ValueType.isEnum:
@@ -849,7 +890,11 @@ class TypeDefinition {
     var genericsString = generics.isNotEmpty ? '<${generics.join(',')}>' : '';
     var nullableString = nullable ? '?' : '';
     var urlString = url != null ? '$url:' : '';
-    var classRepr = isVectorType ? '$className($vectorDimension)' : className;
+    var classRepr = isVectorType
+        ? '$className($vectorDimension)'
+        : (isDecimalType && decimalPrecision != null)
+        ? '$className($decimalPrecision,${decimalScale ?? 0})'
+        : className;
     return '$urlString$classRepr$genericsString$nullableString';
   }
 }
@@ -962,6 +1007,25 @@ TypeDefinition parseType(
         )
       : null;
 
+  int? decimalPrecision;
+  int? decimalScale;
+  if (className == 'Decimal' &&
+      trimmedInput.count('(') == 1 &&
+      trimmedInput.count(')') == 1) {
+    var paramsStr = trimmedInput.substring(
+      terminatedAt + 1,
+      trimmedInput.indexOf(')'),
+    );
+    var params = paramsStr.split(',').map((s) => s.trim()).toList();
+    if (params.length == 2) {
+      decimalPrecision = int.tryParse(params[0]);
+      decimalScale = int.tryParse(params[1]);
+    } else if (params.length == 1) {
+      decimalPrecision = int.tryParse(params[0]);
+      decimalScale = 0;
+    }
+  }
+
   var extraClass = extraClasses?.cast<TypeDefinition?>().firstWhere(
     (c) => c?.className == className,
     orElse: () => null,
@@ -977,6 +1041,8 @@ TypeDefinition parseType(
     generics: generics,
     customClass: extraClasses == null,
     vectorDimension: vectorDimension,
+    decimalPrecision: decimalPrecision,
+    decimalScale: decimalScale,
   );
 }
 
@@ -1010,6 +1076,7 @@ enum ValueType {
   byteData,
   uuidValue,
   bigInt,
+  decimal,
   list,
   set,
   map,
@@ -1031,6 +1098,7 @@ enum DefaultValueAllowedType {
   string,
   uuidValue,
   bigInt,
+  decimal,
   duration,
   uri,
   isEnum,

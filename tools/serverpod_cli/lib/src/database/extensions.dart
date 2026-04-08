@@ -47,6 +47,12 @@ extension ColumnComparisons on ColumnDefinition {
       return false;
     }
 
+    // Decimal precision/scale changes require dropping and recreating the column.
+    if (decimalPrecision != other.decimalPrecision ||
+        decimalScale != other.decimalScale) {
+      return false;
+    }
+
     return other.columnType == columnType;
   }
 

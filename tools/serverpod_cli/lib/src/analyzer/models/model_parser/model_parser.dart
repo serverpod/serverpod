@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
@@ -808,6 +809,9 @@ class ModelParser {
         if (lower == 'true') return true;
         if (lower == 'false') return false;
         return null;
+      case 'Decimal':
+        if (Decimal.tryParse(valueStr) == null) return null;
+        return valueStr;
       case 'String':
       default:
         var escaped = valueStr.replaceAll("'", r"\'");
