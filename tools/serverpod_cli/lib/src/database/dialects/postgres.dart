@@ -482,6 +482,15 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
     }
 
+    // Rename columns (must happen before add/modify to avoid naming conflicts)
+    if (renameColumns != null) {
+      for (var entry in renameColumns!.entries) {
+        var fromName = entry.key;
+        var toName = entry.value;
+        out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
+      }
+    }
+
     // Add columns
     for (var addColumn in addColumns) {
       out +=
