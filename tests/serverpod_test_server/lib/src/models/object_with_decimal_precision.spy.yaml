@@ -1,0 +1,7 @@
+class: ObjectWithDecimalPrecision
+table: object_with_decimal_precision
+fields:
+  price: Decimal(10,2)
+  priceNullable: Decimal(10,2)?
+  quantity: Decimal(19,4)
+  unbounded: Decimal

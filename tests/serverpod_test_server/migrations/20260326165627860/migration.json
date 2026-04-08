@@ -1,0 +1,203 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default",
+        "dartName": "DecimalDefault",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefault",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "10.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultNull",
+            "columnType": 14,
+            "isNullable": true,
+            "columnDefault": "20.5",
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_mix",
+        "dartName": "DecimalDefaultMix",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultAndDefaultModel",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "10.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultAndDefaultPersist",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "20.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelAndDefaultPersist",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "20.5",
+            "dartType": "Decimal"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_model",
+        "dartName": "DecimalDefaultModel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelStr",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelStrNull",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_persist",
+        "dartName": "DecimalDefaultPersist",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultPersist",
+            "columnType": 14,
+            "isNullable": true,
+            "columnDefault": "10.5",
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_decimal",
+        "dartName": "ObjectWithDecimal",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalValue",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalValueNull",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
