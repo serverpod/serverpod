@@ -144,13 +144,8 @@ fields:
 
         expect(
           columnNames,
-          isNot(contains(originalColumnName)),
+          ['id', newColumnName],
           reason: 'Original column name should not exist after rename.',
-        );
-        expect(
-          columnNames,
-          contains(newColumnName),
-          reason: 'New column name should exist after rename.',
         );
 
         var columnValues = await serviceClient.insights.runQueries([
