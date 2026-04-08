@@ -52,10 +52,17 @@ Future<bool> performCreate(
   bool force, {
   required bool? interactive,
 }) async {
-  // If the name is a dot, we are upgrading an existing project
-  // Instead of creating a new one, we try to upgrade the current directory.
+  // If the name is a dot, we can either create a new project in the current
+  // directory or upgrade an existing project.
   if (name == '.') {
-    return await _performUpgrade(template, interactive: interactive);
+    if (findServerDirectory(Directory.current) != null) {
+      return await _performUpgrade(template, interactive: interactive);
+    }
+
+    // If we are creating a new project in the current directory, we need to
+    // use the parent directory as the project root.
+    name = p.basename(Directory.current.absolute.path);
+    Directory.current = Directory.current.parent;
   }
 
   // check if project name is valid
@@ -71,7 +78,8 @@ Future<bool> performCreate(
     projectDir: Directory(p.join(Directory.current.path, name)),
     name: name,
   );
-  if (serverpodDirs.projectDir.existsSync()) {
+  var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
+  if (pubspecFile.existsSync()) {
     log.error('Project $name already exists.');
     return false;
   }
@@ -229,10 +237,14 @@ Future<bool> performCreate(
       type: TextLogType.success,
     );
 
+    var relativeServerPath = p.relative(
+      serverpodDirs.serverDir.path,
+      from: serverpodDirs.projectDir.path,
+    );
     if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(name);
+      _logStartInstructions(relativeServerPath);
     } else if (template == ServerpodTemplateType.mini) {
-      _logMiniStartInstructions(name);
+      _logMiniStartInstructions(relativeServerPath);
     }
   }
 
@@ -312,7 +324,7 @@ Future<bool> _performUpgrade(
   return success;
 }
 
-void _logMiniStartInstructions(String name) {
+void _logMiniStartInstructions(String relativeServerPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -328,7 +340,7 @@ void _logMiniStartInstructions(String name) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
+      'cd .\\$relativeServerPath\\',
       type: TextLogType.command,
       newParagraph: true,
     );
@@ -338,7 +350,7 @@ void _logMiniStartInstructions(String name) {
     );
   } else {
     log.info(
-      'cd ${p.join(name, '${name}_server')}',
+      'cd $relativeServerPath',
       type: TextLogType.command,
       newParagraph: true,
     );
@@ -351,7 +363,7 @@ void _logMiniStartInstructions(String name) {
   log.info(' ');
 }
 
-void _logStartInstructions(String name) {
+void _logStartInstructions(String relativeServerPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -367,7 +379,7 @@ void _logStartInstructions(String name) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
+      'cd .\\$relativeServerPath\\',
       type: TextLogType.command,
       newParagraph: true,
     );
@@ -381,7 +393,7 @@ void _logStartInstructions(String name) {
     );
   } else {
     log.info(
-      'cd ${p.join(name, '${name}_server')}',
+      'cd $relativeServerPath',
       type: TextLogType.command,
       newParagraph: true,
     );
