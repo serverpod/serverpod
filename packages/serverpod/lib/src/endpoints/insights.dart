@@ -85,7 +85,7 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.time >= filter.startTime!);
     }
     if (filter != null && filter.endTime != null) {
-      where = where & (SessionLogEntry.t.time <= filter.endTime!);
+      where = where & (SessionLogEntry.t.time < filter.endTime!);
     }
 
     var rows = await session.db.find<SessionLogEntry>(
