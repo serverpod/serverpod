@@ -23,6 +23,8 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     this.columnDefault,
     this.dartType,
     this.vectorDimension,
+    this.decimalPrecision,
+    this.decimalScale,
   });
 
   factory ColumnDefinition({
@@ -33,6 +35,8 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     String? columnDefault,
     String? dartType,
     int? vectorDimension,
+    int? decimalPrecision,
+    int? decimalScale,
   }) = _ColumnDefinitionImpl;
 
   factory ColumnDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -48,6 +52,8 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
       columnDefault: jsonSerialization['columnDefault'] as String?,
       dartType: jsonSerialization['dartType'] as String?,
       vectorDimension: jsonSerialization['vectorDimension'] as int?,
+      decimalPrecision: jsonSerialization['decimalPrecision'] as int?,
+      decimalScale: jsonSerialization['decimalScale'] as int?,
     );
   }
 
@@ -77,6 +83,14 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
   /// Only populated for Vector types.
   int? vectorDimension;
 
+  /// Stores the precision of Decimal type (e.g., 10 for Decimal(10,2)).
+  /// Only populated for Decimal types with explicit precision.
+  int? decimalPrecision;
+
+  /// Stores the scale of Decimal type (e.g., 2 for Decimal(10,2)).
+  /// Only populated for Decimal types with explicit precision.
+  int? decimalScale;
+
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -88,6 +102,8 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
     String? columnDefault,
     String? dartType,
     int? vectorDimension,
+    int? decimalPrecision,
+    int? decimalScale,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,6 +116,8 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
       if (columnDefault != null) 'columnDefault': columnDefault,
       if (dartType != null) 'dartType': dartType,
       if (vectorDimension != null) 'vectorDimension': vectorDimension,
+      if (decimalPrecision != null) 'decimalPrecision': decimalPrecision,
+      if (decimalScale != null) 'decimalScale': decimalScale,
     };
   }
 
@@ -120,6 +138,8 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
     String? columnDefault,
     String? dartType,
     int? vectorDimension,
+    int? decimalPrecision,
+    int? decimalScale,
   }) : super._(
          name: name,
          fieldName: fieldName,
@@ -128,6 +148,8 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
          columnDefault: columnDefault,
          dartType: dartType,
          vectorDimension: vectorDimension,
+         decimalPrecision: decimalPrecision,
+         decimalScale: decimalScale,
        );
 
   /// Returns a shallow copy of this [ColumnDefinition]
@@ -142,6 +164,8 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
     Object? columnDefault = _Undefined,
     Object? dartType = _Undefined,
     Object? vectorDimension = _Undefined,
+    Object? decimalPrecision = _Undefined,
+    Object? decimalScale = _Undefined,
   }) {
     return ColumnDefinition(
       name: name ?? this.name,
@@ -155,6 +179,10 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
       vectorDimension: vectorDimension is int?
           ? vectorDimension
           : this.vectorDimension,
+      decimalPrecision: decimalPrecision is int?
+          ? decimalPrecision
+          : this.decimalPrecision,
+      decimalScale: decimalScale is int? ? decimalScale : this.decimalScale,
     );
   }
 }

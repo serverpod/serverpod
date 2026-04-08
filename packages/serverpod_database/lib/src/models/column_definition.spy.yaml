@@ -26,3 +26,11 @@ fields:
   ### Stores the dimension of Vector type (e.g., 1536 for Vector(1536)).
   ### Only populated for Vector types.
   vectorDimension: int?
+
+  ### Stores the precision of Decimal type (e.g., 10 for Decimal(10,2)).
+  ### Only populated for Decimal types with explicit precision.
+  decimalPrecision: int?
+
+  ### Stores the scale of Decimal type (e.g., 2 for Decimal(10,2)).
+  ### Only populated for Decimal types with explicit precision.
+  decimalScale: int?

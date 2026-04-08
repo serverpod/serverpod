@@ -975,6 +975,12 @@ class PostgresDatabaseConnection
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnUri) return 'text';
     if (column is ColumnBigInt) return 'text';
+    if (column is ColumnDecimal) {
+      if (column.precision != null) {
+        return 'decimal(${column.precision},${column.scale ?? 0})';
+      }
+      return 'decimal';
+    }
     if (column is ColumnVector) return 'vector(${column.dimension})';
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';

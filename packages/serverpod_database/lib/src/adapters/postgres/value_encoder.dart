@@ -34,6 +34,8 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
       return "'${input.toString()}'";
     } else if (input is BigInt) {
       return '\'${input.toString()}\'';
+    } else if (input is Decimal) {
+      return input.toString();
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {

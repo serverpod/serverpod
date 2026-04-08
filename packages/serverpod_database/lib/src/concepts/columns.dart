@@ -295,6 +295,29 @@ class ColumnBigInt extends _ValueOperatorColumn<BigInt>
   Expression _encodeValueForQuery(BigInt value) => EscapedExpression(value);
 }
 
+/// A [Column] holding [Decimal].
+class ColumnDecimal extends ColumnComparable<Decimal>
+    with _ColumnComparisonBetweenOperations<Decimal> {
+  /// The precision of the decimal (total digits), or null for unbounded.
+  final int? precision;
+
+  /// The scale of the decimal (digits after decimal point), or null for unbounded.
+  final int? scale;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnDecimal(
+    super.columnName,
+    super.table, {
+    this.precision,
+    this.scale,
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Decimal value) => EscapedExpression(value);
+}
+
 /// A [Column] holding an [int].
 class ColumnInt extends ColumnComparable<int>
     with _ColumnComparisonBetweenOperations<int> {

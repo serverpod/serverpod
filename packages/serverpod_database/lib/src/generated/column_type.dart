@@ -56,7 +56,10 @@ enum ColumnType implements _i1.SerializableModel {
   sparsevec,
 
   /// Dart type: [Bit]
-  bit;
+  bit,
+
+  /// Dart type: [Decimal]
+  decimal;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -88,6 +91,8 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.sparsevec;
       case 13:
         return ColumnType.bit;
+      case 14:
+        return ColumnType.decimal;
       default:
         throw ArgumentError(
           'Value "$index" cannot be converted to "ColumnType"',
