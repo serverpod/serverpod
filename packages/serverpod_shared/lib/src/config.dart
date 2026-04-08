@@ -63,7 +63,7 @@ class ServerpodConfig {
   final SessionLogConfig sessionLogs;
 
   /// Health check interval.
-  /// Default is 1 minute.
+  /// Default is 1 minute. Set to zero to disable health checks.
   final Duration healthCheckInterval;
 
   /// The timeout for the diagnostic event handlers.

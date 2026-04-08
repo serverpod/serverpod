@@ -698,6 +698,29 @@ class ServerTestToolsGenerator {
       ),
       Parameter(
         (p) => p
+          ..name = 'configOverride'
+          ..named = true
+          ..type = FunctionType(
+            (f) => f
+              ..isNullable = true
+              ..returnType = TypeReference(
+                (t) => t
+                  ..symbol = 'ServerpodConfig'
+                  ..url = serverpodUrl(true)
+                  ..isNullable = false,
+              )
+              ..requiredParameters.add(
+                TypeReference(
+                  (t) => t
+                    ..symbol = 'ServerpodConfig'
+                    ..url = serverpodUrl(true)
+                    ..isNullable = false,
+                ),
+              ),
+          ),
+      ),
+      Parameter(
+        (p) => p
           ..name = 'testGroupTagsOverride'
           ..named = true
           ..type = refer('List<String>?'),
