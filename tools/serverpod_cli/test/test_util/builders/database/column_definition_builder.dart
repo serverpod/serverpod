@@ -4,6 +4,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ColumnDefinitionBuilder {
   String _name;
+  String? _fieldName;
   ColumnType _columnType;
   bool _isNullable;
   String? _columnDefault;
@@ -20,12 +21,18 @@ class ColumnDefinitionBuilder {
   ColumnDefinition build() {
     return ColumnDefinition(
       name: _name,
+      fieldName: _fieldName,
       columnType: _columnType,
       isNullable: _isNullable,
       columnDefault: _columnDefault,
       dartType: _dartType,
       vectorDimension: _vectorDimension,
     );
+  }
+
+  ColumnDefinitionBuilder withFieldName(String? fieldName) {
+    _fieldName = fieldName;
+    return this;
   }
 
   ColumnDefinitionBuilder withIdColumn(

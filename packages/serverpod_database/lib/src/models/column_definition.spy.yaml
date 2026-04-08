@@ -4,6 +4,11 @@ fields:
   ### The column name
   name: String
 
+  ### The Dart/model field name this column belongs to (when known).
+  ### Used to match columns across renames. Is nullable since it is not
+  ### available when analyzing the database.
+  fieldName: String?
+
   ### The actual column type
   columnType: ColumnType
 
