@@ -292,6 +292,14 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
+        test('has a root .gitignore that ignores workspace .dart_tool', () {
+          final rootGitignore = File(
+            path.join(tempPath, projectName, '.gitignore'),
+          );
+          expect(rootGitignore.existsSync(), isTrue);
+          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
+        });
+
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
             path.join(tempPath, serverDir, 'pubspec.yaml'),

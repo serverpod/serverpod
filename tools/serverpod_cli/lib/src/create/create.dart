@@ -853,7 +853,12 @@ void _copyServerTemplates(
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
-    fileNameReplacements: const [],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
     ignoreFileNames: const [],
   );
   rootCopier.copyFiles();
@@ -999,7 +1004,12 @@ void _copyModuleTemplates(
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
-    fileNameReplacements: const [],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
     ignoreFileNames: const [],
   );
   rootCopier.copyFiles();
