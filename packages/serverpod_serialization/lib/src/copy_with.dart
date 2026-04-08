@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import 'decimal.dart';
 import 'pgvector.dart';
 
 /// Adds clone method that create a deep copy of a ByteData.
@@ -78,4 +79,5 @@ const _nonMutableTypes = [
   UuidValue,
   Uri,
   BigInt,
+  Decimal,
 ];

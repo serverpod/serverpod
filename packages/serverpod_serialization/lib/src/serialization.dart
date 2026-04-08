@@ -104,6 +104,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<BigInt>(t)) {
       if (data == null) return null as T;
       return BigInt.parse(data) as T;
+    } else if (_isNullableType<Decimal>(t)) {
+      if (data == null) return null as T;
+      return Decimal.parse(data as String) as T;
     }
 
     throw DeserializationTypeNotFoundException(
@@ -135,6 +138,8 @@ abstract class SerializationManager {
       return 'Uri';
     } else if (data is BigInt) {
       return 'BigInt';
+    } else if (data is Decimal) {
+      return 'Decimal';
     } else if (data is Vector) {
       return 'Vector';
     } else if (data is HalfVector) {
@@ -174,6 +179,8 @@ abstract class SerializationManager {
         return deserialize<Uri>(data['data']);
       case 'BigInt':
         return deserialize<BigInt>(data['data']);
+      case 'Decimal':
+        return deserialize<Decimal>(data['data']);
       case 'Vector':
         return deserialize<Vector>(data['data']);
       case 'HalfVector':
@@ -231,6 +238,7 @@ abstract class SerializationManager {
         UuidValue() => object.uuid,
         Uri() => object.toString(),
         BigInt() => object.toString(),
+        Decimal() => object.toString(),
         Vector() => object.toList(),
         HalfVector() => object.toList(),
         SparseVector() => object.toList(),
@@ -329,6 +337,7 @@ const extensionSerializedTypes = [
   'UuidValue',
   'Uri',
   'BigInt',
+  'Decimal',
   'Vector',
   'HalfVector',
   'SparseVector',
