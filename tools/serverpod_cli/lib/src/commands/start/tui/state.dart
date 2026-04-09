@@ -1,0 +1,111 @@
+/// Log level for structured log entries displayed in the TUI.
+enum TuiLogLevel {
+  debug('debug', 5),
+  info('info ', 4),
+  warning('warn ', 3),
+  error('error', 2),
+  fatal('fatal', 1);
+
+  const TuiLogLevel(this.label, this.padWidth);
+  final String label;
+  final int padWidth;
+}
+
+/// A single structured log entry.
+class TuiLogEntry {
+  TuiLogEntry({
+    required this.timestamp,
+    required this.level,
+    required this.message,
+  });
+
+  final DateTime timestamp;
+  final TuiLogLevel level;
+  final String message;
+}
+
+/// A sub-entry within a tracked operation (session log or query).
+class OperationSubEntry {
+  OperationSubEntry({
+    required this.timestamp,
+    required this.message,
+    this.level,
+    this.duration,
+  });
+
+  final DateTime timestamp;
+  final String message;
+  final TuiLogLevel? level;
+
+  /// Query duration in seconds, if this is a query sub-entry.
+  final double? duration;
+}
+
+/// A tracked operation (server session or CLI progress).
+///
+/// While active, rendered as a pinned entry with spinner at the bottom of the
+/// log area. On completion, collapses into a divider-style summary line.
+class TrackedOperation {
+  TrackedOperation({
+    required this.id,
+    required this.label,
+    required this.startTime,
+  });
+
+  final String id;
+  final String label;
+  final DateTime startTime;
+
+  /// Null while active, set on completion.
+  bool? success;
+
+  /// Duration in seconds, set on completion.
+  double? duration;
+
+  /// Sub-entries (logs, queries) that occurred during this operation.
+  final List<OperationSubEntry> entries = [];
+}
+
+/// Completed tracked operation, stored in the log history.
+class CompletedOperation {
+  CompletedOperation({
+    required this.label,
+    required this.success,
+    required this.duration,
+    required this.entries,
+  });
+
+  final String label;
+  final bool success;
+  final Duration duration;
+  final List<OperationSubEntry> entries;
+
+  /// Whether the user has expanded this entry to see sub-entries.
+  bool expanded = false;
+}
+
+/// Central state for the TUI, mutated by the backend and rendered by nocterm.
+class ServerWatchState {
+  ServerWatchState({this.splashStage});
+
+  /// Non-null during the loading screen. Describes current startup step.
+  String? splashStage;
+
+  /// Structured log entries for the "Log Messages" tab.
+  final List<Object> logHistory = []; // TuiLogEntry | CompletedOperation
+
+  /// Raw stdout/stderr lines for the "Raw Output" tab.
+  final List<String> rawLines = [];
+
+  /// Currently active tracked operations (keyed by ID).
+  final Map<String, TrackedOperation> activeOperations = {};
+
+  /// Currently selected tab index (0 = Log Messages, 1 = Raw Output).
+  int selectedTab = 0;
+
+  /// Maximum number of log entries to keep.
+  static const maxLogEntries = 10000;
+
+  /// Maximum number of raw lines to keep.
+  static const maxRawLines = 10000;
+}

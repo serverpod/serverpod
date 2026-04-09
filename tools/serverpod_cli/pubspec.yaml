@@ -27,6 +27,7 @@ dependencies:
   json_rpc_2: ^4.0.0
   lsp_server: ^0.4.0
   meta: ^1.15.0
+  nocterm: ^0.6.0
   package_config: ^2.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
