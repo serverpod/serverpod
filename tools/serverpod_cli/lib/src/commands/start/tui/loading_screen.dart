@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:nocterm/nocterm.dart';
 
@@ -69,11 +70,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             width: 12,
             height: 8,
             // ignore: experimental_member_use
-            child: Image(
-              image: MemoryImage(logoBytes),
+            child: Image.memory(
+              logoBytes,
               fit: BoxFit.contain,
-              protocol: ImageProtocol.kitty,
-              errorWidget: const Text('!', style: TextStyle(color: Colors.red)),
+              protocol: _imageProtocol,
             ),
           ),
           const SizedBox(width: 2),
@@ -130,7 +130,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       text: TextSpan(
         children: [
           TextSpan(
-            text: 'The ',
+            text: ' The ',
             style: TextStyle(color: white),
           ),
           ...ultimateSpans,
@@ -147,3 +147,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
     );
   }
 }
+
+final ImageProtocol? _imageProtocol = () {
+  final termProgram = Platform.environment['TERM_PROGRAM'];
+  return switch (termProgram) {
+    'ghostty' => ImageProtocol.kitty,
+    _ => null,
+  };
+}();
