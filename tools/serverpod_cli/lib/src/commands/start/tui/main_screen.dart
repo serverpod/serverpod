@@ -114,7 +114,7 @@ class MainScreen extends StatelessComponent {
       child: ListView.builder(
         controller: logScrollController,
         reverse: true,
-        keyboardScrollable: true,
+        keyboardScrollable: false,
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[items.length - 1 - index];
@@ -145,7 +145,7 @@ class MainScreen extends StatelessComponent {
       child: ListView.builder(
         controller: rawScrollController,
         reverse: true,
-        keyboardScrollable: true,
+        keyboardScrollable: false,
         itemCount: lines.length,
         itemBuilder: (context, index) {
           final line = lines[lines.length - 1 - index];

@@ -138,19 +138,49 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    // Vim-style scroll: j/k
-    final controller = state.selectedTab == 0
+    // Scrolling.
+    final c = state.selectedTab == 0
         ? logScrollController
         : rawScrollController;
-    if (event.logicalKey == LogicalKey.keyJ) {
-      controller.scrollDown(1.0);
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.keyK) {
-      controller.scrollUp(1.0);
-      return true;
-    }
+    final quarter = c.viewportDimension / 4;
+    final half = c.viewportDimension / 2;
 
-    return false;
+    switch (event.logicalKey) {
+      // Quarter screen (Shift+arrows) - before plain arrows.
+      case LogicalKey.arrowUp when event.isShiftPressed:
+        c.scrollUp(quarter);
+      case LogicalKey.arrowDown when event.isShiftPressed:
+        c.scrollDown(quarter);
+
+      // Single line
+      case LogicalKey.arrowUp || LogicalKey.keyK:
+        c.scrollUp();
+      case LogicalKey.arrowDown || LogicalKey.keyJ || LogicalKey.enter:
+        c.scrollDown();
+
+      // Half screen
+      case LogicalKey.keyU:
+        c.scrollUp(half);
+      case LogicalKey.keyD:
+        c.scrollDown(half);
+
+      // Full screen
+      case LogicalKey.pageUp || LogicalKey.backspace || LogicalKey.keyB:
+        c.pageUp();
+      case LogicalKey.pageDown || LogicalKey.space || LogicalKey.keyF:
+        c.pageDown();
+
+      // Start / end - G with shift = end, g without = start.
+      case LogicalKey.keyG when event.isShiftPressed:
+        c.scrollToEnd();
+      case LogicalKey.home || LogicalKey.keyG:
+        c.scrollToStart();
+      case LogicalKey.end:
+        c.scrollToEnd();
+
+      default:
+        return false;
+    }
+    return true;
   }
 }
