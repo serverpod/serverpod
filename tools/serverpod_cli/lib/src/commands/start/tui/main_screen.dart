@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart';
 
 import 'components.dart';
+import 'help_overlay.dart';
 import 'loading_screen.dart';
 import 'serverpod_theme.dart';
 import 'state.dart';
@@ -18,6 +19,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.logScrollController,
     required this.rawScrollController,
+    this.onToggleHelp,
     this.onHotReload,
     this.onCreateMigration,
     this.onApplyMigration,
@@ -29,6 +31,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController logScrollController;
   final ScrollController rawScrollController;
+  final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
   final VoidCallback? onApplyMigration;
@@ -73,6 +76,7 @@ class MainScreen extends StatelessComponent {
           ],
         ),
         LoadingScreen(visible: showSplash),
+        if (state.showHelp) const HelpOverlay(),
       ],
     );
   }
@@ -183,6 +187,14 @@ class MainScreen extends StatelessComponent {
           activationKey: LogicalKey.keyA,
           onActivate: onApplyMigration ?? () {},
           enabled: actionsEnabled && onApplyMigration != null,
+        ),
+        const SizedBox(width: 2),
+        Button(
+          name: 'Help',
+          activationChar: 'H',
+          activationKey: LogicalKey.keyH,
+          onActivate: onToggleHelp ?? () {},
+          enabled: onToggleHelp != null,
         ),
         const SizedBox(width: 2),
         Button(

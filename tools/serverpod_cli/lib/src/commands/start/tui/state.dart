@@ -113,6 +113,9 @@ class ServerWatchState {
   /// after 5 seconds or explicitly by the backend.
   bool showSplash = true;
 
+  /// Whether the help overlay is visible.
+  bool showHelp = false;
+
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;
 

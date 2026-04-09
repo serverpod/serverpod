@@ -108,6 +108,10 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
           showSplash: state.showSplash,
           logScrollController: logScrollController,
           rawScrollController: rawScrollController,
+          onToggleHelp: () {
+            state.showHelp = !state.showHelp;
+            _rebuild();
+          },
           onTabChanged: (index) {
             state.selectedTab = index;
             _rebuild();
@@ -123,6 +127,16 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
 
   bool _handleKeyEvent(KeyboardEvent event) {
     final state = component.holder.state;
+
+    // Dismiss help overlay.
+    if (state.showHelp && event.logicalKey == LogicalKey.escape) {
+      state.showHelp = false;
+      _rebuild();
+      return true;
+    }
+    // When help is open, absorb all keys except H (toggle) and Q (quit).
+    if (state.showHelp) return true;
+
     if (event.logicalKey == LogicalKey.tab) {
       state.selectedTab = (state.selectedTab + 1) % 2;
       _rebuild();
