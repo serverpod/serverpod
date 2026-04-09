@@ -9,8 +9,6 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  
-  
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   googleapis: '>=11.0.0 <17.0.0'
