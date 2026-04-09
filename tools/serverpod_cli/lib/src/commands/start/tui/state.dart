@@ -116,6 +116,9 @@ class ServerWatchState {
   /// Whether the help overlay is visible.
   bool showHelp = false;
 
+  /// Whether completed operations are expanded to show sub-entries.
+  bool expandOperations = false;
+
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;
 

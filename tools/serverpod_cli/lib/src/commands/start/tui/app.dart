@@ -137,6 +137,12 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
     // When help is open, absorb all keys except H (toggle) and Q (quit).
     if (state.showHelp) return true;
 
+    if (event.logicalKey == LogicalKey.keyX) {
+      state.expandOperations = !state.expandOperations;
+      _rebuild();
+      return true;
+    }
+
     if (event.logicalKey == LogicalKey.tab) {
       state.selectedTab = (state.selectedTab + 1) % 2;
       _rebuild();

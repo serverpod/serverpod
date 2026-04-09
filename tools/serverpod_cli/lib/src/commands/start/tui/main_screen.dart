@@ -132,6 +132,7 @@ class MainScreen extends StatelessComponent {
             return CompletedOperationWidget(
               key: ValueKey(index),
               operation: item,
+              expanded: state.expandOperations,
             );
           }
           return const SizedBox.shrink();
