@@ -1,4 +1,4 @@
-// Vendored from tuid (https://github.com/AstroNvim/tuid)
+// Vendored from tuid
 // SPDX-License-Identifier: BSD-3-Clause
 
 /// Format a duration with dynamic units (μs/ms/s/m).
