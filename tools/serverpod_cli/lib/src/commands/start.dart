@@ -813,7 +813,14 @@ Future<void> _runTuiBackend({
     }
 
     // Wire button callbacks.
-    holder.onQuit = () => nocterm.shutdownApp(0);
+    holder.onQuit = () async {
+      holder.state.serverReady = false;
+      holder.markDirty();
+      await fileChangeSub?.cancel();
+      await mcpSocket?.close();
+      await session.dispose();
+      nocterm.shutdownApp(0);
+    };
     holder.onHotReload = () {
       _runTrackedAction(holder, 'Hot reload', session.forceReload);
     };
