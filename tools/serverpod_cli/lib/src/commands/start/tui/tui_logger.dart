@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cli_tools/cli_tools.dart';
 
 import 'app.dart';
@@ -8,44 +6,42 @@ import 'state.dart';
 /// A [Logger] implementation that routes messages to the TUI state.
 ///
 /// Before the TUI is ready, messages are buffered and flushed once
-/// [attach] is called with the app state handle.
+/// [attach] is called with the state holder.
 class TuiLogger extends Logger {
   TuiLogger() : super(LogLevel.debug);
 
-  ServerpodWatchAppState? _appState;
-  final List<_BufferedEntry> _buffer = [];
+  AppStateHolder? _holder;
+  final List<TuiLogEntry> _buffer = [];
   int _progressCounter = 0;
 
   @override
   int? get wrapTextColumn => null;
 
-  /// Attach to the TUI state. Flushes any buffered messages.
-  void attach(ServerpodWatchAppState appState) {
-    _appState = appState;
-    for (final entry in _buffer) {
-      appState.addStructuredLog(
-        level: entry.level,
-        timestamp: entry.timestamp,
-        message: entry.message,
-      );
+  /// Attach to the TUI state holder. Flushes any buffered messages.
+  void attach(AppStateHolder holder) {
+    _holder = holder;
+    if (_buffer.isNotEmpty) {
+      holder.state.logHistory.addAll(_buffer);
+      _buffer.clear();
+      holder.markDirty();
     }
-    _buffer.clear();
   }
 
   void _addLog(TuiLogLevel level, String message) {
-    final entry = _BufferedEntry(
+    final entry = TuiLogEntry(
       level: level,
       timestamp: DateTime.now(),
       message: message,
     );
 
-    final appState = _appState;
-    if (appState != null) {
-      appState.addStructuredLog(
-        level: entry.level,
-        timestamp: entry.timestamp,
-        message: entry.message,
-      );
+    final holder = _holder;
+    if (holder != null) {
+      final state = holder.state;
+      state.logHistory.add(entry);
+      if (state.logHistory.length > ServerWatchState.maxLogEntries) {
+        state.logHistory.removeAt(0);
+      }
+      holder.markDirty();
     } else {
       _buffer.add(entry);
     }
@@ -115,18 +111,34 @@ class TuiLogger extends Logger {
     bool newParagraph = false,
   }) async {
     final id = 'cli_progress_${_progressCounter++}';
-    final appState = _appState;
+    final holder = _holder;
 
-    if (appState != null) {
-      appState.startTrackedOperation(id: id, label: message);
+    if (holder != null) {
+      holder.state.activeOperations[id] = TrackedOperation(
+        id: id,
+        label: message,
+      );
+      holder.markDirty();
     } else {
       _addLog(TuiLogLevel.info, message);
     }
 
     final success = await runner();
 
-    if (appState != null) {
-      appState.endTrackedOperation(id: id, success: success);
+    if (holder != null) {
+      final op = holder.state.activeOperations.remove(id);
+      if (op != null) {
+        op.stopwatch.stop();
+        holder.state.logHistory.add(
+          CompletedOperation(
+            label: op.label,
+            success: success,
+            duration: op.stopwatch.elapsed,
+            entries: op.entries,
+          ),
+        );
+      }
+      holder.markDirty();
     }
 
     return success;
@@ -143,19 +155,5 @@ class TuiLogger extends Logger {
   }
 
   @override
-  Future<void> flush() async {
-    // No-op - TUI renders synchronously on setState.
-  }
-}
-
-class _BufferedEntry {
-  _BufferedEntry({
-    required this.level,
-    required this.timestamp,
-    required this.message,
-  });
-
-  final TuiLogLevel level;
-  final DateTime timestamp;
-  final String message;
+  Future<void> flush() async {}
 }

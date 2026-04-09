@@ -4,29 +4,49 @@ import 'loading_screen.dart';
 import 'main_screen.dart';
 import 'state.dart';
 
-/// Root TUI component for `serverpod start`.
+/// Provides access to the shared [ServerWatchState] and a way to trigger
+/// rebuilds on the currently mounted [ServerpodWatchAppState].
 ///
-/// Uses a [GlobalKey] so the backend can retrieve the state handle via
-/// [GlobalKey.currentState] after the first frame has been rendered.
-/// The [onReady] callback fires after the first frame, when [setState]
-/// is safe to call.
+/// The backend mutates [state] directly, then calls [markDirty] to schedule
+/// a rebuild. This avoids proxying every mutation method and survives
+/// `NoctermApp` rebuilds that recreate the widget state.
+class AppStateHolder {
+  AppStateHolder(this.state);
+
+  final ServerWatchState state;
+  ServerpodWatchAppState? _widgetState;
+
+  void _attach(ServerpodWatchAppState s) => _widgetState = s;
+  void _detach(ServerpodWatchAppState s) {
+    if (_widgetState == s) _widgetState = null;
+  }
+
+  /// Trigger a rebuild on the currently mounted state.
+  void markDirty() => _widgetState?._rebuild();
+
+  set onHotReload(VoidCallback? cb) => _widgetState?.onHotReload = cb;
+  set onCreateMigration(VoidCallback? cb) =>
+      _widgetState?.onCreateMigration = cb;
+  set onApplyMigration(VoidCallback? cb) => _widgetState?.onApplyMigration = cb;
+  set onQuit(VoidCallback? cb) => _widgetState?.onQuit = cb;
+}
+
+/// Root TUI component for `serverpod start`.
 class ServerpodWatchApp extends StatefulComponent {
   const ServerpodWatchApp({
     super.key,
-    required this.initialState,
+    required this.holder,
     required this.onReady,
   });
 
-  final ServerWatchState initialState;
-  final void Function(ServerpodWatchAppState appState) onReady;
+  final AppStateHolder holder;
+  final void Function(AppStateHolder holder) onReady;
 
   @override
   State<ServerpodWatchApp> createState() => ServerpodWatchAppState();
 }
 
 class ServerpodWatchAppState extends State<ServerpodWatchApp> {
-  late final ServerWatchState _state;
-
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onCreateMigration;
@@ -36,136 +56,39 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   @override
   void initState() {
     super.initState();
-    _state = component.initialState;
-    // Schedule the onReady callback after the first frame is fully rendered.
-    // At that point the element is mounted and setState is safe.
+    component.holder._attach(this);
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      component.onReady(this);
+      component.onReady(component.holder);
     });
   }
 
-  ServerWatchState get state => _state;
-
-  /// Whether this state is still mounted in the component tree.
-  /// Guards against setState calls after the TUI has started tearing down.
-  bool get isMounted => mounted;
-
-  void _safeSetState(VoidCallback fn) {
-    if (mounted) setState(fn);
+  @override
+  void dispose() {
+    component.holder._detach(this);
+    super.dispose();
   }
 
-  // -- State mutation methods called from the backend --
-
-  void setSplashStage(String? stage) {
-    _safeSetState(() => _state.splashStage = stage);
-  }
-
-  void addStructuredLog({
-    required TuiLogLevel level,
-    required DateTime timestamp,
-    required String message,
-  }) {
-    _safeSetState(() {
-      _state.logHistory.add(
-        TuiLogEntry(
-          timestamp: timestamp,
-          level: level,
-          message: message,
-        ),
-      );
-      if (_state.logHistory.length > ServerWatchState.maxLogEntries) {
-        _state.logHistory.removeAt(0);
-      }
-    });
-  }
-
-  void addRawLine(String line) {
-    _safeSetState(() {
-      _state.rawLines.add(line);
-      if (_state.rawLines.length > ServerWatchState.maxRawLines) {
-        _state.rawLines.removeAt(0);
-      }
-    });
-  }
-
-  void startTrackedOperation({
-    required String id,
-    required String label,
-    DateTime? timestamp,
-  }) {
-    _safeSetState(() {
-      _state.activeOperations[id] = TrackedOperation(
-        id: id,
-        label: label,
-        startTime: timestamp ?? DateTime.now(),
-      );
-    });
-  }
-
-  void addOperationEntry({
-    required String sessionId,
-    required String message,
-    TuiLogLevel? level,
-    double? duration,
-    DateTime? timestamp,
-  }) {
-    _safeSetState(() {
-      final op = _state.activeOperations[sessionId];
-      if (op != null) {
-        op.entries.add(
-          OperationSubEntry(
-            timestamp: timestamp ?? DateTime.now(),
-            message: message,
-            level: level,
-            duration: duration,
-          ),
-        );
-      }
-    });
-  }
-
-  void endTrackedOperation({
-    required String id,
-    required bool success,
-    double? duration,
-  }) {
-    _safeSetState(() {
-      final op = _state.activeOperations.remove(id);
-      if (op != null) {
-        final elapsed = duration != null
-            ? Duration(microseconds: (duration * 1000000).round())
-            : DateTime.now().difference(op.startTime);
-        _state.logHistory.add(
-          CompletedOperation(
-            label: op.label,
-            success: success,
-            duration: elapsed,
-            entries: op.entries,
-          ),
-        );
-        if (_state.logHistory.length > ServerWatchState.maxLogEntries) {
-          _state.logHistory.removeAt(0);
-        }
-      }
-    });
-  }
-
-  void setSelectedTab(int index) {
-    _safeSetState(() => _state.selectedTab = index);
+  void _rebuild() {
+    if (mounted) setState(() {});
   }
 
   @override
   Component build(BuildContext context) {
-    if (_state.splashStage != null) {
-      return LoadingScreen(stage: _state.splashStage!);
+    final state = component.holder.state;
+
+    if (state.splashStage != null) {
+      return LoadingScreen(stage: state.splashStage!);
     }
 
     return Focusable(
       focused: true,
       onKeyEvent: _handleKeyEvent,
       child: MainScreen(
-        state: _state,
-        onTabChanged: setSelectedTab,
+        state: state,
+        onTabChanged: (index) {
+          state.selectedTab = index;
+          _rebuild();
+        },
         onHotReload: onHotReload,
         onCreateMigration: onCreateMigration,
         onApplyMigration: onApplyMigration,
@@ -175,16 +98,20 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   }
 
   bool _handleKeyEvent(KeyboardEvent event) {
+    final state = component.holder.state;
     if (event.logicalKey == LogicalKey.tab) {
-      setSelectedTab((_state.selectedTab + 1) % 2);
+      state.selectedTab = (state.selectedTab + 1) % 2;
+      _rebuild();
       return true;
     }
     if (event.logicalKey == LogicalKey.digit1) {
-      setSelectedTab(0);
+      state.selectedTab = 0;
+      _rebuild();
       return true;
     }
     if (event.logicalKey == LogicalKey.digit2) {
-      setSelectedTab(1);
+      state.selectedTab = 1;
+      _rebuild();
       return true;
     }
     return false;

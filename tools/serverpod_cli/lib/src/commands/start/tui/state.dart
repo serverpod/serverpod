@@ -49,12 +49,13 @@ class TrackedOperation {
   TrackedOperation({
     required this.id,
     required this.label,
-    required this.startTime,
-  });
+  }) {
+    stopwatch.start();
+  }
 
   final String id;
   final String label;
-  final DateTime startTime;
+  final Stopwatch stopwatch = Stopwatch();
 
   /// Null while active, set on completion.
   bool? success;

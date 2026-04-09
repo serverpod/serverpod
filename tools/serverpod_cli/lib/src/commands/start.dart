@@ -605,24 +605,33 @@ Future<int> _runWithTui({
   required bool watch,
   required bool startedDocker,
 }) async {
-  final initialState = ServerWatchState(splashStage: 'Starting...');
+  final holder = AppStateHolder(
+    ServerWatchState(splashStage: 'Starting...'),
+  );
   var exitCode = 0;
+  var backendStarted = false;
 
-  void onReady(ServerpodWatchAppState appState) {
+  void onReady(AppStateHolder h) {
+    if (backendStarted) return;
+    backendStarted = true;
+
     _runTuiBackend(
-      appState: appState,
+      holder: h,
       config: config,
       serverDir: serverDir,
       serverArgs: serverArgs,
       watch: watch,
       onExitCode: (code) => exitCode = code,
     ).catchError((Object e, StackTrace st) {
-      appState.setSplashStage(null);
-      appState.addStructuredLog(
-        level: TuiLogLevel.fatal,
-        timestamp: DateTime.now(),
-        message: 'Fatal error: $e\n$st',
+      h.state.splashStage = null;
+      h.state.logHistory.add(
+        TuiLogEntry(
+          timestamp: DateTime.now(),
+          level: TuiLogLevel.fatal,
+          message: 'Fatal error: $e\n$st',
+        ),
       );
+      h.markDirty();
       exitCode = 1;
     });
   }
@@ -631,7 +640,7 @@ Future<int> _runWithTui({
   await nocterm.runApp(
     nocterm.NoctermApp(
       child: ServerpodWatchApp(
-        initialState: initialState,
+        holder: holder,
         onReady: onReady,
       ),
     ),
@@ -642,7 +651,7 @@ Future<int> _runWithTui({
 
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
-  required ServerpodWatchAppState appState,
+  required AppStateHolder holder,
   required GeneratorConfig config,
   required String serverDir,
   required List<String> serverArgs,
@@ -654,13 +663,14 @@ Future<void> _runTuiBackend({
   try {
     // Replace the CLI logger with the TUI-aware logger.
     initializeLoggerWith(tuiLogger);
-    tuiLogger.attach(appState);
+    tuiLogger.attach(holder);
 
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
     final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
 
     // Code generation.
-    appState.setSplashStage('Running code generation...');
+    holder.state.splashStage = 'Running code generation...';
+    holder.markDirty();
     final analyzers = createAndUpdateAnalyzers(config);
     final allSources = await enumerateSourceFiles(config);
     if (!isGenerationUpToDate(config, allSources)) {
@@ -679,7 +689,8 @@ Future<void> _runTuiBackend({
     }
 
     // Compilation.
-    appState.setSplashStage('Compiling server...');
+    holder.state.splashStage = 'Compiling server...';
+    holder.markDirty();
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
     final compiler = KernelCompiler(
@@ -699,8 +710,8 @@ Future<void> _runTuiBackend({
     }
 
     // Create TUI log sinks for server output.
-    final stdoutSink = TuiLogSink(appState);
-    final stderrSink = TuiLogSink(appState);
+    final stdoutSink = TuiLogSink(holder);
+    final stderrSink = TuiLogSink(holder);
 
     // IDE reload callback.
     Future<String?> onReloadRequested() async {
@@ -737,7 +748,8 @@ Future<void> _runTuiBackend({
           return serverProcess;
         };
 
-    appState.setSplashStage('Starting server...');
+    holder.state.splashStage = 'Starting server...';
+    holder.markDirty();
     final initialServer = await serverProcessFactory(initialDill);
 
     // Subscribe to structured server log events via VM service.
@@ -745,7 +757,7 @@ Future<void> _runTuiBackend({
     if (vmService != null) {
       await vmService.streamListen('Extension');
       vmService.onExtensionEvent.listen(
-        (event) => _handleServerLogEvent(appState, event),
+        (event) => _handleServerLogEvent(holder, event),
       );
     }
 
@@ -801,11 +813,12 @@ Future<void> _runTuiBackend({
     }
 
     // Wire button callbacks.
-    appState.onQuit = () => nocterm.shutdownApp(0);
-    appState.onApplyMigration = () => session.applyMigration();
+    holder.onQuit = () => nocterm.shutdownApp(0);
+    holder.onApplyMigration = () => session.applyMigration();
 
     // Switch to main screen.
-    appState.setSplashStage(null);
+    holder.state.splashStage = null;
+    holder.markDirty();
 
     if (session.isRunning) log.info(serverRunning);
 
@@ -819,76 +832,85 @@ Future<void> _runTuiBackend({
     await mcpSocket?.close();
     await session.dispose();
   } catch (e, st) {
-    // Show the error in the TUI before shutting down.
-    appState.addStructuredLog(
-      level: TuiLogLevel.error,
-      timestamp: DateTime.now(),
-      message: '$e\n$st',
+    // Show the error in the TUI. Keep it open so the user can read it.
+    holder.state.splashStage = null;
+    holder.state.logHistory.add(
+      TuiLogEntry(
+        timestamp: DateTime.now(),
+        level: TuiLogLevel.error,
+        message: '$e\n$st',
+      ),
     );
-    // Keep the TUI open so the user can see the error.
-    // They can press Q to quit.
+    holder.markDirty();
     onExitCode(1);
   }
 }
 
 /// Dispatches a structured server log event to the TUI state.
-void _handleServerLogEvent(ServerpodWatchAppState appState, Event event) {
+void _handleServerLogEvent(AppStateHolder holder, Event event) {
   if (event.extensionKind != 'ext.serverpod.log') return;
   final data = event.extensionData?.data;
   if (data == null) return;
 
+  final state = holder.state;
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
-      final level = _parseTuiLogLevel(data['level'] as String? ?? 'info');
-      final timestamp =
-          DateTime.tryParse(data['timestamp'] as String? ?? '') ??
-          DateTime.now();
-      appState.addStructuredLog(
-        level: level,
-        timestamp: timestamp,
-        message: data['message'] as String? ?? '',
+      state.logHistory.add(
+        TuiLogEntry(
+          level: _parseTuiLogLevel(data['level'] as String? ?? 'info'),
+          timestamp:
+              DateTime.tryParse(data['timestamp'] as String? ?? '') ??
+              DateTime.now(),
+          message: data['message'] as String? ?? '',
+        ),
       );
 
     case 'session_start':
       final id = data['id'] as String? ?? '';
-      final label = data['label'] as String? ?? '';
-      final timestamp = DateTime.tryParse(data['timestamp'] as String? ?? '');
-      appState.startTrackedOperation(
+      state.activeOperations[id] = TrackedOperation(
         id: id,
-        label: label,
-        timestamp: timestamp,
+        label: data['label'] as String? ?? '',
       );
 
     case 'session_log':
-      final sessionId = data['sessionId'] as String? ?? '';
-      final level = _parseTuiLogLevel(data['level'] as String? ?? 'info');
-      appState.addOperationEntry(
-        sessionId: sessionId,
-        message: data['message'] as String? ?? '',
-        level: level,
+      state.activeOperations[data['sessionId'] as String? ?? '']?.entries.add(
+        OperationSubEntry(
+          timestamp: DateTime.now(),
+          message: data['message'] as String? ?? '',
+          level: _parseTuiLogLevel(data['level'] as String? ?? 'info'),
+        ),
       );
 
     case 'session_query':
-      final sessionId = data['sessionId'] as String? ?? '';
-      final query = data['query'] as String? ?? '';
-      final duration = (data['duration'] as num?)?.toDouble();
-      appState.addOperationEntry(
-        sessionId: sessionId,
-        message: query,
-        duration: duration,
+      state.activeOperations[data['sessionId'] as String? ?? '']?.entries.add(
+        OperationSubEntry(
+          timestamp: DateTime.now(),
+          message: data['query'] as String? ?? '',
+          duration: (data['duration'] as num?)?.toDouble(),
+        ),
       );
 
     case 'session_end':
       final id = data['id'] as String? ?? '';
-      final success = data['success'] as bool? ?? true;
-      final duration = (data['duration'] as num?)?.toDouble();
-      appState.endTrackedOperation(
-        id: id,
-        success: success,
-        duration: duration,
-      );
+      final op = state.activeOperations.remove(id);
+      if (op != null) {
+        op.stopwatch.stop();
+        // Prefer server-reported duration if available.
+        final serverDuration = (data['duration'] as num?)?.toDouble();
+        state.logHistory.add(
+          CompletedOperation(
+            label: op.label,
+            success: data['success'] as bool? ?? true,
+            duration: serverDuration != null
+                ? Duration(microseconds: (serverDuration * 1000000).round())
+                : op.stopwatch.elapsed,
+            entries: op.entries,
+          ),
+        );
+      }
   }
+  holder.markDirty();
 }
 
 TuiLogLevel _parseTuiLogLevel(String level) {

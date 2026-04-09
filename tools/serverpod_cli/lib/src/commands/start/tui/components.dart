@@ -204,8 +204,7 @@ class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
   @override
   Component build(BuildContext context) {
     final op = component.operation;
-    final elapsed = DateTime.now().difference(op.startTime);
-    final durationStr = formatDuration(elapsed);
+    final durationStr = formatDuration(op.stopwatch.elapsed);
     final frame = _spinnerFrames[_frameIndex % _spinnerFrames.length];
 
     return Column(

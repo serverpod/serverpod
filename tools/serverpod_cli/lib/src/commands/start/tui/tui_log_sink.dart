@@ -5,13 +5,10 @@ import 'app.dart';
 
 /// An [IOSink] implementation that captures server stdout/stderr output
 /// and routes it to the TUI's "Raw Output" tab.
-///
-/// Decodes UTF-8 byte chunks into lines, buffering partial lines until a
-/// newline is received.
 class TuiLogSink implements IOSink {
-  TuiLogSink(this._appState);
+  TuiLogSink(this._holder);
 
-  final ServerpodWatchAppState _appState;
+  final AppStateHolder _holder;
   final StringBuffer _lineBuffer = StringBuffer();
 
   @override
@@ -20,8 +17,9 @@ class TuiLogSink implements IOSink {
     for (var i = 0; i < text.length; i++) {
       final char = text[i];
       if (char == '\n') {
-        _appState.addRawLine(_lineBuffer.toString());
+        _holder.state.rawLines.add(_lineBuffer.toString());
         _lineBuffer.clear();
+        _holder.markDirty();
       } else if (char != '\r') {
         _lineBuffer.writeCharCode(char.codeUnitAt(0));
       }
@@ -29,47 +27,37 @@ class TuiLogSink implements IOSink {
   }
 
   @override
-  void write(Object? object) {
-    add(utf8.encode('$object'));
-  }
+  void write(Object? object) => add(utf8.encode('$object'));
 
   @override
-  void writeln([Object? object = '']) {
-    write('$object\n');
-  }
+  void writeln([Object? object = '']) => write('$object\n');
 
   @override
-  void writeAll(Iterable objects, [String separator = '']) {
-    write(objects.join(separator));
-  }
+  void writeAll(Iterable objects, [String separator = '']) =>
+      write(objects.join(separator));
 
   @override
-  void writeCharCode(int charCode) {
-    add([charCode]);
-  }
+  void writeCharCode(int charCode) => add([charCode]);
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    _appState.addRawLine('ERROR: $error');
-    if (stackTrace != null) {
-      _appState.addRawLine('$stackTrace');
-    }
+    _holder.state.rawLines.add('ERROR: $error');
+    if (stackTrace != null) _holder.state.rawLines.add('$stackTrace');
+    _holder.markDirty();
   }
 
   @override
-  Future addStream(Stream<List<int>> stream) {
-    return stream.forEach(add);
-  }
+  Future addStream(Stream<List<int>> stream) => stream.forEach(add);
 
   @override
   Future flush() async {}
 
   @override
   Future close() async {
-    // Flush any remaining partial line.
     if (_lineBuffer.isNotEmpty) {
-      _appState.addRawLine(_lineBuffer.toString());
+      _holder.state.rawLines.add(_lineBuffer.toString());
       _lineBuffer.clear();
+      _holder.markDirty();
     }
   }
 
@@ -77,9 +65,7 @@ class TuiLogSink implements IOSink {
   Encoding get encoding => utf8;
 
   @override
-  set encoding(Encoding value) {
-    // Only UTF-8 is supported.
-  }
+  set encoding(Encoding value) {}
 
   @override
   Future get done => Future.value();
