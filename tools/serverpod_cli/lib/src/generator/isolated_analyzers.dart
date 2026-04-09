@@ -7,6 +7,14 @@ import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/isolated_object.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+/// A log message that can be transferred across isolates without copying.
+@pragma('vm:deeply-immutable')
+final class IsolateLogMessage {
+  final int levelIndex;
+  final String message;
+  const IsolateLogMessage(this.levelIndex, this.message);
+}
+
 /// An [Analyzers] that runs on a dedicated worker isolate via
 /// [IsolatedObject].
 ///
@@ -26,8 +34,8 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   static Future<IsolatedAnalyzers> create(GeneratorConfig config) async {
     final logPort = ReceivePort();
     logPort.listen((message) {
-      final (LogLevel level, String msg) = message as (LogLevel, String);
-      log.log(msg, level);
+      final msg = message as IsolateLogMessage;
+      log.log(msg.message, LogLevel.values[msg.levelIndex]);
     });
 
     final logSendPort = logPort.sendPort;
@@ -88,7 +96,8 @@ class _PortForwardingLogger extends Logger {
   @override
   int? get wrapTextColumn => null;
 
-  void _send(LogLevel level, String message) => _port.send((level, message));
+  void _send(LogLevel level, String message) =>
+      _port.send(IsolateLogMessage(level.index, message));
 
   @override
   void debug(
