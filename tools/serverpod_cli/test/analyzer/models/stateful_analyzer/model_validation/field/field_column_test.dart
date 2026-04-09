@@ -1,5 +1,4 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
@@ -13,52 +12,7 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group('Given a class with an explicit column name', () {
-    group('When column override experimental feature is NOT enabled', () {
-      var config = GeneratorConfigBuilder().withName(projectName).build();
-
-      test(
-        'Given a class with a field with a column name override, then an error is collected.',
-        () {
-          var models = [
-            ModelSourceBuilder().withYaml(
-              '''
-          class: Example
-          table: example
-          fields:
-            name: String, column=user_name
-          ''',
-            ).build(),
-          ];
-
-          var collector = CodeGenerationCollector();
-          StatefulAnalyzer(
-            config,
-            models,
-            onErrorsCollector(collector),
-          ).validateAll();
-
-          expect(
-            collector.errors,
-            isNotEmpty,
-            reason: 'Expected an error but none was generated.',
-          );
-
-          var error = collector.errors.first;
-          expect(
-            error.message,
-            'The "column" property is not allowed for name type. Valid keys are {type, parent, relation, scope, persist, required, database, api, default, defaultModel, defaultPersist, jsonKey, unique}.',
-          );
-        },
-      );
-    });
-
-    group('When column override experimental feature IS enabled', () {
-      var config = GeneratorConfigBuilder()
-          .withName(projectName)
-          .withEnabledExperimentalFeatures([
-            ExperimentalFeature.columnOverride,
-          ])
-          .build();
+    group('When parsed', () {
       const noColumnFieldName = 'name';
       const columnFieldName = 'userName';
       const columnName = 'user_name';

@@ -12,7 +12,7 @@ class CommandLineExperimentalFeatures {
 
 enum ExperimentalFeature {
   all,
-  // TODO: Remove when column override is enabled by default.
+  // Retained for backwards compatibility with existing configs and CLI usage.
   columnOverride;
 
   static ExperimentalFeature fromString(String value) {
