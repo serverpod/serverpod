@@ -125,6 +125,7 @@ void _completeTrackedAction(
 TuiLogLevel parseTuiLogLevel(String level) {
   return switch (level) {
     'debug' => TuiLogLevel.debug,
+    'info' => TuiLogLevel.info,
     'warning' || 'warn' => TuiLogLevel.warning,
     'error' => TuiLogLevel.error,
     'fatal' => TuiLogLevel.fatal,
