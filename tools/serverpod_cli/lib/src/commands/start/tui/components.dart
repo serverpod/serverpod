@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:nocterm/nocterm.dart';
 
 import 'format_duration.dart';
+import 'serverpod_theme.dart';
 import 'state.dart';
 
 // -- BorderedBox --
@@ -46,6 +47,8 @@ class Button extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
+
     return Focusable(
       focused: enabled,
       onKeyEvent: (event) {
@@ -61,7 +64,7 @@ class Button extends StatelessComponent {
           Text(
             activationChar,
             style: TextStyle(
-              color: enabled ? Colors.magenta : Colors.gray,
+              color: enabled ? st.activationKey : st.subtleDivider,
               fontWeight: enabled ? FontWeight.bold : FontWeight.dim,
             ),
           ),
@@ -93,6 +96,8 @@ class TuiTabBar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
+
     return Row(
       children: [
         for (var i = 0; i < labels.length; i++) ...[
@@ -100,7 +105,7 @@ class TuiTabBar extends StatelessComponent {
             labels[i],
             style: TextStyle(
               fontWeight: i == selectedTab ? FontWeight.normal : FontWeight.dim,
-              color: i == selectedTab ? Colors.magenta : null,
+              color: i == selectedTab ? st.activeTab : null,
               decoration: i == selectedTab ? TextDecoration.underline : null,
             ),
           ),
@@ -124,12 +129,14 @@ class LogMessageWidget extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
+
     final levelColor = switch (entry.level) {
-      TuiLogLevel.debug => Colors.gray,
-      TuiLogLevel.info => Colors.blue,
-      TuiLogLevel.warning => Colors.yellow,
-      TuiLogLevel.error => Colors.red,
-      TuiLogLevel.fatal => Colors.brightRed,
+      TuiLogLevel.debug => st.debugLevel,
+      TuiLogLevel.info => st.infoLevel,
+      TuiLogLevel.warning => st.warningLevel,
+      TuiLogLevel.error => st.errorLevel,
+      TuiLogLevel.fatal => st.errorLevel,
     };
 
     return Row(
@@ -150,25 +157,36 @@ class LogMessageWidget extends StatelessComponent {
 
 // -- CompletedOperationWidget --
 
-/// Renders a completed tracked operation as a divider-style summary line.
+/// Renders a completed tracked operation as a left-aligned log-style line
+/// with a trailing divider.
 class CompletedOperationWidget extends StatelessComponent {
   const CompletedOperationWidget({super.key, required this.operation});
+
+  static final _timeFormat = DateFormat('HH:mm:ss');
 
   final CompletedOperation operation;
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
     final icon = operation.success ? '✓' : '✗';
-    final color = operation.success ? Colors.green : Colors.red;
+    final color = operation.success ? st.success : st.failure;
     final durationStr = formatDuration(operation.duration);
-    final label = ' $icon ${operation.label} ($durationStr) ';
 
-    return Stack(
+    return Row(
       children: [
-        const Divider(),
-        Center(
-          child: Text(label, style: TextStyle(color: color)),
+        Text('  $icon  ', style: TextStyle(color: color)),
+        const SizedBox(width: 1),
+        Text(
+          _timeFormat.format(operation.completedAt.toLocal()),
+          style: const TextStyle(fontWeight: FontWeight.dim),
         ),
+        const SizedBox(width: 1),
+        Text(
+          '${operation.label} ($durationStr) ',
+          style: TextStyle(color: color),
+        ),
+        Expanded(child: Divider(color: st.subtleDivider)),
       ],
     );
   }
@@ -176,7 +194,7 @@ class CompletedOperationWidget extends StatelessComponent {
 
 // -- TrackedOperationWidget --
 
-/// Renders an active tracked operation with spinner and live duration.
+/// Renders an active tracked operation with spinner.
 class TrackedOperationWidget extends StatefulComponent {
   const TrackedOperationWidget({super.key, required this.operation});
 
@@ -208,8 +226,8 @@ class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
     final op = component.operation;
-    final durationStr = formatDuration(op.stopwatch.elapsed);
     final frame = _spinnerFrames[_frameIndex % _spinnerFrames.length];
 
     return Column(
@@ -217,10 +235,11 @@ class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
       children: [
         Row(
           children: [
-            Text(' $frame ', style: const TextStyle(color: Colors.cyan)),
-            Expanded(
-              child: Text('${op.label}... ($durationStr)'),
-            ),
+            Text('  $frame  ', style: TextStyle(color: st.spinner)),
+            const SizedBox(width: 1),
+            const Text('        '),
+            const SizedBox(width: 1),
+            Expanded(child: Text('${op.label}...')),
           ],
         ),
         // Sub-entries indented
@@ -234,14 +253,14 @@ class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
                     entry.level!.label,
                     style: TextStyle(
                       color: entry.level == TuiLogLevel.error
-                          ? Colors.red
-                          : Colors.gray,
+                          ? st.errorLevel
+                          : st.debugLevel,
                     ),
                   )
                 else
-                  const Text(
+                  Text(
                     'query',
-                    style: TextStyle(color: Colors.gray),
+                    style: TextStyle(color: st.debugLevel),
                   ),
                 const SizedBox(width: 1),
                 Expanded(child: Text(entry.message)),

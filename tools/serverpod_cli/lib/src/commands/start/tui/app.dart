@@ -2,6 +2,7 @@ import 'package:nocterm/nocterm.dart';
 
 import 'loading_screen.dart';
 import 'main_screen.dart';
+import 'serverpod_theme.dart';
 import 'state.dart';
 
 /// Provides access to the shared [ServerWatchState] and a way to trigger
@@ -77,22 +78,28 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
     final state = component.holder.state;
 
     if (state.splashStage != null) {
-      return LoadingScreen(stage: state.splashStage!);
+      return ServerpodTheme(
+        data: ServerpodThemeData.dark,
+        child: LoadingScreen(stage: state.splashStage!),
+      );
     }
 
-    return Focusable(
-      focused: true,
-      onKeyEvent: _handleKeyEvent,
-      child: MainScreen(
-        state: state,
-        onTabChanged: (index) {
-          state.selectedTab = index;
-          _rebuild();
-        },
-        onHotReload: onHotReload,
-        onCreateMigration: onCreateMigration,
-        onApplyMigration: onApplyMigration,
-        onQuit: onQuit,
+    return ServerpodTheme(
+      data: ServerpodThemeData.dark,
+      child: Focusable(
+        focused: true,
+        onKeyEvent: _handleKeyEvent,
+        child: MainScreen(
+          state: state,
+          onTabChanged: (index) {
+            state.selectedTab = index;
+            _rebuild();
+          },
+          onHotReload: onHotReload,
+          onCreateMigration: onCreateMigration,
+          onApplyMigration: onApplyMigration,
+          onQuit: onQuit,
+        ),
       ),
     );
   }

@@ -636,6 +636,9 @@ Future<int> _runWithTui({
   // Block on the TUI.
   await nocterm.runApp(
     nocterm.NoctermApp(
+      theme: nocterm.TuiThemeData.dark.copyWith(
+        background: nocterm.Color.defaultColor,
+      ),
       child: ServerpodWatchApp(
         holder: holder,
         onReady: onReady,

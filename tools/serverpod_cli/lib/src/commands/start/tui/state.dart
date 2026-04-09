@@ -74,11 +74,13 @@ class CompletedOperation {
     required this.success,
     required this.duration,
     required this.entries,
-  });
+    DateTime? completedAt,
+  }) : completedAt = completedAt ?? DateTime.now();
 
   final String label;
   final bool success;
   final Duration duration;
+  final DateTime completedAt;
   final List<OperationSubEntry> entries;
 
   /// Whether the user has expanded this entry to see sub-entries.
