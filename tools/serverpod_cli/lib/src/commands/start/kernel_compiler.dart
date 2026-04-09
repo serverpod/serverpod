@@ -133,6 +133,7 @@ class KernelCompiler {
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
   Future<void> reset() async {
+    if (_needsFullCompile) return; // No compile yet; already in full state.
     final client = await _client;
     client.reset();
     _needsFullCompile = true;
