@@ -207,7 +207,8 @@ Future<GenerateResult> analyzeAndGenerate({
     return true;
   });
   if (!needsGenerate) return (success: true, generatedFiles: <String>{});
-  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
+  if (!skipStalenessCheck &&
+      await isGenerationUpToDate(config, affectedPaths)) {
     log.debug('All affected files are older than generation stamp, skipping.');
     return (success: true, generatedFiles: <String>{});
   }

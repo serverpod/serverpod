@@ -19,11 +19,14 @@ String _stampFilePath(GeneratorConfig config) => p.joinAll([
 /// Returns `true` if all [paths] are older than the generation stamp,
 /// the stamp's CLI version matches the running version, and all previously
 /// generated output files still exist on disk.
-bool isGenerationUpToDate(GeneratorConfig config, Set<String> paths) {
+Future<bool> isGenerationUpToDate(
+  GeneratorConfig config,
+  Set<String> paths,
+) async {
   final stampFile = File(_stampFilePath(config));
-  if (!stampFile.existsSync()) return false;
+  if (!await stampFile.exists()) return false;
 
-  final content = stampFile.readAsStringSync().trim();
+  final content = (await stampFile.readAsString()).trim();
   if (content.isEmpty) return false;
 
   // First line is the CLI version.
@@ -35,11 +38,11 @@ bool isGenerationUpToDate(GeneratorConfig config, Set<String> paths) {
   if (lines.length > 2) {
     final generatedFiles = lines.skip(2).where((l) => l.isNotEmpty);
     for (final filePath in generatedFiles) {
-      if (!File(filePath).existsSync()) return false;
+      if (!await File(filePath).exists()) return false;
     }
   }
 
-  final stampMtime = stampFile.statSync().modified;
+  final stampMtime = (await stampFile.stat()).modified;
 
   // Check config/generator.yaml - config changes should trigger regen.
   final configFile = File(
@@ -49,14 +52,15 @@ bool isGenerationUpToDate(GeneratorConfig config, Set<String> paths) {
       'generator.yaml',
     ]),
   );
-  if (configFile.existsSync() &&
-      configFile.statSync().modified.isAfter(stampMtime)) {
+  if (await configFile.exists() &&
+      (await configFile.stat()).modified.isAfter(stampMtime)) {
     return false;
   }
 
   for (final path in paths) {
     final file = File(path);
-    if (file.existsSync() && file.statSync().modified.isAfter(stampMtime)) {
+    if (await file.exists() &&
+        (await file.stat()).modified.isAfter(stampMtime)) {
       return false;
     }
   }
