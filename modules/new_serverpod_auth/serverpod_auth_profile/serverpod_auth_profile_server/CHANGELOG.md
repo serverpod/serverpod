@@ -1,3 +1,6 @@
+### 2.9.3
+- chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`.
+
 ## 2.9.2
 - fix: Fixes a crash when persistent logging is disabled but database is enabled.
 
@@ -13,11 +16,11 @@
 
 ## 2.9.0
 - feat: Adds support for `HalfVector`, `SparseVector` and `Bit` vector types in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
-- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
-- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
+- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
 - feat: Adds support for supplying CLI arguments from environment variables when starting the server.
 - feat: Adds support for loading custom passwords from environment variables.
-- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.  
+- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.
 - feat(EXPERIMENTAL): Adds support for registering shutdown tasks that are executed when the server is shutting down. ([yashas-hm](https://github.com/yashas-hm))
 - fix: Fixes an issue where unblocking a user would not invalidate the user cache. ([@LesYampolskyi](https://github.com/LesYampolskyi))
 - fix: Fixes an issue where paths starting with `v` would be stripped when serving static files in the web server.
@@ -187,7 +190,7 @@
  - fix: Better error message if an error occurs when parsing the config files in CLI.
  - fix: Adds validation of custom class names to look for potential collisions.
  - fix: Only considers positional `Session` parameter when validating endpoint method.
- - fix: Updates example documentation. 
+ - fix: Updates example documentation.
  - fix: Before a session is closed, all logging is now awaited.
  - fix: Adds new `WebCallSession` for Relic.
  - fix: Correctly verifies `iss` value for all possible domains in Sign in with Google.
