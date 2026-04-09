@@ -9,13 +9,15 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  
+  
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
   googleapis: '>=11.0.0 <17.0.0'
   googleapis_auth: '>=1.6.0 <3.0.0'
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
-  jose: ^0.3.3
+  jose: ^0.3.5+2
   meta: ^1.15.0
   openid_client: ^0.4.8
   pointycastle: '>=3.7.4 <5.0.0'
