@@ -116,13 +116,13 @@ BorderTitle buildTabTitle({
   );
 }
 
+final _timeFormat = DateFormat('HH:mm:ss.SSS');
+
 // -- LogMessageWidget --
 
 /// Renders a single structured log entry.
 class LogMessageWidget extends StatelessComponent {
   const LogMessageWidget({super.key, required this.entry});
-
-  static final _timeFormat = DateFormat('HH:mm:ss');
 
   final TuiLogEntry entry;
 
@@ -160,8 +160,6 @@ class LogMessageWidget extends StatelessComponent {
 /// with a trailing divider.
 class CompletedOperationWidget extends StatelessComponent {
   const CompletedOperationWidget({super.key, required this.operation});
-
-  static final _timeFormat = DateFormat('HH:mm:ss');
 
   final CompletedOperation operation;
 
@@ -235,9 +233,7 @@ class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
         Row(
           children: [
             Text('  $frame  ', style: TextStyle(color: st.spinner)),
-            const SizedBox(width: 1),
-            const Text('        '),
-            const SizedBox(width: 1),
+            const SizedBox(width: 14),
             Expanded(child: Text('${op.label}...')),
           ],
         ),
