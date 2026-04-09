@@ -12,7 +12,7 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group('Given a class with an explicit column name', () {
-    group('When parsed', () {
+    group('when parsing', () {
       const noColumnFieldName = 'name';
       const columnFieldName = 'userName';
       const columnName = 'user_name';

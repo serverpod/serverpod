@@ -11,9 +11,7 @@ class CommandLineExperimentalFeatures {
 }
 
 enum ExperimentalFeature {
-  all,
-  // Retained for backwards compatibility with existing configs and CLI usage.
-  columnOverride;
+  all;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {
