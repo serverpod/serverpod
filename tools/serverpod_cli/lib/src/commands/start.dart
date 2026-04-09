@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:nocterm/nocterm.dart' as nocterm;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
@@ -13,6 +14,11 @@ import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
+import 'package:serverpod_cli/src/commands/start/tui/app.dart';
+import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
+import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tui_log_sink.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tui_logger.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -22,6 +28,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
+import 'package:vm_service/vm_service.dart' show Event;
 import 'package:vm_service/vm_service_io.dart';
 
 /// Options for the `start` command.
@@ -61,6 +68,13 @@ enum StartOption<V> implements OptionDefinition<V> {
           'Skip the Frontend Server compilation pipeline. '
           'The server is started with dart run and the VM service info file '
           'is kept so an IDE debugger can attach and handle hot reload.',
+    ),
+  ),
+  tui(
+    FlagOption(
+      argName: 'tui',
+      defaultsTo: true,
+      helpText: 'Show interactive terminal UI.',
     ),
   );
 
@@ -145,8 +159,19 @@ class StartCommand extends ServerpodCommand<StartOption> {
       final serverArgs = argResults?.rest ?? [];
 
       final noFes = commandConfig.value(StartOption.noFes);
+      final useTui =
+          commandConfig.value(StartOption.tui) && stdout.hasTerminal && !noFes;
 
-      if (watch) {
+      if (useTui) {
+        final exitCode = await _runWithTui(
+          config: config,
+          serverDir: serverDir,
+          serverArgs: serverArgs,
+          watch: watch,
+          startedDocker: startedDocker,
+        );
+        if (exitCode != 0) throw ExitException(exitCode);
+      } else if (watch) {
         final exitCode = await _runWatchMode(
           config: config,
           serverDir: serverDir,
@@ -565,4 +590,284 @@ Future<String?> _checkExistingServer(String infoPath) async {
     await file.deleteIfExists();
     return null;
   }
+}
+
+/// Runs the server with the nocterm TUI.
+///
+/// The TUI takes over the terminal via [nocterm.runApp], which blocks the main
+/// isolate. All backend work runs in a callback triggered once the TUI delivers
+/// its state handle via a [Completer].
+Future<int> _runWithTui({
+  required GeneratorConfig config,
+  required String serverDir,
+  required List<String> serverArgs,
+  required bool watch,
+  required bool startedDocker,
+}) async {
+  final initialState = ServerWatchState(splashStage: 'Starting...');
+  final stateCompleter = Completer<ServerpodWatchAppState>();
+  var exitCode = 0;
+
+  unawaited(
+    stateCompleter.future.then((appState) async {
+      final tuiLogger = TuiLogger();
+
+      try {
+        // Replace the CLI logger with the TUI-aware logger.
+        initializeLoggerWith(tuiLogger);
+        tuiLogger.attach(appState);
+
+        final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
+        final vmServiceInfoFile = p.join(
+          serverpodToolDir,
+          'vm-service-info.json',
+        );
+
+        // Code generation.
+        appState.setSplashStage('Running code generation...');
+        final analyzers = createAndUpdateAnalyzers(config);
+        final allSources = await enumerateSourceFiles(config);
+        if (!isGenerationUpToDate(config, allSources)) {
+          final genResult = await analyzeAndGenerate(
+            config: config,
+            analyzers: await analyzers,
+            affectedPaths: allSources,
+            requirements: GenerationRequirements.full,
+          );
+          if (!genResult.success) {
+            log.error('Code generation failed.');
+            exitCode = 1;
+            nocterm.shutdownApp(exitCode);
+            return;
+          }
+        }
+
+        // Compilation.
+        appState.setSplashStage('Compiling server...');
+        final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+        final initialDill = p.join(serverpodToolDir, 'server.dill');
+        final compiler = KernelCompiler(
+          entryPoint: entryPoint,
+          outputDill: initialDill,
+        );
+        await compiler.start();
+
+        if (!await compiler.compileIfNeeded(
+          config.watchPaths(includeWeb: true, includeClientPackage: true),
+        )) {
+          await compiler.dispose();
+          log.error('Initial compilation failed.');
+          exitCode = 1;
+          nocterm.shutdownApp(exitCode);
+          return;
+        }
+
+        // Create TUI log sinks for server output.
+        final stdoutSink = TuiLogSink(appState);
+        final stderrSink = TuiLogSink(appState);
+
+        // IDE reload callback.
+        Future<String?> onReloadRequested() async {
+          await compiler.reset();
+          final result = await compileWithProgress(
+            'Compiling server (IDE reload)',
+            compiler,
+            rejectOnFailure: true,
+          );
+          if (result == null) return null;
+          compiler.accept();
+          return result.dillOutput ?? initialDill;
+        }
+
+        // Server process factory.
+        ServerProcessFactory serverProcessFactory;
+        serverProcessFactory =
+            (
+              String dillPath, {
+              List<String> extraArgs = const [],
+            }) async {
+              final serverProcess = ServerProcess(
+                serverDir: serverDir,
+                serverArgs: [...serverArgs, ...extraArgs],
+                dartExecutable: compiler.dartExecutable,
+                enableVmService: true,
+                vmServiceInfoFile: vmServiceInfoFile,
+                onReloadRequested: onReloadRequested,
+                stdoutSink: stdoutSink,
+                stderrSink: stderrSink,
+              );
+              await serverProcess.start(dillPath: dillPath);
+              await serverProcess.connectToVmService();
+              return serverProcess;
+            };
+
+        appState.setSplashStage('Starting server...');
+        final initialServer = await serverProcessFactory(initialDill);
+
+        // Subscribe to structured server log events via VM service.
+        final vmService = initialServer.vmService;
+        if (vmService != null) {
+          await vmService.streamListen('Extension');
+          vmService.onExtensionEvent.listen(
+            (event) => _handleServerLogEvent(appState, event),
+          );
+        }
+
+        // Create watch session.
+        final session = WatchSession(
+          compiler: compiler,
+          generate: (affectedPaths, requirements) async {
+            return analyzeAndGenerate(
+              config: config,
+              analyzers: await analyzers,
+              affectedPaths: affectedPaths,
+              skipStalenessCheck: true,
+              requirements: requirements,
+            );
+          },
+          createServer: serverProcessFactory,
+          initialServer: initialServer,
+          generatedDirPaths: config.generatedDirPaths,
+        );
+
+        // Start MCP socket server.
+        McpSocketServer? mcpSocket;
+        mcpSocket = McpSocketServer(
+          socketPath: p.join(serverpodToolDir, 'mcp.sock'),
+        );
+        try {
+          await mcpSocket.start();
+          mcpSocket.connect(onApplyMigration: session.applyMigration);
+          log.info('MCP server listening on ${mcpSocket.socketPath}');
+        } on SocketException catch (e) {
+          log.warning('Failed to start MCP server: $e');
+          mcpSocket = null;
+        }
+
+        // Start file watcher if in watch mode.
+        StreamSubscription? fileChangeSub;
+        if (watch) {
+          final watcher = FileWatcher(
+            watchPaths: {
+              p.absolute(p.joinAll(config.libSourcePathParts)),
+              ...config.sharedModelsLibSourcePaths.map(p.absolute),
+              p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
+              p.absolute(
+                p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
+              ),
+            },
+          );
+          fileChangeSub = watcher.onFilesChanged
+              .asyncMapBuffer(
+                (events) => session.handleFileChange(events.merge()),
+              )
+              .listen((_) {});
+        }
+
+        // Wire button callbacks.
+        appState.onQuit = () => nocterm.shutdownApp(0);
+        appState.onApplyMigration = () => session.applyMigration();
+
+        // Switch to main screen.
+        appState.setSplashStage(null);
+
+        if (session.isRunning) log.info(serverRunning);
+
+        // Wait for server exit.
+        exitCode = await session.done;
+        log.info('Server stopped (exitCode: $exitCode).');
+
+        // Clean up.
+        await fileChangeSub?.cancel();
+        await mcpSocket?.close();
+        await session.dispose();
+      } catch (e, st) {
+        log.error('$e', stackTrace: st);
+        exitCode = 1;
+        nocterm.shutdownApp(exitCode);
+      }
+    }),
+  );
+
+  // Block on the TUI.
+  await nocterm.runApp(
+    nocterm.NoctermApp(
+      child: ServerpodWatchApp(
+        initialState: initialState,
+        stateCompleter: stateCompleter,
+      ),
+    ),
+  );
+
+  return exitCode;
+}
+
+/// Dispatches a structured server log event to the TUI state.
+void _handleServerLogEvent(ServerpodWatchAppState appState, Event event) {
+  if (event.extensionKind != 'ext.serverpod.log') return;
+  final data = event.extensionData?.data;
+  if (data == null) return;
+
+  final type = data['type'] as String?;
+  switch (type) {
+    case 'log':
+      final level = _parseTuiLogLevel(data['level'] as String? ?? 'info');
+      final timestamp =
+          DateTime.tryParse(data['timestamp'] as String? ?? '') ??
+          DateTime.now();
+      appState.addStructuredLog(
+        level: level,
+        timestamp: timestamp,
+        message: data['message'] as String? ?? '',
+      );
+
+    case 'session_start':
+      final id = data['id'] as String? ?? '';
+      final label = data['label'] as String? ?? '';
+      final timestamp = DateTime.tryParse(data['timestamp'] as String? ?? '');
+      appState.startTrackedOperation(
+        id: id,
+        label: label,
+        timestamp: timestamp,
+      );
+
+    case 'session_log':
+      final sessionId = data['sessionId'] as String? ?? '';
+      final level = _parseTuiLogLevel(data['level'] as String? ?? 'info');
+      appState.addOperationEntry(
+        sessionId: sessionId,
+        message: data['message'] as String? ?? '',
+        level: level,
+      );
+
+    case 'session_query':
+      final sessionId = data['sessionId'] as String? ?? '';
+      final query = data['query'] as String? ?? '';
+      final duration = (data['duration'] as num?)?.toDouble();
+      appState.addOperationEntry(
+        sessionId: sessionId,
+        message: query,
+        duration: duration,
+      );
+
+    case 'session_end':
+      final id = data['id'] as String? ?? '';
+      final success = data['success'] as bool? ?? true;
+      final duration = (data['duration'] as num?)?.toDouble();
+      appState.endTrackedOperation(
+        id: id,
+        success: success,
+        duration: duration,
+      );
+  }
+}
+
+TuiLogLevel _parseTuiLogLevel(String level) {
+  return switch (level) {
+    'debug' => TuiLogLevel.debug,
+    'warning' || 'warn' => TuiLogLevel.warning,
+    'error' => TuiLogLevel.error,
+    'fatal' => TuiLogLevel.fatal,
+    _ => TuiLogLevel.info,
+  };
 }
