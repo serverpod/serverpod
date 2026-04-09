@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:cli_tools/cli_tools.dart';
@@ -7,12 +8,33 @@ import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/isolated_object.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-/// A log message that can be transferred across isolates without copying.
+/// Messages sent from the worker isolate logger to the main isolate.
 @pragma('vm:deeply-immutable')
-final class IsolateLogMessage {
+sealed class IsolateLogEvent {
+  const IsolateLogEvent();
+}
+
+/// A log entry with level and message.
+@pragma('vm:deeply-immutable')
+final class IsolateLogMessage extends IsolateLogEvent {
   final int levelIndex;
   final String message;
   const IsolateLogMessage(this.levelIndex, this.message);
+}
+
+/// Signals the start of a progress operation.
+@pragma('vm:deeply-immutable')
+final class IsolateProgressStart extends IsolateLogEvent {
+  final String label;
+  const IsolateProgressStart(this.label);
+}
+
+/// Signals the end of a progress operation.
+@pragma('vm:deeply-immutable')
+final class IsolateProgressEnd extends IsolateLogEvent {
+  final String label;
+  final bool success;
+  const IsolateProgressEnd(this.label, this.success);
 }
 
 /// An [Analyzers] that runs on a dedicated worker isolate via
@@ -24,6 +46,7 @@ final class IsolateLogMessage {
 final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
     implements Analyzers {
   final ReceivePort _logPort;
+  static final _activeProgress = <String, Completer<bool>>{};
 
   IsolatedAnalyzers._(super.create, this._logPort);
 
@@ -34,8 +57,18 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   static Future<IsolatedAnalyzers> create(GeneratorConfig config) async {
     final logPort = ReceivePort();
     logPort.listen((message) {
-      final msg = message as IsolateLogMessage;
-      log.log(msg.message, LogLevel.values[msg.levelIndex]);
+      final event = message as IsolateLogEvent;
+      switch (event) {
+        case IsolateLogMessage(:final levelIndex, :final message):
+          log.log(message, LogLevel.values[levelIndex]);
+        case IsolateProgressStart(:final label):
+          _activeProgress[label] = Completer<bool>();
+          unawaited(
+            log.progress(label, () => _activeProgress[label]!.future),
+          );
+        case IsolateProgressEnd(:final label, :final success):
+          _activeProgress.remove(label)?.complete(success);
+      }
     });
 
     final logSendPort = logPort.sendPort;
@@ -153,8 +186,10 @@ class _PortForwardingLogger extends Logger {
     Future<bool> Function() runner, {
     bool newParagraph = false,
   }) async {
-    _send(LogLevel.info, message);
-    return runner();
+    _port.send(IsolateProgressStart(message));
+    final success = await runner();
+    _port.send(IsolateProgressEnd(message, success));
+    return success;
   }
 
   @override

@@ -702,7 +702,11 @@ Future<void> _runTuiBackend({
     // Code generation (staleness check runs concurrently with analyzers).
     final allSources = await enumerateSourceFiles(config);
     if (!await isGenerationUpToDate(config, allSources)) {
-      final analyzers = await analyzersFuture;
+      late final IsolatedAnalyzers analyzers;
+      await log.progress('Initializing analyzers', () async {
+        analyzers = await analyzersFuture;
+        return true;
+      });
       final genResult = await analyzers.analyzeAndGenerate(
         config: config,
         affectedPaths: allSources,
