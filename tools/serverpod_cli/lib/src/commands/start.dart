@@ -19,6 +19,7 @@ import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/tui/tui_log_sink.dart';
 import 'package:serverpod_cli/src/commands/start/tui/tui_logger.dart';
+import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -346,18 +347,15 @@ Future<int> _runWatchMode({
     }
   }
 
-  // Create analyzers and run initial code generation.
-  final analyzers = createAndUpdateAnalyzers(config); // async
+  // Start analyzer initialization in the background.
+  final analyzersFuture = createAndUpdateAnalyzers(config);
 
-  // Ensure generated code is up to date.
+  // Ensure generated code is up to date (runs concurrently with analyzers).
   final allSources = await enumerateSourceFiles(config);
-  if (!isGenerationUpToDate(config, allSources)) {
-    // Generated code is stale! Block on generation before the server starts.
-    // Use full requirements for initial generation to ensure all models,
-    // endpoints, and future calls are properly generated.
-    final genResult = await analyzeAndGenerate(
+  if (!await isGenerationUpToDate(config, allSources)) {
+    final analyzers = await analyzersFuture;
+    final genResult = await analyzers.analyzeAndGenerate(
       config: config,
-      analyzers: await analyzers,
       affectedPaths: allSources,
       requirements: GenerationRequirements.full,
     );
@@ -385,10 +383,9 @@ Future<int> _runWatchMode({
     ),
     generatedDirPaths: config.generatedDirPaths,
     generate: (affectedPaths, requirements) async {
-      // Wait for background priming to finish before touching analyzers.
-      return analyzeAndGenerate(
+      final analyzers = await analyzersFuture;
+      return analyzers.analyzeAndGenerate(
         config: config,
-        analyzers: await analyzers,
         affectedPaths: affectedPaths,
         skipStalenessCheck: true,
         requirements: requirements,
@@ -665,23 +662,31 @@ Future<void> _runTuiBackend({
     initializeLoggerWith(tuiLogger);
     tuiLogger.attach(holder);
 
+    // Skip the splash screen - go straight to main screen.
+    // The splash animation freezes during heavy async work (analyzer init,
+    // process spawning) because the main isolate can't render frames.
+    // Instead, show startup progress as log messages.
+    holder.state.splashStage = null;
+    holder.markDirty();
+
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
     final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
 
-    // Code generation.
-    holder.state.splashStage = 'Running code generation...';
-    holder.markDirty();
-    final analyzers = createAndUpdateAnalyzers(config);
+    // Start analyzer initialization on a worker isolate in the background.
+    final analyzersFuture = IsolatedAnalyzers.create(config);
+
+    // Code generation (staleness check runs concurrently with analyzers).
     final allSources = await enumerateSourceFiles(config);
-    if (!isGenerationUpToDate(config, allSources)) {
-      final genResult = await analyzeAndGenerate(
+    if (!await isGenerationUpToDate(config, allSources)) {
+      final analyzers = await analyzersFuture;
+      final genResult = await analyzers.analyzeAndGenerate(
         config: config,
-        analyzers: await analyzers,
         affectedPaths: allSources,
         requirements: GenerationRequirements.full,
       );
       if (!genResult.success) {
         log.error('Code generation failed.');
+        await (await analyzersFuture).close();
         onExitCode(1);
         nocterm.shutdownApp(1);
         return;
@@ -689,8 +694,6 @@ Future<void> _runTuiBackend({
     }
 
     // Compilation.
-    holder.state.splashStage = 'Compiling server...';
-    holder.markDirty();
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
     final compiler = KernelCompiler(
@@ -726,7 +729,8 @@ Future<void> _runTuiBackend({
       return result.dillOutput ?? initialDill;
     }
 
-    // Server process factory.
+    // Server process factory. Subscribes to VM service extension events
+    // on each new server process so restarts pick up the new connection.
     ServerProcessFactory serverProcessFactory;
     serverProcessFactory =
         (
@@ -745,29 +749,31 @@ Future<void> _runTuiBackend({
           );
           await serverProcess.start(dillPath: dillPath);
           await serverProcess.connectToVmService();
+
+          final vmService = serverProcess.vmService;
+          if (vmService != null) {
+            await vmService.streamListen('Extension');
+            vmService.onExtensionEvent.listen(
+              (event) => _handleServerLogEvent(holder, event),
+            );
+          }
+
           return serverProcess;
         };
 
-    holder.state.splashStage = 'Starting server...';
-    holder.markDirty();
-    final initialServer = await serverProcessFactory(initialDill);
-
-    // Subscribe to structured server log events via VM service.
-    final vmService = initialServer.vmService;
-    if (vmService != null) {
-      await vmService.streamListen('Extension');
-      vmService.onExtensionEvent.listen(
-        (event) => _handleServerLogEvent(holder, event),
-      );
-    }
+    late final ServerProcess initialServer;
+    await log.progress('Starting server', () async {
+      initialServer = await serverProcessFactory(initialDill);
+      return true;
+    });
 
     // Create watch session.
     final session = WatchSession(
       compiler: compiler,
       generate: (affectedPaths, requirements) async {
-        return analyzeAndGenerate(
+        final analyzers = await analyzersFuture;
+        return analyzers.analyzeAndGenerate(
           config: config,
-          analyzers: await analyzers,
           affectedPaths: affectedPaths,
           skipStalenessCheck: true,
           requirements: requirements,
@@ -828,8 +834,6 @@ Future<void> _runTuiBackend({
       _runTrackedAction(holder, 'Applying migrations', session.applyMigration);
     };
 
-    // Switch to main screen.
-    holder.state.splashStage = null;
     holder.state.serverReady = session.isRunning;
     holder.markDirty();
 
@@ -883,9 +887,12 @@ void _handleServerLogEvent(AppStateHolder holder, Event event) {
 
     case 'session_start':
       final id = data['id'] as String? ?? '';
+      final label = data['label'] as String? ?? '';
+      // Don't track internal sessions as operations - show as plain log.
+      if (label == 'INTERNAL') break;
       state.activeOperations[id] = TrackedOperation(
         id: id,
-        label: data['label'] as String? ?? '',
+        label: label,
       );
 
     case 'session_log':

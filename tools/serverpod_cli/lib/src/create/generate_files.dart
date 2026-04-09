@@ -50,7 +50,7 @@ class GenerateFiles {
 
     final result = await performGenerate(
       config: config,
-      analyzers: (
+      analyzers: Analyzers(
         endpoints: endpointsAnalyzer,
         models: modelAnalyzer,
         futureCalls: futureCallsAnalyzer,

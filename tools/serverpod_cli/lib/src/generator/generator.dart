@@ -12,49 +12,9 @@ import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-/// Holds the set of analyzers needed for code generation.
-typedef Analyzers = ({
-  EndpointsAnalyzer endpoints,
-  StatefulAnalyzer models,
-  FutureCallsAnalyzer futureCalls,
-});
+import 'package:serverpod_cli/src/generator/analyzers.dart';
 
-/// Creates the analyzers needed for code generation from [config].
-Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
-  final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-  final collection = createAnalysisContextCollection(libDirectory);
-  final endpointsAnalyzer = EndpointsAnalyzer(
-    libDirectory,
-    collection: collection,
-  );
-  final yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-  final futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    collection: collection,
-  );
-  return (
-    endpoints: endpointsAnalyzer,
-    models: modelAnalyzer,
-    futureCalls: futureCallsAnalyzer,
-  );
-}
-
-/// Creates and updates the analyzers needed for code generation from [config].
-///
-/// Returns the analyzers after they have been primed with the current
-/// state of the source files.
-Future<Analyzers> createAndUpdateAnalyzers(GeneratorConfig config) async {
-  final analyzers = await createAnalyzers(config);
-  await updateAnalyzers(
-    config: config,
-    analyzers: analyzers,
-    affectedPaths: await enumerateSourceFiles(config),
-  );
-  return analyzers;
-}
+export 'analyzers.dart';
 
 /// Incrementally updates analyzer state for the given [affectedPaths].
 ///
@@ -110,9 +70,6 @@ Future<bool> updateAnalyzers({
 
   return shouldGenerate;
 }
-
-/// Result of a code generation run.
-typedef GenerateResult = ({bool success, Set<String> generatedFiles});
 
 /// Analyze the server package and generate the code.
 ///
