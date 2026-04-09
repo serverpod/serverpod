@@ -16,6 +16,8 @@ class MainScreen extends StatelessComponent {
     required this.state,
     required this.onTabChanged,
     this.showSplash = false,
+    required this.logScrollController,
+    required this.rawScrollController,
     this.onHotReload,
     this.onCreateMigration,
     this.onApplyMigration,
@@ -25,6 +27,8 @@ class MainScreen extends StatelessComponent {
   final ServerWatchState state;
   final ValueChanged<int> onTabChanged;
   final bool showSplash;
+  final ScrollController logScrollController;
+  final ScrollController rawScrollController;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
   final VoidCallback? onApplyMigration;
@@ -104,40 +108,50 @@ class MainScreen extends StatelessComponent {
   Component _buildStructuredLogView() {
     final items = state.logHistory;
 
-    return ListView.builder(
-      reverse: true,
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        // ListView with reverse shows items from the bottom, so we read
-        // from the end of the list.
-        final item = items[items.length - 1 - index];
-        if (item is TuiLogEntry) {
-          return LogMessageWidget(
-            key: ValueKey(index),
-            entry: item,
-          );
-        }
-        if (item is CompletedOperation) {
-          return CompletedOperationWidget(
-            key: ValueKey(index),
-            operation: item,
-          );
-        }
-        return const SizedBox.shrink();
-      },
+    return Scrollbar(
+      controller: logScrollController,
+      thumbVisibility: true,
+      child: ListView.builder(
+        controller: logScrollController,
+        reverse: true,
+        keyboardScrollable: true,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[items.length - 1 - index];
+          if (item is TuiLogEntry) {
+            return LogMessageWidget(
+              key: ValueKey(index),
+              entry: item,
+            );
+          }
+          if (item is CompletedOperation) {
+            return CompletedOperationWidget(
+              key: ValueKey(index),
+              operation: item,
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 
   Component _buildRawOutputView() {
     final lines = state.rawLines;
 
-    return ListView.builder(
-      reverse: true,
-      itemCount: lines.length,
-      itemBuilder: (context, index) {
-        final line = lines[lines.length - 1 - index];
-        return Text(line, key: ValueKey(index));
-      },
+    return Scrollbar(
+      controller: rawScrollController,
+      thumbVisibility: true,
+      child: ListView.builder(
+        controller: rawScrollController,
+        reverse: true,
+        keyboardScrollable: true,
+        itemCount: lines.length,
+        itemBuilder: (context, index) {
+          final line = lines[lines.length - 1 - index];
+          return Text(line, key: ValueKey(index));
+        },
+      ),
     );
   }
 

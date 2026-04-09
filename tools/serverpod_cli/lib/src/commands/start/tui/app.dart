@@ -49,6 +49,9 @@ class ServerpodWatchApp extends StatefulComponent {
 }
 
 class ServerpodWatchAppState extends State<ServerpodWatchApp> {
+  final logScrollController = ScrollController();
+  final rawScrollController = ScrollController();
+
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onCreateMigration;
@@ -103,6 +106,8 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
         child: MainScreen(
           state: state,
           showSplash: state.showSplash,
+          logScrollController: logScrollController,
+          rawScrollController: rawScrollController,
           onTabChanged: (index) {
             state.selectedTab = index;
             _rebuild();
@@ -133,6 +138,19 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
+    // Vim-style scroll: j/k
+    final controller = state.selectedTab == 0
+        ? logScrollController
+        : rawScrollController;
+    if (event.logicalKey == LogicalKey.keyJ) {
+      controller.scrollDown(1.0);
+      return true;
+    }
+    if (event.logicalKey == LogicalKey.keyK) {
+      controller.scrollUp(1.0);
+      return true;
+    }
+
     return false;
   }
 }
