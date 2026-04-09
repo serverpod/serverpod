@@ -9,6 +9,7 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/log_manager/vm_service_log_writer.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 import '../cache/caches.dart';
@@ -201,6 +202,8 @@ abstract class Session implements DatabaseSession {
       };
       logWriters.add(consoleLogger);
     }
+
+    logWriters.add(VmServiceLogWriter(session));
 
     if ((_isLongLived(session)) &&
         logSettings.logStreamingSessionsContinuously) {

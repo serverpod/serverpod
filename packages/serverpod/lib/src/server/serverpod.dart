@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -61,6 +62,12 @@ class Serverpod {
     if (_shouldPrintLifecycleMessages) {
       stdout.writeln(message);
     }
+    developer.postEvent('ext.serverpod.log', {
+      'type': 'log',
+      'level': 'info',
+      'message': message,
+      'timestamp': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
@@ -1274,6 +1281,14 @@ class Serverpod {
     }
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
+
+    var errorMessage = message != null ? '$message: $e' : '$e';
+    developer.postEvent('ext.serverpod.log', {
+      'type': 'log',
+      'level': 'error',
+      'message': errorMessage,
+      'timestamp': now.toIso8601String(),
+    });
 
     internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
