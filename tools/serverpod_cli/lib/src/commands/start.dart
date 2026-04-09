@@ -119,6 +119,25 @@ class StartCommand extends ServerpodCommand<StartOption> {
     Configuration<StartOption> commandConfig,
   ) async {
     final watch = commandConfig.value(StartOption.watch);
+    final noFes = commandConfig.value(StartOption.noFes);
+    final useTui =
+        commandConfig.value(StartOption.tui) && stdout.hasTerminal && !noFes;
+
+    // In TUI mode, start the UI immediately and do all setup in onReady.
+    // This avoids a visible delay from config loading and Docker checks.
+    if (useTui) {
+      final exitCode = await _runWithTui(
+        commandConfig: commandConfig,
+        watch: watch,
+        serverArgs: argResults?.rest ?? [],
+        interactive: serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        ),
+      );
+      if (exitCode != 0) throw ExitException(exitCode);
+      return;
+    }
+
     final directory = commandConfig.value(StartOption.directory);
 
     // Get interactive flag from global configuration.
@@ -159,20 +178,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Extract passthrough args (everything after '--').
       final serverArgs = argResults?.rest ?? [];
 
-      final noFes = commandConfig.value(StartOption.noFes);
-      final useTui =
-          commandConfig.value(StartOption.tui) && stdout.hasTerminal && !noFes;
-
-      if (useTui) {
-        final exitCode = await _runWithTui(
-          config: config,
-          serverDir: serverDir,
-          serverArgs: serverArgs,
-          watch: watch,
-          startedDocker: startedDocker,
-        );
-        if (exitCode != 0) throw ExitException(exitCode);
-      } else if (watch) {
+      if (watch) {
         final exitCode = await _runWatchMode(
           config: config,
           serverDir: serverDir,
@@ -270,7 +276,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ///
   /// Returns `true` if this method started the containers (meaning we should
   /// stop them on shutdown). Returns `false` if no action was taken.
-  Future<bool> _ensureDockerServices(String serverDir) async {
+  static Future<bool> _ensureDockerServices(String serverDir) async {
     final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
     if (!await composeFile.exists()) return false;
 
@@ -310,7 +316,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     return true;
   }
 
-  Future<void> _stopDockerServices(String serverDir) async {
+  static Future<void> _stopDockerServices(String serverDir) async {
     log.info('Stopping Docker Compose services...');
     await Process.run(
       'docker',
@@ -596,11 +602,10 @@ Future<String?> _checkExistingServer(String infoPath) async {
 /// which fires after the first frame via [addPostFrameCallback], ensuring the
 /// component tree is fully mounted before any [setState] calls.
 Future<int> _runWithTui({
-  required GeneratorConfig config,
-  required String serverDir,
-  required List<String> serverArgs,
+  required Configuration<StartOption> commandConfig,
   required bool watch,
-  required bool startedDocker,
+  required List<String> serverArgs,
+  required bool? interactive,
 }) async {
   final holder = AppStateHolder(
     ServerWatchState(),
@@ -614,10 +619,10 @@ Future<int> _runWithTui({
 
     _runTuiBackend(
       holder: h,
-      config: config,
-      serverDir: serverDir,
-      serverArgs: serverArgs,
+      commandConfig: commandConfig,
       watch: watch,
+      serverArgs: serverArgs,
+      interactive: interactive,
       onExitCode: (code) => exitCode = code,
     ).catchError((Object e, StackTrace st) {
       h.state.logHistory.add(
@@ -651,10 +656,10 @@ Future<int> _runWithTui({
 /// Backend logic that runs after the TUI is mounted and ready.
 Future<void> _runTuiBackend({
   required AppStateHolder holder,
-  required GeneratorConfig config,
-  required String serverDir,
-  required List<String> serverArgs,
+  required Configuration<StartOption> commandConfig,
   required bool watch,
+  required List<String> serverArgs,
+  required bool? interactive,
   required void Function(int) onExitCode,
 }) async {
   final tuiLogger = TuiLogger();
@@ -664,11 +669,22 @@ Future<void> _runTuiBackend({
     initializeLoggerWith(tuiLogger);
     tuiLogger.attach(holder);
 
-    // Skip the splash screen - go straight to main screen.
-    // The splash animation freezes during heavy async work (analyzer init,
-    // process spawning) because the main isolate can't render frames.
-    // Instead, show startup progress as log messages.
-    holder.markDirty();
+    final directory = commandConfig.value(StartOption.directory);
+
+    // Load generator config.
+    final config = await GeneratorConfig.load(
+      serverRootDir: directory,
+      interactive: interactive,
+    );
+
+    final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+
+    // Start Docker Compose services if needed.
+    final docker = commandConfig.value(StartOption.docker);
+    var startedDocker = false;
+    if (docker) {
+      startedDocker = await StartCommand._ensureDockerServices(serverDir);
+    }
 
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
     final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
@@ -826,6 +842,9 @@ Future<void> _runTuiBackend({
       await fileChangeSub?.cancel();
       await mcpSocket?.close();
       await session.dispose();
+      if (startedDocker) {
+        await StartCommand._stopDockerServices(serverDir);
+      }
       nocterm.shutdownApp(0);
     };
     holder.onHotReload = () {
