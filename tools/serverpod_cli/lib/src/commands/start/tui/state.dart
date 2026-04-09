@@ -89,10 +89,7 @@ class CompletedOperation {
 
 /// Central state for the TUI, mutated by the backend and rendered by nocterm.
 class ServerWatchState {
-  ServerWatchState({this.splashStage});
-
-  /// Non-null during the loading screen. Describes current startup step.
-  String? splashStage;
+  ServerWatchState();
 
   /// Structured log entries for the "Log Messages" tab.
   final List<Object> logHistory = []; // TuiLogEntry | CompletedOperation
@@ -111,6 +108,10 @@ class ServerWatchState {
 
   /// Whether the server is running and ready for actions.
   bool serverReady = false;
+
+  /// Whether to show the splash overlay. Starts true, set to false
+  /// after 5 seconds or explicitly by the backend.
+  bool showSplash = true;
 
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;

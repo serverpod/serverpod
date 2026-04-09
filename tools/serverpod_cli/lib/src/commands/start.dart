@@ -603,7 +603,7 @@ Future<int> _runWithTui({
   required bool startedDocker,
 }) async {
   final holder = AppStateHolder(
-    ServerWatchState(splashStage: 'Starting...'),
+    ServerWatchState(),
   );
   var exitCode = 0;
   var backendStarted = false;
@@ -620,7 +620,6 @@ Future<int> _runWithTui({
       watch: watch,
       onExitCode: (code) => exitCode = code,
     ).catchError((Object e, StackTrace st) {
-      h.state.splashStage = null;
       h.state.logHistory.add(
         TuiLogEntry(
           timestamp: DateTime.now(),
@@ -669,7 +668,6 @@ Future<void> _runTuiBackend({
     // The splash animation freezes during heavy async work (analyzer init,
     // process spawning) because the main isolate can't render frames.
     // Instead, show startup progress as log messages.
-    holder.state.splashStage = null;
     holder.markDirty();
 
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
@@ -855,7 +853,7 @@ Future<void> _runTuiBackend({
     await session.dispose();
   } catch (e, st) {
     // Show the error in the TUI. Keep it open so the user can read it.
-    holder.state.splashStage = null;
+    holder.state.showSplash = false;
     holder.state.logHistory.add(
       TuiLogEntry(
         timestamp: DateTime.now(),

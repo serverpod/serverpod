@@ -70,19 +70,17 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   }
 
   void _rebuild() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    final state = component.holder.state;
+    if (state.serverReady && state.showSplash) {
+      state.showSplash = false;
+    }
+    setState(() {});
   }
 
   @override
   Component build(BuildContext context) {
     final state = component.holder.state;
-
-    if (state.splashStage != null) {
-      return ServerpodTheme(
-        data: ServerpodThemeData.dark,
-        child: LoadingScreen(stage: state.splashStage!),
-      );
-    }
 
     return ServerpodTheme(
       data: ServerpodThemeData.dark,
@@ -91,6 +89,7 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
         onKeyEvent: _handleKeyEvent,
         child: MainScreen(
           state: state,
+          showSplash: state.showSplash,
           onTabChanged: (index) {
             state.selectedTab = index;
             _rebuild();

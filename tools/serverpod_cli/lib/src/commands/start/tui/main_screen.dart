@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart';
 
 import 'components.dart';
+import 'loading_screen.dart';
 import 'serverpod_theme.dart';
 import 'state.dart';
 
@@ -14,6 +15,7 @@ class MainScreen extends StatelessComponent {
     super.key,
     required this.state,
     required this.onTabChanged,
+    this.showSplash = false,
     this.onHotReload,
     this.onCreateMigration,
     this.onApplyMigration,
@@ -22,6 +24,7 @@ class MainScreen extends StatelessComponent {
 
   final ServerWatchState state;
   final ValueChanged<int> onTabChanged;
+  final bool showSplash;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
   final VoidCallback? onApplyMigration;
@@ -31,37 +34,41 @@ class MainScreen extends StatelessComponent {
   Component build(BuildContext context) {
     final st = ServerpodTheme.of(context);
 
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: Stack(
-            children: [
-              // Border box (full, including top line).
-              BorderedBox(
-                color: st.activeTab,
-                child: Column(
-                  children: [
-                    Expanded(child: _buildTabContent()),
-                    // Pinned active operations
-                    if (state.activeOperations.isNotEmpty) ...[
-                      for (final op in state.activeOperations.values)
-                        TrackedOperationWidget(
-                          key: ValueKey(op.id),
-                          operation: op,
-                        ),
-                    ],
-                  ],
-                ),
+        LoadingScreen(visible: showSplash),
+        Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  BorderedBox(
+                    color: st.activeTab,
+                    child: Column(
+                      children: [
+                        Expanded(child: _buildTabContent()),
+                        // Pinned active operations
+                        if (state.activeOperations.isNotEmpty) ...[
+                          for (final op in state.activeOperations.values)
+                            TrackedOperationWidget(
+                              key: ValueKey(op.id),
+                              operation: op,
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  // Tab labels overlaid on top border, offset past the corner.
+                  Padding(
+                    padding: const EdgeInsets.only(left: 1),
+                    child: _buildTabBar(st),
+                  ),
+                ],
               ),
-              // Tab labels overlaid on top border, offset past the corner.
-              Padding(
-                padding: const EdgeInsets.only(left: 1),
-                child: _buildTabBar(st),
-              ),
-            ],
-          ),
+            ),
+            _buildButtonBar(),
+          ],
         ),
-        _buildButtonBar(),
       ],
     );
   }
@@ -96,14 +103,6 @@ class MainScreen extends StatelessComponent {
 
   Component _buildStructuredLogView() {
     final items = state.logHistory;
-    if (items.isEmpty) {
-      return const Center(
-        child: Text(
-          'Waiting for log messages...',
-          style: TextStyle(fontWeight: FontWeight.dim),
-        ),
-      );
-    }
 
     return ListView.builder(
       reverse: true,
@@ -131,14 +130,6 @@ class MainScreen extends StatelessComponent {
 
   Component _buildRawOutputView() {
     final lines = state.rawLines;
-    if (lines.isEmpty) {
-      return const Center(
-        child: Text(
-          'No raw output yet.',
-          style: TextStyle(fontWeight: FontWeight.dim),
-        ),
-      );
-    }
 
     return ListView.builder(
       reverse: true,
