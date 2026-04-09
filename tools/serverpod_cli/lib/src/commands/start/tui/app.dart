@@ -1,6 +1,5 @@
 import 'package:nocterm/nocterm.dart';
 
-import 'loading_screen.dart';
 import 'main_screen.dart';
 import 'serverpod_theme.dart';
 import 'state.dart';

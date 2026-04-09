@@ -271,59 +271,59 @@ class StartCommand extends ServerpodCommand<StartOption> {
       await compiler.dispose();
     }
   }
+}
 
-  /// Ensures Docker Compose services are running.
-  ///
-  /// Returns `true` if this method started the containers (meaning we should
-  /// stop them on shutdown). Returns `false` if no action was taken.
-  static Future<bool> _ensureDockerServices(String serverDir) async {
-    final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
-    if (!await composeFile.exists()) return false;
+/// Ensures Docker Compose services are running.
+///
+/// Returns `true` if this method started the containers (meaning we should
+/// stop them on shutdown). Returns `false` if no action was taken.
+Future<bool> _ensureDockerServices(String serverDir) async {
+  final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
+  if (!await composeFile.exists()) return false;
 
-    // Check if containers are already running.
-    final ps = await Process.run(
-      'docker',
-      ['compose', 'ps', '--status', 'running', '-q'],
-      workingDirectory: serverDir,
+  // Check if containers are already running.
+  final ps = await Process.run(
+    'docker',
+    ['compose', 'ps', '--status', 'running', '-q'],
+    workingDirectory: serverDir,
+  );
+
+  if (ps.exitCode != 0) {
+    log.warning(
+      'Docker does not appear to be running. '
+      'Start Docker or use --no-docker to skip.',
     );
-
-    if (ps.exitCode != 0) {
-      log.warning(
-        'Docker does not appear to be running. '
-        'Start Docker or use --no-docker to skip.',
-      );
-      return false;
-    }
-
-    final running = (ps.stdout as String).trim();
-    if (running.isNotEmpty) return false;
-
-    // Start containers.
-    log.info('Starting Docker Compose services...');
-    final up = await Process.run(
-      'docker',
-      ['compose', 'up', '-d'],
-      workingDirectory: serverDir,
-    );
-
-    if (up.exitCode != 0) {
-      final error = (up.stderr as String).trim();
-      log.warning('Failed to start Docker Compose services: $error');
-      return false;
-    }
-
-    log.info('Docker Compose services started.');
-    return true;
+    return false;
   }
 
-  static Future<void> _stopDockerServices(String serverDir) async {
-    log.info('Stopping Docker Compose services...');
-    await Process.run(
-      'docker',
-      ['compose', 'stop'],
-      workingDirectory: serverDir,
-    );
+  final running = (ps.stdout as String).trim();
+  if (running.isNotEmpty) return false;
+
+  // Start containers.
+  log.info('Starting Docker Compose services...');
+  final up = await Process.run(
+    'docker',
+    ['compose', 'up', '-d'],
+    workingDirectory: serverDir,
+  );
+
+  if (up.exitCode != 0) {
+    final error = (up.stderr as String).trim();
+    log.warning('Failed to start Docker Compose services: $error');
+    return false;
   }
+
+  log.info('Docker Compose services started.');
+  return true;
+}
+
+Future<void> _stopDockerServices(String serverDir) async {
+  log.info('Stopping Docker Compose services...');
+  await Process.run(
+    'docker',
+    ['compose', 'stop'],
+    workingDirectory: serverDir,
+  );
 }
 
 /// Runs the entire watch-mode loop.
@@ -672,10 +672,14 @@ Future<void> _runTuiBackend({
     final directory = commandConfig.value(StartOption.directory);
 
     // Load generator config.
-    final config = await GeneratorConfig.load(
-      serverRootDir: directory,
-      interactive: interactive,
-    );
+    late final GeneratorConfig config;
+    await log.progress('Loading project configuration', () async {
+      config = await GeneratorConfig.load(
+        serverRootDir: directory,
+        interactive: interactive,
+      );
+      return true;
+    });
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
 
@@ -683,7 +687,10 @@ Future<void> _runTuiBackend({
     final docker = commandConfig.value(StartOption.docker);
     var startedDocker = false;
     if (docker) {
-      startedDocker = await StartCommand._ensureDockerServices(serverDir);
+      await log.progress('Starting Docker services', () async {
+        startedDocker = await _ensureDockerServices(serverDir);
+        return true;
+      });
     }
 
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
@@ -843,7 +850,7 @@ Future<void> _runTuiBackend({
       await mcpSocket?.close();
       await session.dispose();
       if (startedDocker) {
-        await StartCommand._stopDockerServices(serverDir);
+        await _stopDockerServices(serverDir);
       }
       nocterm.shutdownApp(0);
     };
