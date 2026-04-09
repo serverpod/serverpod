@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
 
+import 'logo.dart';
 import 'shimmer.dart';
 
-/// Splash screen showing ASCII art "Serverpod" with shimmer effect
-/// and a subtitle with gradient on "ultimate".
+/// Splash screen showing the Serverpod logo and ASCII art title
+/// with shimmer effect, plus a subtitle with gradient on "ultimate".
 class LoadingScreen extends StatefulComponent {
   const LoadingScreen({super.key, this.visible = true});
 
@@ -60,20 +61,39 @@ class _LoadingScreenState extends State<LoadingScreen> {
     final highlightColor = Color.lerp(Color.defaultColor, Colors.cyan, t)!;
 
     return Center(
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Shimmer(
-            highlightColor: highlightColor,
-            baseColor: baseColor,
-            child: AsciiText(
-              'Serverpod',
-              font: AsciiFont.standard,
-              style: TextStyle(color: baseColor),
+          SizedBox(
+            width: 12,
+            height: 8,
+            // ignore: experimental_member_use
+            child: Image(
+              image: MemoryImage(logoBytes),
+              fit: BoxFit.contain,
+              protocol: ImageProtocol.kitty,
+              errorWidget: const Text('!', style: TextStyle(color: Colors.red)),
             ),
           ),
-          const SizedBox(height: 1),
-          _buildSubtitle(t),
+          const SizedBox(width: 2),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Shimmer(
+                highlightColor: highlightColor,
+                baseColor: baseColor,
+                child: AsciiText(
+                  'Serverpod',
+                  font: AsciiFont.standard,
+                  style: TextStyle(color: baseColor),
+                ),
+              ),
+              const SizedBox(height: 1),
+              _buildSubtitle(t),
+            ],
+          ),
         ],
       ),
     );
@@ -83,16 +103,15 @@ class _LoadingScreenState extends State<LoadingScreen> {
     final white = Color.lerp(Color.defaultColor, Colors.brightWhite, t)!;
     final dim = Color.lerp(Color.defaultColor, Colors.gray, t)!;
 
-    // Gradient colors for "ultimate" (pink/purple spectrum).
     const gradientColors = [
-      Color.fromRGB(180, 140, 200), // lavender
-      Color.fromRGB(200, 130, 180), // pink-lavender
-      Color.fromRGB(220, 120, 160), // rose
-      Color.fromRGB(230, 120, 150), // pink
-      Color.fromRGB(220, 130, 160), // rose
-      Color.fromRGB(200, 140, 180), // pink-lavender
-      Color.fromRGB(180, 150, 190), // lavender
-      Color.fromRGB(170, 155, 195), // soft lavender
+      Color.fromRGB(180, 140, 200),
+      Color.fromRGB(200, 130, 180),
+      Color.fromRGB(220, 120, 160),
+      Color.fromRGB(230, 120, 150),
+      Color.fromRGB(220, 130, 160),
+      Color.fromRGB(200, 140, 180),
+      Color.fromRGB(180, 150, 190),
+      Color.fromRGB(170, 155, 195),
     ];
 
     final ultimateSpans = <InlineSpan>[
@@ -100,11 +119,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         TextSpan(
           text: 'ultimate'[i],
           style: TextStyle(
-            color: Color.lerp(
-              Color.defaultColor,
-              gradientColors[i],
-              t,
-            ),
+            color: Color.lerp(Color.defaultColor, gradientColors[i], t),
             fontStyle: FontStyle.italic,
           ),
         ),

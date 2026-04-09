@@ -36,7 +36,6 @@ class MainScreen extends StatelessComponent {
 
     return Stack(
       children: [
-        LoadingScreen(visible: showSplash),
         Column(
           children: [
             Expanded(
@@ -69,6 +68,7 @@ class MainScreen extends StatelessComponent {
             _buildButtonBar(),
           ],
         ),
+        LoadingScreen(visible: showSplash),
       ],
     );
   }

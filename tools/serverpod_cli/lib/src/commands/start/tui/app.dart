@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nocterm/nocterm.dart';
 
 import 'main_screen.dart';
@@ -53,10 +55,17 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
 
+  bool _minSplashElapsed = false;
+
   @override
   void initState() {
     super.initState();
     component.holder._attach(this);
+    // Keep splash visible for at least 5 seconds.
+    Timer(const Duration(seconds: 5), () {
+      _minSplashElapsed = true;
+      _tryDismissSplash();
+    });
     SchedulerBinding.instance.addPostFrameCallback((_) {
       component.onReady(component.holder);
     });
@@ -68,12 +77,17 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
     super.dispose();
   }
 
+  void _tryDismissSplash() {
+    final state = component.holder.state;
+    if (_minSplashElapsed && state.serverReady && state.showSplash) {
+      state.showSplash = false;
+      if (mounted) setState(() {});
+    }
+  }
+
   void _rebuild() {
     if (!mounted) return;
-    final state = component.holder.state;
-    if (state.serverReady && state.showSplash) {
-      state.showSplash = false;
-    }
+    _tryDismissSplash();
     setState(() {});
   }
 
