@@ -60,13 +60,18 @@ class Button extends StatelessComponent {
         children: [
           Text(
             activationChar,
-            style: const TextStyle(
-              color: Colors.magenta,
-              fontWeight: FontWeight.bold,
+            style: TextStyle(
+              color: enabled ? Colors.magenta : Colors.gray,
+              fontWeight: enabled ? FontWeight.bold : FontWeight.dim,
             ),
           ),
           const Text(' '),
-          Text(name),
+          Text(
+            name,
+            style: TextStyle(
+              fontWeight: enabled ? FontWeight.normal : FontWeight.dim,
+            ),
+          ),
         ],
       ),
     );

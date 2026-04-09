@@ -104,6 +104,12 @@ class ServerWatchState {
   /// Currently selected tab index (0 = Log Messages, 1 = Raw Output).
   int selectedTab = 0;
 
+  /// Whether a tracked action (hot reload, migration) is in progress.
+  bool actionBusy = false;
+
+  /// Whether the server is running and ready for actions.
+  bool serverReady = false;
+
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;
 

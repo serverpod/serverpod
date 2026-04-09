@@ -814,16 +814,24 @@ Future<void> _runTuiBackend({
 
     // Wire button callbacks.
     holder.onQuit = () => nocterm.shutdownApp(0);
-    holder.onApplyMigration = () => session.applyMigration();
+    holder.onHotReload = () {
+      _runTrackedAction(holder, 'Hot reload', session.forceReload);
+    };
+    holder.onApplyMigration = () {
+      _runTrackedAction(holder, 'Applying migrations', session.applyMigration);
+    };
 
     // Switch to main screen.
     holder.state.splashStage = null;
+    holder.state.serverReady = session.isRunning;
     holder.markDirty();
 
     if (session.isRunning) log.info(serverRunning);
 
     // Wait for server exit.
     final serverExitCode = await session.done;
+    holder.state.serverReady = false;
+    holder.markDirty();
     onExitCode(serverExitCode);
     log.info('Server stopped (exitCode: $serverExitCode).');
 
@@ -909,6 +917,55 @@ void _handleServerLogEvent(AppStateHolder holder, Event event) {
           ),
         );
       }
+  }
+  holder.markDirty();
+}
+
+/// Runs an async action as a tracked operation with spinner in the TUI.
+///
+/// Guards against concurrent actions - if [state.actionBusy] is true or
+/// [state.serverReady] is false, the action is silently ignored.
+void _runTrackedAction(
+  AppStateHolder holder,
+  String label,
+  Future<void> Function() action,
+) {
+  final state = holder.state;
+  if (state.actionBusy || !state.serverReady) return;
+
+  state.actionBusy = true;
+  final id = '${label.hashCode}_${DateTime.now().millisecondsSinceEpoch}';
+  state.activeOperations[id] = TrackedOperation(id: id, label: label);
+  holder.markDirty();
+
+  action()
+      .then((_) {
+        _completeTrackedAction(holder, id, success: true);
+      })
+      .catchError((Object e) {
+        _completeTrackedAction(holder, id, success: false);
+        log.error('$label failed: $e');
+      });
+}
+
+void _completeTrackedAction(
+  AppStateHolder holder,
+  String id, {
+  required bool success,
+}) {
+  final state = holder.state;
+  state.actionBusy = false;
+  final op = state.activeOperations.remove(id);
+  if (op != null) {
+    op.stopwatch.stop();
+    state.logHistory.add(
+      CompletedOperation(
+        label: op.label,
+        success: success,
+        duration: op.stopwatch.elapsed,
+        entries: op.entries,
+      ),
+    );
   }
   holder.markDirty();
 }

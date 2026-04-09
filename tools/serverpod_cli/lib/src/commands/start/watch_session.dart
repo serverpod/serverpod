@@ -201,6 +201,7 @@ class WatchSession {
   Future<void> _compileAndReload({
     required Set<String> dartFiles,
     required bool packageConfigChanged,
+    bool forceFullCompile = false,
   }) async {
     final compiler = _compiler!;
 
@@ -209,7 +210,15 @@ class WatchSession {
     final changedPaths = {..._pendingPaths, ...dartFiles};
 
     CompileResult? result;
-    if (packageConfigChanged) {
+    if (forceFullCompile) {
+      _pendingPaths.clear();
+      await compiler.reset();
+      result = await compileWithProgress(
+        'Compiling server',
+        compiler,
+        rejectOnFailure: true,
+      );
+    } else if (packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       _pendingPaths.clear();
@@ -279,6 +288,27 @@ class WatchSession {
     }
 
     await _restartServer(fullResult.dillOutput!);
+  }
+
+  /// Forces a full recompile and hot reload (or restart).
+  ///
+  /// Useful when the user explicitly requests a reload via a button press.
+  Future<void> forceReload() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    final compiler = _compiler;
+    if (compiler == null) {
+      throw StateError('Cannot force reload in --no-fes mode.');
+    }
+    _pending = _pending.then(
+      (_) => _compileAndReload(
+        dartFiles: const {},
+        packageConfigChanged: false,
+        forceFullCompile: true,
+      ),
+    );
+    return _pending;
   }
 
   /// Restarts the server with `--apply-migrations` (one-shot).
