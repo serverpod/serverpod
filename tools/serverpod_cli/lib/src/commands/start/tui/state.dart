@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 /// Log level for structured log entries displayed in the TUI.
 enum TuiLogLevel {
   debug('debug', 5),
@@ -92,10 +94,11 @@ class ServerWatchState {
   ServerWatchState();
 
   /// Structured log entries for the "Log Messages" tab.
-  final List<Object> logHistory = []; // TuiLogEntry | CompletedOperation
+  final QueueList<Object> logHistory =
+      QueueList(); // TuiLogEntry | CompletedOperation
 
   /// Raw stdout/stderr lines for the "Raw Output" tab.
-  final List<String> rawLines = [];
+  final QueueList<String> rawLines = QueueList();
 
   /// Currently active tracked operations (keyed by ID).
   final Map<String, TrackedOperation> activeOperations = {};

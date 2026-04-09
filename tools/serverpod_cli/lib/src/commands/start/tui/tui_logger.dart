@@ -37,9 +37,9 @@ class TuiLogger extends Logger {
     final holder = _holder;
     if (holder != null) {
       final state = holder.state;
-      state.logHistory.add(entry);
+      state.logHistory.addLast(entry);
       if (state.logHistory.length > ServerWatchState.maxLogEntries) {
-        state.logHistory.removeAt(0);
+        state.logHistory.removeFirst();
       }
       holder.markDirty();
     } else {

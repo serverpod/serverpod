@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'app.dart';
+import 'state.dart';
 
 /// An [IOSink] implementation that captures server stdout/stderr output
 /// and routes it to the TUI's "Raw Output" tab.
@@ -17,7 +18,11 @@ class TuiLogSink implements IOSink {
     for (var i = 0; i < text.length; i++) {
       final char = text[i];
       if (char == '\n') {
-        _holder.state.rawLines.add(_lineBuffer.toString());
+        final rawLines = _holder.state.rawLines;
+        rawLines.addLast(_lineBuffer.toString());
+        if (rawLines.length > ServerWatchState.maxRawLines) {
+          rawLines.removeFirst();
+        }
         _lineBuffer.clear();
         _holder.markDirty();
       } else if (char != '\r') {
