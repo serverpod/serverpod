@@ -21,7 +21,10 @@ class TuiLogger extends Logger {
   void attach(AppStateHolder holder) {
     _holder = holder;
     if (_buffer.isNotEmpty) {
-      holder.state.logHistory.addAll(_buffer);
+      final overflow = _buffer.length - ServerWatchState.maxLogEntries;
+      holder.state.logHistory.addAll(
+        overflow > 0 ? _buffer.skip(overflow) : _buffer,
+      );
       _buffer.clear();
       holder.markDirty();
     }
