@@ -9,17 +9,23 @@ import 'state.dart';
 
 // -- BorderedBox --
 
-/// A container with a rounded border.
+/// A container with a rounded border and optional title.
 class BorderedBox extends StatelessComponent {
-  const BorderedBox({super.key, required this.child});
+  const BorderedBox({super.key, required this.child, this.title, this.color});
 
   final Component child;
+  final BorderTitle? title;
+  final Color? color;
 
   @override
   Component build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: BoxBorder.all(style: BoxBorderStyle.rounded),
+        border: BoxBorder.all(
+          style: BoxBorderStyle.rounded,
+          color: color ?? TuiTheme.of(context).outline,
+        ),
+        title: title,
       ),
       child: child,
     );
@@ -81,40 +87,33 @@ class Button extends StatelessComponent {
   }
 }
 
-// -- TabBar --
+// -- Tab title builder --
 
-/// A terminal-style tab bar.
-class TuiTabBar extends StatelessComponent {
-  const TuiTabBar({
-    super.key,
-    required this.labels,
-    required this.selectedTab,
-  });
-
-  final List<String> labels;
-  final int selectedTab;
-
-  @override
-  Component build(BuildContext context) {
-    final st = ServerpodTheme.of(context);
-
-    return Row(
+/// Builds a [BorderTitle] with tab labels for use in [BorderedBox].
+/// Selected tab uses reverse style, others are dimmed.
+BorderTitle buildTabTitle({
+  required List<String> labels,
+  required int selectedTab,
+  required ServerpodThemeData theme,
+}) {
+  return BorderTitle.rich(
+    textSpan: TextSpan(
       children: [
         for (var i = 0; i < labels.length; i++) ...[
-          Text(
-            labels[i],
-            style: TextStyle(
-              fontWeight: i == selectedTab ? FontWeight.normal : FontWeight.dim,
-              color: i == selectedTab ? st.activeTab : null,
-              decoration: i == selectedTab ? TextDecoration.underline : null,
+          if (i == selectedTab)
+            TextSpan(
+              text: ' ${labels[i]} ',
+              style: TextStyle(color: theme.activeTab, reverse: true),
+            )
+          else
+            TextSpan(
+              text: ' ${labels[i]} ',
+              style: const TextStyle(fontWeight: FontWeight.dim),
             ),
-          ),
-          if (i < labels.length - 1) const Text('  '),
         ],
-        Expanded(child: const Divider()),
       ],
-    );
-  }
+    ),
+  );
 }
 
 // -- LogMessageWidget --

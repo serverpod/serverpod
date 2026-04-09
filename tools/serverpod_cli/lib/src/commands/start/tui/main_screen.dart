@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart';
 
 import 'components.dart';
+import 'serverpod_theme.dart';
 import 'state.dart';
 
 /// Main screen shown after startup completes.
@@ -28,30 +29,60 @@ class MainScreen extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final st = ServerpodTheme.of(context);
+
     return Column(
       children: [
         Expanded(
-          child: BorderedBox(
-            child: Column(
-              children: [
-                TuiTabBar(
-                  labels: const ['Log Messages', 'Raw Output'],
-                  selectedTab: state.selectedTab,
+          child: Stack(
+            children: [
+              // Border box (full, including top line).
+              BorderedBox(
+                color: st.activeTab,
+                child: Column(
+                  children: [
+                    Expanded(child: _buildTabContent()),
+                    // Pinned active operations
+                    if (state.activeOperations.isNotEmpty) ...[
+                      for (final op in state.activeOperations.values)
+                        TrackedOperationWidget(
+                          key: ValueKey(op.id),
+                          operation: op,
+                        ),
+                    ],
+                  ],
                 ),
-                Expanded(child: _buildTabContent()),
-                // Pinned active operations
-                if (state.activeOperations.isNotEmpty) ...[
-                  for (final op in state.activeOperations.values)
-                    TrackedOperationWidget(
-                      key: ValueKey(op.id),
-                      operation: op,
-                    ),
-                ],
-              ],
-            ),
+              ),
+              // Tab labels overlaid on top border, offset past the corner.
+              Padding(
+                padding: const EdgeInsets.only(left: 1),
+                child: _buildTabBar(st),
+              ),
+            ],
           ),
         ),
         _buildButtonBar(),
+      ],
+    );
+  }
+
+  Component _buildTabBar(ServerpodThemeData st) {
+    const labels = ['Log Messages', 'Raw Output'];
+    return Row(
+      children: [
+        for (var i = 0; i < labels.length; i++)
+          if (i == state.selectedTab) ...[
+            Text('▐', style: TextStyle(color: st.activeTab)),
+            Text(
+              labels[i],
+              style: TextStyle(color: st.activeTab, reverse: true),
+            ),
+            Text('▌─', style: TextStyle(color: st.activeTab)),
+          ] else ...[
+            Text(' ', style: TextStyle(color: st.activeTab)),
+            Text(labels[i], style: const TextStyle(fontWeight: FontWeight.dim)),
+            Text(' ─', style: TextStyle(color: st.activeTab)),
+          ],
       ],
     );
   }
