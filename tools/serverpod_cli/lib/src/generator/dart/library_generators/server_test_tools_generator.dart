@@ -817,6 +817,7 @@ class ServerTestToolsGenerator {
                         'serverpodLoggingMode': refer('serverpodLoggingMode'),
                         'testServerOutputMode': refer('testServerOutputMode'),
                         'experimentalFeatures': refer('experimentalFeatures'),
+                        'configOverride': refer('configOverride'),
                         if (config.isFeatureEnabled(ServerpodFeature.database))
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
