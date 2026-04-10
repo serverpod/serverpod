@@ -64,6 +64,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var table = _getTableOrAssert<T>(session, operation: 'find');
     var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
+    await _warnIfSqliteIgnoresLockBehavior(
+      session,
+      operation: 'finding rows',
+      lockBehavior: lockBehavior,
+    );
+
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
         .withWhere(where)
@@ -109,6 +115,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       limit: 1,
       transaction: transaction,
       include: include,
+      lockBehavior: lockBehavior,
+      lockMode: lockMode,
     );
 
     if (rows.isEmpty) return null;
@@ -130,9 +138,19 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
+      lockBehavior: lockBehavior,
+      lockMode: lockMode,
     );
   }
 
+  /// No-op for SQLite.
+  ///
+  /// Since SQLite allow only one write transaction at a time, locking specific
+  /// rows is not necessary - nor supported by the SQLite engine. Given that
+  /// [lockRows] require a transaction, the lock will be acquired implicitly.
+  ///
+  /// This method is no-op to maintain compatibility with code that can also
+  /// be run against other databases.
   @override
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
@@ -141,8 +159,25 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     required Transaction transaction,
     LockBehavior lockBehavior = LockBehavior.wait,
   }) async {
-    // SQLite has no row-level locking; using a transaction is sufficient.
-    // No-op so callers (e.g. lockRows then find) still work.
+    await _warnIfSqliteIgnoresLockBehavior(
+      session,
+      operation: 'locking rows',
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  Future<void> _warnIfSqliteIgnoresLockBehavior(
+    DatabaseSession session, {
+    required String operation,
+    LockBehavior? lockBehavior,
+  }) async {
+    if (lockBehavior == null || lockBehavior == LockBehavior.wait) return;
+    await session.logWarning?.call(
+      'The lock behavior "$lockBehavior" has no effect when $operation '
+      'on SQLite because SQLite does not support concurrent writes and the '
+      'transaction will acquire a lock implicitly. To suppress this warning, '
+      'either skip locking or use "LockBehavior.wait".',
+    );
   }
 
   @override

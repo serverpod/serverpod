@@ -939,6 +939,23 @@ class SessionLogConfig {
     );
   }
 
+  /// Returns a copy of this [SessionLogConfig] with the given properties updated.
+  SessionLogConfig copyWith({
+    bool? persistentEnabled,
+    bool? consoleEnabled,
+    Duration? cleanupInterval,
+    Duration? retentionPeriod,
+    int? retentionCount,
+    ConsoleLogFormat? consoleLogFormat,
+  }) => SessionLogConfig(
+    persistentEnabled: persistentEnabled ?? this.persistentEnabled,
+    consoleEnabled: consoleEnabled ?? this.consoleEnabled,
+    cleanupInterval: cleanupInterval ?? this.cleanupInterval,
+    retentionPeriod: retentionPeriod ?? this.retentionPeriod,
+    retentionCount: retentionCount ?? this.retentionCount,
+    consoleLogFormat: consoleLogFormat ?? this.consoleLogFormat,
+  );
+
   factory SessionLogConfig._fromJson(
     Map sessionLogConfigJson,
     String name, {
