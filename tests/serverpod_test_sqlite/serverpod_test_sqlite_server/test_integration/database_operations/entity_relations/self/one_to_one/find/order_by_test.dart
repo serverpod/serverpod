@@ -59,8 +59,8 @@ void main() async {
         var postsFetched = await Post.db.find(
           session,
           orderByList: (t) => [
-            db.Order(column: t.next.next.content),
-            db.Order(column: t.content),
+            t.next.next.content.asc(),
+            t.content.asc(),
           ],
         );
 

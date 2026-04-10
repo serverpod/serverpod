@@ -106,6 +106,7 @@ abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
@@ -115,7 +116,8 @@ abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Person.t),
       include: include,
     );
@@ -301,6 +303,7 @@ class PersonIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -350,6 +353,7 @@ class PersonRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
@@ -361,7 +365,8 @@ class PersonRepository {
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -393,6 +398,7 @@ class PersonRepository {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
@@ -404,7 +410,8 @@ class PersonRepository {
       where: where?.call(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -527,6 +534,7 @@ class PersonRepository {
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -537,7 +545,8 @@ class PersonRepository {
       offset: offset,
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -553,6 +562,7 @@ class PersonRepository {
     _i1.DatabaseSession session,
     List<Person> rows, {
     _i1.OrderByBuilder<PersonTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
@@ -561,7 +571,8 @@ class PersonRepository {
       rows,
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -586,6 +597,7 @@ class PersonRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.OrderByBuilder<PersonTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
@@ -594,7 +606,8 @@ class PersonRepository {
       where: where(Person.t),
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

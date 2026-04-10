@@ -80,14 +80,8 @@ void main() async {
         var fetchedMembers = await Member.db.find(
           session,
           orderByList: (t) => [
-            db.Order(
-              column: t.blocking.count(
-                (c) => c.blockedId.equals(member[0].id!),
-              ),
-            ),
-            db.Order(
-              column: t.name,
-            ),
+            t.blocking.count((c) => c.blockedId.equals(member[0].id!)).asc(),
+            t.name.asc(),
           ],
         );
 

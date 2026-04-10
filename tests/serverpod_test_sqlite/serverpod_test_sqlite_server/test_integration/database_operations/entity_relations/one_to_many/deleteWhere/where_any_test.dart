@@ -205,8 +205,7 @@ void main() async {
           session,
           // All customers with any order.
           where: (c) => c.orders.any(),
-          orderBy: (c) => c.name,
-          orderDescending: true,
+          orderBy: (c) => c.name.desc(),
         );
 
         expect(deletedCustomers, hasLength(2));

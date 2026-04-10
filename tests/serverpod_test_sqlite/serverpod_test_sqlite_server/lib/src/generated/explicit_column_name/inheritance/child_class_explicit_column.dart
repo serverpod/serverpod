@@ -87,6 +87,7 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
@@ -96,7 +97,8 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
       include: include,
     );
@@ -200,6 +202,7 @@ class ChildClassExplicitColumnIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -245,6 +248,7 @@ class ChildClassExplicitColumnRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
@@ -255,7 +259,8 @@ class ChildClassExplicitColumnRepository {
       where: where?.call(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -286,6 +291,7 @@ class ChildClassExplicitColumnRepository {
     _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
@@ -296,7 +302,8 @@ class ChildClassExplicitColumnRepository {
       where: where?.call(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -418,6 +425,7 @@ class ChildClassExplicitColumnRepository {
     int? offset,
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -428,7 +436,8 @@ class ChildClassExplicitColumnRepository {
       offset: offset,
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -444,6 +453,7 @@ class ChildClassExplicitColumnRepository {
     _i2.DatabaseSession session,
     List<ChildClassExplicitColumn> rows, {
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
@@ -452,7 +462,8 @@ class ChildClassExplicitColumnRepository {
       rows,
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -477,6 +488,7 @@ class ChildClassExplicitColumnRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
     _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
@@ -485,7 +497,8 @@ class ChildClassExplicitColumnRepository {
       where: where(ChildClassExplicitColumn.t),
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

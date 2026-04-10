@@ -280,8 +280,6 @@ class ColumnUri extends _ValueOperatorColumn<Uri>
 }
 
 /// A [Column] holding [BigInt].
-///
-/// [ColumnBigInt] is not orderable because it is stored as text in the database.
 class ColumnBigInt extends _ValueOperatorColumn<BigInt>
     with _NullableColumnDefaultOperations<BigInt> {
   /// Creates a new [Column], this is typically done in generated code only.

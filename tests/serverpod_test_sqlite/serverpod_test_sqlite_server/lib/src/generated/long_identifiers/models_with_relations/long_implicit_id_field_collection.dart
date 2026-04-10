@@ -113,6 +113,7 @@ abstract class LongImplicitIdFieldCollection
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     LongImplicitIdFieldCollectionInclude? include,
@@ -122,7 +123,8 @@ abstract class LongImplicitIdFieldCollection
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
       include: include,
     );
@@ -294,6 +296,7 @@ class LongImplicitIdFieldCollectionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -347,6 +350,7 @@ class LongImplicitIdFieldCollectionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -358,7 +362,8 @@ class LongImplicitIdFieldCollectionRepository {
       where: where?.call(LongImplicitIdFieldCollection.t),
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -390,6 +395,7 @@ class LongImplicitIdFieldCollectionRepository {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -401,7 +407,8 @@ class LongImplicitIdFieldCollectionRepository {
       where: where?.call(LongImplicitIdFieldCollection.t),
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -531,6 +538,7 @@ class LongImplicitIdFieldCollectionRepository {
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -541,7 +549,8 @@ class LongImplicitIdFieldCollectionRepository {
       offset: offset,
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -557,6 +566,7 @@ class LongImplicitIdFieldCollectionRepository {
     _i1.DatabaseSession session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -565,7 +575,8 @@ class LongImplicitIdFieldCollectionRepository {
       rows,
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -591,6 +602,7 @@ class LongImplicitIdFieldCollectionRepository {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
     where,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -599,7 +611,8 @@ class LongImplicitIdFieldCollectionRepository {
       where: where(LongImplicitIdFieldCollection.t),
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

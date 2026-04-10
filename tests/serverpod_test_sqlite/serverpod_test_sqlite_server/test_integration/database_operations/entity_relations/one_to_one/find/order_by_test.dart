@@ -111,8 +111,8 @@ void main() async {
           session,
           // Order by company town name and then company name
           orderByList: (t) => [
-            db.Order(column: t.town.name),
-            db.Order(column: t.name),
+            t.town.name.asc(),
+            t.name.asc(),
           ],
         );
 
@@ -164,8 +164,8 @@ void main() async {
           session,
           // Order by citizen company town name and then citizen name
           orderByList: (t) => [
-            db.Order(column: t.company.town.name),
-            db.Order(column: t.name),
+            t.company.town.name.asc(),
+            t.name.asc(),
           ],
         );
 

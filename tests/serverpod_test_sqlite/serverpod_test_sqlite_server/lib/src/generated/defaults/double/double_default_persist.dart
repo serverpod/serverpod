@@ -82,6 +82,7 @@ abstract class DoubleDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     DoubleDefaultPersistInclude? include,
@@ -91,7 +92,8 @@ abstract class DoubleDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
       include: include,
     );
@@ -180,6 +182,7 @@ class DoubleDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -225,6 +228,7 @@ class DoubleDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -235,7 +239,8 @@ class DoubleDefaultPersistRepository {
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -266,6 +271,7 @@ class DoubleDefaultPersistRepository {
     _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -276,7 +282,8 @@ class DoubleDefaultPersistRepository {
       where: where?.call(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -398,6 +405,7 @@ class DoubleDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -408,7 +416,8 @@ class DoubleDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -424,6 +433,7 @@ class DoubleDefaultPersistRepository {
     _i1.DatabaseSession session,
     List<DoubleDefaultPersist> rows, {
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -432,7 +442,8 @@ class DoubleDefaultPersistRepository {
       rows,
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -457,6 +468,7 @@ class DoubleDefaultPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
     _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -465,7 +477,8 @@ class DoubleDefaultPersistRepository {
       where: where(DoubleDefaultPersist.t),
       orderBy: orderBy?.call(DoubleDefaultPersist.t),
       orderByList: orderByList?.call(DoubleDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -491,8 +491,7 @@ void main() {
             session,
             columnValues: (t) => [t.aString('ordered_update')],
             where: (t) => t.anInt.equals(matchingInt),
-            orderBy: (t) => t.aDouble,
-            orderDescending: true,
+            orderBy: (t) => t.aDouble.desc(),
             limit: 2,
           );
         });

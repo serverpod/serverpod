@@ -88,6 +88,7 @@ abstract class RelationEmptyModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     RelationEmptyModelInclude? include,
@@ -97,7 +98,8 @@ abstract class RelationEmptyModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(RelationEmptyModel.t),
       include: include,
     );
@@ -224,6 +226,7 @@ class RelationEmptyModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -277,6 +280,7 @@ class RelationEmptyModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -288,7 +292,8 @@ class RelationEmptyModelRepository {
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -320,6 +325,7 @@ class RelationEmptyModelRepository {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -331,7 +337,8 @@ class RelationEmptyModelRepository {
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -456,6 +463,7 @@ class RelationEmptyModelRepository {
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +474,8 @@ class RelationEmptyModelRepository {
       offset: offset,
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -482,6 +491,7 @@ class RelationEmptyModelRepository {
     _i1.DatabaseSession session,
     List<RelationEmptyModel> rows, {
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -490,7 +500,8 @@ class RelationEmptyModelRepository {
       rows,
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -515,6 +526,7 @@ class RelationEmptyModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -523,7 +535,8 @@ class RelationEmptyModelRepository {
       where: where(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

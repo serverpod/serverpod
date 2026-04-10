@@ -88,6 +88,7 @@ abstract class DoubleDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     DoubleDefaultModelInclude? include,
@@ -97,7 +98,8 @@ abstract class DoubleDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DoubleDefaultModel.t),
       include: include,
     );
@@ -201,6 +203,7 @@ class DoubleDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -246,6 +249,7 @@ class DoubleDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -256,7 +260,8 @@ class DoubleDefaultModelRepository {
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -287,6 +292,7 @@ class DoubleDefaultModelRepository {
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -297,7 +303,8 @@ class DoubleDefaultModelRepository {
       where: where?.call(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -419,6 +426,7 @@ class DoubleDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -429,7 +437,8 @@ class DoubleDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -445,6 +454,7 @@ class DoubleDefaultModelRepository {
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -453,7 +463,8 @@ class DoubleDefaultModelRepository {
       rows,
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -478,6 +489,7 @@ class DoubleDefaultModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -486,7 +498,8 @@ class DoubleDefaultModelRepository {
       where: where(DoubleDefaultModel.t),
       orderBy: orderBy?.call(DoubleDefaultModel.t),
       orderByList: orderByList?.call(DoubleDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

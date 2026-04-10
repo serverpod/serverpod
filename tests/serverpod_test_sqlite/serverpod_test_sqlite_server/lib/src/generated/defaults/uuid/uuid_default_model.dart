@@ -148,6 +148,7 @@ abstract class UuidDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     UuidDefaultModelInclude? include,
@@ -157,7 +158,8 @@ abstract class UuidDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UuidDefaultModel.t),
       include: include,
     );
@@ -322,6 +324,7 @@ class UuidDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -367,6 +370,7 @@ class UuidDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -377,7 +381,8 @@ class UuidDefaultModelRepository {
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -408,6 +413,7 @@ class UuidDefaultModelRepository {
     _i1.WhereExpressionBuilder<UuidDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -418,7 +424,8 @@ class UuidDefaultModelRepository {
       where: where?.call(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -540,6 +547,7 @@ class UuidDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -550,7 +558,8 @@ class UuidDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -566,6 +575,7 @@ class UuidDefaultModelRepository {
     _i1.DatabaseSession session,
     List<UuidDefaultModel> rows, {
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -574,7 +584,8 @@ class UuidDefaultModelRepository {
       rows,
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -599,6 +610,7 @@ class UuidDefaultModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UuidDefaultModelTable> where,
     _i1.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -607,7 +619,8 @@ class UuidDefaultModelRepository {
       where: where(UuidDefaultModel.t),
       orderBy: orderBy?.call(UuidDefaultModel.t),
       orderByList: orderByList?.call(UuidDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

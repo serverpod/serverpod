@@ -83,6 +83,7 @@ abstract class UriDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     UriDefaultPersistInclude? include,
@@ -92,7 +93,8 @@ abstract class UriDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UriDefaultPersist.t),
       include: include,
     );
@@ -180,6 +182,7 @@ class UriDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -225,6 +228,7 @@ class UriDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -235,7 +239,8 @@ class UriDefaultPersistRepository {
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -266,6 +271,7 @@ class UriDefaultPersistRepository {
     _i1.WhereExpressionBuilder<UriDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -276,7 +282,8 @@ class UriDefaultPersistRepository {
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -398,6 +405,7 @@ class UriDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -408,7 +416,8 @@ class UriDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -424,6 +433,7 @@ class UriDefaultPersistRepository {
     _i1.DatabaseSession session,
     List<UriDefaultPersist> rows, {
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -432,7 +442,8 @@ class UriDefaultPersistRepository {
       rows,
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -457,6 +468,7 @@ class UriDefaultPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -465,7 +477,8 @@ class UriDefaultPersistRepository {
       where: where(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

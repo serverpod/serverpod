@@ -95,6 +95,7 @@ abstract class UniqueDataWithNonPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
@@ -104,7 +105,8 @@ abstract class UniqueDataWithNonPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
       include: include,
     );
@@ -209,6 +211,7 @@ class UniqueDataWithNonPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -254,6 +257,7 @@ class UniqueDataWithNonPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -264,7 +268,8 @@ class UniqueDataWithNonPersistRepository {
       where: where?.call(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -295,6 +300,7 @@ class UniqueDataWithNonPersistRepository {
     _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -305,7 +311,8 @@ class UniqueDataWithNonPersistRepository {
       where: where?.call(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -427,6 +434,7 @@ class UniqueDataWithNonPersistRepository {
     int? offset,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -437,7 +445,8 @@ class UniqueDataWithNonPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -453,6 +462,7 @@ class UniqueDataWithNonPersistRepository {
     _i1.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -461,7 +471,8 @@ class UniqueDataWithNonPersistRepository {
       rows,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -486,6 +497,7 @@ class UniqueDataWithNonPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -494,7 +506,8 @@ class UniqueDataWithNonPersistRepository {
       where: where(UniqueDataWithNonPersist.t),
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

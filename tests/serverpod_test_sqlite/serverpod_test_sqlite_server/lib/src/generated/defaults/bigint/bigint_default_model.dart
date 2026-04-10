@@ -101,6 +101,7 @@ abstract class BigIntDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     BigIntDefaultModelInclude? include,
@@ -110,7 +111,8 @@ abstract class BigIntDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(BigIntDefaultModel.t),
       include: include,
     );
@@ -216,6 +218,7 @@ class BigIntDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -261,6 +264,7 @@ class BigIntDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -271,7 +275,8 @@ class BigIntDefaultModelRepository {
       where: where?.call(BigIntDefaultModel.t),
       orderBy: orderBy?.call(BigIntDefaultModel.t),
       orderByList: orderByList?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -302,6 +307,7 @@ class BigIntDefaultModelRepository {
     _i1.WhereExpressionBuilder<BigIntDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -312,7 +318,8 @@ class BigIntDefaultModelRepository {
       where: where?.call(BigIntDefaultModel.t),
       orderBy: orderBy?.call(BigIntDefaultModel.t),
       orderByList: orderByList?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -434,6 +441,7 @@ class BigIntDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -444,7 +452,8 @@ class BigIntDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultModel.t),
       orderByList: orderByList?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -460,6 +469,7 @@ class BigIntDefaultModelRepository {
     _i1.DatabaseSession session,
     List<BigIntDefaultModel> rows, {
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -468,7 +478,8 @@ class BigIntDefaultModelRepository {
       rows,
       orderBy: orderBy?.call(BigIntDefaultModel.t),
       orderByList: orderByList?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -493,6 +504,7 @@ class BigIntDefaultModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BigIntDefaultModelTable> where,
     _i1.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -501,7 +513,8 @@ class BigIntDefaultModelRepository {
       where: where(BigIntDefaultModel.t),
       orderBy: orderBy?.call(BigIntDefaultModel.t),
       orderByList: orderByList?.call(BigIntDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

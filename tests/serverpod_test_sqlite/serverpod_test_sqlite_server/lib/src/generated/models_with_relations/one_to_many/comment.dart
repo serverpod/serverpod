@@ -99,6 +99,7 @@ abstract class Comment
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     CommentInclude? include,
@@ -108,7 +109,8 @@ abstract class Comment
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Comment.t),
       include: include,
     );
@@ -238,6 +240,7 @@ class CommentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -285,6 +288,7 @@ class CommentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
@@ -296,7 +300,8 @@ class CommentRepository {
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -328,6 +333,7 @@ class CommentRepository {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
@@ -339,7 +345,8 @@ class CommentRepository {
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -462,6 +469,7 @@ class CommentRepository {
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -472,7 +480,8 @@ class CommentRepository {
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -488,6 +497,7 @@ class CommentRepository {
     _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.OrderByBuilder<CommentTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
@@ -496,7 +506,8 @@ class CommentRepository {
       rows,
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -521,6 +532,7 @@ class CommentRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.OrderByBuilder<CommentTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
@@ -529,7 +541,8 @@ class CommentRepository {
       where: where(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
