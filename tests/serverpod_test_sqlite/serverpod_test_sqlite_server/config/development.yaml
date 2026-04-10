@@ -20,5 +20,5 @@ database:
   filePath: serverpod_test_dev.db
 
 sessionLogs:
-  persistentEnabled: true
+  persistentEnabled: false
   consoleEnabled: false

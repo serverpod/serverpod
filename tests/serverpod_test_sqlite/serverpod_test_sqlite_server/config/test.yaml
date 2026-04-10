@@ -24,7 +24,7 @@ database:
   filePath: sqlite_data/serverpod_test_prod.db
 
 sessionLogs:
-  persistentEnabled: true
+  persistentEnabled: false
   consoleEnabled: false
 
 futureCallExecutionEnabled: false
