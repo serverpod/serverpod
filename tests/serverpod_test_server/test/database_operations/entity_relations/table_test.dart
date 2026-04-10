@@ -4,7 +4,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given models with deep nested relations', () {
     group('when building expression with deep nested relations', () {

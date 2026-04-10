@@ -42,7 +42,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   @override
-  PostgresValueEncoder get encoder => PostgresValueEncoder();
+  PostgresValueEncoder get encoder => const PostgresValueEncoder();
 
   /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
   /// when starting the [Server].

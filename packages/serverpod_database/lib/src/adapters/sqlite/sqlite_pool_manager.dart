@@ -40,7 +40,7 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// The encoder used to encode objects for storing in the database.
   @override
-  SqliteValueEncoder get encoder => SqliteValueEncoder();
+  SqliteValueEncoder get encoder => const SqliteValueEncoder();
 
   /// Creates a new [SqlitePoolManager]. Typically, this is done automatically
   /// when starting the [Server] with SQLite configuration.

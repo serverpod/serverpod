@@ -3,7 +3,7 @@ import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given a ColumnString', () {
     var columnName = 'name';

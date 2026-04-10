@@ -6,7 +6,7 @@ import 'package:serverpod_database/src/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   var testTable = Table<int?>(tableName: 'test');
   group('Given one expression', () {

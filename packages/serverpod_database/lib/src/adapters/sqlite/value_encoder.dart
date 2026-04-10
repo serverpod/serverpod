@@ -11,6 +11,9 @@ import '../../../serverpod_database.dart';
 /// done through [convert]. Use [encodeColumnValue] to encode a model value for
 /// a column.
 class SqliteValueEncoder implements ValueEncoder {
+  /// Creates a new [SqliteValueEncoder].
+  const SqliteValueEncoder();
+
   @override
   String convert(
     dynamic input, {
