@@ -121,21 +121,17 @@ class MainScreen extends StatelessComponent {
         keyboardScrollable: false,
         itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = items[items.length - 1 - index];
-          if (item is TuiLogEntry) {
-            return LogMessageWidget(
+          return switch (items[items.length - 1 - index]) {
+            TuiLogEntry entry => LogMessageWidget(
               key: ValueKey(index),
-              entry: item,
-            );
-          }
-          if (item is CompletedOperation) {
-            return CompletedOperationWidget(
+              entry: entry,
+            ),
+            CompletedOperation op => CompletedOperationWidget(
               key: ValueKey(index),
-              operation: item,
+              operation: op,
               expanded: state.expandOperations,
-            );
-          }
-          return const SizedBox.shrink();
+            ),
+          };
         },
       ),
     );

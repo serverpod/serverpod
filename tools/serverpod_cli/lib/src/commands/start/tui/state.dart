@@ -13,8 +13,11 @@ enum TuiLogLevel {
   final int padWidth;
 }
 
+/// Base type for entries in the log history.
+sealed class LogEntry {}
+
 /// A single structured log entry.
-class TuiLogEntry {
+final class TuiLogEntry extends LogEntry {
   TuiLogEntry({
     required this.timestamp,
     required this.level,
@@ -27,7 +30,7 @@ class TuiLogEntry {
 }
 
 /// A sub-entry within a tracked operation (session log or query).
-class OperationSubEntry {
+final class OperationSubEntry {
   OperationSubEntry({
     required this.timestamp,
     required this.message,
@@ -47,7 +50,7 @@ class OperationSubEntry {
 ///
 /// While active, rendered as a pinned entry with spinner at the bottom of the
 /// log area. On completion, collapses into a divider-style summary line.
-class TrackedOperation {
+final class TrackedOperation {
   TrackedOperation({
     required this.id,
     required this.label,
@@ -70,7 +73,7 @@ class TrackedOperation {
 }
 
 /// Completed tracked operation, stored in the log history.
-class CompletedOperation {
+final class CompletedOperation extends LogEntry {
   CompletedOperation({
     required this.label,
     required this.success,
@@ -90,12 +93,11 @@ class CompletedOperation {
 }
 
 /// Central state for the TUI, mutated by the backend and rendered by nocterm.
-class ServerWatchState {
+final class ServerWatchState {
   ServerWatchState();
 
   /// Structured log entries for the "Log Messages" tab.
-  final QueueList<Object> logHistory =
-      QueueList(); // TuiLogEntry | CompletedOperation
+  final QueueList<LogEntry> logHistory = QueueList();
 
   /// Raw stdout/stderr lines for the "Raw Output" tab.
   final QueueList<String> rawLines = QueueList();
