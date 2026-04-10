@@ -64,22 +64,6 @@ abstract base class DatabaseDeleteRowException implements DatabaseException {
   String toString() => 'DatabaseDeleteRowException: $message';
 }
 
-/// Thrown when [Transaction.cancel] has been called and a value is expected
-/// from the transaction.
-///
-/// This exception is used in SQLite to ensure that a rolled back transaction
-/// does not attempt to commit. If the transaction is not expected to return a
-/// value, this exception will be swallowed - which is the desired behavior.
-/// Otherwise, it will be thrown since it is not possible to return a value from
-/// a cancelled transaction.
-final class TransactionCancelledException extends DatabaseException {
-  @override
-  String get message => 'Transaction was cancelled.';
-
-  @override
-  String toString() => 'TransactionCancelledException: $message';
-}
-
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
 /// reports one or more rows that violate foreign key constraints.
 final class SqliteForeignKeyViolationException implements DatabaseException {

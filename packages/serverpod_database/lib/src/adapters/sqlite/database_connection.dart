@@ -779,15 +779,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     try {
       return await _db.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
-        return await transactionFunction(transaction);
+        final result = await transactionFunction(transaction);
+        if (transaction._isCancelled) {
+          throw _TransactionCancelledException(result);
+        }
+        return result;
       });
-    } on TransactionCancelledException catch (_) {
-      Type typeOf<X>() => X;
-
-      if (R == Null || R == typeOf<void>()) {
-        return Future.value();
-      }
-      rethrow;
+    } on _TransactionCancelledException catch (e) {
+      return e.result;
     }
   }
 
@@ -1456,6 +1455,7 @@ class _SqliteSavepoint implements Savepoint {
 
 class _SqliteTransaction implements Transaction {
   final SqliteWriteContext _ctx;
+  bool _isCancelled = false;
 
   @override
   final Map<String, dynamic> runtimeParameters = {};
@@ -1464,14 +1464,18 @@ class _SqliteTransaction implements Transaction {
 
   @override
   Future<void> cancel() async {
+    if (_isCancelled) return;
+    _isCancelled = true;
     await _ctx.execute('ROLLBACK');
-    throw TransactionCancelledException();
   }
 
   Future<ResultSet> execute(
     String query, [
     List<Object?> parameters = const [],
   ]) {
+    if (_isCancelled) {
+      return Future.value(ResultSet([], null, []));
+    }
     return _ctx.execute(query, parameters);
   }
 
@@ -1515,4 +1519,11 @@ Set<T> _extractPrimaryKeyForRelation<T>(
 ) {
   var idFieldName = tableRelation.fieldQueryAliasWithJoins;
   return resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
+}
+
+class _TransactionCancelledException<R> implements Exception {
+  _TransactionCancelledException(this.result);
+
+  /// The result of the transaction.
+  final R result;
 }

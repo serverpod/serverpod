@@ -156,21 +156,4 @@ void main() async {
       },
     );
   });
-
-  test(
-    'Given a transaction that should return a value but is cancelled '
-    'when cancelling '
-    'then TransactionCancelledException is thrown since it is not possible to return a value from a cancelled transaction.',
-    () async {
-      // NOTE: This test is hypothetical since it is not practical to expect a
-      // return value from a transaction that can be conditionally cancelled.
-      await expectLater(
-        session.db.transaction<int>((transaction) async {
-          await transaction.cancel();
-          return 1;
-        }),
-        throwsA(isA<TransactionCancelledException>()),
-      );
-    },
-  );
 }
