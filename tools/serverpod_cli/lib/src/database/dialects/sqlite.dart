@@ -350,6 +350,14 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
       out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
     }
 
+    // Rename columns (must happen before add to avoid name collisions)
+    if (renameColumns != null) {
+      for (var entry in renameColumns!.entries) {
+        out +=
+            'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+      }
+    }
+
     // Add columns
     for (var addColumn in addColumns) {
       // Note: SQLite ADD COLUMN cannot support PRIMARY KEY or UNIQUE constraints.
@@ -394,10 +402,16 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
         .where((c) => !addColumnNames.contains(c.name))
         .toList();
     if (copyColumns.isNotEmpty) {
-      final colList = copyColumns.map((c) => '"${c.name}"').join(', ');
+      final colListNew = copyColumns.map((c) => '"${c.name}"').join(', ');
+      final selectList = copyColumns
+          .map(
+            (c) =>
+                '"${_sqliteSourceColumnNameForInsert(c.name, renameColumns)}"',
+          )
+          .join(', ');
       out +=
-          'INSERT INTO "$newTableName" ($colList) '
-          'SELECT $colList FROM "$name";\n';
+          'INSERT INTO "$newTableName" ($colListNew) '
+          'SELECT $selectList FROM "$name";\n';
     }
 
     // 6. Drop the old table.
@@ -480,6 +494,21 @@ String _sqlStoreColumnTypesForMigrations(
     }
   }
   return out;
+}
+
+/// Returns the physical column name on the source table for [targetColumnName]
+/// when copying into a rebuilt table, accounting for pending renames.
+String _sqliteSourceColumnNameForInsert(
+  String targetColumnName,
+  Map<String, String>? renameColumns,
+) {
+  if (renameColumns == null) return targetColumnName;
+  for (final entry in renameColumns.entries) {
+    if (entry.value == targetColumnName) {
+      return entry.key;
+    }
+  }
+  return targetColumnName;
 }
 
 String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersionModel> modules) {
