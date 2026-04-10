@@ -106,6 +106,7 @@ abstract class LegacyEmailPassword
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     LegacyEmailPasswordInclude? include,
@@ -115,7 +116,8 @@ abstract class LegacyEmailPassword
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(LegacyEmailPassword.t),
       include: include,
     );
@@ -255,6 +257,7 @@ class LegacyEmailPasswordIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -302,6 +305,7 @@ class LegacyEmailPasswordRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
@@ -313,7 +317,8 @@ class LegacyEmailPasswordRepository {
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -345,6 +350,7 @@ class LegacyEmailPasswordRepository {
     _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
@@ -356,7 +362,8 @@ class LegacyEmailPasswordRepository {
       where: where?.call(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -481,6 +488,7 @@ class LegacyEmailPasswordRepository {
     int? offset,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +499,8 @@ class LegacyEmailPasswordRepository {
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -507,6 +516,7 @@ class LegacyEmailPasswordRepository {
     _i1.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
@@ -515,7 +525,8 @@ class LegacyEmailPasswordRepository {
       rows,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -540,6 +551,7 @@ class LegacyEmailPasswordRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
     _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _i1.Transaction? transaction,
@@ -548,7 +560,8 @@ class LegacyEmailPasswordRepository {
       where: where(LegacyEmailPassword.t),
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

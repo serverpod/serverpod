@@ -121,6 +121,7 @@ abstract class CityWithLongTableName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     CityWithLongTableNameInclude? include,
@@ -130,7 +131,8 @@ abstract class CityWithLongTableName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CityWithLongTableName.t),
       include: include,
     );
@@ -333,6 +335,7 @@ class CityWithLongTableNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -386,6 +389,7 @@ class CityWithLongTableNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -397,7 +401,8 @@ class CityWithLongTableNameRepository {
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -429,6 +434,7 @@ class CityWithLongTableNameRepository {
     _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -440,7 +446,8 @@ class CityWithLongTableNameRepository {
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -565,6 +572,7 @@ class CityWithLongTableNameRepository {
     int? offset,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -575,7 +583,8 @@ class CityWithLongTableNameRepository {
       offset: offset,
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -591,6 +600,7 @@ class CityWithLongTableNameRepository {
     _i1.DatabaseSession session,
     List<CityWithLongTableName> rows, {
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -599,7 +609,8 @@ class CityWithLongTableNameRepository {
       rows,
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -624,6 +635,7 @@ class CityWithLongTableNameRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
     _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -632,7 +644,8 @@ class CityWithLongTableNameRepository {
       where: where(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

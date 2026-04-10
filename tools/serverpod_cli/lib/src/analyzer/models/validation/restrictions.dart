@@ -514,6 +514,20 @@ class Restrictions {
         ];
       }
 
+      var reservedIndex = parsedModels.findAutoUniqueIndexOwner(indexName);
+      if (reservedIndex != null) {
+        return [
+          SourceSpanSeverityException(
+            'The index name "$indexName" is reserved for the field '
+            '"${reservedIndex.index.fields.first}" of the model '
+            '"${reservedIndex.model.className}" marked as unique '
+            '(auto-generated). Either remove the unique modifier from the '
+            'field or use a different name for this index.',
+            span,
+          ),
+        ];
+      }
+
       if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
         var collision = parsedModels.findByIndexName(
           indexName,

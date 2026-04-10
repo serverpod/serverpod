@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart' as db;
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -8,7 +8,7 @@ void main() async {
 
   group('Given models with one to one relation', () {
     tearDown(() async {
-      await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -39,7 +39,7 @@ void main() async {
 
   group('Given models with nested one to one relations', () {
     tearDown(() async {
-      await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -59,8 +59,8 @@ void main() async {
         var postsFetched = await Post.db.find(
           session,
           orderByList: (t) => [
-            db.Order(column: t.next.next.content),
-            db.Order(column: t.content),
+            t.next.next.content.asc(),
+            t.content.asc(),
           ],
         );
 

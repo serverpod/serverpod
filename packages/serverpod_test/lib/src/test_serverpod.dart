@@ -122,6 +122,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required TestServerOutputMode? testServerOutputMode,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    ServerpodConfig Function(ServerpodConfig)? configOverride,
   }) : testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
@@ -137,6 +138,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           ),
           serializationManager,
           endpoints,
+          configOverride: configOverride,
           experimentalFeatures: experimentalFeatures,
           runtimeParametersBuilder: runtimeParametersBuilder,
         );

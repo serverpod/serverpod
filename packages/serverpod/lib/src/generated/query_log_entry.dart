@@ -162,6 +162,7 @@ abstract class QueryLogEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     QueryLogEntryInclude? include,
@@ -171,7 +172,8 @@ abstract class QueryLogEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(QueryLogEntry.t),
       include: include,
     );
@@ -411,6 +413,7 @@ class QueryLogEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -456,6 +459,7 @@ class QueryLogEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -466,7 +470,8 @@ class QueryLogEntryRepository {
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -497,6 +502,7 @@ class QueryLogEntryRepository {
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -507,7 +513,8 @@ class QueryLogEntryRepository {
       where: where?.call(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -627,6 +634,7 @@ class QueryLogEntryRepository {
     int? offset,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -637,7 +645,8 @@ class QueryLogEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -653,6 +662,7 @@ class QueryLogEntryRepository {
     _i1.DatabaseSession session,
     List<QueryLogEntry> rows, {
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -661,7 +671,8 @@ class QueryLogEntryRepository {
       rows,
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -686,6 +697,7 @@ class QueryLogEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -694,7 +706,8 @@ class QueryLogEntryRepository {
       where: where(QueryLogEntry.t),
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

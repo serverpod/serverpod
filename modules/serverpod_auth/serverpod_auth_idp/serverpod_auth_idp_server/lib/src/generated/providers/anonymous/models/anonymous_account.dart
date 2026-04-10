@@ -106,6 +106,7 @@ abstract class AnonymousAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     AnonymousAccountInclude? include,
@@ -115,7 +116,8 @@ abstract class AnonymousAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(AnonymousAccount.t),
       include: include,
     );
@@ -254,6 +256,7 @@ class AnonymousAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -301,6 +304,7 @@ class AnonymousAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -312,7 +316,8 @@ class AnonymousAccountRepository {
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -344,6 +349,7 @@ class AnonymousAccountRepository {
     _i1.WhereExpressionBuilder<AnonymousAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -355,7 +361,8 @@ class AnonymousAccountRepository {
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -480,6 +487,7 @@ class AnonymousAccountRepository {
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -490,7 +498,8 @@ class AnonymousAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -506,6 +515,7 @@ class AnonymousAccountRepository {
     _i1.DatabaseSession session,
     List<AnonymousAccount> rows, {
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -514,7 +524,8 @@ class AnonymousAccountRepository {
       rows,
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -539,6 +550,7 @@ class AnonymousAccountRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AnonymousAccountTable> where,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -547,7 +559,8 @@ class AnonymousAccountRepository {
       where: where(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

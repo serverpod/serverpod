@@ -187,10 +187,27 @@ TableMigration? generateTableMigration(
   List<DatabaseMigrationWarning> warnings, {
   Set<String> deleteTables = const {},
 }) {
+  var dstByFieldId = <String, ColumnDefinition>{
+    for (var c in dstTable.columns) c.effectiveFieldName: c,
+  };
+
+  var renameColumns = <String, String>{};
+  for (var srcColumn in srcTable.columns) {
+    var dstColumn = dstByFieldId[srcColumn.effectiveFieldName];
+    if (dstColumn == null) continue;
+    if (srcColumn.name == dstColumn.name) continue;
+    if (!srcColumn.canMigrateTo(dstColumn)) continue;
+    renameColumns[srcColumn.name] = dstColumn.name;
+  }
+
+  var renameSources = renameColumns.keys.toSet();
+  var renameTargets = renameColumns.values.toSet();
+
   // Find added columns
   var addColumns = <ColumnDefinition>[];
   for (var dstColumn in dstTable.columns) {
     if (!srcTable.containsColumnNamed(dstColumn.name)) {
+      if (renameTargets.contains(dstColumn.name)) continue;
       addColumns.add(dstColumn);
     }
   }
@@ -199,6 +216,7 @@ TableMigration? generateTableMigration(
   var deleteColumns = <String>[];
   for (var srcColumn in srcTable.columns) {
     if (!dstTable.containsColumnNamed(srcColumn.name)) {
+      if (renameSources.contains(srcColumn.name)) continue;
       deleteColumns.add(srcColumn.name);
       warnings.add(
         DatabaseMigrationWarning(
@@ -218,11 +236,14 @@ TableMigration? generateTableMigration(
 
   // Find modified columns
   for (var srcColumn in srcTable.columns) {
-    var dstColumn = dstTable.findColumnNamed(srcColumn.name);
+    var dstColumn = renameColumns.containsKey(srcColumn.name)
+        ? dstTable.findColumnNamed(renameColumns[srcColumn.name]!)
+        : dstTable.findColumnNamed(srcColumn.name);
     if (dstColumn == null) {
       continue;
     }
-    if (!srcColumn.like(dstColumn)) {
+    // The column name must be the same for the like comparison.
+    if (!srcColumn.copyWith(name: dstColumn.name).like(dstColumn)) {
       if (srcColumn.canMigrateTo(dstColumn)) {
         // Column can be modified
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
@@ -241,7 +262,7 @@ TableMigration? generateTableMigration(
 
         modifyColumns.add(
           ColumnMigration(
-            columnName: srcColumn.name,
+            columnName: dstColumn.name,
             addNullable: addNullable,
             removeNullable: removeNullable,
             changeDefault: changeDefault,
@@ -254,9 +275,9 @@ TableMigration? generateTableMigration(
             DatabaseMigrationWarning(
               type: DatabaseMigrationWarningType.notNullAdded,
               table: srcTable.name,
-              columns: [srcColumn.name],
+              columns: [dstColumn.name],
               message:
-                  'Column "${srcColumn.name}" of table "${srcTable.name}" is '
+                  'Column "${dstColumn.name}" of table "${srcTable.name}" is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
               destructive: false,
@@ -386,10 +407,23 @@ TableMigration? generateTableMigration(
     deleteColumns: deleteColumns,
     addColumns: addColumns,
     modifyColumns: modifyColumns,
+    renameColumns: renameColumns.isEmpty ? null : renameColumns,
     deleteIndexes: deleteIndexes,
     addIndexes: addIndexes,
     deleteForeignKeys: deleteForeignKeys,
     addForeignKeys: addForeignKeys,
     warnings: warnings,
   );
+}
+
+extension on ColumnDefinition {
+  /// The field name will not be set for [ColumnDefinition] generated before
+  /// the column rename feature was implemented. For those, the physical column
+  /// name match the model field name.
+  ///
+  /// The only exception are projects that opted-in to use the experimental
+  /// `column` override field in the `.spy.yaml` file to explicitly set
+  /// the column name. Since the feature is experimental, there is no need
+  /// to support this edge case.
+  String get effectiveFieldName => fieldName ?? name;
 }

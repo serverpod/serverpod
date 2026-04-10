@@ -119,6 +119,7 @@ abstract class Blocking
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     BlockingInclude? include,
@@ -128,7 +129,8 @@ abstract class Blocking
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Blocking.t),
       include: include,
     );
@@ -291,6 +293,7 @@ class BlockingIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -338,6 +341,7 @@ class BlockingRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
@@ -349,7 +353,8 @@ class BlockingRepository {
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -381,6 +386,7 @@ class BlockingRepository {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
@@ -392,7 +398,8 @@ class BlockingRepository {
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -515,6 +522,7 @@ class BlockingRepository {
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -525,7 +533,8 @@ class BlockingRepository {
       offset: offset,
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -541,6 +550,7 @@ class BlockingRepository {
     _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
@@ -549,7 +559,8 @@ class BlockingRepository {
       rows,
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -574,6 +585,7 @@ class BlockingRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
@@ -582,7 +594,8 @@ class BlockingRepository {
       where: where(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

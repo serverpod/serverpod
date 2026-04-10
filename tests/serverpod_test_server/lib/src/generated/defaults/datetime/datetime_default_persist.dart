@@ -101,6 +101,7 @@ abstract class DateTimeDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
@@ -110,7 +111,8 @@ abstract class DateTimeDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       include: include,
     );
@@ -221,6 +223,7 @@ class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -266,6 +269,7 @@ class DateTimeDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -276,7 +280,8 @@ class DateTimeDefaultPersistRepository {
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -307,6 +312,7 @@ class DateTimeDefaultPersistRepository {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -317,7 +323,8 @@ class DateTimeDefaultPersistRepository {
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -439,6 +446,7 @@ class DateTimeDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -449,7 +457,8 @@ class DateTimeDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -465,6 +474,7 @@ class DateTimeDefaultPersistRepository {
     _i1.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -473,7 +483,8 @@ class DateTimeDefaultPersistRepository {
       rows,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -498,6 +509,7 @@ class DateTimeDefaultPersistRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -506,7 +518,8 @@ class DateTimeDefaultPersistRepository {
       where: where(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

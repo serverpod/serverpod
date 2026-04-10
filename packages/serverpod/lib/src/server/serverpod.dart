@@ -84,6 +84,14 @@ class Serverpod {
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
 
+  /// A function to override the server configuration.
+  ///
+  /// This function is called with the default server configuration after it is
+  /// loaded from the config/ directory and before it is used to start the server.
+  /// This can be used to override the server configuration with a custom
+  /// configuration.
+  final ServerpodConfig Function(ServerpodConfig)? _configOverride;
+
   Map<String, String> _passwords = <String, String>{};
 
   late PasswordManager _passwordManager;
@@ -405,6 +413,7 @@ class Serverpod {
     this.serializationManager,
     this.endpoints, {
     ServerpodConfig? config,
+    ServerpodConfig Function(ServerpodConfig)? configOverride,
     this.authenticationHandler,
     this.healthCheckHandler,
     HealthConfig? healthConfig,
@@ -416,6 +425,7 @@ class Serverpod {
   }) : httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
+       _configOverride = configOverride,
        _securityContextConfig = securityContextConfig,
        _healthConfig = healthConfig ?? const HealthConfig(),
        _experimental = ExperimentalApi._(
@@ -495,6 +505,9 @@ class Serverpod {
     } on ArgumentError catch (e) {
       throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
     }
+
+    // Override the server configuration with a custom configuration.
+    this.config = _configOverride?.call(this.config) ?? this.config;
 
     // Sync instance serverId from config so Server, Caches, and log entries
     // use the same id (e.g. from --server-id) instead of staying 'default'.

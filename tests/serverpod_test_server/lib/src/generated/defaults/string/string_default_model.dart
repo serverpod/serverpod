@@ -89,6 +89,7 @@ abstract class StringDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     StringDefaultModelInclude? include,
@@ -98,7 +99,8 @@ abstract class StringDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(StringDefaultModel.t),
       include: include,
     );
@@ -202,6 +204,7 @@ class StringDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -247,6 +250,7 @@ class StringDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -257,7 +261,8 @@ class StringDefaultModelRepository {
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -288,6 +293,7 @@ class StringDefaultModelRepository {
     _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -298,7 +304,8 @@ class StringDefaultModelRepository {
       where: where?.call(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -420,6 +427,7 @@ class StringDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -430,7 +438,8 @@ class StringDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -446,6 +455,7 @@ class StringDefaultModelRepository {
     _i1.DatabaseSession session,
     List<StringDefaultModel> rows, {
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -454,7 +464,8 @@ class StringDefaultModelRepository {
       rows,
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -479,6 +490,7 @@ class StringDefaultModelRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
     _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -487,7 +499,8 @@ class StringDefaultModelRepository {
       where: where(StringDefaultModel.t),
       orderBy: orderBy?.call(StringDefaultModel.t),
       orderByList: orderByList?.call(StringDefaultModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

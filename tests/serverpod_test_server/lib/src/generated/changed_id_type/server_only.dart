@@ -65,6 +65,7 @@ abstract class ServerOnlyChangedIdFieldClass
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
@@ -74,7 +75,8 @@ abstract class ServerOnlyChangedIdFieldClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
       include: include,
     );
@@ -135,6 +137,7 @@ class ServerOnlyChangedIdFieldClassIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -180,6 +183,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
@@ -190,7 +194,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -221,6 +226,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
@@ -231,7 +237,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -358,6 +365,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -368,7 +376,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -384,6 +393,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     _i1.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
@@ -392,7 +402,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       rows,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -418,6 +429,7 @@ class ServerOnlyChangedIdFieldClassRepository {
     required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
@@ -426,7 +438,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       where: where(ServerOnlyChangedIdFieldClass.t),
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

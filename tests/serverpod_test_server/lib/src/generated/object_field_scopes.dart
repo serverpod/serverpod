@@ -92,6 +92,7 @@ abstract class ObjectFieldScopes
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
@@ -101,7 +102,8 @@ abstract class ObjectFieldScopes
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       include: include,
     );
@@ -206,6 +208,7 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -251,6 +254,7 @@ class ObjectFieldScopesRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
@@ -261,7 +265,8 @@ class ObjectFieldScopesRepository {
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -292,6 +297,7 @@ class ObjectFieldScopesRepository {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
@@ -302,7 +308,8 @@ class ObjectFieldScopesRepository {
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -424,6 +431,7 @@ class ObjectFieldScopesRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -434,7 +442,8 @@ class ObjectFieldScopesRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -450,6 +459,7 @@ class ObjectFieldScopesRepository {
     _i1.DatabaseSession session,
     List<ObjectFieldScopes> rows, {
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
@@ -458,7 +468,8 @@ class ObjectFieldScopesRepository {
       rows,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -483,6 +494,7 @@ class ObjectFieldScopesRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
@@ -491,7 +503,8 @@ class ObjectFieldScopesRepository {
       where: where(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

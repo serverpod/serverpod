@@ -39,20 +39,21 @@ class PostgresDatabaseConnection
     int? limit,
     int? offset,
     Column? orderBy,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
-    List<Order>? orderByList,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
         .withWhere(where)
-        .withOrderBy(orderByList)
+        .withOrderBy(orderByCols)
         .withLimit(limit)
         .withOffset(offset)
         .withInclude(include)
@@ -75,7 +76,8 @@ class PostgresDatabaseConnection
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -89,6 +91,7 @@ class PostgresDatabaseConnection
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
@@ -337,7 +340,8 @@ class PostgresDatabaseConnection
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -410,7 +414,8 @@ class PostgresDatabaseConnection
     DatabaseSession session,
     List<T> rows, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -426,6 +431,7 @@ class PostgresDatabaseConnection
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
     );
@@ -457,18 +463,19 @@ class PostgresDatabaseConnection
     DatabaseSession session,
     Expression where, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
     var query = DeleteQueryBuilder(table: table)
         .withReturn(Returning.all)
         .withWhere(where)
-        .withOrderBy(orderByList)
+        .withOrderBy(orderByCols)
         .build();
 
     return await _deserializedMappedQuery(
@@ -810,6 +817,7 @@ class PostgresDatabaseConnection
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
+          // ignore: deprecated_member_use_from_same_package
           nestedInclude.orderDescending,
         );
 
@@ -885,16 +893,17 @@ class PostgresDatabaseConnection
   }
 
   List<Order>? _resolveOrderBy(
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     Column<dynamic>? orderBy,
     bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      // If order by is set then order by list is overridden.
-      return [Order(column: orderBy, orderDescending: orderDescending)];
+      if (orderBy is Order) return [orderBy];
+      return [orderDescending ? orderBy.desc() : orderBy.asc()];
     }
-    return orderByList;
+    if (orderByList == null || orderByList.isEmpty) return null;
+    return orderByList.asOrderBy();
   }
 
   String _createQueryValueList(

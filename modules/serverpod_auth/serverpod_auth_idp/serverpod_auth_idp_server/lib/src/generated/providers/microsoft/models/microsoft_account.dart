@@ -127,6 +127,7 @@ abstract class MicrosoftAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
@@ -136,7 +137,8 @@ abstract class MicrosoftAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(MicrosoftAccount.t),
       include: include,
     );
@@ -317,6 +319,7 @@ class MicrosoftAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -364,6 +367,7 @@ class MicrosoftAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -375,7 +379,8 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -407,6 +412,7 @@ class MicrosoftAccountRepository {
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -418,7 +424,8 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -543,6 +550,7 @@ class MicrosoftAccountRepository {
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -553,7 +561,8 @@ class MicrosoftAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -569,6 +578,7 @@ class MicrosoftAccountRepository {
     _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -577,7 +587,8 @@ class MicrosoftAccountRepository {
       rows,
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -602,6 +613,7 @@ class MicrosoftAccountRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -610,7 +622,8 @@ class MicrosoftAccountRepository {
       where: where(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -169,10 +169,7 @@ void main() {
           tableName: citizenTable.tableName,
           relationAlias: 'friends',
         );
-        Order order = Order(
-          column: relationTable.manyRelation.count(),
-          orderDescending: false,
-        );
+        var order = relationTable.manyRelation.count().asc();
 
         var query = SelectQueryBuilder(
           table: relationTable,
@@ -307,9 +304,7 @@ void main() {
                 )
                 .withWhere(const Expression('"user_name"=test'))
                 .withReturn(Returning.all)
-                .withOrderBy([
-                  Order(column: table.userName),
-                ])
+                .withOrderBy([table.userName.asc()])
                 .build();
 
         expect(
@@ -332,8 +327,8 @@ void main() {
             DeleteQueryBuilder(
               table: table,
             ).withReturn(Returning.all).withOrderBy([
-              Order(column: table.userName),
-              Order(column: table.userAge, orderDescending: true),
+              table.userName.asc(),
+              table.userAge.desc(),
             ]).build();
 
         expect(
@@ -358,9 +353,7 @@ void main() {
                 table: table,
               )
               ..withReturn(Returning.id)
-              ..withOrderBy([
-                Order(column: table.userName),
-              ]);
+              ..withOrderBy([table.userName.asc()]);
 
         expect(
           () => queryBuilder.build(),
@@ -387,9 +380,7 @@ void main() {
                 table: table,
               )
               ..withReturn(Returning.none)
-              ..withOrderBy([
-                Order(column: table.userName),
-              ]);
+              ..withOrderBy([table.userName.asc()]);
 
         expect(
           () => queryBuilder.build(),
@@ -428,7 +419,7 @@ void main() {
               )
               ..withReturn(Returning.all)
               ..withOrderBy([
-                Order(column: ColumnString('user_age', relationTable)),
+                ColumnString('user_age', relationTable).asc(),
               ]);
 
         expect(
@@ -462,7 +453,7 @@ void main() {
               )
               ..withReturn(Returning.all)
               ..withOrderBy([
-                Order(column: relationTable.manyRelation.count()),
+                relationTable.manyRelation.count().asc(),
               ]);
 
         expect(
@@ -490,7 +481,7 @@ void main() {
               )
               ..withReturn(Returning.all)
               ..withOrderBy([
-                Order(column: ColumnString('name', companyTable)),
+                ColumnString('name', companyTable).asc(),
               ]);
 
         expect(
@@ -616,7 +607,7 @@ void main() {
                 .withWhere(relationTable.manyRelation.any())
                 .withReturn(Returning.all)
                 .withOrderBy([
-                  Order(column: table.userAge),
+                  table.userAge.asc(),
                 ])
                 .build();
 
@@ -656,12 +647,14 @@ void main() {
 
 class TableWithExplicitColumn extends Table<int?> {
   late final ColumnInt companyId;
+  late final ColumnInt userAge;
 
   TableWithExplicitColumn({
     required super.tableName,
     super.tableRelation,
   }) {
     companyId = ColumnInt('company_id', this, fieldName: 'companyId');
+    userAge = ColumnInt('user_age', this, fieldName: 'userAge');
   }
 
   @override

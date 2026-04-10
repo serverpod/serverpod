@@ -34,8 +34,9 @@ class Features {
   /// Returns true if the web server is enabled.
   static bool get enableFutureCalls => enableDatabase;
 
-  /// Returns true if the web server is enabled.
-  static bool get enableScheduledHealthChecks => enableDatabase;
+  /// Returns true if the web server is enabled and the health check interval is valid.
+  static bool get enableScheduledHealthChecks =>
+      enableDatabase && _instance._config.healthCheckInterval > Duration.zero;
 
   /// Returns true if the web server is enabled.
   static bool get enablePersistentLogging =>

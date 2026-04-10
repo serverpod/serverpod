@@ -99,6 +99,7 @@ abstract class EmailReset
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
@@ -108,7 +109,8 @@ abstract class EmailReset
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(EmailReset.t),
       include: include,
     );
@@ -229,6 +231,7 @@ class EmailResetIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -274,6 +277,7 @@ class EmailResetRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
@@ -284,7 +288,8 @@ class EmailResetRepository {
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -315,6 +320,7 @@ class EmailResetRepository {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
@@ -325,7 +331,8 @@ class EmailResetRepository {
       where: where?.call(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -445,6 +452,7 @@ class EmailResetRepository {
     int? offset,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -455,7 +463,8 @@ class EmailResetRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -471,6 +480,7 @@ class EmailResetRepository {
     _i1.DatabaseSession session,
     List<EmailReset> rows, {
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
@@ -479,7 +489,8 @@ class EmailResetRepository {
       rows,
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -504,6 +515,7 @@ class EmailResetRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
     _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
@@ -512,7 +524,8 @@ class EmailResetRepository {
       where: where(EmailReset.t),
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -119,6 +119,7 @@ abstract class AuthKey
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
@@ -128,7 +129,8 @@ abstract class AuthKey
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(AuthKey.t),
       include: include,
     );
@@ -269,6 +271,7 @@ class AuthKeyIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -314,6 +317,7 @@ class AuthKeyRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -324,7 +328,8 @@ class AuthKeyRepository {
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -355,6 +360,7 @@ class AuthKeyRepository {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -365,7 +371,8 @@ class AuthKeyRepository {
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -485,6 +492,7 @@ class AuthKeyRepository {
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -495,7 +503,8 @@ class AuthKeyRepository {
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -511,6 +520,7 @@ class AuthKeyRepository {
     _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -519,7 +529,8 @@ class AuthKeyRepository {
       rows,
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -544,6 +555,7 @@ class AuthKeyRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -552,7 +564,8 @@ class AuthKeyRepository {
       where: where(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

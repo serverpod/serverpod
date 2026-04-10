@@ -79,6 +79,7 @@ abstract class ObjectWithDuration
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
@@ -88,7 +89,8 @@ abstract class ObjectWithDuration
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ObjectWithDuration.t),
       include: include,
     );
@@ -174,6 +176,7 @@ class ObjectWithDurationIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -219,6 +222,7 @@ class ObjectWithDurationRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
@@ -229,7 +233,8 @@ class ObjectWithDurationRepository {
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -260,6 +265,7 @@ class ObjectWithDurationRepository {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
@@ -270,7 +276,8 @@ class ObjectWithDurationRepository {
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -392,6 +399,7 @@ class ObjectWithDurationRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -402,7 +410,8 @@ class ObjectWithDurationRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -418,6 +427,7 @@ class ObjectWithDurationRepository {
     _i1.DatabaseSession session,
     List<ObjectWithDuration> rows, {
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
@@ -426,7 +436,8 @@ class ObjectWithDurationRepository {
       rows,
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -451,6 +462,7 @@ class ObjectWithDurationRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
@@ -459,7 +471,8 @@ class ObjectWithDurationRepository {
       where: where(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

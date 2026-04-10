@@ -111,6 +111,7 @@ abstract class BoolDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     BoolDefaultMixInclude? include,
@@ -120,7 +121,8 @@ abstract class BoolDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(BoolDefaultMix.t),
       include: include,
     );
@@ -246,6 +248,7 @@ class BoolDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -291,6 +294,7 @@ class BoolDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -301,7 +305,8 @@ class BoolDefaultMixRepository {
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -332,6 +337,7 @@ class BoolDefaultMixRepository {
     _i1.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -342,7 +348,8 @@ class BoolDefaultMixRepository {
       where: where?.call(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -462,6 +469,7 @@ class BoolDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -472,7 +480,8 @@ class BoolDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -488,6 +497,7 @@ class BoolDefaultMixRepository {
     _i1.DatabaseSession session,
     List<BoolDefaultMix> rows, {
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -496,7 +506,8 @@ class BoolDefaultMixRepository {
       rows,
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -521,6 +532,7 @@ class BoolDefaultMixRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
     _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -529,7 +541,8 @@ class BoolDefaultMixRepository {
       where: where(BoolDefaultMix.t),
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

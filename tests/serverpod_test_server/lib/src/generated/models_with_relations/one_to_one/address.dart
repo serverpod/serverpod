@@ -100,6 +100,7 @@ abstract class Address
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
@@ -109,7 +110,8 @@ abstract class Address
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Address.t),
       include: include,
     );
@@ -241,6 +243,7 @@ class AddressIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -290,6 +293,7 @@ class AddressRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
@@ -301,7 +305,8 @@ class AddressRepository {
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -333,6 +338,7 @@ class AddressRepository {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
@@ -344,7 +350,8 @@ class AddressRepository {
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -467,6 +474,7 @@ class AddressRepository {
     int? offset,
     _i1.OrderByBuilder<AddressTable>? orderBy,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -477,7 +485,8 @@ class AddressRepository {
       offset: offset,
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -493,6 +502,7 @@ class AddressRepository {
     _i1.DatabaseSession session,
     List<Address> rows, {
     _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
@@ -501,7 +511,8 @@ class AddressRepository {
       rows,
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -526,6 +537,7 @@ class AddressRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
@@ -534,7 +546,8 @@ class AddressRepository {
       where: where(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

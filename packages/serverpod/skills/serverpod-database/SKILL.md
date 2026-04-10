@@ -40,7 +40,7 @@ var activeCompanies = await Company.db.find(session,
 ## Sorting and pagination
 
 - Sort: `orderBy: (t) => t.column` (ascending default); `orderDescending: true` for descending
-- Multiple: `orderByList: (t) => [Order(column: t.name, orderDescending: true), Order(column: t.id)]`
+- Multiple: `orderByList: (t) => [t.name.desc(), t.id.asc()]`
 - Sort on relation: `orderBy: (t) => t.ceo.name`; on count: `orderBy: (t) => t.employees.count()`
 - Pagination: `limit` + `offset` for offset-based; cursor-based: `where: (t) => t.id > lastId` with `orderBy: (t) => t.id` and `limit`
 

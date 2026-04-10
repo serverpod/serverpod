@@ -122,6 +122,7 @@ abstract class EnumDefaultMix
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
@@ -131,7 +132,8 @@ abstract class EnumDefaultMix
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(EnumDefaultMix.t),
       include: include,
     );
@@ -265,6 +267,7 @@ class EnumDefaultMixIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -310,6 +313,7 @@ class EnumDefaultMixRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -320,7 +324,8 @@ class EnumDefaultMixRepository {
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -351,6 +356,7 @@ class EnumDefaultMixRepository {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -361,7 +367,8 @@ class EnumDefaultMixRepository {
       where: where?.call(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -481,6 +488,7 @@ class EnumDefaultMixRepository {
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +499,8 @@ class EnumDefaultMixRepository {
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -507,6 +516,7 @@ class EnumDefaultMixRepository {
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -515,7 +525,8 @@ class EnumDefaultMixRepository {
       rows,
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -540,6 +551,7 @@ class EnumDefaultMixRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
@@ -548,7 +560,8 @@ class EnumDefaultMixRepository {
       where: where(EnumDefaultMix.t),
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

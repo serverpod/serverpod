@@ -1374,6 +1374,7 @@ class SerializableModelLibraryGenerator {
           Parameter(
             (p) => p
               ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..named = true
               ..defaultTo = const Code('false')
               ..type = refer('bool'),
@@ -1400,7 +1401,11 @@ class SerializableModelLibraryGenerator {
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
-              'orderDescending': refer('orderDescending'),
+              'orderDescending': const CodeExpression(
+                Code(
+                  '// ignore: deprecated_member_use_from_same_package\norderDescending',
+                ),
+              ),
               'orderByList': refer('orderByList').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
@@ -2898,6 +2903,7 @@ class SerializableModelLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'orderDescending'
+            ..annotations.add(deprecatedOrderDescendingAnnotation())
             ..toSuper = true
             ..named = true,
         ),

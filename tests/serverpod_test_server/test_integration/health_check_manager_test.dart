@@ -94,6 +94,59 @@ void main() {
       );
     },
   );
+
+  group('Given a running server with health check interval set to zero', () {
+    late Serverpod server;
+    late Session session;
+
+    setUp(() async {
+      server = Serverpod(
+        ['-m', 'production'],
+        p.Protocol(),
+        e.Endpoints(),
+        config: ServerpodConfig(
+          runMode: ServerpodRunMode.production,
+          serverId: Uuid().v4(),
+          apiServer: ServerConfig(
+            port: 8065,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 8065,
+          ),
+          database: DatabaseConfig(
+            host: 'postgres',
+            port: 5432,
+            user: 'postgres',
+            password: 'password',
+            name: 'serverpod_test',
+          ),
+          healthCheckInterval: Duration.zero,
+        ),
+      );
+
+      session = await server.createSession();
+      await server.clearHealthChecks(session);
+      await server.start();
+
+      // Await the first health check to be performed.
+      await Future.delayed(const Duration(seconds: 3));
+    });
+
+    tearDown(() async {
+      await server.clearHealthChecks(session);
+      await session.close();
+      await server.shutdown(exitProcess: false);
+    });
+
+    test(
+      'when server starts then no health check is recorded.',
+      () async {
+        await Future.delayed(const Duration(seconds: 3));
+        final healthChecks = await server.countHealthChecks(session);
+        expect(healthChecks, equals(0));
+      },
+    );
+  });
 }
 
 extension on Serverpod {

@@ -102,7 +102,7 @@ void main() {
       var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
           .withOrderBy([
-            Order(column: manyRelation.count((t) => t.id.equals(1))),
+            manyRelation.count((t) => t.id.equals(1)).asc(),
           ])
           .build();
 

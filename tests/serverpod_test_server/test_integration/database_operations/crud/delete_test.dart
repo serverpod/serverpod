@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart' hide Order;
+import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
@@ -153,8 +153,7 @@ void main() async {
         deleteResult = await SimpleData.db.deleteWhere(
           session,
           where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
-          orderBy: (t) => t.num,
-          orderDescending: true,
+          orderBy: (t) => t.num.desc(),
         );
       });
 
@@ -172,7 +171,7 @@ void main() async {
         deleteResult = await SimpleData.db.deleteWhere(
           session,
           where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
-          orderByList: (t) => [Order(column: t.num)],
+          orderByList: (t) => [t.num.asc()],
         );
       });
 
@@ -299,8 +298,7 @@ void main() async {
         var deleted = await UniqueData.db.delete(
           session,
           inserted,
-          orderBy: (t) => t.number,
-          orderDescending: true,
+          orderBy: (t) => t.number.desc(),
         );
 
         expect(deleted, hasLength(2));
@@ -321,7 +319,7 @@ void main() async {
         var deleted = await UniqueData.db.delete(
           session,
           inserted,
-          orderByList: (t) => [Order(column: t.number), Order(column: t.email)],
+          orderByList: (t) => [t.number.asc(), t.email.asc()],
         );
 
         expect(deleted, hasLength(2));

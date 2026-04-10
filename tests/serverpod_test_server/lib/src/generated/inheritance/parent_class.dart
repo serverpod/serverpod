@@ -85,6 +85,7 @@ class ParentClass extends _i1.GrandparentClass
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
@@ -94,7 +95,8 @@ class ParentClass extends _i1.GrandparentClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ParentClass.t),
       include: include,
     );
@@ -167,6 +169,7 @@ class ParentClassIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -212,6 +215,7 @@ class ParentClassRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -222,7 +226,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -253,6 +258,7 @@ class ParentClassRepository {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -263,7 +269,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -383,6 +390,7 @@ class ParentClassRepository {
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -393,7 +401,8 @@ class ParentClassRepository {
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -409,6 +418,7 @@ class ParentClassRepository {
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -417,7 +427,8 @@ class ParentClassRepository {
       rows,
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -442,6 +453,7 @@ class ParentClassRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -450,7 +462,8 @@ class ParentClassRepository {
       where: where(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

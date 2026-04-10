@@ -21,3 +21,9 @@ fields:
 
   ### Last session id to start the list of logs from. Used for pagination.
   lastSessionLogId: int?
+
+  ### Inclusive lower bound on session start time. Null means no lower bound.
+  startTime: DateTime?
+
+  ### Inclusive upper bound on session start time. Null means no upper bound.
+  endTime: DateTime?
