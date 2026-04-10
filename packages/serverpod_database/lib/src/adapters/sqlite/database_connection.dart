@@ -868,6 +868,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     _SqliteTransaction? sqliteTx,
   }) async {
     var startTime = DateTime.now();
+    var stopwatch = Stopwatch()..start();
     parameters ??= const [];
     final statement = parsed.text.trim();
     if (statement.isEmpty) {
@@ -889,7 +890,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         }
       }
 
-      _logQuery(session, statement, startTime, numRowsAffected: result.length);
+      _logQuery(session, statement, stopwatch, numRowsAffected: result.length);
       return result;
     } catch (exception, trace) {
       final serverpodException = exception is _SqliteDatabaseQueryException
@@ -898,7 +899,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       _logQuery(
         session,
         statement,
-        startTime,
+        stopwatch,
         exception: serverpodException,
         trace: trace,
       );
@@ -1091,16 +1092,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   static void _logQuery(
     DatabaseSession session,
     String query,
-    DateTime startTime, {
+    Stopwatch stopwatch, {
     int? numRowsAffected,
     dynamic exception,
     StackTrace? trace,
   }) {
-    var duration = DateTime.now().difference(startTime);
+    stopwatch.stop();
     trace ??= StackTrace.current;
     session.logQuery?.call(
       query: query,
-      duration: duration,
+      duration: stopwatch.elapsed,
       numRowsAffected: numRowsAffected,
       error: exception?.toString(),
       stackTrace: trace,
