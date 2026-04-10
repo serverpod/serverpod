@@ -35,13 +35,25 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
       return [];
     }
 
-    return await migrationsDirectory
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((directory) => path.basename(directory.path))
-          .toList()
-      ..sort();
+    var directories = await migrationsDirectory
+        .list()
+        .where((entity) => entity is Directory)
+        .cast<Directory>()
+        .toList();
+
+    var versions = <String>[];
+    for (var directory in directories) {
+      var versionName = path.basename(directory.path);
+      var definitionFile = MigrationConstants.databaseDefinitionJSONPath(
+        _projectDirectory,
+        versionName,
+      );
+      if (await definitionFile.exists()) {
+        versions.add(versionName);
+      }
+    }
+
+    return versions..sort();
   }
 
   @override
