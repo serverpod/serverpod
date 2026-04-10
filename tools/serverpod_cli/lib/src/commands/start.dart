@@ -624,17 +624,13 @@ Future<int> _runWithTui({
       interactive: interactive,
       onExitCode: (code) => exitCode = code,
     ).catchError((Object e, StackTrace st) {
-      final history = h.state.logHistory;
-      history.addLast(
+      h.state.logHistory.add(
         TuiLogEntry(
           timestamp: DateTime.now(),
           level: TuiLogLevel.fatal,
           message: 'Fatal error: $e\n$st',
         ),
       );
-      if (history.length > ServerWatchState.maxLogEntries) {
-        history.removeFirst();
-      }
       h.markDirty();
       exitCode = 1;
     });
@@ -887,17 +883,13 @@ Future<void> _runTuiBackend({
   } catch (e, st) {
     // Show the error in the TUI. Keep it open so the user can read it.
     holder.state.showSplash = false;
-    final history = holder.state.logHistory;
-    history.addLast(
+    holder.state.logHistory.add(
       TuiLogEntry(
         timestamp: DateTime.now(),
         level: TuiLogLevel.error,
         message: '$e\n$st',
       ),
     );
-    if (history.length > ServerWatchState.maxLogEntries) {
-      history.removeFirst();
-    }
     holder.markDirty();
     onExitCode(1);
   }

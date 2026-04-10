@@ -21,10 +21,7 @@ class TuiLogger extends Logger {
   void attach(AppStateHolder holder) {
     _holder = holder;
     if (_buffer.isNotEmpty) {
-      final overflow = _buffer.length - ServerWatchState.maxLogEntries;
-      holder.state.logHistory.addAll(
-        overflow > 0 ? _buffer.skip(overflow) : _buffer,
-      );
+      holder.state.logHistory.addAll(_buffer);
       _buffer.clear();
       holder.markDirty();
     }
@@ -40,10 +37,7 @@ class TuiLogger extends Logger {
     final holder = _holder;
     if (holder != null) {
       final state = holder.state;
-      state.logHistory.addLast(entry);
-      if (state.logHistory.length > ServerWatchState.maxLogEntries) {
-        state.logHistory.removeFirst();
-      }
+      state.logHistory.add(entry);
       holder.markDirty();
     } else {
       _buffer.add(entry);
@@ -145,8 +139,7 @@ class TuiLogger extends Logger {
     final op = holder.state.activeOperations.remove(id);
     if (op != null) {
       op.stopwatch.stop();
-      final history = holder.state.logHistory;
-      history.addLast(
+      holder.state.logHistory.add(
         CompletedOperation(
           label: op.label,
           success: success,
@@ -154,9 +147,6 @@ class TuiLogger extends Logger {
           entries: op.entries,
         ),
       );
-      if (history.length > ServerWatchState.maxLogEntries) {
-        history.removeFirst();
-      }
     }
     holder.markDirty();
   }

@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+import 'bounded_queue_list.dart';
 
 /// Log level for structured log entries displayed in the TUI.
 enum TuiLogLevel {
@@ -97,10 +97,10 @@ final class ServerWatchState {
   ServerWatchState();
 
   /// Structured log entries for the "Log Messages" tab.
-  final QueueList<LogEntry> logHistory = QueueList();
+  final logHistory = BoundedQueueList<LogEntry>(maxLogEntries);
 
   /// Raw stdout/stderr lines for the "Raw Output" tab.
-  final QueueList<String> rawLines = QueueList();
+  final rawLines = BoundedQueueList<String>(maxRawLines);
 
   /// Currently active tracked operations (keyed by ID).
   final Map<String, TrackedOperation> activeOperations = {};
