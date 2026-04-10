@@ -12,17 +12,21 @@ class TuiLogSink implements IOSink {
   final AppStateHolder _holder;
   final StringBuffer _lineBuffer = StringBuffer();
 
+  void _addRawLine(String line) {
+    final rawLines = _holder.state.rawLines;
+    rawLines.addLast(line);
+    if (rawLines.length > ServerWatchState.maxRawLines) {
+      rawLines.removeFirst();
+    }
+  }
+
   @override
   void add(List<int> data) {
     final text = utf8.decode(data, allowMalformed: true);
     for (var i = 0; i < text.length; i++) {
       final char = text[i];
       if (char == '\n') {
-        final rawLines = _holder.state.rawLines;
-        rawLines.addLast(_lineBuffer.toString());
-        if (rawLines.length > ServerWatchState.maxRawLines) {
-          rawLines.removeFirst();
-        }
+        _addRawLine(_lineBuffer.toString());
         _lineBuffer.clear();
         _holder.markDirty();
       } else if (char != '\r') {
@@ -46,8 +50,8 @@ class TuiLogSink implements IOSink {
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    _holder.state.rawLines.add('ERROR: $error');
-    if (stackTrace != null) _holder.state.rawLines.add('$stackTrace');
+    _addRawLine('ERROR: $error');
+    if (stackTrace != null) _addRawLine('$stackTrace');
     _holder.markDirty();
   }
 
@@ -60,7 +64,7 @@ class TuiLogSink implements IOSink {
   @override
   Future close() async {
     if (_lineBuffer.isNotEmpty) {
-      _holder.state.rawLines.add(_lineBuffer.toString());
+      _addRawLine(_lineBuffer.toString());
       _lineBuffer.clear();
       _holder.markDirty();
     }

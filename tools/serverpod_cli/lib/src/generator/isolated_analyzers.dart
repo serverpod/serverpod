@@ -187,9 +187,14 @@ class _PortForwardingLogger extends Logger {
     bool newParagraph = false,
   }) async {
     _port.send(IsolateProgressStart(message));
-    final success = await runner();
-    _port.send(IsolateProgressEnd(message, success));
-    return success;
+    try {
+      final success = await runner();
+      _port.send(IsolateProgressEnd(message, success));
+      return success;
+    } catch (_) {
+      _port.send(IsolateProgressEnd(message, false));
+      rethrow;
+    }
   }
 
   @override

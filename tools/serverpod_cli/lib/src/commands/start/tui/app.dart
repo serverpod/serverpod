@@ -17,8 +17,19 @@ class AppStateHolder {
 
   final ServerWatchState state;
   ServerpodWatchAppState? _widgetState;
+  VoidCallback? _onHotReload;
+  VoidCallback? _onCreateMigration;
+  VoidCallback? _onApplyMigration;
+  VoidCallback? _onQuit;
 
-  void _attach(ServerpodWatchAppState s) => _widgetState = s;
+  void _attach(ServerpodWatchAppState s) {
+    _widgetState = s;
+    s.onHotReload = _onHotReload;
+    s.onCreateMigration = _onCreateMigration;
+    s.onApplyMigration = _onApplyMigration;
+    s.onQuit = _onQuit;
+  }
+
   void _detach(ServerpodWatchAppState s) {
     if (_widgetState == s) _widgetState = null;
   }
@@ -26,11 +37,25 @@ class AppStateHolder {
   /// Trigger a rebuild on the currently mounted state.
   void markDirty() => _widgetState?._rebuild();
 
-  set onHotReload(VoidCallback? cb) => _widgetState?.onHotReload = cb;
-  set onCreateMigration(VoidCallback? cb) =>
-      _widgetState?.onCreateMigration = cb;
-  set onApplyMigration(VoidCallback? cb) => _widgetState?.onApplyMigration = cb;
-  set onQuit(VoidCallback? cb) => _widgetState?.onQuit = cb;
+  set onHotReload(VoidCallback? cb) {
+    _onHotReload = cb;
+    _widgetState?.onHotReload = cb;
+  }
+
+  set onCreateMigration(VoidCallback? cb) {
+    _onCreateMigration = cb;
+    _widgetState?.onCreateMigration = cb;
+  }
+
+  set onApplyMigration(VoidCallback? cb) {
+    _onApplyMigration = cb;
+    _widgetState?.onApplyMigration = cb;
+  }
+
+  set onQuit(VoidCallback? cb) {
+    _onQuit = cb;
+    _widgetState?.onQuit = cb;
+  }
 }
 
 /// Root TUI component for `serverpod start`.

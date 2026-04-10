@@ -126,25 +126,39 @@ class TuiLogger extends Logger {
       _addLog(TuiLogLevel.info, message);
     }
 
-    final success = await runner();
-
-    if (holder != null) {
-      final op = holder.state.activeOperations.remove(id);
-      if (op != null) {
-        op.stopwatch.stop();
-        holder.state.logHistory.add(
-          CompletedOperation(
-            label: op.label,
-            success: success,
-            duration: op.stopwatch.elapsed,
-            entries: op.entries,
-          ),
-        );
-      }
-      holder.markDirty();
+    try {
+      final success = await runner();
+      _completeProgress(holder, id, success: success);
+      return success;
+    } catch (_) {
+      _completeProgress(holder, id, success: false);
+      rethrow;
     }
+  }
 
-    return success;
+  void _completeProgress(
+    AppStateHolder? holder,
+    String id, {
+    required bool success,
+  }) {
+    if (holder == null) return;
+    final op = holder.state.activeOperations.remove(id);
+    if (op != null) {
+      op.stopwatch.stop();
+      final history = holder.state.logHistory;
+      history.addLast(
+        CompletedOperation(
+          label: op.label,
+          success: success,
+          duration: op.stopwatch.elapsed,
+          entries: op.entries,
+        ),
+      );
+      if (history.length > ServerWatchState.maxLogEntries) {
+        history.removeFirst();
+      }
+    }
+    holder.markDirty();
   }
 
   @override

@@ -14,7 +14,8 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
-      state.logHistory.add(
+      _addToHistory(
+        state,
         TuiLogEntry(
           level: parseTuiLogLevel(data['level'] as String? ?? 'info'),
           timestamp:
@@ -58,7 +59,8 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
       if (op != null) {
         op.stopwatch.stop();
         final serverDuration = (data['duration'] as num?)?.toDouble();
-        state.logHistory.add(
+        _addToHistory(
+          state,
           CompletedOperation(
             label: op.label,
             success: data['success'] as bool? ?? true,
@@ -110,7 +112,8 @@ void _completeTrackedAction(
   final op = state.activeOperations.remove(id);
   if (op != null) {
     op.stopwatch.stop();
-    state.logHistory.add(
+    _addToHistory(
+      state,
       CompletedOperation(
         label: op.label,
         success: success,
@@ -120,6 +123,13 @@ void _completeTrackedAction(
     );
   }
   holder.markDirty();
+}
+
+void _addToHistory(ServerWatchState state, LogEntry entry) {
+  state.logHistory.addLast(entry);
+  if (state.logHistory.length > ServerWatchState.maxLogEntries) {
+    state.logHistory.removeFirst();
+  }
 }
 
 TuiLogLevel parseTuiLogLevel(String level) {
