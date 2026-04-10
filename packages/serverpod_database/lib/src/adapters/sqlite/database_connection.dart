@@ -477,7 +477,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table: table,
     );
     if (requiresFilteredSubquery) {
-      result = _restoreUpdateWhereSelectionOrder(result, table, ids);
+      result = _restoreOperationWhereSelectionOrder(result, table, ids);
     }
 
     return result.map(poolManager.serializationManager.deserialize<T>).toList();
@@ -541,15 +541,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
-    var selectIds = SelectQueryBuilder(table: table)
+    var selectIdsQuery = SelectQueryBuilder(table: table)
         .withSelectFields([table.id])
         .withWhere(where)
         .withOrderBy(orderByCols)
         .build();
 
-    // It is not possible to use CTEs with delete on SQLite, so we need to first
-    // select the ids and then delete the rows. For the operation to be atomic,
-    // it runs inside a transaction or savepoint.
+    // It is not possible to use data-modifying CTEs with delete on SQLite to
+    // order the deleted rows, so we need to first select the ids and then
+    // delete the rows. For the operation to be atomic, it runs inside a
+    // transaction or savepoint.
     if (orderByCols != null) {
       return await DatabaseUtil.runInTransactionOrSavepoint(
         session.db,
@@ -557,28 +558,42 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         (tx) async {
           final orderedIds = (await _mappedResultsQuery(
             session,
-            selectIds,
+            selectIdsQuery,
             transaction: tx,
-          )).map((row) => row.values.first).toList();
+          )).map((row) => row.values.first as Object).toList();
 
-          final deletedRows = await deleteWhere<T>(
+          return await _deleteWhereOrdered<T>(
             session,
-            table.id.inSet(orderedIds.castToIdType().toSet()),
+            table,
+            selectIdsQuery,
+            where,
+            orderedIds: orderedIds,
             transaction: tx,
           );
-
-          return deletedRows.toList()..sort((a, b) {
-            final aId = orderedIds.indexOf(a.id);
-            final bId = orderedIds.indexOf(b.id);
-            return aId.compareTo(bId);
-          });
         },
       );
     }
 
+    return await _deleteWhereOrdered<T>(
+      session,
+      table,
+      selectIdsQuery,
+      where,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<T>> _deleteWhereOrdered<T extends TableRow>(
+    DatabaseSession session,
+    Table table,
+    String selectIdsQuery,
+    Expression where, {
+    List<Object>? orderedIds,
+    Transaction? transaction,
+  }) async {
     var deleteQuery =
         'DELETE FROM "${table.tableName}" '
-        'WHERE "${table.id.columnName}" IN ($selectIds) '
+        'WHERE "${table.id.columnName}" IN ($selectIdsQuery) '
         'RETURNING *';
 
     var result = await _mappedResultsQuery(
@@ -587,6 +602,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       transaction: transaction,
       table: table,
     );
+
+    if (orderedIds != null) {
+      result = _restoreOperationWhereSelectionOrder(result, table, orderedIds);
+    }
 
     return result.map(poolManager.serializationManager.deserialize<T>).toList();
   }
@@ -945,8 +964,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   /// `SELECT id ...` used by `updateWhere`, but the subsequent
   /// `UPDATE ... WHERE id IN (...) RETURNING *` does not preserve that row
   /// order. Re-apply the selected id order so `updateWhere` returns rows in the
-  /// same order implied by the caller's query options.
-  static Iterable<Map<String, dynamic>> _restoreUpdateWhereSelectionOrder(
+  /// same order implied by the caller's query options. The same applies to
+  /// delete operations, in which the result order is arbitrary. A pre-selected
+  /// list of ids is then provided to restore the order.
+  static Iterable<Map<String, dynamic>> _restoreOperationWhereSelectionOrder(
     Iterable<Map<String, dynamic>> rows,
     Table table,
     List<Object> ids,
