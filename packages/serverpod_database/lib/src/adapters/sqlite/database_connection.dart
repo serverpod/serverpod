@@ -29,6 +29,7 @@ import '../../util/query_result_parser.dart';
 import '../postgres/sql_query_builder.dart';
 import 'sqlite_database_result.dart';
 import 'sqlite_pool_manager.dart';
+import 'sqlite_query_parameters.dart';
 
 part 'sqlite_exceptions.dart';
 
@@ -693,7 +694,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Transaction? transaction,
     QueryParameters? parameters,
   }) async {
-    var (sql, params) = _convertParameters(query, parameters);
+    var (sql, params) = convertQueryParametersForSqlite(query, parameters);
     var result = await _runQuery(
       session,
       sql,
@@ -711,7 +712,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Transaction? transaction,
     QueryParameters? parameters,
   }) async {
-    var (sql, params) = _convertParameters(query, parameters);
+    var (sql, params) = convertQueryParametersForSqlite(query, parameters);
 
     final script = _parseSqlScriptForBatch(sql);
     if (script.length > 1 && params.isNotEmpty) {
@@ -1244,39 +1245,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         });
   }
 
-  /// Converts Postgres-style parameters ($1, $2 or @name) to SQLite ? and list.
-  (String, List<Object?>) _convertParameters(
-    String query,
-    QueryParameters? parameters,
-  ) {
-    if (parameters == null) return (query, const []);
-
-    if (parameters is QueryParametersPositional) {
-      var list = parameters.parameters;
-      var sql = query;
-      for (var i = 0; i < list.length; i++) {
-        sql = sql.replaceFirst(RegExp(r'\$' + (i + 1).toString()), '?');
-      }
-      return (sql, list);
-    }
-
-    if (parameters is QueryParametersNamed) {
-      var map = parameters.parameters;
-      var paramNames = <String>[];
-      var sql = query;
-      final namePattern = RegExp(r'@(\w+)');
-      for (var m in namePattern.allMatches(query)) {
-        var name = m.group(1)!;
-        if (!paramNames.contains(name)) paramNames.add(name);
-        sql = sql.replaceFirst(m.group(0)!, '?');
-      }
-      var list = paramNames.map((n) => map[n]).toList();
-      return (sql, list);
-    }
-
-    return (query, const []);
-  }
-
   /// Parses [sql] into statements using [SqlEngine.parseMultiple] (tokenizer
   /// aware of comments and strings). If that does not yield statements, runs
   /// the whole script as a single [InvalidStatement] so SQLite still executes
@@ -1317,9 +1285,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 
   static String _stripTrailingSemicolon(String sql) {
-    var t = sql.trim();
-    if (!t.endsWith(';')) return t;
-    return t.substring(0, t.length - 1).trim();
+    return sql.trim().replaceFirst(RegExp(r'(?:;|\s)+$'), '');
   }
 }
 
