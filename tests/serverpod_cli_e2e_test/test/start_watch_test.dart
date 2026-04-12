@@ -1,5 +1,4 @@
 @Timeout(Duration(minutes: 12))
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -107,7 +106,7 @@ void main() async {
     });
 
     tearDown(() async {
-      serverProcess?.killAndWaitForExit();
+      await serverProcess?.killAndWaitForExit();
       streamSearch?.cancel();
 
       serverProcess = null;
