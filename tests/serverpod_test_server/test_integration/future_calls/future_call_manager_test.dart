@@ -783,12 +783,13 @@ void main() async {
         'then a message is logged for the unregistered FutureCall with error level',
         () async {
           await futureCallManager.runScheduledFutureCalls();
+          await logSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(logSession);
+          var logs = await LoggingUtil.findAllLogs(session);
           for (var i = 0; i < 20; i++) {
             if (logs.isNotEmpty && logs.last.logs.isNotEmpty) break;
             await Future.delayed(const Duration(milliseconds: 100));
-            logs = await LoggingUtil.findAllLogs(logSession);
+            logs = await LoggingUtil.findAllLogs(session);
           }
 
           expect(logs, isNotEmpty, reason: 'Expected at least one log batch.');
@@ -798,7 +799,6 @@ void main() async {
             reason: 'Expected at least one log entry.',
           );
 
-          await logSession.close();
           final logEntry = logs.last.logs.last;
 
           expect(logEntry.logLevel, LogLevel.error);
