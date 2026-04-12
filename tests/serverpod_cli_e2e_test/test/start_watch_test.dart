@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:test_descriptor/test_descriptor.dart' as d;
+
 import 'package:uuid/uuid.dart';
 
 const startWatchKeywords = [
