@@ -10,6 +10,22 @@ class LoggingUtil {
     );
   }
 
+  /// Fetches log entries for a specific session log ID returned by
+  /// [Session.close]. This is preferred over [findAllLogs] when you need to
+  /// assert on logs from a specific session, as it avoids interference from
+  /// concurrent test sessions and log cleanup.
+  static Future<List<LogEntry>> findLogsForSession(
+    Session session,
+    int? sessionLogId,
+  ) async {
+    if (sessionLogId == null) return [];
+    return LogEntry.db.find(
+      session,
+      where: (t) => t.sessionLogId.equals(sessionLogId),
+      orderBy: (t) => t.order,
+    );
+  }
+
   static Future<List<SessionLogInfo>> findAllLogs(
     Session session,
   ) async {

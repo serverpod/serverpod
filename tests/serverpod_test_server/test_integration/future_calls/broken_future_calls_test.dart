@@ -122,14 +122,17 @@ void main() {
         test(
           'then unregistered and broken future calls are not logged',
           () async {
-            await server.internalLoggingSession.close();
-
-            final logs = await LoggingUtil.findAllLogs(session);
-            final logMessages =
-                logs.lastOrNull?.logs.map((e) => e.message).toList() ?? [];
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
+            final logMessages = allLogs.map((e) => e.message).toList();
 
             expect(
-              logMessages.where((message) => message.contains(r'TestCall\d')),
+              logMessages.where(
+                (message) => RegExp(r'TestCall\d').hasMatch(message),
+              ),
               isEmpty,
             );
           },
@@ -146,9 +149,11 @@ void main() {
         test(
           'then a warning is logged about skipping the check for broken future calls',
           () async {
-            await server.internalLoggingSession.close();
-            final logs = await LoggingUtil.findAllLogs(session);
-            final allLogs = logs.expand((l) => l.logs).toList();
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains(
                 'Skipping automatic check for broken future calls',
@@ -215,9 +220,11 @@ void main() {
         test(
           'then unregistered future calls are logged',
           () async {
-            await server.internalLoggingSession.close();
-            final logs = await LoggingUtil.findAllLogs(session);
-            final allLogs = logs.expand((l) => l.logs).toList();
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains('Unregistered future call:'),
               orElse: () => throw StateError('Log not found in $allLogs'),
@@ -235,9 +242,11 @@ void main() {
         test(
           'then broken future calls are logged',
           () async {
-            await server.internalLoggingSession.close();
-            final logs = await LoggingUtil.findAllLogs(session);
-            final allLogs = logs.expand((l) => l.logs).toList();
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains(
                 'Future call failed deserialization. Error:',
@@ -314,9 +323,11 @@ void main() {
         test(
           'then unregistered future calls are logged',
           () async {
-            await server.internalLoggingSession.close();
-            final logs = await LoggingUtil.findAllLogs(session);
-            final allLogs = logs.expand((l) => l.logs).toList();
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains('Unregistered future call:'),
               orElse: () => throw StateError('Log not found in $allLogs'),
@@ -336,9 +347,11 @@ void main() {
         test(
           'then broken future calls are logged',
           () async {
-            await server.internalLoggingSession.close();
-            final logs = await LoggingUtil.findAllLogs(session);
-            final allLogs = logs.expand((l) => l.logs).toList();
+            final sessionLogId = await server.internalLoggingSession.close();
+            final allLogs = await LoggingUtil.findLogsForSession(
+              session,
+              sessionLogId,
+            );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains(
                 'Future call failed deserialization. Error:',

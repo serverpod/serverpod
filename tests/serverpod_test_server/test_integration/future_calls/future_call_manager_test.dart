@@ -790,17 +790,13 @@ void main() async {
           await futureCallManager.runScheduledFutureCalls();
 
           // Close logSession to flush buffered logs to the database.
-          // After this, use `session` (DB access still enabled) for queries.
-          await logSession.close();
+          // Capture the sessionLogId so we can query exactly those log entries.
+          final sessionLogId = await logSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var allLogs = logs.expand((l) => l.logs).toList();
-          for (var i = 0; i < 20; i++) {
-            if (allLogs.isNotEmpty) break;
-            await Future.delayed(const Duration(milliseconds: 100));
-            logs = await LoggingUtil.findAllLogs(session);
-            allLogs = logs.expand((l) => l.logs).toList();
-          }
+          final allLogs = await LoggingUtil.findLogsForSession(
+            session,
+            sessionLogId,
+          );
 
           expect(
             allLogs,
