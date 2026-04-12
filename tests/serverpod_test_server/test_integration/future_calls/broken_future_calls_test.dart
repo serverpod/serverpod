@@ -148,7 +148,11 @@ void main() {
           () async {
             await server.internalLoggingSession.close();
             final logs = await LoggingUtil.findAllLogs(session);
-            final logEntry = logs.last.logs.first;
+            final allLogs = logs.expand((l) => l.logs).toList();
+            final logEntry = allLogs.firstWhere(
+              (l) => l.message.contains('Skipping automatic check for broken future calls'),
+              orElse: () => throw StateError('Log not found in $allLogs'),
+            );
 
             expect(
               logEntry.message,
@@ -211,7 +215,11 @@ void main() {
           () async {
             await server.internalLoggingSession.close();
             final logs = await LoggingUtil.findAllLogs(session);
-            final logEntry = logs.last.logs.first;
+            final allLogs = logs.expand((l) => l.logs).toList();
+            final logEntry = allLogs.firstWhere(
+              (l) => l.message.contains('Unregistered future call:'),
+              orElse: () => throw StateError('Log not found in $allLogs'),
+            );
 
             expect(
               logEntry.message,
@@ -227,7 +235,11 @@ void main() {
           () async {
             await server.internalLoggingSession.close();
             final logs = await LoggingUtil.findAllLogs(session);
-            final logEntry = logs.last.logs.first;
+            final allLogs = logs.expand((l) => l.logs).toList();
+            final logEntry = allLogs.firstWhere(
+              (l) => l.message.contains('Future call failed deserialization. Error:'),
+              orElse: () => throw StateError('Log not found in $allLogs'),
+            );
 
             expect(
               logEntry.message,
@@ -300,7 +312,11 @@ void main() {
           () async {
             await server.internalLoggingSession.close();
             final logs = await LoggingUtil.findAllLogs(session);
-            final logEntry = logs.last.logs.first;
+            final allLogs = logs.expand((l) => l.logs).toList();
+            final logEntry = allLogs.firstWhere(
+              (l) => l.message.contains('Unregistered future call:'),
+              orElse: () => throw StateError('Log not found in $allLogs'),
+            );
 
             expect(logEntry.logLevel, LogLevel.warning);
             expect(
@@ -318,7 +334,11 @@ void main() {
           () async {
             await server.internalLoggingSession.close();
             final logs = await LoggingUtil.findAllLogs(session);
-            final logEntry = logs.last.logs.first;
+            final allLogs = logs.expand((l) => l.logs).toList();
+            final logEntry = allLogs.firstWhere(
+              (l) => l.message.contains('Future call failed deserialization. Error:'),
+              orElse: () => throw StateError('Log not found in $allLogs'),
+            );
 
             expect(logEntry.logLevel, LogLevel.warning);
             expect(

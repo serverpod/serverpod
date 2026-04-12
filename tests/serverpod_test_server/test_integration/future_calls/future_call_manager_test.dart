@@ -794,20 +794,20 @@ void main() async {
           await logSession.close();
 
           var logs = await LoggingUtil.findAllLogs(session);
+          var allLogs = logs.expand((l) => l.logs).toList();
           for (var i = 0; i < 20; i++) {
-            if (logs.isNotEmpty && logs.last.logs.isNotEmpty) break;
+            if (allLogs.isNotEmpty) break;
             await Future.delayed(const Duration(milliseconds: 100));
             logs = await LoggingUtil.findAllLogs(session);
+            allLogs = logs.expand((l) => l.logs).toList();
           }
 
-          expect(logs, isNotEmpty, reason: 'Expected at least one log batch.');
-          expect(
-            logs.last.logs,
-            isNotEmpty,
-            reason: 'Expected at least one log entry.',
-          );
+          expect(allLogs, isNotEmpty, reason: 'Expected at least one log entry.');
 
-          final logEntry = logs.last.logs.last;
+          final logEntry = allLogs.firstWhere(
+            (l) => l.message.contains('Attempted to run a FutureCall that was not registered'),
+            orElse: () => throw StateError('Log not found in $allLogs'),
+          );
 
           expect(logEntry.logLevel, LogLevel.error);
           expect(

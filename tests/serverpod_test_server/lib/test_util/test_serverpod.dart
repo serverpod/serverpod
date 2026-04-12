@@ -9,7 +9,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 var _integrationTestMode =
     Platform.environment['INTEGRATION_TEST_SERVERPOD_MODE'] ?? 'production';
 
-var _integrationTestFlags = ['-m', _integrationTestMode];
+var _integrationTestFlags = ['-m', _integrationTestMode, '--logging', 'normal'];
 
 class IntegrationTestServer extends TestServerpod {
   IntegrationTestServer({
@@ -53,9 +53,20 @@ class IntegrationTestServer extends TestServerpod {
     try {
       await server.start(runInGuardedZone: false);
     } catch (e) {
-      if (e.runtimeType.toString() != 'ExitException') {
+      if (e.runtimeType.toString() == 'ExitException') {
+        final exitCode = (e as dynamic).exitCode;
+        if (exitCode != 0) {
+          throw Exception(
+            'Migrations failed with ExitException($exitCode): ${(e as dynamic).message}',
+          );
+        }
+      } else {
         rethrow;
       }
+    } finally {
+      // Must explicitly shutdown Serverpod to release Postgres connections
+      // since the maintenance role bypasses standard shutdown hooks.
+      await server.shutdown(exitProcess: false);
     }
   }
 }
