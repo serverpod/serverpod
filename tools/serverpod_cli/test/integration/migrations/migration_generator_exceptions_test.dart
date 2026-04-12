@@ -37,61 +37,26 @@ void main() {
     );
 
     test(
-      'when creating migration then MigrationVersionLoadException is thrown.',
+      'when creating migration then empty folder is skipped and no exception is thrown.',
       () async {
-        expect(
-          generator.createMigration(force: false, config: config),
-          throwsA(
-            isA<MigrationVersionLoadException>()
-                .having(
-                  (e) => e.moduleName,
-                  'Matching module name',
-                  equals(projectName),
-                )
-                .having(
-                  (e) => e.versionName,
-                  'Matching version name',
-                  '00000000000000',
-                )
-                .having(
-                  (e) => e.exception,
-                  'Matching exception',
-                  contains('Required migration artifact is missing'),
-                ),
-          ),
+        var result = await generator.createMigration(
+          force: false,
+          config: config,
         );
+        expect(result, isNull);
       },
     );
 
     test(
-      'when creating repair migration then MigrationVersionLoadException exception is thrown.',
+      'when creating repair migration then empty folder is skipped and no exception is thrown.',
       () async {
-        expect(
-          generator.repairMigration(
-            runMode:
-                CreateRepairMigrationOption.runModes.first /* development */,
-            force: false,
-            dialect: DatabaseDialect.postgres,
-          ),
-          throwsA(
-            isA<MigrationVersionLoadException>()
-                .having(
-                  (e) => e.moduleName,
-                  'Matching module name',
-                  equals(projectName),
-                )
-                .having(
-                  (e) => e.versionName,
-                  'Matching version name',
-                  '00000000000000',
-                )
-                .having(
-                  (e) => e.exception,
-                  'Matching exception',
-                  contains('Required migration artifact is missing'),
-                ),
-          ),
+        var result = await generator.repairMigration(
+          runMode:
+              CreateRepairMigrationOption.runModes.first /* development */,
+          force: false,
+          dialect: DatabaseDialect.postgres,
         );
+        expect(result, isNull);
       },
     );
   });
