@@ -17,6 +17,10 @@ class _SimpleFutureCall extends FutureCall<SimpleData> {
 }
 
 void main() {
+  setUpAll(() async {
+    await IntegrationTestServer.applyMigrations();
+  });
+
   group(
     'Given a Serverpod server instance with default config'
     'and valid registered future calls in the database',

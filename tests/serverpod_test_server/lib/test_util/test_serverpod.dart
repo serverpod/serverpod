@@ -42,6 +42,22 @@ class IntegrationTestServer extends TestServerpod {
       runtimeParametersBuilder: runtimeParametersBuilder,
     );
   }
+
+  static Future<void> applyMigrations({ServerpodConfig? config}) async {
+    final server = Serverpod(
+      [..._integrationTestFlags, '--apply-migrations', '--role', 'maintenance'],
+      Protocol(),
+      Endpoints(),
+      config: config,
+    );
+    try {
+      await server.start(runInGuardedZone: false);
+    } catch (e) {
+      if (e.runtimeType.toString() != 'ExitException') {
+        rethrow;
+      }
+    }
+  }
 }
 
 class TestServerpod {

@@ -49,6 +49,10 @@ class DelayedListTestCall extends FutureCall<SimpleData> {
 }
 
 void main() async {
+  setUpAll(() async {
+    await IntegrationTestServer.applyMigrations();
+  });
+
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
