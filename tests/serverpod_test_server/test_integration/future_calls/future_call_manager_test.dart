@@ -802,10 +802,16 @@ void main() async {
             allLogs = logs.expand((l) => l.logs).toList();
           }
 
-          expect(allLogs, isNotEmpty, reason: 'Expected at least one log entry.');
+          expect(
+            allLogs,
+            isNotEmpty,
+            reason: 'Expected at least one log entry.',
+          );
 
           final logEntry = allLogs.firstWhere(
-            (l) => l.message.contains('Attempted to run a FutureCall that was not registered'),
+            (l) => l.message.contains(
+              'Attempted to run a FutureCall that was not registered',
+            ),
             orElse: () => throw StateError('Log not found in $allLogs'),
           );
 

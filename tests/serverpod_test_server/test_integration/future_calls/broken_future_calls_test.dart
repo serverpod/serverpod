@@ -150,7 +150,9 @@ void main() {
             final logs = await LoggingUtil.findAllLogs(session);
             final allLogs = logs.expand((l) => l.logs).toList();
             final logEntry = allLogs.firstWhere(
-              (l) => l.message.contains('Skipping automatic check for broken future calls'),
+              (l) => l.message.contains(
+                'Skipping automatic check for broken future calls',
+              ),
               orElse: () => throw StateError('Log not found in $allLogs'),
             );
 
@@ -237,7 +239,9 @@ void main() {
             final logs = await LoggingUtil.findAllLogs(session);
             final allLogs = logs.expand((l) => l.logs).toList();
             final logEntry = allLogs.firstWhere(
-              (l) => l.message.contains('Future call failed deserialization. Error:'),
+              (l) => l.message.contains(
+                'Future call failed deserialization. Error:',
+              ),
               orElse: () => throw StateError('Log not found in $allLogs'),
             );
 
@@ -336,7 +340,9 @@ void main() {
             final logs = await LoggingUtil.findAllLogs(session);
             final allLogs = logs.expand((l) => l.logs).toList();
             final logEntry = allLogs.firstWhere(
-              (l) => l.message.contains('Future call failed deserialization. Error:'),
+              (l) => l.message.contains(
+                'Future call failed deserialization. Error:',
+              ),
               orElse: () => throw StateError('Log not found in $allLogs'),
             );
 
@@ -402,11 +408,15 @@ void main() {
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
-          final logMessages =
-              logs.lastOrNull?.logs.map((e) => e.message).toList() ?? [];
+          final allMessages = logs
+              .expand((l) => l.logs)
+              .map((e) => e.message)
+              .toList();
 
           expect(
-            logMessages.where((message) => message.contains(r'TestCall\d')),
+            allMessages.where(
+              (message) => RegExp(r'TestCall\d').hasMatch(message),
+            ),
             isEmpty,
           );
         },
