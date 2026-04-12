@@ -793,7 +793,11 @@ void main() async {
           }
 
           expect(logs, isNotEmpty, reason: 'Expected at least one log batch.');
-          expect(logs.last.logs, isNotEmpty, reason: 'Expected at least one log entry.');
+          expect(
+            logs.last.logs,
+            isNotEmpty,
+            reason: 'Expected at least one log entry.',
+          );
           final logEntry = logs.last.logs.last;
 
           expect(logEntry.logLevel, LogLevel.error);

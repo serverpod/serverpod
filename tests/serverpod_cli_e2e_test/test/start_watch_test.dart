@@ -84,7 +84,9 @@ void main() async {
     KeywordSearchInStream? streamSearch;
 
     setUpAll(() async {
-      sandboxDirectory = await Directory.systemTemp.createTemp('serverpod_cli_e2e_');
+      sandboxDirectory = await Directory.systemTemp.createTemp(
+        'serverpod_cli_e2e_',
+      );
       sandboxDir = sandboxDirectory.path;
 
       var result = await runServerpod(
