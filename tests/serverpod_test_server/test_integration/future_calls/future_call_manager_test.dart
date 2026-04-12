@@ -774,6 +774,7 @@ void main() async {
         );
 
         await session.close();
+        // logSession may already be closed by the test body (to flush logs).
         await logSession.close();
         await server.shutdown(exitProcess: false);
       });
@@ -783,6 +784,9 @@ void main() async {
         'then a message is logged for the unregistered FutureCall with error level',
         () async {
           await futureCallManager.runScheduledFutureCalls();
+
+          // Close logSession to flush buffered logs to the database.
+          // After this, use `session` (DB access still enabled) for queries.
           await logSession.close();
 
           var logs = await LoggingUtil.findAllLogs(session);
@@ -808,7 +812,7 @@ void main() async {
               'Attempted to run a FutureCall that was not registered. This is likely due '
               'to changing a FutureCall method after it was scheduled, leading to an '
               'entry that no longer has a matching method. For legacy future calls, '
-              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
+              r'make sure they are registered in the server start. Entry: \{.*"name":\s*"scheduled-but-unregistered-call".*\}',
             ),
           );
         },
