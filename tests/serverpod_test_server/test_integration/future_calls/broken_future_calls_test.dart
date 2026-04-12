@@ -158,7 +158,9 @@ void main() {
               (l) => l.message.contains(
                 'Skipping automatic check for broken future calls',
               ),
-              orElse: () => throw StateError('Log not found in $allLogs'),
+              orElse: () => throw StateError(
+                'Log not found for sessionLogId $sessionLogId in $allLogs',
+              ),
             );
 
             expect(
@@ -227,7 +229,9 @@ void main() {
             );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains('Unregistered future call:'),
-              orElse: () => throw StateError('Log not found in $allLogs'),
+              orElse: () => throw StateError(
+                'Log not found for sessionLogId $sessionLogId in $allLogs',
+              ),
             );
 
             expect(
@@ -251,7 +255,9 @@ void main() {
               (l) => l.message.contains(
                 'Future call failed deserialization. Error:',
               ),
-              orElse: () => throw StateError('Log not found in $allLogs'),
+              orElse: () => throw StateError(
+                'Log not found for sessionLogId $sessionLogId in $allLogs',
+              ),
             );
 
             expect(
@@ -330,7 +336,9 @@ void main() {
             );
             final logEntry = allLogs.firstWhere(
               (l) => l.message.contains('Unregistered future call:'),
-              orElse: () => throw StateError('Log not found in $allLogs'),
+              orElse: () => throw StateError(
+                'Log not found for sessionLogId $sessionLogId in $allLogs',
+              ),
             );
 
             expect(logEntry.logLevel, LogLevel.warning);
@@ -356,7 +364,9 @@ void main() {
               (l) => l.message.contains(
                 'Future call failed deserialization. Error:',
               ),
-              orElse: () => throw StateError('Log not found in $allLogs'),
+              orElse: () => throw StateError(
+                'Log not found for sessionLogId $sessionLogId in $allLogs',
+              ),
             );
 
             expect(logEntry.logLevel, LogLevel.warning);

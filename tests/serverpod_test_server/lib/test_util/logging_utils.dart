@@ -8,6 +8,12 @@ class LoggingUtil {
       session,
       where: (t) => Constant.bool(true),
     );
+
+    // Also clear runtime settings to ensure default log levels.
+    await RuntimeSettings.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
   }
 
   /// Fetches log entries for a specific session log ID returned by
@@ -18,7 +24,14 @@ class LoggingUtil {
     Session session,
     int? sessionLogId,
   ) async {
-    if (sessionLogId == null) return [];
+    if (sessionLogId == null) {
+      // ignore: avoid_print
+      print(
+        'findLogsForSession: sessionLogId is null. This means no log '
+        'was opened for this session. Check logAllSessions or logLevel.',
+      );
+      return [];
+    }
     return LogEntry.db.find(
       session,
       where: (t) => t.sessionLogId.equals(sessionLogId),

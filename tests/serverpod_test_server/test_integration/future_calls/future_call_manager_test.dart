@@ -808,7 +808,9 @@ void main() async {
             (l) => l.message.contains(
               'Attempted to run a FutureCall that was not registered',
             ),
-            orElse: () => throw StateError('Log not found in $allLogs'),
+            orElse: () => throw StateError(
+              'Log not found for sessionLogId $sessionLogId in $allLogs',
+            ),
           );
 
           expect(logEntry.logLevel, LogLevel.error);
