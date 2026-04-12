@@ -785,7 +785,15 @@ void main() async {
           await futureCallManager.runScheduledFutureCalls();
           await logSession.close();
 
-          final logs = await LoggingUtil.findAllLogs(session);
+          var logs = await LoggingUtil.findAllLogs(session);
+          for (var i = 0; i < 20; i++) {
+            if (logs.isNotEmpty && logs.last.logs.isNotEmpty) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+            logs = await LoggingUtil.findAllLogs(session);
+          }
+
+          expect(logs, isNotEmpty, reason: 'Expected at least one log batch.');
+          expect(logs.last.logs, isNotEmpty, reason: 'Expected at least one log entry.');
           final logEntry = logs.last.logs.last;
 
           expect(logEntry.logLevel, LogLevel.error);
