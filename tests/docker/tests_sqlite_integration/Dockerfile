@@ -2,7 +2,7 @@
 FROM dart:3.8.0 AS dart-sdk
 FROM ubuntu:24.04 AS build
 
-# Copy SQLite >= 3.41.0 from Ubuntu 24.04.
+# Use Ubuntu 24.04 as base image to ensure SQLite >= 3.41.0 is available.
 COPY --from=dart-sdk /usr/lib/dart /usr/lib/dart
 ENV PATH="/usr/lib/dart/bin:${PATH}"
 
