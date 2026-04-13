@@ -467,18 +467,7 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseDialect = DatabaseDialect.postgres;
-    final maybeDatabaseDialect = generatorConfig['databaseDialect'];
-    if (maybeDatabaseDialect != null) {
-      if (maybeDatabaseDialect is! String ||
-          !DatabaseDialect.values.any((d) => d.name == maybeDatabaseDialect)) {
-        throw SourceSpanFormatException(
-          'Invalid database dialect: "$maybeDatabaseDialect".',
-          maybeDatabaseDialect is YamlNode ? maybeDatabaseDialect.span : null,
-        );
-      }
-      databaseDialect = DatabaseDialect.values.byName(maybeDatabaseDialect);
-    }
+    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
 
     return GeneratorConfig(
       name: name,
@@ -496,6 +485,55 @@ class GeneratorConfig implements ModelLoadConfig {
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+  }
+
+  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
+    String serverRootDir,
+  ) async {
+    final configDir = Directory(p.join(serverRootDir, 'config'));
+    if (!await configDir.exists()) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialectsByFile = <String, DatabaseDialect>{};
+    await for (final entity in configDir.list(followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
+          basename.startsWith('generator.') ||
+          basename.startsWith('passwords.')) {
+        continue;
+      }
+
+      final yamlRoot = loadYaml(await entity.readAsString());
+      if (yamlRoot == null || yamlRoot is! Map) continue;
+
+      final dialect = inferDatabaseDialectFromConfigMap(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
+      if (dialect != null) {
+        dialectsByFile[basename] = dialect;
+      }
+    }
+
+    if (dialectsByFile.isEmpty) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialects = dialectsByFile.values.toSet();
+    if (dialects.length > 1) {
+      final details = dialectsByFile.entries
+          .map((e) => '${e.key} (${e.value.name})')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database dialects across run-mode config files: $details. '
+        'A Serverpod project must use a single database dialect in all run modes.',
+      );
+    }
+
+    return dialects.single;
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
@@ -725,4 +763,8 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+extension on Iterable<String> {
+  List<String> sorted() => toList()..sort();
 }
