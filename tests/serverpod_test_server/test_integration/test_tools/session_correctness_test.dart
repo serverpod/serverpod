@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/endpoints/test_tools.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
+import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -10,6 +11,7 @@ import 'serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given calling endpoint returning Future',
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, endpoints) {
       group('when using the same session between two calls', () {
         late UuidValue sessionId1;
