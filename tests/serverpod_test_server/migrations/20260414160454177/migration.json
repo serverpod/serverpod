@@ -59,6 +59,14 @@
             "columnType": 14,
             "isNullable": false,
             "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "nullableJsonb",
+            "fieldName": "nullableJsonb",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "List<String>?"
           }
         ],
         "foreignKeys": [],

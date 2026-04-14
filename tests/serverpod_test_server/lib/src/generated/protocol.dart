@@ -3609,6 +3609,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'List<String>',
         ),
+        _i2.ColumnDefinition(
+          name: 'nullableJsonb',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: true,
+          dartType: 'List<String>?',
+        ),
       ],
       foreignKeys: [],
       indexes: [
@@ -8126,6 +8132,12 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
+    if (t == _i1.getType<List<String>?>()) {
+      return (data != null
+              ? (data as List).map((e) => deserialize<String>(e)).toList()
+              : null)
+          as T;
+    }
     if (t == Map<String, _i199.SimpleData>) {
       return (data as Map).map(
             (k, v) => MapEntry(
@@ -8616,12 +8628,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<List<double>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<double>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<String>(e)).toList()
               : null)
           as T;
     }

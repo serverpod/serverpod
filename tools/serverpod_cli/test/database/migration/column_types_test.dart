@@ -48,6 +48,72 @@ void main() {
       expect(migration.warnings, hasLength(0));
     });
   });
+
+  group(
+    'Given table with json column as source and jsonb column as target',
+    () {
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      // The migration engine does not support in-place ALTER COLUMN TYPE for
+      // json/jsonb, so the table is dropped and recreated. The destructive
+      // warnings abort `serverpod create-migration` unless --force is used.
+      test(
+        'then the table is dropped and recreated with destructive warnings.',
+        () {
+          expect(migration.actions, hasLength(2));
+          expect(
+            migration.actions.first.type,
+            DatabaseMigrationActionType.deleteTable,
+          );
+          expect(
+            migration.actions.last.type,
+            DatabaseMigrationActionType.createTable,
+          );
+          expect(migration.warnings, isNotEmpty);
+          expect(migration.warnings.every((w) => w.destructive), isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given table with jsonb column as source and json column as target',
+    () {
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
+      var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      // The migration engine does not support in-place ALTER COLUMN TYPE for
+      // json/jsonb, so the table is dropped and recreated. The destructive
+      // warnings abort `serverpod create-migration` unless --force is used.
+      test(
+        'then the table is dropped and recreated with destructive warnings.',
+        () {
+          expect(migration.actions, hasLength(2));
+          expect(
+            migration.actions.first.type,
+            DatabaseMigrationActionType.deleteTable,
+          );
+          expect(
+            migration.actions.last.type,
+            DatabaseMigrationActionType.createTable,
+          );
+          expect(migration.warnings, isNotEmpty);
+          expect(migration.warnings.every((w) => w.destructive), isTrue);
+        },
+      );
+    },
+  );
 }
 
 DatabaseDefinition _singleColumnDatabaseDefinition(ColumnType columnType) {

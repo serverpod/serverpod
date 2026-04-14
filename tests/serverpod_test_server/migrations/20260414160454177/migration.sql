@@ -9,7 +9,8 @@ CREATE TABLE "object_with_jsonb" (
     "jsonb" jsonb NOT NULL,
     "jsonbIndexed" jsonb NOT NULL,
     "jsonbIndexedGin" jsonb NOT NULL,
-    "jsonbIndexedGinJsonbPath" jsonb NOT NULL
+    "jsonbIndexedGinJsonbPath" jsonb NOT NULL,
+    "nullableJsonb" jsonb
 );
 
 -- Indexes
@@ -31,9 +32,9 @@ CREATE TABLE "object_with_jsonb_class_level" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260414134722411', now())
+    VALUES ('serverpod_test', '20260414160454177', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260414134722411', "timestamp" = now();
+    DO UPDATE SET "version" = '20260414160454177', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

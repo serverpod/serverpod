@@ -6,6 +6,7 @@ fields:
   jsonbIndexed: List<String>, serializationDataType=jsonb
   jsonbIndexedGin: List<String>, serializationDataType=jsonb
   jsonbIndexedGinJsonbPath: List<String>, serializationDataType=jsonb
+  nullableJsonb: List<String>?, serializationDataType=jsonb
 indexes:
   jsonb_index_gin:
     fields: jsonbIndexedGin

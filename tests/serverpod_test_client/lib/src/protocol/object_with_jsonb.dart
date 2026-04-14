@@ -21,6 +21,7 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
     required this.jsonbIndexed,
     required this.jsonbIndexedGin,
     required this.jsonbIndexedGinJsonbPath,
+    this.nullableJsonb,
   });
 
   factory ObjectWithJsonb({
@@ -30,6 +31,7 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   }) = _ObjectWithJsonbImpl;
 
   factory ObjectWithJsonb.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -50,6 +52,11 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
       jsonbIndexedGinJsonbPath: _i2.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGinJsonbPath'],
       ),
+      nullableJsonb: jsonSerialization['nullableJsonb'] == null
+          ? null
+          : _i2.Protocol().deserialize<List<String>>(
+              jsonSerialization['nullableJsonb'],
+            ),
     );
   }
 
@@ -68,6 +75,8 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
 
   List<String> jsonbIndexedGinJsonbPath;
 
+  List<String>? nullableJsonb;
+
   /// Returns a shallow copy of this [ObjectWithJsonb]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -78,6 +87,7 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,6 +99,7 @@ abstract class ObjectWithJsonb implements _i1.SerializableModel {
       'jsonbIndexed': jsonbIndexed.toJson(),
       'jsonbIndexedGin': jsonbIndexedGin.toJson(),
       'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
+      if (nullableJsonb != null) 'nullableJsonb': nullableJsonb?.toJson(),
     };
   }
 
@@ -108,6 +119,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   }) : super._(
          id: id,
          notJsonb: notJsonb,
@@ -115,6 +127,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
          jsonbIndexed: jsonbIndexed,
          jsonbIndexedGin: jsonbIndexedGin,
          jsonbIndexedGinJsonbPath: jsonbIndexedGinJsonbPath,
+         nullableJsonb: nullableJsonb,
        );
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
@@ -128,6 +141,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
+    Object? nullableJsonb = _Undefined,
   }) {
     return ObjectWithJsonb(
       id: id is int? ? id : this.id,
@@ -139,6 +153,9 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
       jsonbIndexedGinJsonbPath:
           jsonbIndexedGinJsonbPath ??
           this.jsonbIndexedGinJsonbPath.map((e0) => e0).toList(),
+      nullableJsonb: nullableJsonb is List<String>?
+          ? nullableJsonb
+          : this.nullableJsonb?.map((e0) => e0).toList(),
     );
   }
 }

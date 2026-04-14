@@ -23,6 +23,7 @@ abstract class ObjectWithJsonb
     required this.jsonbIndexed,
     required this.jsonbIndexedGin,
     required this.jsonbIndexedGinJsonbPath,
+    this.nullableJsonb,
   });
 
   factory ObjectWithJsonb({
@@ -32,6 +33,7 @@ abstract class ObjectWithJsonb
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   }) = _ObjectWithJsonbImpl;
 
   factory ObjectWithJsonb.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -52,6 +54,11 @@ abstract class ObjectWithJsonb
       jsonbIndexedGinJsonbPath: _i2.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGinJsonbPath'],
       ),
+      nullableJsonb: jsonSerialization['nullableJsonb'] == null
+          ? null
+          : _i2.Protocol().deserialize<List<String>>(
+              jsonSerialization['nullableJsonb'],
+            ),
     );
   }
 
@@ -72,6 +79,8 @@ abstract class ObjectWithJsonb
 
   List<String> jsonbIndexedGinJsonbPath;
 
+  List<String>? nullableJsonb;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -85,6 +94,7 @@ abstract class ObjectWithJsonb
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -96,6 +106,7 @@ abstract class ObjectWithJsonb
       'jsonbIndexed': jsonbIndexed.toJson(),
       'jsonbIndexedGin': jsonbIndexedGin.toJson(),
       'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
+      if (nullableJsonb != null) 'nullableJsonb': nullableJsonb?.toJson(),
     };
   }
 
@@ -109,6 +120,7 @@ abstract class ObjectWithJsonb
       'jsonbIndexed': jsonbIndexed.toJson(),
       'jsonbIndexedGin': jsonbIndexedGin.toJson(),
       'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
+      if (nullableJsonb != null) 'nullableJsonb': nullableJsonb?.toJson(),
     };
   }
 
@@ -154,6 +166,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
+    List<String>? nullableJsonb,
   }) : super._(
          id: id,
          notJsonb: notJsonb,
@@ -161,6 +174,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
          jsonbIndexed: jsonbIndexed,
          jsonbIndexedGin: jsonbIndexedGin,
          jsonbIndexedGinJsonbPath: jsonbIndexedGinJsonbPath,
+         nullableJsonb: nullableJsonb,
        );
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
@@ -174,6 +188,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
+    Object? nullableJsonb = _Undefined,
   }) {
     return ObjectWithJsonb(
       id: id is int? ? id : this.id,
@@ -185,6 +200,9 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
       jsonbIndexedGinJsonbPath:
           jsonbIndexedGinJsonbPath ??
           this.jsonbIndexedGinJsonbPath.map((e0) => e0).toList(),
+      nullableJsonb: nullableJsonb is List<String>?
+          ? nullableJsonb
+          : this.nullableJsonb?.map((e0) => e0).toList(),
     );
   }
 }
@@ -224,6 +242,13 @@ class ObjectWithJsonbUpdateTable extends _i1.UpdateTable<ObjectWithJsonbTable> {
     table.jsonbIndexedGinJsonbPath,
     value,
   );
+
+  _i1.ColumnValue<List<String>, List<String>> nullableJsonb(
+    List<String>? value,
+  ) => _i1.ColumnValue(
+    table.nullableJsonb,
+    value,
+  );
 }
 
 class ObjectWithJsonbTable extends _i1.Table<int?> {
@@ -254,6 +279,11 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
       this,
       serializationDataType: _i3.SerializationDataType.jsonb,
     );
+    nullableJsonb = _i1.ColumnSerializable<List<String>>(
+      'nullableJsonb',
+      this,
+      serializationDataType: _i3.SerializationDataType.jsonb,
+    );
   }
 
   late final ObjectWithJsonbUpdateTable updateTable;
@@ -268,6 +298,8 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
 
   late final _i1.ColumnSerializable<List<String>> jsonbIndexedGinJsonbPath;
 
+  late final _i1.ColumnSerializable<List<String>> nullableJsonb;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -276,6 +308,7 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
     jsonbIndexed,
     jsonbIndexedGin,
     jsonbIndexedGinJsonbPath,
+    nullableJsonb,
   ];
 }
 
