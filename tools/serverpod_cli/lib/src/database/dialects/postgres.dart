@@ -1,3 +1,4 @@
+import 'package:recase/recase.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
 // This is a temporary internal import since the normalize functions are not
@@ -197,6 +198,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.json:
         type = 'json';
         break;
+      case ColumnType.jsonb:
+        type = 'jsonb';
+        break;
       case ColumnType.text:
         type = 'text';
         break;
@@ -256,9 +260,19 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
   }) {
     var out = '';
 
+    var typeStr = type;
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
+
+    String ginOperatorClassStr = '';
+
+    if (type == 'gin') {
+      typeStr = 'GIN';
+      if (ginOperatorClass != null) {
+        ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
+      }
+    }
 
     String distanceStr = '';
     String pgvectorParams = '';
@@ -275,9 +289,15 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
+        'USING $typeStr (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
 
     return out;
+  }
+}
+
+extension GinIndexOperatorClass on GinOperatorClass {
+  String asOperator() {
+    return '${name.snakeCase}_ops';
   }
 }
 

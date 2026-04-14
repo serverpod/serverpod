@@ -49,6 +49,13 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.serializationDataType,
+        valueRestriction:
+            EnumValueRestriction(enums: SerializationDataType.values).validate,
+        isHidden: !restrictions.config
+            .isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
+      ),
+      ValidateNode(
         Keyword.managedMigration,
         valueRestriction: BooleanValueRestriction().validate,
       ),
@@ -156,6 +163,19 @@ class ClassYamlDefinition {
                 valueRestriction: BooleanValueRestriction().validate,
               ),
               ValidateNode(
+                Keyword.serializationDataType,
+                keyRestriction:
+                    restrictions.validateFieldSerializationDataTypeKey,
+                valueRestriction:
+                    EnumValueRestriction(enums: SerializationDataType.values)
+                        .validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+                    ExperimentalFeature.serializeAsJsonb),
+              ),
+              ValidateNode(
                 Keyword.database,
                 isDeprecated: true,
                 isRemoved: true,
@@ -239,6 +259,15 @@ class ClassYamlDefinition {
                 Keyword.unique,
                 keyRestriction: restrictions.validateIndexUniqueKey,
                 valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
+                Keyword.operatorClass,
+                keyRestriction: restrictions.validateIndexOperatorClassKey,
+                valueRestriction:
+                    EnumValueRestriction(enums: GinOperatorClass.values)
+                        .validate,
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+                    ExperimentalFeature.serializeAsJsonb),
               ),
               ValidateNode(
                 Keyword.distanceFunction,

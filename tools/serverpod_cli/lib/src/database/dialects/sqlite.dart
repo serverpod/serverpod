@@ -155,6 +155,7 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
         type = 'BLOB';
       case ColumnType.text:
       case ColumnType.json:
+      case ColumnType.jsonb:
       case ColumnType.vector:
       case ColumnType.halfvec:
       case ColumnType.sparsevec:

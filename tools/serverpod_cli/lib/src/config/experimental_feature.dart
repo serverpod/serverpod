@@ -13,7 +13,10 @@ class CommandLineExperimentalFeatures {
 enum ExperimentalFeature {
   all,
   // TODO: Remove when column override is enabled by default.
-  columnOverride;
+  columnOverride,
+
+  // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919
+  serializeAsJsonb;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {

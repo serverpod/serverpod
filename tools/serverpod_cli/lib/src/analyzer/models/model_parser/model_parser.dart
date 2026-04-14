@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -17,7 +18,7 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
   ) {
     var isSealed = _parseIsSealed(documentContents);
 
@@ -30,6 +31,7 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
+    var serializationDataType = _parseSerializationDataType(documentContents);
 
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
@@ -37,7 +39,7 @@ class ModelParser {
       outFileName: outFileName,
       documentContents: documentContents,
       docsExtractor: docsExtractor,
-      extraClasses: extraClasses,
+      config: config,
       hasTable: tableName != null,
       initialize:
           ({
@@ -56,6 +58,7 @@ class ModelParser {
               extendsClass: extendsClass,
               sourceFileName: protocolSource.yamlSourceUri.path,
               tableName: tableName,
+              serializationDataType: serializationDataType,
               manageMigration: manageMigration,
               fileName: outFileName,
               fields: fields,
@@ -76,7 +79,7 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    GeneratorConfig config,
   ) {
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
@@ -84,7 +87,7 @@ class ModelParser {
       outFileName: outFileName,
       documentContents: documentContents,
       docsExtractor: docsExtractor,
-      extraClasses: extraClasses,
+      config: config,
       hasTable: false,
       initialize:
           ({
@@ -118,7 +121,7 @@ class ModelParser {
     required String outFileName,
     required YamlMap documentContents,
     required YamlDocumentationExtractor docsExtractor,
-    required List<TypeDefinition> extraClasses,
+    required GeneratorConfig config,
     required bool hasTable,
     required T Function({
       required String className,
@@ -145,16 +148,22 @@ class ModelParser {
     var className = classNode.value;
     if (className is! String) return null;
 
+    var extraClasses = config.extraClasses;
+
     var classType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: extraClasses,
     );
 
+    var modelSerializationDataType =
+        _parseSerializationDataType(documentContents);
+
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      extraClasses,
+      modelSerializationDataType,
+      config,
       serverOnly,
     );
 
@@ -181,7 +190,7 @@ class ModelParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
-    var serializeAs = _parseSerializedAs(documentContents);
+    var serializedAs = _parseSerializedAs(documentContents);
     var properties = _parseEnumProperties(documentContents, docsExtractor);
     var values = _parseEnumValues(documentContents, docsExtractor, properties);
     var enumType = parseType(
@@ -198,7 +207,7 @@ class ModelParser {
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
       values: values,
-      serialized: serializeAs,
+      serialized: serializedAs,
       documentation: enumDocumentation,
       defaultValue: defaultEnumDefinitionValue,
       subDirParts: protocolSource.subDirPathParts,
@@ -241,6 +250,21 @@ class ModelParser {
     return serverOnly;
   }
 
+  static SerializationDataType? _parseSerializationDataType(
+      YamlMap documentContents) {
+    if (documentContents.nodes[Keyword.serializationDataType] == null) {
+      return null;
+    }
+    final serializationDataType =
+        documentContents.nodes[Keyword.serializationDataType]?.value;
+
+    return convertToEnum<SerializationDataType>(
+      value: serializationDataType,
+      enumDefault: SerializationDataType.json,
+      enumValues: SerializationDataType.values,
+    );
+  }
+
   static EnumSerialization _parseSerializedAs(YamlMap documentContents) {
     var serializedAs = documentContents.nodes[Keyword.serialized]?.value;
 
@@ -261,7 +285,8 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    SerializationDataType? modelSerializationDataType,
+    GeneratorConfig config,
     bool serverOnlyClass,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
@@ -274,7 +299,8 @@ class ModelParser {
           return _parseModelFieldDefinition(
             fieldNode,
             docsExtractor,
-            extraClasses,
+            modelSerializationDataType,
+            config,
             serverOnlyClass,
           );
         }).toList(),
@@ -287,7 +313,8 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    List<TypeDefinition> extraClasses,
+    SerializationDataType? modelSerializationDataType,
+    GeneratorConfig config,
     bool serverOnlyClass,
   ) {
     var key = fieldNode.key;
@@ -322,6 +349,8 @@ class ModelParser {
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
 
+    var extraClasses = config.extraClasses;
+
     var typeResult = parseType(
       typeValue,
       extraClasses: extraClasses,
@@ -329,6 +358,15 @@ class ModelParser {
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
+
+    typeResult.serializationDataType =
+        _parseClassFieldSerializationDataType(node) ??
+            modelSerializationDataType;
+    if (typeResult.serializationDataType == null &&
+        typeResult.isColumnSerializable &&
+        config.serializeAsJsonbByDefault) {
+      typeResult.serializationDataType = SerializationDataType.jsonb;
+    }
 
     var defaultModelValue = _parseDefaultValue(
       node,
@@ -538,6 +576,12 @@ class ModelParser {
     return _parseBooleanKey(relation, Keyword.optional);
   }
 
+  static SerializationDataType? _parseClassFieldSerializationDataType(
+    YamlMap documentContents,
+  ) {
+    return _parseSerializationDataType(documentContents);
+  }
+
   static ModelFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
     bool serverOnlyClass,
@@ -605,6 +649,11 @@ class ModelParser {
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
+      var operatorClass = _parseOperatorClass(
+        nodeDocument,
+        type,
+        indexFieldsTypes,
+      );
       var distanceFunction = _parseDistanceFunction(
         nodeDocument,
         type,
@@ -617,6 +666,7 @@ class ModelParser {
         type: type,
         unique: unique,
         fields: indexFields,
+        ginOperatorClass: operatorClass,
         vectorDistanceFunction: distanceFunction,
         parameters: parameters,
       );
@@ -673,6 +723,28 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static GinOperatorClass? _parseOperatorClass(
+    YamlMap documentContents,
+    String indexType,
+    Iterable<SerializableModelFieldDefinition> indexFieldsTypes,
+  ) {
+    var node = documentContents.nodes[Keyword.operatorClass];
+    var nodeValue = node?.value;
+
+    if (nodeValue is! String) {
+      return (indexType == 'gin') ? GinOperatorClass.jsonb : null;
+    }
+
+    try {
+      return unsafeConvertToEnum(
+        value: nodeValue,
+        enumValues: GinOperatorClass.values,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   static VectorDistanceFunction? _parseDistanceFunction(
