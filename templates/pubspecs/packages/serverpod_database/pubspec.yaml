@@ -17,8 +17,8 @@ dependencies:
   postgres: ^3.4.0
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
-  sqlite3: ^2.9.4
-  sqlite_async: ^0.13.1
+  sqlite3: '>=2.9.4 <4.0.0'
+  sqlite_async: '>=0.13.1 <0.15.0'
   sqlparser: ^0.44.3
 
 dev_dependencies:
