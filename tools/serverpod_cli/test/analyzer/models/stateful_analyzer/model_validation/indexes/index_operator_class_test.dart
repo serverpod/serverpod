@@ -8,114 +8,129 @@ import '../../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-      [ExperimentalFeature.serializeAsJsonb]).build();
+  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+    ExperimentalFeature.serializeAsJsonb,
+  ]).build();
 
   test(
-      'Given a class with a gin index with valid operator class, then return a definition where operatorClass is correctly set.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a gin index with valid operator class, then return a definition where operatorClass is correctly set.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
-            tags: List<String>
+            tags: List<String>, serializationDataType=jsonb
           indexes:
             tags_ndx:
               fields: tags
               type: gin
-              operatorClass: jsonbPath
+              operatorClass: jsonbPathOps
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
 
-    var definition = definitions.first as ModelClassDefinition;
-    var operatorClass = definition.indexes.first.ginOperatorClass;
+      var definition = definitions.first as ModelClassDefinition;
+      var operatorClass = definition.indexes.first.ginOperatorClass;
 
-    expect(operatorClass, isNotNull);
-    expect(operatorClass!.name, 'jsonbPath');
-  });
+      expect(operatorClass, isNotNull);
+      expect(operatorClass!.name, 'jsonbPathOps');
+    },
+  );
 
   test(
-      'Given a class with a gin index without operator class, then return a definition where operatorClass defaults to jsonb.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a gin index without operator class, then return a definition where operatorClass defaults to jsonbOps.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
-            tags: List<String>
+            tags: List<String>, serializationDataType=jsonb
           indexes:
             tags_ndx:
               fields: tags
               type: gin
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
 
-    var definition = definitions.first as ModelClassDefinition;
-    var operatorClass = definition.indexes.first.ginOperatorClass;
+      var definition = definitions.first as ModelClassDefinition;
+      var operatorClass = definition.indexes.first.ginOperatorClass;
 
-    expect(operatorClass, isNotNull);
-    expect(operatorClass!.name, 'jsonb');
-  });
+      expect(operatorClass, isNotNull);
+      expect(operatorClass!.name, 'jsonbOps');
+    },
+  );
 
   test(
-      'Given a class with a gin index with invalid operator class value, then collect an error about invalid operator class value.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a gin index with invalid operator class value, then collect an error about invalid operator class value.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
-            tags: List<String>
+            tags: List<String>, serializationDataType=jsonb
           indexes:
             tags_ndx:
               fields: tags
               type: gin
               operatorClass: invalid
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(error.message,
-        '"invalid" is not a valid property. Valid properties are (array, jsonb, jsonbPath, tsvector).');
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        '"invalid" is not a valid property. Valid properties are (arrayOps, jsonbOps, jsonbPathOps, tsvectorOps).',
+      );
+    },
+  );
 }

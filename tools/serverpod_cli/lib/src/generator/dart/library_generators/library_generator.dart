@@ -2161,8 +2161,9 @@ extension on DatabaseDefinition {
                 'isPrimary': literalBool(index.isPrimary),
                 if (index.ginOperatorClass != null)
                   'ginOperatorClass': refer(
-                      'GinOperatorClass.${index.ginOperatorClass!.name}',
-                      serverpodProtocolUrl(serverCode)),
+                    'GinOperatorClass.${index.ginOperatorClass!.name}',
+                    serverpodProtocolUrl(serverCode),
+                  ),
                 if (index.vectorDistanceFunction != null)
                   'vectorDistanceFunction': refer(
                     'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',

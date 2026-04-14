@@ -1733,7 +1733,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonb,
+              ginOperatorClass: GinOperatorClass.jsonbOps,
             ),
           ],
           foreignKeys: [],
@@ -1763,7 +1763,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonbPath,
+              ginOperatorClass: GinOperatorClass.jsonbPathOps,
             ),
           ],
           foreignKeys: [],
@@ -1775,8 +1775,8 @@ void main() {
         expect(mismatches.length, 1);
         expect(mismatches.first, isA<IndexComparisonWarning>());
         expect(mismatches.first.subs.length, 1);
-        expect(mismatches.first.subs.first.expected, equals('jsonb'));
-        expect(mismatches.first.subs.first.found, equals('jsonbPath'));
+        expect(mismatches.first.subs.first.expected, equals('jsonbOps'));
+        expect(mismatches.first.subs.first.found, equals('jsonbPathOps'));
         expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );
@@ -1807,7 +1807,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonbPath,
+              ginOperatorClass: GinOperatorClass.jsonbPathOps,
             ),
           ],
           foreignKeys: [],
@@ -1851,7 +1851,7 @@ void main() {
         expect(mismatches.first.subs.first.expected, 'gin');
         expect(mismatches.first.subs.first.found, 'btree');
         expect(mismatches.first.subs.first.isMismatch, isTrue);
-        expect(mismatches.first.subs.last.expected, 'jsonbPath');
+        expect(mismatches.first.subs.last.expected, 'jsonbPathOps');
         expect(mismatches.first.subs.last.found, isNull);
         expect(mismatches.first.subs.last.isMissing, isTrue);
       },
@@ -1883,7 +1883,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonbPath,
+              ginOperatorClass: GinOperatorClass.jsonbPathOps,
             ),
           ],
           foreignKeys: [],
@@ -1913,7 +1913,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonbPath,
+              ginOperatorClass: GinOperatorClass.jsonbPathOps,
             ),
           ],
           foreignKeys: [],
@@ -1952,7 +1952,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonb,
+              ginOperatorClass: GinOperatorClass.jsonbOps,
             ),
           ],
           foreignKeys: [],
@@ -1982,7 +1982,7 @@ void main() {
               type: 'gin',
               isUnique: false,
               isPrimary: false,
-              ginOperatorClass: GinOperatorClass.jsonbPath,
+              ginOperatorClass: GinOperatorClass.jsonbPathOps,
             ),
           ],
           foreignKeys: [],
@@ -1994,8 +1994,8 @@ void main() {
         expect(mismatches.length, 1);
         expect(mismatches.first, isA<IndexComparisonWarning>());
         expect(mismatches.first.subs.length, 1);
-        expect(mismatches.first.subs.first.expected, equals('jsonb'));
-        expect(mismatches.first.subs.first.found, equals('jsonbPath'));
+        expect(mismatches.first.subs.first.expected, equals('jsonbOps'));
+        expect(mismatches.first.subs.first.found, equals('jsonbPathOps'));
         expect(mismatches.first.subs.first.isMismatch, isTrue);
       },
     );

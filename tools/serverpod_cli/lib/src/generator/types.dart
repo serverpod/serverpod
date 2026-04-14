@@ -169,6 +169,9 @@ class TypeDefinition {
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
 
+  bool get isJsonbSerialized =>
+      serializationDataType == SerializationDataType.jsonb;
+
   bool get isSerializableDartType => ![
     ValueType.record,
     ValueType.isEnum,
@@ -469,9 +472,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
-
-    if (isColumnSerializable &&
-        serializationDataType == SerializationDataType.jsonb) {
+    if (isColumnSerializable && isJsonbSerialized) {
       return 'jsonb';
     }
     return 'json';

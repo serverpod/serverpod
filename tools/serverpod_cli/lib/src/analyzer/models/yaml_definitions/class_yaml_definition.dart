@@ -50,10 +50,12 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serializationDataType,
-        valueRestriction:
-            EnumValueRestriction(enums: SerializationDataType.values).validate,
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
+        valueRestriction: EnumValueRestriction(
+          enums: SerializationDataType.values,
+        ).validate,
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+          ExperimentalFeature.serializeAsJsonb,
+        ),
       ),
       ValidateNode(
         Keyword.managedMigration,
@@ -166,14 +168,15 @@ class ClassYamlDefinition {
                 Keyword.serializationDataType,
                 keyRestriction:
                     restrictions.validateFieldSerializationDataTypeKey,
-                valueRestriction:
-                    EnumValueRestriction(enums: SerializationDataType.values)
-                        .validate,
+                valueRestriction: EnumValueRestriction(
+                  enums: SerializationDataType.values,
+                ).validate,
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },
                 isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                    ExperimentalFeature.serializeAsJsonb),
+                  ExperimentalFeature.serializeAsJsonb,
+                ),
               ),
               ValidateNode(
                 Keyword.database,
@@ -263,11 +266,12 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.operatorClass,
                 keyRestriction: restrictions.validateIndexOperatorClassKey,
-                valueRestriction:
-                    EnumValueRestriction(enums: GinOperatorClass.values)
-                        .validate,
+                valueRestriction: EnumValueRestriction(
+                  enums: GinOperatorClass.values,
+                ).validate,
                 isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                    ExperimentalFeature.serializeAsJsonb),
+                  ExperimentalFeature.serializeAsJsonb,
+                ),
               ),
               ValidateNode(
                 Keyword.distanceFunction,

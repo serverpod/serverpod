@@ -297,7 +297,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
 extension GinIndexOperatorClass on GinOperatorClass {
   String asOperator() {
-    return '${name.snakeCase}_ops';
+    return name.snakeCase;
   }
 }
 

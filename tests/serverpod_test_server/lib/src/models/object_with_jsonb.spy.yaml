@@ -12,4 +12,4 @@ indexes:
   jsonb_index_gin_with_operator_class:
     fields: indexed3
     type: gin
-    operatorClass: jsonbPath
+    operatorClass: jsonbPathOps

@@ -68,7 +68,7 @@
             "type": "gin",
             "isUnique": false,
             "isPrimary": false,
-            "ginOperatorClass": "jsonb"
+            "ginOperatorClass": "jsonbOps"
           },
           {
             "__className__": "serverpod.IndexDefinition",
@@ -83,7 +83,7 @@
             "type": "gin",
             "isUnique": false,
             "isPrimary": false,
-            "ginOperatorClass": "jsonbPath"
+            "ginOperatorClass": "jsonbPathOps"
           }
         ],
         "managed": true

@@ -885,15 +885,16 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
-    var index =
-        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
 
     if (!index.isGinIndex) {
       return [
         SourceSpanSeverityException(
           'The "${Keyword.operatorClass}" property can only be used with gin indexes.',
           span,
-        )
+        ),
       ];
     }
 
@@ -1555,7 +1556,39 @@ class Restrictions {
         ),
     ];
 
-    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
+    var index = definition.indexes
+        .where((i) => i.name == parentNodeName)
+        .firstOrNull;
+    var isGinIndex = index != null && index.isGinIndex;
+
+    var nonJsonbFields = isGinIndex
+        ? fields
+              .where((f) => indexFields.contains(f.name))
+              .where((f) => !f.type.isJsonbSerialized)
+              .map((f) => f.name)
+              .toList()
+        : <String>[];
+
+    var ginErrors = [
+      if (isGinIndex && config.databaseDialect == DatabaseDialect.sqlite)
+        SourceSpanSeverityException(
+          'GIN indexes are not supported in SQLite.',
+          span,
+        ),
+      if (nonJsonbFields.isNotEmpty)
+        SourceSpanSeverityException(
+          'GIN indexes require the indexed field to use '
+          '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
+          span,
+        ),
+    ];
+
+    return [
+      ...missingFieldErrors,
+      ...duplicateFieldErrors,
+      ...vectorErrors,
+      ...ginErrors,
+    ];
   }
 
   List<SourceSpanSeverityException> validateIndexDistanceFunctionValue(
@@ -1900,10 +1933,25 @@ class Restrictions {
     if ((definition is ModelClassDefinition) &&
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
-      errors.add(SourceSpanSeverityException(
-        'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
-        span,
-      ));
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
+          span,
+        ),
+      );
+    }
+
+    var field = definition.fields
+        .where((f) => f.name == parentNodeName)
+        .firstOrNull;
+    if (field != null && !field.type.isColumnSerializable) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is only valid on '
+          'serializable field types (e.g. lists, maps, or custom classes).',
+          span,
+        ),
+      );
     }
 
     return errors;

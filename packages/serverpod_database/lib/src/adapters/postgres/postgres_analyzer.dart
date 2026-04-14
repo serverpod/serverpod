@@ -324,13 +324,13 @@ extension on String {
   GinOperatorClass? toGinOperatorClass() {
     switch (this) {
       case 'array_ops':
-        return GinOperatorClass.array;
+        return GinOperatorClass.arrayOps;
       case 'jsonb_ops':
-        return GinOperatorClass.jsonb;
+        return GinOperatorClass.jsonbOps;
       case 'jsonb_path_ops':
-        return GinOperatorClass.jsonbPath;
+        return GinOperatorClass.jsonbPathOps;
       case 'tsvector_ops':
-        return GinOperatorClass.tsvector;
+        return GinOperatorClass.tsvectorOps;
       default:
         return null;
     }

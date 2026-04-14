@@ -155,17 +155,25 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
-    var modelSerializationDataType =
-        _parseSerializationDataType(documentContents);
-
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      modelSerializationDataType,
       config,
       serverOnly,
     );
+
+    var modelSerializationDataType = _parseSerializationDataType(
+      documentContents,
+    );
+    if (modelSerializationDataType != null) {
+      for (var field in fields) {
+        if (field.type.isColumnSerializable &&
+            field.type.serializationDataType == null) {
+          field.type.serializationDataType = modelSerializationDataType;
+        }
+      }
+    }
 
     return initialize(
       className: className,
@@ -251,7 +259,8 @@ class ModelParser {
   }
 
   static SerializationDataType? _parseSerializationDataType(
-      YamlMap documentContents) {
+    YamlMap documentContents,
+  ) {
     if (documentContents.nodes[Keyword.serializationDataType] == null) {
       return null;
     }
@@ -285,7 +294,6 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    SerializationDataType? modelSerializationDataType,
     GeneratorConfig config,
     bool serverOnlyClass,
   ) {
@@ -299,7 +307,6 @@ class ModelParser {
           return _parseModelFieldDefinition(
             fieldNode,
             docsExtractor,
-            modelSerializationDataType,
             config,
             serverOnlyClass,
           );
@@ -313,7 +320,6 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    SerializationDataType? modelSerializationDataType,
     GeneratorConfig config,
     bool serverOnlyClass,
   ) {
@@ -359,14 +365,7 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.serializationDataType =
-        _parseClassFieldSerializationDataType(node) ??
-            modelSerializationDataType;
-    if (typeResult.serializationDataType == null &&
-        typeResult.isColumnSerializable &&
-        config.serializeAsJsonbByDefault) {
-      typeResult.serializationDataType = SerializationDataType.jsonb;
-    }
+    typeResult.serializationDataType = _parseFieldSerializationDataType(node);
 
     var defaultModelValue = _parseDefaultValue(
       node,
@@ -576,7 +575,7 @@ class ModelParser {
     return _parseBooleanKey(relation, Keyword.optional);
   }
 
-  static SerializationDataType? _parseClassFieldSerializationDataType(
+  static SerializationDataType? _parseFieldSerializationDataType(
     YamlMap documentContents,
   ) {
     return _parseSerializationDataType(documentContents);
@@ -647,6 +646,9 @@ class ModelParser {
         onlyVectorFields:
             indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isVectorType),
+        onlyJsonbFields:
+            indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isJsonbSerialized),
       );
       var unique = _parseUniqueKey(nodeDocument);
       var operatorClass = _parseOperatorClass(
@@ -708,12 +710,15 @@ class ModelParser {
   static String _parseIndexType(
     YamlMap documentContents, {
     required bool onlyVectorFields,
+    required bool onlyJsonbFields,
   }) {
     var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
 
     if (type == null || type is! String) {
-      return onlyVectorFields ? 'hnsw' : 'btree';
+      if (onlyVectorFields) return 'hnsw';
+      if (onlyJsonbFields) return 'gin';
+      return 'btree';
     }
 
     return type;
@@ -734,7 +739,7 @@ class ModelParser {
     var nodeValue = node?.value;
 
     if (nodeValue is! String) {
-      return (indexType == 'gin') ? GinOperatorClass.jsonb : null;
+      return (indexType == 'gin') ? GinOperatorClass.jsonbOps : null;
     }
 
     try {

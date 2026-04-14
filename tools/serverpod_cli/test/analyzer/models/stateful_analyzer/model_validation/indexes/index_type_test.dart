@@ -14,7 +14,6 @@ void main() {
     'hash',
     'gist',
     'spgist',
-    'gin',
     'brin',
   ];
 

@@ -15,21 +15,21 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 /// Operator classes used by GIN indexes.
 /// See: https://www.postgresql.org/docs/current/gin.html#GIN-BUILTIN-OPCLASSES
 enum GinOperatorClass implements _i1.SerializableModel {
-  array,
-  jsonb,
-  jsonbPath,
-  tsvector;
+  arrayOps,
+  jsonbOps,
+  jsonbPathOps,
+  tsvectorOps;
 
   static GinOperatorClass fromJson(String name) {
     switch (name) {
-      case 'array':
-        return GinOperatorClass.array;
-      case 'jsonb':
-        return GinOperatorClass.jsonb;
-      case 'jsonbPath':
-        return GinOperatorClass.jsonbPath;
-      case 'tsvector':
-        return GinOperatorClass.tsvector;
+      case 'arrayOps':
+        return GinOperatorClass.arrayOps;
+      case 'jsonbOps':
+        return GinOperatorClass.jsonbOps;
+      case 'jsonbPathOps':
+        return GinOperatorClass.jsonbPathOps;
+      case 'tsvectorOps':
+        return GinOperatorClass.tsvectorOps;
       default:
         throw ArgumentError(
           'Value "$name" cannot be converted to "GinOperatorClass"',

@@ -9,133 +9,151 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
-      [ExperimentalFeature.serializeAsJsonb]).build();
+  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+    ExperimentalFeature.serializeAsJsonb,
+  ]).build();
 
   group(
-      'Given class definition with no `serializationDataType` key when validating',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given class definition with no `serializationDataType` key when validating',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
           tags: List<String>
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      );
 
-    var definitions = analyzer.validateAll();
+      var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ModelClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then `serializationDataType` is set to null.', () {
-      expect(definition.serializationDataType, isNull);
-    });
-  });
+      test('then `serializationDataType` is set to null.', () {
+        expect(definition.serializationDataType, isNull);
+      });
+    },
+  );
 
   group(
-      'Given a valid class definition with `serializationDataType` set to jsonb when validating',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a valid class definition with `serializationDataType` set to jsonb when validating',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         serializationDataType: jsonb
         fields:
           tags: List<String>
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      );
 
-    var definitions = analyzer.validateAll();
+      var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ModelClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then `serializationDataType` is set to jsonb.', () {
-      expect(definition.serializationDataType, SerializationDataType.jsonb);
-    });
-  });
+      test('then `serializationDataType` is set to jsonb.', () {
+        expect(definition.serializationDataType, SerializationDataType.jsonb);
+      });
+    },
+  );
 
   group(
-      'Given a valid class definition with `serializationDataType` set to json when validating',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a valid class definition with `serializationDataType` set to json when validating',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         serializationDataType: json
         fields:
           tags: List<String>
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      );
 
-    var definitions = analyzer.validateAll();
+      var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as ModelClassDefinition;
+      var definition = definitions.first as ModelClassDefinition;
 
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then `serializationDataType` is set to json.', () {
-      expect(definition.serializationDataType, SerializationDataType.json);
-    });
-  });
+      test('then `serializationDataType` is set to json.', () {
+        expect(definition.serializationDataType, SerializationDataType.json);
+      });
+    },
+  );
 
   group(
-      'Given a valid class definition with `serializationDataType` set to an invalid value when validating',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a valid class definition with `serializationDataType` set to an invalid value when validating',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         serializationDataType: Invalid
         fields:
           tags: List<String>
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      );
 
-    analyzer.validateAll();
+      analyzer.validateAll();
 
-    test(
+      test(
         'then collect an error that the `serializationDataType` value is invalid.',
         () {
-      expect(collector.errors, isNotEmpty);
-      expect(
-        collector.errors.first.message,
-        '"Invalid" is not a valid property. Valid properties are (json, jsonb).',
+          expect(collector.errors, isNotEmpty);
+          expect(
+            collector.errors.first.message,
+            '"Invalid" is not a valid property. Valid properties are (json, jsonb).',
+          );
+        },
       );
-    });
-  });
+    },
+  );
 }

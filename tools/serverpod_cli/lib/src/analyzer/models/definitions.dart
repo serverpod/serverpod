@@ -458,6 +458,7 @@ class SerializableModelIndexDefinition {
       type: type,
       unique: unique,
       fields: fields,
+      ginOperatorClass: ginOperatorClass,
       vectorDistanceFunction: vectorDistanceFunction,
       parameters: parameters,
     );

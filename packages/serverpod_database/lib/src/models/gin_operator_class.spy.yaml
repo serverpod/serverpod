@@ -3,7 +3,7 @@
 enum: GinOperatorClass
 serialized: byName
 values:
-  - array
-  - jsonb
-  - jsonbPath
-  - tsvector
+  - arrayOps
+  - jsonbOps
+  - jsonbPathOps
+  - tsvectorOps

@@ -502,8 +502,10 @@ class GeneratorConfig implements ModelLoadConfig {
       databaseDialect = DatabaseDialect.values.byName(maybeDatabaseDialect);
     }
 
-    var serializeAsJsonbByDefault =
-        _loadSerializeAsJsonbByDefault(file, generatorConfig);
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
+      file,
+      generatorConfig,
+    );
 
     return GeneratorConfig(
       name: name,
