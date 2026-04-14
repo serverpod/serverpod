@@ -209,6 +209,25 @@ CREATE TABLE "chapter" (
 );
 
 --
+-- Class ChildEntity as table child_entity
+--
+CREATE TABLE "child_entity" (
+    "id" bigserial PRIMARY KEY,
+    "sharedField" text NOT NULL,
+    "localField" text NOT NULL,
+    "_parentEntityChildrenParentEntityId" bigint
+);
+
+--
+-- Class ChildClassExplicitColumn as table child_table_explicit_column
+--
+CREATE TABLE "child_table_explicit_column" (
+    "id" bigserial PRIMARY KEY,
+    "non_table_parent_field" text NOT NULL,
+    "child_field" text NOT NULL
+);
+
+--
 -- Class ChildClassWithoutId as table child_table_with_inherited_id
 --
 CREATE TABLE "child_table_with_inherited_id" (
@@ -217,6 +236,9 @@ CREATE TABLE "child_table_with_inherited_id" (
     "parentField" text NOT NULL,
     "childField" text NOT NULL
 );
+
+-- Indexes
+CREATE INDEX "child_table_with_inherited_id_base_index" ON "child_table_with_inherited_id" USING btree ("grandParentField");
 
 --
 -- Class ChildWithInheritedId as table child_with_inherited_id
@@ -300,6 +322,18 @@ CREATE TABLE "company_uuid" (
 );
 
 --
+-- Class Contractor as table contractor
+--
+CREATE TABLE "contractor" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "fk_contractor_service_id" bigint
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "contractor_service_unique_idx" ON "contractor" USING btree ("fk_contractor_service_id");
+
+--
 -- Class Course as table course
 --
 CREATE TABLE "course" (
@@ -337,8 +371,8 @@ CREATE TABLE "customer_int" (
 CREATE TABLE "datetime_default" (
     "id" bigserial PRIMARY KEY,
     "dateTimeDefaultNow" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "dateTimeDefaultStr" timestamp without time zone NOT NULL DEFAULT '2024-05-24 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultStrNull" timestamp without time zone DEFAULT '2024-05-24 22:00:00'::timestamp without time zone
+    "dateTimeDefaultStr" timestamp without time zone NOT NULL DEFAULT '2024-05-24 22:00:00.000'::timestamp without time zone,
+    "dateTimeDefaultStrNull" timestamp without time zone DEFAULT '2024-05-24 22:00:00.000'::timestamp without time zone
 );
 
 --
@@ -346,9 +380,9 @@ CREATE TABLE "datetime_default" (
 --
 CREATE TABLE "datetime_default_mix" (
     "id" bigserial PRIMARY KEY,
-    "dateTimeDefaultAndDefaultModel" timestamp without time zone NOT NULL DEFAULT '2024-05-01 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone,
-    "dateTimeDefaultModelAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+    "dateTimeDefaultAndDefaultModel" timestamp without time zone NOT NULL DEFAULT '2024-05-01 22:00:00.000'::timestamp without time zone,
+    "dateTimeDefaultAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00.000'::timestamp without time zone,
+    "dateTimeDefaultModelAndDefaultPersist" timestamp without time zone NOT NULL DEFAULT '2024-05-10 22:00:00.000'::timestamp without time zone
 );
 
 --
@@ -367,7 +401,15 @@ CREATE TABLE "datetime_default_model" (
 CREATE TABLE "datetime_default_persist" (
     "id" bigserial PRIMARY KEY,
     "dateTimeDefaultPersistNow" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    "dateTimeDefaultPersistStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+    "dateTimeDefaultPersistStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00.000'::timestamp without time zone
+);
+
+--
+-- Class Department as table department
+--
+CREATE TABLE "department" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL
 );
 
 --
@@ -440,6 +482,15 @@ CREATE TABLE "duration_default_model" (
 CREATE TABLE "duration_default_persist" (
     "id" bigserial PRIMARY KEY,
     "durationDefaultPersist" bigint DEFAULT 94230100
+);
+
+--
+-- Class Employee as table employee
+--
+CREATE TABLE "employee" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "fk_employee_department_id" bigint NOT NULL
 );
 
 --
@@ -611,6 +662,15 @@ CREATE TABLE "model_with_required_field" (
 );
 
 --
+-- Class ModifiedColumnName as table modified_column_name
+--
+CREATE TABLE "modified_column_name" (
+    "id" bigserial PRIMARY KEY,
+    "originalColumn" text NOT NULL,
+    "modified_column" text NOT NULL
+);
+
+--
 -- Class MultipleMaxFieldName as table multiple_max_field_name
 --
 CREATE TABLE "multiple_max_field_name" (
@@ -692,6 +752,19 @@ CREATE TABLE "object_with_enum" (
     "enumList" json NOT NULL,
     "nullableEnumList" json NOT NULL,
     "enumListList" json NOT NULL
+);
+
+--
+-- Class ObjectWithEnumEnhanced as table object_with_enum_enhanced
+--
+CREATE TABLE "object_with_enum_enhanced" (
+    "id" bigserial PRIMARY KEY,
+    "byIndex" bigint NOT NULL,
+    "nullableByIndex" bigint,
+    "byIndexList" json NOT NULL,
+    "byName" text NOT NULL,
+    "nullableByName" text,
+    "byNameList" json NOT NULL
 );
 
 --
@@ -874,6 +947,13 @@ CREATE TABLE "parent_class_table" (
 );
 
 --
+-- Class ParentEntity as table parent_entity
+--
+CREATE TABLE "parent_entity" (
+    "id" bigserial PRIMARY KEY
+);
+
+--
 -- Class ParentUser as table parent_user
 --
 CREATE TABLE "parent_user" (
@@ -973,6 +1053,44 @@ CREATE TABLE "server_only_changed_id_field_class" (
 );
 
 --
+-- Class Service as table service
+--
+CREATE TABLE "service" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "description" text
+);
+
+--
+-- Class SharedModelContainer as table shared_model_container
+--
+CREATE TABLE "shared_model_container" (
+    "id" bigserial PRIMARY KEY,
+    "sharedModel" json NOT NULL,
+    "sharedModelWithModuleAlias" json NOT NULL,
+    "sharedModelNullable" json,
+    "serverOnlySharedModel" json,
+    "sharedSubclass" json NOT NULL,
+    "sharedSubclassNullable" json,
+    "sharedEnum" text NOT NULL,
+    "sharedEnumNullable" text,
+    "sharedSealedParent" json NOT NULL,
+    "sharedSealedParentNullable" json,
+    "sharedSealedChild" json NOT NULL,
+    "sharedSealedChildNullable" json,
+    "sharedModelSubclass" json NOT NULL,
+    "sharedModelSubclassNullable" json,
+    "sharedModelList" json NOT NULL,
+    "sharedModelNullableList" json NOT NULL,
+    "sharedModelListNullable" json,
+    "sharedModelMap" json NOT NULL,
+    "sharedModelMapNullable" json,
+    "sharedSubclassMap" json NOT NULL,
+    "sharedModelSet" json NOT NULL,
+    "sharedModelSetNullable" json
+);
+
+--
 -- Class SimpleData as table simple_data
 --
 CREATE TABLE "simple_data" (
@@ -1046,6 +1164,15 @@ CREATE TABLE "student" (
 CREATE TABLE "student_uuid" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" text NOT NULL
+);
+
+--
+-- Class TableWithExplicitColumnName as table table_with_explicit_column_names
+--
+CREATE TABLE "table_with_explicit_column_names" (
+    "id" bigserial PRIMARY KEY,
+    "user_name" text NOT NULL,
+    "user_description" text DEFAULT 'Just some information'::text
 );
 
 --
@@ -1128,6 +1255,18 @@ CREATE TABLE "unique_data" (
 
 -- Indexes
 CREATE UNIQUE INDEX "email_index_idx" ON "unique_data" USING btree ("email");
+
+--
+-- Class UniqueDataWithNonPersist as table unique_data_with_non_persist
+--
+CREATE TABLE "unique_data_with_non_persist" (
+    "id" bigserial PRIMARY KEY,
+    "number" bigint NOT NULL,
+    "email" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "unique_email_idx" ON "unique_data_with_non_persist" USING btree ("email");
 
 --
 -- Class UriDefault as table uri_default
@@ -1292,6 +1431,18 @@ CREATE INDEX "serverpod_future_call_serverId_idx" ON "serverpod_future_call" USI
 CREATE INDEX "serverpod_future_call_identifier_idx" ON "serverpod_future_call" USING btree ("identifier");
 
 --
+-- Class FutureCallClaimEntry as table serverpod_future_call_claim
+--
+CREATE TABLE "serverpod_future_call_claim" (
+    "id" bigserial PRIMARY KEY,
+    "futureCallId" bigint,
+    "lastHeartbeatTime" timestamp without time zone NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "future_call_unique_idx" ON "serverpod_future_call_claim" USING btree ("futureCallId");
+
+--
 -- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
 --
 CREATE TABLE "serverpod_health_connection_info" (
@@ -1447,6 +1598,7 @@ CREATE TABLE "serverpod_session_log" (
 
 -- Indexes
 CREATE INDEX "serverpod_session_log_serverid_idx" ON "serverpod_session_log" USING btree ("serverId");
+CREATE INDEX "serverpod_session_log_time_idx" ON "serverpod_session_log" USING btree ("time");
 CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USING btree ("touched");
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
@@ -1635,6 +1787,16 @@ ALTER TABLE ONLY "chapter"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "child_entity" table
+--
+ALTER TABLE ONLY "child_entity"
+    ADD CONSTRAINT "child_entity_fk_0"
+    FOREIGN KEY("_parentEntityChildrenParentEntityId")
+    REFERENCES "parent_entity"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "child_with_inherited_id" table
 --
 ALTER TABLE ONLY "child_with_inherited_id"
@@ -1713,6 +1875,26 @@ ALTER TABLE ONLY "company_uuid"
     ADD CONSTRAINT "company_uuid_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town_int"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "contractor" table
+--
+ALTER TABLE ONLY "contractor"
+    ADD CONSTRAINT "contractor_fk_0"
+    FOREIGN KEY("fk_contractor_service_id")
+    REFERENCES "service"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "employee" table
+--
+ALTER TABLE ONLY "employee"
+    ADD CONSTRAINT "employee_fk_0"
+    FOREIGN KEY("fk_employee_department_id")
+    REFERENCES "department"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -1991,6 +2173,16 @@ ALTER TABLE ONLY "user_note_with_a_long_name"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "serverpod_future_call_claim" table
+--
+ALTER TABLE ONLY "serverpod_future_call_claim"
+    ADD CONSTRAINT "serverpod_future_call_claim_fk_0"
+    FOREIGN KEY("futureCallId")
+    REFERENCES "serverpod_future_call"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "serverpod_log" table
 --
 ALTER TABLE ONLY "serverpod_log"
@@ -2025,33 +2217,33 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251112134239590', now())
+    VALUES ('serverpod_test', '20260414092400332', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251112134239590', "timestamp" = now();
+    DO UPDATE SET "version" = '20260414092400332', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20250825102336032-v3-0-0', now())
+    VALUES ('serverpod', '20260324085808546', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102336032-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085808546', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20250825102351908-v3-0-0', now())
+    VALUES ('serverpod_auth', '20260324085838223', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102351908-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085838223', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_test_module
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test_module', '20250825102429343-v3-0-0', now())
+    VALUES ('serverpod_test_module', '20260324085920616', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102429343-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260324085920616', "timestamp" = now();
 
 
 COMMIT;
