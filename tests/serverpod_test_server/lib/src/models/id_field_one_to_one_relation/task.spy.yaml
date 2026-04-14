@@ -1,0 +1,5 @@
+class: Task
+table: task
+fields:
+  name: String
+  time: DateTime

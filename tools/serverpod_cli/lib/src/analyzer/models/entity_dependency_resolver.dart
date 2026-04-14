@@ -126,6 +126,7 @@ class ModelDependencyResolver {
       SerializableModelFieldDefinition(
         name: defaultPrimaryKeyName,
         type: idFieldType,
+        relation: maybeIdField?.relation,
         scope: maybeIdField?.scope ?? ModelFieldScopeDefinition.all,
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue ?? defaultModelValue,

@@ -1,0 +1,5 @@
+class: TaskClaim
+table: task_claim
+fields:
+  id: int?, relation(parent=task, onDelete=Cascade)
+  server: String

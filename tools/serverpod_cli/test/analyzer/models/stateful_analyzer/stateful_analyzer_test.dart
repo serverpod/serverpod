@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
@@ -658,6 +659,53 @@ fields:
       expect(errors, isNotEmpty);
       expect(errors, hasLength(1));
       expect(errors.single.severity, SourceSpanSeverity.warning);
+    },
+  );
+
+  test(
+    'Given valid yaml models with one-to-one relationship on the id field, '
+    'when validateAll is called, '
+    'then the class with the relation is serialized containing an id field with valid relation.',
+    () {
+      var yamlSource = ModelSourceBuilder().withFileName('example').withYaml(
+        '''
+      class: Example
+      table: example
+      fields:
+        id: int?, relation(parent=other, onDelete=Cascade)
+        name: String
+      ''',
+      ).build();
+
+      var parentYamlSource = ModelSourceBuilder()
+          .withFileName('other')
+          .withYaml(
+            '''
+      class: Other
+      table: other
+      fields:
+        name: String
+      ''',
+          )
+          .build();
+
+      var statefulAnalyzer = StatefulAnalyzer(config, [
+        yamlSource,
+        parentYamlSource,
+      ]);
+
+      var models = statefulAnalyzer.validateAll();
+
+      var fields = models
+          .whereType<ModelClassDefinition>()
+          .firstWhere(
+            (e) => e.className == 'Example',
+          )
+          .fields;
+
+      var idField = fields.firstWhere((field) => field.name == 'id');
+
+      expect(idField.relation, isA<ForeignRelationDefinition>());
     },
   );
 }
