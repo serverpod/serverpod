@@ -891,6 +891,8 @@ class Serverpod {
 
         if (migrationsApplied == null) {
           _writeLifecycleMessage('Latest database migration already applied.');
+        } else if (migrationsApplied.isEmpty) {
+          _writeLifecycleMessage('No database migrations were applied.');
         } else {
           _writeLifecycleMessage(
             'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
