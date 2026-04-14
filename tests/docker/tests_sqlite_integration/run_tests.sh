@@ -22,5 +22,5 @@ dart bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"
-dart test test_integration -x integration --concurrency=1 --reporter=failures-only
+dart test test_integration --concurrency=1 --reporter=failures-only
 checkLastExitCode
