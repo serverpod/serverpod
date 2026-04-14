@@ -16,15 +16,15 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
   ObjectWithJsonbClassLevel._({
     this.id,
-    required this.jsonb1,
-    required this.jsonb2,
+    required this.implicitJsonb,
+    required this.explicitJsonb,
     required this.json,
   });
 
   factory ObjectWithJsonbClassLevel({
     int? id,
-    required List<String> jsonb1,
-    required List<String> jsonb2,
+    required List<String> implicitJsonb,
+    required List<String> explicitJsonb,
     required List<String> json,
   }) = _ObjectWithJsonbClassLevelImpl;
 
@@ -33,11 +33,11 @@ abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
   ) {
     return ObjectWithJsonbClassLevel(
       id: jsonSerialization['id'] as int?,
-      jsonb1: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['jsonb1'],
+      implicitJsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['implicitJsonb'],
       ),
-      jsonb2: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['jsonb2'],
+      explicitJsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['explicitJsonb'],
       ),
       json: _i2.Protocol().deserialize<List<String>>(jsonSerialization['json']),
     );
@@ -48,9 +48,9 @@ abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  List<String> jsonb1;
+  List<String> implicitJsonb;
 
-  List<String> jsonb2;
+  List<String> explicitJsonb;
 
   List<String> json;
 
@@ -59,8 +59,8 @@ abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
   @_i1.useResult
   ObjectWithJsonbClassLevel copyWith({
     int? id,
-    List<String>? jsonb1,
-    List<String>? jsonb2,
+    List<String>? implicitJsonb,
+    List<String>? explicitJsonb,
     List<String>? json,
   });
   @override
@@ -68,8 +68,8 @@ abstract class ObjectWithJsonbClassLevel implements _i1.SerializableModel {
     return {
       '__className__': 'ObjectWithJsonbClassLevel',
       if (id != null) 'id': id,
-      'jsonb1': jsonb1.toJson(),
-      'jsonb2': jsonb2.toJson(),
+      'implicitJsonb': implicitJsonb.toJson(),
+      'explicitJsonb': explicitJsonb.toJson(),
       'json': json.toJson(),
     };
   }
@@ -85,13 +85,13 @@ class _Undefined {}
 class _ObjectWithJsonbClassLevelImpl extends ObjectWithJsonbClassLevel {
   _ObjectWithJsonbClassLevelImpl({
     int? id,
-    required List<String> jsonb1,
-    required List<String> jsonb2,
+    required List<String> implicitJsonb,
+    required List<String> explicitJsonb,
     required List<String> json,
   }) : super._(
          id: id,
-         jsonb1: jsonb1,
-         jsonb2: jsonb2,
+         implicitJsonb: implicitJsonb,
+         explicitJsonb: explicitJsonb,
          json: json,
        );
 
@@ -101,14 +101,16 @@ class _ObjectWithJsonbClassLevelImpl extends ObjectWithJsonbClassLevel {
   @override
   ObjectWithJsonbClassLevel copyWith({
     Object? id = _Undefined,
-    List<String>? jsonb1,
-    List<String>? jsonb2,
+    List<String>? implicitJsonb,
+    List<String>? explicitJsonb,
     List<String>? json,
   }) {
     return ObjectWithJsonbClassLevel(
       id: id is int? ? id : this.id,
-      jsonb1: jsonb1 ?? this.jsonb1.map((e0) => e0).toList(),
-      jsonb2: jsonb2 ?? this.jsonb2.map((e0) => e0).toList(),
+      implicitJsonb:
+          implicitJsonb ?? this.implicitJsonb.map((e0) => e0).toList(),
+      explicitJsonb:
+          explicitJsonb ?? this.explicitJsonb.map((e0) => e0).toList(),
       json: json ?? this.json.map((e0) => e0).toList(),
     );
   }

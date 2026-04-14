@@ -3580,25 +3580,31 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
-          name: 'indexed0',
+          name: 'notJsonb',
           columnType: _i2.ColumnType.json,
           isNullable: false,
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'indexed1',
+          name: 'jsonb',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'indexed2',
+          name: 'jsonbIndexed',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'indexed3',
+          name: 'jsonbIndexedGin',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'jsonbIndexedGinJsonbPath',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',
@@ -3612,7 +3618,7 @@ class Protocol extends _i1.SerializationManagerServer {
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed2',
+              definition: 'jsonbIndexedGin',
             ),
           ],
           type: 'gin',
@@ -3626,7 +3632,7 @@ class Protocol extends _i1.SerializationManagerServer {
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed3',
+              definition: 'jsonbIndexedGinJsonbPath',
             ),
           ],
           type: 'gin',
@@ -3651,13 +3657,13 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
-          name: 'jsonb1',
+          name: 'implicitJsonb',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
-          name: 'jsonb2',
+          name: 'explicitJsonb',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',

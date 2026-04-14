@@ -657,7 +657,7 @@ END
     );
   });
 
-  group('Given a table definition with a jsonb field', () {
+  group('Given a table definition with a gin index', () {
     var modelName = 'myModel';
     var fieldName = 'jdoc';
     var models = [
@@ -680,33 +680,7 @@ END
     var tableDefinition = databaseDefinition.tables.first;
 
     test(
-      'when creating a default index on a jsonb field, then the SQL should include an implicit btree index type.',
-      () {
-        var indexName = '${modelName}_jsonb_idx';
-        var index = IndexDefinitionBuilder()
-            .withIndexName(indexName)
-            .withElements([
-              IndexElementDefinition(
-                type: IndexElementDefinitionType.column,
-                definition: fieldName,
-              ),
-            ])
-            .withIsUnique(false)
-            .withIsPrimary(false)
-            .build();
-
-        var sql = index.toPgSql(tableName: tableDefinition.name);
-
-        expect(
-          sql,
-          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-          'USING btree ("$fieldName");\n',
-        );
-      },
-    );
-
-    test(
-      'when creating an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.',
+      'when creating a gin index without an explicit operator class, then the SQL uses USING GIN without an operator class suffix.',
       () {
         var indexName = '${modelName}_jsonb_idx';
         var index = IndexDefinitionBuilder()
@@ -733,7 +707,7 @@ END
     );
 
     test(
-      'when creating an GIN index with json_path_ops on a jsonb field, then the SQL should include the correct GIN parameters.',
+      'when creating a gin index with the jsonbPathOps operator class, then the SQL uses USING GIN with the jsonb_path_ops suffix.',
       () {
         var indexName = '${modelName}_jsonb_idx';
         var index = IndexDefinitionBuilder()

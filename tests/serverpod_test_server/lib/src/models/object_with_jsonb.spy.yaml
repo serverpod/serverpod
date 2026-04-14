@@ -1,15 +1,16 @@
 class: ObjectWithJsonb
 table: object_with_jsonb
 fields:
-  indexed0: List<String>
-  indexed1: List<String>, serializationDataType=jsonb
-  indexed2: List<String>, serializationDataType=jsonb
-  indexed3: List<String>, serializationDataType=jsonb
+  notJsonb: List<String>
+  jsonb: List<String>, serializationDataType=jsonb
+  jsonbIndexed: List<String>, serializationDataType=jsonb
+  jsonbIndexedGin: List<String>, serializationDataType=jsonb
+  jsonbIndexedGinJsonbPath: List<String>, serializationDataType=jsonb
 indexes:
   jsonb_index_gin:
-    fields: indexed2
+    fields: jsonbIndexedGin
     type: gin
   jsonb_index_gin_with_operator_class:
-    fields: indexed3
+    fields: jsonbIndexedGinJsonbPath
     type: gin
     operatorClass: jsonbPathOps

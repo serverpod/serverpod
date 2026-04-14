@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
@@ -211,4 +212,33 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given a database definition with a jsonb serializable column, '
+    'when generating SQL for SQLite, '
+    'then the column uses TEXT storage.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder().withName('jsonb_model').withColumns([
+              ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withIdColumn('jsonb_model')
+                  .build(),
+              ColumnDefinitionBuilder()
+                  .withName('tags')
+                  .withColumnType(ColumnType.jsonb)
+                  .withDartType('List<String>')
+                  .build(),
+            ]).build(),
+          )
+          .build();
+
+      var sqlite = databaseDefinition.toSqliteSql(
+        installedModules: _sqliteModules(databaseDefinition),
+      );
+
+      expect(sqlite, contains('"tags" TEXT NOT NULL'));
+    },
+  );
 }

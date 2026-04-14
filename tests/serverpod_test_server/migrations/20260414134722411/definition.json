@@ -3825,32 +3825,40 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "indexed0",
-          "fieldName": "indexed0",
+          "name": "notJsonb",
+          "fieldName": "notJsonb",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<String>"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "indexed1",
-          "fieldName": "indexed1",
+          "name": "jsonb",
+          "fieldName": "jsonb",
           "columnType": 14,
           "isNullable": false,
           "dartType": "List<String>"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "indexed2",
-          "fieldName": "indexed2",
+          "name": "jsonbIndexed",
+          "fieldName": "jsonbIndexed",
           "columnType": 14,
           "isNullable": false,
           "dartType": "List<String>"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "indexed3",
-          "fieldName": "indexed3",
+          "name": "jsonbIndexedGin",
+          "fieldName": "jsonbIndexedGin",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "List<String>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbIndexedGinJsonbPath",
+          "fieldName": "jsonbIndexedGinJsonbPath",
           "columnType": 14,
           "isNullable": false,
           "dartType": "List<String>"
@@ -3865,7 +3873,7 @@
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
-              "definition": "indexed2"
+              "definition": "jsonbIndexedGin"
             }
           ],
           "type": "gin",
@@ -3880,7 +3888,7 @@
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
-              "definition": "indexed3"
+              "definition": "jsonbIndexedGinJsonbPath"
             }
           ],
           "type": "gin",
@@ -3909,16 +3917,16 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonb1",
-          "fieldName": "jsonb1",
+          "name": "implicitJsonb",
+          "fieldName": "implicitJsonb",
           "columnType": 14,
           "isNullable": false,
           "dartType": "List<String>"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonb2",
-          "fieldName": "jsonb2",
+          "name": "explicitJsonb",
+          "fieldName": "explicitJsonb",
           "columnType": 14,
           "isNullable": false,
           "dartType": "List<String>"
@@ -8642,7 +8650,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersionModel",
       "module": "serverpod_test",
-      "version": "20260414113849611"
+      "version": "20260414134722411"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

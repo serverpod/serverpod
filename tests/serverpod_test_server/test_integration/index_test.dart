@@ -369,12 +369,12 @@ void main() async {
           expect(index.ginOperatorClass, GinOperatorClass.jsonbOps);
           expect(index.elements.length, 1);
           expect(index.elements.first.type, IndexElementDefinitionType.column);
-          expect(index.elements.first.definition, 'indexed2');
+          expect(index.elements.first.definition, 'jsonbIndexedGin');
         },
       );
 
       test(
-        'then the explicitly declared gin index with operator class exists.',
+        'then the explicitly declared gin index with operator class exists with correct operator class.',
         () {
           final index = indexes.firstWhere(
             (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
@@ -384,7 +384,10 @@ void main() async {
           expect(index.ginOperatorClass, GinOperatorClass.jsonbPathOps);
           expect(index.elements.length, 1);
           expect(index.elements.first.type, IndexElementDefinitionType.column);
-          expect(index.elements.first.definition, 'indexed3');
+          expect(
+            index.elements.first.definition,
+            'jsonbIndexedGinJsonbPath',
+          );
         },
       );
     },
@@ -409,7 +412,7 @@ void main() async {
         'then the column without `serializationDataType` set has type jsonb.',
         () {
           final column = columns.firstWhere(
-            (idx) => idx.name == 'jsonb1',
+            (idx) => idx.name == 'implicitJsonb',
           );
 
           expect(column.columnType, ColumnType.jsonb);
@@ -420,7 +423,7 @@ void main() async {
         'then the column with `serializationDataType` set to jsonb has type jsonb.',
         () {
           final column = columns.firstWhere(
-            (idx) => idx.name == 'jsonb2',
+            (idx) => idx.name == 'explicitJsonb',
           );
 
           expect(column.columnType, ColumnType.jsonb);

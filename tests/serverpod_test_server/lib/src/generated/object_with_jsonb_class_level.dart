@@ -18,15 +18,15 @@ abstract class ObjectWithJsonbClassLevel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithJsonbClassLevel._({
     this.id,
-    required this.jsonb1,
-    required this.jsonb2,
+    required this.implicitJsonb,
+    required this.explicitJsonb,
     required this.json,
   });
 
   factory ObjectWithJsonbClassLevel({
     int? id,
-    required List<String> jsonb1,
-    required List<String> jsonb2,
+    required List<String> implicitJsonb,
+    required List<String> explicitJsonb,
     required List<String> json,
   }) = _ObjectWithJsonbClassLevelImpl;
 
@@ -35,11 +35,11 @@ abstract class ObjectWithJsonbClassLevel
   ) {
     return ObjectWithJsonbClassLevel(
       id: jsonSerialization['id'] as int?,
-      jsonb1: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['jsonb1'],
+      implicitJsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['implicitJsonb'],
       ),
-      jsonb2: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['jsonb2'],
+      explicitJsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['explicitJsonb'],
       ),
       json: _i2.Protocol().deserialize<List<String>>(jsonSerialization['json']),
     );
@@ -52,9 +52,9 @@ abstract class ObjectWithJsonbClassLevel
   @override
   int? id;
 
-  List<String> jsonb1;
+  List<String> implicitJsonb;
 
-  List<String> jsonb2;
+  List<String> explicitJsonb;
 
   List<String> json;
 
@@ -66,8 +66,8 @@ abstract class ObjectWithJsonbClassLevel
   @_i1.useResult
   ObjectWithJsonbClassLevel copyWith({
     int? id,
-    List<String>? jsonb1,
-    List<String>? jsonb2,
+    List<String>? implicitJsonb,
+    List<String>? explicitJsonb,
     List<String>? json,
   });
   @override
@@ -75,8 +75,8 @@ abstract class ObjectWithJsonbClassLevel
     return {
       '__className__': 'ObjectWithJsonbClassLevel',
       if (id != null) 'id': id,
-      'jsonb1': jsonb1.toJson(),
-      'jsonb2': jsonb2.toJson(),
+      'implicitJsonb': implicitJsonb.toJson(),
+      'explicitJsonb': explicitJsonb.toJson(),
       'json': json.toJson(),
     };
   }
@@ -86,8 +86,8 @@ abstract class ObjectWithJsonbClassLevel
     return {
       '__className__': 'ObjectWithJsonbClassLevel',
       if (id != null) 'id': id,
-      'jsonb1': jsonb1.toJson(),
-      'jsonb2': jsonb2.toJson(),
+      'implicitJsonb': implicitJsonb.toJson(),
+      'explicitJsonb': explicitJsonb.toJson(),
       'json': json.toJson(),
     };
   }
@@ -129,13 +129,13 @@ class _Undefined {}
 class _ObjectWithJsonbClassLevelImpl extends ObjectWithJsonbClassLevel {
   _ObjectWithJsonbClassLevelImpl({
     int? id,
-    required List<String> jsonb1,
-    required List<String> jsonb2,
+    required List<String> implicitJsonb,
+    required List<String> explicitJsonb,
     required List<String> json,
   }) : super._(
          id: id,
-         jsonb1: jsonb1,
-         jsonb2: jsonb2,
+         implicitJsonb: implicitJsonb,
+         explicitJsonb: explicitJsonb,
          json: json,
        );
 
@@ -145,14 +145,16 @@ class _ObjectWithJsonbClassLevelImpl extends ObjectWithJsonbClassLevel {
   @override
   ObjectWithJsonbClassLevel copyWith({
     Object? id = _Undefined,
-    List<String>? jsonb1,
-    List<String>? jsonb2,
+    List<String>? implicitJsonb,
+    List<String>? explicitJsonb,
     List<String>? json,
   }) {
     return ObjectWithJsonbClassLevel(
       id: id is int? ? id : this.id,
-      jsonb1: jsonb1 ?? this.jsonb1.map((e0) => e0).toList(),
-      jsonb2: jsonb2 ?? this.jsonb2.map((e0) => e0).toList(),
+      implicitJsonb:
+          implicitJsonb ?? this.implicitJsonb.map((e0) => e0).toList(),
+      explicitJsonb:
+          explicitJsonb ?? this.explicitJsonb.map((e0) => e0).toList(),
       json: json ?? this.json.map((e0) => e0).toList(),
     );
   }
@@ -162,17 +164,19 @@ class ObjectWithJsonbClassLevelUpdateTable
     extends _i1.UpdateTable<ObjectWithJsonbClassLevelTable> {
   ObjectWithJsonbClassLevelUpdateTable(super.table);
 
-  _i1.ColumnValue<List<String>, List<String>> jsonb1(List<String> value) =>
-      _i1.ColumnValue(
-        table.jsonb1,
-        value,
-      );
+  _i1.ColumnValue<List<String>, List<String>> implicitJsonb(
+    List<String> value,
+  ) => _i1.ColumnValue(
+    table.implicitJsonb,
+    value,
+  );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonb2(List<String> value) =>
-      _i1.ColumnValue(
-        table.jsonb2,
-        value,
-      );
+  _i1.ColumnValue<List<String>, List<String>> explicitJsonb(
+    List<String> value,
+  ) => _i1.ColumnValue(
+    table.explicitJsonb,
+    value,
+  );
 
   _i1.ColumnValue<List<String>, List<String>> json(List<String> value) =>
       _i1.ColumnValue(
@@ -185,13 +189,13 @@ class ObjectWithJsonbClassLevelTable extends _i1.Table<int?> {
   ObjectWithJsonbClassLevelTable({super.tableRelation})
     : super(tableName: 'object_with_jsonb_class_level') {
     updateTable = ObjectWithJsonbClassLevelUpdateTable(this);
-    jsonb1 = _i1.ColumnSerializable<List<String>>(
-      'jsonb1',
+    implicitJsonb = _i1.ColumnSerializable<List<String>>(
+      'implicitJsonb',
       this,
       serializationDataType: _i3.SerializationDataType.jsonb,
     );
-    jsonb2 = _i1.ColumnSerializable<List<String>>(
-      'jsonb2',
+    explicitJsonb = _i1.ColumnSerializable<List<String>>(
+      'explicitJsonb',
       this,
       serializationDataType: _i3.SerializationDataType.jsonb,
     );
@@ -204,17 +208,17 @@ class ObjectWithJsonbClassLevelTable extends _i1.Table<int?> {
 
   late final ObjectWithJsonbClassLevelUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<List<String>> jsonb1;
+  late final _i1.ColumnSerializable<List<String>> implicitJsonb;
 
-  late final _i1.ColumnSerializable<List<String>> jsonb2;
+  late final _i1.ColumnSerializable<List<String>> explicitJsonb;
 
   late final _i1.ColumnSerializable<List<String>> json;
 
   @override
   List<_i1.Column> get columns => [
     id,
-    jsonb1,
-    jsonb2,
+    implicitJsonb,
+    explicitJsonb,
     json,
   ];
 }

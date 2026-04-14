@@ -18,34 +18,39 @@ abstract class ObjectWithJsonb
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithJsonb._({
     this.id,
-    required this.indexed0,
-    required this.indexed1,
-    required this.indexed2,
-    required this.indexed3,
+    required this.notJsonb,
+    required this.jsonb,
+    required this.jsonbIndexed,
+    required this.jsonbIndexedGin,
+    required this.jsonbIndexedGinJsonbPath,
   });
 
   factory ObjectWithJsonb({
     int? id,
-    required List<String> indexed0,
-    required List<String> indexed1,
-    required List<String> indexed2,
-    required List<String> indexed3,
+    required List<String> notJsonb,
+    required List<String> jsonb,
+    required List<String> jsonbIndexed,
+    required List<String> jsonbIndexedGin,
+    required List<String> jsonbIndexedGinJsonbPath,
   }) = _ObjectWithJsonbImpl;
 
   factory ObjectWithJsonb.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithJsonb(
       id: jsonSerialization['id'] as int?,
-      indexed0: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['indexed0'],
+      notJsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['notJsonb'],
       ),
-      indexed1: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['indexed1'],
+      jsonb: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['jsonb'],
       ),
-      indexed2: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['indexed2'],
+      jsonbIndexed: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['jsonbIndexed'],
       ),
-      indexed3: _i2.Protocol().deserialize<List<String>>(
-        jsonSerialization['indexed3'],
+      jsonbIndexedGin: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['jsonbIndexedGin'],
+      ),
+      jsonbIndexedGinJsonbPath: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['jsonbIndexedGinJsonbPath'],
       ),
     );
   }
@@ -57,13 +62,15 @@ abstract class ObjectWithJsonb
   @override
   int? id;
 
-  List<String> indexed0;
+  List<String> notJsonb;
 
-  List<String> indexed1;
+  List<String> jsonb;
 
-  List<String> indexed2;
+  List<String> jsonbIndexed;
 
-  List<String> indexed3;
+  List<String> jsonbIndexedGin;
+
+  List<String> jsonbIndexedGinJsonbPath;
 
   @override
   _i1.Table<int?> get table => t;
@@ -73,20 +80,22 @@ abstract class ObjectWithJsonb
   @_i1.useResult
   ObjectWithJsonb copyWith({
     int? id,
-    List<String>? indexed0,
-    List<String>? indexed1,
-    List<String>? indexed2,
-    List<String>? indexed3,
+    List<String>? notJsonb,
+    List<String>? jsonb,
+    List<String>? jsonbIndexed,
+    List<String>? jsonbIndexedGin,
+    List<String>? jsonbIndexedGinJsonbPath,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ObjectWithJsonb',
       if (id != null) 'id': id,
-      'indexed0': indexed0.toJson(),
-      'indexed1': indexed1.toJson(),
-      'indexed2': indexed2.toJson(),
-      'indexed3': indexed3.toJson(),
+      'notJsonb': notJsonb.toJson(),
+      'jsonb': jsonb.toJson(),
+      'jsonbIndexed': jsonbIndexed.toJson(),
+      'jsonbIndexedGin': jsonbIndexedGin.toJson(),
+      'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
     };
   }
 
@@ -95,10 +104,11 @@ abstract class ObjectWithJsonb
     return {
       '__className__': 'ObjectWithJsonb',
       if (id != null) 'id': id,
-      'indexed0': indexed0.toJson(),
-      'indexed1': indexed1.toJson(),
-      'indexed2': indexed2.toJson(),
-      'indexed3': indexed3.toJson(),
+      'notJsonb': notJsonb.toJson(),
+      'jsonb': jsonb.toJson(),
+      'jsonbIndexed': jsonbIndexed.toJson(),
+      'jsonbIndexedGin': jsonbIndexedGin.toJson(),
+      'jsonbIndexedGinJsonbPath': jsonbIndexedGinJsonbPath.toJson(),
     };
   }
 
@@ -139,16 +149,18 @@ class _Undefined {}
 class _ObjectWithJsonbImpl extends ObjectWithJsonb {
   _ObjectWithJsonbImpl({
     int? id,
-    required List<String> indexed0,
-    required List<String> indexed1,
-    required List<String> indexed2,
-    required List<String> indexed3,
+    required List<String> notJsonb,
+    required List<String> jsonb,
+    required List<String> jsonbIndexed,
+    required List<String> jsonbIndexedGin,
+    required List<String> jsonbIndexedGinJsonbPath,
   }) : super._(
          id: id,
-         indexed0: indexed0,
-         indexed1: indexed1,
-         indexed2: indexed2,
-         indexed3: indexed3,
+         notJsonb: notJsonb,
+         jsonb: jsonb,
+         jsonbIndexed: jsonbIndexed,
+         jsonbIndexedGin: jsonbIndexedGin,
+         jsonbIndexedGinJsonbPath: jsonbIndexedGinJsonbPath,
        );
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
@@ -157,17 +169,22 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
   @override
   ObjectWithJsonb copyWith({
     Object? id = _Undefined,
-    List<String>? indexed0,
-    List<String>? indexed1,
-    List<String>? indexed2,
-    List<String>? indexed3,
+    List<String>? notJsonb,
+    List<String>? jsonb,
+    List<String>? jsonbIndexed,
+    List<String>? jsonbIndexedGin,
+    List<String>? jsonbIndexedGinJsonbPath,
   }) {
     return ObjectWithJsonb(
       id: id is int? ? id : this.id,
-      indexed0: indexed0 ?? this.indexed0.map((e0) => e0).toList(),
-      indexed1: indexed1 ?? this.indexed1.map((e0) => e0).toList(),
-      indexed2: indexed2 ?? this.indexed2.map((e0) => e0).toList(),
-      indexed3: indexed3 ?? this.indexed3.map((e0) => e0).toList(),
+      notJsonb: notJsonb ?? this.notJsonb.map((e0) => e0).toList(),
+      jsonb: jsonb ?? this.jsonb.map((e0) => e0).toList(),
+      jsonbIndexed: jsonbIndexed ?? this.jsonbIndexed.map((e0) => e0).toList(),
+      jsonbIndexedGin:
+          jsonbIndexedGin ?? this.jsonbIndexedGin.map((e0) => e0).toList(),
+      jsonbIndexedGinJsonbPath:
+          jsonbIndexedGinJsonbPath ??
+          this.jsonbIndexedGinJsonbPath.map((e0) => e0).toList(),
     );
   }
 }
@@ -175,51 +192,65 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
 class ObjectWithJsonbUpdateTable extends _i1.UpdateTable<ObjectWithJsonbTable> {
   ObjectWithJsonbUpdateTable(super.table);
 
-  _i1.ColumnValue<List<String>, List<String>> indexed0(List<String> value) =>
+  _i1.ColumnValue<List<String>, List<String>> notJsonb(List<String> value) =>
       _i1.ColumnValue(
-        table.indexed0,
+        table.notJsonb,
         value,
       );
 
-  _i1.ColumnValue<List<String>, List<String>> indexed1(List<String> value) =>
+  _i1.ColumnValue<List<String>, List<String>> jsonb(List<String> value) =>
       _i1.ColumnValue(
-        table.indexed1,
+        table.jsonb,
         value,
       );
 
-  _i1.ColumnValue<List<String>, List<String>> indexed2(List<String> value) =>
-      _i1.ColumnValue(
-        table.indexed2,
-        value,
-      );
+  _i1.ColumnValue<List<String>, List<String>> jsonbIndexed(
+    List<String> value,
+  ) => _i1.ColumnValue(
+    table.jsonbIndexed,
+    value,
+  );
 
-  _i1.ColumnValue<List<String>, List<String>> indexed3(List<String> value) =>
-      _i1.ColumnValue(
-        table.indexed3,
-        value,
-      );
+  _i1.ColumnValue<List<String>, List<String>> jsonbIndexedGin(
+    List<String> value,
+  ) => _i1.ColumnValue(
+    table.jsonbIndexedGin,
+    value,
+  );
+
+  _i1.ColumnValue<List<String>, List<String>> jsonbIndexedGinJsonbPath(
+    List<String> value,
+  ) => _i1.ColumnValue(
+    table.jsonbIndexedGinJsonbPath,
+    value,
+  );
 }
 
 class ObjectWithJsonbTable extends _i1.Table<int?> {
   ObjectWithJsonbTable({super.tableRelation})
     : super(tableName: 'object_with_jsonb') {
     updateTable = ObjectWithJsonbUpdateTable(this);
-    indexed0 = _i1.ColumnSerializable<List<String>>(
-      'indexed0',
+    notJsonb = _i1.ColumnSerializable<List<String>>(
+      'notJsonb',
       this,
     );
-    indexed1 = _i1.ColumnSerializable<List<String>>(
-      'indexed1',
-      this,
-      serializationDataType: _i3.SerializationDataType.jsonb,
-    );
-    indexed2 = _i1.ColumnSerializable<List<String>>(
-      'indexed2',
+    jsonb = _i1.ColumnSerializable<List<String>>(
+      'jsonb',
       this,
       serializationDataType: _i3.SerializationDataType.jsonb,
     );
-    indexed3 = _i1.ColumnSerializable<List<String>>(
-      'indexed3',
+    jsonbIndexed = _i1.ColumnSerializable<List<String>>(
+      'jsonbIndexed',
+      this,
+      serializationDataType: _i3.SerializationDataType.jsonb,
+    );
+    jsonbIndexedGin = _i1.ColumnSerializable<List<String>>(
+      'jsonbIndexedGin',
+      this,
+      serializationDataType: _i3.SerializationDataType.jsonb,
+    );
+    jsonbIndexedGinJsonbPath = _i1.ColumnSerializable<List<String>>(
+      'jsonbIndexedGinJsonbPath',
       this,
       serializationDataType: _i3.SerializationDataType.jsonb,
     );
@@ -227,21 +258,24 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
 
   late final ObjectWithJsonbUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<List<String>> indexed0;
+  late final _i1.ColumnSerializable<List<String>> notJsonb;
 
-  late final _i1.ColumnSerializable<List<String>> indexed1;
+  late final _i1.ColumnSerializable<List<String>> jsonb;
 
-  late final _i1.ColumnSerializable<List<String>> indexed2;
+  late final _i1.ColumnSerializable<List<String>> jsonbIndexed;
 
-  late final _i1.ColumnSerializable<List<String>> indexed3;
+  late final _i1.ColumnSerializable<List<String>> jsonbIndexedGin;
+
+  late final _i1.ColumnSerializable<List<String>> jsonbIndexedGinJsonbPath;
 
   @override
   List<_i1.Column> get columns => [
     id,
-    indexed0,
-    indexed1,
-    indexed2,
-    indexed3,
+    notJsonb,
+    jsonb,
+    jsonbIndexed,
+    jsonbIndexedGin,
+    jsonbIndexedGinJsonbPath,
   ];
 }
 
