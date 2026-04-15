@@ -244,8 +244,8 @@ void main() {
       );
 
       test(
-        'then the alter action for grant_allowance should NOT explicitly drop '
-        'the foreign key because DROP TABLE CASCADE handles it.',
+        'then the alter action for grant_allowance should list the foreign key '
+        'to drop so each dialect can react accordingly.',
         () {
           var alterAction = migration.actions.firstWhere(
             (action) =>
@@ -258,10 +258,7 @@ void main() {
 
           expect(
             alterAction.alterTable?.deleteForeignKeys,
-            isNot(contains('grant_bundle_allowances_fk')),
-            reason:
-                'DROP TABLE "grant_bundle" CASCADE automatically drops the '
-                'foreign key constraint, so it must not be explicitly dropped.',
+            contains('grant_bundle_allowances_fk'),
           );
         },
       );

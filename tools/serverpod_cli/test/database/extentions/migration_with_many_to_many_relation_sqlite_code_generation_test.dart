@@ -405,19 +405,20 @@ fields:
       var dropSourceConstraint = sqlite.indexOf(
         'ALTER TABLE "source" DROP CONSTRAINT "source_fk_0"',
       );
-      var dropSourceColumnPointingTotarget = sqlite.indexOf(
+      var dropSourceColumnPointingToTarget = sqlite.indexOf(
         'ALTER TABLE "source" DROP COLUMN "targetId"',
       );
       var createNewTargetTable = sqlite.indexOf('CREATE TABLE "target_new"');
 
-      expect(dropTableSourceIndex, -1);
+      expect(dropTableSourceIndex, greaterThanOrEqualTo(0));
       expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
       expect(dropSourceConstraint, -1);
-      expect(dropSourceColumnPointingTotarget, greaterThanOrEqualTo(0));
+      // Table rebuild removes the FK column without a separate DROP COLUMN.
+      expect(dropSourceColumnPointingToTarget, -1);
       expect(createNewTargetTable, greaterThanOrEqualTo(0));
 
-      expect(dropTableTargetIndex, lessThan(dropSourceColumnPointingTotarget));
-      expect(dropSourceColumnPointingTotarget, lessThan(createNewTargetTable));
+      expect(dropTableTargetIndex, lessThan(dropTableSourceIndex));
+      expect(dropTableSourceIndex, lessThan(createNewTargetTable));
     },
   );
 }
