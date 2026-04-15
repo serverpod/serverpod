@@ -1,0 +1,5 @@
+class: Town
+table: town
+fields:
+  name: String
+  mayor: Citizen?, relation(optional)

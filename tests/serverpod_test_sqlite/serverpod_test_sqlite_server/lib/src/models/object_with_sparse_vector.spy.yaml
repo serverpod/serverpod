@@ -1,0 +1,21 @@
+class: ObjectWithSparseVector
+table: object_with_sparse_vector
+fields:
+  sparseVector: SparseVector(512)
+  sparseVectorNullable: SparseVector(512)?
+  sparseVectorIndexedHnsw: SparseVector(512)
+  sparseVectorIndexedHnswWithParams: SparseVector(512)
+
+indexes:
+  sparse_vector_index_default:
+    fields: sparseVector
+  sparse_vector_index_hnsw:
+    fields: sparseVectorIndexedHnsw
+    type: hnsw
+  sparse_vector_index_hnsw_with_params:
+    fields: sparseVectorIndexedHnswWithParams
+    type: hnsw
+    distanceFunction: l1
+    parameters:
+      m: 64
+      ef_construction: 200

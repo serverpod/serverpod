@@ -214,7 +214,7 @@ class InsightsEndpoint extends Endpoint {
   Future<List<TableDefinition>> getTargetTableDefinition(
     Session session,
   ) async {
-    return session.serverpod.serializationManager.getTargetTableDefinitions();
+    return session.db.analyzer.getTargetTableDefinitions();
   }
 
   /// Returns the structure of the live database by

@@ -154,8 +154,7 @@ class DatabaseBulkData {
     Database database,
     String table,
   ) async {
-    var tableDefinitions = database.serializationManager
-        .getTargetTableDefinitions();
+    var tableDefinitions = database.analyzer.getTargetTableDefinitions();
 
     var tableDefinition = tableDefinitions.firstWhereOrNull(
       (e) => e.name == table,

@@ -74,3 +74,17 @@ abstract class DatabaseAnalyzer {
     }
   }
 }
+
+/// Extensions on [DatabaseAnalyzer] to add functionality not overridden by
+/// the concrete analyzer implementations.
+extension DatabaseAnalyzerExtensions on DatabaseAnalyzer {
+  /// Gets the target database definition for the current dialect.
+  ///
+  /// This is used to compare the live database to the target database. The
+  /// definitions returned by this method do not contain elements that are
+  /// ignored on the current dialect (e.g. unsupported index types).
+  List<TableDefinition> getTargetTableDefinitions() {
+    var tables = database.serializationManager.getTargetTableDefinitions();
+    return tables.forDialect(database.dialect);
+  }
+}

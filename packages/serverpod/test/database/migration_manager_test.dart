@@ -5,7 +5,7 @@ import 'package:serverpod_database/src/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given MigrationManager with available versions', () {
     late ServerMigrationManager migrationManager;

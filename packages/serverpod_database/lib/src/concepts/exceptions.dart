@@ -63,3 +63,38 @@ abstract base class DatabaseDeleteRowException implements DatabaseException {
   @override
   String toString() => 'DatabaseDeleteRowException: $message';
 }
+
+/// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
+/// reports one or more rows that violate foreign key constraints.
+final class SqliteForeignKeyViolationException implements DatabaseException {
+  /// Creates a new [SqliteForeignKeyViolationException].
+  ///
+  /// Each map is a row from `PRAGMA foreign_key_check` (typically `table`,
+  /// `rowid`, `parent`, `fkid`).
+  SqliteForeignKeyViolationException(this.violations)
+    : message = _formatMessage(violations);
+
+  /// Rows returned by `PRAGMA foreign_key_check`.
+  final List<Map<String, dynamic>> violations;
+
+  @override
+  final String message;
+
+  static String _formatMessage(List<Map<String, dynamic>> violations) {
+    final buffer = StringBuffer(
+      'Foreign key integrity check failed: ${violations.length} violation'
+      '${violations.length > 1 ? 's' : ''}.',
+    );
+    for (var i = 0; i < violations.length; i++) {
+      buffer.writeln();
+      buffer.write('  ${i + 1}. ');
+      buffer.write(
+        violations[i].entries.map((e) => '${e.key}=${e.value}').join(', '),
+      );
+    }
+    return buffer.toString();
+  }
+
+  @override
+  String toString() => 'SqliteForeignKeyViolationException: $message';
+}

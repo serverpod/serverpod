@@ -187,6 +187,31 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
 
             Method((m) {
               m
+                ..name = 'callRecurring'
+                ..annotations.add(refer('override'))
+                ..returns = refer(
+                  'RecurringFutureCallDispatch<_FutureCallRef>',
+                  serverpodUrl(true),
+                )
+                ..optionalParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'identifier'
+                      ..named = true
+                      ..type = refer('String?'),
+                  ),
+                )
+                ..body = const Code('''
+                    return _RecurringFutureCallDispatchImpl(
+                      _effectiveFutureCallManager,
+                      _effectiveServerId,
+                      identifier,
+                    );
+                  ''');
+            }),
+
+            Method((m) {
+              m
                 ..name = 'cancel'
                 ..annotations.add(refer('override'))
                 ..returns = refer('Future<void>')
@@ -206,6 +231,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
       ),
     );
 
+    _generateRecurringFutureCallDispatch(library);
     _generateFutureCallRef(library);
     _generateFutureCallDispatchers(library);
     _generateServerFutureCalls(library);
@@ -245,6 +271,152 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
           ),
         )
         .statement;
+  }
+
+  /// Generates RecurringFutureCallDispatch for server side.
+  void _generateRecurringFutureCallDispatch(LibraryBuilder libraryBuilder) {
+    libraryBuilder.body.add(
+      Class(
+        (c) => c
+          ..name = '_RecurringFutureCallDispatchImpl'
+          ..extend = refer(
+            'RecurringFutureCallDispatch<_FutureCallRef>',
+            serverpodUrl(true),
+          )
+          ..constructors.add(
+            Constructor(
+              (c) => c
+                ..requiredParameters.addAll([
+                  Parameter(
+                    (p) => p
+                      ..toThis = true
+                      ..name = '_futureCallManager',
+                  ),
+                  Parameter(
+                    (p) => p
+                      ..toThis = true
+                      ..name = '_serverId',
+                  ),
+                  Parameter(
+                    (p) => p
+                      ..toThis = true
+                      ..name = '_identifier',
+                  ),
+                ]),
+            ),
+          )
+          ..fields.addAll([
+            Field(
+              (f) {
+                f
+                  ..modifier = FieldModifier.final$
+                  ..name = '_futureCallManager'
+                  ..type = refer('FutureCallManager', serverpodUrl(true));
+              },
+            ),
+            Field(
+              (f) {
+                f
+                  ..modifier = FieldModifier.final$
+                  ..name = '_serverId'
+                  ..type = refer('String');
+              },
+            ),
+            Field(
+              (f) {
+                f
+                  ..modifier = FieldModifier.final$
+                  ..name = '_identifier'
+                  ..type = refer('String?');
+              },
+            ),
+          ])
+          ..methods.addAll([
+            Method((m) {
+              m
+                ..name = 'cron'
+                ..annotations.add(refer('override'))
+                ..returns = refer('_FutureCallRef')
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'cronExpression'
+                      ..type = refer('String'),
+                  ),
+                )
+                ..body = Code.scope((allocate) {
+                  final cron = allocate(
+                    refer('Cron', serverpodUrl(true)),
+                  );
+                  final cronScheduling = allocate(
+                    refer('CronFutureCallScheduling', serverpodUrl(true)),
+                  );
+
+                  return '''
+                    return _FutureCallRef(
+                      (name, object) {
+                        return _futureCallManager.scheduleFutureCall(
+                          name,
+                          object,
+                          $cron.parse(cronExpression).nextTime(),
+                          _serverId,
+                          _identifier,
+                          scheduling: $cronScheduling(cron: cronExpression),
+                        );
+                      },
+                    );
+                  ''';
+                });
+            }),
+            Method((m) {
+              m
+                ..name = 'every'
+                ..annotations.add(refer('override'))
+                ..returns = refer('_FutureCallRef')
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'interval'
+                      ..type = refer('Duration'),
+                  ),
+                )
+                ..optionalParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..named = true
+                      ..name = 'start'
+                      ..type = refer('DateTime?'),
+                  ),
+                )
+                ..body = Code.scope((allocate) {
+                  final clock = allocate(
+                    refer('clock', 'package:clock/clock.dart'),
+                  );
+
+                  final intervalScheduling = allocate(
+                    refer('IntervalFutureCallScheduling', serverpodUrl(true)),
+                  );
+
+                  return '''
+                    final now = $clock.now().toUtc();
+                    return _FutureCallRef(
+                      (name, object) {
+                        return _futureCallManager.scheduleFutureCall(
+                          name,
+                          object,
+                          start ?? now.add(interval),
+                          _serverId,
+                          _identifier,
+                          scheduling: $intervalScheduling(interval: interval, start: start),
+                        );
+                      },
+                    );
+                  ''';
+                });
+            }),
+          ]),
+      ),
+    );
   }
 
   /// Generates FutureCallRef for server side.

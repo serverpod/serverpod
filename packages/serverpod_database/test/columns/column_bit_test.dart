@@ -4,7 +4,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given a ColumnBit', () {
     var columnName = 'signature';

@@ -1,0 +1,50 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+publish_to: none
+
+name: serverpod_test_sqlite_server
+version: 1.0.0
+description: SQLite project test server for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod: 3.5.0-beta.3
+  serverpod_service_client: 3.5.0-beta.3
+
+dev_dependencies:
+  serverpod_cli: 3.5.0-beta.3
+  serverpod_lints: 3.5.0-beta.3
+  serverpod_test: 3.5.0-beta.3
+  serverpod_test_client:
+    path: ../../serverpod_test_client
+  serverpod_test_server:
+    path: ../../serverpod_test_server
+  serverpod_test_sqlite_client: 3.5.0-beta.3
+  test: ^1.25.5
+  test_descriptor: ^2.0.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_cli:
+    path: ../../../tools/serverpod_cli
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_database:
+    path: ../../../packages/serverpod_database
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
+  serverpod_test_sqlite_client:
+    path: ../serverpod_test_sqlite_client

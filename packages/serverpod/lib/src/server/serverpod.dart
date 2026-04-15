@@ -842,9 +842,18 @@ class Serverpod {
     }
 
     if (Features.enableDatabase &&
-        config.sessionLogs.persistentEnabled == true &&
-        config.sessionLogs.cleanupInterval != null) {
-      _logCleanupManager = LogCleanupManager(config.sessionLogs);
+        config.sessionLogs.persistentEnabled == true) {
+      if (_databasePoolManager?.dialect == DatabaseDialect.sqlite) {
+        stderr.writeln(
+          'Persistent logging is not supported when using SQLite database '
+          'because it does not allow concurrent writes. Use console logging '
+          'instead.',
+        );
+      } else {
+        if (config.sessionLogs.cleanupInterval != null) {
+          _logCleanupManager = LogCleanupManager(config.sessionLogs);
+        }
+      }
     }
   }
 
@@ -856,7 +865,10 @@ class Serverpod {
 
     try {
       _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = ServerMigrationManager(Directory.current);
+      var migrationManager = ServerMigrationManager(
+        Directory.current,
+        runMode: runMode,
+      );
 
       if (applyRepairMigration) {
         _internalLogVerbose('Applying database repair migration');

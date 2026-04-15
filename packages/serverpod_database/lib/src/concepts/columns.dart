@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../serverpod_database.dart';
+import '../adapters/sqlite/value_encoder.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
@@ -279,8 +280,6 @@ class ColumnUri extends _ValueOperatorColumn<Uri>
 }
 
 /// A [Column] holding [BigInt].
-///
-/// [ColumnBigInt] is not orderable because it is stored as text in the database.
 class ColumnBigInt extends _ValueOperatorColumn<BigInt>
     with _NullableColumnDefaultOperations<BigInt> {
   /// Creates a new [Column], this is typically done in generated code only.
@@ -879,14 +878,20 @@ class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _ILikeExpression(super.column, super.other);
 
   @override
-  String get operator => 'ILIKE';
+  String get operator => switch (ValueEncoder.instance) {
+    SqliteValueEncoder() => 'LIKE',
+    _ => 'ILIKE',
+  };
 }
 
 class _NotILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _NotILikeExpression(super.column, super.other);
 
   @override
-  String get operator => 'NOT ILIKE';
+  String get operator => switch (ValueEncoder.instance) {
+    SqliteValueEncoder() => 'NOT LIKE',
+    _ => 'NOT ILIKE',
+  };
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {

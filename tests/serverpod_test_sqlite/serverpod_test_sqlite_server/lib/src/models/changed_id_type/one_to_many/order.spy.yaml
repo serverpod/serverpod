@@ -1,0 +1,7 @@
+class: OrderUuid
+table: order_uuid
+fields:
+  id: UuidValue, defaultModel=random_v7
+  description: String
+  customer: CustomerInt?, relation(name=customer_orders, onDelete=Cascade)
+  comments: List<CommentInt>?, relation(name=order_comments)

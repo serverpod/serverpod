@@ -12,6 +12,17 @@ typedef MigrationWarningWriter = void Function(String message);
 abstract class MigrationManager {
   final MigrationArtifactStore _artifactStore;
 
+  /// The run mode of the server.
+  ///
+  /// This is used to determine if additional database integrity checks should
+  /// be run, since they can be expensive and not matter in production.
+  ///
+  /// If the run mode is not set, the migration manager will not run any
+  /// additional database integrity checks. This config only matters if using
+  /// the [MigrationManager] to run migrations. For other use cases, the run
+  /// mode is not relevant.
+  final String? runMode;
+
   /// List of installed migration versions. Available after starting a migration
   /// or repair migration.
   final List<DatabaseMigrationVersionModel> _installedVersions = [];
@@ -22,7 +33,7 @@ abstract class MigrationManager {
   final List<String> availableVersions = [];
 
   /// Creates a new migration manager.
-  MigrationManager(this._artifactStore);
+  MigrationManager(this._artifactStore, {this.runMode});
 
   /// Loads the installed versions of the migrations from the database.
   ///
@@ -286,7 +297,7 @@ abstract class MigrationManager {
     Future<void> Function(Transaction? transaction) action,
   ) async {
     final provider = DatabaseProvider.forDialect(session.db.dialect);
-    final migrationRunner = provider.createMigrationRunner();
+    final migrationRunner = provider.createMigrationRunner(runMode: runMode);
     await migrationRunner.runMigrations(session, action);
   }
 
@@ -296,8 +307,7 @@ abstract class MigrationManager {
     var warnings = <String>[];
 
     var liveDatabase = await session.db.analyzer.analyze();
-    var targetTables = session.db.serializationManager
-        .getTargetTableDefinitions();
+    var targetTables = session.db.analyzer.getTargetTableDefinitions();
 
     for (var table in targetTables) {
       var liveTable = liveDatabase.findTableNamed(table.name);

@@ -182,16 +182,19 @@ abstract class Session implements DatabaseSession {
 
     var logWriters = <LogWriter>[];
 
-    if (Features.enablePersistentLogging) {
-      logWriters.add(
-        DatabaseLogWriter(
-          logWriterSession: session.serverpod.internalSession,
-        ),
-      );
+    var sessionLogs = session.serverpod.config.sessionLogs;
+    if (sessionLogs.persistentEnabled) {
+      if (_db?.dialect != DatabaseDialect.sqlite) {
+        logWriters.add(
+          DatabaseLogWriter(
+            logWriterSession: session.serverpod.internalSession,
+          ),
+        );
+      }
     }
 
-    if (Features.enableConsoleLogging) {
-      var logFormat = session.serverpod.config.sessionLogs.consoleLogFormat;
+    if (sessionLogs.consoleEnabled) {
+      var logFormat = sessionLogs.consoleLogFormat;
       var consoleLogger = switch (logFormat) {
         ConsoleLogFormat.json => JsonStdOutLogWriter(session),
         ConsoleLogFormat.text => TextStdOutLogWriter(session),

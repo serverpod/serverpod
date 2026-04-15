@@ -1,0 +1,6 @@
+class: Order
+table: order
+fields:
+  description: String
+  customer: Customer?, relation(name=customer_orders, onDelete=Cascade)
+  comments: List<Comment>?, relation(name=order_comments)

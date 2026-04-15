@@ -1,0 +1,9 @@
+class: UniqueData
+table: unique_data
+fields:
+  number: int
+  email: String
+indexes:
+  email_index_idx:
+    fields: email
+    unique: true

@@ -83,7 +83,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
           // ensure that the latest auth from the storage is used. This is
           // required for web if another tab has rotated the refresh token,
           // since the storage is shared between tabs.
-          invalidateCachedAuthInfo: restore,
+          invalidateCachedAuthInfo: _resetCachedAuthInfo,
           refreshEndpoint: caller.client
               .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
@@ -146,12 +146,16 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// value. This method can be called at any time to get the latest value from
   /// the storage.
   Future<void> restore() async {
+    await _resetCachedAuthInfo();
+    onAuthInfoChanged?.call(_authInfo);
+  }
+
+  Future<void> _resetCachedAuthInfo() async {
     final storage = this.storage;
     if (storage is CachedClientAuthSuccessStorage) {
       await storage.clearCache();
     }
     _authInfo = await storage.get();
-    onAuthInfoChanged?.call(_authInfo);
   }
 
   /// Updates the signed in user on the storage and for open connections.

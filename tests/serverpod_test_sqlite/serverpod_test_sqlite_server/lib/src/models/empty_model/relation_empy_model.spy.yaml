@@ -1,0 +1,4 @@
+class: RelationEmptyModel
+table: relation_empty_model
+fields:
+  items: List<EmptyModelRelationItem>?, relation

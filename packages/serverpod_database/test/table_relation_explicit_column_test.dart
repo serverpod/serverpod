@@ -4,7 +4,7 @@ import 'package:serverpod_database/src/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given table relation with explicit column name', () {
     var table = Table<int?>(tableName: 'company');

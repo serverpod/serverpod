@@ -6,6 +6,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 // Export underlying dialect implementations.
 export 'package:serverpod_database/src/extensions.dart';
 export 'dialects/postgres.dart';
+export 'dialects/sqlite.dart';
 
 //
 // Comparisons of database models

@@ -1,0 +1,11 @@
+class: Post
+table: post
+fields:
+  content: String
+  previous: Post?, relation(name=next_previous_post)
+  nextId: int?
+  next: Post?, relation(name=next_previous_post, field=nextId, onDelete=SetNull)
+indexes:
+  next_unique_idx:
+    fields: nextId
+    unique: true

@@ -1,0 +1,5 @@
+class: Book
+table: book
+fields:
+    title: String
+    chapters: List<Chapter>?, relation

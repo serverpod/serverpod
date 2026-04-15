@@ -1,0 +1,25 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_sqlite_client
+version: 1.0.0
+description: SQLite project test client for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+  serverpod_service_client: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_database:
+    path: ../../../packages/serverpod_database
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
