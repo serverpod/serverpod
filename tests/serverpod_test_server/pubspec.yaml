@@ -11,6 +11,7 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: '^3.8.0'
 dependencies:
+  clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
   relic: ^1.2.0
   serverpod: 3.5.0-beta.3

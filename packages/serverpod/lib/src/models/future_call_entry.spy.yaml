@@ -18,6 +18,10 @@ fields:
   ### An optional identifier which can be used to cancel the call.
   identifier: String?
 
+  ### Specifies how recurring calls should be scheduled.
+  ### This field is null for one-off future calls.
+  scheduling: FutureCallScheduling?
+
 indexes:
   serverpod_future_call_time_idx:
     fields: time

@@ -13,7 +13,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -22,7 +21,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "street",
-          "fieldName": "street",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -30,7 +28,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "inhabitantId",
-          "fieldName": "inhabitantId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -80,7 +77,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -89,7 +85,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "street",
-          "fieldName": "street",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -97,7 +92,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "inhabitantId",
-          "fieldName": "inhabitantId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -147,7 +141,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -156,7 +149,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -176,7 +168,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -185,7 +176,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -205,7 +195,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -214,7 +203,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigintDefaultStr",
-          "fieldName": "bigintDefaultStr",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'-1234567890123456789099999999'",
@@ -223,7 +211,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigintDefaultStrNull",
-          "fieldName": "bigintDefaultStrNull",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'1234567890123456789099999999'",
@@ -244,7 +231,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -253,7 +239,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultAndDefaultModel",
-          "fieldName": "bigIntDefaultAndDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'1'",
@@ -262,7 +247,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultAndDefaultPersist",
-          "fieldName": "bigIntDefaultAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'12345678901234567890'",
@@ -271,7 +255,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultModelAndDefaultPersist",
-          "fieldName": "bigIntDefaultModelAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'-1234567890123456789099999999'",
@@ -292,7 +275,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -301,7 +283,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultModelStr",
-          "fieldName": "bigIntDefaultModelStr",
           "columnType": 0,
           "isNullable": false,
           "dartType": "BigInt"
@@ -309,7 +290,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultModelStrNull",
-          "fieldName": "bigIntDefaultModelStrNull",
           "columnType": 0,
           "isNullable": true,
           "dartType": "BigInt?"
@@ -329,7 +309,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -338,7 +317,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bigIntDefaultPersistStr",
-          "fieldName": "bigIntDefaultPersistStr",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'1234567890123456789099999999'",
@@ -359,7 +337,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -368,7 +345,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "blockedId",
-          "fieldName": "blockedId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -376,7 +352,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "blockedById",
-          "fieldName": "blockedById",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -445,7 +420,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -454,7 +428,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "title",
-          "fieldName": "title",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -474,7 +447,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -483,7 +455,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultTrue",
-          "fieldName": "boolDefaultTrue",
           "columnType": 1,
           "isNullable": false,
           "columnDefault": "true",
@@ -492,7 +463,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultFalse",
-          "fieldName": "boolDefaultFalse",
           "columnType": 1,
           "isNullable": false,
           "columnDefault": "false",
@@ -501,7 +471,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultNullFalse",
-          "fieldName": "boolDefaultNullFalse",
           "columnType": 1,
           "isNullable": true,
           "columnDefault": "false",
@@ -522,7 +491,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -531,7 +499,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultAndDefaultModel",
-          "fieldName": "boolDefaultAndDefaultModel",
           "columnType": 1,
           "isNullable": false,
           "columnDefault": "true",
@@ -540,7 +507,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultAndDefaultPersist",
-          "fieldName": "boolDefaultAndDefaultPersist",
           "columnType": 1,
           "isNullable": false,
           "columnDefault": "false",
@@ -549,7 +515,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultModelAndDefaultPersist",
-          "fieldName": "boolDefaultModelAndDefaultPersist",
           "columnType": 1,
           "isNullable": false,
           "columnDefault": "false",
@@ -570,7 +535,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -579,7 +543,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultModelTrue",
-          "fieldName": "boolDefaultModelTrue",
           "columnType": 1,
           "isNullable": false,
           "dartType": "bool"
@@ -587,7 +550,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultModelFalse",
-          "fieldName": "boolDefaultModelFalse",
           "columnType": 1,
           "isNullable": false,
           "dartType": "bool"
@@ -595,7 +557,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultModelNullFalse",
-          "fieldName": "boolDefaultModelNullFalse",
           "columnType": 1,
           "isNullable": false,
           "dartType": "bool"
@@ -615,7 +576,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -624,7 +584,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultPersistTrue",
-          "fieldName": "boolDefaultPersistTrue",
           "columnType": 1,
           "isNullable": true,
           "columnDefault": "true",
@@ -633,7 +592,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "boolDefaultPersistFalse",
-          "fieldName": "boolDefaultPersistFalse",
           "columnType": 1,
           "isNullable": true,
           "columnDefault": "false",
@@ -654,7 +612,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -663,7 +620,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -671,7 +627,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "motherId",
-          "fieldName": "motherId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -706,7 +661,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -715,7 +669,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -723,7 +676,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nextId",
-          "fieldName": "nextId",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -731,7 +683,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "parentId",
-          "fieldName": "parentId",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -795,7 +746,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -804,7 +754,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "title",
-          "fieldName": "title",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -812,7 +761,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_bookChaptersBookId",
-          "fieldName": "_bookChaptersBookId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -847,7 +795,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -856,7 +803,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedField",
-          "fieldName": "sharedField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -864,7 +810,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "localField",
-          "fieldName": "localField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -872,7 +817,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_parentEntityChildrenParentEntityId",
-          "fieldName": "_parentEntityChildrenParentEntityId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -907,7 +851,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -916,7 +859,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "non_table_parent_field",
-          "fieldName": "nonTableParentField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -924,7 +866,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "child_field",
-          "fieldName": "childField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -944,7 +885,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -953,7 +893,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "grandParentField",
-          "fieldName": "grandParentField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -961,7 +900,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "parentField",
-          "fieldName": "parentField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -969,7 +907,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "childField",
-          "fieldName": "childField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1004,7 +941,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -1013,7 +949,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1021,7 +956,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "parentId",
-          "fieldName": "parentId",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -1056,7 +990,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1065,7 +998,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1073,7 +1005,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "companyId",
-          "fieldName": "companyId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -1081,7 +1012,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "oldCompanyId",
-          "fieldName": "oldCompanyId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -1130,7 +1060,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1139,7 +1068,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1147,7 +1075,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "companyId",
-          "fieldName": "companyId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -1155,7 +1082,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "oldCompanyId",
-          "fieldName": "oldCompanyId",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -1204,7 +1130,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1213,7 +1138,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1233,7 +1157,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1242,7 +1165,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1262,7 +1184,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1271,7 +1192,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1279,7 +1199,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "orderId",
-          "fieldName": "orderId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -1314,7 +1233,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1323,7 +1241,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1331,7 +1248,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "orderId",
-          "fieldName": "orderId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -1366,7 +1282,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1375,7 +1290,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1383,7 +1297,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "townId",
-          "fieldName": "townId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -1418,7 +1331,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -1427,7 +1339,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1435,7 +1346,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "townId",
-          "fieldName": "townId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -1470,7 +1380,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1479,7 +1388,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1487,7 +1395,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "fk_contractor_service_id",
-          "fieldName": "serviceIdField",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -1537,7 +1444,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1546,7 +1452,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1566,7 +1471,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -1575,7 +1479,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1595,7 +1498,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1604,7 +1506,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1624,7 +1525,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1633,7 +1533,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1653,7 +1552,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1662,7 +1560,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultNow",
-          "fieldName": "dateTimeDefaultNow",
           "columnType": 4,
           "isNullable": false,
           "columnDefault": "now",
@@ -1671,7 +1568,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultStr",
-          "fieldName": "dateTimeDefaultStr",
           "columnType": 4,
           "isNullable": false,
           "columnDefault": "2024-05-24T22:00:00.000Z",
@@ -1680,7 +1576,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultStrNull",
-          "fieldName": "dateTimeDefaultStrNull",
           "columnType": 4,
           "isNullable": true,
           "columnDefault": "2024-05-24T22:00:00.000Z",
@@ -1701,7 +1596,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1710,7 +1604,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultAndDefaultModel",
-          "fieldName": "dateTimeDefaultAndDefaultModel",
           "columnType": 4,
           "isNullable": false,
           "columnDefault": "2024-05-01T22:00:00.000Z",
@@ -1719,7 +1612,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultAndDefaultPersist",
-          "fieldName": "dateTimeDefaultAndDefaultPersist",
           "columnType": 4,
           "isNullable": false,
           "columnDefault": "2024-05-10T22:00:00.000Z",
@@ -1728,7 +1620,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultModelAndDefaultPersist",
-          "fieldName": "dateTimeDefaultModelAndDefaultPersist",
           "columnType": 4,
           "isNullable": false,
           "columnDefault": "2024-05-10T22:00:00.000Z",
@@ -1749,7 +1640,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1758,7 +1648,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultModelNow",
-          "fieldName": "dateTimeDefaultModelNow",
           "columnType": 4,
           "isNullable": false,
           "dartType": "DateTime"
@@ -1766,7 +1655,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultModelStr",
-          "fieldName": "dateTimeDefaultModelStr",
           "columnType": 4,
           "isNullable": false,
           "dartType": "DateTime"
@@ -1774,7 +1662,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultModelStrNull",
-          "fieldName": "dateTimeDefaultModelStrNull",
           "columnType": 4,
           "isNullable": true,
           "dartType": "DateTime?"
@@ -1794,7 +1681,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1803,7 +1689,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultPersistNow",
-          "fieldName": "dateTimeDefaultPersistNow",
           "columnType": 4,
           "isNullable": true,
           "columnDefault": "now",
@@ -1812,7 +1697,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTimeDefaultPersistStr",
-          "fieldName": "dateTimeDefaultPersistStr",
           "columnType": 4,
           "isNullable": true,
           "columnDefault": "2024-05-10T22:00:00.000Z",
@@ -1833,7 +1717,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1842,7 +1725,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -1862,7 +1744,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1871,7 +1752,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefault",
-          "fieldName": "doubleDefault",
           "columnType": 3,
           "isNullable": false,
           "columnDefault": "10.5",
@@ -1880,7 +1760,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultNull",
-          "fieldName": "doubleDefaultNull",
           "columnType": 3,
           "isNullable": true,
           "columnDefault": "20.5",
@@ -1901,7 +1780,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1910,7 +1788,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultAndDefaultModel",
-          "fieldName": "doubleDefaultAndDefaultModel",
           "columnType": 3,
           "isNullable": false,
           "columnDefault": "10.5",
@@ -1919,7 +1796,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultAndDefaultPersist",
-          "fieldName": "doubleDefaultAndDefaultPersist",
           "columnType": 3,
           "isNullable": false,
           "columnDefault": "20.5",
@@ -1928,7 +1804,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultModelAndDefaultPersist",
-          "fieldName": "doubleDefaultModelAndDefaultPersist",
           "columnType": 3,
           "isNullable": false,
           "columnDefault": "20.5",
@@ -1949,7 +1824,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1958,7 +1832,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultModel",
-          "fieldName": "doubleDefaultModel",
           "columnType": 3,
           "isNullable": false,
           "dartType": "double"
@@ -1966,7 +1839,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultModelNull",
-          "fieldName": "doubleDefaultModelNull",
           "columnType": 3,
           "isNullable": false,
           "dartType": "double"
@@ -1986,7 +1858,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -1995,7 +1866,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "doubleDefaultPersist",
-          "fieldName": "doubleDefaultPersist",
           "columnType": 3,
           "isNullable": true,
           "columnDefault": "10.5",
@@ -2016,7 +1886,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2025,7 +1894,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefault",
-          "fieldName": "durationDefault",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "94230100",
@@ -2034,7 +1902,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultNull",
-          "fieldName": "durationDefaultNull",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "177640100",
@@ -2055,7 +1922,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2064,7 +1930,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultAndDefaultModel",
-          "fieldName": "durationDefaultAndDefaultModel",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "94230100",
@@ -2073,7 +1938,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultAndDefaultPersist",
-          "fieldName": "durationDefaultAndDefaultPersist",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "177640100",
@@ -2082,7 +1946,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultModelAndDefaultPersist",
-          "fieldName": "durationDefaultModelAndDefaultPersist",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "177640100",
@@ -2103,7 +1966,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2112,7 +1974,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultModel",
-          "fieldName": "durationDefaultModel",
           "columnType": 6,
           "isNullable": false,
           "dartType": "Duration"
@@ -2120,7 +1981,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultModelNull",
-          "fieldName": "durationDefaultModelNull",
           "columnType": 6,
           "isNullable": true,
           "dartType": "Duration?"
@@ -2140,7 +2000,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2149,7 +2008,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "durationDefaultPersist",
-          "fieldName": "durationDefaultPersist",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "94230100",
@@ -2170,7 +2028,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2179,7 +2036,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2187,7 +2043,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "fk_employee_department_id",
-          "fieldName": "departmentId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -2222,7 +2077,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2231,7 +2085,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2239,7 +2092,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_relationEmptyModelItemsRelationEmptyModelId",
-          "fieldName": "_relationEmptyModelItemsRelationEmptyModelId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -2274,7 +2126,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2295,7 +2146,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2304,7 +2154,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "studentId",
-          "fieldName": "studentId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -2312,7 +2161,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "courseId",
-          "fieldName": "courseId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -2381,7 +2229,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2390,7 +2237,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "studentId",
-          "fieldName": "studentId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -2398,7 +2244,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "courseId",
-          "fieldName": "courseId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -2467,7 +2312,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2476,7 +2320,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefault",
-          "fieldName": "byNameEnumDefault",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'byName1'",
@@ -2485,7 +2328,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultNull",
-          "fieldName": "byNameEnumDefaultNull",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'byName2'",
@@ -2494,7 +2336,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexEnumDefault",
-          "fieldName": "byIndexEnumDefault",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "0",
@@ -2503,7 +2344,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexEnumDefaultNull",
-          "fieldName": "byIndexEnumDefaultNull",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "1",
@@ -2524,7 +2364,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2533,7 +2372,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultAndDefaultModel",
-          "fieldName": "byNameEnumDefaultAndDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'byName1'",
@@ -2542,7 +2380,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultAndDefaultPersist",
-          "fieldName": "byNameEnumDefaultAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'byName2'",
@@ -2551,7 +2388,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultModelAndDefaultPersist",
-          "fieldName": "byNameEnumDefaultModelAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'byName2'",
@@ -2572,7 +2408,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2581,7 +2416,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultModel",
-          "fieldName": "byNameEnumDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "dartType": "protocol:ByNameEnum"
@@ -2589,7 +2423,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultModelNull",
-          "fieldName": "byNameEnumDefaultModelNull",
           "columnType": 0,
           "isNullable": true,
           "dartType": "protocol:ByNameEnum?"
@@ -2597,7 +2430,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexEnumDefaultModel",
-          "fieldName": "byIndexEnumDefaultModel",
           "columnType": 6,
           "isNullable": false,
           "dartType": "protocol:ByIndexEnum"
@@ -2605,7 +2437,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexEnumDefaultModelNull",
-          "fieldName": "byIndexEnumDefaultModelNull",
           "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:ByIndexEnum?"
@@ -2625,7 +2456,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2634,7 +2464,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameEnumDefaultPersist",
-          "fieldName": "byNameEnumDefaultPersist",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'byName1'",
@@ -2643,7 +2472,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexEnumDefaultPersist",
-          "fieldName": "byIndexEnumDefaultPersist",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "0",
@@ -2664,7 +2492,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2673,7 +2500,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "variable",
-          "fieldName": "variable",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2693,7 +2519,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2702,7 +2527,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefault",
-          "fieldName": "intDefault",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "10",
@@ -2711,7 +2535,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultNull",
-          "fieldName": "intDefaultNull",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "20",
@@ -2732,7 +2555,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2741,7 +2563,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultAndDefaultModel",
-          "fieldName": "intDefaultAndDefaultModel",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "10",
@@ -2750,7 +2571,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultAndDefaultPersist",
-          "fieldName": "intDefaultAndDefaultPersist",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "20",
@@ -2759,7 +2579,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultModelAndDefaultPersist",
-          "fieldName": "intDefaultModelAndDefaultPersist",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "20",
@@ -2780,7 +2599,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2789,7 +2607,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultModel",
-          "fieldName": "intDefaultModel",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -2797,7 +2614,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultModelNull",
-          "fieldName": "intDefaultModelNull",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -2817,7 +2633,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2826,7 +2641,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "intDefaultPersist",
-          "fieldName": "intDefaultPersist",
           "columnType": 6,
           "isNullable": true,
           "columnDefault": "10",
@@ -2847,7 +2661,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2856,7 +2669,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2864,7 +2676,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
-          "fieldName": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -2899,7 +2710,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2908,7 +2718,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2928,7 +2737,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2937,7 +2745,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo",
-          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2957,7 +2764,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2966,7 +2772,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -2986,7 +2791,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -2995,7 +2799,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3003,7 +2806,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "email",
-          "fieldName": "email",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -3011,7 +2813,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "phone",
-          "fieldName": "phone",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -3031,7 +2832,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3040,7 +2840,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "originalColumn",
-          "fieldName": "originalColumn",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3048,7 +2847,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "modified_column",
-          "fieldName": "modifiedColumn",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3068,7 +2866,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3077,7 +2874,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1",
-          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3085,7 +2881,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2",
-          "fieldName": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3093,7 +2888,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
-          "fieldName": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -3128,7 +2922,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3137,7 +2930,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "normal",
-          "fieldName": "normal",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3157,7 +2949,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3166,7 +2957,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "normal",
-          "fieldName": "normal",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -3174,7 +2964,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "database",
-          "fieldName": "database",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -3194,7 +2983,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3203,7 +2991,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -3211,7 +2998,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "userInfoId",
-          "fieldName": "userInfoId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -3246,7 +3032,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3255,7 +3040,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bit",
-          "fieldName": "bit",
           "columnType": 13,
           "isNullable": false,
           "dartType": "Bit(512)",
@@ -3264,7 +3048,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bitNullable",
-          "fieldName": "bitNullable",
           "columnType": 13,
           "isNullable": true,
           "dartType": "Bit(512)?",
@@ -3273,7 +3056,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bitIndexedHnsw",
-          "fieldName": "bitIndexedHnsw",
           "columnType": 13,
           "isNullable": false,
           "dartType": "Bit(512)",
@@ -3282,7 +3064,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bitIndexedHnswWithParams",
-          "fieldName": "bitIndexedHnswWithParams",
           "columnType": 13,
           "isNullable": false,
           "dartType": "Bit(512)",
@@ -3291,7 +3072,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bitIndexedIvfflat",
-          "fieldName": "bitIndexedIvfflat",
           "columnType": 13,
           "isNullable": false,
           "dartType": "Bit(512)",
@@ -3300,7 +3080,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "bitIndexedIvfflatWithParams",
-          "fieldName": "bitIndexedIvfflatWithParams",
           "columnType": 13,
           "isNullable": false,
           "dartType": "Bit(512)",
@@ -3409,7 +3188,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3418,7 +3196,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byteData",
-          "fieldName": "byteData",
           "columnType": 5,
           "isNullable": false,
           "dartType": "dart:typed_data:ByteData"
@@ -3438,7 +3215,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3447,7 +3223,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "duration",
-          "fieldName": "duration",
           "columnType": 6,
           "isNullable": false,
           "dartType": "Duration"
@@ -3467,7 +3242,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3476,7 +3250,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "testEnum",
-          "fieldName": "testEnum",
           "columnType": 6,
           "isNullable": false,
           "dartType": "protocol:TestEnum"
@@ -3484,7 +3257,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableEnum",
-          "fieldName": "nullableEnum",
           "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnum?"
@@ -3492,7 +3264,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "enumList",
-          "fieldName": "enumList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:TestEnum>"
@@ -3500,7 +3271,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableEnumList",
-          "fieldName": "nullableEnumList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:TestEnum?>"
@@ -3508,7 +3278,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "enumListList",
-          "fieldName": "enumListList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<List<protocol:TestEnum>>"
@@ -3528,7 +3297,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3537,7 +3305,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndex",
-          "fieldName": "byIndex",
           "columnType": 6,
           "isNullable": false,
           "dartType": "protocol:TestEnumEnhanced"
@@ -3545,7 +3312,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableByIndex",
-          "fieldName": "nullableByIndex",
           "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnumEnhanced?"
@@ -3553,7 +3319,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byIndexList",
-          "fieldName": "byIndexList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:TestEnumEnhanced>"
@@ -3561,7 +3326,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byName",
-          "fieldName": "byName",
           "columnType": 0,
           "isNullable": false,
           "dartType": "protocol:TestEnumEnhancedByName"
@@ -3569,7 +3333,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableByName",
-          "fieldName": "nullableByName",
           "columnType": 0,
           "isNullable": true,
           "dartType": "protocol:TestEnumEnhancedByName?"
@@ -3577,7 +3340,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "byNameList",
-          "fieldName": "byNameList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:TestEnumEnhancedByName>"
@@ -3597,7 +3359,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3606,7 +3367,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVector",
-          "fieldName": "halfVector",
           "columnType": 11,
           "isNullable": false,
           "dartType": "HalfVector(512)",
@@ -3615,7 +3375,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVectorNullable",
-          "fieldName": "halfVectorNullable",
           "columnType": 11,
           "isNullable": true,
           "dartType": "HalfVector(512)?",
@@ -3624,7 +3383,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVectorIndexedHnsw",
-          "fieldName": "halfVectorIndexedHnsw",
           "columnType": 11,
           "isNullable": false,
           "dartType": "HalfVector(512)",
@@ -3633,7 +3391,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVectorIndexedHnswWithParams",
-          "fieldName": "halfVectorIndexedHnswWithParams",
           "columnType": 11,
           "isNullable": false,
           "dartType": "HalfVector(512)",
@@ -3642,7 +3399,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVectorIndexedIvfflat",
-          "fieldName": "halfVectorIndexedIvfflat",
           "columnType": 11,
           "isNullable": false,
           "dartType": "HalfVector(512)",
@@ -3651,7 +3407,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "halfVectorIndexedIvfflatWithParams",
-          "fieldName": "halfVectorIndexedIvfflatWithParams",
           "columnType": 11,
           "isNullable": false,
           "dartType": "HalfVector(512)",
@@ -3760,7 +3515,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3769,7 +3523,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "indexed",
-          "fieldName": "indexed",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -3777,7 +3530,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "indexed2",
-          "fieldName": "indexed2",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -3809,151 +3561,6 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
-      "name": "object_with_jsonb",
-      "dartName": "ObjectWithJsonb",
-      "module": "serverpod_test",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "notJsonb",
-          "fieldName": "notJsonb",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonb",
-          "fieldName": "jsonb",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonbIndexed",
-          "fieldName": "jsonbIndexed",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonbIndexedGin",
-          "fieldName": "jsonbIndexedGin",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "jsonbIndexedGinJsonbPath",
-          "fieldName": "jsonbIndexedGinJsonbPath",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "nullableJsonb",
-          "fieldName": "nullableJsonb",
-          "columnType": 14,
-          "isNullable": true,
-          "dartType": "List<String>?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "jsonb_index_gin",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "jsonbIndexedGin"
-            }
-          ],
-          "type": "gin",
-          "isUnique": false,
-          "isPrimary": false,
-          "ginOperatorClass": "jsonbOps"
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "jsonb_index_gin_with_operator_class",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "jsonbIndexedGinJsonbPath"
-            }
-          ],
-          "type": "gin",
-          "isUnique": false,
-          "isPrimary": false,
-          "ginOperatorClass": "jsonbPathOps"
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "object_with_jsonb_class_level",
-      "dartName": "ObjectWithJsonbClassLevel",
-      "module": "serverpod_test",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "implicitJsonb",
-          "fieldName": "implicitJsonb",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "explicitJsonb",
-          "fieldName": "explicitJsonb",
-          "columnType": 14,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "json",
-          "fieldName": "json",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "List<String>"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
       "name": "object_with_object",
       "dartName": "ObjectWithObject",
       "module": "serverpod_test",
@@ -3962,7 +3569,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -3971,7 +3577,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "data",
-          "fieldName": "data",
           "columnType": 8,
           "isNullable": false,
           "dartType": "protocol:SimpleData"
@@ -3979,7 +3584,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableData",
-          "fieldName": "nullableData",
           "columnType": 8,
           "isNullable": true,
           "dartType": "protocol:SimpleData?"
@@ -3987,7 +3591,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dataList",
-          "fieldName": "dataList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:SimpleData>"
@@ -3995,7 +3598,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableDataList",
-          "fieldName": "nullableDataList",
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<protocol:SimpleData>?"
@@ -4003,7 +3605,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "listWithNullableData",
-          "fieldName": "listWithNullableData",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:SimpleData?>"
@@ -4011,7 +3612,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nullableListWithNullableData",
-          "fieldName": "nullableListWithNullableData",
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<protocol:SimpleData?>?"
@@ -4019,7 +3619,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nestedDataList",
-          "fieldName": "nestedDataList",
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<List<protocol:SimpleData>>?"
@@ -4027,7 +3626,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nestedDataListInMap",
-          "fieldName": "nestedDataListInMap",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Map<String,List<List<Map<int,protocol:SimpleData>>?>>?"
@@ -4035,7 +3633,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nestedDataMap",
-          "fieldName": "nestedDataMap",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Map<String,Map<int,protocol:SimpleData>>?"
@@ -4055,7 +3652,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4064,7 +3660,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "other",
-          "fieldName": "other",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -4099,7 +3694,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4108,7 +3702,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "other",
-          "fieldName": "other",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4143,7 +3736,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4152,7 +3744,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sparseVector",
-          "fieldName": "sparseVector",
           "columnType": 12,
           "isNullable": false,
           "dartType": "SparseVector(512)",
@@ -4161,7 +3752,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sparseVectorNullable",
-          "fieldName": "sparseVectorNullable",
           "columnType": 12,
           "isNullable": true,
           "dartType": "SparseVector(512)?",
@@ -4170,7 +3760,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sparseVectorIndexedHnsw",
-          "fieldName": "sparseVectorIndexedHnsw",
           "columnType": 12,
           "isNullable": false,
           "dartType": "SparseVector(512)",
@@ -4179,7 +3768,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sparseVectorIndexedHnswWithParams",
-          "fieldName": "sparseVectorIndexedHnswWithParams",
           "columnType": 12,
           "isNullable": false,
           "dartType": "SparseVector(512)",
@@ -4253,7 +3841,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4262,7 +3849,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuid",
-          "fieldName": "uuid",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -4270,7 +3856,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidNullable",
-          "fieldName": "uuidNullable",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -4290,7 +3875,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4299,7 +3883,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vector",
-          "fieldName": "vector",
           "columnType": 10,
           "isNullable": false,
           "dartType": "Vector(512)",
@@ -4308,7 +3891,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vectorNullable",
-          "fieldName": "vectorNullable",
           "columnType": 10,
           "isNullable": true,
           "dartType": "Vector(512)?",
@@ -4317,7 +3899,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vectorIndexedHnsw",
-          "fieldName": "vectorIndexedHnsw",
           "columnType": 10,
           "isNullable": false,
           "dartType": "Vector(512)",
@@ -4326,7 +3907,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vectorIndexedHnswWithParams",
-          "fieldName": "vectorIndexedHnswWithParams",
           "columnType": 10,
           "isNullable": false,
           "dartType": "Vector(512)",
@@ -4335,7 +3915,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vectorIndexedIvfflat",
-          "fieldName": "vectorIndexedIvfflat",
           "columnType": 10,
           "isNullable": false,
           "dartType": "Vector(512)",
@@ -4344,7 +3923,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "vectorIndexedIvfflatWithParams",
-          "fieldName": "vectorIndexedIvfflatWithParams",
           "columnType": 10,
           "isNullable": false,
           "dartType": "Vector(512)",
@@ -4453,7 +4031,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4462,7 +4039,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4470,7 +4046,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "customerId",
-          "fieldName": "customerId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -4505,7 +4080,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -4514,7 +4088,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4522,7 +4095,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "customerId",
-          "fieldName": "customerId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -4557,7 +4129,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4566,7 +4137,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4574,7 +4144,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "cityId",
-          "fieldName": "cityId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4609,7 +4178,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4618,7 +4186,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4626,7 +4193,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "cityId",
-          "fieldName": "cityId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4661,7 +4227,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4670,7 +4235,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "grandParentField",
-          "fieldName": "grandParentField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4678,7 +4242,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "parentField",
-          "fieldName": "parentField",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4698,7 +4261,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4719,7 +4281,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4728,7 +4289,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -4736,7 +4296,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "userInfoId",
-          "fieldName": "userInfoId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4771,7 +4330,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4780,7 +4338,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4788,7 +4345,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "organizationId",
-          "fieldName": "organizationId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4796,7 +4352,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_cityCitizensCityId",
-          "fieldName": "_cityCitizensCityId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4845,7 +4400,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4854,7 +4408,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4862,7 +4415,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "organizationId",
-          "fieldName": "organizationId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4870,7 +4422,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
-          "fieldName": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4919,7 +4470,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -4928,7 +4478,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4936,7 +4485,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "teamId",
-          "fieldName": "teamId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -4971,7 +4519,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -4980,7 +4527,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -4988,7 +4534,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "teamId",
-          "fieldName": "teamId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -5023,7 +4568,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5032,7 +4576,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "content",
-          "fieldName": "content",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5040,7 +4583,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "nextId",
-          "fieldName": "nextId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -5090,7 +4632,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5099,7 +4640,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uniqueDataId",
-          "fieldName": "uniqueDataId",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -5107,7 +4647,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "number",
-          "fieldName": "number",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -5142,7 +4681,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5163,7 +4701,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5172,7 +4709,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5192,7 +4728,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5201,7 +4736,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -5209,7 +4743,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "object",
-          "fieldName": "object",
           "columnType": 8,
           "isNullable": true,
           "dartType": "protocol:SimpleData?"
@@ -5229,7 +4762,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -5250,7 +4782,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5259,7 +4790,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5267,7 +4797,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -5287,7 +4816,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5296,7 +4824,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModel",
-          "fieldName": "sharedModel",
           "columnType": 8,
           "isNullable": false,
           "dartType": "SharedModel"
@@ -5304,7 +4831,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelWithModuleAlias",
-          "fieldName": "sharedModelWithModuleAlias",
           "columnType": 8,
           "isNullable": false,
           "dartType": "serverpod_test_shared:SharedModel"
@@ -5312,7 +4838,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelNullable",
-          "fieldName": "sharedModelNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "SharedModel?"
@@ -5320,7 +4845,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "serverOnlySharedModel",
-          "fieldName": "serverOnlySharedModel",
           "columnType": 8,
           "isNullable": true,
           "dartType": "SharedModel?"
@@ -5328,7 +4852,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSubclass",
-          "fieldName": "sharedSubclass",
           "columnType": 8,
           "isNullable": false,
           "dartType": "SharedSubclass"
@@ -5336,7 +4859,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSubclassNullable",
-          "fieldName": "sharedSubclassNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "SharedSubclass?"
@@ -5344,7 +4866,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedEnum",
-          "fieldName": "sharedEnum",
           "columnType": 0,
           "isNullable": false,
           "dartType": "SharedEnum"
@@ -5352,7 +4873,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedEnumNullable",
-          "fieldName": "sharedEnumNullable",
           "columnType": 0,
           "isNullable": true,
           "dartType": "SharedEnum?"
@@ -5360,7 +4880,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSealedParent",
-          "fieldName": "sharedSealedParent",
           "columnType": 8,
           "isNullable": false,
           "dartType": "SharedSealedParent"
@@ -5368,7 +4887,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSealedParentNullable",
-          "fieldName": "sharedSealedParentNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "SharedSealedParent?"
@@ -5376,7 +4894,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSealedChild",
-          "fieldName": "sharedSealedChild",
           "columnType": 8,
           "isNullable": false,
           "dartType": "SharedSealedChild"
@@ -5384,7 +4901,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSealedChildNullable",
-          "fieldName": "sharedSealedChildNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "SharedSealedChild?"
@@ -5392,7 +4908,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelSubclass",
-          "fieldName": "sharedModelSubclass",
           "columnType": 8,
           "isNullable": false,
           "dartType": "protocol:SharedModelSubclass"
@@ -5400,7 +4915,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelSubclassNullable",
-          "fieldName": "sharedModelSubclassNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "protocol:SharedModelSubclass?"
@@ -5408,7 +4922,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelList",
-          "fieldName": "sharedModelList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<SharedModel>"
@@ -5416,7 +4929,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelNullableList",
-          "fieldName": "sharedModelNullableList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<SharedModel?>"
@@ -5424,7 +4936,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelListNullable",
-          "fieldName": "sharedModelListNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<SharedModel>?"
@@ -5432,7 +4943,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelMap",
-          "fieldName": "sharedModelMap",
           "columnType": 8,
           "isNullable": false,
           "dartType": "Map<String,SharedModel>"
@@ -5440,7 +4950,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelMapNullable",
-          "fieldName": "sharedModelMapNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Map<String,SharedModel>?"
@@ -5448,7 +4957,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedSubclassMap",
-          "fieldName": "sharedSubclassMap",
           "columnType": 8,
           "isNullable": false,
           "dartType": "Map<String,SharedSubclass>"
@@ -5456,7 +4964,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelSet",
-          "fieldName": "sharedModelSet",
           "columnType": 8,
           "isNullable": false,
           "dartType": "Set<SharedModel>"
@@ -5464,7 +4971,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "sharedModelSetNullable",
-          "fieldName": "sharedModelSetNullable",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Set<SharedModel>?"
@@ -5484,7 +4990,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5493,7 +4998,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "num",
-          "fieldName": "num",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -5513,7 +5017,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5522,7 +5025,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "dateTime",
-          "fieldName": "dateTime",
           "columnType": 4,
           "isNullable": false,
           "dartType": "DateTime"
@@ -5542,7 +5044,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5551,7 +5052,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefault",
-          "fieldName": "stringDefault",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'This is a default value'",
@@ -5560,7 +5060,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultNull",
-          "fieldName": "stringDefaultNull",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a default null value'",
@@ -5581,7 +5080,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5590,7 +5088,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultAndDefaultModel",
-          "fieldName": "stringDefaultAndDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'This is a default value'",
@@ -5599,7 +5096,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultAndDefaultPersist",
-          "fieldName": "stringDefaultAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'This is a default persist value'",
@@ -5608,7 +5104,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultModelAndDefaultPersist",
-          "fieldName": "stringDefaultModelAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'This is a default persist value'",
@@ -5629,7 +5124,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5638,7 +5132,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultModel",
-          "fieldName": "stringDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5646,7 +5139,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultModelNull",
-          "fieldName": "stringDefaultModelNull",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5666,7 +5158,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5675,7 +5166,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersist",
-          "fieldName": "stringDefaultPersist",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a default persist value'",
@@ -5684,7 +5174,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
-          "fieldName": "stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a ''default persist value'",
@@ -5693,7 +5182,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
-          "fieldName": "stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a ''default'' persist value'",
@@ -5702,7 +5190,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
-          "fieldName": "stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a \"default persist value'",
@@ -5711,7 +5198,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
-          "fieldName": "stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a \"default\" persist value'",
@@ -5720,7 +5206,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
-          "fieldName": "stringDefaultPersistSingleQuoteWithOneDoubleQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a \"default persist value'",
@@ -5729,7 +5214,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
-          "fieldName": "stringDefaultPersistSingleQuoteWithTwoDoubleQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a \"default\" persist value'",
@@ -5738,7 +5222,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
-          "fieldName": "stringDefaultPersistDoubleQuoteWithOneSingleQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a ''default persist value'",
@@ -5747,7 +5230,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
-          "fieldName": "stringDefaultPersistDoubleQuoteWithTwoSingleQuote",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'This is a ''default'' persist value'",
@@ -5768,7 +5250,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5777,7 +5258,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5797,7 +5277,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -5806,7 +5285,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5826,7 +5304,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5835,7 +5312,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "user_name",
-          "fieldName": "userName",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5843,7 +5319,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "user_description",
-          "fieldName": "description",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'Just some information'",
@@ -5864,7 +5339,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5873,7 +5347,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5881,7 +5354,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "arenaId",
-          "fieldName": "arenaId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -5931,7 +5403,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -5940,7 +5411,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -5948,7 +5418,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "arenaId",
-          "fieldName": "arenaId",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -5998,7 +5467,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6007,7 +5475,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6015,7 +5482,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "mayorId",
-          "fieldName": "mayorId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -6050,7 +5516,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6059,7 +5524,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6067,7 +5531,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "mayorId",
-          "fieldName": "mayorId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -6102,7 +5565,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6111,7 +5573,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "anInt",
-          "fieldName": "anInt",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -6119,7 +5580,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aBool",
-          "fieldName": "aBool",
           "columnType": 1,
           "isNullable": true,
           "dartType": "bool?"
@@ -6127,7 +5587,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aDouble",
-          "fieldName": "aDouble",
           "columnType": 3,
           "isNullable": true,
           "dartType": "double?"
@@ -6135,7 +5594,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aDateTime",
-          "fieldName": "aDateTime",
           "columnType": 4,
           "isNullable": true,
           "dartType": "DateTime?"
@@ -6143,7 +5601,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aString",
-          "fieldName": "aString",
           "columnType": 0,
           "isNullable": true,
           "dartType": "String?"
@@ -6151,7 +5608,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aByteData",
-          "fieldName": "aByteData",
           "columnType": 5,
           "isNullable": true,
           "dartType": "dart:typed_data:ByteData?"
@@ -6159,7 +5615,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aDuration",
-          "fieldName": "aDuration",
           "columnType": 6,
           "isNullable": true,
           "dartType": "Duration?"
@@ -6167,7 +5622,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aUuid",
-          "fieldName": "aUuid",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -6175,7 +5629,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aUri",
-          "fieldName": "aUri",
           "columnType": 0,
           "isNullable": true,
           "dartType": "Uri?"
@@ -6183,7 +5636,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aBigInt",
-          "fieldName": "aBigInt",
           "columnType": 0,
           "isNullable": true,
           "dartType": "BigInt?"
@@ -6191,7 +5643,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aVector",
-          "fieldName": "aVector",
           "columnType": 10,
           "isNullable": true,
           "dartType": "Vector(3)?",
@@ -6200,7 +5651,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aHalfVector",
-          "fieldName": "aHalfVector",
           "columnType": 11,
           "isNullable": true,
           "dartType": "HalfVector(3)?",
@@ -6209,7 +5659,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aSparseVector",
-          "fieldName": "aSparseVector",
           "columnType": 12,
           "isNullable": true,
           "dartType": "SparseVector(3)?",
@@ -6218,7 +5667,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aBit",
-          "fieldName": "aBit",
           "columnType": 13,
           "isNullable": true,
           "dartType": "Bit(3)?",
@@ -6227,7 +5675,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "anEnum",
-          "fieldName": "anEnum",
           "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnum?"
@@ -6235,7 +5682,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aStringifiedEnum",
-          "fieldName": "aStringifiedEnum",
           "columnType": 0,
           "isNullable": true,
           "dartType": "protocol:TestEnumStringified?"
@@ -6243,7 +5689,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aList",
-          "fieldName": "aList",
           "columnType": 8,
           "isNullable": true,
           "dartType": "List<int>?"
@@ -6251,7 +5696,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aMap",
-          "fieldName": "aMap",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Map<int,int>?"
@@ -6259,7 +5703,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aSet",
-          "fieldName": "aSet",
           "columnType": 8,
           "isNullable": true,
           "dartType": "Set<int>?"
@@ -6267,7 +5710,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "aRecord",
-          "fieldName": "aRecord",
           "columnType": 8,
           "isNullable": true,
           "dartType": "(String, {Uri? optionalUri})?"
@@ -6287,7 +5729,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6296,7 +5737,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "number",
-          "fieldName": "number",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -6304,7 +5744,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "email",
-          "fieldName": "email",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6339,7 +5778,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6348,7 +5786,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "number",
-          "fieldName": "number",
           "columnType": 6,
           "isNullable": false,
           "dartType": "int"
@@ -6356,7 +5793,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "email",
-          "fieldName": "email",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6391,7 +5827,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6400,7 +5835,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefault",
-          "fieldName": "uriDefault",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'https://serverpod.dev/default'",
@@ -6409,7 +5843,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultNull",
-          "fieldName": "uriDefaultNull",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'https://serverpod.dev/default'",
@@ -6430,7 +5863,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6439,7 +5871,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultAndDefaultModel",
-          "fieldName": "uriDefaultAndDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'https://serverpod.dev/default'",
@@ -6448,7 +5879,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultAndDefaultPersist",
-          "fieldName": "uriDefaultAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'https://serverpod.dev/defaultPersist'",
@@ -6457,7 +5887,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultModelAndDefaultPersist",
-          "fieldName": "uriDefaultModelAndDefaultPersist",
           "columnType": 0,
           "isNullable": false,
           "columnDefault": "'https://serverpod.dev/defaultPersist'",
@@ -6478,7 +5907,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6487,7 +5915,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultModel",
-          "fieldName": "uriDefaultModel",
           "columnType": 0,
           "isNullable": false,
           "dartType": "Uri"
@@ -6495,7 +5922,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultModelNull",
-          "fieldName": "uriDefaultModelNull",
           "columnType": 0,
           "isNullable": true,
           "dartType": "Uri?"
@@ -6515,7 +5941,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6524,7 +5949,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uriDefaultPersist",
-          "fieldName": "uriDefaultPersist",
           "columnType": 0,
           "isNullable": true,
           "columnDefault": "'https://serverpod.dev/'",
@@ -6545,7 +5969,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6554,7 +5977,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6562,7 +5984,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
-          "fieldName": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -6597,7 +6018,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6606,7 +6026,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6626,7 +6045,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6635,7 +6053,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6655,7 +6072,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6664,7 +6080,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "name",
-          "fieldName": "name",
           "columnType": 0,
           "isNullable": false,
           "dartType": "String"
@@ -6672,7 +6087,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
-          "fieldName": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
           "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
@@ -6707,7 +6121,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6716,7 +6129,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultRandom",
-          "fieldName": "uuidDefaultRandom",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random",
@@ -6725,7 +6137,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultRandomV7",
-          "fieldName": "uuidDefaultRandomV7",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "random_v7",
@@ -6734,7 +6145,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultRandomNull",
-          "fieldName": "uuidDefaultRandomNull",
           "columnType": 7,
           "isNullable": true,
           "columnDefault": "random",
@@ -6743,7 +6153,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultStr",
-          "fieldName": "uuidDefaultStr",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'",
@@ -6752,7 +6161,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultStrNull",
-          "fieldName": "uuidDefaultStrNull",
           "columnType": 7,
           "isNullable": true,
           "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'",
@@ -6773,7 +6181,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6782,7 +6189,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultAndDefaultModel",
-          "fieldName": "uuidDefaultAndDefaultModel",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "'3f2504e0-4f89-11d3-9a0c-0305e82c3301'",
@@ -6791,7 +6197,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultAndDefaultPersist",
-          "fieldName": "uuidDefaultAndDefaultPersist",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "'9e107d9d-372b-4d97-9b27-2f0907d0b1d4'",
@@ -6800,7 +6205,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelAndDefaultPersist",
-          "fieldName": "uuidDefaultModelAndDefaultPersist",
           "columnType": 7,
           "isNullable": false,
           "columnDefault": "'f47ac10b-58cc-4372-a567-0e02b2c3d479'",
@@ -6821,7 +6225,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6830,7 +6233,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelRandom",
-          "fieldName": "uuidDefaultModelRandom",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -6838,7 +6240,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelRandomV7",
-          "fieldName": "uuidDefaultModelRandomV7",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -6846,7 +6247,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelRandomNull",
-          "fieldName": "uuidDefaultModelRandomNull",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -6854,7 +6254,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelStr",
-          "fieldName": "uuidDefaultModelStr",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
@@ -6862,7 +6261,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultModelStrNull",
-          "fieldName": "uuidDefaultModelStrNull",
           "columnType": 7,
           "isNullable": true,
           "dartType": "UuidValue?"
@@ -6882,7 +6280,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "id",
-          "fieldName": "id",
           "columnType": 6,
           "isNullable": false,
           "columnDefault": "serial",
@@ -6891,7 +6288,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultPersistRandom",
-          "fieldName": "uuidDefaultPersistRandom",
           "columnType": 7,
           "isNullable": true,
           "columnDefault": "random",
@@ -6900,7 +6296,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultPersistRandomV7",
-          "fieldName": "uuidDefaultPersistRandomV7",
           "columnType": 7,
           "isNullable": true,
           "columnDefault": "random_v7",
@@ -6909,7 +6304,6 @@
         {
           "__className__": "serverpod.ColumnDefinition",
           "name": "uuidDefaultPersistStr",
-          "fieldName": "uuidDefaultPersistStr",
           "columnType": 7,
           "isNullable": true,
           "columnDefault": "'550e8400-e29b-41d4-a716-446655440000'",
@@ -6919,1756 +6313,18 @@
       "foreignKeys": [],
       "indexes": [],
       "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_cloud_storage",
-      "dartName": "CloudStorageEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "storageId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "path",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "addedTime",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "expiration",
-          "columnType": 4,
-          "isNullable": true,
-          "dartType": "DateTime?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "byteData",
-          "columnType": 5,
-          "isNullable": false,
-          "dartType": "dart:typed_data:ByteData"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "verified",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_cloud_storage_path_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "storageId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "path"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_cloud_storage_expiration",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "expiration"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_cloud_storage_direct_upload",
-      "dartName": "CloudStorageDirectUploadEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "storageId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "path",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "expiration",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "authKey",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_cloud_storage_direct_upload_storage_path",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "storageId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "path"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_future_call",
-      "dartName": "FutureCallEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "name",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "time",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serializedObject",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "identifier",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_future_call_time_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "time"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_future_call_serverId_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "serverId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_future_call_identifier_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "identifier"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_future_call_claim",
-      "dartName": "FutureCallClaimEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "futureCallId",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "lastHeartbeatTime",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        }
-      ],
-      "foreignKeys": [
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_future_call_claim_fk_0",
-          "columns": [
-            "futureCallId"
-          ],
-          "referenceTable": "serverpod_future_call",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        }
-      ],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "future_call_unique_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "futureCallId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_health_connection_info",
-      "dartName": "ServerHealthConnectionInfo",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "timestamp",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "active",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "closing",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "idle",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "granularity",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_health_connection_info_timestamp_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "timestamp"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "serverId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "granularity"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_health_metric",
-      "dartName": "ServerHealthMetric",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "name",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "timestamp",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "isHealthy",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "value",
-          "columnType": 3,
-          "isNullable": false,
-          "dartType": "double"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "granularity",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_health_metric_timestamp_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "timestamp"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "serverId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "name"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "granularity"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_log",
-      "dartName": "LogEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "sessionLogId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "messageId",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "reference",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "time",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "logLevel",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "protocol:LogLevel"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "message",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "error",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "stackTrace",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "order",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_log_fk_0",
-          "columns": [
-            "sessionLogId"
-          ],
-          "referenceTable": "serverpod_session_log",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        }
-      ],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_log_sessionLogId_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "sessionLogId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_message_log",
-      "dartName": "MessageLogEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "sessionLogId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "messageId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "endpoint",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "messageName",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "duration",
-          "columnType": 3,
-          "isNullable": false,
-          "dartType": "double"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "error",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "stackTrace",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "slow",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "order",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_message_log_fk_0",
-          "columns": [
-            "sessionLogId"
-          ],
-          "referenceTable": "serverpod_session_log",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        }
-      ],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_method",
-      "dartName": "MethodInfo",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "endpoint",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "method",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_method_endpoint_method_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "endpoint"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "method"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_migrations",
-      "dartName": "DatabaseMigrationVersion",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "module",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "version",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "timestamp",
-          "columnType": 4,
-          "isNullable": true,
-          "dartType": "DateTime?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_migrations_ids",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "module"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_query_log",
-      "dartName": "QueryLogEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "sessionLogId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "messageId",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "query",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "duration",
-          "columnType": 3,
-          "isNullable": false,
-          "dartType": "double"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "numRows",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "error",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "stackTrace",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "slow",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "order",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_query_log_fk_0",
-          "columns": [
-            "sessionLogId"
-          ],
-          "referenceTable": "serverpod_session_log",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        }
-      ],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_query_log_sessionLogId_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "sessionLogId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_readwrite_test",
-      "dartName": "ReadWriteTestEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "number",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_runtime_settings",
-      "dartName": "RuntimeSettings",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "logSettings",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "protocol:LogSettings"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "logSettingsOverrides",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "List<protocol:LogSettingsOverride>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "logServiceCalls",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "logMalformedCalls",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_session_log",
-      "dartName": "SessionLogEntry",
-      "module": "serverpod",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "serverId",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "time",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "module",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "endpoint",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "method",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "duration",
-          "columnType": 3,
-          "isNullable": true,
-          "dartType": "double?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "numQueries",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "slow",
-          "columnType": 1,
-          "isNullable": true,
-          "dartType": "bool?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "error",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "stackTrace",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "authenticatedUserId",
-          "columnType": 6,
-          "isNullable": true,
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "isOpen",
-          "columnType": 1,
-          "isNullable": true,
-          "dartType": "bool?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "touched",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_session_log_serverid_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "serverId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_session_log_time_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "time"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_session_log_touched_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "touched"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_session_log_isopen_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "isOpen"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_auth_key",
-      "dartName": "AuthKey",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "hash",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "scopeNames",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "method",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_key_userId_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "userId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_email_auth",
-      "dartName": "EmailAuth",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "email",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "hash",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_email_auth_email",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_email_create_request",
-      "dartName": "EmailCreateAccountRequest",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userName",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "email",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "hash",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "verificationCode",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_email_auth_create_account_request_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_email_failed_sign_in",
-      "dartName": "EmailFailedSignIn",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "email",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "time",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "ipAddress",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_email_failed_sign_in_email_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_email_failed_sign_in_time_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "time"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_email_reset",
-      "dartName": "EmailReset",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "verificationCode",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "expiration",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_email_reset_verification_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "verificationCode"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_google_refresh_token",
-      "dartName": "GoogleRefreshToken",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "refreshToken",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_google_refresh_token_userId_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "userId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_user_image",
-      "dartName": "UserImage",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "version",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "url",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_user_image_user_id",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "userId"
-            },
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "version"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_user_info",
-      "dartName": "UserInfo",
-      "module": "serverpod_auth",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userIdentifier",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "userName",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "fullName",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "email",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "created",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "imageUrl",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "scopeNames",
-          "columnType": 8,
-          "isNullable": false,
-          "dartType": "List<String>"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "blocked",
-          "columnType": 1,
-          "isNullable": false,
-          "dartType": "bool"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_user_info_user_identifier",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "userIdentifier"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_user_info_email",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "email"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
     }
   ],
   "installedModules": [
     {
-      "__className__": "serverpod.DatabaseMigrationVersionModel",
-      "module": "serverpod_test",
-      "version": "20260415123234426"
-    },
-    {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod",
-      "version": "20260324085808546"
+      "version": "20260407154349528"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth",
-      "version": "20260324085838223"
+      "version": "20260407154723760"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

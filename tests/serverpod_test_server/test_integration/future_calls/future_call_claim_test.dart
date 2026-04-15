@@ -275,6 +275,7 @@ void main() {
 
   withServerpod(
     'Given FutureCallManager with scheduled long running FutureCall that is due',
+    rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
@@ -369,12 +370,12 @@ void main() {
         );
       });
     },
-    rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
     'Given a degraded and an active FutureCallManager '
     'running concurrently and a FutureCall that is due',
+    rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late FutureCallManager degradedFutureCallManager;
       late FutureCallManager activeFutureCallManager;
@@ -484,6 +485,5 @@ void main() {
         );
       });
     },
-    rollbackDatabase: RollbackDatabase.disabled,
   );
 }

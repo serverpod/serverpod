@@ -10,6 +10,7 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: DART_VERSION
 dependencies:
+  clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
   relic: ^1.2.0
   serverpod: SERVERPOD_VERSION

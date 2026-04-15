@@ -800,33 +800,6 @@ CREATE TABLE "object_with_index" (
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
 
 --
--- Class ObjectWithJsonb as table object_with_jsonb
---
-CREATE TABLE "object_with_jsonb" (
-    "id" bigserial PRIMARY KEY,
-    "notJsonb" json NOT NULL,
-    "jsonb" jsonb NOT NULL,
-    "jsonbIndexed" jsonb NOT NULL,
-    "jsonbIndexedGin" jsonb NOT NULL,
-    "jsonbIndexedGinJsonbPath" jsonb NOT NULL,
-    "nullableJsonb" jsonb
-);
-
--- Indexes
-CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING gin ("jsonbIndexedGin" jsonb_ops);
-CREATE INDEX "jsonb_index_gin_with_operator_class" ON "object_with_jsonb" USING gin ("jsonbIndexedGinJsonbPath" jsonb_path_ops);
-
---
--- Class ObjectWithJsonbClassLevel as table object_with_jsonb_class_level
---
-CREATE TABLE "object_with_jsonb_class_level" (
-    "id" bigserial PRIMARY KEY,
-    "implicitJsonb" jsonb NOT NULL,
-    "explicitJsonb" jsonb NOT NULL,
-    "json" json NOT NULL
-);
-
---
 -- Class ObjectWithObject as table object_with_object
 --
 CREATE TABLE "object_with_object" (
@@ -1424,7 +1397,8 @@ CREATE TABLE "serverpod_future_call" (
     "time" timestamp without time zone NOT NULL,
     "serializedObject" text,
     "serverId" text NOT NULL,
-    "identifier" text
+    "identifier" text,
+    "scheduling" json
 );
 
 -- Indexes
@@ -2219,25 +2193,25 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260415123234426', now())
+    VALUES ('serverpod_test', '20260407154802260', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260415123234426', "timestamp" = now();
+    DO UPDATE SET "version" = '20260407154802260', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20260324085808546', now())
+    VALUES ('serverpod', '20260407154349528', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260324085808546', "timestamp" = now();
+    DO UPDATE SET "version" = '20260407154349528', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20260324085838223', now())
+    VALUES ('serverpod_auth', '20260407154723760', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260324085838223', "timestamp" = now();
+    DO UPDATE SET "version" = '20260407154723760', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_test_module
