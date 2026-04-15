@@ -475,9 +475,10 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += 'DROP INDEX "$deleteIndex";\n';
     }
 
-    // Drop foreign keys
+    // Drop foreign keys. Uses IF EXISTS to avoid a hard failure for constraints
+    // of dropped tables or columns.
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey";\n';
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT IF EXISTS "$deleteKey";\n';
     }
 
     // Drop columns
