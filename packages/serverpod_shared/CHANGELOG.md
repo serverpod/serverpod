@@ -1,3 +1,9 @@
+## 3.4.7
+
+- fix: Fixes constraints drop failing on Postgres due to already removed columns.
+- fix: Adds missing `configOverride` forward to the test server.
+- fix: Prevents triggering auth event listener when invalidating cache for JWT token refresh.
+
 ## 3.4.6
 
 - fix: Removes wrong documentation link on `PasswordMissingException`.

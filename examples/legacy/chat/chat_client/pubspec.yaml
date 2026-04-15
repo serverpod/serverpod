@@ -8,9 +8,9 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod_auth_client: 3.4.6
-  serverpod_chat_client: 3.4.6
-  serverpod_client: 3.4.6
+  serverpod_auth_client: 3.4.7
+  serverpod_chat_client: 3.4.7
+  serverpod_client: 3.4.7
 
 dependency_overrides:
   serverpod_auth_client:
