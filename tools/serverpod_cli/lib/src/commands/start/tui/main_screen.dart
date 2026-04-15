@@ -112,27 +112,32 @@ class MainScreen extends StatelessComponent {
   Component _buildStructuredLogView() {
     final items = state.logHistory;
 
-    return Scrollbar(
-      controller: logScrollController,
-      thumbVisibility: true,
-      child: ListView.builder(
+    return SelectionArea(
+      onSelectionCompleted: (text) {
+        if (text.isNotEmpty) ClipboardManager.copy(text);
+      },
+      child: Scrollbar(
         controller: logScrollController,
-        reverse: true,
-        keyboardScrollable: false,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return switch (items[items.length - 1 - index]) {
-            TuiLogEntry entry => LogMessageWidget(
-              key: ValueKey(index),
-              entry: entry,
-            ),
-            CompletedOperation op => CompletedOperationWidget(
-              key: ValueKey(index),
-              operation: op,
-              expanded: state.expandOperations,
-            ),
-          };
-        },
+        thumbVisibility: true,
+        child: ListView.builder(
+          controller: logScrollController,
+          reverse: true,
+          keyboardScrollable: false,
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return switch (items[items.length - 1 - index]) {
+              TuiLogEntry entry => LogMessageWidget(
+                key: ValueKey(index),
+                entry: entry,
+              ),
+              CompletedOperation op => CompletedOperationWidget(
+                key: ValueKey(index),
+                operation: op,
+                expanded: state.expandOperations,
+              ),
+            };
+          },
+        ),
       ),
     );
   }
@@ -140,18 +145,23 @@ class MainScreen extends StatelessComponent {
   Component _buildRawOutputView() {
     final lines = state.rawLines;
 
-    return Scrollbar(
-      controller: rawScrollController,
-      thumbVisibility: true,
-      child: ListView.builder(
+    return SelectionArea(
+      onSelectionCompleted: (text) {
+        if (text.isNotEmpty) ClipboardManager.copy(text);
+      },
+      child: Scrollbar(
         controller: rawScrollController,
-        reverse: true,
-        keyboardScrollable: false,
-        itemCount: lines.length,
-        itemBuilder: (context, index) {
-          final line = lines[lines.length - 1 - index];
-          return Text(line, key: ValueKey(index));
-        },
+        thumbVisibility: true,
+        child: ListView.builder(
+          controller: rawScrollController,
+          reverse: true,
+          keyboardScrollable: false,
+          itemCount: lines.length,
+          itemBuilder: (context, index) {
+            final line = lines[lines.length - 1 - index];
+            return Text(line, key: ValueKey(index));
+          },
+        ),
       ),
     );
   }
