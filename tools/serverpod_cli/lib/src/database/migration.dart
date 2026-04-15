@@ -77,7 +77,6 @@ DatabaseMigration generateDatabaseMigration({
         srcTable,
         dstTable,
         warnings,
-        deleteTables: deleteTables,
       );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
@@ -184,9 +183,8 @@ bool _sameColumns(List<String> columns1, List<String> columns2) {
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
-  List<DatabaseMigrationWarning> warnings, {
-  Set<String> deleteTables = const {},
-}) {
+  List<DatabaseMigrationWarning> warnings,
+) {
   var dstByFieldId = <String, ColumnDefinition>{
     for (var c in dstTable.columns) c.effectiveFieldName: c,
   };
@@ -360,11 +358,6 @@ TableMigration? generateTableMigration(
   var deleteForeignKeys = <String>[];
   for (var srcKey in srcTable.foreignKeys) {
     if (!dstTable.containsForeignKeyNamed(srcKey.constraintName)) {
-      // Skip FKs referencing a table being dropped in this migration.
-      // DROP TABLE ... CASCADE automatically drops all foreign key constraints
-      // that reference the dropped table, so generating an explicit
-      // DROP CONSTRAINT would fail with "constraint does not exist".
-      if (deleteTables.contains(srcKey.referenceTable)) continue;
       deleteForeignKeys.add(srcKey.constraintName);
     }
   }

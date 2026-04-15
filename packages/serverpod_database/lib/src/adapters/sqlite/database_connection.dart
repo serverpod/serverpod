@@ -6,7 +6,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 // We only use the `source_span` package to generated expected inputs for the
 // `sqlparser` package, which depends on it for public interfaces.
 // ignore: depend_on_referenced_packages
-import 'package:source_span/source_span.dart';
 import 'package:sqlite3/common.dart' hide Session;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:sqlparser/sqlparser.dart'
@@ -16,8 +15,7 @@ import 'package:sqlparser/sqlparser.dart'
         CommitStatement,
         DeleteStatement,
         InsertStatement,
-        InvalidStatement,
-        SemicolonSeparatedStatements,
+        ParserEntrypoint,
         SqlEngine,
         Statement,
         UpdateStatement;
@@ -1246,43 +1244,32 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         });
   }
 
-  /// Parses [sql] into statements using [SqlEngine.parseMultiple] (tokenizer
+  /// Parses [sql] into statements using [SqlEngine.parse] (tokenizer
   /// aware of comments and strings). If that does not yield statements, runs
-  /// the whole script as a single [InvalidStatement] so SQLite still executes
-  /// it (no character-level splitting).
+  /// the whole script as a single statement so SQLite still executes it (no
+  /// character-level splitting).
   static List<_ParsedSqlStatement> _parseSqlScript(String sql) {
     final trimmed = sql.trim();
     if (trimmed.isEmpty) return [];
     if (!trimmed.contains(';')) {
       return [_parseOneStatement(trimmed)];
     }
-    final span = SourceFile.fromString(trimmed).span(0);
-    final result = _sqlEngine.parseMultiple(span);
-    final rootNode = result.rootNode;
+    final result = _sqlEngine.parse(ParserEntrypoint.multiple, trimmed);
 
-    switch (rootNode) {
-      case SemicolonSeparatedStatements block:
-        final out = <_ParsedSqlStatement>[];
-        for (final stmt in block.statements) {
-          final text = _stripTrailingSemicolon(result.lexemeOfNode(stmt));
-          if (text.isEmpty) continue;
-          out.add(_ParsedSqlStatement(text: text, ast: stmt));
-        }
-        if (out.isNotEmpty) return out;
-      case Statement stmt:
-        return [_ParsedSqlStatement(text: trimmed, ast: stmt)];
+    final out = <_ParsedSqlStatement>[];
+    for (final stmt in result.rootNode.statements) {
+      final text = _stripTrailingSemicolon(result.lexemeOfNode(stmt));
+      if (text.isEmpty) continue;
+      out.add(_ParsedSqlStatement(text: text, ast: stmt));
     }
-
-    return [_ParsedSqlStatement(text: trimmed, ast: InvalidStatement())];
+    if (out.isNotEmpty) return out;
+    return [_parseOneStatement(trimmed)];
   }
 
   static _ParsedSqlStatement _parseOneStatement(String sql) {
-    final result = _sqlEngine.parse(sql);
+    final result = _sqlEngine.parse(ParserEntrypoint.statement, sql);
     final root = result.rootNode;
-    if (root is Statement) {
-      return _ParsedSqlStatement(text: sql, ast: root);
-    }
-    return _ParsedSqlStatement(text: sql, ast: InvalidStatement());
+    return _ParsedSqlStatement(text: sql, ast: root);
   }
 
   static String _stripTrailingSemicolon(String sql) {

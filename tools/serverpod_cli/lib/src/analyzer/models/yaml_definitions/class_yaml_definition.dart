@@ -226,9 +226,6 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.columnKey,
                 valueRestriction: restrictions.validateColumnName,
-                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                  ExperimentalFeature.columnOverride,
-                ),
               ),
               ValidateNode(
                 Keyword.jsonKey,

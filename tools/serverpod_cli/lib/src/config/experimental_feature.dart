@@ -12,8 +12,6 @@ class CommandLineExperimentalFeatures {
 
 enum ExperimentalFeature {
   all,
-  // TODO: Remove when column override is enabled by default.
-  columnOverride,
 
   // TODO: Remove when jsonb serialization is enabled by default.
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919

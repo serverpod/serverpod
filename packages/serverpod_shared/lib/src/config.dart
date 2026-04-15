@@ -1073,6 +1073,27 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
+/// Infer the database dialect from one run-mode config map (the body of
+/// `config/<runMode>.yaml`), using the same `database` merging rules as
+/// [ServerpodConfig.loadFromMap].
+///
+/// Returns `null` when there is no database section or it is empty after
+/// merging environment variables. Uses a placeholder password so PostgreSQL
+/// configs can be parsed without a `passwords.yaml` file (for example in the
+/// CLI).
+DatabaseDialect? inferDatabaseDialectFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  if (dbSetup == null) return null;
+  return DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  ).dialect;
+}
+
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   var redisConfig = configMap[ServerpodConfigMap.redis] ?? {};
 

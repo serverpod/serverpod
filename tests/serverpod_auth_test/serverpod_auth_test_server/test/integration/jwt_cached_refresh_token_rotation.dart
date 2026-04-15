@@ -14,6 +14,7 @@ void main() {
   late client_auth.CachedClientAuthSuccessStorage cachedStorage;
   late client_auth.AuthSuccess oldAuthSuccess;
   late client_auth.AuthSuccess newAuthSuccess;
+  var onAuthInfoChangedCalls = 0;
 
   final jwtConfig = server_auth.JwtConfig(
     refreshTokenHashPepper: 'test-pepper-jwt-cached-storage-integration',
@@ -33,6 +34,7 @@ void main() {
     'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a non-expiring refresh token ',
     (final sessionBuilder, final endpoints) {
       setUp(() async {
+        onAuthInfoChangedCalls = 0;
         final session = sessionBuilder.build();
         final pod = session.serverpod;
         pod.initializeAuthServices(tokenManagerBuilders: [jwtConfig]);
@@ -40,6 +42,7 @@ void main() {
         client = Client('http://localhost:${session.server.port}/')
           ..authSessionManager = client_auth.ClientAuthSessionManager(
             storage: cachedStorage,
+            onAuthInfoChanged: (_) => onAuthInfoChangedCalls++,
           );
 
         final userId = await client.authTest.createTestUser();
@@ -71,7 +74,10 @@ void main() {
 
       group('when calling refresh ', () {
         late RefreshAuthKeyResult refreshResult;
+        late int onAuthInfoCallsBeforeRefresh;
+
         setUp(() async {
+          onAuthInfoCallsBeforeRefresh = onAuthInfoChangedCalls;
           refreshResult = await client.auth.refreshAuthKey();
         });
 
@@ -91,6 +97,14 @@ void main() {
             );
           },
         );
+
+        test(
+          'then onAuthInfoChanged receives no update when refresh only resets '
+          'the cache and skips the network refresh.',
+          () {
+            expect(onAuthInfoChangedCalls, onAuthInfoCallsBeforeRefresh);
+          },
+        );
       });
     },
   );
@@ -99,6 +113,7 @@ void main() {
     'Given JWT auth, a client with cached storage and an expiring refresh token that is changed directly on the storage layer to a another expiring refresh token ',
     (final sessionBuilder, final endpoints) {
       setUp(() async {
+        onAuthInfoChangedCalls = 0;
         final session = sessionBuilder.build();
         final pod = session.serverpod;
         pod.initializeAuthServices(tokenManagerBuilders: [jwtConfig]);
@@ -106,6 +121,7 @@ void main() {
         client = Client('http://localhost:${session.server.port}/')
           ..authSessionManager = client_auth.ClientAuthSessionManager(
             storage: cachedStorage,
+            onAuthInfoChanged: (_) => onAuthInfoChangedCalls++,
           );
 
         final userId = await client.authTest.createTestUser();
@@ -137,7 +153,10 @@ void main() {
 
       group('when calling refresh ', () {
         late RefreshAuthKeyResult refreshResult;
+        late int onAuthInfoCallsBeforeRefresh;
+
         setUp(() async {
+          onAuthInfoCallsBeforeRefresh = onAuthInfoChangedCalls;
           refreshResult = await client.auth.refreshAuthKey();
         });
 
@@ -156,6 +175,14 @@ void main() {
               client.auth.authInfo?.refreshToken,
               isNot(newAuthSuccess.refreshToken),
             );
+          },
+        );
+
+        test(
+          'then onAuthInfoChanged is invoked once when the rotated token is '
+          'persisted after refresh.',
+          () {
+            expect(onAuthInfoChangedCalls, onAuthInfoCallsBeforeRefresh + 1);
           },
         );
       });

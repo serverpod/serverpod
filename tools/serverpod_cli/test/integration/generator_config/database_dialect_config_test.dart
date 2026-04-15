@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -27,13 +26,10 @@ void main() {
   });
 
   test(
-    'Given a generator.yaml without database dialect key when loading GeneratorConfig then database dialect is postgres by default.',
+    'Given no run-mode database config when loading GeneratorConfig then database dialect is postgres.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
-        generatorYamlContent: '''
-type: server
-''',
       );
       await projectDir.create();
 
@@ -47,14 +43,42 @@ type: server
   );
 
   test(
-    'Given a generator.yaml with database dialect set to postgres when loading GeneratorConfig then database dialect is postgres.',
+    'Given SQLite database in a run-mode YAML when loading GeneratorConfig then dialect is sqlite.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
-        generatorYamlContent: '''
-type: server
-databaseDialect: postgres
+        runModeYamlFiles: {
+          'development.yaml': '''
+database:
+  filePath: app.db
 ''',
+        },
+      );
+      await projectDir.create();
+
+      var config = await GeneratorConfig.load(
+        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
+        interactive: false,
+      );
+
+      expect(config.databaseDialect, DatabaseDialect.sqlite);
+    },
+  );
+
+  test(
+    'Given PostgreSQL database in a run-mode YAML when loading GeneratorConfig then dialect is postgres.',
+    () async {
+      var projectDir = createMockServerpodProject(
+        projectName: 'my_project',
+        runModeYamlFiles: {
+          'development.yaml': '''
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''',
+        },
       );
       await projectDir.create();
 
@@ -68,14 +92,23 @@ databaseDialect: postgres
   );
 
   test(
-    'Given a generator.yaml with database dialect set to unsupported dialect when loading GeneratorConfig then an exception is thrown.',
+    'Given conflicting database dialects across run-mode YAMLs when loading GeneratorConfig then StateError is thrown.',
     () async {
       var projectDir = createMockServerpodProject(
         projectName: 'my_project',
-        generatorYamlContent: '''
-        type: server
-        databaseDialect: unsupported
-        ''',
+        runModeYamlFiles: {
+          'development.yaml': '''
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''',
+          'test.yaml': '''
+database:
+  filePath: test.db
+''',
+        },
       );
       await projectDir.create();
 
@@ -85,10 +118,12 @@ databaseDialect: postgres
           interactive: false,
         ),
         throwsA(
-          isA<SourceSpanFormatException>().having(
+          isA<StateError>().having(
             (e) => e.message,
             'message',
-            equals('Invalid database dialect: "unsupported".'),
+            'Inconsistent database dialects across run-mode config files: '
+                'development.yaml (postgres), test.yaml (sqlite). A Serverpod '
+                'project must use a single database dialect in all run modes.',
           ),
         ),
       );
@@ -98,9 +133,13 @@ databaseDialect: postgres
 
 d.DirectoryDescriptor createMockServerpodProject({
   String projectName = 'my_project',
-  String? generatorYamlContent,
+  Map<String, String> runModeYamlFiles = const {},
 }) {
   var serverDirContents = <d.Descriptor>[
+    d.dir('config', [
+      for (final entry in runModeYamlFiles.entries)
+        d.file(entry.key, entry.value),
+    ]),
     d.file('pubspec.yaml', '''
 name: ${projectName}_server
 dependencies:
@@ -131,14 +170,6 @@ dependencies:
 '''),
     ]),
   ];
-
-  if (generatorYamlContent != null) {
-    serverDirContents.add(
-      d.dir('config', [
-        d.file('generator.yaml', generatorYamlContent),
-      ]),
-    );
-  }
 
   var clientDir = d.dir('${projectName}_client', [
     d.file('pubspec.yaml', '''
