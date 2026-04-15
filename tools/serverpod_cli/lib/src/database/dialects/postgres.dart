@@ -260,18 +260,14 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
   }) {
     var out = '';
 
-    var typeStr = type;
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
     String ginOperatorClassStr = '';
 
-    if (type == 'gin') {
-      typeStr = 'GIN';
-      if (ginOperatorClass != null) {
-        ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
-      }
+    if (type == 'gin' && ginOperatorClass != null) {
+      ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
     }
 
     String distanceStr = '';
@@ -289,7 +285,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $typeStr (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
 
     return out;
   }

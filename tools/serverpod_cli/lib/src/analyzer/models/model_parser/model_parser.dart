@@ -365,7 +365,7 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.serializationDataType = _parseFieldSerializationDataType(node);
+    typeResult.serializationDataType = _parseSerializationDataType(node);
 
     var defaultModelValue = _parseDefaultValue(
       node,
@@ -573,12 +573,6 @@ class ModelParser {
     if (relation is! YamlMap) return false;
 
     return _parseBooleanKey(relation, Keyword.optional);
-  }
-
-  static SerializationDataType? _parseFieldSerializationDataType(
-    YamlMap documentContents,
-  ) {
-    return _parseSerializationDataType(documentContents);
   }
 
   static ModelFieldScopeDefinition _parseClassFieldScope(

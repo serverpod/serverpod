@@ -680,7 +680,7 @@ END
     var tableDefinition = databaseDefinition.tables.first;
 
     test(
-      'when creating a gin index without an explicit operator class, then the SQL uses USING GIN without an operator class suffix.',
+      'when creating a gin index without an explicit operator class, then the SQL uses USING gin without an operator class suffix.',
       () {
         var indexName = '${modelName}_jsonb_idx';
         var index = IndexDefinitionBuilder()
@@ -701,13 +701,13 @@ END
         expect(
           sql,
           'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-          'USING GIN ("$fieldName");\n',
+          'USING gin ("$fieldName");\n',
         );
       },
     );
 
     test(
-      'when creating a gin index with the jsonbPathOps operator class, then the SQL uses USING GIN with the jsonb_path_ops suffix.',
+      'when creating a gin index with the jsonbPathOps operator class, then the SQL uses USING gin with the jsonb_path_ops suffix.',
       () {
         var indexName = '${modelName}_jsonb_idx';
         var index = IndexDefinitionBuilder()
@@ -729,7 +729,7 @@ END
         expect(
           sql,
           'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-          'USING GIN ("$fieldName" jsonb_path_ops);\n',
+          'USING gin ("$fieldName" jsonb_path_ops);\n',
         );
       },
     );

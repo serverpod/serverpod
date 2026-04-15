@@ -14,8 +14,8 @@ CREATE TABLE "object_with_jsonb" (
 );
 
 -- Indexes
-CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING GIN ("jsonbIndexedGin" jsonb_ops);
-CREATE INDEX "jsonb_index_gin_with_operator_class" ON "object_with_jsonb" USING GIN ("jsonbIndexedGinJsonbPath" jsonb_path_ops);
+CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING gin ("jsonbIndexedGin" jsonb_ops);
+CREATE INDEX "jsonb_index_gin_with_operator_class" ON "object_with_jsonb" USING gin ("jsonbIndexedGinJsonbPath" jsonb_path_ops);
 
 --
 -- ACTION CREATE TABLE
@@ -32,9 +32,9 @@ CREATE TABLE "object_with_jsonb_class_level" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260414160454177', now())
+    VALUES ('serverpod_test', '20260415123234426', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260414160454177', "timestamp" = now();
+    DO UPDATE SET "version" = '20260415123234426', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

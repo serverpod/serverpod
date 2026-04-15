@@ -62,10 +62,11 @@ class ColumnByteData extends Column<ByteData> {
   });
 }
 
-/// A [Column] holding an [SerializableModel]. The entity will be stored in the
-/// database as a json column.
+/// A [Column] holding a [SerializableModel]. The entity is stored in the
+/// database as a `json` or `jsonb` column, controlled by [serializationDataType].
 class ColumnSerializable<T> extends Column<T> {
-  /// Column serialization type.
+  /// The PostgreSQL storage type used for this column. Defaults to `json` when
+  /// not set.
   final SerializationDataType? serializationDataType;
 
   /// Creates a new [Column], this is typically done in generated code only.
