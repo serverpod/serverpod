@@ -1,6 +1,5 @@
 ## 3.5.0-beta.3
 
-- feat(EXPERIMENTAL): Adds `jsonb` storage support for serializable fields via the `serializeAsJsonb` experimental flag, with GIN index operator class support for efficient querying.
 - feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
 - feat: Ensures at-least-once semantics for future calls execution.
 - feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
