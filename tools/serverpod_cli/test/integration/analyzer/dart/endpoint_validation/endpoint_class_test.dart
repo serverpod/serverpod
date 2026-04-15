@@ -203,7 +203,10 @@ class ExampleEndpoint extends Endpoint {
 }
 ''');
       analyzer = EndpointsAnalyzer(config, testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
+      endpointDefinitions = await analyzer.analyze(
+        collector: collector,
+        models: StatefulAnalyzer(config, []).models,
+      );
     });
 
     test('then two validation errors are reported.', () {

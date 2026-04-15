@@ -92,8 +92,8 @@ abstract class EndpointMethodAnalyzer {
   static List<SourceSpanSeverityException> validate(
     MethodElement method,
     ClassElement classElement,
-      List<TypeDefinition> extraClasses,
-      List<SerializableModelDefinition> models,
+    List<TypeDefinition> extraClasses,
+    List<SerializableModelDefinition> models,
   ) {
     List<SourceSpanSeverityException?> errors = [
       _validateReturnType(
@@ -149,7 +149,8 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
-    if ((innerType is VoidType || innerType.isDartCoreNull) && dartType.isDartAsyncFuture) {
+    if ((innerType is VoidType || innerType.isDartCoreNull) &&
+        dartType.isDartAsyncFuture) {
       return null;
     }
 
@@ -160,19 +161,19 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
-    if(innerType is DynamicType && dartType.isDartAsyncStream){
+    if (innerType is DynamicType && dartType.isDartAsyncStream) {
       return null;
     }
 
     try {
       var typeDefinition = TypeDefinition.fromDartType(innerType);
-      if(!TypeValidators.isValidType(typeDefinition, extraClasses, models)){
-          var typeName = typeDefinition.className;
-          return SourceSpanSeverityException(
-              'The return type has an invalid datatype "$typeName". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
-              dartElement.span
-          );
-        }
+      if (!TypeValidators.isValidType(typeDefinition, extraClasses, models)) {
+        var typeName = typeDefinition.className;
+        return SourceSpanSeverityException(
+          'The return type has an invalid datatype "$typeName". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
+          dartElement.span,
+        );
+      }
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',

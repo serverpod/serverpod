@@ -50,7 +50,7 @@ abstract class EndpointParameterAnalyzer {
   static List<SourceSpanSeverityException> validate(
     List<FormalParameterElement> parameters,
     List<TypeDefinition> extraClasses,
-      List<SerializableModelDefinition> models,
+    List<SerializableModelDefinition> models,
   ) {
     List<SourceSpanSeverityException> exceptions = [];
 
@@ -112,12 +112,16 @@ abstract class EndpointParameterAnalyzer {
 
         try {
           var typeDefinition = TypeDefinition.fromDartType(parameter.type);
-          if(parameter.type.element?.displayName != Keyword.sessionClassName){
-            if(!TypeValidators.isValidType(typeDefinition, extraClasses, models)){
+          if (parameter.type.element?.displayName != Keyword.sessionClassName) {
+            if (!TypeValidators.isValidType(
+              typeDefinition,
+              extraClasses,
+              models,
+            )) {
               var typeName = typeDefinition.className;
               return SourceSpanSeverityException(
                 'The type has an invalid datatype "$typeName". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
-                  parameter.span
+                parameter.span,
               );
             }
           }
