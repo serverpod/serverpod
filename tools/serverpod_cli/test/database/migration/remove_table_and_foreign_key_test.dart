@@ -68,17 +68,17 @@ void main() {
       );
 
       test(
-        'then the generated SQL should NOT contain an explicit DROP CONSTRAINT '
-        'for the foreign key because DROP TABLE CASCADE automatically drops '
-        'all dependent foreign key constraints.',
+        'then the generated SQL uses DROP CONSTRAINT IF EXISTS to avoid a hard '
+        'failure for already removed constraints after DROP TABLE CASCADE.',
         () {
           expect(
             psql,
-            isNot(contains('DROP CONSTRAINT "parent_entity_fk_0"')),
+            contains(
+              'ALTER TABLE "parent_entity" DROP CONSTRAINT IF EXISTS "parent_entity_fk_0"',
+            ),
             reason:
-                'DROP TABLE "child_entity" CASCADE automatically drops '
-                '"parent_entity_fk_0". Generating an explicit DROP CONSTRAINT '
-                'after that would fail with: constraint does not exist.',
+                'DROP CONSTRAINT IF EXISTS is used to avoid a hard failure '
+                'for already removed constraints after DROP TABLE CASCADE.',
           );
         },
       );
@@ -240,8 +240,8 @@ void main() {
       );
 
       test(
-        'then the alter action for grant_allowance should NOT explicitly drop '
-        'the foreign key because DROP TABLE CASCADE handles it.',
+        'then the alter action for grant_allowance should list the foreign key '
+        'to drop so each dialect can react accordingly.',
         () {
           var alterAction = migration.actions.firstWhere(
             (action) =>
@@ -254,10 +254,7 @@ void main() {
 
           expect(
             alterAction.alterTable?.deleteForeignKeys,
-            isNot(contains('grant_bundle_allowances_fk')),
-            reason:
-                'DROP TABLE "grant_bundle" CASCADE automatically drops the '
-                'foreign key constraint, so it must not be explicitly dropped.',
+            contains('grant_bundle_allowances_fk'),
           );
         },
       );
