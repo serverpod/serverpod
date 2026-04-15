@@ -7,12 +7,14 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
@@ -42,7 +44,7 @@ class ExampleEndpoint extends Endpoint {
 
 
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -84,7 +86,7 @@ import 'package:serverpod/serverpod.dart';
 class ExampleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -127,7 +129,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -180,7 +182,7 @@ class ExampleEndpointValid extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -218,7 +220,7 @@ class InvalidClass {
 
 
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
       await analyzer.analyze(collector: collector);
     });
 
@@ -261,7 +263,7 @@ class ExampleEndpointValid extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 

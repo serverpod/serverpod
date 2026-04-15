@@ -6,12 +6,14 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
@@ -27,7 +29,7 @@ void main() {
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(config, trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -109,7 +111,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(config, trackedDirectory);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -203,7 +205,7 @@ class ExampleClass {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(config, trackedDirectory);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -249,7 +251,7 @@ class ExampleEndpoint extends Endpoint {
     return 'Hello \$name';
   }
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(config, trackedDirectory);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 
@@ -307,7 +309,7 @@ class ExampleClass extends Endpoint {
         invalidDartFile.writeAsStringSync('''
 classInvalidClass {}
 ''');
-        analyzer = EndpointsAnalyzer(trackedDirectory);
+        analyzer = EndpointsAnalyzer(config, trackedDirectory);
         await analyzer.analyze(collector: CodeGenerationCollector());
       });
 

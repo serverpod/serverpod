@@ -3,16 +3,19 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
@@ -41,8 +44,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -101,8 +104,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
       test('then a hint message is reported.', () {
         expect(collector.errors, hasLength(1));
@@ -170,8 +173,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no endpoint definition methods are created.', () {
@@ -205,8 +208,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no endpoint definition methods are created.', () {
@@ -238,8 +241,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -280,8 +283,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
       test('then no validation errors are reported.', () {
         expect(collector.errors, isEmpty);
@@ -321,8 +324,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
       test('then no validation errors are reported.', () {
         expect(collector.errors, isEmpty);
@@ -362,8 +365,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
       test('then no validation errors are reported.', () {
         expect(collector.errors, isEmpty);
@@ -403,8 +406,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
 
       expect(collector.errors, isNotEmpty);
       expect(
@@ -436,8 +439,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -486,8 +489,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -527,8 +530,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then a validation errors is reported.', () {
@@ -575,8 +578,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then a validation errors is reported.', () {
@@ -624,8 +627,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -677,8 +680,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -731,8 +734,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -783,8 +786,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -836,8 +839,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -877,8 +880,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then a validation errors is reported.', () {
@@ -923,8 +926,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -967,8 +970,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1013,8 +1016,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -1068,8 +1071,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1134,8 +1137,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1180,8 +1183,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1231,8 +1234,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1278,8 +1281,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -1324,8 +1327,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -1361,8 +1364,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then no validation errors are reported.', () {
@@ -1420,8 +1423,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test(
@@ -1486,8 +1489,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
-        endpointDefinitions = await analyzer.analyze(collector: collector);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
       });
 
       test('then no validation errors are reported.', () {
@@ -1506,4 +1509,100 @@ class ExampleEndpoint extends Endpoint {
       });
     },
   );
+
+  group('Given an endpoint method that has non serializable parameters after the first positional Session parameter', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, Object data) async {
+    return 'Hello \$data';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
+    });
+
+    test('then a validation errors is reported.', () {
+      expect(collector.errors, hasLength(1));
+    });
+
+    test(
+      'then validation error informs that the non serializable parameter type is not supported',
+          () {
+        expect(
+          collector.errors.firstOrNull?.message,
+          'The type has an invalid datatype "Object". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
+        );
+      },
+    );
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
+
+  group('Given an endpoint method with a non serializable model return type', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<Object> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
+    });
+
+    test('then a validation errors is reported.', () {
+      expect(collector.errors, hasLength(1));
+    });
+
+    test(
+      'then validation error informs that the non serializable parameter type is not supported',
+          () {
+        expect(
+          collector.errors.firstOrNull?.message,
+          'The return type has an invalid datatype "Object". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
+        );
+      },
+    );
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then no endpoint method definition is created.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
 }

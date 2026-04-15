@@ -3,16 +3,19 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
@@ -41,7 +44,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -110,7 +113,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -150,7 +153,7 @@ class ExampleEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(testDirectory);
+        analyzer = EndpointsAnalyzer(config, testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -199,8 +202,8 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
+      analyzer = EndpointsAnalyzer(config, testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector, models: StatefulAnalyzer(config, []).models);
     });
 
     test('then two validation errors are reported.', () {
