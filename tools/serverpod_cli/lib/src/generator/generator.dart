@@ -24,6 +24,7 @@ Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
   final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
   final collection = createAnalysisContextCollection(libDirectory);
   final endpointsAnalyzer = EndpointsAnalyzer(
+    config,
     libDirectory,
     collection: collection,
   );
@@ -204,6 +205,7 @@ Future<GenerateResult> performGenerate({
   final endpointAnalyzerCollector = CodeGenerationCollector();
   final endpoints = await analyzers.endpoints.analyze(
     collector: endpointAnalyzerCollector,
+    models: analyzers.models.models,
     changedFiles: changedFiles,
   );
 

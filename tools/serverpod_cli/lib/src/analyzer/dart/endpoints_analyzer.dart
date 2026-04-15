@@ -7,6 +7,7 @@ import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
@@ -32,15 +33,21 @@ class _CachedFileResult {
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
+
+  final GeneratorConfig config;
+
   final AnalysisContextCollection collection;
 
   final String absoluteIncludedPaths;
+
+  List<SerializableModelDefinition>? _cachedModels;
 
   /// Create a new [EndpointsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
   /// [FutureCallsAnalyzer]). Otherwise a new one is created internally.
   EndpointsAnalyzer(
+      this.config,
     Directory directory, {
     AnalysisContextCollection? collection,
   }) : collection = collection ?? createAnalysisContextCollection(directory),
@@ -110,8 +117,14 @@ class EndpointsAnalyzer {
   /// files).
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
+    List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
   }) async {
+
+    if (models != null) {
+      _cachedModels = models;
+    }
+
     changedFiles ??= {};
     await refreshAnalysisContext(collection, changedFiles);
 
@@ -225,18 +238,27 @@ class EndpointsAnalyzer {
       templateRegistry.addAll(templates);
     }
 
+    final hasModels = _cachedModels != null;
+
     // Phase 4: Validate and parse re-analyzed files, update cache.
     for (var (library, filePath, fileTemplates) in validLibraries) {
+
+      var failingExceptions = <String, List<SourceSpanSeverityException>>{};
+
       templateRegistry.addAll(fileTemplates);
 
-      var severityExceptions = _validateLibrary(
-        library,
-        filePath,
-        duplicateEndpointClasses,
-      );
-      collector.addErrors(severityExceptions.values.expand((e) => e).toList());
+      if (hasModels) {
+        var severityExceptions = _validateLibrary(
+          library,
+          filePath,
+          duplicateEndpointClasses,
+          _cachedModels!,
+        );
+        collector.addErrors(
+            severityExceptions.values.expand((e) => e).toList());
 
-      var failingExceptions = _filterNoFailExceptions(severityExceptions);
+        failingExceptions = _filterNoFailExceptions(severityExceptions);
+      }
 
       var defs = _parseLibrary(
         library,
@@ -391,6 +413,7 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     String filePath,
     Set<String> duplicatedClasses,
+      List<SerializableModelDefinition> models,
   ) {
     var endpointClasses = _getEndpointClasses(library);
 
@@ -412,9 +435,9 @@ class EndpointsAnalyzer {
         EndpointMethodAnalyzer.isEndpointMethod,
       );
       for (var method in endpointMethods) {
-        errors = EndpointMethodAnalyzer.validate(method, classElement);
+        errors = EndpointMethodAnalyzer.validate(method, classElement, config.extraClasses, models);
         errors.addAll(
-          EndpointParameterAnalyzer.validate(method.formalParameters),
+          EndpointParameterAnalyzer.validate(method.formalParameters, config.extraClasses, models),
         );
         if (errors.isNotEmpty) {
           validationErrors[EndpointMethodAnalyzer.elementNamespace(

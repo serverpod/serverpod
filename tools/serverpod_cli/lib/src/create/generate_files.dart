@@ -24,7 +24,7 @@ class GenerateFiles {
     }
 
     var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-    var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+    var endpointsAnalyzer = EndpointsAnalyzer(config, libDirectory);
 
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
