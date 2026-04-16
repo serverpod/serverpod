@@ -47,6 +47,16 @@ fields:
 
   ### Timestamp of the last time this record was modified.
   touched: DateTime
+
+  ### Application log lines for this session.
+  logs: List<LogEntry>?, relation(name=session_log_logs)
+
+  ### Query log lines for this session.
+  queries: List<QueryLogEntry>?, relation(name=session_log_query_logs)
+
+  ### Streaming message log lines for this session.
+  messages: List<MessageLogEntry>?, relation(name=session_log_message_logs)
+
 indexes:
   serverpod_session_log_serverid_idx:
     fields: serverId
