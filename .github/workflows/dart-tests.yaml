@@ -195,7 +195,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1.7.3
+      - uses: browser-actions/setup-chrome@4f8e94349a351df0f048634f25fec36c3c91eded # v2.1.1
       - name: Run unit tests
         run: >-
           dart test
