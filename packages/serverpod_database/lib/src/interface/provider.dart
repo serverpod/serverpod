@@ -8,6 +8,7 @@ import 'database_pool_manager.dart';
 import 'definition_restrictions.dart';
 import 'migration_runner.dart';
 import 'provider/io.dart' if (dart.library.html) 'provider/web.dart';
+import 'reactive_trigger_manager.dart';
 import 'serialization_manager.dart';
 
 /// Abstract interface for database providers.
@@ -37,4 +38,8 @@ abstract interface class DatabaseProvider {
 
   /// Creates a new [DatabaseAnalyzer] for the given [database].
   DatabaseAnalyzer createAnalyzer(Database database);
+
+  /// Creates a new [ReactiveTriggerManager] for managing reactive future
+  /// call triggers.
+  ReactiveTriggerManager createReactiveTriggerManager();
 }

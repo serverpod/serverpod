@@ -31,6 +31,7 @@ typedef InitializeFutureCall =
 /// - Cancelling scheduled future calls.
 /// - Registering future call handlers.
 /// - Monitoring and executing overdue future calls.
+/// - Managing reactive future calls that respond to database changes.
 class FutureCallManager {
   final Session _internalSession;
   final Session _logSession;
@@ -40,7 +41,9 @@ class FutureCallManager {
   final SerializationManager _serializationManager;
 
   final _futureCalls = <String, FutureCall>{};
+  final _reactiveFutureCalls = <String, ReactiveFutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
+  final ReactiveTriggerManager? _reactiveTriggerManager;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
@@ -49,6 +52,7 @@ class FutureCallManager {
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
   bool _hasPendingStart = false;
+  bool _isStarted = false;
 
   /// Collection of active claim heartbeat timers.
   final List<Timer> _heartbeatTimers = [];
@@ -73,12 +77,15 @@ class FutureCallManager {
     required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
+    required String serverId,
+    ReactiveTriggerManager? reactiveTriggerManager,
     Duration? heartbeatInterval,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
        _initializeFutureCall = initializeFutureCall,
+       _reactiveTriggerManager = reactiveTriggerManager,
        _heartbeatInterval = heartbeatInterval ?? const Duration(minutes: 1) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
@@ -90,13 +97,14 @@ class FutureCallManager {
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
+      serverId: serverId,
     );
   }
 
   /// Cancels a [FutureCall] with the specified [identifier]. If no future
   /// call with the given identifier exists, this method has no effect.
   Future<void> cancelFutureCall(String identifier) async {
-    var session = _internalSession;
+    final session = _internalSession;
 
     await FutureCallEntry.db.deleteWhere(
       session,
@@ -107,25 +115,40 @@ class FutureCallManager {
   /// Registers a [FutureCall] with the manager. This associates a [FutureCall]
   /// implementation with a specific [name].
   ///
-  /// Throws an exception if a future call with the same name is already registered.
+  /// If the [futureCall] is a [ReactiveFutureCall], it is registered
+  /// separately and its database triggers will be created when the manager
+  /// starts.
+  ///
+  /// Throws an exception if a future call with the same name is already
+  /// registered.
   ///
   /// If [start] has been called previously but the scanner hasn't started yet
   /// (because there were no registered future calls), this will trigger the
   /// scanner to begin scanning for overdue future calls.
   void registerFutureCall(FutureCall futureCall, String name) {
-    if (_futureCalls.containsKey(name)) {
+    if (_futureCalls.containsKey(name) ||
+        _reactiveFutureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
     }
 
     _initializeFutureCall(futureCall, name);
 
-    _futureCalls[name] = futureCall;
+    if (futureCall is ReactiveFutureCall) {
+      _reactiveFutureCalls[name] = futureCall;
 
-    // If start() was called but we deferred starting the scanner,
-    // start it now that we have a registered future call.
-    if (_hasPendingStart) {
-      _hasPendingStart = false;
-      _scanner.start();
+      if (_isStarted) {
+        _initializeReactiveTriggerForCall(name, futureCall);
+        _scanner.startReactiveScanner();
+      }
+    } else {
+      _futureCalls[name] = futureCall;
+
+      // If start() was called but we deferred starting the scanner,
+      // start it now that we have a registered future call.
+      if (_hasPendingStart) {
+        _hasPendingStart = false;
+        _scanner.start();
+      }
     }
   }
 
@@ -173,7 +196,7 @@ class FutureCallManager {
       serialization = SerializationManager.encode(object.toJson());
     }
 
-    var entry = FutureCallEntry(
+    final entry = FutureCallEntry(
       name: name,
       serializedObject: serialization,
       time: time,
@@ -182,7 +205,7 @@ class FutureCallManager {
       scheduling: scheduling,
     );
 
-    var session = _internalSession;
+    final session = _internalSession;
     await FutureCallEntry.db.insertRow(session, entry);
   }
 
@@ -192,6 +215,9 @@ class FutureCallManager {
   /// If no future calls are registered, the scanner will not start immediately.
   /// Instead, the scanner will be started when the first future call is
   /// registered via [registerFutureCall].
+  ///
+  /// If reactive future calls are registered, their database triggers are
+  /// created and the outbox scanner is started.
   Future<void> start() async {
     await _checkBrokenFutureCalls();
     if (_futureCalls.isNotEmpty) {
@@ -199,15 +225,26 @@ class FutureCallManager {
     } else {
       _hasPendingStart = true;
     }
+
+    if (_reactiveFutureCalls.isNotEmpty) {
+      await _initializeReactiveTriggers();
+      _scanner.startReactiveScanner();
+    }
+
+    _isStarted = true;
   }
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
   /// executing overdue future calls.
   Future<void> stop({bool unregisterAll = false}) async {
+    _isStarted = false;
     _hasPendingStart = false;
     await _scanner.stop();
     await _scheduler.drain();
-    if (unregisterAll) _futureCalls.clear();
+    if (unregisterAll) {
+      _futureCalls.clear();
+      _reactiveFutureCalls.clear();
+    }
     _heartbeatTimers.forEach(_cancelHeartbeatTimer);
   }
 
@@ -356,15 +393,22 @@ class FutureCallManager {
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
 
     try {
-      dynamic object;
-      if (futureCallEntry.serializedObject != null) {
-        object = _serializationManager.decode(
-          futureCallEntry.serializedObject!,
-          futureCall.dataType,
+      if (futureCall is ReactiveFutureCall && futureCallEntry.id != null) {
+        await futureCall.invokeWithEntryId(
+          futureCallSession,
+          futureCallEntry.id!,
         );
-      }
+      } else {
+        dynamic object;
+        if (futureCallEntry.serializedObject != null) {
+          object = _serializationManager.decode(
+            futureCallEntry.serializedObject!,
+            futureCall.dataType,
+          );
+        }
 
-      await futureCall.invoke(futureCallSession, object);
+        await futureCall.invoke(futureCallSession, object);
+      }
       await futureCallSession.close();
     } catch (error, stackTrace) {
       _diagnosticsService.submitCallException(
@@ -417,6 +461,40 @@ class FutureCallManager {
     await FutureCallEntry.db.insertRow(
       _internalSession,
       futureCallEntry.copyWith(id: null, time: nextRunTime),
+    );
+  }
+
+  /// Creates database triggers for all registered reactive future calls and
+  /// cleans up orphaned triggers from previously registered handlers.
+  Future<void> _initializeReactiveTriggers() async {
+    final triggerManager = _reactiveTriggerManager;
+    if (triggerManager == null) return;
+
+    for (final entry in _reactiveFutureCalls.entries) {
+      await triggerManager.createTrigger(
+        _internalSession,
+        handlerName: entry.key,
+        tableName: entry.value.tableName,
+        condition: entry.value.condition,
+      );
+    }
+    await triggerManager.cleanupOrphanedTriggers(
+      _internalSession,
+      registeredHandlers: _reactiveFutureCalls.keys.toSet(),
+    );
+  }
+
+  /// Creates the database trigger for a single reactive call registered
+  /// after the manager has started.
+  Future<void> _initializeReactiveTriggerForCall(
+    String handlerName,
+    ReactiveFutureCall call,
+  ) async {
+    await _reactiveTriggerManager?.createTrigger(
+      _internalSession,
+      handlerName: handlerName,
+      tableName: call.tableName,
+      condition: call.condition,
     );
   }
 

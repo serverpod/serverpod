@@ -874,3 +874,12 @@ class CatDetachRowRepository {
     );
   }
 }
+
+abstract class CatReactiveFutureCall extends _i1.ReactiveFutureCall<Cat> {
+  @override
+  String get tableName => 'cat';
+
+  _i1.WhereExpressionBuilder<CatTable> get where;
+  @override
+  _i1.Expression? get condition => where(Cat.t);
+}

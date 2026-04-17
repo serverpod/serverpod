@@ -57,6 +57,7 @@ class FutureCallManagerBuilder {
     sessionProvider: _sessionBuilder,
     initializeFutureCall: _initializeFutureCall,
     heartbeatInterval: _heartbeatInterval,
+    serverId: 'default',
   );
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {

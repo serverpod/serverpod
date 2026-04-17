@@ -114,7 +114,24 @@ abstract class FutureCallClassAnalyzer {
   static bool isFutureCallClass(ClassElement element) {
     if (!element.isConstructable && !element.isAbstract) return false;
     if (element.isExecutableFutureCall) return false;
+    if (isReactiveFutureCall(element)) return false;
     return isFutureCallInterface(element);
+  }
+
+  /// Returns `true` if the class is a concrete user-written reactive future
+  /// call that should be registered.
+  static bool isReactiveFutureCallClass(ClassElement element) {
+    if (!element.isConstructable) return false;
+    if (element.isAbstract) return false;
+    return isReactiveFutureCall(element);
+  }
+
+  /// Returns `true` if the class is or extends `ReactiveFutureCall`.
+  static bool isReactiveFutureCall(ClassElement element) {
+    if (element.name == 'ReactiveFutureCall') return true;
+    return element.allSupertypes.any(
+      (s) => s.element.name == 'ReactiveFutureCall',
+    );
   }
 
   /// Returns `true` if the class extends the Serverpod `FutureCall` base class.
