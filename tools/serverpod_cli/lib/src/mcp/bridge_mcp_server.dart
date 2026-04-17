@@ -53,6 +53,7 @@ base class BridgeMcpServer extends MCPServer
     registerTool(_spawnTool, _spawn);
     registerTool(_stopTool, _stop);
     registerTool(_applyMigrationsTool, _forwardApplyMigrations);
+    registerTool(_tailLogsTool, _forwardTailLogs);
 
     addResource(_instancesResource, _readInstances);
 
@@ -422,6 +423,29 @@ base class BridgeMcpServer extends MCPServer
     if (!_isConnected) return _notConnectedError();
     return _connection!.callTool(
       CallToolRequest(name: 'apply_migrations', arguments: request.arguments),
+    );
+  }
+
+  static final _tailLogsTool = Tool(
+    name: 'tail_logs',
+    description:
+        'Return recent log entries from the connected serverpod instance '
+        '(structured log entries plus completed operations). Newest last.',
+    inputSchema: Schema.object(
+      properties: {
+        'limit': Schema.int(
+          description: 'Max entries to return (default 200, max 10000).',
+          minimum: 1,
+          maximum: 10000,
+        ),
+      },
+    ),
+  );
+
+  Future<CallToolResult> _forwardTailLogs(CallToolRequest request) async {
+    if (!_isConnected) return _notConnectedError();
+    return _connection!.callTool(
+      CallToolRequest(name: 'tail_logs', arguments: request.arguments),
     );
   }
 

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:dart_mcp/server.dart';
+import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_shared/log.dart';
 
 /// MCP server that exposes serverpod dev tools.
 ///
@@ -8,6 +12,9 @@ import 'package:serverpod_cli/src/generated/version.dart';
 base class ServerpodMcpServer extends MCPServer with ToolsSupport {
   /// Callback to apply pending database migrations.
   Future<void> Function()? onApplyMigration;
+
+  /// Returns the current log history snapshot.
+  List<Object> Function()? getLogHistory;
 
   ServerpodMcpServer(super.channel)
     : super.fromStreamChannel(
@@ -20,6 +27,7 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
             '`serverpod start --watch`.',
       ) {
     registerTool(_applyMigrationsTool, _applyMigrations);
+    registerTool(_tailLogsTool, _tailLogs);
   }
 
   static final _applyMigrationsTool = Tool(
@@ -58,4 +66,70 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
       );
     }
   }
+
+  static final _tailLogsTool = Tool(
+    name: 'tail_logs',
+    description:
+        'Return recent log entries from the running watch session '
+        '(structured log entries plus completed operations). Newest last.',
+    inputSchema: Schema.object(
+      properties: {
+        'limit': Schema.int(
+          description: 'Max entries to return (default 200, max 10000).',
+          minimum: 1,
+          maximum: 10000,
+        ),
+      },
+    ),
+  );
+
+  Future<CallToolResult> _tailLogs(CallToolRequest request) async {
+    final get = getLogHistory;
+    if (get == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Log history not available.')],
+        isError: true,
+      );
+    }
+    final limitArg = request.arguments?['limit'];
+    final limit = switch (limitArg) {
+      int v => v.clamp(1, 10000),
+      _ => 200,
+    };
+    final all = get();
+    final tail = all.length <= limit ? all : all.sublist(all.length - limit);
+    final encoded = tail.map(_encodeLogHistoryItem).toList();
+    return CallToolResult(
+      content: [
+        TextContent(
+          text: jsonEncode(encoded, toEncodable: (o) => o.toString()),
+        ),
+      ],
+    );
+  }
+}
+
+Map<String, Object?> _encodeLogHistoryItem(Object item) {
+  if (item is LogEntry) {
+    return {
+      'type': 'log',
+      'time': item.time.toIso8601String(),
+      'level': item.level.name,
+      'message': item.message,
+      'scope': {'id': item.scope.id, 'label': item.scope.label},
+      if (item.error != null) 'error': item.error.toString(),
+      if (item.stackTrace != null) 'stackTrace': item.stackTrace.toString(),
+      if (item.metadata != null) 'metadata': item.metadata,
+    };
+  }
+  if (item is CompletedOperation) {
+    return {
+      'type': 'operation',
+      'label': item.label,
+      'success': item.success,
+      'durationMs': item.duration.inMilliseconds,
+      'completedAt': item.completedAt.toIso8601String(),
+    };
+  }
+  return {'type': 'unknown', 'value': item.toString()};
 }

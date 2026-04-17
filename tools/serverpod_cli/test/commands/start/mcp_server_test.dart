@@ -56,12 +56,14 @@ void main() {
 
     test(
       'when listing tools, '
-      'then apply_migrations is available',
+      'then apply_migrations and tail_logs are available',
       () async {
         final result = await connection.listTools();
 
-        expect(result.tools, hasLength(1));
-        expect(result.tools.first.name, 'apply_migrations');
+        expect(
+          result.tools.map((t) => t.name),
+          containsAll(['apply_migrations', 'tail_logs']),
+        );
       },
     );
 

@@ -25,8 +25,9 @@ class McpSocketServer {
   Future<void>? _pendingShutdown;
   bool _closing = false;
 
-  /// Callback wired once via [connect].
+  /// Callbacks wired once via [connect].
   Future<void> Function()? _onApplyMigration;
+  List<Object> Function()? _getLogHistory;
 
   McpSocketServer({required String project})
     : project = sanitizeProjectName(project),
@@ -46,9 +47,15 @@ class McpSocketServer {
   /// after a client connects.
   void connect({
     required Future<void> Function() onApplyMigration,
+    List<Object> Function()? getLogHistory,
   }) {
     _onApplyMigration = onApplyMigration;
-    _mcpServer?.onApplyMigration = onApplyMigration;
+    _getLogHistory = getLogHistory;
+    final server = _mcpServer;
+    if (server != null) {
+      server.onApplyMigration = onApplyMigration;
+      server.getLogHistory = getLogHistory;
+    }
   }
 
   /// Shut down the socket server and clean up.
@@ -96,10 +103,9 @@ class McpSocketServer {
     final server = ServerpodMcpServer(channel);
     _mcpServer = server;
 
-    // Wire callback if already connected.
-    if (_onApplyMigration != null) {
-      server.onApplyMigration = _onApplyMigration;
-    }
+    // Wire callbacks if already connected.
+    server.onApplyMigration = _onApplyMigration;
+    server.getLogHistory = _getLogHistory;
 
     // Clean up on disconnect.
     unawaited(
