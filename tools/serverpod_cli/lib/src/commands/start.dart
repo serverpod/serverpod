@@ -353,13 +353,14 @@ Future<int> _runWatchMode({
   }
 
   // Start analyzer initialization in the background.
-  final analyzersFuture = createAndUpdateAnalyzers(config);
+  final analyzersFuture = Analyzers.createAndUpdate(config);
 
   // Ensure generated code is up to date (runs concurrently with analyzers).
   final allSources = await enumerateSourceFiles(config);
   if (!await isGenerationUpToDate(config, allSources)) {
     final analyzers = await analyzersFuture;
-    final genResult = await analyzers.analyzeAndGenerate(
+    final genResult = await analyzeAndGenerate(
+      analyzers: analyzers,
       config: config,
       affectedPaths: allSources,
       requirements: GenerationRequirements.full,
@@ -389,7 +390,8 @@ Future<int> _runWatchMode({
     generatedDirPaths: config.generatedDirPaths,
     generate: (affectedPaths, requirements) async {
       final analyzers = await analyzersFuture;
-      return analyzers.analyzeAndGenerate(
+      return analyzeAndGenerate(
+        analyzers: analyzers,
         config: config,
         affectedPaths: affectedPaths,
         skipStalenessCheck: true,
@@ -706,7 +708,8 @@ Future<void> _runTuiBackend({
         analyzers = await analyzersFuture;
         return true;
       });
-      final genResult = await analyzers.analyzeAndGenerate(
+      final genResult = await analyzeAndGenerate(
+        analyzers: analyzers,
         config: config,
         affectedPaths: allSources,
         requirements: GenerationRequirements.full,
@@ -798,8 +801,8 @@ Future<void> _runTuiBackend({
     final session = WatchSession(
       compiler: compiler,
       generate: (affectedPaths, requirements) async {
-        final analyzers = await analyzersFuture;
-        return analyzers.analyzeAndGenerate(
+        return analyzeAndGenerate(
+          analyzers: await analyzersFuture,
           config: config,
           affectedPaths: affectedPaths,
           skipStalenessCheck: true,

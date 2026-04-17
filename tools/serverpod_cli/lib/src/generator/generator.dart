@@ -10,65 +10,9 @@ import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 export 'analyzers.dart';
-
-/// Incrementally updates analyzer state for the given [affectedPaths].
-///
-/// Refreshes the Dart analysis context for endpoints and future calls,
-/// and updates the model analyzer for changed or removed model files.
-///
-/// The [requirements] parameter controls which analyzers to update.
-/// When [GenerationRequirements.generateModels] is `false`, the model
-/// analyzer is not updated (saving time when only Dart files changed).
-///
-/// Returns `true` if any of the changes are relevant for code generation
-/// (endpoint, future call, or model changes), `false` otherwise.
-Future<bool> updateAnalyzers({
-  required GeneratorConfig config,
-  required Analyzers analyzers,
-  required Set<String> affectedPaths,
-  GenerationRequirements requirements = GenerationRequirements.full,
-}) async {
-  var shouldGenerate = false;
-
-  if (requirements.generateProtocol) {
-    shouldGenerate |= await analyzers.endpoints.updateFileContexts(
-      affectedPaths,
-    );
-    shouldGenerate |= await analyzers.futureCalls.updateFileContexts(
-      affectedPaths,
-    );
-  }
-
-  if (requirements.generateModels) {
-    for (final path in affectedPaths) {
-      if (ModelHelper.isModelFile(path, loadConfig: config)) {
-        shouldGenerate = true;
-        final file = File(path);
-        if (file.existsSync()) {
-          analyzers.models.addYamlModel(
-            ModelHelper.createModelSourceForPath(
-              config,
-              path,
-              file.readAsStringSync(),
-            ),
-          );
-        } else {
-          analyzers.models.removeYamlModel(Uri.parse(p.absolute(path)));
-        }
-      }
-    }
-  }
-
-  if (!shouldGenerate) {
-    log.debug('No relevant changes detected, skipping code generation.');
-  }
-
-  return shouldGenerate;
-}
 
 /// Analyze the server package and generate the code.
 ///

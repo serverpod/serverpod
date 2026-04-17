@@ -158,7 +158,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
 }) async {
-  final analyzers = await createAnalyzers(config);
+  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
   final result = await analyzeAndGenerate(
     config: config,
@@ -198,9 +198,8 @@ Future<GenerateResult> analyzeAndGenerate({
 }) async {
   bool needsGenerate = false;
   await log.progress('Analyzing changes', () async {
-    needsGenerate = await updateAnalyzers(
+    needsGenerate = await analyzers.update(
       config: config,
-      analyzers: analyzers,
       affectedPaths: affectedPaths,
       requirements: requirements,
     );
@@ -233,7 +232,7 @@ Future<GenerateResult> analyzeAndGenerate({
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
 }) async {
-  final analyzers = await createAnalyzers(config);
+  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
   final initialResult = await analyzeAndGenerate(
     config: config,

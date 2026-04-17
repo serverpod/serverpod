@@ -3,10 +3,13 @@ import 'dart:isolate';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/commands/generate.dart' as gen;
+import 'package:serverpod_cli/src/commands/generate.dart'
+    show GenerationRequirements;
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/isolated_object.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+
+import '../commands/generate.dart';
 
 /// Messages sent from the worker isolate logger to the main isolate.
 @pragma('vm:deeply-immutable')
@@ -76,7 +79,7 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
       () {
         // Install a logger on the worker isolate that forwards to main.
         initializeLoggerWith(_PortForwardingLogger(logSendPort));
-        return createAndUpdateAnalyzers(config);
+        return Analyzers.createAndUpdate(config);
       },
       logPort,
     );
@@ -91,24 +94,6 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
     await super.close();
   }
 
-  @override
-  Future<GenerateResult> analyzeAndGenerate({
-    required GeneratorConfig config,
-    required Set<String> affectedPaths,
-    bool skipStalenessCheck = false,
-    gen.GenerationRequirements requirements = gen.GenerationRequirements.full,
-  }) {
-    return evaluate(
-      (analyzers) => gen.analyzeAndGenerate(
-        config: config,
-        analyzers: analyzers,
-        affectedPaths: affectedPaths,
-        skipStalenessCheck: skipStalenessCheck,
-        requirements: requirements,
-      ),
-    );
-  }
-
   // These are not accessible on the isolated proxy - the real instances
   // live on the worker isolate.
   @override
@@ -117,6 +102,21 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
   Never get models => throw UnsupportedError('Use analyzeAndGenerate()');
   @override
   Never get futureCalls => throw UnsupportedError('Use analyzeAndGenerate()');
+
+  @override
+  Future<bool> update({
+    required GeneratorConfig config,
+    required Set<String> affectedPaths,
+    GenerationRequirements requirements = GenerationRequirements.full,
+  }) {
+    return evaluate(
+      (analyzers) => analyzers.update(
+        config: config,
+        affectedPaths: affectedPaths,
+        requirements: requirements,
+      ),
+    );
+  }
 }
 
 /// A lightweight logger that sends messages over a [SendPort] to the

@@ -96,7 +96,7 @@ class MyFutureCall extends FutureCall {
 ''');
 
         config = _buildTestConfig(projectDir);
-        analyzers = await createAnalyzers(config);
+        analyzers = await Analyzers.create(config);
       });
 
       group(
@@ -190,7 +190,7 @@ class ItemEndpoint extends Endpoint {
 ''');
 
       config = _buildTestConfig(projectDir);
-      analyzers = await createAnalyzers(config);
+      analyzers = await Analyzers.create(config);
     });
 
     group('when generating', () {
