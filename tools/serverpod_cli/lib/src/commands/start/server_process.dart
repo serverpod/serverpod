@@ -52,7 +52,13 @@ class ServerProcess {
   VmService? _vmService;
   String? _mainIsolateId;
 
+  /// The HTTP VM service URI, set once [connectToVmService] has read it from
+  /// the service info file. `null` before the child has published it (or if
+  /// publication failed).
+  String? _vmServiceUri;
+
   final Completer<int> _exitCodeCompleter = Completer<int>();
+  final Completer<void> _vmServiceReady = Completer<void>();
 
   ServerProcess({
     required String serverDir,
@@ -80,6 +86,13 @@ class ServerProcess {
 
   /// The VM service connection, if connected.
   VmService? get vmService => _vmService;
+
+  /// The HTTP VM service URI for this process, or `null` if not yet available.
+  String? get vmServiceUri => _vmServiceUri;
+
+  /// Completes after [connectToVmService] successfully reads the VM service
+  /// URI and connects. Never completes if the URI never resolves.
+  Future<void> get vmServiceReady => _vmServiceReady.future;
 
   /// Completes with the process exit code when the server exits.
   Future<int> get exitCode => _exitCodeCompleter.future;
@@ -170,6 +183,7 @@ class ServerProcess {
       log.warning('VM service URI not found in service info file.');
       return;
     }
+    _vmServiceUri = httpUri;
 
     // The VM service may not be fully ready immediately after printing
     // its URI. Retry a few times with a short delay.
@@ -193,6 +207,8 @@ class ServerProcess {
     final vmService = _vmService!;
     final vm = await vmService.getVM();
     _mainIsolateId = vm.isolates!.first.id!;
+
+    if (!_vmServiceReady.isCompleted) _vmServiceReady.complete();
 
     // Register custom reloadSources service so IDE reload requests
     // go through the FES compilation pipeline.

@@ -36,6 +36,18 @@ base class BridgeMcpServer extends MCPServer
     mimeType: 'application/json',
   );
 
+  static final _vmServiceResource = Resource(
+    uri: 'serverpod://vm-service',
+    name: 'VM service',
+    description:
+        'Dart VM service HTTP URI for the connected serverpod instance. '
+        'Stable across hot reloads; changes on restart. Subscribe to be '
+        'notified when the URI changes.',
+    mimeType: 'application/json',
+  );
+
+  StreamSubscription<ResourceUpdatedNotification>? _resourceUpdatedSub;
+
   BridgeMcpServer(super.channel, {required this.bridge})
     : super.fromStreamChannel(
         implementation: Implementation(
@@ -57,6 +69,7 @@ base class BridgeMcpServer extends MCPServer
     registerTool(_tailLogsTool, _forwardTailLogs);
 
     addResource(_instancesResource, _readInstances);
+    addResource(_vmServiceResource, _readVmService);
 
     bridge.onSocketsChanged = () {
       if (ready) updateResource(_instancesResource);
@@ -191,6 +204,20 @@ base class BridgeMcpServer extends MCPServer
       _connectedId = target.project.isEmpty ? '${target.pid}' : target.project;
       _connectedPid = target.pid;
 
+      // Relay resource-updated notifications for forwarded resources.
+      _resourceUpdatedSub = connection.resourceUpdated.listen((n) {
+        if (n.uri == _vmServiceResource.uri && ready) {
+          updateResource(_vmServiceResource);
+        }
+      });
+      try {
+        await connection.subscribeResource(
+          SubscribeRequest(uri: _vmServiceResource.uri),
+        );
+      } catch (_) {
+        // The instance may not support subscription; reads still work.
+      }
+
       // Drop our state and update the resource if the instance dies on us.
       unawaited(
         connection.done.then((_) {
@@ -257,6 +284,8 @@ base class BridgeMcpServer extends MCPServer
     _connection = null;
     _connectedId = null;
     _connectedPid = null;
+    await _resourceUpdatedSub?.cancel();
+    _resourceUpdatedSub = null;
     if (conn != null) {
       try {
         await conn.shutdown();
@@ -264,6 +293,7 @@ base class BridgeMcpServer extends MCPServer
         // Already gone.
       }
     }
+    if (ready) updateResource(_vmServiceResource);
   }
 
   // ---------------------------------------------------------------------------
@@ -469,6 +499,24 @@ base class BridgeMcpServer extends MCPServer
   // ---------------------------------------------------------------------------
   // Resources
   // ---------------------------------------------------------------------------
+
+  Future<ReadResourceResult> _readVmService(
+    ReadResourceRequest request,
+  ) async {
+    if (!_isConnected) {
+      return ReadResourceResult(
+        contents: [
+          TextResourceContents(
+            uri: request.uri,
+            text: jsonEncode({'uri': null, 'error': 'not-connected'}),
+          ),
+        ],
+      );
+    }
+    return _connection!.readResource(
+      ReadResourceRequest(uri: _vmServiceResource.uri),
+    );
+  }
 
   ReadResourceResult _readInstances(ReadResourceRequest request) {
     final instances = bridge.sockets

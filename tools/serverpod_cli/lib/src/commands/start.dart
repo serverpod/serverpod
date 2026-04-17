@@ -512,6 +512,8 @@ Future<int> _startWatchSession({
       mcpSocket.connect(
         onApplyMigration: session.applyMigration,
         onHotReload: session.forceReload,
+        getVmServiceUri: () => session.vmServiceUri,
+        vmServiceUriChanges: session.vmServiceUriChanges,
       );
       log.info('MCP server listening on ${mcpSocket.socketPath}');
     } on SocketException catch (e) {
@@ -827,6 +829,8 @@ Future<void> _runTuiBackend({
         onApplyMigration: session.applyMigration,
         onHotReload: session.forceReload,
         getLogHistory: () => holder.state.logHistory.toList(),
+        getVmServiceUri: () => session.vmServiceUri,
+        vmServiceUriChanges: session.vmServiceUriChanges,
       );
       log.info('MCP server listening on ${mcpSocket.socketPath}');
     } on SocketException catch (e) {

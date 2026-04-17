@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dart_mcp/server.dart';
@@ -9,7 +10,8 @@ import 'package:serverpod_shared/log.dart';
 ///
 /// Runs inside the CLI process during watch mode, letting AI agents trigger
 /// operations that require explicit intent (like applying migrations).
-base class ServerpodMcpServer extends MCPServer with ToolsSupport {
+base class ServerpodMcpServer extends MCPServer
+    with ToolsSupport, ResourcesSupport {
   /// Callback to apply pending database migrations.
   Future<void> Function()? onApplyMigration;
 
@@ -18,6 +20,11 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
 
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
+
+  /// Returns the current HTTP VM service URI, or `null` if not yet available.
+  String? Function()? getVmServiceUri;
+
+  StreamSubscription<void>? _vmServiceUriSub;
 
   ServerpodMcpServer(super.channel)
     : super.fromStreamChannel(
@@ -32,6 +39,25 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
     registerTool(_applyMigrationsTool, _applyMigrations);
     registerTool(_hotReloadTool, _hotReload);
     registerTool(_tailLogsTool, _tailLogs);
+
+    addResource(_vmServiceResource, _readVmService);
+  }
+
+  /// Wires a stream whose events signal that the VM service URI has changed.
+  /// Each event triggers a resource-updated notification for
+  /// `serverpod://vm-service`.
+  set vmServiceUriChanges(Stream<void>? stream) {
+    _vmServiceUriSub?.cancel();
+    _vmServiceUriSub = stream?.listen((_) {
+      if (ready) updateResource(_vmServiceResource);
+    });
+  }
+
+  @override
+  Future<void> shutdown() async {
+    await _vmServiceUriSub?.cancel();
+    _vmServiceUriSub = null;
+    await super.shutdown();
   }
 
   static final _applyMigrationsTool = Tool(
@@ -69,6 +95,28 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
         isError: true,
       );
     }
+  }
+
+  static final _vmServiceResource = Resource(
+    uri: 'serverpod://vm-service',
+    name: 'VM service',
+    description:
+        'Dart VM service HTTP URI for the running server isolate. Stable '
+        'across hot reloads; changes on restart (apply_migrations, crash '
+        'recovery). Subscribe to be notified when the URI changes.',
+    mimeType: 'application/json',
+  );
+
+  ReadResourceResult _readVmService(ReadResourceRequest request) {
+    final uri = getVmServiceUri?.call();
+    return ReadResourceResult(
+      contents: [
+        TextResourceContents(
+          uri: request.uri,
+          text: jsonEncode({'uri': uri}),
+        ),
+      ],
+    );
   }
 
   static final _hotReloadTool = Tool(

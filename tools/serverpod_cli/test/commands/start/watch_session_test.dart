@@ -61,6 +61,7 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 class _FakeServer extends Fake implements ServerProcess {
   final List<String> calls = [];
   final Completer<int> _exitCodeCompleter = Completer<int>();
+  final Completer<void> _vmServiceReadyCompleter = Completer<void>();
 
   bool _vmServiceConnected;
   bool reloadSuccess = true;
@@ -75,6 +76,12 @@ class _FakeServer extends Fake implements ServerProcess {
 
   @override
   Future<int> get exitCode => _exitCodeCompleter.future;
+
+  @override
+  Future<void> get vmServiceReady => _vmServiceReadyCompleter.future;
+
+  @override
+  String? get vmServiceUri => null;
 
   /// Completes [exitCode] with the given code, simulating a crash.
   void simulateExit(int code) => _exitCodeCompleter.complete(code);

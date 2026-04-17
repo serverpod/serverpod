@@ -29,6 +29,8 @@ class McpSocketServer {
   Future<void> Function()? _onApplyMigration;
   Future<void> Function()? _onHotReload;
   List<Object> Function()? _getLogHistory;
+  String? Function()? _getVmServiceUri;
+  Stream<void>? _vmServiceUriChanges;
 
   McpSocketServer({required String project})
     : project = sanitizeProjectName(project),
@@ -50,15 +52,21 @@ class McpSocketServer {
     required Future<void> Function() onApplyMigration,
     Future<void> Function()? onHotReload,
     List<Object> Function()? getLogHistory,
+    String? Function()? getVmServiceUri,
+    Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
     _onHotReload = onHotReload;
     _getLogHistory = getLogHistory;
+    _getVmServiceUri = getVmServiceUri;
+    _vmServiceUriChanges = vmServiceUriChanges;
     final server = _mcpServer;
     if (server != null) {
       server.onApplyMigration = onApplyMigration;
       server.onHotReload = onHotReload;
       server.getLogHistory = getLogHistory;
+      server.getVmServiceUri = getVmServiceUri;
+      server.vmServiceUriChanges = vmServiceUriChanges;
     }
   }
 
@@ -111,6 +119,8 @@ class McpSocketServer {
     server.onApplyMigration = _onApplyMigration;
     server.onHotReload = _onHotReload;
     server.getLogHistory = _getLogHistory;
+    server.getVmServiceUri = _getVmServiceUri;
+    server.vmServiceUriChanges = _vmServiceUriChanges;
 
     // Clean up on disconnect.
     unawaited(

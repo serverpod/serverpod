@@ -84,6 +84,9 @@ class WatchSession {
   /// the previous one via [_pending], so concurrent calls execute in order.
   Future<void> _pending = Future.value();
 
+  final StreamController<void> _vmServiceUriChangesController =
+      StreamController<void>.broadcast();
+
   WatchSession({
     KernelCompiler? compiler,
     required GenerateAction generate,
@@ -100,6 +103,7 @@ class WatchSession {
       'compiler and createServer must both be provided or both be null.',
     );
     _monitorExit(initialServer);
+    _trackVmServiceUri(initialServer);
   }
 
   /// Completes when the server exits unexpectedly (crash).
@@ -107,6 +111,14 @@ class WatchSession {
 
   /// Returns `true` if the server is currently running.
   bool get isRunning => !_done.isCompleted;
+
+  /// The current HTTP VM service URI of the running server, or `null` if not
+  /// yet available.
+  String? get vmServiceUri => _server.vmServiceUri;
+
+  /// Fires each time a new server process publishes its VM service URI. The
+  /// URI itself is read via [vmServiceUri]; the stream just signals "changed".
+  Stream<void> get vmServiceUriChanges => _vmServiceUriChangesController.stream;
 
   /// Processes a single (merged) file change event.
   Future<void> handleFileChange(FileChangeEvent event) async {
@@ -363,6 +375,7 @@ class WatchSession {
         extraArgs: ['--apply-migrations'],
       );
       _monitorExit(_server);
+      _trackVmServiceUri(_server);
       log.info('Server restarted with --apply-migrations.');
     } finally {
       _state = SessionState.idle;
@@ -375,6 +388,7 @@ class WatchSession {
       await _server.stop();
       _server = await _createServer!(dillPath);
       _monitorExit(_server);
+      _trackVmServiceUri(_server);
       log.info(serverRestarted);
     } finally {
       _state = SessionState.idle;
@@ -384,6 +398,7 @@ class WatchSession {
   /// Disposes the session: stops server and disposes compiler.
   Future<void> dispose() async {
     _state = SessionState.disposed;
+    await _vmServiceUriChangesController.close();
     await _server.stop();
     await _compiler?.dispose();
   }
@@ -393,6 +408,16 @@ class WatchSession {
       server.exitCode.then((code) {
         if (_state == SessionState.idle && !_done.isCompleted) {
           _done.complete(code);
+        }
+      }),
+    );
+  }
+
+  void _trackVmServiceUri(ServerProcess server) {
+    unawaited(
+      server.vmServiceReady.then((_) {
+        if (_server == server && !_vmServiceUriChangesController.isClosed) {
+          _vmServiceUriChangesController.add(null);
         }
       }),
     );
