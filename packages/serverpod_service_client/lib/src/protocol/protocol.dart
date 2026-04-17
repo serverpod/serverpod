@@ -362,16 +362,40 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
+    if (t == _i1.getType<List<_i15.LogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i15.LogEntry>(e))
+                    .toList()
+              : null)
+          as T;
+    }
     if (t == List<_i22.QueryLogEntry>) {
       return (data as List)
               .map((e) => deserialize<_i22.QueryLogEntry>(e))
               .toList()
           as T;
     }
+    if (t == _i1.getType<List<_i22.QueryLogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i22.QueryLogEntry>(e))
+                    .toList()
+              : null)
+          as T;
+    }
     if (t == List<_i20.MessageLogEntry>) {
       return (data as List)
               .map((e) => deserialize<_i20.MessageLogEntry>(e))
               .toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i20.MessageLogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i20.MessageLogEntry>(e))
+                    .toList()
+              : null)
           as T;
     }
     if (t == List<_i31.SessionLogInfo>) {
