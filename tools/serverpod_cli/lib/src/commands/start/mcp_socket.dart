@@ -27,6 +27,7 @@ class McpSocketServer {
 
   /// Callbacks wired once via [connect].
   Future<void> Function()? _onApplyMigration;
+  Future<void> Function()? _onHotReload;
   List<Object> Function()? _getLogHistory;
 
   McpSocketServer({required String project})
@@ -47,13 +48,16 @@ class McpSocketServer {
   /// after a client connects.
   void connect({
     required Future<void> Function() onApplyMigration,
+    Future<void> Function()? onHotReload,
     List<Object> Function()? getLogHistory,
   }) {
     _onApplyMigration = onApplyMigration;
+    _onHotReload = onHotReload;
     _getLogHistory = getLogHistory;
     final server = _mcpServer;
     if (server != null) {
       server.onApplyMigration = onApplyMigration;
+      server.onHotReload = onHotReload;
       server.getLogHistory = getLogHistory;
     }
   }
@@ -105,6 +109,7 @@ class McpSocketServer {
 
     // Wire callbacks if already connected.
     server.onApplyMigration = _onApplyMigration;
+    server.onHotReload = _onHotReload;
     server.getLogHistory = _getLogHistory;
 
     // Clean up on disconnect.

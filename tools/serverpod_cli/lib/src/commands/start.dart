@@ -509,7 +509,10 @@ Future<int> _startWatchSession({
     mcpSocket = McpSocketServer(project: project);
     try {
       await mcpSocket.start();
-      mcpSocket.connect(onApplyMigration: session.applyMigration);
+      mcpSocket.connect(
+        onApplyMigration: session.applyMigration,
+        onHotReload: session.forceReload,
+      );
       log.info('MCP server listening on ${mcpSocket.socketPath}');
     } on SocketException catch (e) {
       log.warning('Failed to start MCP server: $e');
@@ -822,6 +825,7 @@ Future<void> _runTuiBackend({
       await mcpSocket.start();
       mcpSocket.connect(
         onApplyMigration: session.applyMigration,
+        onHotReload: session.forceReload,
         getLogHistory: () => holder.state.logHistory.toList(),
       );
       log.info('MCP server listening on ${mcpSocket.socketPath}');

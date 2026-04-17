@@ -56,13 +56,13 @@ void main() {
 
     test(
       'when listing tools, '
-      'then apply_migrations and tail_logs are available',
+      'then apply_migrations, hot_reload, and tail_logs are available',
       () async {
         final result = await connection.listTools();
 
         expect(
           result.tools.map((t) => t.name),
-          containsAll(['apply_migrations', 'tail_logs']),
+          containsAll(['apply_migrations', 'hot_reload', 'tail_logs']),
         );
       },
     );

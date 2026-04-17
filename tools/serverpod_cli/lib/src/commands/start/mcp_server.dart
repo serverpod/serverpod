@@ -13,6 +13,9 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
   /// Callback to apply pending database migrations.
   Future<void> Function()? onApplyMigration;
 
+  /// Callback to recompile and hot-reload the running server isolate.
+  Future<void> Function()? onHotReload;
+
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
@@ -27,6 +30,7 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
             '`serverpod start --watch`.',
       ) {
     registerTool(_applyMigrationsTool, _applyMigrations);
+    registerTool(_hotReloadTool, _hotReload);
     registerTool(_tailLogsTool, _tailLogs);
   }
 
@@ -62,6 +66,35 @@ base class ServerpodMcpServer extends MCPServer with ToolsSupport {
     } catch (e) {
       return CallToolResult(
         content: [TextContent(text: 'Failed to apply migrations: $e')],
+        isError: true,
+      );
+    }
+  }
+
+  static final _hotReloadTool = Tool(
+    name: 'hot_reload',
+    description:
+        'Recompile the server kernel and hot-reload the running isolate. '
+        'Falls back to a full restart if reload is not possible.',
+    inputSchema: Schema.object(),
+  );
+
+  Future<CallToolResult> _hotReload(CallToolRequest request) async {
+    final callback = onHotReload;
+    if (callback == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Watch session not connected.')],
+        isError: true,
+      );
+    }
+    try {
+      await callback();
+      return CallToolResult(
+        content: [TextContent(text: 'Hot reload completed.')],
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Hot reload failed: $e')],
         isError: true,
       );
     }

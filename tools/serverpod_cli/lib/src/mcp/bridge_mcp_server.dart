@@ -53,6 +53,7 @@ base class BridgeMcpServer extends MCPServer
     registerTool(_spawnTool, _spawn);
     registerTool(_stopTool, _stop);
     registerTool(_applyMigrationsTool, _forwardApplyMigrations);
+    registerTool(_hotReloadTool, _forwardHotReload);
     registerTool(_tailLogsTool, _forwardTailLogs);
 
     addResource(_instancesResource, _readInstances);
@@ -423,6 +424,22 @@ base class BridgeMcpServer extends MCPServer
     if (!_isConnected) return _notConnectedError();
     return _connection!.callTool(
       CallToolRequest(name: 'apply_migrations', arguments: request.arguments),
+    );
+  }
+
+  static final _hotReloadTool = Tool(
+    name: 'hot_reload',
+    description:
+        'Recompile the server kernel and hot-reload the running isolate on '
+        'the connected serverpod instance. Falls back to a full restart if '
+        'reload is not possible.',
+    inputSchema: Schema.object(),
+  );
+
+  Future<CallToolResult> _forwardHotReload(CallToolRequest request) async {
+    if (!_isConnected) return _notConnectedError();
+    return _connection!.callTool(
+      CallToolRequest(name: 'hot_reload', arguments: request.arguments),
     );
   }
 
