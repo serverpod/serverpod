@@ -377,6 +377,7 @@ Future<int> _runWatchMode({
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
+    project: config.name,
     shutdownSignal: shutdownSignal,
     watcher: FileWatcher(
       watchPaths: {
@@ -415,6 +416,7 @@ Future<int> _startWatchSession({
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
+  required String project,
   required Future<int> shutdownSignal,
   required FileWatcher watcher,
   required Set<String> generatedDirPaths,
@@ -504,9 +506,7 @@ Future<int> _startWatchSession({
   // current MCP tools require the compiler and process lifecycle.
   McpSocketServer? mcpSocket;
   if (!noFes) {
-    mcpSocket = McpSocketServer(
-      socketPath: p.join(serverpodToolDir, 'mcp.sock'),
-    );
+    mcpSocket = McpSocketServer(project: project);
     try {
       await mcpSocket.start();
       mcpSocket.connect(onApplyMigration: session.applyMigration);
@@ -817,9 +817,7 @@ Future<void> _runTuiBackend({
 
     // Start MCP socket server.
     McpSocketServer? mcpSocket;
-    mcpSocket = McpSocketServer(
-      socketPath: p.join(serverpodToolDir, 'mcp.sock'),
-    );
+    mcpSocket = McpSocketServer(project: config.name);
     try {
       await mcpSocket.start();
       mcpSocket.connect(onApplyMigration: session.applyMigration);
