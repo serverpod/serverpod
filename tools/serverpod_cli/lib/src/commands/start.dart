@@ -149,12 +149,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
     );
 
     // Load generator config (also resolves server directory).
-    GeneratorConfig config;
+    late final GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load(
-        serverRootDir: directory,
-        interactive: interactive,
-      );
+      await log.progress('Loading project configuration', () async {
+        config = await GeneratorConfig.load(
+          serverRootDir: directory,
+          interactive: interactive,
+        );
+        return true;
+      });
     } catch (e) {
       log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
@@ -171,7 +174,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
     // Start Docker Compose services if needed.
     var startedDocker = false;
     if (docker) {
-      startedDocker = await _ensureDockerServices(serverDir);
+      await log.progress('Starting Docker services', () async {
+        startedDocker = await _ensureDockerServices(serverDir);
+        return true;
+      });
     }
 
     try {
@@ -408,7 +414,11 @@ Future<int> _runWatchMode({
   // Ensure generated code is up to date (runs concurrently with analyzers).
   final allSources = await enumerateSourceFiles(config);
   if (!await isGenerationUpToDate(config, allSources)) {
-    final analyzers = await analyzersFuture;
+    late final Analyzers analyzers;
+    await log.progress('Initializing analyzers', () async {
+      analyzers = await analyzersFuture;
+      return true;
+    });
     final genResult = await analyzeAndGenerate(
       analyzers: analyzers,
       config: config,
@@ -487,8 +497,11 @@ Future<int> _startWatchSession({
       enableVmService: true,
       vmServiceInfoFile: vmServiceInfoFile,
     );
-    await serverProcess.start();
-    await serverProcess.connectToVmService();
+    await log.progress('Starting server', () async {
+      await serverProcess.start();
+      await serverProcess.connectToVmService();
+      return true;
+    });
     initialServerProcess = serverProcess;
   } else {
     // Set up incremental compiler.
@@ -555,7 +568,12 @@ Future<int> _startWatchSession({
           return serverProcess;
         };
 
-    initialServerProcess = await serverProcessFactory(initialDill);
+    late final ServerProcess started;
+    await log.progress('Starting server', () async {
+      started = await serverProcessFactory!(initialDill);
+      return true;
+    });
+    initialServerProcess = started;
     compiler = localCompiler;
     nativeAssetsBuilder = localBuilder;
   }
