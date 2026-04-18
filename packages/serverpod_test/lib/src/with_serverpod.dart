@@ -105,8 +105,6 @@ buildWithServerpod<T extends InternalTestEndpoints>(
   var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 120);
   var enableLogging = maybeEnableSessionLogging ?? false;
 
-  bool startServerpodFailed = false;
-
   return (
     TestClosure<T> testClosure,
   ) {
@@ -116,45 +114,33 @@ buildWithServerpod<T extends InternalTestEndpoints>(
         final sessionBuilder = InternalTestSessionBuilder();
         late final InternalServerpodSession mainServerpodSession;
         late final List<InternalServerpodSession> allTestSessions;
-        TransactionManager? transactionManager;
-
-        TransactionManager getTransactionManager() {
-          var localTransactionManager = transactionManager;
-          if (localTransactionManager == null) {
-            throw StateError(
-              'The transaction manager is null.',
-            );
-          }
-
-          return localTransactionManager;
-        }
+        // Assigned in setUpAll whenever the database is enabled, which
+        // `rollbacksEnabled` already guarantees for every read below.
+        late final TransactionManager transactionManager;
 
         setUpAll(() async {
-          try {
-            await testServerpod.start().timeout(
-              startTimeout,
-              onTimeout: () {
-                throw InitializationException(
-                  'Serverpod did not start within the timeout of $startTimeout. '
-                  'This might indicate that Serverpod cannot connect to the database.',
-                );
-              },
-            );
-          } catch (_) {
-            startServerpodFailed = true;
-            rethrow;
-          }
+          await testServerpod.start().timeout(
+            startTimeout,
+            onTimeout: () {
+              throw InitializationException(
+                'Serverpod did not start within the timeout of $startTimeout. '
+                'This might indicate that Serverpod cannot connect to the database.',
+              );
+            },
+          );
 
           mainServerpodSession = testServerpod.createSession(
             rollbackDatabase: rollbackDatabase,
           );
           if (testServerpod.isDatabaseEnabled) {
-            transactionManager = mainServerpodSession.transactionManager;
-            if (transactionManager == null) {
+            var localTransactionManager =
+                mainServerpodSession.transactionManager;
+            if (localTransactionManager == null) {
               throw InitializationException(
                 'The transaction manager is null but database is enabled.',
               );
             }
+            transactionManager = localTransactionManager;
           }
           allTestSessions = <InternalServerpodSession>[];
           sessionBuilder.bind(
@@ -164,49 +150,61 @@ buildWithServerpod<T extends InternalTestEndpoints>(
             enableLogging: enableLogging,
           );
 
-          if (rollbackDatabase == RollbackDatabase.afterAll ||
-              rollbackDatabase == RollbackDatabase.afterEach) {
-            var localTransactionManager = getTransactionManager();
-
-            await localTransactionManager.createTransaction();
-            await localTransactionManager.addSavepoint();
+          // A throw here skips the group's tests, but tearDownAll still runs
+          // and drops the database. No unlock needed - this TransactionManager
+          // dies with the group's session.
+          if (rollbacksEnabled) {
+            await transactionManager.createTransaction();
+            await transactionManager.addSavepoint();
           }
         });
 
         tearDown(() async {
-          if (startServerpodFailed) {
-            return;
-          }
-
           if (rollbackDatabase == RollbackDatabase.afterEach) {
-            var localTransactionManager = getTransactionManager();
-
-            await localTransactionManager.rollbackToPreviousSavepoint();
-            await localTransactionManager.addSavepoint();
+            try {
+              await transactionManager.rollbackToPreviousSavepoint();
+              await transactionManager.addSavepoint();
+            } catch (_) {
+              // A half-applied pair leaves the stack locked, failing every
+              // later addSavepoint with ConcurrentTransactionsException.
+              await transactionManager.ensureTransactionIsUnlocked();
+              rethrow;
+            }
           }
 
-          await mainServerpodSession.caches.clear();
-
-          await GlobalStreamManager.closeAllStreams();
+          await (
+            mainServerpodSession.caches.clear(),
+            GlobalStreamManager.closeAllStreams(),
+          ).wait;
         });
 
         tearDownAll(() async {
-          if (startServerpodFailed) {
-            return;
+          // DB-touching cleanup runs first, in parallel; both return
+          // connections to the pool.
+          Future<void> cancelTransactionIfNeeded() async {
+            if (rollbacksEnabled) {
+              await transactionManager.cancelTransaction();
+            }
           }
 
-          if (rollbackDatabase == RollbackDatabase.afterAll ||
-              rollbackDatabase == RollbackDatabase.afterEach) {
-            var localTransactionManager = getTransactionManager();
-
-            await localTransactionManager.cancelTransaction();
+          Future<void> closeAllTestSessions() async {
+            await [
+              for (var testSession in allTestSessions) testSession.close(),
+            ].wait;
+            allTestSessions.clear();
           }
 
-          for (var testSession in allTestSessions) {
-            await testSession.close();
+          try {
+            await (cancelTransactionIfNeeded(), closeAllTestSessions()).wait;
+          } catch (_) {
+            // Swallowed rather than `finally`: a broken setUpAll leaves this
+            // state half-built, and rethrowing would report the resulting
+            // cascade as a second failure on top of the real one.
           }
-          allTestSessions.clear();
 
+          // Must run after, not alongside, the cleanup above: pg.Pool.close()
+          // skips connections still marked _isInUse, so a racing in-flight
+          // ROLLBACK leaks its connection until max_connections is hit.
           await testServerpod.shutdown();
         });
 
