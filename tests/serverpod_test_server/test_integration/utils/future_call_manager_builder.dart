@@ -1,5 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
+import 'package:serverpod_database/serverpod_database.dart'
+    show DatabaseProvider, DatabaseDialect, ReactiveTriggerManager;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -31,6 +33,10 @@ class FutureCallManagerBuilder {
 
   FutureCallDiagnosticsService _diagnosticsService = _MockDiagnosticsService();
 
+  ReactiveTriggerManager? _reactiveTriggerManager = DatabaseProvider.forDialect(
+    DatabaseDialect.postgres,
+  ).createReactiveTriggerManager();
+
   FutureCallManagerBuilder({
     required FutureCallSessionBuilder sessionProvider,
     required Session internalSession,
@@ -58,7 +64,15 @@ class FutureCallManagerBuilder {
     initializeFutureCall: _initializeFutureCall,
     heartbeatInterval: _heartbeatInterval,
     serverId: 'default',
+    reactiveTriggerManager: _reactiveTriggerManager,
   );
+
+  FutureCallManagerBuilder withReactiveTriggerManager(
+    ReactiveTriggerManager? reactiveTriggerManager,
+  ) {
+    _reactiveTriggerManager = reactiveTriggerManager;
+    return this;
+  }
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {
     _config = config;
