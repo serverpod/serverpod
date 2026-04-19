@@ -32,6 +32,10 @@ extension SqliteTypeDefinition on ColumnType {
           defaultUuidValueRandomV7 => _generateRandomUuidV7,
           _ => "X${defaultValue.replaceAll('-', '')}",
         };
+      case ColumnType.decimal:
+        // Decimal columns are stored as TEXT in STRICT tables, so the default
+        // literal must be a quoted string.
+        return "'$defaultValue'";
       default:
         return '$defaultValue';
     }
@@ -75,6 +79,12 @@ String? sqliteSqlToAbstractDefault(
             RegExp(r"^('.{8})(.{4})(.{4})(.{4})(.{12}')$"),
             (m) => '${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}',
           );
+    case ColumnType.decimal:
+      // Strip the surrounding single quotes that the STRICT TEXT default uses.
+      if (sql.length >= 2 && sql.startsWith("'") && sql.endsWith("'")) {
+        return sql.substring(1, sql.length - 1);
+      }
+      return sql;
     default:
       return sql;
   }
