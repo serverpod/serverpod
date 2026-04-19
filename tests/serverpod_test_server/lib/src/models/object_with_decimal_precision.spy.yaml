@@ -5,3 +5,6 @@ fields:
   priceNullable: Decimal(10,2)?
   quantity: Decimal(19,4)
   unbounded: Decimal
+  priceWithDefault: Decimal(10,2), default=9.99
+  priceWithDefaultNullable: Decimal(10,2)?, default=1.23
+  quantityWithDefault: Decimal(19,4), default=100.0000

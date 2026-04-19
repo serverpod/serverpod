@@ -20,7 +20,14 @@ abstract class ObjectWithDecimalPrecision
     this.priceNullable,
     required this.quantity,
     required this.unbounded,
-  });
+    _i1.Decimal? priceWithDefault,
+    _i1.Decimal? priceWithDefaultNullable,
+    _i1.Decimal? quantityWithDefault,
+  }) : priceWithDefault = priceWithDefault ?? _i1.Decimal.parse('9.99'),
+       priceWithDefaultNullable =
+           priceWithDefaultNullable ?? _i1.Decimal.parse('1.23'),
+       quantityWithDefault =
+           quantityWithDefault ?? _i1.Decimal.parse('100.0000');
 
   factory ObjectWithDecimalPrecision({
     int? id,
@@ -28,6 +35,9 @@ abstract class ObjectWithDecimalPrecision
     _i1.Decimal? priceNullable,
     required _i1.Decimal quantity,
     required _i1.Decimal unbounded,
+    _i1.Decimal? priceWithDefault,
+    _i1.Decimal? priceWithDefaultNullable,
+    _i1.Decimal? quantityWithDefault,
   }) = _ObjectWithDecimalPrecisionImpl;
 
   factory ObjectWithDecimalPrecision.fromJson(
@@ -47,6 +57,22 @@ abstract class ObjectWithDecimalPrecision
       unbounded: _i1.DecimalJsonExtension.fromJson(
         jsonSerialization['unbounded'],
       ),
+      priceWithDefault: jsonSerialization['priceWithDefault'] == null
+          ? null
+          : _i1.DecimalJsonExtension.fromJson(
+              jsonSerialization['priceWithDefault'],
+            ),
+      priceWithDefaultNullable:
+          jsonSerialization['priceWithDefaultNullable'] == null
+          ? null
+          : _i1.DecimalJsonExtension.fromJson(
+              jsonSerialization['priceWithDefaultNullable'],
+            ),
+      quantityWithDefault: jsonSerialization['quantityWithDefault'] == null
+          ? null
+          : _i1.DecimalJsonExtension.fromJson(
+              jsonSerialization['quantityWithDefault'],
+            ),
     );
   }
 
@@ -65,6 +91,12 @@ abstract class ObjectWithDecimalPrecision
 
   _i1.Decimal unbounded;
 
+  _i1.Decimal priceWithDefault;
+
+  _i1.Decimal? priceWithDefaultNullable;
+
+  _i1.Decimal quantityWithDefault;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -77,6 +109,9 @@ abstract class ObjectWithDecimalPrecision
     _i1.Decimal? priceNullable,
     _i1.Decimal? quantity,
     _i1.Decimal? unbounded,
+    _i1.Decimal? priceWithDefault,
+    _i1.Decimal? priceWithDefaultNullable,
+    _i1.Decimal? quantityWithDefault,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,6 +122,10 @@ abstract class ObjectWithDecimalPrecision
       if (priceNullable != null) 'priceNullable': priceNullable?.toJson(),
       'quantity': quantity.toJson(),
       'unbounded': unbounded.toJson(),
+      'priceWithDefault': priceWithDefault.toJson(),
+      if (priceWithDefaultNullable != null)
+        'priceWithDefaultNullable': priceWithDefaultNullable?.toJson(),
+      'quantityWithDefault': quantityWithDefault.toJson(),
     };
   }
 
@@ -99,6 +138,10 @@ abstract class ObjectWithDecimalPrecision
       if (priceNullable != null) 'priceNullable': priceNullable?.toJson(),
       'quantity': quantity.toJson(),
       'unbounded': unbounded.toJson(),
+      'priceWithDefault': priceWithDefault.toJson(),
+      if (priceWithDefaultNullable != null)
+        'priceWithDefaultNullable': priceWithDefaultNullable?.toJson(),
+      'quantityWithDefault': quantityWithDefault.toJson(),
     };
   }
 
@@ -143,12 +186,18 @@ class _ObjectWithDecimalPrecisionImpl extends ObjectWithDecimalPrecision {
     _i1.Decimal? priceNullable,
     required _i1.Decimal quantity,
     required _i1.Decimal unbounded,
+    _i1.Decimal? priceWithDefault,
+    _i1.Decimal? priceWithDefaultNullable,
+    _i1.Decimal? quantityWithDefault,
   }) : super._(
          id: id,
          price: price,
          priceNullable: priceNullable,
          quantity: quantity,
          unbounded: unbounded,
+         priceWithDefault: priceWithDefault,
+         priceWithDefaultNullable: priceWithDefaultNullable,
+         quantityWithDefault: quantityWithDefault,
        );
 
   /// Returns a shallow copy of this [ObjectWithDecimalPrecision]
@@ -161,6 +210,9 @@ class _ObjectWithDecimalPrecisionImpl extends ObjectWithDecimalPrecision {
     Object? priceNullable = _Undefined,
     _i1.Decimal? quantity,
     _i1.Decimal? unbounded,
+    _i1.Decimal? priceWithDefault,
+    Object? priceWithDefaultNullable = _Undefined,
+    _i1.Decimal? quantityWithDefault,
   }) {
     return ObjectWithDecimalPrecision(
       id: id is int? ? id : this.id,
@@ -170,6 +222,11 @@ class _ObjectWithDecimalPrecisionImpl extends ObjectWithDecimalPrecision {
           : this.priceNullable,
       quantity: quantity ?? this.quantity,
       unbounded: unbounded ?? this.unbounded,
+      priceWithDefault: priceWithDefault ?? this.priceWithDefault,
+      priceWithDefaultNullable: priceWithDefaultNullable is _i1.Decimal?
+          ? priceWithDefaultNullable
+          : this.priceWithDefaultNullable,
+      quantityWithDefault: quantityWithDefault ?? this.quantityWithDefault,
     );
   }
 }
@@ -201,6 +258,27 @@ class ObjectWithDecimalPrecisionUpdateTable
         table.unbounded,
         value,
       );
+
+  _i1.ColumnValue<_i1.Decimal, _i1.Decimal> priceWithDefault(
+    _i1.Decimal value,
+  ) => _i1.ColumnValue(
+    table.priceWithDefault,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.Decimal, _i1.Decimal> priceWithDefaultNullable(
+    _i1.Decimal? value,
+  ) => _i1.ColumnValue(
+    table.priceWithDefaultNullable,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.Decimal, _i1.Decimal> quantityWithDefault(
+    _i1.Decimal value,
+  ) => _i1.ColumnValue(
+    table.quantityWithDefault,
+    value,
+  );
 }
 
 class ObjectWithDecimalPrecisionTable extends _i1.Table<int?> {
@@ -229,6 +307,27 @@ class ObjectWithDecimalPrecisionTable extends _i1.Table<int?> {
       'unbounded',
       this,
     );
+    priceWithDefault = _i1.ColumnDecimal(
+      'priceWithDefault',
+      this,
+      precision: 10,
+      scale: 2,
+      hasDefault: true,
+    );
+    priceWithDefaultNullable = _i1.ColumnDecimal(
+      'priceWithDefaultNullable',
+      this,
+      precision: 10,
+      scale: 2,
+      hasDefault: true,
+    );
+    quantityWithDefault = _i1.ColumnDecimal(
+      'quantityWithDefault',
+      this,
+      precision: 19,
+      scale: 4,
+      hasDefault: true,
+    );
   }
 
   late final ObjectWithDecimalPrecisionUpdateTable updateTable;
@@ -241,6 +340,12 @@ class ObjectWithDecimalPrecisionTable extends _i1.Table<int?> {
 
   late final _i1.ColumnDecimal unbounded;
 
+  late final _i1.ColumnDecimal priceWithDefault;
+
+  late final _i1.ColumnDecimal priceWithDefaultNullable;
+
+  late final _i1.ColumnDecimal quantityWithDefault;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -248,6 +353,9 @@ class ObjectWithDecimalPrecisionTable extends _i1.Table<int?> {
     priceNullable,
     quantity,
     unbounded,
+    priceWithDefault,
+    priceWithDefaultNullable,
+    quantityWithDefault,
   ];
 }
 
