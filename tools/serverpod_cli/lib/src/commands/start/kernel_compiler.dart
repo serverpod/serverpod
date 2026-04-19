@@ -65,19 +65,20 @@ class KernelCompiler {
   /// Returns `true` if [outputDill] exists, is newer than every file under
   /// [watchDirs], and is compatible with the current Dart SDK's kernel binary
   /// format.
-  bool isDillUpToDate(Set<String> watchDirs) {
+  Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     final dillFile = File(outputDill);
-    if (!dillFile.existsSync()) return false;
+    if (!await dillFile.exists()) return false;
 
     if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
 
-    final dillMtime = dillFile.statSync().modified;
+    final dillMtime = (await dillFile.stat()).modified;
 
     for (final watchDir in watchDirs) {
       final dir = Directory(watchDir);
-      if (!dir.existsSync()) continue;
-      for (final entity in dir.listSync(recursive: true)) {
-        if (entity is File && entity.statSync().modified.isAfter(dillMtime)) {
+      if (!await dir.exists()) continue;
+      await for (final entity in dir.list(recursive: true)) {
+        if (entity is File &&
+            (await entity.stat()).modified.isAfter(dillMtime)) {
           return false;
         }
       }
@@ -91,7 +92,7 @@ class KernelCompiler {
   /// Returns `true` on success (including when no compilation was needed).
   /// Returns `false` if compilation failed.
   Future<bool> compileIfNeeded(Set<String> watchDirs) async {
-    if (isDillUpToDate(watchDirs)) {
+    if (await isDillUpToDate(watchDirs)) {
       log.debug('Cached server.dill is up to date, skipping initial compile.');
       return true;
     }
@@ -133,6 +134,7 @@ class KernelCompiler {
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
   Future<void> reset() async {
+    if (_needsFullCompile) return; // No compile yet; already in full state.
     final client = await _client;
     client.reset();
     _needsFullCompile = true;

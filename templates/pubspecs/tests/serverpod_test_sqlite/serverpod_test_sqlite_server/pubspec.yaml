@@ -29,10 +29,18 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
+  serverpod_auth_client:
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
+  serverpod_auth_server:
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_cli:
     path: ../../../tools/serverpod_cli
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_cloud_storage_s3:
+    path: ../../../integrations/serverpod_cloud_storage_s3
+  serverpod_cloud_storage_s3_compat:
+    path: ../../../integrations/serverpod_cloud_storage_s3_compat
   serverpod_database:
     path: ../../../packages/serverpod_database
   serverpod_lints:

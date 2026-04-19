@@ -335,65 +335,63 @@ void main() {
     },
   );
 
-  group('Demonstrate transaction difference between prod and test tools', () {
-    withServerpod(
-      'Given transaction call in test with database rollbacks enabled (default)',
-      (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
-        test(
-          'when database exception occurs '
-          'then transaction WILL NOT throw exception if it was caught in the transaction',
-          () async {
-            var future = session.db.transaction((tx) async {
-              var data = UniqueData(number: 1, email: 'test@test.com');
-              try {
-                await UniqueData.db.insertRow(session, data);
-                await UniqueData.db.insertRow(session, data);
-              } catch (_) {}
-            });
+  withServerpod(
+    'Given transaction call in test with database rollbacks enabled (default)',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+      test(
+        'when database exception occurs '
+        'then transaction WILL NOT throw exception if it was caught in the transaction',
+        () async {
+          var future = session.db.transaction((tx) async {
+            var data = UniqueData(number: 1, email: 'test@test.com');
+            try {
+              await UniqueData.db.insertRow(session, data);
+              await UniqueData.db.insertRow(session, data);
+            } catch (_) {}
+          });
 
-            // NOTE: On SQLite, this is the behavior both with or without
-            // rollbacks enabled, since the driver does not poison the
-            // surrounding transaction when the error is caught.
-            await expectLater(future, completes);
-          },
+          // NOTE: On SQLite, this is the behavior both with or without
+          // rollbacks enabled, since the driver does not poison the
+          // surrounding transaction when the error is caught.
+          await expectLater(future, completes);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given transaction call in test with database rollbacks disabled',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      tearDown(() async {
+        await UniqueData.db.deleteWhere(
+          session,
+          where: (t) => t.email.equals('test@test.com'),
         );
-      },
-    );
+      });
 
-    withServerpod(
-      'Given transaction call in test with database rollbacks disabled',
-      (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+      test(
+        'when database exception occurs '
+        'then transaction will complete if it was caught in the transaction',
+        () async {
+          var future = session.db.transaction((tx) async {
+            var data = UniqueData(number: 1, email: 'test@test.com');
+            try {
+              await UniqueData.db.insertRow(session, data, transaction: tx);
+              await UniqueData.db.insertRow(session, data, transaction: tx);
+            } catch (_) {}
+          });
 
-        tearDown(() async {
-          await UniqueData.db.deleteWhere(
-            session,
-            where: (t) => t.email.equals('test@test.com'),
-          );
-        });
-
-        test(
-          'when database exception occurs '
-          'then transaction will complete if it was caught in the transaction',
-          () async {
-            var future = session.db.transaction((tx) async {
-              var data = UniqueData(number: 1, email: 'test@test.com');
-              try {
-                await UniqueData.db.insertRow(session, data, transaction: tx);
-                await UniqueData.db.insertRow(session, data, transaction: tx);
-              } catch (_) {}
-            });
-
-            // NOTE: This behavior differs from PostgreSQL because SQLite does
-            // not poison the surrounding transaction when an error that happen
-            // inside a transaction is caught.
-            await expectLater(future, completes);
-          },
-        );
-      },
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
-    );
-  });
+          // NOTE: This behavior differs from PostgreSQL because SQLite does
+          // not poison the surrounding transaction when an error that happen
+          // inside a transaction is caught.
+          await expectLater(future, completes);
+        },
+      );
+    },
+  );
 }

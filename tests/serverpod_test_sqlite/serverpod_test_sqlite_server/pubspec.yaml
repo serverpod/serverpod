@@ -12,28 +12,36 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod: 3.5.0-beta.3
-  serverpod_service_client: 3.5.0-beta.3
+  serverpod: 3.5.0-beta.4
+  serverpod_service_client: 3.5.0-beta.4
 
 dev_dependencies:
-  serverpod_cli: 3.5.0-beta.3
-  serverpod_lints: 3.5.0-beta.3
-  serverpod_test: 3.5.0-beta.3
+  serverpod_cli: 3.5.0-beta.4
+  serverpod_lints: 3.5.0-beta.4
+  serverpod_test: 3.5.0-beta.4
   serverpod_test_client:
     path: ../../serverpod_test_client
   serverpod_test_server:
     path: ../../serverpod_test_server
-  serverpod_test_sqlite_client: 3.5.0-beta.3
+  serverpod_test_sqlite_client: 3.5.0-beta.4
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
 dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
+  serverpod_auth_client:
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
+  serverpod_auth_server:
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_cli:
     path: ../../../tools/serverpod_cli
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_cloud_storage_s3:
+    path: ../../../integrations/serverpod_cloud_storage_s3
+  serverpod_cloud_storage_s3_compat:
+    path: ../../../integrations/serverpod_cloud_storage_s3_compat
   serverpod_database:
     path: ../../../packages/serverpod_database
   serverpod_lints:

@@ -1,3 +1,20 @@
+## 3.5.0-beta.4
+
+- feat(EXPERIMENTAL): Adds `nocterm` based TUI to `serverpod start` command.
+- feat(EXPERIMENTAL): Implements SQLite database support.
+- feat: Adds dedicated support for recurring future calls.
+- feat: Allows overriding a `column` name on models, with proper migration support.
+- feat: Exposes a `unique` keyword on models for simplified creation of unique indexes.
+- feat: Exposes datetime filter parameters on Insights endpoints.
+- feat: Adds supports for `serverpod create .` call in the current directory.
+- feat: Adds support for `orderBy` and `orderByList` in `delete` and `deleteWhere` methods ([@henycave](https://github.com/henycave)).
+- feat: Adds `HmacSha256` JWT algorithm on the auth core package.
+- feat: Introduces `asc()` / `desc()` convenience methods on orderable columns.
+- fix: Deprecates the manual creation of `Order` objects in favor of the new `asc()` / `desc()` methods.
+- fix: Adds missing `onRefreshTokenCreated` to `JwtConfigFromPasswords` constructor.
+- perf: Optimizes Insights queries 60x by using object relations and improved indexes.
+- chore: Adds `.gitignore` to the top-level directory on new projects to ignore `.dart_tool`.
+
 ## 3.5.0-beta.3
 
 - feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
@@ -20,6 +37,12 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.7
+
+- fix: Fixes constraints drop failing on Postgres due to already removed columns.
+- fix: Adds missing `configOverride` forward to the test server.
+- fix: Prevents triggering auth event listener when invalidating cache for JWT token refresh.
 
 ## 3.4.6
 
