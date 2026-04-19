@@ -8969,7 +8969,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersionModel",
       "module": "serverpod_test",
-      "version": "20260419095309750-decimal-precision-defaults"
+      "version": "20260419104001229"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

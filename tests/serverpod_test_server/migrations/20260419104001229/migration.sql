@@ -64,9 +64,9 @@ CREATE TABLE "object_with_decimal_precision" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260419095309750-decimal-precision-defaults', now())
+    VALUES ('serverpod_test', '20260419104001229', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260419095309750-decimal-precision-defaults', "timestamp" = now();
+    DO UPDATE SET "version" = '20260419104001229', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

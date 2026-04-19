@@ -409,8 +409,8 @@ CREATE TABLE "datetime_default_persist" (
 --
 CREATE TABLE "decimal_default" (
     "id" bigserial PRIMARY KEY,
-    "decimalDefault" numeric NOT NULL DEFAULT 10.5,
-    "decimalDefaultNull" numeric DEFAULT 20.5
+    "decimalDefault" decimal NOT NULL DEFAULT 10.5,
+    "decimalDefaultNull" decimal DEFAULT 20.5
 );
 
 --
@@ -418,9 +418,9 @@ CREATE TABLE "decimal_default" (
 --
 CREATE TABLE "decimal_default_mix" (
     "id" bigserial PRIMARY KEY,
-    "decimalDefaultAndDefaultModel" numeric NOT NULL DEFAULT 10.5,
-    "decimalDefaultAndDefaultPersist" numeric NOT NULL DEFAULT 20.5,
-    "decimalDefaultModelAndDefaultPersist" numeric NOT NULL DEFAULT 20.5
+    "decimalDefaultAndDefaultModel" decimal NOT NULL DEFAULT 10.5,
+    "decimalDefaultAndDefaultPersist" decimal NOT NULL DEFAULT 20.5,
+    "decimalDefaultModelAndDefaultPersist" decimal NOT NULL DEFAULT 20.5
 );
 
 --
@@ -428,8 +428,8 @@ CREATE TABLE "decimal_default_mix" (
 --
 CREATE TABLE "decimal_default_model" (
     "id" bigserial PRIMARY KEY,
-    "decimalDefaultModelStr" numeric NOT NULL,
-    "decimalDefaultModelStrNull" numeric
+    "decimalDefaultModelStr" decimal NOT NULL,
+    "decimalDefaultModelStrNull" decimal
 );
 
 --
@@ -437,7 +437,7 @@ CREATE TABLE "decimal_default_model" (
 --
 CREATE TABLE "decimal_default_persist" (
     "id" bigserial PRIMARY KEY,
-    "decimalDefaultPersist" numeric DEFAULT 10.5
+    "decimalDefaultPersist" decimal DEFAULT 10.5
 );
 
 --
@@ -775,8 +775,8 @@ CREATE TABLE "object_with_bytedata" (
 --
 CREATE TABLE "object_with_decimal" (
     "id" bigserial PRIMARY KEY,
-    "decimalValue" numeric NOT NULL,
-    "decimalValueNull" numeric
+    "decimalValue" decimal NOT NULL,
+    "decimalValueNull" decimal
 );
 
 --
@@ -784,10 +784,13 @@ CREATE TABLE "object_with_decimal" (
 --
 CREATE TABLE "object_with_decimal_precision" (
     "id" bigserial PRIMARY KEY,
-    "price" numeric(10,2) NOT NULL,
-    "priceNullable" numeric(10,2),
-    "quantity" numeric(19,4) NOT NULL,
-    "unbounded" numeric NOT NULL
+    "price" decimal(10,2) NOT NULL,
+    "priceNullable" decimal(10,2),
+    "quantity" decimal(19,4) NOT NULL,
+    "unbounded" decimal NOT NULL,
+    "priceWithDefault" decimal(10,2) NOT NULL DEFAULT 9.99,
+    "priceWithDefaultNullable" decimal(10,2) DEFAULT 1.23,
+    "quantityWithDefault" decimal(19,4) NOT NULL DEFAULT 100.0000
 );
 
 --
@@ -1453,7 +1456,8 @@ CREATE TABLE "serverpod_future_call" (
     "time" timestamp without time zone NOT NULL,
     "serializedObject" text,
     "serverId" text NOT NULL,
-    "identifier" text
+    "identifier" text,
+    "scheduling" json
 );
 
 -- Indexes
@@ -1523,7 +1527,7 @@ CREATE TABLE "serverpod_log" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("sessionLogId");
+CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class MessageLogEntry as table serverpod_message_log
@@ -1541,6 +1545,9 @@ CREATE TABLE "serverpod_message_log" (
     "slow" boolean NOT NULL,
     "order" bigint NOT NULL
 );
+
+-- Indexes
+CREATE INDEX "serverpod_message_log_sessionLogId_idx" ON "serverpod_message_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -1585,7 +1592,7 @@ CREATE TABLE "serverpod_query_log" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USING btree ("sessionLogId");
+CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test
@@ -2248,33 +2255,33 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260326195725300', now())
+    VALUES ('serverpod_test', '20260419104001229', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260326195725300', "timestamp" = now();
+    DO UPDATE SET "version" = '20260419104001229', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20260129180959368', now())
+    VALUES ('serverpod', '20260416151914983-insights-perf', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129180959368', "timestamp" = now();
+    DO UPDATE SET "version" = '20260416151914983-insights-perf', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20260129181059877', now())
+    VALUES ('serverpod_auth', '20260417182239578', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129181059877', "timestamp" = now();
+    DO UPDATE SET "version" = '20260417182239578', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_test_module
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test_module', '20260129181225792', now())
+    VALUES ('serverpod_test_module', '20260417182416941', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260129181225792', "timestamp" = now();
+    DO UPDATE SET "version" = '20260417182416941', "timestamp" = now();
 
 
 COMMIT;
