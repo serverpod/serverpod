@@ -1,0 +1,5 @@
+class: ObjectWithDecimal
+table: object_with_decimal
+fields:
+  decimalValue: Decimal
+  decimalValueNull: Decimal?

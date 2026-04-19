@@ -1,0 +1,6 @@
+class: DecimalDefaultMix
+table: decimal_default_mix
+fields:
+  decimalDefaultAndDefaultModel: Decimal, default=10.5, defaultModel=20.5
+  decimalDefaultAndDefaultPersist: Decimal, default=10.5, defaultPersist=20.5
+  decimalDefaultModelAndDefaultPersist: Decimal, defaultModel=10.5, defaultPersist=20.5

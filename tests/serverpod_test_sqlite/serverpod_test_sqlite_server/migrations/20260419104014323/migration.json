@@ -1,0 +1,314 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default",
+        "dartName": "DecimalDefault",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefault",
+            "fieldName": "decimalDefault",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "10.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultNull",
+            "fieldName": "decimalDefaultNull",
+            "columnType": 14,
+            "isNullable": true,
+            "columnDefault": "20.5",
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_mix",
+        "dartName": "DecimalDefaultMix",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultAndDefaultModel",
+            "fieldName": "decimalDefaultAndDefaultModel",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "10.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultAndDefaultPersist",
+            "fieldName": "decimalDefaultAndDefaultPersist",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "20.5",
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelAndDefaultPersist",
+            "fieldName": "decimalDefaultModelAndDefaultPersist",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "20.5",
+            "dartType": "Decimal"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_model",
+        "dartName": "DecimalDefaultModel",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelStr",
+            "fieldName": "decimalDefaultModelStr",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultModelStrNull",
+            "fieldName": "decimalDefaultModelStrNull",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "decimal_default_persist",
+        "dartName": "DecimalDefaultPersist",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalDefaultPersist",
+            "fieldName": "decimalDefaultPersist",
+            "columnType": 14,
+            "isNullable": true,
+            "columnDefault": "10.5",
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_decimal",
+        "dartName": "ObjectWithDecimal",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalValue",
+            "fieldName": "decimalValue",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "decimalValueNull",
+            "fieldName": "decimalValueNull",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "Decimal?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_decimal_precision",
+        "dartName": "ObjectWithDecimalPrecision",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "price",
+            "fieldName": "price",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal(10,2)",
+            "decimalPrecision": 10,
+            "decimalScale": 2
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "priceNullable",
+            "fieldName": "priceNullable",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "Decimal(10,2)?",
+            "decimalPrecision": 10,
+            "decimalScale": 2
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "quantity",
+            "fieldName": "quantity",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal(19,4)",
+            "decimalPrecision": 19,
+            "decimalScale": 4
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "unbounded",
+            "fieldName": "unbounded",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Decimal"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "priceWithDefault",
+            "fieldName": "priceWithDefault",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "9.99",
+            "dartType": "Decimal(10,2)",
+            "decimalPrecision": 10,
+            "decimalScale": 2
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "priceWithDefaultNullable",
+            "fieldName": "priceWithDefaultNullable",
+            "columnType": 14,
+            "isNullable": true,
+            "columnDefault": "1.23",
+            "dartType": "Decimal(10,2)?",
+            "decimalPrecision": 10,
+            "decimalScale": 2
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "quantityWithDefault",
+            "fieldName": "quantityWithDefault",
+            "columnType": 14,
+            "isNullable": false,
+            "columnDefault": "100.0000",
+            "dartType": "Decimal(19,4)",
+            "decimalPrecision": 19,
+            "decimalScale": 4
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

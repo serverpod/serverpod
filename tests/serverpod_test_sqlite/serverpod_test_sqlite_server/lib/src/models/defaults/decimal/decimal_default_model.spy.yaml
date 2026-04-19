@@ -1,0 +1,5 @@
+class: DecimalDefaultModel
+table: decimal_default_model
+fields:
+  decimalDefaultModelStr: Decimal, defaultModel=10.5
+  decimalDefaultModelStrNull: Decimal?, defaultModel=20.5
