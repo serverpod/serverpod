@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:test/test.dart';
 
@@ -96,7 +96,7 @@ class MyFutureCall extends FutureCall {
 ''');
 
         config = _buildTestConfig(projectDir);
-        analyzers = await createAnalyzers(config);
+        analyzers = await Analyzers.create(config);
       });
 
       group(
@@ -106,9 +106,8 @@ class MyFutureCall extends FutureCall {
 
           tearDown(() => generatedDir.deleteIfExists(recursive: true));
           setUp(() async {
-            result = await performGenerate(
+            result = await analyzers.performGenerate(
               config: config,
-              analyzers: analyzers,
             );
           });
 
@@ -190,7 +189,7 @@ class ItemEndpoint extends Endpoint {
 ''');
 
       config = _buildTestConfig(projectDir);
-      analyzers = await createAnalyzers(config);
+      analyzers = await Analyzers.create(config);
     });
 
     group('when generating', () {
@@ -198,9 +197,8 @@ class ItemEndpoint extends Endpoint {
 
       tearDown(() => generatedDir.deleteIfExists(recursive: true));
       setUp(() async {
-        result = await performGenerate(
+        result = await analyzers.performGenerate(
           config: config,
-          analyzers: analyzers,
         );
       });
 

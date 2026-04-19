@@ -9,6 +9,7 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/log_manager/vm_service_log_writer.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 
 import '../cache/caches.dart';
@@ -182,22 +183,27 @@ abstract class Session implements DatabaseSession {
 
     var logWriters = <LogWriter>[];
 
-    if (Features.enablePersistentLogging) {
-      logWriters.add(
-        DatabaseLogWriter(
-          logWriterSession: session.serverpod.internalSession,
-        ),
-      );
+    var sessionLogs = session.serverpod.config.sessionLogs;
+    if (sessionLogs.persistentEnabled) {
+      if (_db?.dialect != DatabaseDialect.sqlite) {
+        logWriters.add(
+          DatabaseLogWriter(
+            logWriterSession: session.serverpod.internalSession,
+          ),
+        );
+      }
     }
 
-    if (Features.enableConsoleLogging) {
-      var logFormat = session.serverpod.config.sessionLogs.consoleLogFormat;
+    if (sessionLogs.consoleEnabled) {
+      var logFormat = sessionLogs.consoleLogFormat;
       var consoleLogger = switch (logFormat) {
         ConsoleLogFormat.json => JsonStdOutLogWriter(session),
         ConsoleLogFormat.text => TextStdOutLogWriter(session),
       };
       logWriters.add(consoleLogger);
     }
+
+    logWriters.add(VmServiceLogWriter(session));
 
     if ((_isLongLived(session)) &&
         logSettings.logStreamingSessionsContinuously) {

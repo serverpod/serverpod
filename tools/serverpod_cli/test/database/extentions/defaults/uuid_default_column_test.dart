@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
@@ -21,6 +22,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB NOT NULL',
+          );
+        },
+      );
     });
 
     group('with gen_random_uuid() as default value', () {
@@ -38,6 +49,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"uuid" uuid NOT NULL DEFAULT gen_random_uuid()',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB NOT NULL DEFAULT (unhex(hex(randomblob(6)) || \'4\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
           );
         },
       );
@@ -61,6 +82,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB NOT NULL DEFAULT (unhex(printf(\'%012x\', CAST(unixepoch(\'now\', \'subsecond\') * 1000 AS INTEGER)) || \'7\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
+          );
+        },
+      );
     });
 
     group('with a specific UUID string as default value', () {
@@ -78,6 +109,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"uuid" uuid NOT NULL DEFAULT \'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB NOT NULL DEFAULT (X\'550e8400e29b41d4a716446655440000\')',
           );
         },
       );
@@ -100,6 +141,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB',
+          );
+        },
+      );
     });
 
     group('with nullable column and default value', () {
@@ -117,6 +168,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"uuid" uuid DEFAULT gen_random_uuid()',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"uuid" BLOB DEFAULT (unhex(hex(randomblob(6)) || \'4\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
           );
         },
       );

@@ -20,7 +20,7 @@ void main() {
                         .withName('bigint')
                         .withColumnType(ColumnType.text)
                         .withColumnDefault(
-                          "'-12345678901234567890'::text",
+                          "'-12345678901234567890'",
                         )
                         .build(),
                   )
@@ -84,7 +84,7 @@ void main() {
                         .withColumnType(ColumnType.text)
                         .withIsNullable(true)
                         .withColumnDefault(
-                          "'-12345678901234567890'::text",
+                          "'-12345678901234567890'",
                         )
                         .build(),
                   )
@@ -133,6 +133,135 @@ void main() {
           sql,
           isNot(contains('DEFAULT')),
         );
+      },
+    );
+  });
+
+  group('Given a SQLite database table definition with a BigInt column ', () {
+    test(
+      'when generating SQL with a specific BigInt default value, then TEXT keeps the abstract default expression.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('bigint')
+                        .withColumnType(ColumnType.text)
+                        .withColumnDefault(
+                          "'-12345678901234567890'",
+                        )
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"bigint" TEXT NOT NULL DEFAULT (\'-12345678901234567890\')',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the BigInt column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('bigint')
+                        .withColumnType(ColumnType.text)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"bigint" TEXT NOT NULL'));
+        expect(
+          sql,
+          isNot(contains('"bigint" TEXT NOT NULL DEFAULT')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable BigInt field and columnDefault, then the column is nullable with default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('bigint')
+                        .withColumnType(ColumnType.text)
+                        .withIsNullable(true)
+                        .withColumnDefault(
+                          "'-12345678901234567890'",
+                        )
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"bigint" TEXT DEFAULT (\'-12345678901234567890\')',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable BigInt field and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('bigint')
+                        .withColumnType(ColumnType.text)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"bigint" TEXT\n'));
+        expect(sql, isNot(contains('"bigint" TEXT DEFAULT')));
       },
     );
   });

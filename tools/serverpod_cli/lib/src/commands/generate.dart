@@ -9,8 +9,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
-import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
@@ -158,7 +158,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
 }) async {
-  final analyzers = await createAnalyzers(config);
+  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
   final result = await analyzeAndGenerate(
     config: config,
@@ -198,24 +198,23 @@ Future<GenerateResult> analyzeAndGenerate({
 }) async {
   bool needsGenerate = false;
   await log.progress('Analyzing changes', () async {
-    needsGenerate = await updateAnalyzers(
+    needsGenerate = await analyzers.update(
       config: config,
-      analyzers: analyzers,
       affectedPaths: affectedPaths,
       requirements: requirements,
     );
     return true;
   });
   if (!needsGenerate) return (success: true, generatedFiles: <String>{});
-  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
+  if (!skipStalenessCheck &&
+      await isGenerationUpToDate(config, affectedPaths)) {
     log.debug('All affected files are older than generation stamp, skipping.');
     return (success: true, generatedFiles: <String>{});
   }
   late final GenerateResult result;
   await log.progress('Generating code', () async {
-    result = await performGenerate(
+    result = await analyzers.performGenerate(
       config: config,
-      analyzers: analyzers,
       requirements: requirements,
       affectedPaths: skipStalenessCheck ? affectedPaths : null,
     );
@@ -232,7 +231,7 @@ Future<GenerateResult> analyzeAndGenerate({
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
 }) async {
-  final analyzers = await createAnalyzers(config);
+  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
   final initialResult = await analyzeAndGenerate(
     config: config,

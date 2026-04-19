@@ -1,0 +1,5 @@
+class: StringDefault
+table: string_default
+fields:
+  stringDefault: String, default='This is a default value'
+  stringDefaultNull: String?, default='This is a default null value'

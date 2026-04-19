@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -87,8 +88,8 @@ void main() {
     });
 
     test('when ValueEncoder instance is accessed '
-        'then returns the ValueEncoder instance', () {
-      expect(ValueEncoder.instance, isA<ValueEncoder>());
+        'then returns the PostgresValueEncoder instance', () {
+      expect(ValueEncoder.instance, isA<PostgresValueEncoder>());
     });
   });
 }

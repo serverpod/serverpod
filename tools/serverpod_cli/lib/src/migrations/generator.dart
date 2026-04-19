@@ -84,7 +84,6 @@ class MigrationGenerator {
       modelDefinitions,
       config.name,
       config.modulesAll,
-      dialect: config.databaseDialect,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -126,15 +125,22 @@ class MigrationGenerator {
 
     var sqlGenerator = SqlGenerator.forDialect(config.databaseDialect);
 
+    // Filter the elements here to keep the definition files complete. Only
+    // the migration and definition SQL will be filtered by the dialect.
+    var databaseDefinitionNextForDialect = databaseDefinitionNext.forDialect(
+      config.databaseDialect,
+      logWarnings: log.warning,
+    );
+
     var artifacts = MigrationVersionArtifacts(
       version: versionName,
       definitionSql: sqlGenerator.generateDatabaseDefinitionSql(
-        databaseDefinitionNext,
+        databaseDefinitionNextForDialect,
         installedModules: databaseDefinitionNext.installedModules,
       ),
       migrationSql: sqlGenerator.generateDatabaseMigrationSql(
         migration,
-        databaseDefinitionNext,
+        databaseDefinitionNextForDialect,
         installedModules: databaseDefinitionNext.installedModules,
         removedModules: _removedModulesDiff(
           databaseDefinitionLatest.installedModules,
@@ -192,6 +198,15 @@ class MigrationGenerator {
       migrationVersion,
     );
 
+    // Stored artifacts use the full merged definition (same as create-migration
+    // before SQL is generated). The live database only contains objects that
+    // exist for this dialect, so we must compare against the dialect-filtered
+    // target—otherwise unsupported indexes (etc.) appear as spurious drift.
+    var dstDatabaseForDialect = dstDatabase.forDialect(
+      dialect,
+      logWarnings: log.warning,
+    );
+
     var client = ConfigInfo(runMode).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
@@ -208,7 +223,7 @@ class MigrationGenerator {
 
     var migration = generateDatabaseMigration(
       databaseSource: liveDatabase,
-      databaseTarget: dstDatabase,
+      databaseTarget: dstDatabaseForDialect,
     );
 
     var warnings = migration.warnings;
@@ -246,7 +261,7 @@ class MigrationGenerator {
     return await _writeRepairMigration(
       repairMigrationName,
       migration,
-      dstDatabase,
+      dstDatabaseForDialect,
       installedModules,
       removedModules,
       dialect,

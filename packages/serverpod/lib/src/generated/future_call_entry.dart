@@ -11,6 +11,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'future_call_scheduling.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry
@@ -22,6 +24,7 @@ abstract class FutureCallEntry
     this.serializedObject,
     required this.serverId,
     this.identifier,
+    this.scheduling,
   });
 
   factory FutureCallEntry({
@@ -31,6 +34,7 @@ abstract class FutureCallEntry
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,6 +45,11 @@ abstract class FutureCallEntry
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,
+      scheduling: jsonSerialization['scheduling'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.FutureCallScheduling>(
+              jsonSerialization['scheduling'],
+            ),
     );
   }
 
@@ -66,6 +75,10 @@ abstract class FutureCallEntry
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Specifies how recurring calls should be scheduled.
+  /// This field is null for one-off future calls.
+  _i2.FutureCallScheduling? scheduling;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -79,6 +92,7 @@ abstract class FutureCallEntry
     String? serializedObject,
     String? serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,6 +104,7 @@ abstract class FutureCallEntry
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJson(),
     };
   }
 
@@ -103,6 +118,7 @@ abstract class FutureCallEntry
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
     };
   }
 
@@ -148,6 +164,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) : super._(
          id: id,
          name: name,
@@ -155,6 +172,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
          serializedObject: serializedObject,
          serverId: serverId,
          identifier: identifier,
+         scheduling: scheduling,
        );
 
   /// Returns a shallow copy of this [FutureCallEntry]
@@ -168,6 +186,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     Object? serializedObject = _Undefined,
     String? serverId,
     Object? identifier = _Undefined,
+    Object? scheduling = _Undefined,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -178,6 +197,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
+      scheduling: scheduling is _i2.FutureCallScheduling?
+          ? scheduling
+          : this.scheduling?.copyWith(),
     );
   }
 }
@@ -210,6 +232,12 @@ class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
     table.identifier,
     value,
   );
+
+  _i1.ColumnValue<_i2.FutureCallScheduling, _i2.FutureCallScheduling>
+  scheduling(_i2.FutureCallScheduling? value) => _i1.ColumnValue(
+    table.scheduling,
+    value,
+  );
 }
 
 class FutureCallEntryTable extends _i1.Table<int?> {
@@ -236,6 +264,10 @@ class FutureCallEntryTable extends _i1.Table<int?> {
       'identifier',
       this,
     );
+    scheduling = _i1.ColumnSerializable<_i2.FutureCallScheduling>(
+      'scheduling',
+      this,
+    );
   }
 
   late final FutureCallEntryUpdateTable updateTable;
@@ -255,6 +287,10 @@ class FutureCallEntryTable extends _i1.Table<int?> {
   /// An optional identifier which can be used to cancel the call.
   late final _i1.ColumnString identifier;
 
+  /// Specifies how recurring calls should be scheduled.
+  /// This field is null for one-off future calls.
+  late final _i1.ColumnSerializable<_i2.FutureCallScheduling> scheduling;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -263,6 +299,7 @@ class FutureCallEntryTable extends _i1.Table<int?> {
     serializedObject,
     serverId,
     identifier,
+    scheduling,
   ];
 }
 

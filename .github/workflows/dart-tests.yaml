@@ -195,7 +195,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1.7.3
+      - uses: browser-actions/setup-chrome@4f8e94349a351df0f048634f25fec36c3c91eded # v2.1.1
       - name: Run unit tests
         run: >-
           dart test
@@ -385,6 +385,21 @@ jobs:
       - name: Run integration tests
         run: util/run_tests_integration_concurrently
 
+  integration_test_sqlite_server:
+    name: Serverpod SQLite integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite integration tests
+        run: util/run_tests_sqlite_integration
+
   bootstrap_tests:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
@@ -428,6 +443,21 @@ jobs:
           cache: true
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
+
+  migration_e2e_tests_sqlite:
+    name: Migration e2e tests (SQLite)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite e2e migration tests
+        run: util/run_tests_sqlite_migrations_e2e
 
   cli_e2e_tests:
     name: CLI e2e tests
@@ -519,7 +549,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_s3
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - run: dart pub get
       - run: dart test test/integration --reporter=failures-only
 
@@ -538,7 +568,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_r2
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - run: dart pub get
       - run: dart test test/integration --reporter=failures-only
 
@@ -557,7 +587,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_gcp
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - run: dart pub get
       - run: dart test test/integration/gcp_s3_compat_integration_test.dart --reporter=failures-only
 
@@ -573,7 +603,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_gcp
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - run: dart pub get
       - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
 

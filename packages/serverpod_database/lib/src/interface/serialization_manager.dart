@@ -14,5 +14,10 @@ abstract class SerializationManagerServer extends SerializationManager {
   Table? getTableForType(Type t);
 
   /// The desired structure of the database.
+  ///
+  /// Should never be used to compare directly with the live database, since
+  /// [getTargetTableDefinitions] returns the definitions from the models that
+  /// can contain elements ignored on certain dialect. To correctly compare
+  /// with the live database, use [DatabaseAnalyzer.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
 }

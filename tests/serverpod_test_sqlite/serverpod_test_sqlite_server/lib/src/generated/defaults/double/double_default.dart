@@ -1,0 +1,536 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+
+abstract class DoubleDefault
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  DoubleDefault._({
+    this.id,
+    double? doubleDefault,
+    double? doubleDefaultNull,
+  }) : doubleDefault = doubleDefault ?? 10.5,
+       doubleDefaultNull = doubleDefaultNull ?? 20.5;
+
+  factory DoubleDefault({
+    int? id,
+    double? doubleDefault,
+    double? doubleDefaultNull,
+  }) = _DoubleDefaultImpl;
+
+  factory DoubleDefault.fromJson(Map<String, dynamic> jsonSerialization) {
+    return DoubleDefault(
+      id: jsonSerialization['id'] as int?,
+      doubleDefault: (jsonSerialization['doubleDefault'] as num?)?.toDouble(),
+      doubleDefaultNull: (jsonSerialization['doubleDefaultNull'] as num?)
+          ?.toDouble(),
+    );
+  }
+
+  static final t = DoubleDefaultTable();
+
+  static const db = DoubleDefaultRepository._();
+
+  @override
+  int? id;
+
+  double doubleDefault;
+
+  double? doubleDefaultNull;
+
+  @override
+  _i1.Table<int?> get table => t;
+
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  DoubleDefault copyWith({
+    int? id,
+    double? doubleDefault,
+    double? doubleDefaultNull,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'DoubleDefault',
+      if (id != null) 'id': id,
+      'doubleDefault': doubleDefault,
+      if (doubleDefaultNull != null) 'doubleDefaultNull': doubleDefaultNull,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'DoubleDefault',
+      if (id != null) 'id': id,
+      'doubleDefault': doubleDefault,
+      if (doubleDefaultNull != null) 'doubleDefaultNull': doubleDefaultNull,
+    };
+  }
+
+  static DoubleDefaultInclude include() {
+    return DoubleDefaultInclude._();
+  }
+
+  static DoubleDefaultIncludeList includeList({
+    _i1.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    DoubleDefaultInclude? include,
+  }) {
+    return DoubleDefaultIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(DoubleDefault.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _DoubleDefaultImpl extends DoubleDefault {
+  _DoubleDefaultImpl({
+    int? id,
+    double? doubleDefault,
+    double? doubleDefaultNull,
+  }) : super._(
+         id: id,
+         doubleDefault: doubleDefault,
+         doubleDefaultNull: doubleDefaultNull,
+       );
+
+  /// Returns a shallow copy of this [DoubleDefault]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  DoubleDefault copyWith({
+    Object? id = _Undefined,
+    double? doubleDefault,
+    Object? doubleDefaultNull = _Undefined,
+  }) {
+    return DoubleDefault(
+      id: id is int? ? id : this.id,
+      doubleDefault: doubleDefault ?? this.doubleDefault,
+      doubleDefaultNull: doubleDefaultNull is double?
+          ? doubleDefaultNull
+          : this.doubleDefaultNull,
+    );
+  }
+}
+
+class DoubleDefaultUpdateTable extends _i1.UpdateTable<DoubleDefaultTable> {
+  DoubleDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<double, double> doubleDefault(double value) =>
+      _i1.ColumnValue(
+        table.doubleDefault,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> doubleDefaultNull(double? value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultNull,
+        value,
+      );
+}
+
+class DoubleDefaultTable extends _i1.Table<int?> {
+  DoubleDefaultTable({super.tableRelation})
+    : super(tableName: 'double_default') {
+    updateTable = DoubleDefaultUpdateTable(this);
+    doubleDefault = _i1.ColumnDouble(
+      'doubleDefault',
+      this,
+      hasDefault: true,
+    );
+    doubleDefaultNull = _i1.ColumnDouble(
+      'doubleDefaultNull',
+      this,
+      hasDefault: true,
+    );
+  }
+
+  late final DoubleDefaultUpdateTable updateTable;
+
+  late final _i1.ColumnDouble doubleDefault;
+
+  late final _i1.ColumnDouble doubleDefaultNull;
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    doubleDefault,
+    doubleDefaultNull,
+  ];
+}
+
+class DoubleDefaultInclude extends _i1.IncludeObject {
+  DoubleDefaultInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table<int?> get table => DoubleDefault.t;
+}
+
+class DoubleDefaultIncludeList extends _i1.IncludeList {
+  DoubleDefaultIncludeList._({
+    _i1.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(DoubleDefault.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => DoubleDefault.t;
+}
+
+class DoubleDefaultRepository {
+  const DoubleDefaultRepository._();
+
+  /// Returns a list of [DoubleDefault]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<DoubleDefault>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<DoubleDefault>(
+      where: where?.call(DoubleDefault.t),
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [DoubleDefault] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<DoubleDefault?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<DoubleDefault>(
+      where: where?.call(DoubleDefault.t),
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [DoubleDefault] by its [id] or null if no such row exists.
+  Future<DoubleDefault?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<DoubleDefault>(
+      id,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [DoubleDefault]s in the list and returns the inserted rows.
+  ///
+  /// The returned [DoubleDefault]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<DoubleDefault>> insert(
+    _i1.DatabaseSession session,
+    List<DoubleDefault> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<DoubleDefault>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [DoubleDefault] and returns the inserted row.
+  ///
+  /// The returned [DoubleDefault] will have its `id` field set.
+  Future<DoubleDefault> insertRow(
+    _i1.DatabaseSession session,
+    DoubleDefault row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<DoubleDefault>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefault]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<DoubleDefault>> update(
+    _i1.DatabaseSession session,
+    List<DoubleDefault> rows, {
+    _i1.ColumnSelections<DoubleDefaultTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<DoubleDefault>(
+      rows,
+      columns: columns?.call(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DoubleDefault]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<DoubleDefault> updateRow(
+    _i1.DatabaseSession session,
+    DoubleDefault row, {
+    _i1.ColumnSelections<DoubleDefaultTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<DoubleDefault>(
+      row,
+      columns: columns?.call(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DoubleDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefault?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefault>(
+      id,
+      columnValues: columnValues(DoubleDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefault>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefault>(
+      columnValues: columnValues(DoubleDefault.t.updateTable),
+      where: where(DoubleDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [DoubleDefault]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<DoubleDefault>> delete(
+    _i1.DatabaseSession session,
+    List<DoubleDefault> rows, {
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<DoubleDefault>(
+      rows,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [DoubleDefault].
+  Future<DoubleDefault> deleteRow(
+    _i1.DatabaseSession session,
+    DoubleDefault row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<DoubleDefault>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<DoubleDefault>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<DoubleDefault>(
+      where: where(DoubleDefault.t),
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<DoubleDefault>(
+      where: where?.call(DoubleDefault.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [DoubleDefault] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<DoubleDefault>(
+      where: where(DoubleDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}

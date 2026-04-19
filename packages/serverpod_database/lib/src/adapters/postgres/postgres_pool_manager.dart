@@ -18,7 +18,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   DateTime? lastDatabaseOperationTime;
 
   /// Database configuration.
-  final DatabaseConfig config;
+  final PostgresDatabaseConfig config;
 
   late SerializationManagerServer _serializationManager;
 
@@ -42,7 +42,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   @override
-  PostgresValueEncoder get encoder => PostgresValueEncoder();
+  PostgresValueEncoder get encoder => const PostgresValueEncoder();
 
   /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
   /// when starting the [Server].

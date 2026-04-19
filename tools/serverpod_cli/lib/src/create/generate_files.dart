@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -48,13 +48,13 @@ class GenerateFiles {
       return false;
     }
 
-    final result = await performGenerate(
+    final analyzers = Analyzers(
+      endpoints: endpointsAnalyzer,
+      models: modelAnalyzer,
+      futureCalls: futureCallsAnalyzer,
+    );
+    final result = await analyzers.performGenerate(
       config: config,
-      analyzers: (
-        endpoints: endpointsAnalyzer,
-        models: modelAnalyzer,
-        futureCalls: futureCallsAnalyzer,
-      ),
     );
     return result.success;
   }

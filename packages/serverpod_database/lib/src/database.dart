@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:serverpod_shared/serverpod_shared.dart';
-
 import '../serverpod_database.dart';
 import 'interface/database_connection.dart';
 

@@ -1,0 +1,6 @@
+class: ObjectFieldPersist
+table: object_field_persist
+fields:
+  normal: String
+  api: String?, !persist
+  data: SimpleData?, !persist

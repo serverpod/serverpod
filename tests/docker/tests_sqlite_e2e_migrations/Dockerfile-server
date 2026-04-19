@@ -1,0 +1,23 @@
+# Dart SDK from the official image.
+FROM dart:3.8.0 AS dart-sdk
+FROM ubuntu:24.04 AS build
+
+# Copy SQLite >= 3.41.0 from Ubuntu 24.04.
+COPY --from=dart-sdk /usr/lib/dart /usr/lib/dart
+ENV PATH="/usr/lib/dart/bin:${PATH}"
+
+# Install SQLite.
+RUN apt-get update && apt-get install -y libsqlite3-dev
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the whole serverpod repo into the container.
+COPY . .
+
+# Install dependencies for test server.
+WORKDIR /app/tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+RUN dart pub get
+
+# Setup database tables and start the server.
+CMD ["../../docker/tests_sqlite_e2e_migrations/start-server.sh"]

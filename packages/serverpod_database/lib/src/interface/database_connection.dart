@@ -220,10 +220,4 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     required TransactionSettings settings,
     required DatabaseSession session,
   });
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<void> runMigrations(
-    DatabaseSession session,
-    Future<void> Function(Transaction? transaction) action,
-  );
 }

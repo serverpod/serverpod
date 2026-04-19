@@ -1,6 +1,10 @@
-import 'package:intl/intl.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
+// This is a temporary internal import since the normalize functions are not
+// meant to be exported from the database package. It will be removed once the
+// [PostgresSqlGenerator] gets moved to the database package.
+// ignore: implementation_imports
+import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {
@@ -229,7 +233,6 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
     var defaultSql = columnType.getPgColumnDefault(
       columnDefault,
       tableName,
-      dartType: dartType!,
     );
 
     var defaultValue = defaultSql != null ? ' DEFAULT $defaultSql' : '';
@@ -479,9 +482,10 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += 'DROP INDEX "$deleteIndex";\n';
     }
 
-    // Drop foreign keys
+    // Drop foreign keys. Uses IF EXISTS to avoid a hard failure for constraints
+    // of dropped tables or columns.
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey";\n';
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT IF EXISTS "$deleteKey";\n';
     }
 
     // Drop columns
@@ -560,7 +564,6 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
         var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
           newDefault,
           tableName,
-          dartType: columnDefinition.dartType!,
         );
         out +=
             'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
@@ -693,50 +696,5 @@ extension PostgresVectorIndexDistanceFunction on VectorDistanceFunction {
   String asDistanceFunction([String vectorType = 'vector']) {
     var funcCode = (this == VectorDistanceFunction.innerProduct) ? 'ip' : name;
     return '${vectorType}_${funcCode}_ops';
-  }
-}
-
-extension PostgresColumnTypeDefault on ColumnType {
-  String? getPgColumnDefault(
-    dynamic defaultValue,
-    String tableName, {
-    required String dartType,
-  }) {
-    if (defaultValue == null) return null;
-
-    if ((this == ColumnType.integer || this == ColumnType.bigint) &&
-        defaultValue == defaultIntSerial) {
-      return "nextval('${tableName}_id_seq'::regclass)";
-    }
-
-    switch (this) {
-      case ColumnType.timestampWithoutTimeZone:
-        if (defaultValue is! String) {
-          throw StateError('Invalid DateTime default value: $defaultValue');
-        }
-        if (defaultValue == defaultDateTimeValueNow) {
-          return 'CURRENT_TIMESTAMP';
-        }
-        var dateTime = DateTime.parse(defaultValue);
-        var formatted = DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(dateTime);
-        return "'$formatted'::timestamp without time zone";
-      case ColumnType.boolean:
-      case ColumnType.integer:
-      case ColumnType.doublePrecision:
-      case ColumnType.decimal:
-      case ColumnType.bigint:
-        return '$defaultValue';
-      case ColumnType.text:
-      case ColumnType.json:
-        return '$defaultValue::text';
-      case ColumnType.uuid:
-        return switch (defaultValue) {
-          defaultUuidValueRandom => 'gen_random_uuid()',
-          defaultUuidValueRandomV7 => 'gen_random_uuid_v7()',
-          _ => '$defaultValue::uuid',
-        };
-      default:
-        return '$defaultValue::text';
-    }
   }
 }

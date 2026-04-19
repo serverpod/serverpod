@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -61,6 +62,12 @@ class Serverpod {
     if (_shouldPrintLifecycleMessages) {
       stdout.writeln(message);
     }
+    developer.postEvent('ext.serverpod.log', {
+      'type': 'log',
+      'level': 'info',
+      'message': message,
+      'timestamp': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
@@ -842,9 +849,18 @@ class Serverpod {
     }
 
     if (Features.enableDatabase &&
-        config.sessionLogs.persistentEnabled == true &&
-        config.sessionLogs.cleanupInterval != null) {
-      _logCleanupManager = LogCleanupManager(config.sessionLogs);
+        config.sessionLogs.persistentEnabled == true) {
+      if (_databasePoolManager?.dialect == DatabaseDialect.sqlite) {
+        stderr.writeln(
+          'Persistent logging is not supported when using SQLite database '
+          'because it does not allow concurrent writes. Use console logging '
+          'instead.',
+        );
+      } else {
+        if (config.sessionLogs.cleanupInterval != null) {
+          _logCleanupManager = LogCleanupManager(config.sessionLogs);
+        }
+      }
     }
   }
 
@@ -856,7 +872,10 @@ class Serverpod {
 
     try {
       _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = ServerMigrationManager(Directory.current);
+      var migrationManager = ServerMigrationManager(
+        Directory.current,
+        runMode: runMode,
+      );
 
       if (applyRepairMigration) {
         _internalLogVerbose('Applying database repair migration');
@@ -1262,6 +1281,14 @@ class Serverpod {
     }
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
+
+    var errorMessage = message != null ? '$message: $e' : '$e';
+    developer.postEvent('ext.serverpod.log', {
+      'type': 'log',
+      'level': 'error',
+      'message': errorMessage,
+      'timestamp': now.toIso8601String(),
+    });
 
     internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
