@@ -25,5 +25,31 @@ void main() {
         );
       },
     );
+
+    test(
+      'when an object of the class is created with a specific value for "decimalDefaultModelStr", then the provided value overrides the default.',
+      () {
+        var object = DecimalDefaultModel(
+          decimalDefaultModelStr: Decimal.parse('15.5'),
+        );
+        expect(
+          object.decimalDefaultModelStr,
+          equals(Decimal.parse('15.5')),
+        );
+      },
+    );
+
+    test(
+      'when an object of the class is created with a specific value for the nullable "decimalDefaultModelStrNull", then the provided value overrides the default.',
+      () {
+        var object = DecimalDefaultModel(
+          decimalDefaultModelStrNull: Decimal.parse('25.5'),
+        );
+        expect(
+          object.decimalDefaultModelStrNull,
+          equals(Decimal.parse('25.5')),
+        );
+      },
+    );
   });
 }

@@ -1,3 +1,4 @@
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -8,6 +9,16 @@ void main() {
       () {
         var object = DecimalDefaultPersist();
         expect(object.decimalDefaultPersist, isNull);
+      },
+    );
+
+    test(
+      'when an object of the class is created with a specific value for "decimalDefaultPersist", then the field value should match the provided value.',
+      () {
+        var object = DecimalDefaultPersist(
+          decimalDefaultPersist: Decimal.parse('15.5'),
+        );
+        expect(object.decimalDefaultPersist, equals(Decimal.parse('15.5')));
       },
     );
   });

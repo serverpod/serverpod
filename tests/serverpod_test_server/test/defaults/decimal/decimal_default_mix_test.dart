@@ -16,7 +16,7 @@ void main() {
     );
 
     test(
-      'when "default" and "defaultPersist" are set, then "default" is used for model.',
+      'when "default" and "defaultPersist" are set, then "default" is used for the model.',
       () {
         var object = DecimalDefaultMix();
         expect(
@@ -27,12 +27,51 @@ void main() {
     );
 
     test(
-      'when "defaultModel" and "defaultPersist" are set, then "defaultModel" is used for model.',
+      'when "defaultModel" and "defaultPersist" are set, then "defaultModel" is used for the model.',
       () {
         var object = DecimalDefaultMix();
         expect(
           object.decimalDefaultModelAndDefaultPersist,
           equals(Decimal.parse('10.5')),
+        );
+      },
+    );
+
+    test(
+      'when an object of the class is created with a value for "decimalDefaultAndDefaultModel", then the field value should match the provided value.',
+      () {
+        var object = DecimalDefaultMix(
+          decimalDefaultAndDefaultModel: Decimal.parse('15.5'),
+        );
+        expect(
+          object.decimalDefaultAndDefaultModel,
+          equals(Decimal.parse('15.5')),
+        );
+      },
+    );
+
+    test(
+      'when an object of the class is created with a value for "decimalDefaultAndDefaultPersist", then the field value should match the provided value.',
+      () {
+        var object = DecimalDefaultMix(
+          decimalDefaultAndDefaultPersist: Decimal.parse('25.5'),
+        );
+        expect(
+          object.decimalDefaultAndDefaultPersist,
+          equals(Decimal.parse('25.5')),
+        );
+      },
+    );
+
+    test(
+      'when an object of the class is created with a value for "decimalDefaultModelAndDefaultPersist", then the field value should match the provided value.',
+      () {
+        var object = DecimalDefaultMix(
+          decimalDefaultModelAndDefaultPersist: Decimal.parse('30.5'),
+        );
+        expect(
+          object.decimalDefaultModelAndDefaultPersist,
+          equals(Decimal.parse('30.5')),
         );
       },
     );
