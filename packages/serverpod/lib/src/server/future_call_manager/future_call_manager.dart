@@ -259,7 +259,8 @@ class FutureCallManager {
   /// the task scheduler for execution.
   void _dispatchEntries(List<FutureCallEntry> entries) {
     final callbacks = entries.map<TaskCallback?>((entry) {
-      final futureCall = _futureCalls[entry.name];
+      final futureCall =
+          _futureCalls[entry.name] ?? _reactiveFutureCalls[entry.name];
 
       if (futureCall == null) {
         _logSession.log(
@@ -554,7 +555,8 @@ class FutureCallManager {
     final buffer = StringBuffer();
 
     for (final entry in entries) {
-      final futureCall = _futureCalls[entry.name];
+      final futureCall =
+          _futureCalls[entry.name] ?? _reactiveFutureCalls[entry.name];
       if (futureCall == null) {
         unregisteredCalls.add(entry);
         buffer.writeln('Unregistered future call: $entry');
