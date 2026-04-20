@@ -11,11 +11,7 @@ class CommandLineExperimentalFeatures {
 }
 
 enum ExperimentalFeature {
-  all,
-
-  // TODO: Remove when jsonb serialization is enabled by default.
-  // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919
-  serializeAsJsonb;
+  all;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {

@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -199,11 +198,7 @@ fields:
     'when analyzing models '
     'then the child model inherits the index with the operator class preserved.',
     () {
-      var jsonbConfig = GeneratorConfigBuilder()
-          .withEnabledExperimentalFeatures(
-            [ExperimentalFeature.serializeAsJsonb],
-          )
-          .build();
+      var jsonbConfig = GeneratorConfigBuilder().build();
 
       var models = [
         ModelSourceBuilder().withYaml(

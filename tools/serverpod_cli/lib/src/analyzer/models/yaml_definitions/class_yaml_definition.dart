@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.d
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ClassYamlDefinition {
@@ -53,9 +52,6 @@ class ClassYamlDefinition {
         valueRestriction: EnumValueRestriction(
           enums: SerializationDataType.values,
         ).validate,
-        isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-          ExperimentalFeature.serializeAsJsonb,
-        ),
       ),
       ValidateNode(
         Keyword.managedMigration,
@@ -174,9 +170,6 @@ class ClassYamlDefinition {
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },
-                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                  ExperimentalFeature.serializeAsJsonb,
-                ),
               ),
               ValidateNode(
                 Keyword.database,
@@ -266,9 +259,6 @@ class ClassYamlDefinition {
                 valueRestriction: EnumValueRestriction(
                   enums: GinOperatorClass.values,
                 ).validate,
-                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                  ExperimentalFeature.serializeAsJsonb,
-                ),
               ),
               ValidateNode(
                 Keyword.distanceFunction,

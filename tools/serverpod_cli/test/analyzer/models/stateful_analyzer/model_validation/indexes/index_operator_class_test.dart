@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
@@ -9,9 +8,7 @@ import '../../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
-    ExperimentalFeature.serializeAsJsonb,
-  ]).build();
+  var config = GeneratorConfigBuilder().build();
 
   test(
     'Given a class with a gin index with valid operator class, then return a definition where operatorClass is correctly set.',
@@ -330,9 +327,6 @@ void main() {
     () {
       var sqliteConfig = GeneratorConfigBuilder()
           .withDatabaseDialect(DatabaseDialect.sqlite)
-          .withEnabledExperimentalFeatures([
-            ExperimentalFeature.serializeAsJsonb,
-          ])
           .build();
 
       var models = [

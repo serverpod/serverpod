@@ -477,7 +477,6 @@ class GeneratorConfig implements ModelLoadConfig {
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
       file,
       generatorConfig,
-      enabledExperimentalFeatures,
     );
 
     return GeneratorConfig(
@@ -502,24 +501,9 @@ class GeneratorConfig implements ModelLoadConfig {
   static bool _loadSerializeAsJsonbByDefault(
     File file,
     Map config,
-    List<ExperimentalFeature> enabledExperimentalFeatures,
   ) {
     if (!file.existsSync()) return false;
-    var value = config['serialize_as_jsonb_by_default'] ?? false;
-    if (value == true &&
-        !enabledExperimentalFeatures.contains(
-          ExperimentalFeature.serializeAsJsonb,
-        )) {
-      var node = config is YamlMap
-          ? config.nodes['serialize_as_jsonb_by_default']
-          : null;
-      throw SourceSpanFormatException(
-        'The "serialize_as_jsonb_by_default" config requires the '
-        '"serializeAsJsonb" experimental feature to be enabled.',
-        node is YamlNode ? node.span : null,
-      );
-    }
-    return value;
+    return config['serialize_as_jsonb_by_default'] ?? false;
   }
 
   static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
