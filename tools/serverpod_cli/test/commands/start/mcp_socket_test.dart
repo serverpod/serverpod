@@ -32,7 +32,7 @@ void main() {
         );
         expect(
           server.socketPath,
-          matches(r'/serverpod/serverpod-\d+-mst\d+\.sock$'),
+          matches(r'[\\/]serverpod[\\/]serverpod-\d+-mst\d+\.sock$'),
         );
       },
     );

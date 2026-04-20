@@ -62,10 +62,15 @@ List<ServerpodMcpSocketInfo> listServerpodMcpSockets() {
   if (!dir.existsSync()) return const [];
 
   final results = <ServerpodMcpSocketInfo>[];
-  final stale = <File>[];
+  final stalePaths = <String>[];
 
-  for (final entity in dir.listSync()) {
-    if (entity is! File) continue;
+  // followLinks: false - on Windows, AF_UNIX socket files are reparse points
+  // with a tag Dart does not recognize. With the default followLinks: true,
+  // listSync() tries to resolve them, fails, and silently drops the entry.
+  // We also do not filter on FileSystemEntity type: the filename regex is
+  // specific enough, and Windows AF_UNIX entries do not classify cleanly
+  // as File.
+  for (final entity in dir.listSync(followLinks: false)) {
     final name = p.basename(entity.path);
     final match = _socketFilenamePattern.firstMatch(name);
     if (match == null) continue;
@@ -76,13 +81,13 @@ List<ServerpodMcpSocketInfo> listServerpodMcpSockets() {
     if (_isProcessAlive(socketPid)) {
       results.add((pid: socketPid, project: project, path: entity.path));
     } else {
-      stale.add(entity);
+      stalePaths.add(entity.path);
     }
   }
 
-  for (final file in stale) {
+  for (final path in stalePaths) {
     try {
-      file.deleteSync();
+      File(path).deleteSync();
     } on FileSystemException {
       // Ignore - another process may have cleaned it up.
     }
@@ -91,23 +96,26 @@ List<ServerpodMcpSocketInfo> listServerpodMcpSockets() {
   return results;
 }
 
-/// Returns `true` if a process with [pid] is currently alive.
+/// Returns `true` if a process with [checkPid] is currently alive.
 ///
 /// Uses `kill -0` on POSIX (sends no signal, just checks). On Windows, falls
-/// back to `tasklist`.
-bool _isProcessAlive(int pid) {
+/// back to `tasklist`. Short-circuits for the current process to avoid an
+/// unnecessary fork and insulate scans from any tasklist quirks on Windows
+/// CI runners.
+bool _isProcessAlive(int checkPid) {
+  if (checkPid == pid) return true;
   if (Platform.isWindows) {
     final result = Process.runSync('tasklist', [
       '/FI',
-      'PID eq $pid',
+      'PID eq $checkPid',
       '/NH',
       '/FO',
       'CSV',
     ]);
     if (result.exitCode != 0) return false;
-    return (result.stdout as String).contains('"$pid"');
+    return (result.stdout as String).contains('"$checkPid"');
   }
-  return Process.runSync('kill', ['-0', '$pid']).exitCode == 0;
+  return Process.runSync('kill', ['-0', '$checkPid']).exitCode == 0;
 }
 
 /// Wraps [socket] in a [StreamChannel<String>] using line-delimited messages.
