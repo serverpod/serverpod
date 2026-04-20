@@ -149,13 +149,13 @@ class FutureCallManager {
       }
     } else {
       _futureCalls[name] = futureCall;
+    }
 
-      // If start() was called but we deferred starting the scanner,
-      // start it now that we have a registered future call.
-      if (_hasPendingStart) {
-        _hasPendingStart = false;
-        _scanner.start();
-      }
+    // If start() was called but we deferred starting the scanner,
+    // start it now that we have a registered future call of any kind.
+    if (_hasPendingStart) {
+      _hasPendingStart = false;
+      _scanner.start();
     }
   }
 
@@ -227,7 +227,7 @@ class FutureCallManager {
   /// created and the outbox scanner is started.
   Future<void> start() async {
     await _checkBrokenFutureCalls();
-    if (_futureCalls.isNotEmpty) {
+    if (_futureCalls.isNotEmpty || _reactiveFutureCalls.isNotEmpty) {
       _scanner.start();
     } else {
       _hasPendingStart = true;
