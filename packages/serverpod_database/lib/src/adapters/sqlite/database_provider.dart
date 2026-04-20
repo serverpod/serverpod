@@ -48,10 +48,5 @@ class SqliteDatabaseProvider implements DatabaseProvider {
   }
 
   @override
-  ReactiveTriggerManager createReactiveTriggerManager() {
-    throw UnsupportedError(
-      'SQLite does not support reactive triggers. '
-      'Reactive future calls are not available on SQLite.',
-    );
-  }
+  ReactiveTriggerManager? createReactiveTriggerManager() => null;
 }

@@ -407,4 +407,61 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given a FutureCallManager without a reactive trigger manager',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+
+      setUp(() {
+        futureCallManager = FutureCallManagerBuilder.fromTestSessionBuilder(
+          sessionBuilder,
+        ).withReactiveTriggerManager(null).build();
+      });
+
+      tearDown(() async {
+        await futureCallManager.stop(unregisterAll: true);
+      });
+
+      group('when registering a ReactiveFutureCall', () {
+        test('then a StateError is thrown with a clear message', () {
+          expect(
+            () => futureCallManager.registerFutureCall(
+              _ReactiveCallWithCondition(),
+              'no-trigger-manager',
+            ),
+            throwsA(
+              isA<StateError>().having(
+                (e) => e.message,
+                'message',
+                allOf(
+                  contains('ReactiveFutureCall'),
+                  contains('does not support reactive triggers'),
+                ),
+              ),
+            ),
+          );
+        });
+      });
+
+      group('when registering a non-reactive FutureCall', () {
+        test('then it is registered successfully', () {
+          expect(
+            () => futureCallManager.registerFutureCall(
+              _PlainFutureCall(),
+              'plain-call',
+            ),
+            returnsNormally,
+          );
+        });
+      });
+    },
+  );
+}
+
+class _PlainFutureCall extends FutureCall<SimpleData> {
+  @override
+  Future<void> invoke(Session session, SimpleData? object) async {}
 }

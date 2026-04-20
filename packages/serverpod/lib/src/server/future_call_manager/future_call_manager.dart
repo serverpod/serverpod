@@ -134,6 +134,13 @@ class FutureCallManager {
     _initializeFutureCall(futureCall, name);
 
     if (futureCall is ReactiveFutureCall) {
+      if (_reactiveTriggerManager == null) {
+        throw StateError(
+          'Cannot register ReactiveFutureCall "$name": the configured '
+          'database dialect does not support reactive triggers. Reactive '
+          'future calls require PostgreSQL.',
+        );
+      }
       _reactiveFutureCalls[name] = futureCall;
 
       if (_isStarted) {

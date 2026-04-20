@@ -41,5 +41,9 @@ abstract interface class DatabaseProvider {
 
   /// Creates a new [ReactiveTriggerManager] for managing reactive future
   /// call triggers.
-  ReactiveTriggerManager createReactiveTriggerManager();
+  ///
+  /// Returns `null` for dialects that do not support reactive triggers
+  /// (e.g. SQLite). Registering a [ReactiveFutureCall] in that case will
+  /// throw a clear error at registration time.
+  ReactiveTriggerManager? createReactiveTriggerManager();
 }

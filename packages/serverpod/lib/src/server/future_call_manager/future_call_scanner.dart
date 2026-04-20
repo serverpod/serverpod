@@ -123,7 +123,6 @@ class FutureCallScanner {
       );
 
       if (unclaimed.isEmpty) {
-        _reactiveScanCompleter.complete();
         return;
       }
 
