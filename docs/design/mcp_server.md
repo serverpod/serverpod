@@ -4,7 +4,7 @@ This document describes the MCP (Model Context Protocol) integration for `server
 
 The integration has two parts:
 
-- A small **per-runner MCP server** that lives inside each `serverpod start --watch` process and exposes operations that need the CLI's in-memory state (currently: `apply_migrations`).
+- A small **per-runner MCP server** that lives inside each `serverpod start --watch` process and exposes dev operations against that instance (currently: `apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`).
 - A long-lived **bridge MCP server** (`serverpod mcp`) that sits on stdio between the AI client and the runners. It discovers running instances by scanning a shared socket directory, connects to one at a time, and forwards tool calls. The bridge survives runner restarts.
 
 The per-runner server runs inside the CLI process, alongside the compiler, file watcher, and watch session. It is not part of the server subprocess (the Serverpod application). This keeps dev tooling concerns out of the framework itself - the `serverpod` package should not impose an MCP dependency or dev-time features on the application server. It also means the MCP server has access to the CLI's internal state (the incremental compiler, the server process handle, the restart lifecycle) which the server subprocess does not.
@@ -83,6 +83,9 @@ The bridge does not need a `--directory` flag - it discovers running instances b
 | `spawn`             | Start a new `serverpod start --watch` process detached from the bridge. Optional `directory` to choose the server dir; optional `args` appended to the CLI. Polls the socket dir for up to ~10s for the new instance to appear. Does **not** auto-connect. |
 | `stop`              | Send SIGTERM to the named instance. Auto-disconnects if it was the connected one.                                                                                                                                              |
 | `apply_migrations`  | **Forwarded** to the connected instance. Errors with a not-connected message if no instance is attached.                                                                                                                       |
+| `create_migration`  | **Forwarded** to the connected instance. Writes migration files for the current model definitions; does not restart the server. Accepts optional `tag` and `force`.                                                           |
+| `hot_reload`        | **Forwarded** to the connected instance. Recompiles the server kernel and hot-reloads the running isolate.                                                                                                                     |
+| `tail_logs`         | **Forwarded** to the connected instance. Returns recent log entries.                                                                                                                                                           |
 
 #### Resources exposed by the bridge
 
@@ -118,12 +121,12 @@ The runner's MCP socket survives the server-subprocess restart because the socke
 
 `McpSocketServer({required project})` derives its socket path from the current `pid` and the sanitized project. `start()` ensures the shared dir exists, binds the `ServerSocket`, and accepts at most one client at a time. `close()` shuts down the active MCP server, destroys the client socket, and unlinks the socket file. New connections wait for any in-flight shutdown to settle and are rejected once `close()` has been called.
 
-`ServerpodMcpServer` (`lib/src/commands/start/mcp_server.dart`) is unchanged: it extends `MCPServer` with `ToolsSupport` and registers `apply_migrations` against a `WatchSession.applyMigration` callback wired by `start.dart`.
+`ServerpodMcpServer` (`lib/src/commands/start/mcp_server.dart`) extends `MCPServer` with `ToolsSupport` and `ResourcesSupport`. It registers `apply_migrations`, `create_migration`, `hot_reload`, and `tail_logs` tools against callbacks wired by `start.dart` (`WatchSession.applyMigration`, a `createMigrationAction`-backed closure, `WatchSession.forceReload`, and a log-history getter respectively). It also exposes the `serverpod://vm-service` resource.
 
 ### Bridge side (`lib/src/mcp/`)
 
 - `ServerpodMcpBridge` - owns the discovered socket list. `scan()` re-reads the dir; `startWatching()` subscribes to `Directory.watch()` and coalesces bursts into single rescans via `asyncMapBuffer`; `findSocket(id)` matches by project then PID; `dispose()` cancels the watcher.
-- `BridgeMcpServer extends MCPServer with ToolsSupport, ResourcesSupport` - registers `connect`/`disconnect`/`spawn`/`stop`/`apply_migrations` and the `serverpod://instances` resource. Holds at most one `ServerConnection` at a time. Forwarding for `apply_migrations` is a direct `_connection.callTool(...)`. When the upstream connection completes (runner died), bridge state is cleared and the instances resource is updated.
+- `BridgeMcpServer extends MCPServer with ToolsSupport, ResourcesSupport` - registers `connect`/`disconnect`/`spawn`/`stop`, the forwarded tools (`apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`), and the `serverpod://instances` / `serverpod://vm-service` resources. Holds at most one `ServerConnection` at a time. Forwarding is a direct `_connection.callTool(...)`. When the upstream connection completes (runner died), bridge state is cleared and the instances resource is updated.
 
 ### CLI command (`lib/src/commands/mcp.dart`)
 
@@ -131,7 +134,7 @@ Validates Unix socket support, instantiates `ServerpodMcpBridge`, scans + starts
 
 ### Integration with watch mode
 
-In `_startWatchSession()` and `_runTuiBackend()` (`start.dart`), the runner-side `McpSocketServer` is constructed with `project: config.name`. The `apply_migrations` callback is wired to `WatchSession.applyMigration`. The socket is closed on shutdown (signal, TUI quit, or session exit), which removes the file from the shared dir.
+In `_startWatchSession()` and `_runTuiBackend()` (`start.dart`), the runner-side `McpSocketServer` is constructed with `project: config.name`. The `apply_migrations` callback is wired to `WatchSession.applyMigration`; the `create_migration` callback is a closure over `createMigrationAction(config: ...)` (the shared helper also used by the `serverpod create-migration` CLI command and the TUI "Create Migration" button); `hot_reload` is `WatchSession.forceReload`; `tail_logs` reads from `holder.state.logHistory` in the TUI path. The socket is closed on shutdown (signal, TUI quit, or session exit), which removes the file from the shared dir.
 
 ### One-shot migration flag
 
@@ -151,13 +154,14 @@ Without a bridge, the MCP connection is bound to the runner's lifetime. Any oper
 
 Forwarding to one runner at a time keeps tool semantics unambiguous - the client always knows which project an `apply_migrations` call lands on. Multi-attach would force every forwarded tool to grow a target argument and risk silent cross-project effects. Users with multiple projects open run one bridge per AI window.
 
-### Why only CLI-internal operations are exposed via MCP
+### What belongs on the MCP server
 
-The MCP server exposes only operations that require the CLI's internal state. Stateless operations like `serverpod create-migration` or `serverpod generate` are better invoked directly as CLI commands.
+Any operation that the AI agent reaches for mid-session against a running dev environment belongs on the MCP server, whether or not it strictly needs the CLI's in-memory state. Keeping those operations behind the socket gives agents a stable, discoverable interface tied to the specific running instance (no ambiguity about which project directory the action lands in) and avoids forcing the agent to shell out with the right flags and working directory each time.
 
-Agents can discover CLI commands through a skill (a project-level instruction file that teaches the agent about available commands and workflows). This requires no code and no maintenance coupling to CLI flag changes. CLI commands also work without `serverpod start --watch` running; wrapping them in MCP would make them unavailable outside watch mode.
+- Operations that need the CLI's in-memory state (compiler, server lifecycle) - `apply_migrations`, `hot_reload` - must live here.
+- Operations that are conceptually per-instance but don't strictly need in-memory state - `create_migration`, `tail_logs` - are exposed here too. The alternative (shelling out to `serverpod create-migration`) forces a context switch, adds a failure mode where the agent runs in the wrong directory, and makes tool discovery dependent on a shipped skill file.
 
-If an operation needs the CLI's in-memory state, it belongs on the MCP server. Otherwise, it's a CLI command documented via a skill.
+Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
 
 Future MCP tool candidates include `server_status` (only the CLI knows whether the server subprocess is running, compiling, or errored).
 

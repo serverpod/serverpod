@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
@@ -24,6 +25,7 @@ import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/file_ex.dart';
@@ -373,11 +375,11 @@ Future<int> _runWatchMode({
   }
 
   return _startWatchSession(
+    config: config,
     serverDir: serverDir,
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
-    project: config.name,
     shutdownSignal: shutdownSignal,
     watcher: FileWatcher(
       watchPaths: {
@@ -412,11 +414,11 @@ Future<int> _runWatchMode({
 /// The session still runs code generation and triggers VM service reloads
 /// for static file changes.
 Future<int> _startWatchSession({
+  required GeneratorConfig config,
   required String serverDir,
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
-  required String project,
   required Future<int> shutdownSignal,
   required FileWatcher watcher,
   required Set<String> generatedDirPaths,
@@ -506,11 +508,13 @@ Future<int> _startWatchSession({
   // current MCP tools require the compiler and process lifecycle.
   McpSocketServer? mcpSocket;
   if (!noFes) {
-    mcpSocket = McpSocketServer(project: project);
+    mcpSocket = McpSocketServer(project: config.name);
     try {
       await mcpSocket.start();
       mcpSocket.connect(
         onApplyMigration: session.applyMigration,
+        onCreateMigration: ({String? tag, bool force = false}) =>
+            _createMigrationForMcp(config, tag: tag, force: force),
         onHotReload: session.forceReload,
         getVmServiceUri: () => session.vmServiceUri,
         vmServiceUriChanges: session.vmServiceUriChanges,
@@ -827,6 +831,8 @@ Future<void> _runTuiBackend({
       await mcpSocket.start();
       mcpSocket.connect(
         onApplyMigration: session.applyMigration,
+        onCreateMigration: ({String? tag, bool force = false}) =>
+            _createMigrationForMcp(config, tag: tag, force: force),
         onHotReload: session.forceReload,
         getLogHistory: () => holder.state.logHistory.toList(),
         getVmServiceUri: () => session.vmServiceUri,
@@ -873,6 +879,13 @@ Future<void> _runTuiBackend({
     holder.onHotReload = () {
       runTrackedAction(holder, 'Hot reload', session.forceReload);
     };
+    holder.onCreateMigration = () {
+      runTrackedAction(
+        holder,
+        'Creating migration',
+        () => _runCreateMigrationForTui(config),
+      );
+    };
     holder.onApplyMigration = () {
       runTrackedAction(holder, 'Applying migrations', session.applyMigration);
     };
@@ -899,4 +912,60 @@ Future<void> _runTuiBackend({
     log.error('$e', stackTrace: st);
     onExitCode(1);
   }
+}
+
+/// Runs `create-migration` for the TUI's Create Migration button.
+///
+/// Logs the outcome; throws on failure so [runTrackedAction] marks the
+/// operation red.
+Future<void> _runCreateMigrationForTui(GeneratorConfig config) async {
+  final outcome = await createMigrationAction(config: config);
+  switch (outcome) {
+    case CreateMigrationCreated(:final versionName):
+      log.info('Migration created: $versionName');
+    case CreateMigrationNoChanges():
+      log.info('No schema changes detected; no migration created.');
+    case CreateMigrationAborted():
+      throw Exception(
+        'Migration aborted due to warnings. Run `serverpod create-migration '
+        '--force` to create it anyway.',
+      );
+    case CreateMigrationFailed(:final message):
+      throw Exception(message);
+  }
+}
+
+/// Runs `create-migration` for the MCP `create_migration` tool. Returns a
+/// structured result so the MCP server can flag errors.
+Future<CreateMigrationMcpResult> _createMigrationForMcp(
+  GeneratorConfig config, {
+  String? tag,
+  bool force = false,
+}) async {
+  final outcome = await createMigrationAction(
+    config: config,
+    tag: tag,
+    force: force,
+  );
+  return switch (outcome) {
+    CreateMigrationCreated(:final versionName, :final migrationDirectory) =>
+      CreateMigrationMcpResult(
+        message:
+            'Migration "$versionName" created at $migrationDirectory. '
+            'Call `apply_migrations` to run it against the database.',
+      ),
+    CreateMigrationNoChanges() => const CreateMigrationMcpResult(
+      message: 'No schema changes detected; no migration created.',
+    ),
+    CreateMigrationAborted() => const CreateMigrationMcpResult(
+      message:
+          'Migration aborted due to warnings. Call again with `force: true` '
+          'to create it anyway.',
+      isError: true,
+    ),
+    CreateMigrationFailed(:final message) => CreateMigrationMcpResult(
+      message: message,
+      isError: true,
+    ),
+  };
 }
