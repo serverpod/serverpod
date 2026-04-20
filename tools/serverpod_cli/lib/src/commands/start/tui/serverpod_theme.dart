@@ -37,6 +37,28 @@ class ServerpodThemeData {
   /// Trailing divider on completed operations.
   final Color subtleDivider;
 
+  /// Derives a [ServerpodThemeData] from a nocterm [TuiThemeData].
+  ///
+  /// Semantic slots map to the closest [TuiThemeData] role:
+  /// log levels/success/failure use `warning`/`error`/`success`, muted
+  /// elements (debug, divider) use `outline`/`outlineVariant`, and accents
+  /// (active tab, spinner, info) use `primary` while the activation key
+  /// uses `secondary` to stand apart from the active-tab color.
+  factory ServerpodThemeData.fromTuiTheme(TuiThemeData theme) {
+    return ServerpodThemeData(
+      activationKey: theme.secondary,
+      activeTab: theme.primary,
+      spinner: theme.primary,
+      debugLevel: theme.outline,
+      infoLevel: theme.primary,
+      warningLevel: theme.warning,
+      errorLevel: theme.error,
+      success: theme.success,
+      failure: theme.error,
+      subtleDivider: theme.outlineVariant,
+    );
+  }
+
   /// Default dark theme.
   static const dark = ServerpodThemeData(
     activationKey: Colors.magenta,
@@ -65,7 +87,10 @@ class ServerpodTheme extends InheritedComponent {
   static ServerpodThemeData of(BuildContext context) {
     final widget = context
         .dependOnInheritedComponentOfExactType<ServerpodTheme>();
-    return widget?.data ?? ServerpodThemeData.dark;
+    if (widget != null) return widget.data;
+    final tuiTheme = TuiTheme.maybeOf(context);
+    if (tuiTheme != null) return ServerpodThemeData.fromTuiTheme(tuiTheme);
+    return ServerpodThemeData.dark;
   }
 
   @override

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:nocterm/nocterm.dart';
 
 import 'main_screen.dart';
-import 'serverpod_theme.dart';
 import 'state.dart';
 
 /// Provides access to the shared [ServerWatchState] and a way to trigger
@@ -123,29 +122,26 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   Component build(BuildContext context) {
     final state = component.holder.state;
 
-    return ServerpodTheme(
-      data: ServerpodThemeData.dark,
-      child: Focusable(
-        focused: true,
-        onKeyEvent: _handleKeyEvent,
-        child: MainScreen(
-          state: state,
-          showSplash: state.showSplash,
-          logScrollController: logScrollController,
-          rawScrollController: rawScrollController,
-          onToggleHelp: () {
-            state.showHelp = !state.showHelp;
-            _rebuild();
-          },
-          onTabChanged: (index) {
-            state.selectedTab = index;
-            _rebuild();
-          },
-          onHotReload: onHotReload,
-          onCreateMigration: onCreateMigration,
-          onApplyMigration: onApplyMigration,
-          onQuit: onQuit,
-        ),
+    return Focusable(
+      focused: true,
+      onKeyEvent: _handleKeyEvent,
+      child: MainScreen(
+        state: state,
+        showSplash: state.showSplash,
+        logScrollController: logScrollController,
+        rawScrollController: rawScrollController,
+        onToggleHelp: () {
+          state.showHelp = !state.showHelp;
+          _rebuild();
+        },
+        onTabChanged: (index) {
+          state.selectedTab = index;
+          _rebuild();
+        },
+        onHotReload: onHotReload,
+        onCreateMigration: onCreateMigration,
+        onApplyMigration: onApplyMigration,
+        onQuit: onQuit,
       ),
     );
   }

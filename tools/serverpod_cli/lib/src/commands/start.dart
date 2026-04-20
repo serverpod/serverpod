@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:nocterm/nocterm.dart' as nocterm;
+import 'package:nocterm/nocterm.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
@@ -633,14 +633,21 @@ Future<int> _runWithTui({
   }
 
   // Block on the TUI.
-  await nocterm.runApp(
-    nocterm.NoctermApp(
-      theme: nocterm.TuiThemeData.dark.copyWith(
-        background: nocterm.Color.defaultColor,
-      ),
-      child: ServerpodWatchApp(
-        holder: holder,
-        onReady: onReady,
+  await runApp(
+    NoctermApp(
+      child: Builder(
+        builder: (context) {
+          var themeData = TuiTheme.of(context);
+          return TuiTheme(
+            data: themeData.copyWith(
+              background: Color.defaultColor,
+            ),
+            child: ServerpodWatchApp(
+              holder: holder,
+              onReady: onReady,
+            ),
+          );
+        },
       ),
     ),
   );
@@ -712,7 +719,7 @@ Future<void> _runTuiBackend({
         log.error('Code generation failed.');
         await (await analyzersFuture).close();
         onExitCode(1);
-        nocterm.shutdownApp(1);
+        shutdownApp(1);
         return;
       }
     }
@@ -732,7 +739,7 @@ Future<void> _runTuiBackend({
       await compiler.dispose();
       log.error('Initial compilation failed.');
       onExitCode(1);
-      nocterm.shutdownApp(1);
+      shutdownApp(1);
       return;
     }
 
@@ -852,7 +859,7 @@ Future<void> _runTuiBackend({
       if (startedDocker) {
         await _stopDockerServices(serverDir);
       }
-      nocterm.shutdownApp(0);
+      shutdownApp(0);
     };
     holder.onHotReload = () {
       runTrackedAction(holder, 'Hot reload', session.forceReload);
