@@ -1,0 +1,117 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+
+/// Outcome of a [createMigrationAction] call.
+sealed class CreateMigrationOutcome {
+  const CreateMigrationOutcome();
+}
+
+/// A migration was written to disk.
+class CreateMigrationCreated extends CreateMigrationOutcome {
+  const CreateMigrationCreated({
+    required this.versionName,
+    required this.migrationDirectory,
+  });
+
+  /// The name (timestamp + optional tag) of the new migration version.
+  final String versionName;
+
+  /// Absolute path to the new migration's directory.
+  final String migrationDirectory;
+}
+
+/// No schema changes were detected; nothing was written.
+class CreateMigrationNoChanges extends CreateMigrationOutcome {
+  const CreateMigrationNoChanges();
+}
+
+/// The migration was aborted due to warnings and [force] was false.
+class CreateMigrationAborted extends CreateMigrationOutcome {
+  const CreateMigrationAborted();
+}
+
+/// The migration could not be created.
+class CreateMigrationFailed extends CreateMigrationOutcome {
+  const CreateMigrationFailed(this.message);
+
+  /// User-facing description of the failure.
+  final String message;
+}
+
+/// Shared implementation behind the `serverpod create-migration` command, the
+/// TUI's "Create Migration" button, and the `create_migration` MCP tool.
+///
+/// Returns a [CreateMigrationOutcome] describing what happened. The caller is
+/// responsible for logging and formatting the result.
+Future<CreateMigrationOutcome> createMigrationAction({
+  required GeneratorConfig config,
+  String? tag,
+  bool force = false,
+}) async {
+  if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+    return const CreateMigrationFailed(
+      'The database feature is not enabled in this project. '
+      'Migrations cannot be created.',
+    );
+  }
+
+  final serverDirectory = Directory(
+    path.joinAll(config.serverPackageDirectoryPathParts),
+  );
+
+  final projectName = await getProjectName(serverDirectory);
+  if (projectName == null) {
+    return const CreateMigrationFailed(
+      'Unable to determine project name from the server package.',
+    );
+  }
+
+  final generator = MigrationGenerator(
+    directory: serverDirectory,
+    projectName: projectName,
+  );
+
+  MigrationVersionArtifacts? migration;
+  try {
+    migration = await generator.createMigration(
+      tag: tag,
+      force: force,
+      config: config,
+    );
+  } on MigrationVersionLoadException catch (e) {
+    return CreateMigrationFailed(
+      'Unable to determine latest database definition due to a corrupted '
+      'migration. Please re-create or remove the migration version and try '
+      'again. Migration version: "${e.versionName}".\n${e.exception}',
+    );
+  } on GenerateMigrationDatabaseDefinitionException {
+    return const CreateMigrationFailed(
+      'Unable to generate database definition for project.',
+    );
+  } on MigrationVersionAlreadyExistsException catch (e) {
+    return CreateMigrationFailed(
+      'Unable to create migration. A directory with the same name already '
+      'exists: "${e.directoryPath}".',
+    );
+  } on MigrationAbortedException {
+    return const CreateMigrationAborted();
+  }
+
+  if (migration == null) {
+    return const CreateMigrationNoChanges();
+  }
+
+  return CreateMigrationCreated(
+    versionName: migration.version,
+    migrationDirectory: MigrationConstants.migrationVersionDirectory(
+      serverDirectory,
+      migration.version,
+    ).path,
+  );
+}
