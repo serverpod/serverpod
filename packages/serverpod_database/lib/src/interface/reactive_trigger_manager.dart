@@ -23,4 +23,8 @@ abstract interface class ReactiveTriggerManager {
   /// Drops all reactive triggers. Called before migrations to prevent
   /// stale trigger references.
   Future<void> dropAllTriggers(DatabaseSession session);
+
+  /// Returns the handler names of all currently registered reactive
+  /// triggers in the database. Useful for inspection and testing.
+  Future<List<String>> listTriggerHandlers(DatabaseSession session);
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod/protocol.dart' show ReactiveDatabaseCallEntry;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_database/serverpod_database.dart'
+    show DatabaseProvider, DatabaseDialect, ReactiveTriggerManager;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
@@ -459,9 +461,275 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given two ReactiveFutureCalls registered on different tables',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      late Session session;
+      late _SimpleDataOnlyCall simpleCall;
+      late _UniqueDataOnlyCall uniqueCall;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        simpleCall = _SimpleDataOnlyCall();
+        uniqueCall = _UniqueDataOnlyCall();
+
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(
+                    scanInterval: const Duration(milliseconds: 50),
+                  ),
+                )
+                .build();
+
+        futureCallManager.registerFutureCall(simpleCall, 'simpleOnly');
+        futureCallManager.registerFutureCall(uniqueCall, 'uniqueOnly');
+        await futureCallManager.start();
+      });
+
+      tearDown(() async {
+        await futureCallManager.stop(unregisterAll: true);
+        await SimpleData.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+        await UniqueData.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+        await ReactiveDatabaseCallEntry.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+      });
+
+      group('when a row is inserted into each table', () {
+        setUp(() async {
+          await SimpleData.db.insertRow(session, SimpleData(num: 42));
+          await UniqueData.db.insertRow(
+            session,
+            UniqueData(number: 7, email: 'multi@test.com'),
+          );
+        });
+
+        test('then each reactive call receives only its own events', () async {
+          await simpleCall.firstBatch.future.timeout(
+            const Duration(seconds: 5),
+          );
+          await uniqueCall.firstBatch.future.timeout(
+            const Duration(seconds: 5),
+          );
+
+          expect(simpleCall.received.map((d) => d.num), contains(42));
+          expect(uniqueCall.received.map((d) => d.number), contains(7));
+          expect(simpleCall.received, hasLength(1));
+          expect(uniqueCall.received, hasLength(1));
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given a FutureCallManager started without any reactive calls',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(
+                    scanInterval: const Duration(milliseconds: 50),
+                  ),
+                )
+                .build();
+
+        await futureCallManager.start();
+      });
+
+      tearDown(() async {
+        await futureCallManager.stop(unregisterAll: true);
+        await SimpleData.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+        await ReactiveDatabaseCallEntry.db.deleteWhere(
+          session,
+          where: (_) => Constant.bool(true),
+        );
+      });
+
+      group(
+        'when a ReactiveFutureCall is registered and a matching row '
+        'is inserted',
+        () {
+          late _SimpleDataOnlyCall reactiveCall;
+
+          setUp(() async {
+            reactiveCall = _SimpleDataOnlyCall();
+            futureCallManager.registerFutureCall(
+              reactiveCall,
+              'lateRegistered',
+            );
+            // Give the trigger a moment to be created.
+            await Future.delayed(const Duration(milliseconds: 100));
+            await SimpleData.db.insertRow(session, SimpleData(num: 99));
+          });
+
+          test('then react is called with the inserted data', () async {
+            await reactiveCall.firstBatch.future.timeout(
+              const Duration(seconds: 5),
+            );
+            expect(reactiveCall.received.map((d) => d.num), contains(99));
+          });
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a database with an orphaned reactive trigger from '
+    'a previous registration',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late Session session;
+      late ReactiveTriggerManager triggerManager;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        triggerManager = DatabaseProvider.forDialect(
+          DatabaseDialect.postgres,
+        ).createReactiveTriggerManager()!;
+
+        await triggerManager.createTrigger(
+          session,
+          handlerName: 'orphanedHandler',
+          tableName: 'simple_data',
+          condition: null,
+        );
+      });
+
+      tearDown(() async {
+        await triggerManager.dropAllTriggers(session);
+      });
+
+      group(
+        'when the manager initializes with a different set of reactive calls',
+        () {
+          setUp(() async {
+            await triggerManager.cleanupOrphanedTriggers(
+              session,
+              registeredHandlers: {'activeHandler'},
+            );
+          });
+
+          test(
+            'then the orphaned trigger is removed from the database',
+            () async {
+              final handlers = await triggerManager.listTriggerHandlers(
+                session,
+              );
+              expect(handlers, isNot(contains('orphanedHandler')));
+            },
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a PostgresReactiveTriggerManager with registered triggers',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late Session session;
+      late ReactiveTriggerManager triggerManager;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        triggerManager = DatabaseProvider.forDialect(
+          DatabaseDialect.postgres,
+        ).createReactiveTriggerManager()!;
+
+        await triggerManager.createTrigger(
+          session,
+          handlerName: 'handlerOne',
+          tableName: 'simple_data',
+          condition: null,
+        );
+        await triggerManager.createTrigger(
+          session,
+          handlerName: 'handlerTwo',
+          tableName: 'unique_data',
+          condition: null,
+        );
+      });
+
+      tearDown(() async {
+        await triggerManager.dropAllTriggers(session);
+      });
+
+      group('when dropAllTriggers is called', () {
+        setUp(() async {
+          await triggerManager.dropAllTriggers(session);
+        });
+
+        test(
+          'then all reactive triggers are removed from the database',
+          () async {
+            final handlers = await triggerManager.listTriggerHandlers(session);
+            expect(handlers, isEmpty);
+          },
+        );
+      });
+    },
+  );
 }
 
 class _PlainFutureCall extends FutureCall<SimpleData> {
   @override
   Future<void> invoke(Session session, SimpleData? object) async {}
+}
+
+class _SimpleDataOnlyCall extends SimpleDataReactiveFutureCall {
+  final List<SimpleData> received = [];
+  final Completer<void> firstBatch = Completer<void>();
+
+  @override
+  WhereExpressionBuilder<SimpleDataTable> get where =>
+      (t) => const Expression('TRUE');
+
+  @override
+  Future<void> react(Session session, List<SimpleData> objects) async {
+    received.addAll(objects);
+    if (!firstBatch.isCompleted) {
+      firstBatch.complete();
+    }
+  }
+}
+
+class _UniqueDataOnlyCall extends UniqueDataReactiveFutureCall {
+  final List<UniqueData> received = [];
+  final Completer<void> firstBatch = Completer<void>();
+
+  @override
+  WhereExpressionBuilder<UniqueDataTable> get where =>
+      (t) => const Expression('TRUE');
+
+  @override
+  Future<void> react(Session session, List<UniqueData> objects) async {
+    received.addAll(objects);
+    if (!firstBatch.isCompleted) {
+      firstBatch.complete();
+    }
+  }
 }

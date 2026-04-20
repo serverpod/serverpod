@@ -64,6 +64,20 @@ class PostgresReactiveTriggerManager implements ReactiveTriggerManager {
   }
 
   @override
+  Future<List<String>> listTriggerHandlers(DatabaseSession session) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT tgname FROM pg_trigger '
+      "WHERE tgname LIKE '$_triggerPrefix%' "
+      'AND NOT tgisinternal;',
+    );
+
+    return [
+      for (final row in result)
+        (row[0] as String).replaceFirst(_triggerPrefix, ''),
+    ];
+  }
+
+  @override
   Future<void> dropAllTriggers(DatabaseSession session) async {
     final result = await session.db.unsafeQuery(
       'SELECT tgname, relname FROM pg_trigger '
