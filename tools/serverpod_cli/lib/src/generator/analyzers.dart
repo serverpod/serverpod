@@ -41,6 +41,7 @@ class Analyzers {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
     final collection = createAnalysisContextCollection(libDirectory);
     final endpointsAnalyzer = EndpointsAnalyzer(
+      config,
       libDirectory,
       collection: collection,
     );
@@ -211,6 +212,7 @@ class Analyzers {
     log.debug('Analyzing the endpoints.');
     final endpointAnalyzerCollector = CodeGenerationCollector();
     final endpoints = await _endpoints.analyze(
+      models: _models.models,
       collector: endpointAnalyzerCollector,
       changedFiles: changedFiles,
     );
