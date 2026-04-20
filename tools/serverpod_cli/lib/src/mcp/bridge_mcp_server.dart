@@ -65,6 +65,7 @@ base class BridgeMcpServer extends MCPServer
     registerTool(_spawnTool, _spawn);
     registerTool(_stopTool, _stop);
     registerTool(_applyMigrationsTool, _forwardApplyMigrations);
+    registerTool(_createMigrationTool, _forwardCreateMigration);
     registerTool(_hotReloadTool, _forwardHotReload);
     registerTool(_tailLogsTool, _forwardTailLogs);
 
@@ -444,7 +445,8 @@ base class BridgeMcpServer extends MCPServer
     description:
         'Apply pending database migrations on the connected serverpod '
         'instance. The server restarts with `--apply-migrations`. Call after '
-        'creating a migration with `serverpod create-migration`.',
+        '`create_migration` (or `serverpod create-migration`) has written the '
+        'migration files.',
     inputSchema: Schema.object(),
   );
 
@@ -454,6 +456,36 @@ base class BridgeMcpServer extends MCPServer
     if (!_isConnected) return _notConnectedError();
     return _connection!.callTool(
       CallToolRequest(name: 'apply_migrations', arguments: request.arguments),
+    );
+  }
+
+  static final _createMigrationTool = Tool(
+    name: 'create_migration',
+    description:
+        'Create a new database migration from the current model definitions '
+        'on the connected serverpod instance. Writes the migration files to '
+        'disk; does not restart the server or apply the migration. Follow up '
+        'with `apply_migrations` to run it against the database.',
+    inputSchema: Schema.object(
+      properties: {
+        'tag': Schema.string(
+          description: 'Optional tag appended to the migration version name.',
+        ),
+        'force': Schema.bool(
+          description:
+              'Create the migration even if warnings are present (data may '
+              'be destroyed).',
+        ),
+      },
+    ),
+  );
+
+  Future<CallToolResult> _forwardCreateMigration(
+    CallToolRequest request,
+  ) async {
+    if (!_isConnected) return _notConnectedError();
+    return _connection!.callTool(
+      CallToolRequest(name: 'create_migration', arguments: request.arguments),
     );
   }
 

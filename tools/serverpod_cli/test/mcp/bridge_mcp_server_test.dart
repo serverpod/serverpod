@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dart_mcp/client.dart';
+import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
@@ -79,7 +80,8 @@ void main() {
 
       test(
         'when listing tools, '
-        'then connect/disconnect/spawn/stop/apply_migrations are exposed',
+        'then connect/disconnect/spawn/stop and the forwarded tools are '
+        'exposed',
         () async {
           final result = await client.listTools();
           final names = result.tools.map((t) => t.name).toSet();
@@ -91,6 +93,9 @@ void main() {
               'spawn',
               'stop',
               'apply_migrations',
+              'create_migration',
+              'hot_reload',
+              'tail_logs',
             }),
           );
         },
@@ -162,6 +167,47 @@ void main() {
           expect(
             (applyResult.content.first as TextContent).text,
             contains('Migrations applied'),
+          );
+        },
+      );
+
+      test(
+        'when calling connect then create_migration with tag and force, '
+        'then the runner-side callback receives the arguments',
+        () async {
+          String? receivedTag;
+          bool? receivedForce;
+          runner.connect(
+            onApplyMigration: () async {},
+            onCreateMigration: ({String? tag, bool force = false}) async {
+              receivedTag = tag;
+              receivedForce = force;
+              return const CreateMigrationMcpResult(
+                message: 'Migration "v1" created at /tmp/v1.',
+              );
+            },
+          );
+
+          await client.callTool(
+            CallToolRequest(
+              name: 'connect',
+              arguments: {'instanceId': project},
+            ),
+          );
+
+          final result = await client.callTool(
+            CallToolRequest(
+              name: 'create_migration',
+              arguments: {'tag': 'add-users', 'force': true},
+            ),
+          );
+
+          expect(result.isError, anyOf(isNull, isFalse));
+          expect(receivedTag, 'add-users');
+          expect(receivedForce, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Migration "v1" created'),
           );
         },
       );
