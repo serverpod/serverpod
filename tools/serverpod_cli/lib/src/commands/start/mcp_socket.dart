@@ -27,6 +27,8 @@ class McpSocketServer {
 
   /// Callbacks wired once via [connect].
   Future<void> Function()? _onApplyMigration;
+  Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
+  _onCreateMigration;
   Future<void> Function()? _onHotReload;
   List<Object> Function()? _getLogHistory;
   String? Function()? _getVmServiceUri;
@@ -50,12 +52,15 @@ class McpSocketServer {
   /// after a client connects.
   void connect({
     required Future<void> Function() onApplyMigration,
+    Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
+    onCreateMigration,
     Future<void> Function()? onHotReload,
     List<Object> Function()? getLogHistory,
     String? Function()? getVmServiceUri,
     Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
+    _onCreateMigration = onCreateMigration;
     _onHotReload = onHotReload;
     _getLogHistory = getLogHistory;
     _getVmServiceUri = getVmServiceUri;
@@ -63,6 +68,7 @@ class McpSocketServer {
     final server = _mcpServer;
     if (server != null) {
       server.onApplyMigration = onApplyMigration;
+      server.onCreateMigration = onCreateMigration;
       server.onHotReload = onHotReload;
       server.getLogHistory = getLogHistory;
       server.getVmServiceUri = getVmServiceUri;
@@ -117,6 +123,7 @@ class McpSocketServer {
 
     // Wire callbacks if already connected.
     server.onApplyMigration = _onApplyMigration;
+    server.onCreateMigration = _onCreateMigration;
     server.onHotReload = _onHotReload;
     server.getLogHistory = _getLogHistory;
     server.getVmServiceUri = _getVmServiceUri;

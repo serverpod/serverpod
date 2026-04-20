@@ -6,6 +6,18 @@ import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_shared/log.dart';
 
+/// Result of a `create_migration` MCP call. [message] is returned to the
+/// caller verbatim; [isError] marks the tool result as an error.
+class CreateMigrationMcpResult {
+  const CreateMigrationMcpResult({
+    required this.message,
+    this.isError = false,
+  });
+
+  final String message;
+  final bool isError;
+}
+
 /// MCP server that exposes serverpod dev tools.
 ///
 /// Runs inside the CLI process during watch mode, letting AI agents trigger
@@ -14,6 +26,11 @@ base class ServerpodMcpServer extends MCPServer
     with ToolsSupport, ResourcesSupport {
   /// Callback to apply pending database migrations.
   Future<void> Function()? onApplyMigration;
+
+  /// Callback to create a new migration from the current model definitions.
+  /// Returns a human-readable status message describing the outcome.
+  Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
+  onCreateMigration;
 
   /// Callback to recompile and hot-reload the running server isolate.
   Future<void> Function()? onHotReload;
@@ -37,6 +54,7 @@ base class ServerpodMcpServer extends MCPServer
             '`serverpod start --watch`.',
       ) {
     registerTool(_applyMigrationsTool, _applyMigrations);
+    registerTool(_createMigrationTool, _createMigration);
     registerTool(_hotReloadTool, _hotReload);
     registerTool(_tailLogsTool, _tailLogs);
 
@@ -64,8 +82,8 @@ base class ServerpodMcpServer extends MCPServer
     name: 'apply_migrations',
     description:
         'Apply pending database migrations. The server restarts with '
-        '`--apply-migrations`. Call after creating a migration with '
-        '`serverpod create-migration`.',
+        '`--apply-migrations`. Call after `create_migration` (or '
+        '`serverpod create-migration`) has written the migration files.',
     inputSchema: Schema.object(),
   );
 
@@ -92,6 +110,55 @@ base class ServerpodMcpServer extends MCPServer
     } catch (e) {
       return CallToolResult(
         content: [TextContent(text: 'Failed to apply migrations: $e')],
+        isError: true,
+      );
+    }
+  }
+
+  static final _createMigrationTool = Tool(
+    name: 'create_migration',
+    description:
+        'Create a new database migration from the current model definitions. '
+        'Writes the migration files to disk; does not restart the server or '
+        'apply the migration. Follow up with `apply_migrations` to run it '
+        'against the database.',
+    inputSchema: Schema.object(
+      properties: {
+        'tag': Schema.string(
+          description: 'Optional tag appended to the migration version name.',
+        ),
+        'force': Schema.bool(
+          description:
+              'Create the migration even if warnings are present (data may '
+              'be destroyed).',
+        ),
+      },
+    ),
+  );
+
+  Future<CallToolResult> _createMigration(CallToolRequest request) async {
+    final callback = onCreateMigration;
+    if (callback == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Watch session not connected.')],
+        isError: true,
+      );
+    }
+
+    final tagArg = request.arguments?['tag'];
+    final forceArg = request.arguments?['force'];
+    final tag = tagArg is String && tagArg.isNotEmpty ? tagArg : null;
+    final force = forceArg is bool ? forceArg : false;
+
+    try {
+      final result = await callback(tag: tag, force: force);
+      return CallToolResult(
+        content: [TextContent(text: result.message)],
+        isError: result.isError ? true : null,
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Failed to create migration: $e')],
         isError: true,
       );
     }
