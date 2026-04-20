@@ -800,33 +800,6 @@ CREATE TABLE "object_with_index" (
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
 
 --
--- Class ObjectWithJsonb as table object_with_jsonb
---
-CREATE TABLE "object_with_jsonb" (
-    "id" bigserial PRIMARY KEY,
-    "notJsonb" json NOT NULL,
-    "jsonb" jsonb NOT NULL,
-    "jsonbIndexed" jsonb NOT NULL,
-    "jsonbIndexedGin" jsonb NOT NULL,
-    "jsonbIndexedGinJsonbPath" jsonb NOT NULL,
-    "nullableJsonb" jsonb
-);
-
--- Indexes
-CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING gin ("jsonbIndexedGin" jsonb_ops);
-CREATE INDEX "jsonb_index_gin_with_operator_class" ON "object_with_jsonb" USING gin ("jsonbIndexedGinJsonbPath" jsonb_path_ops);
-
---
--- Class ObjectWithJsonbClassLevel as table object_with_jsonb_class_level
---
-CREATE TABLE "object_with_jsonb_class_level" (
-    "id" bigserial PRIMARY KEY,
-    "implicitJsonb" jsonb NOT NULL,
-    "explicitJsonb" jsonb NOT NULL,
-    "json" json NOT NULL
-);
-
---
 -- Class ObjectWithObject as table object_with_object
 --
 CREATE TABLE "object_with_object" (
@@ -1495,7 +1468,7 @@ CREATE TABLE "serverpod_log" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("sessionLogId");
+CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class MessageLogEntry as table serverpod_message_log
@@ -1513,6 +1486,9 @@ CREATE TABLE "serverpod_message_log" (
     "slow" boolean NOT NULL,
     "order" bigint NOT NULL
 );
+
+-- Indexes
+CREATE INDEX "serverpod_message_log_sessionLogId_idx" ON "serverpod_message_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -1557,7 +1533,7 @@ CREATE TABLE "serverpod_query_log" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USING btree ("sessionLogId");
+CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USING btree ("sessionLogId", "order");
 
 --
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test
@@ -2220,25 +2196,25 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260415153033359', now())
+    VALUES ('serverpod_test', '20260417182403425', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260415153033359', "timestamp" = now();
+    DO UPDATE SET "version" = '20260417182403425', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20260407154349528', now())
+    VALUES ('serverpod', '20260416151914983-insights-perf', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260407154349528', "timestamp" = now();
+    DO UPDATE SET "version" = '20260416151914983-insights-perf', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20260407154723760', now())
+    VALUES ('serverpod_auth', '20260417182239578', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260407154723760', "timestamp" = now();
+    DO UPDATE SET "version" = '20260417182239578', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_test_module

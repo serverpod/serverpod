@@ -38,6 +38,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
   static final _sqlEngine = SqlEngine();
 
+  Zone? _currentTransactionParentZone;
+
   SqliteDatabase get _db => poolManager.database;
 
   @override
@@ -776,6 +778,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     required DatabaseSession session,
   }) async {
     try {
+      // Set a reference to the parent zone (outside the transaction) to allow
+      // for concurrent reads to operate while a write lock is held. Will skip
+      // assigning if already set to preserve the highest parent zone.
+      _currentTransactionParentZone ??= Zone.current;
       return await _db.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
         final result = await transactionFunction(transaction);
@@ -786,6 +792,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       });
     } on _TransactionCancelledException catch (e) {
       return e.result;
+    } finally {
+      _currentTransactionParentZone = null;
     }
   }
 
@@ -874,18 +882,25 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
 
     try {
-      ResultSet? result;
+      late ResultSet result;
 
       poolManager.lastDatabaseOperationTime = startTime;
 
       if (sqliteTx != null) {
-        result = await sqliteTx.execute(statement, parameters);
+        result = parsed.isSelectStatement
+            ? await sqliteTx.getAll(statement, parameters)
+            : await sqliteTx.execute(statement, parameters);
       } else {
-        if (parsed.isSelectStatement) {
-          result = await _db.getAll(statement, parameters);
-        } else {
-          result = await _db.execute(statement, parameters);
+        Future<ResultSet> runQuery() async {
+          return parsed.isSelectStatement
+              ? await _db.getAll(statement, parameters ?? const [])
+              : await _db.execute(statement, parameters ?? const []);
         }
+
+        final transactionParentZone = _currentTransactionParentZone;
+        result = (parsed.isSelectStatement && transactionParentZone != null)
+            ? await transactionParentZone.fork().run(runQuery)
+            : await runQuery();
       }
 
       _logQuery(session, statement, stopwatch, numRowsAffected: result.length);
@@ -1421,6 +1436,13 @@ class _SqliteTransaction implements Transaction {
     if (_isCancelled) return;
     _isCancelled = true;
     await _ctx.execute('ROLLBACK');
+  }
+
+  Future<ResultSet> getAll(
+    String query, [
+    List<Object?> parameters = const [],
+  ]) {
+    return _ctx.getAll(query, parameters);
   }
 
   Future<ResultSet> execute(

@@ -636,6 +636,10 @@ class Protocol extends _i1.SerializationManagerServer {
               type: _i2.IndexElementDefinitionType.column,
               definition: 'sessionLogId',
             ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'order',
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -730,7 +734,25 @@ class Protocol extends _i1.SerializationManagerServer {
           matchType: null,
         ),
       ],
-      indexes: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_message_log_sessionLogId_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'sessionLogId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'order',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
       managed: true,
     ),
     _i2.TableDefinition(
@@ -925,6 +947,10 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'sessionLogId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'order',
             ),
           ],
           type: 'btree',
@@ -1466,16 +1492,40 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
+    if (t == _i1.getType<List<_i19.LogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i19.LogEntry>(e))
+                    .toList()
+              : null)
+          as T;
+    }
     if (t == List<_i26.QueryLogEntry>) {
       return (data as List)
               .map((e) => deserialize<_i26.QueryLogEntry>(e))
               .toList()
           as T;
     }
+    if (t == _i1.getType<List<_i26.QueryLogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i26.QueryLogEntry>(e))
+                    .toList()
+              : null)
+          as T;
+    }
     if (t == List<_i24.MessageLogEntry>) {
       return (data as List)
               .map((e) => deserialize<_i24.MessageLogEntry>(e))
               .toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i24.MessageLogEntry>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i24.MessageLogEntry>(e))
+                    .toList()
+              : null)
           as T;
     }
     if (t == List<_i35.SessionLogInfo>) {
