@@ -359,7 +359,7 @@ void main() async {
       });
 
       test(
-        'then the implicitly declared gin index exists with default jsonb operator class.',
+        'then the explicitly declared gin index exists with default jsonb operator class.',
         () {
           final index = indexes.firstWhere(
             (idx) => idx.indexName == 'jsonb_index_gin',
@@ -388,56 +388,6 @@ void main() async {
             index.elements.first.definition,
             'jsonbIndexedGinJsonbPath',
           );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb when analyzing database schema',
-    () {
-      late List<ColumnDefinition> columns;
-
-      setUpAll(() async {
-        var databaseDefinition = await session.db.analyzer.analyze();
-
-        var table = databaseDefinition.tables.firstWhere(
-          (table) => table.name == 'object_with_jsonb_class_level',
-        );
-
-        columns = table.columns;
-      });
-
-      test(
-        'then the column without `serializationDataType` set has type jsonb.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'implicitJsonb',
-          );
-
-          expect(column.columnType, ColumnType.jsonb);
-        },
-      );
-
-      test(
-        'then the column with `serializationDataType` set to jsonb has type jsonb.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'explicitJsonb',
-          );
-
-          expect(column.columnType, ColumnType.jsonb);
-        },
-      );
-
-      test(
-        'then the column with `serializationDataType` set to json has type json.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'json',
-          );
-
-          expect(column.columnType, ColumnType.json);
         },
       );
     },

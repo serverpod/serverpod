@@ -8,6 +8,7 @@ import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -168,6 +169,8 @@ class TypeDefinition {
   bool get isEnumType => enumDefinition != null;
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
+
+  bool get isColumnStructured => columnType == 'ColumnStructured';
 
   bool get isJsonbSerialized =>
       serializationDataType == SerializationDataType.jsonb;
@@ -472,9 +475,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
-    if (isColumnSerializable && isJsonbSerialized) {
-      return 'jsonb';
-    }
+    if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
 
@@ -502,6 +503,7 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
 
+    if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
   }
 

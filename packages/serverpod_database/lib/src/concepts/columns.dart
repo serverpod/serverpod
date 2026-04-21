@@ -62,18 +62,25 @@ class ColumnByteData extends Column<ByteData> {
   });
 }
 
-/// A [Column] holding a [SerializableModel]. The entity is stored in the
-/// database as a `json` or `jsonb` column, controlled by [serializationDataType].
+/// A [Column] holding an [SerializableModel]. The entity will be stored in the
+/// database as a json column.
 class ColumnSerializable<T> extends Column<T> {
-  /// The PostgreSQL storage type used for this column. Defaults to `json` when
-  /// not set.
-  final SerializationDataType? serializationDataType;
-
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
     super.columnName,
     super.table, {
-    this.serializationDataType,
+    super.hasDefault,
+    super.fieldName,
+  });
+}
+
+/// A [Column] holding an [SerializableModel]. The entity will be stored in the
+/// database as a structured binary column that supports indexing.
+class ColumnStructured<T> extends Column<T> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnStructured(
+    super.columnName,
+    super.table, {
     super.hasDefault,
     super.fieldName,
   });

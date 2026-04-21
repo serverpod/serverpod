@@ -707,30 +707,43 @@ END
     );
 
     test(
-      'when creating a gin index with the jsonbPathOps operator class, then the SQL uses USING gin with the jsonb_path_ops suffix.',
+      'when creating gin indexes with different operator classes, '
+      'then the SQL uses USING gin with the correct operator class suffix.',
       () {
-        var indexName = '${modelName}_jsonb_idx';
-        var index = IndexDefinitionBuilder()
-            .withIndexName(indexName)
-            .withElements([
-              IndexElementDefinition(
-                type: IndexElementDefinitionType.column,
-                definition: fieldName,
-              ),
-            ])
-            .withType('gin')
-            .withGinOperatorClass(GinOperatorClass.jsonbPathOps)
-            .withIsUnique(false)
-            .withIsPrimary(false)
-            .build();
+        var operatorClasses = {
+          GinOperatorClass.arrayOps: 'array_ops',
+          GinOperatorClass.jsonbOps: 'jsonb_ops',
+          GinOperatorClass.jsonbPathOps: 'jsonb_path_ops',
+          GinOperatorClass.tsvectorOps: 'tsvector_ops',
+        };
 
-        var sql = index.toPgSql(tableName: tableDefinition.name);
+        for (var entry in operatorClasses.entries) {
+          var operatorClass = entry.key;
+          var expectedSuffix = entry.value;
+          var indexName = '${modelName}_jsonb_idx_$operatorClass';
 
-        expect(
-          sql,
-          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-          'USING gin ("$fieldName" jsonb_path_ops);\n',
-        );
+          var index = IndexDefinitionBuilder()
+              .withIndexName(indexName)
+              .withElements([
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: fieldName,
+                ),
+              ])
+              .withType('gin')
+              .withGinOperatorClass(operatorClass)
+              .withIsUnique(false)
+              .withIsPrimary(false)
+              .build();
+
+          var sql = index.toPgSql(tableName: tableDefinition.name);
+
+          expect(
+            sql,
+            'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+            'USING gin ("$fieldName" $expectedSuffix);\n',
+          );
+        }
       },
     );
   });

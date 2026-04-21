@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/config/config.dart';
@@ -163,14 +164,15 @@ class ModelParser {
       serverOnly,
     );
 
-    var modelSerializationDataType = _parseSerializationDataType(
-      documentContents,
-    );
-    if (modelSerializationDataType != null) {
+    var effectiveDefault =
+        _parseSerializationDataType(documentContents) ??
+        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
+
+    if (effectiveDefault != null) {
       for (var field in fields) {
         if (field.type.isColumnSerializable &&
             field.type.serializationDataType == null) {
-          field.type.serializationDataType = modelSerializationDataType;
+          field.type.serializationDataType = effectiveDefault;
         }
       }
     }

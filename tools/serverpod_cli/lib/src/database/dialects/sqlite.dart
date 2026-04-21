@@ -152,10 +152,10 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
         type = 'REAL';
       case ColumnType.uuid: // Storing UUIDs as BLOB for efficiency
       case ColumnType.bytea:
+      case ColumnType.jsonb:
         type = 'BLOB';
       case ColumnType.text:
       case ColumnType.json:
-      case ColumnType.jsonb:
       case ColumnType.vector:
       case ColumnType.halfvec:
       case ColumnType.sparsevec:

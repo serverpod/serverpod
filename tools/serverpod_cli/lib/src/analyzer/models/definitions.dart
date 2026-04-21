@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 

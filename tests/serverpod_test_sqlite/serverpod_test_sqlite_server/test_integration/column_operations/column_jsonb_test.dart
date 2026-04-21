@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
+import 'package:serverpod_test_sqlite_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 final _firstJsonbList = ['a', 'b', 'c'];
@@ -57,7 +56,7 @@ void main() async {
   setUpAll(() async => await _createTestDatabase(session));
   tearDownAll(() async => await _deleteAll(session));
 
-  group('Given jsonb column in database', () {
+  group('Given jsonb column in SQLite database', () {
     test('when fetching all then all rows are returned.', () async {
       var result = await ObjectWithJsonb.db.find(
         session,
@@ -68,7 +67,8 @@ void main() async {
     });
 
     test(
-      'when fetching the row inserted with a non-empty list then the jsonb column value is returned unchanged.',
+      'when fetching the row inserted with a non-empty list '
+      'then the jsonb column value is returned unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -80,7 +80,8 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with an empty list then the jsonb column value is returned as an empty list.',
+      'when fetching the row inserted with an empty list '
+      'then the jsonb column value is returned as an empty list.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -92,7 +93,8 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with special characters then every value in the list round-trips unchanged.',
+      'when fetching the row inserted with special characters '
+      'then every value in the list round-trips unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -104,9 +106,10 @@ void main() async {
     );
   });
 
-  group('Given nullable jsonb column in database', () {
+  group('Given nullable jsonb column in SQLite database', () {
     test(
-      'when fetching the row inserted with Dart null then the column value is null.',
+      'when fetching the row inserted with Dart null '
+      'then the column value is null.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -118,7 +121,8 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with an empty list then the column value is a non-null empty list.',
+      'when fetching the row inserted with an empty list '
+      'then the column value is a non-null empty list.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -131,7 +135,8 @@ void main() async {
     );
 
     test(
-      'when fetching the row inserted with a non-empty list then the column value is returned unchanged.',
+      'when fetching the row inserted with a non-empty list '
+      'then the column value is returned unchanged.',
       () async {
         var result = await ObjectWithJsonb.db.findById(
           session,
@@ -142,55 +147,4 @@ void main() async {
       },
     );
   });
-
-  group(
-    'Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb '
-    'when analyzing database schema',
-    () {
-      late List<ColumnDefinition> columns;
-
-      setUpAll(() async {
-        var databaseDefinition = await session.db.analyzer.analyze();
-
-        var table = databaseDefinition.tables.firstWhere(
-          (table) => table.name == 'object_with_jsonb_class_level',
-        );
-
-        columns = table.columns;
-      });
-
-      test(
-        'then the column without `serializationDataType` set has type jsonb.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'implicitJsonb',
-          );
-
-          expect(column.columnType, ColumnType.jsonb);
-        },
-      );
-
-      test(
-        'then the column with `serializationDataType` set to jsonb has type jsonb.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'explicitJsonb',
-          );
-
-          expect(column.columnType, ColumnType.jsonb);
-        },
-      );
-
-      test(
-        'then the column with `serializationDataType` set to json has type json.',
-        () {
-          final column = columns.firstWhere(
-            (idx) => idx.name == 'json',
-          );
-
-          expect(column.columnType, ColumnType.json);
-        },
-      );
-    },
-  );
 }

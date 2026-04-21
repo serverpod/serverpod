@@ -1,7 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../../../../test_util/builders/generator_config_builder.dart';
@@ -319,48 +318,6 @@ void main() {
 
       var definition = definitions.first as ModelClassDefinition;
       expect(definition.indexes.first.type, 'btree');
-    },
-  );
-
-  test(
-    'Given a class with a gin index and the project targets SQLite, then collect an error that gin indexes are not supported in SQLite.',
-    () {
-      var sqliteConfig = GeneratorConfigBuilder()
-          .withDatabaseDialect(DatabaseDialect.sqlite)
-          .build();
-
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          table: example
-          fields:
-            tags: List<String>, serializationDataType=jsonb
-          indexes:
-            tags_ndx:
-              fields: tags
-              type: gin
-          ''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
-        sqliteConfig,
-        models,
-        onErrorsCollector(collector),
-      );
-      analyzer.validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error, but none was collected.',
-      );
-      expect(
-        collector.errors.first.message,
-        'GIN indexes are not supported in SQLite.',
-      );
     },
   );
 }

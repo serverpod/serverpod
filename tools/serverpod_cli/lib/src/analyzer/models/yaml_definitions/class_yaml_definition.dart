@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';

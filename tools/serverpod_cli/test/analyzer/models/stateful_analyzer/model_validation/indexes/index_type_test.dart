@@ -12,6 +12,7 @@ void main() {
   var validIndexTypes = [
     'btree',
     'hash',
+    'gin',
     'gist',
     'spgist',
     'brin',
@@ -27,10 +28,10 @@ void main() {
             class: Example
             table: example
             fields:
-              name: String
+              tags: List<String>, serializationDataType=jsonb
             indexes:
               example_index:
-                fields: name
+                fields: tags
                 type: $indexType
             ''',
           ).build(),

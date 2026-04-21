@@ -1570,11 +1570,6 @@ class Restrictions {
         : <String>[];
 
     var ginErrors = [
-      if (isGinIndex && config.databaseDialect == DatabaseDialect.sqlite)
-        SourceSpanSeverityException(
-          'GIN indexes are not supported in SQLite.',
-          span,
-        ),
       if (nonJsonbFields.isNotEmpty)
         SourceSpanSeverityException(
           'GIN indexes require the indexed field to use '
@@ -1944,7 +1939,9 @@ class Restrictions {
     var field = definition.fields
         .where((f) => f.name == parentNodeName)
         .firstOrNull;
-    if (field != null && !field.type.isColumnSerializable) {
+    if (field != null &&
+        !field.type.isColumnSerializable &&
+        !field.type.isColumnStructured) {
       errors.add(
         SourceSpanSeverityException(
           'The "${Keyword.serializationDataType}" key is only valid on '

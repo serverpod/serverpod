@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 var onErrorsCollector = (CodeGenerationCollector collector) {
   return (Uri uri, CodeGenerationCollector collected) {
@@ -129,24 +128,7 @@ class StatefulAnalyzer {
       state.model = model;
     }
 
-    _applyProjectSerializationDataTypeDefault();
-
     SerializableModelAnalyzer.resolveModelDependencies(_models);
-  }
-
-  void _applyProjectSerializationDataTypeDefault() {
-    if (!config.serializeAsJsonbByDefault) return;
-
-    for (var state in _modelStates.values) {
-      var model = state.model;
-      if (model is! ModelClassDefinition) continue;
-      for (var field in model.fields) {
-        if (field.type.isColumnSerializable &&
-            field.type.serializationDataType == null) {
-          field.type.serializationDataType = SerializationDataType.jsonb;
-        }
-      }
-    }
   }
 
   void _validateAllModels({Set<String>? reportIssuesForPaths}) {

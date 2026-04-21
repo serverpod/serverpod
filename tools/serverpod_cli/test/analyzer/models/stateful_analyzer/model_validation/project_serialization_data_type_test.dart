@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/generator_config_builder.dart';
@@ -13,7 +13,9 @@ void main() {
       .build();
 
   test(
-    'Given `serializeAsJsonbByDefault` enabled and a class without `serializationDataType` and a field without `serializationDataType`, when validating, then the field `serializationDataType` is jsonb.',
+    'Given `serializeAsJsonbByDefault` enabled and a class without `serializationDataType` and a field without `serializationDataType`, '
+    'when validating, '
+    'then the field `serializationDataType` is jsonb.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -43,7 +45,9 @@ void main() {
   );
 
   test(
-    'Given `serializeAsJsonbByDefault` enabled and a class with `serializationDataType` set to json, when validating, then the field `serializationDataType` is json.',
+    'Given `serializeAsJsonbByDefault` enabled and a class with `serializationDataType` set to json, '
+    'when validating, '
+    'then the field `serializationDataType` is json.',
     () {
       var models = [
         ModelSourceBuilder().withYaml('''
@@ -74,7 +78,9 @@ void main() {
   );
 
   test(
-    'Given `serializeAsJsonbByDefault` enabled and multiple models where only one has `serializationDataType` set, when validating, then the project default applies to the model without override and the overriding model keeps its own value.',
+    'Given `serializeAsJsonbByDefault` enabled and multiple models where only one has `serializationDataType` set, '
+    'when validating, '
+    'then the project default applies to the model without override and the overriding model keeps its own value.',
     () {
       var models = [
         ModelSourceBuilder().withFileName('with_override').withYaml('''
@@ -121,6 +127,38 @@ void main() {
       expect(
         withoutOverride.fields.last.type.serializationDataType,
         SerializationDataType.jsonb,
+      );
+    },
+  );
+
+  test(
+    'Given `serializeAsJsonbByDefault` enabled and a class without `serializationDataType` and a field with `serializationDataType` set to json, '
+    'when validating, '
+    'then the field `serializationDataType` is json.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
+        class: Example
+        table: example
+        fields:
+          tags: List<String>, serializationDataType=json
+        ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(collector.errors, isEmpty);
+      expect(
+        definition.fields.last.type.serializationDataType,
+        SerializationDataType.json,
       );
     },
   );

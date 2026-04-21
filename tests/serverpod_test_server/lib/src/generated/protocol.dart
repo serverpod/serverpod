@@ -3592,6 +3592,18 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
+          name: 'jsonbMap',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: false,
+          dartType: 'Map<String,String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'jsonbObject',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: false,
+          dartType: 'protocol:SimpleData',
+        ),
+        _i2.ColumnDefinition(
           name: 'jsonbIndexed',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
@@ -3605,6 +3617,12 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'jsonbIndexedGinJsonbPath',
+          columnType: _i2.ColumnType.jsonb,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'jsonbIndexedImplicitGin',
           columnType: _i2.ColumnType.jsonb,
           isNullable: false,
           dartType: 'List<String>',
@@ -3645,6 +3663,20 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isPrimary: false,
           ginOperatorClass: _i2.GinOperatorClass.jsonbPathOps,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'jsonb_index_implicit_gin',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'jsonbIndexedImplicitGin',
+            ),
+          ],
+          type: 'gin',
+          isUnique: false,
+          isPrimary: false,
+          ginOperatorClass: _i2.GinOperatorClass.jsonbOps,
         ),
       ],
       managed: true,

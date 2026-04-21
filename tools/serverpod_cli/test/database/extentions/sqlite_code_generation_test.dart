@@ -216,7 +216,7 @@ void main() {
   test(
     'Given a database definition with a jsonb serializable column, '
     'when generating SQL for SQLite, '
-    'then the column uses TEXT storage.',
+    'then the column uses BLOB storage.',
     () {
       var databaseDefinition = DatabaseDefinitionBuilder()
           .withTable(
@@ -238,7 +238,7 @@ void main() {
         installedModules: _sqliteModules(databaseDefinition),
       );
 
-      expect(sqlite, contains('"tags" TEXT NOT NULL'));
+      expect(sqlite, contains('"tags" BLOB NOT NULL'));
     },
   );
 }

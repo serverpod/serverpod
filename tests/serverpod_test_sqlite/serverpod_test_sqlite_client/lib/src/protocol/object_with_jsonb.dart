@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
 abstract class ObjectWithJsonb implements _i1.SerializableModel {
   ObjectWithJsonb._({
