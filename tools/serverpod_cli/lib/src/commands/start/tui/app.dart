@@ -4,6 +4,7 @@ import 'package:nocterm/nocterm.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import 'main_screen.dart';
+import 'spinner.dart';
 import 'state.dart';
 
 /// Provides access to the shared [ServerWatchState] and a way to trigger
@@ -26,7 +27,12 @@ class AppStateHolder {
   /// in a window renders immediately (keypresses stay responsive),
   /// and any further marks inside the window coalesce into a single
   /// trailing rebuild so the final state is never missed.
-  static const _rebuildInterval = Duration(milliseconds: 33);
+  ///
+  /// 80ms matches the spinner tick cadence - faster rebuilds aren't
+  /// perceptible since the spinner is the fastest-moving element on
+  /// screen. At ~7ms/frame (layout+paint dominated), 12.5 FPS keeps
+  /// the CPU floor around ~9% vs ~21% at 30 FPS.
+  static const _rebuildInterval = Duration(milliseconds: 80);
 
   final ServerWatchState state;
   ServerpodWatchAppState? _widgetState;
@@ -148,26 +154,29 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   Component build(BuildContext context) {
     final state = component.holder.state;
 
-    return Focusable(
-      focused: true,
-      onKeyEvent: _handleKeyEvent,
-      child: MainScreen(
-        state: state,
-        showSplash: state.showSplash,
-        logScrollController: logScrollController,
-        rawScrollController: rawScrollController,
-        onToggleHelp: () {
-          state.showHelp = !state.showHelp;
-          _rebuild();
-        },
-        onTabChanged: (index) {
-          state.selectedTab = index;
-          _rebuild();
-        },
-        onHotReload: onHotReload,
-        onCreateMigration: onCreateMigration,
-        onApplyMigration: onApplyMigration,
-        onQuit: onQuit,
+    return SpinnerScope(
+      active: state.activeOperations.isNotEmpty,
+      child: Focusable(
+        focused: true,
+        onKeyEvent: _handleKeyEvent,
+        child: MainScreen(
+          state: state,
+          showSplash: state.showSplash,
+          logScrollController: logScrollController,
+          rawScrollController: rawScrollController,
+          onToggleHelp: () {
+            state.showHelp = !state.showHelp;
+            _rebuild();
+          },
+          onTabChanged: (index) {
+            state.selectedTab = index;
+            _rebuild();
+          },
+          onHotReload: onHotReload,
+          onCreateMigration: onCreateMigration,
+          onApplyMigration: onApplyMigration,
+          onQuit: onQuit,
+        ),
       ),
     );
   }

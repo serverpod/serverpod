@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:intl/intl.dart';
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_shared/log.dart';
 
 import 'format_duration.dart';
 import 'serverpod_theme.dart';
+import 'spinner.dart';
 import 'state.dart';
 
 // -- BorderedBox --
@@ -206,46 +205,26 @@ class CompletedOperationWidget extends StatelessComponent {
 // -- TrackedOperationWidget --
 
 /// Renders an active tracked operation with spinner.
-class TrackedOperationWidget extends StatefulComponent {
+///
+/// The spinner frame is driven by a shared [SpinnerScope] higher in the
+/// tree, so any number of concurrent tracked operations share a single
+/// animation controller - one 80ms tick for all of them.
+class TrackedOperationWidget extends StatelessComponent {
   const TrackedOperationWidget({super.key, required this.operation});
 
   final TrackedOperation operation;
 
   @override
-  State<TrackedOperationWidget> createState() => _TrackedOperationWidgetState();
-}
-
-class _TrackedOperationWidgetState extends State<TrackedOperationWidget> {
-  static const _spinnerFrames = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
-
-  late Timer _timer;
-  int _frameIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 80), (_) {
-      setState(() => _frameIndex++);
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
   Component build(BuildContext context) {
     final st = ServerpodTheme.of(context);
-    final op = component.operation;
-    final frame = _spinnerFrames[_frameIndex % _spinnerFrames.length];
 
     return Row(
       children: [
-        Text('  $frame  ', style: TextStyle(color: st.spinner)),
+        const Text('  '),
+        SpinnerIcon(color: st.spinner),
+        const Text('  '),
         const SizedBox(width: 14),
-        Expanded(child: Text('${op.label}...')),
+        Expanded(child: Text('${operation.label}...')),
       ],
     );
   }
