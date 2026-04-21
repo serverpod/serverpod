@@ -459,7 +459,7 @@ String _sqlStoreMigrationVersion({
   return out;
 }
 
-/// Stores all column types on a table to be able to compare schema changes
+/// Stores non-basic column types on a table to be able to compare schema changes
 /// in migrations. This is required since column types on SQLite are simpler
 /// and comparing only the actual column types would be too permissive and
 /// generate deserialization errors in case the dart type being stored changes
@@ -485,6 +485,7 @@ String _sqlStoreColumnTypesForMigrations(
   out += 'INSERT INTO "$_sqliteSchemaTable" VALUES\n';
   for (var t in tables) {
     for (var c in t.columns) {
+      if (c.columnType.isBasicSqliteType) continue;
       out += '    (';
       out += "'${t.name}', ";
       out += "'${c.name}', ";
@@ -495,6 +496,20 @@ String _sqlStoreColumnTypesForMigrations(
     }
   }
   return out;
+}
+
+extension on ColumnType {
+  bool get isBasicSqliteType => switch (this) {
+    ColumnType.integer => true,
+    // Integer and bigint are the same type on SQLite, and the migration system
+    // already skips migrations between them, so it is safe to skip bigint. It
+    // is also the type with most columns (all ID columns are bigint).
+    ColumnType.bigint => true,
+    ColumnType.doublePrecision => true,
+    ColumnType.bytea => true,
+    ColumnType.text => true,
+    _ => false,
+  };
 }
 
 /// Returns the physical column name on the source table for [targetColumnName]

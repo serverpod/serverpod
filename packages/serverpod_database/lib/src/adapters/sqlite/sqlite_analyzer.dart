@@ -75,8 +75,10 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
 
     return queryResult.map((e) {
       var columnName = e[1] as String;
+      var sqliteType = e[2] as String;
+      var schemaInfo = columnTypes[columnName];
       var isIdColumn = columnName == defaultPrimaryKeyName;
-      var columnType = columnTypes[columnName]?.type ?? ColumnType.unknown;
+      var columnType = schemaInfo?.type ?? sqliteType.toColumnType();
 
       return ColumnDefinition(
         name: columnName,
@@ -88,7 +90,7 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
             : sqliteSqlToAbstractDefault(e[4] as String?, columnType),
         columnType: columnType,
         isNullable: !isIdColumn && (e[3] as int?) != 1,
-        vectorDimension: columnTypes[columnName]?.vectorDimension,
+        vectorDimension: schemaInfo?.vectorDimension,
       );
     }).toList();
   }
@@ -221,6 +223,25 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
 
   String _quoteIdentifier(String identifier) {
     return '"${identifier.replaceAll('"', '""')}"';
+  }
+}
+
+extension on String {
+  /// Maps the SQLite column types to the default [ColumnType] for the basic
+  /// types that are intentionally omitted from the `serverpod_sqlite_schema`
+  /// helper table to reduce the size of the schema.
+  ///
+  /// The [ColumnType.bigint] will be treated as [ColumnType.integer] on SQLite,
+  /// since it is the same type and the migration system does not generate
+  /// migrations between them.
+  ColumnType toColumnType() {
+    return switch (toUpperCase()) {
+      'INTEGER' => ColumnType.integer,
+      'REAL' => ColumnType.doublePrecision,
+      'TEXT' => ColumnType.text,
+      'BLOB' => ColumnType.bytea,
+      _ => ColumnType.unknown,
+    };
   }
 }
 
