@@ -135,8 +135,8 @@ class SqliteValueEncoder implements ValueEncoder {
   }) {
     var encoded = convert(
       switch (column) {
-        ColumnSerializable() ||
-        ColumnStructured() => SerializationManager.encode(value),
+        ColumnSerializable() || ColumnStructured() =>
+          value != null ? SerializationManager.encode(value) : null,
         _ => coerceColumnValue(column, value),
       },
       hasDefaults: hasDefaults,
