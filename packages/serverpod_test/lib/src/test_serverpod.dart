@@ -139,6 +139,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
   final TestServerOutputMode testServerOutputMode;
 
   /// Creates a new test serverpod instance.
+  ///
+  /// Endpoint wrappers are not initialized until the first [createSession] or [start] call.
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
@@ -166,9 +168,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
        _configOverride = configOverride,
        ephemeralDatabase = ephemeralDatabase ?? true,
        testServerOutputMode =
-           testServerOutputMode ?? TestServerOutputMode.normal {
-    testEndpoints.initialize(serializationManager, endpoints);
-  }
+           testServerOutputMode ?? TestServerOutputMode.normal;
 
   /// Constructs a [Serverpod]. When [ephemeralDatabase] is true, its configured
   /// database is this group's own: a PostgreSQL database named
@@ -214,6 +214,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           databaseInterceptor: _databaseInterceptor,
         );
         _endpoints.initializeEndpoints(serverpod.server);
+        testEndpoints.initialize(_serializationManager, _endpoints);
         return serverpod;
       },
       stdout: () => NullStdOut(),
