@@ -231,6 +231,26 @@ extension ColumnComparisons on ColumnDefinition {
       );
     }
 
+    if (decimalPrecision != other.decimalPrecision) {
+      mismatches.add(
+        ColumnComparisonWarning(
+          name: 'decimal precision',
+          expected: '$decimalPrecision',
+          found: '${other.decimalPrecision}',
+        ),
+      );
+    }
+
+    if (decimalScale != other.decimalScale) {
+      mismatches.add(
+        ColumnComparisonWarning(
+          name: 'decimal scale',
+          expected: '$decimalScale',
+          found: '${other.decimalScale}',
+        ),
+      );
+    }
+
     return mismatches;
   }
 }
@@ -526,6 +546,7 @@ extension FilterConstraintGenerator on FilterConstraint {
     if (columnType == ColumnType.integer ||
         columnType == ColumnType.bigint ||
         columnType == ColumnType.doublePrecision ||
+        columnType == ColumnType.decimal ||
         columnType == ColumnType.boolean) {
       formattedValue = value;
     } else if (columnType == ColumnType.text) {

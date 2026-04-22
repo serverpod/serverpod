@@ -668,4 +668,65 @@ void main() {
       expect(type.vectorDimension, 64);
     },
   );
+
+  group('Given a decimal field without precision or scale,', () {
+    test(
+      'when parsed, then className is Decimal and precision/scale are null',
+      () {
+        var type = parseType('Decimal', extraClasses: []);
+        expect(type.className, 'Decimal');
+        expect(type.nullable, isFalse);
+        expect(type.decimalPrecision, isNull);
+        expect(type.decimalScale, isNull);
+      },
+    );
+
+    test('when databaseType is computed, then it returns "decimal"', () {
+      var type = parseType('Decimal', extraClasses: []);
+      expect(type.databaseType, 'decimal');
+    });
+  });
+
+  group('Given a decimal field with both precision and scale set,', () {
+    test('when parsed, then className, precision and scale are captured', () {
+      var type = parseType('Decimal(10,2)', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isFalse);
+      expect(type.decimalPrecision, 10);
+      expect(type.decimalScale, 2);
+    });
+
+    test('when databaseType is computed, then it returns "decimal(p,s)"', () {
+      var type = parseType('Decimal(10,2)', extraClasses: []);
+      expect(type.databaseType, 'decimal(10,2)');
+    });
+  });
+
+  group('Given a decimal field with only precision set,', () {
+    test('when parsed, then scale defaults to zero', () {
+      var type = parseType('Decimal(19)', extraClasses: []);
+      expect(type.className, 'Decimal');
+      expect(type.nullable, isFalse);
+      expect(type.decimalPrecision, 19);
+      expect(type.decimalScale, 0);
+    });
+
+    test('when databaseType is computed, then it returns "decimal(p,0)"', () {
+      var type = parseType('Decimal(19)', extraClasses: []);
+      expect(type.databaseType, 'decimal(19,0)');
+    });
+  });
+
+  group('Given a nullable decimal field with precision and scale,', () {
+    test(
+      'when parsed, then nullable is true and precision/scale are captured',
+      () {
+        var type = parseType('Decimal(10,2)?', extraClasses: []);
+        expect(type.className, 'Decimal');
+        expect(type.nullable, isTrue);
+        expect(type.decimalPrecision, 10);
+        expect(type.decimalScale, 2);
+      },
+    );
+  });
 }

@@ -72,7 +72,9 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
       '''
 SELECT column_name, column_default, is_nullable,
        CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
-       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
+       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size,
+       CASE WHEN (data_type = 'numeric') THEN numeric_precision ELSE NULL END as decimal_precision,
+       CASE WHEN (data_type = 'numeric') THEN numeric_scale ELSE NULL END as decimal_scale
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
   LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
@@ -93,6 +95,8 @@ ORDER BY ordinal_position;
         // SQL outputs YES or NO. So we have to convert it to a bool manually.
         isNullable: e[2] == 'YES',
         vectorDimension: e[4],
+        decimalPrecision: e[5] as int?,
+        decimalScale: e[6] as int?,
       );
     }).toList();
   }

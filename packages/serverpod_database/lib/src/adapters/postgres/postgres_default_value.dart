@@ -29,6 +29,7 @@ extension PostgresColumnTypeDefault on ColumnType {
       case ColumnType.boolean:
       case ColumnType.integer:
       case ColumnType.doublePrecision:
+      case ColumnType.decimal:
       case ColumnType.bigint:
         return '$defaultValue';
       case ColumnType.text:

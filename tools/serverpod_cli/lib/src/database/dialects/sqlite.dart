@@ -159,6 +159,9 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
       case ColumnType.halfvec:
       case ColumnType.sparsevec:
       case ColumnType.bit:
+      case ColumnType.decimal:
+        // SQLite has no native NUMERIC(p,s); store as TEXT and recover the
+        // abstract type from serverpod_sqlite_schema during analysis.
         type = 'TEXT';
       case ColumnType.unknown:
         throw const FormatException('Unknown column type');
@@ -478,6 +481,8 @@ String _sqlStoreColumnTypesForMigrations(
   out += '    "column_name" TEXT NOT NULL,\n';
   out += '    "column_type" TEXT NOT NULL,\n';
   out += '    "column_vector_dimension" INTEGER,\n';
+  out += '    "column_decimal_precision" INTEGER,\n';
+  out += '    "column_decimal_scale" INTEGER,\n';
   out += '    PRIMARY KEY ("table_name", "column_name")\n';
   out += ');\n';
   out += '\n';
@@ -488,7 +493,9 @@ String _sqlStoreColumnTypesForMigrations(
       out += "'${t.name}', ";
       out += "'${c.name}', ";
       out += "'${c.columnType.name}', ";
-      out += "${c.vectorDimension ?? 'NULL'}";
+      out += "${c.vectorDimension ?? 'NULL'}, ";
+      out += "${c.decimalPrecision ?? 'NULL'}, ";
+      out += "${c.decimalScale ?? 'NULL'}";
       out += ')';
       out += (t == tables.last && c == t.columns.last) ? ';\n' : ',\n';
     }

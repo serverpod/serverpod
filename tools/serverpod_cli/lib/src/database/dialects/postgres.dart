@@ -218,6 +218,13 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.bit:
         type = 'bit(${vectorDimension!})';
         break;
+      case ColumnType.decimal:
+        if (decimalPrecision != null) {
+          type = 'decimal($decimalPrecision,${decimalScale ?? 0})';
+        } else {
+          type = 'decimal';
+        }
+        break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
     }

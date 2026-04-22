@@ -170,6 +170,13 @@ Expression _buildFromJson(
         serverCode,
         field,
       );
+    case ValueType.decimal:
+      return _buildComplexTypeFromJson(
+        type,
+        valueExpression,
+        serverCode,
+        field,
+      );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
       if (enumSerialization == null) {

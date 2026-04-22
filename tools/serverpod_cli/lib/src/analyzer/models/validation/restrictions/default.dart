@@ -69,6 +69,8 @@ class DefaultValueRestriction extends ValueRestriction {
         errors.addAll(_uuidValueValidation(value, span));
       case DefaultValueAllowedType.bigInt:
         errors.addAll(_bigIntValueValidation(value, span));
+      case DefaultValueAllowedType.decimal:
+        errors.addAll(_decimalValueValidation(value, span));
       case DefaultValueAllowedType.duration:
         errors.addAll(_durationValidation(value, span));
       case DefaultValueAllowedType.isEnum:
@@ -464,6 +466,25 @@ class DefaultValueRestriction extends ValueRestriction {
       return [
         SourceSpanSeverityException(
           'The "$key" value must be a valid BigInt (e.g., "$key"=\'1234567890\').',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> _decimalValueValidation(
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is Decimal) return [];
+
+    var valueStr = value is String ? value : value?.toString() ?? '';
+    if (valueStr.isEmpty || Decimal.tryParse(valueStr) == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "$key" value must be a valid Decimal (e.g., "$key"=\'10.5\').',
           span,
         ),
       ];

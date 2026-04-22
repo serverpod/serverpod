@@ -32,3 +32,5 @@ values:
   - sparsevec
   ### Dart type: [Bit]
   - bit
+  ### Dart type: [Decimal]
+  - decimal

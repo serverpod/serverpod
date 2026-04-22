@@ -91,6 +91,19 @@ extension BigIntJsonExtension on BigInt {
   String toJson() => toString();
 }
 
+/// Expose toJson on Decimal
+/// Expose static fromJson builder
+extension DecimalJsonExtension on Decimal {
+  /// Returns a deserialized version of the [Decimal].
+  static Decimal fromJson(dynamic value) {
+    if (value is Decimal) return value;
+    return Decimal.parse(value as String);
+  }
+
+  /// Returns a serialized version of the [Decimal] as a [String].
+  String toJson() => toString();
+}
+
 /// Expose toJson on ByteData
 /// Expose static fromJson builder
 extension ByteDataJsonExtension on ByteData {

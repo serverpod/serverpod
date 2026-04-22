@@ -1,0 +1,4 @@
+class: DecimalDefaultPersist
+table: decimal_default_persist
+fields:
+  decimalDefaultPersist: Decimal?, defaultPersist=10.5

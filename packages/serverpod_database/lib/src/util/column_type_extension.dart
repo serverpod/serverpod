@@ -8,6 +8,9 @@ extension ExtendedColumnType on ColumnType {
   /// If [type] is not known, returns [ColumnType.unknown].
   static ColumnType fromSqlType(String type) {
     var target = databaseTypeToLowerCamelCase(type);
+    // PostgreSQL always reports 'numeric' in information_schema even when
+    // the column was created with DECIMAL (they are synonyms).
+    if (target == 'numeric') target = 'decimal';
     for (var value in ColumnType.values) {
       if (value.name == target) {
         return value;

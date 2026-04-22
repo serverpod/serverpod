@@ -11,6 +11,8 @@ class TypeDefinitionBuilder {
   EnumDefinition? _enumDefinition;
   SerializableModelDefinition? _modelDefinition;
   int? _vectorDimension;
+  int? _decimalPrecision;
+  int? _decimalScale;
   String? _recordFieldName;
 
   TypeDefinitionBuilder()
@@ -22,6 +24,8 @@ class TypeDefinitionBuilder {
       _customClass = false,
       _modelDefinition = null,
       _vectorDimension = null,
+      _decimalPrecision = null,
+      _decimalScale = null,
       _recordFieldName = null;
 
   TypeDefinitionBuilder withClassName(String className) {
@@ -142,6 +146,16 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withDecimalPrecision(int precision) {
+    _decimalPrecision = precision;
+    return this;
+  }
+
+  TypeDefinitionBuilder withDecimalScale(int scale) {
+    _decimalScale = scale;
+    return this;
+  }
+
   TypeDefinition build() {
     return TypeDefinition(
       className: _className,
@@ -153,6 +167,8 @@ class TypeDefinitionBuilder {
       enumDefinition: _enumDefinition,
       projectModelDefinition: _modelDefinition,
       vectorDimension: _vectorDimension,
+      decimalPrecision: _decimalPrecision,
+      decimalScale: _decimalScale,
       recordFieldName: _recordFieldName,
     );
   }

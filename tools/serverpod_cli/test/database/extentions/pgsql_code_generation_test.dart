@@ -656,4 +656,133 @@ END
       },
     );
   });
+
+  group('Given a table definition with a Decimal field with precision', () {
+    var modelName = 'decimalModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withDecimalField('price', precision: 10, scale: 2)
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+
+    test(
+      'then the generated SQL contains decimal(10,2) column type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+        expect(pgsql, contains('"price" decimal(10,2)'));
+      },
+    );
+  });
+
+  group('Given a table definition with an unbounded Decimal field', () {
+    var modelName = 'decimalUnboundedModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withDecimalField('amount')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+
+    test(
+      'then the generated SQL contains decimal column type without precision.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+        expect(pgsql, contains('"amount" decimal'));
+        // Make sure it doesn't have decimal(
+        expect(
+          pgsql.contains('"amount" decimal('),
+          isFalse,
+          reason:
+              'Unbounded Decimal should generate decimal without parentheses',
+        );
+      },
+    );
+  });
+
+  group(
+    'Given a table definition with a Decimal(10,2) field with default value',
+    () {
+      var modelName = 'decimalDefaultModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withDecimalField(
+              'price',
+              precision: 10,
+              scale: 2,
+              defaultPersistValue: '10.5',
+            )
+            .build(),
+      ];
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
+      );
+
+      test(
+        'then the generated SQL contains decimal(10,2) NOT NULL DEFAULT 10.5.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+          expect(
+            pgsql,
+            contains('"price" decimal(10,2) NOT NULL DEFAULT 10.5'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a table definition with a Decimal field with large precision',
+    () {
+      var modelName = 'decimalLargeModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withDecimalField('quantity', precision: 19, scale: 4)
+            .build(),
+      ];
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
+      );
+
+      test(
+        'then the generated SQL contains decimal(19,4) column type.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+          expect(pgsql, contains('"quantity" decimal(19,4)'));
+        },
+      );
+    },
+  );
 }

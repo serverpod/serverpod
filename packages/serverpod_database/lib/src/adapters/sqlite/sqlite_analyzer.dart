@@ -64,12 +64,16 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
       for (var row in await database.unsafeQuery('''
         SELECT "column_name",
                "column_type",
-               "column_vector_dimension"
+               "column_vector_dimension",
+               "column_decimal_precision",
+               "column_decimal_scale"
         FROM serverpod_sqlite_schema
         WHERE (table_name = '$tableName');'''))
         row[0] as String: _ColumnInfo(
           type: ColumnType.values.byName(row[1] as String),
           vectorDimension: row[2] as int?,
+          decimalPrecision: row[3] as int?,
+          decimalScale: row[4] as int?,
         ),
     };
 
@@ -89,6 +93,8 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
         columnType: columnType,
         isNullable: !isIdColumn && (e[3] as int?) != 1,
         vectorDimension: columnTypes[columnName]?.vectorDimension,
+        decimalPrecision: columnTypes[columnName]?.decimalPrecision,
+        decimalScale: columnTypes[columnName]?.decimalScale,
       );
     }).toList();
   }
@@ -227,9 +233,13 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
 class _ColumnInfo {
   final ColumnType type;
   final int? vectorDimension;
+  final int? decimalPrecision;
+  final int? decimalScale;
 
   _ColumnInfo({
     required this.type,
     required this.vectorDimension,
+    required this.decimalPrecision,
+    required this.decimalScale,
   });
 }
