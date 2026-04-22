@@ -130,6 +130,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
   final TestServerOutputMode testServerOutputMode;
 
   /// Creates a new test serverpod instance.
+  ///
+  /// Endpoint wrappers are not initialized until the first [createSession] or [start] call.
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
@@ -155,9 +157,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
        _databaseInterceptor = databaseInterceptor,
        _configOverride = configOverride,
        testServerOutputMode =
-           testServerOutputMode ?? TestServerOutputMode.normal {
-    testEndpoints.initialize(serializationManager, endpoints);
-  }
+           testServerOutputMode ?? TestServerOutputMode.normal;
 
   /// Constructs a [Serverpod] whose configured database is this group's own: a
   /// PostgreSQL database named [_targetDatabaseName], or a SQLite file derived
@@ -201,6 +201,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
           databaseInterceptor: _databaseInterceptor,
         );
         _endpoints.initializeEndpoints(serverpod.server);
+        testEndpoints.initialize(_serializationManager, _endpoints);
         return serverpod;
       },
       stdout: () => NullStdOut(),
