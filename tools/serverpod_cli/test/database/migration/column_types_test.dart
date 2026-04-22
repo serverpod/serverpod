@@ -60,25 +60,17 @@ void main() {
         databaseTarget: targetDefinition,
       );
 
-      // The migration engine does not support in-place ALTER COLUMN TYPE for
-      // json/jsonb, so the table is dropped and recreated. The destructive
-      // warnings abort `serverpod create-migration` unless --force is used.
-      test(
-        'then the table is dropped and recreated with destructive warnings.',
-        () {
-          expect(migration.actions, hasLength(2));
-          expect(
-            migration.actions.first.type,
-            DatabaseMigrationActionType.deleteTable,
-          );
-          expect(
-            migration.actions.last.type,
-            DatabaseMigrationActionType.createTable,
-          );
-          expect(migration.warnings, isNotEmpty);
-          expect(migration.warnings.every((w) => w.destructive), isTrue);
-        },
-      );
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
     },
   );
 
@@ -93,25 +85,68 @@ void main() {
         databaseTarget: targetDefinition,
       );
 
-      // The migration engine does not support in-place ALTER COLUMN TYPE for
-      // json/jsonb, so the table is dropped and recreated. The destructive
-      // warnings abort `serverpod create-migration` unless --force is used.
-      test(
-        'then the table is dropped and recreated with destructive warnings.',
-        () {
-          expect(migration.actions, hasLength(2));
-          expect(
-            migration.actions.first.type,
-            DatabaseMigrationActionType.deleteTable,
-          );
-          expect(
-            migration.actions.last.type,
-            DatabaseMigrationActionType.createTable,
-          );
-          expect(migration.warnings, isNotEmpty);
-          expect(migration.warnings.every((w) => w.destructive), isTrue);
-        },
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given table with non-nullable json column as source and nullable jsonb column as target',
+    () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('test_column')
+                      .withColumnType(ColumnType.json)
+                      .withIsNullable(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('test_column')
+                      .withColumnType(ColumnType.jsonb)
+                      .withIsNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
       );
+
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
     },
   );
 }

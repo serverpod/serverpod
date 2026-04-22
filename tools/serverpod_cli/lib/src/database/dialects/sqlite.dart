@@ -405,10 +405,24 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     if (copyColumns.isNotEmpty) {
       final colListNew = copyColumns.map((c) => '"${c.name}"').join(', ');
       final selectList = copyColumns
-          .map(
-            (c) =>
-                '"${_sqliteSourceColumnNameForInsert(c.name, renameColumns)}"',
-          )
+          .map((c) {
+            final sourceName = _sqliteSourceColumnNameForInsert(
+              c.name,
+              renameColumns,
+            );
+            final newType = modifyColumns
+                .where((m) => m.columnName == c.name)
+                .firstOrNull
+                ?.newType;
+            if (newType != null) {
+              return switch (newType) {
+                ColumnType.jsonb => 'jsonb("$sourceName")',
+                ColumnType.json => 'json("$sourceName")',
+                _ => '"$sourceName"',
+              };
+            }
+            return '"$sourceName"';
+          })
           .join(', ');
       out +=
           'INSERT INTO "$newTableName" ($colListNew) '

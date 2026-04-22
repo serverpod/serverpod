@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
@@ -744,6 +745,129 @@ END
             'USING gin ("$fieldName" $expectedSuffix);\n',
           );
         }
+      },
+    );
+  });
+
+  group('Given a column migration with a type change', () {
+    test(
+      'when changing from json to jsonb, '
+      'then the SQL uses SET DATA TYPE jsonb with USING cast.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.jsonb)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.jsonb,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(
+          sql,
+          contains(
+            'ALTER TABLE "my_table" ALTER COLUMN "data"'
+            ' SET DATA TYPE jsonb USING "data"::jsonb;',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when changing from jsonb to json, '
+      'then the SQL uses SET DATA TYPE json with USING cast.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.json)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.json,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(
+          sql,
+          contains(
+            'ALTER TABLE "my_table" ALTER COLUMN "data"'
+            ' SET DATA TYPE json USING "data"::json;',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when no type change, '
+      'then the SQL does not contain SET DATA TYPE.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.json)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(sql, isNot(contains('SET DATA TYPE')));
+      },
+    );
+
+    test(
+      'when changing type and nullability simultaneously, '
+      'then the SQL contains both SET DATA TYPE and DROP NOT NULL.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.jsonb)
+            .withDartType('List<String>')
+            .withIsNullable(true)
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: true,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.jsonb,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(sql, contains('DROP NOT NULL'));
+        expect(sql, contains('SET DATA TYPE jsonb USING "data"::jsonb'));
       },
     );
   });

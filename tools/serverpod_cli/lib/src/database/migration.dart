@@ -247,6 +247,9 @@ TableMigration? generateTableMigration(
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
         var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
         var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+        var newType = srcColumn.columnType != dstColumn.columnType
+            ? dstColumn.columnType
+            : null;
 
         // Id column can have its model type changed between non-nullable and
         // nullable, but the database type will remain the same. In this case,
@@ -254,7 +257,8 @@ TableMigration? generateTableMigration(
         if (srcColumn.name == defaultPrimaryKeyName &&
             !addNullable &&
             !removeNullable &&
-            !changeDefault) {
+            !changeDefault &&
+            newType == null) {
           continue;
         }
 
@@ -265,6 +269,7 @@ TableMigration? generateTableMigration(
             removeNullable: removeNullable,
             changeDefault: changeDefault,
             newDefault: dstColumn.columnDefault,
+            newType: newType,
           ),
         );
 

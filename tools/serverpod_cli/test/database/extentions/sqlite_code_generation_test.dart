@@ -241,4 +241,104 @@ void main() {
       expect(sqlite, contains('"tags" BLOB NOT NULL'));
     },
   );
+
+  group('Given a migration changing a column from json to jsonb', () {
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.json)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var targetDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.jsonb)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test(
+      'when generating SQL for SQLite, '
+      'then the rebuild uses jsonb() to cast the column.',
+      () {
+        var sql = migration.toSqliteSql(
+          databaseDefinition: targetDefinition,
+          installedModules: _sqliteModules(targetDefinition),
+          removedModules: [],
+        );
+
+        expect(sql, contains('jsonb("data")'));
+      },
+    );
+  });
+
+  group('Given a migration changing a column from jsonb to json', () {
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.jsonb)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var targetDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.json)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test(
+      'when generating SQL for SQLite, '
+      'then the rebuild uses json() to cast the column.',
+      () {
+        var sql = migration.toSqliteSql(
+          databaseDefinition: targetDefinition,
+          installedModules: _sqliteModules(targetDefinition),
+          removedModules: [],
+        );
+
+        expect(sql, contains('json("data")'));
+      },
+    );
+  });
 }
