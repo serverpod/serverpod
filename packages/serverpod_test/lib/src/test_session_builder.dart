@@ -23,45 +23,46 @@ abstract class AuthenticationOverride {
 
 /// Internal test session that contains implementation details that should
 /// only be used internally by the test tools.
+///
+/// Construct, then call [bind] before any other method. Methods called
+/// before [bind] throw [LateInitializationError].
 class InternalTestSessionBuilder extends TestSessionBuilder {
-  final List<InternalServerpodSession> _allTestSessions;
-  final TestServerpod _testServerpod;
-  final AuthenticationOverride? _authenticationOverride;
-  final bool _enableLogging;
-  final InternalServerpodSession _mainServerpodSession;
+  late final List<InternalServerpodSession> _allTestSessions;
+  late final TestServerpod _testServerpod;
+  late final AuthenticationOverride? _authenticationOverride;
+  late final bool _enableLogging;
+  late final InternalServerpodSession _mainServerpodSession;
 
-  /// Creates a new internal test session.
-  InternalTestSessionBuilder(
-    TestServerpod testServerpod, {
-    AuthenticationOverride? authenticationOverride,
-    InternalTestSessionBuilder? sessionWithDatabaseConnection,
-    required bool enableLogging,
+  /// Populates the builder's state. Can only be called once.
+  void bind({
+    required TestServerpod testServerpod,
     required List<InternalServerpodSession> allTestSessions,
     required InternalServerpodSession mainServerpodSession,
-  }) : _allTestSessions = allTestSessions,
-       _authenticationOverride = authenticationOverride,
-       _testServerpod = testServerpod,
-       _enableLogging = enableLogging,
-       _mainServerpodSession = mainServerpodSession;
+    required bool enableLogging,
+    AuthenticationOverride? authenticationOverride,
+  }) {
+    _testServerpod = testServerpod;
+    _allTestSessions = allTestSessions;
+    _mainServerpodSession = mainServerpodSession;
+    _enableLogging = enableLogging;
+    _authenticationOverride = authenticationOverride;
+  }
 
   @override
-  Session build() {
-    return internalBuild();
-  }
+  Session build() => internalBuild();
 
   @override
   TestSessionBuilder copyWith({
     AuthenticationOverride? authentication,
     bool? enableLogging,
-  }) {
-    return InternalTestSessionBuilder(
-      _testServerpod,
+  }) => InternalTestSessionBuilder()
+    ..bind(
+      testServerpod: _testServerpod,
       allTestSessions: _allTestSessions,
-      authenticationOverride: authentication ?? _authenticationOverride,
-      enableLogging: enableLogging ?? _enableLogging,
       mainServerpodSession: _mainServerpodSession,
+      enableLogging: enableLogging ?? _enableLogging,
+      authenticationOverride: authentication ?? _authenticationOverride,
     );
-  }
 
   /// Creates a new Serverpod session with the specified [endpoint] and [method].
   /// Should only be used by generated code.
