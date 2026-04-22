@@ -157,16 +157,12 @@ class ModelParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
-    var defaultSerializationDataType =
-        _parseSerializationDataType(documentContents) ??
-        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
 
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
       config,
       serverOnly,
-      defaultSerializationDataType,
     );
 
     return initialize(
@@ -290,9 +286,12 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     GeneratorConfig config,
     bool serverOnlyClass,
-    SerializationDataType? defaultSerializationDataType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
+
+    var defaultSerializationDataType =
+        _parseSerializationDataType(documentContents) ??
+        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
 
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is YamlMap) {
