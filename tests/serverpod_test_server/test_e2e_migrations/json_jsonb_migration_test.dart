@@ -215,10 +215,10 @@ void main() {
         expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
         // Step 4: Verify data preserved after json → jsonb
-        var rows = await serviceClient.insights.executeSql(
-          'SELECT data::text FROM migrated_table ORDER BY id',
+        var rowCount = await serviceClient.insights.executeSql(
+          'SELECT * FROM migrated_table',
         );
-        expect(rows, hasLength(3));
+        expect(rowCount, 3);
 
         // Step 5: Migrate jsonb → json
         exitCode = await MigrationTestUtils.createMigrationFromProtocols(
@@ -229,10 +229,10 @@ void main() {
         expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
         // Step 6: Verify data preserved after jsonb → json
-        var rowsAfter = await serviceClient.insights.executeSql(
-          'SELECT data::text FROM migrated_table ORDER BY id',
+        var rowCountAfter = await serviceClient.insights.executeSql(
+          'SELECT * FROM migrated_table',
         );
-        expect(rowsAfter, hasLength(3));
+        expect(rowCountAfter, 3);
       },
     );
   });
