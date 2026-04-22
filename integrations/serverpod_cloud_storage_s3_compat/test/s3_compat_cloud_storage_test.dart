@@ -105,6 +105,19 @@ void main() {
       );
 
       test(
+        'when getting its presigned URL '
+        'then it returns the URL from the S3Client',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 200);
+
+          final url = await storage.testGetPresignedUrl('path/to/file.txt');
+
+          expect(url, isNotNull);
+          expect(mockClient.lastPresignedKey, 'path/to/file.txt');
+        },
+      );
+
+      test(
         'when deleting it '
         'then it calls deleteObject on the client',
         () async {
@@ -164,6 +177,18 @@ void main() {
           mockClient.headObjectResponse = http.Response('', 404);
 
           final url = await storage.testGetPublicUrl('missing.txt');
+
+          expect(url, isNull);
+        },
+      );
+
+      test(
+        'when getting its presigned URL '
+        'then it returns null',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 404);
+
+          final url = await storage.testGetPresignedUrl('missing.txt');
 
           expect(url, isNull);
         },
@@ -310,6 +335,7 @@ class MockS3Client extends S3Client {
   String? lastGetKey;
   String? lastHeadKey;
   String? lastDeleteKey;
+  String? lastPresignedKey;
 
   MockS3Client()
     : super(
@@ -338,6 +364,16 @@ class MockS3Client extends S3Client {
   Future<http.Response> deleteObject(String key) async {
     lastDeleteKey = key;
     return deleteObjectResponse ?? http.Response('', 204);
+  }
+
+  @override
+  Uri getPresignedUrl({
+    required String key,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) {
+    lastPresignedKey = key;
+    return Uri.parse('https://presigned.example.com/$key?method=$method');
   }
 }
 
@@ -460,6 +496,21 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
       return endpoints.buildPublicUri(bucket, region, path);
     }
     return null;
+  }
+
+  /// Test helper to get a presigned URL without a real Session.
+  Future<Uri?> testGetPresignedUrl(
+    String path, {
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) async {
+    if (!await testFileExists(path)) return null;
+
+    return mockClient.getPresignedUrl(
+      key: path,
+      method: method,
+      expiration: expiration,
+    );
   }
 
   /// Test helper to delete file without a real Session.

@@ -217,4 +217,40 @@ void main() {
       );
     },
   );
+
+  group('Given a DatabaseCloudStorage', () {
+    test(
+      'when getPresignedUrl is called '
+      'then it throws UnsupportedError',
+      () {
+        expect(
+          () => storage.getPresignedUrl(
+            session: session,
+            path: 'test/file.txt',
+          ),
+          throwsA(isA<UnsupportedError>()),
+        );
+      },
+    );
+
+    test(
+      'when getPresignedUrl is called '
+      'then the error message mentions DatabaseCloudStorage',
+      () {
+        expect(
+          () => storage.getPresignedUrl(
+            session: session,
+            path: 'test/file.txt',
+          ),
+          throwsA(
+            isA<UnsupportedError>().having(
+              (e) => e.message,
+              'message',
+              contains('DatabaseCloudStorage'),
+            ),
+          ),
+        );
+      },
+    );
+  });
 }
