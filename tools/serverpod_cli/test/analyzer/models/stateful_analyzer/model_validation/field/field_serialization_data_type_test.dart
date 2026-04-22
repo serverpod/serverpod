@@ -122,6 +122,90 @@ void main() {
   );
 
   test(
+    'Given a Map field with `serializationDataType` set to jsonb, '
+    'when validating, '
+    'then no error is reported.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
+        class: Example
+        table: example
+        fields:
+          data: Map<String, String>, serializationDataType=jsonb
+        ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a serializable model field with `serializationDataType` set to jsonb, '
+    'when validating, '
+    'then no error is reported.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('example').withYaml('''
+        class: Example
+        table: example
+        fields:
+          data: CustomModel, serializationDataType=jsonb
+        ''').build(),
+        ModelSourceBuilder().withFileName('custom_model').withYaml('''
+        class: CustomModel
+        fields:
+          value: String
+        ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given the id field with `serializationDataType` set, '
+    'when validating, '
+    'then an error is reported.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
+        class: Example
+        table: example
+        fields:
+          id: int?, defaultPersist=serial, serializationDataType=jsonb
+        ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isNotEmpty);
+      expect(
+        collector.errors.first.message,
+        'The "serializationDataType" key is not allowed on the "id" field.',
+      );
+    },
+  );
+
+  test(
     'Given a non-serializable field with `serializationDataType` set, when validating, then an error about the invalid field type is reported.',
     () {
       var models = [
@@ -143,7 +227,8 @@ void main() {
       expect(collector.errors, isNotEmpty);
       expect(
         collector.errors.first.message,
-        'The "serializationDataType" key is only valid on serializable field types (e.g. lists, maps, or custom classes).',
+        'The "serializationDataType" key is only valid on serializable '
+        'field types (e.g. lists, maps, serializable models or custom classes).',
       );
     },
   );

@@ -390,6 +390,24 @@ void main() async {
           );
         },
       );
+
+      test(
+        'then the implicit gin index exists with default type and operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_implicit_gin',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.jsonbOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(
+            index.elements.first.definition,
+            'jsonbIndexedImplicitGin',
+          );
+        },
+      );
     },
   );
 }

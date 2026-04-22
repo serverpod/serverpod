@@ -38,6 +38,22 @@
           },
           {
             "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbMap",
+            "fieldName": "jsonbMap",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Map<String,String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbObject",
+            "fieldName": "jsonbObject",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "protocol:SimpleData"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
             "name": "jsonbIndexed",
             "fieldName": "jsonbIndexed",
             "columnType": 14,
@@ -56,6 +72,14 @@
             "__className__": "serverpod.ColumnDefinition",
             "name": "jsonbIndexedGinJsonbPath",
             "fieldName": "jsonbIndexedGinJsonbPath",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbIndexedImplicitGin",
+            "fieldName": "jsonbIndexedImplicitGin",
             "columnType": 14,
             "isNullable": false,
             "dartType": "List<String>"
@@ -100,6 +124,21 @@
             "isUnique": false,
             "isPrimary": false,
             "ginOperatorClass": "jsonbPathOps"
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "jsonb_index_implicit_gin",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "jsonbIndexedImplicitGin"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "jsonbOps"
           }
         ],
         "managed": true

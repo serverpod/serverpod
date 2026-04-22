@@ -1556,33 +1556,10 @@ class Restrictions {
         ),
     ];
 
-    var index = definition.indexes
-        .where((i) => i.name == parentNodeName)
-        .firstOrNull;
-    var isGinIndex = index != null && index.isGinIndex;
-
-    var nonJsonbFields = isGinIndex
-        ? fields
-              .where((f) => indexFields.contains(f.name))
-              .where((f) => !f.type.isJsonbSerialized)
-              .map((f) => f.name)
-              .toList()
-        : <String>[];
-
-    var ginErrors = [
-      if (nonJsonbFields.isNotEmpty)
-        SourceSpanSeverityException(
-          'GIN indexes require the indexed field to use '
-          '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
-          span,
-        ),
-    ];
-
     return [
       ...missingFieldErrors,
       ...duplicateFieldErrors,
       ...vectorErrors,
-      ...ginErrors,
     ];
   }
 
@@ -1770,6 +1747,22 @@ class Restrictions {
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
+
+      if (content == 'gin') {
+        var nonJsonbFields = indexFields
+            .where((f) => !f.type.isJsonbSerialized)
+            .map((f) => f.name)
+            .toList();
+        if (nonJsonbFields.isNotEmpty) {
+          return [
+            SourceSpanSeverityException(
+              'The "gin" index type requires all indexed fields to use '
+              '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
+              span,
+            ),
+          ];
+        }
+      }
     }
 
     if (content is! String || !validIndexTypes.contains(content)) {
@@ -1944,8 +1937,8 @@ class Restrictions {
         !field.type.isColumnStructured) {
       errors.add(
         SourceSpanSeverityException(
-          'The "${Keyword.serializationDataType}" key is only valid on '
-          'serializable field types (e.g. lists, maps, or custom classes).',
+          'The "${Keyword.serializationDataType}" key is only valid on serializable '
+          'field types (e.g. lists, maps, serializable models or custom classes).',
           span,
         ),
       );

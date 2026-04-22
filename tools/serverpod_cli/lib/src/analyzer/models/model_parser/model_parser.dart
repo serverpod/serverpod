@@ -157,25 +157,17 @@ class ModelParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
+    var defaultSerializationDataType =
+        _parseSerializationDataType(documentContents) ??
+        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
+
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
       config,
       serverOnly,
+      defaultSerializationDataType,
     );
-
-    var effectiveDefault =
-        _parseSerializationDataType(documentContents) ??
-        (config.serializeAsJsonbByDefault ? SerializationDataType.jsonb : null);
-
-    if (effectiveDefault != null) {
-      for (var field in fields) {
-        if (field.type.isColumnSerializable &&
-            field.type.serializationDataType == null) {
-          field.type.serializationDataType = effectiveDefault;
-        }
-      }
-    }
 
     return initialize(
       className: className,
@@ -298,6 +290,7 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     GeneratorConfig config,
     bool serverOnlyClass,
+    SerializationDataType? defaultSerializationDataType,
   ) {
     List<SerializableModelFieldDefinition> fields = [];
 
@@ -311,6 +304,7 @@ class ModelParser {
             docsExtractor,
             config,
             serverOnlyClass,
+            defaultSerializationDataType,
           );
         }).toList(),
       );
@@ -324,6 +318,7 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     GeneratorConfig config,
     bool serverOnlyClass,
+    SerializationDataType? defaultSerializationDataType,
   ) {
     var key = fieldNode.key;
     if (key is! YamlScalar) return [];
@@ -367,7 +362,8 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.serializationDataType = _parseSerializationDataType(node);
+    typeResult.serializationDataType =
+        _parseSerializationDataType(node) ?? defaultSerializationDataType;
 
     var defaultModelValue = _parseDefaultValue(
       node,
