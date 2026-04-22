@@ -111,6 +111,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
   final TestServerOutputMode testServerOutputMode;
 
   /// Creates a new test serverpod instance.
+  ///
+  /// Endpoint wrappers are not initialized until the first [createSession] or [start] call.
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
@@ -143,12 +145,12 @@ class TestServerpod<T extends InternalTestEndpoints> {
           runtimeParametersBuilder: runtimeParametersBuilder,
         );
         endpoints.initializeEndpoints(serverpod.server);
+        testEndpoints.initialize(serializationManager, endpoints);
         return serverpod;
       },
       stdout: () => NullStdOut(),
       stderr: () => NullStdOut(),
     );
-    testEndpoints.initialize(serializationManager, endpoints);
   }
 
   /// Executes a callback with output suppression based on the configured mode.

@@ -72,9 +72,13 @@ typedef TestClosure<T> =
 /// The default integration test tag used by `withServerpod`.
 const String defaultIntegrationTestTag = 'integration';
 
-/// Builds the `withServerpod` test helper.
-/// Used by the generated code.
-/// Note: The [testGroupName] parameter is needed to enable IDE support.
+/// Builds the `withServerpod` test helper. Used by generated code.
+///
+/// Registers a `group` with `setUpAll`, `tearDown`, and `tearDownAll`
+/// hooks and nothing else. Session, transaction manager, endpoint
+/// wrappers, and Serverpod construction are all deferred into
+/// `setUpAll`, so test-tree enumeration stays cheap and sendable
+/// across isolates.
 void Function(TestClosure<T>)
 buildWithServerpod<T extends InternalTestEndpoints>(
   String testGroupName,
@@ -95,41 +99,7 @@ buildWithServerpod<T extends InternalTestEndpoints>(
   }
 
   var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 30);
-
-  var mainServerpodSession = testServerpod.createSession(
-    rollbackDatabase: rollbackDatabase,
-  );
-
-  TransactionManager? transactionManager;
-  if (testServerpod.isDatabaseEnabled) {
-    transactionManager = mainServerpodSession.transactionManager;
-    if (transactionManager == null) {
-      throw InitializationException(
-        'The transaction manager is null but database is enabled.',
-      );
-    }
-  }
-
-  TransactionManager getTransactionManager() {
-    var localTransactionManager = transactionManager;
-    if (localTransactionManager == null) {
-      throw StateError(
-        'The transaction manager is null.',
-      );
-    }
-
-    return localTransactionManager;
-  }
-
-  List<InternalServerpodSession> allTestSessions = [];
-
-  InternalTestSessionBuilder mainTestSessionBuilder =
-      InternalTestSessionBuilder(
-        testServerpod,
-        allTestSessions: allTestSessions,
-        enableLogging: maybeEnableSessionLogging ?? false,
-        mainServerpodSession: mainServerpodSession,
-      );
+  var enableLogging = maybeEnableSessionLogging ?? false;
 
   bool startServerpodFailed = false;
 
@@ -139,6 +109,22 @@ buildWithServerpod<T extends InternalTestEndpoints>(
     group(
       testGroupName,
       () {
+        final sessionBuilder = InternalTestSessionBuilder();
+        late final InternalServerpodSession mainServerpodSession;
+        late final List<InternalServerpodSession> allTestSessions;
+        TransactionManager? transactionManager;
+
+        TransactionManager getTransactionManager() {
+          var localTransactionManager = transactionManager;
+          if (localTransactionManager == null) {
+            throw StateError(
+              'The transaction manager is null.',
+            );
+          }
+
+          return localTransactionManager;
+        }
+
         setUpAll(() async {
           try {
             await testServerpod.start().timeout(
@@ -155,6 +141,25 @@ buildWithServerpod<T extends InternalTestEndpoints>(
             startServerpodFailed = true;
             rethrow;
           }
+
+          mainServerpodSession = testServerpod.createSession(
+            rollbackDatabase: rollbackDatabase,
+          );
+          if (testServerpod.isDatabaseEnabled) {
+            transactionManager = mainServerpodSession.transactionManager;
+            if (transactionManager == null) {
+              throw InitializationException(
+                'The transaction manager is null but database is enabled.',
+              );
+            }
+          }
+          allTestSessions = <InternalServerpodSession>[];
+          sessionBuilder.bind(
+            testServerpod: testServerpod,
+            allTestSessions: allTestSessions,
+            mainServerpodSession: mainServerpodSession,
+            enableLogging: enableLogging,
+          );
 
           if (rollbackDatabase == RollbackDatabase.afterAll ||
               rollbackDatabase == RollbackDatabase.afterEach) {
@@ -202,7 +207,7 @@ buildWithServerpod<T extends InternalTestEndpoints>(
           await testServerpod.shutdown();
         });
 
-        testClosure(mainTestSessionBuilder, testServerpod.testEndpoints);
+        testClosure(sessionBuilder, testServerpod.testEndpoints);
       },
       tags: maybeTestGroupTagsOverride ?? [defaultIntegrationTestTag],
     );
