@@ -243,34 +243,8 @@ void main() {
   );
 
   group('Given a migration changing a column from json to jsonb', () {
-    var sourceDefinition = DatabaseDefinitionBuilder()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName('my_table')
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName('data')
-                    .withColumnType(ColumnType.json)
-                    .withDartType('List<String>')
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName('my_table')
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName('data')
-                    .withColumnType(ColumnType.jsonb)
-                    .withDartType('List<String>')
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+    var sourceDefinition = _singleColumnDefinition(ColumnType.json);
+    var targetDefinition = _withColumnType(sourceDefinition, ColumnType.jsonb);
 
     var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
@@ -287,40 +261,20 @@ void main() {
           removedModules: [],
         );
 
-        expect(sql, contains('jsonb("data")'));
+        expect(
+          sql,
+          contains(
+            'INSERT INTO "new_my_table" ("id", "name", "data") '
+            'SELECT "id", "name", jsonb("data") FROM "my_table";',
+          ),
+        );
       },
     );
   });
 
   group('Given a migration changing a column from jsonb to json', () {
-    var sourceDefinition = DatabaseDefinitionBuilder()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName('my_table')
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName('data')
-                    .withColumnType(ColumnType.jsonb)
-                    .withDartType('List<String>')
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName('my_table')
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName('data')
-                    .withColumnType(ColumnType.json)
-                    .withDartType('List<String>')
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+    var sourceDefinition = _singleColumnDefinition(ColumnType.jsonb);
+    var targetDefinition = _withColumnType(sourceDefinition, ColumnType.json);
 
     var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
@@ -337,8 +291,48 @@ void main() {
           removedModules: [],
         );
 
-        expect(sql, contains('json("data")'));
+        expect(
+          sql,
+          contains(
+            'INSERT INTO "new_my_table" ("id", "name", "data") '
+            'SELECT "id", "name", json("data") FROM "my_table";',
+          ),
+        );
       },
     );
   });
+}
+
+DatabaseDefinition _singleColumnDefinition(ColumnType columnType) {
+  return DatabaseDefinitionBuilder()
+      .withTable(
+        TableDefinitionBuilder()
+            .withName('my_table')
+            .withColumn(
+              ColumnDefinitionBuilder()
+                  .withName('data')
+                  .withColumnType(columnType)
+                  .withDartType('List<String>')
+                  .build(),
+            )
+            .build(),
+      )
+      .build();
+}
+
+DatabaseDefinition _withColumnType(
+  DatabaseDefinition source,
+  ColumnType columnType,
+) {
+  var table = source.tables.first;
+  var column = table.columns.firstWhere((c) => c.name == 'data');
+  return source.copyWith(
+    tables: [
+      table.copyWith(
+        columns: table.columns
+            .map((c) => c == column ? c.copyWith(columnType: columnType) : c)
+            .toList(),
+      ),
+    ],
+  );
 }

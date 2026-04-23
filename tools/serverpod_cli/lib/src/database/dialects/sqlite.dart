@@ -414,14 +414,11 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
                 .where((m) => m.columnName == c.name)
                 .firstOrNull
                 ?.newType;
-            if (newType != null) {
-              return switch (newType) {
-                ColumnType.jsonb => 'jsonb("$sourceName")',
-                ColumnType.json => 'json("$sourceName")',
-                _ => '"$sourceName"',
-              };
-            }
-            return '"$sourceName"';
+            return switch (newType) {
+              ColumnType.jsonb => 'jsonb("$sourceName")',
+              ColumnType.json => 'json("$sourceName")',
+              _ => '"$sourceName"',
+            };
           })
           .join(', ');
       out +=

@@ -68,6 +68,12 @@ void main() {
         );
       });
 
+      test('then the alter action has a column type change to jsonb.', () {
+        var modifyColumns = migration.actions.first.alterTable!.modifyColumns;
+        expect(modifyColumns, hasLength(1));
+        expect(modifyColumns.first.newType, ColumnType.jsonb);
+      });
+
       test('then no warnings are created.', () {
         expect(migration.warnings, isEmpty);
       });
@@ -93,6 +99,12 @@ void main() {
         );
       });
 
+      test('then the alter action has a column type change to json.', () {
+        var modifyColumns = migration.actions.first.alterTable!.modifyColumns;
+        expect(modifyColumns, hasLength(1));
+        expect(modifyColumns.first.newType, ColumnType.json);
+      });
+
       test('then no warnings are created.', () {
         expect(migration.warnings, isEmpty);
       });
@@ -102,34 +114,27 @@ void main() {
   group(
     'Given table with non-nullable json column as source and nullable jsonb column as target',
     () {
-      var sourceDefinition = DatabaseDefinitionBuilder()
-          .withTable(
-            TableDefinitionBuilder()
-                .withName('example_table')
-                .withColumn(
-                  ColumnDefinitionBuilder()
-                      .withName('test_column')
-                      .withColumnType(ColumnType.json)
-                      .withIsNullable(false)
-                      .build(),
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      var sourceTable = sourceDefinition.tables.first;
+      var sourceColumn = sourceTable.columns.firstWhere(
+        (c) => c.name == 'test_column',
+      );
+      var targetDefinition = sourceDefinition.copyWith(
+        tables: [
+          sourceTable.copyWith(
+            columns: sourceTable.columns
+                .map(
+                  (c) => c == sourceColumn
+                      ? c.copyWith(
+                          columnType: ColumnType.jsonb,
+                          isNullable: true,
+                        )
+                      : c,
                 )
-                .build(),
-          )
-          .build();
-      var targetDefinition = DatabaseDefinitionBuilder()
-          .withTable(
-            TableDefinitionBuilder()
-                .withName('example_table')
-                .withColumn(
-                  ColumnDefinitionBuilder()
-                      .withName('test_column')
-                      .withColumnType(ColumnType.jsonb)
-                      .withIsNullable(true)
-                      .build(),
-                )
-                .build(),
-          )
-          .build();
+                .toList(),
+          ),
+        ],
+      );
 
       var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,

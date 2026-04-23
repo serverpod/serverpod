@@ -581,7 +581,7 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
     }
 
     if (newType != null) {
-      var typeName = newType == ColumnType.jsonb ? 'jsonb' : 'json';
+      var typeName = newType!.name;
       out +=
           'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
           ' SET DATA TYPE $typeName USING "$columnName"::$typeName;\n';

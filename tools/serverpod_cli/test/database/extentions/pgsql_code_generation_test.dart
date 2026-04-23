@@ -756,7 +756,7 @@ END
       () {
         var columnDefinition = ColumnDefinitionBuilder()
             .withName('data')
-            .withColumnType(ColumnType.jsonb)
+            .withColumnType(ColumnType.json)
             .withDartType('List<String>')
             .build();
 
@@ -775,10 +775,8 @@ END
 
         expect(
           sql,
-          contains(
-            'ALTER TABLE "my_table" ALTER COLUMN "data"'
-            ' SET DATA TYPE jsonb USING "data"::jsonb;',
-          ),
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE jsonb USING "data"::jsonb;\n',
         );
       },
     );
@@ -789,7 +787,7 @@ END
       () {
         var columnDefinition = ColumnDefinitionBuilder()
             .withName('data')
-            .withColumnType(ColumnType.json)
+            .withColumnType(ColumnType.jsonb)
             .withDartType('List<String>')
             .build();
 
@@ -808,10 +806,8 @@ END
 
         expect(
           sql,
-          contains(
-            'ALTER TABLE "my_table" ALTER COLUMN "data"'
-            ' SET DATA TYPE json USING "data"::json;',
-          ),
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE json USING "data"::json;\n',
         );
       },
     );
@@ -838,7 +834,7 @@ END
           columnDefinition: columnDefinition,
         );
 
-        expect(sql, isNot(contains('SET DATA TYPE')));
+        expect(sql, '');
       },
     );
 
@@ -848,7 +844,7 @@ END
       () {
         var columnDefinition = ColumnDefinitionBuilder()
             .withName('data')
-            .withColumnType(ColumnType.jsonb)
+            .withColumnType(ColumnType.json)
             .withDartType('List<String>')
             .withIsNullable(true)
             .build();
@@ -866,8 +862,12 @@ END
           columnDefinition: columnDefinition,
         );
 
-        expect(sql, contains('DROP NOT NULL'));
-        expect(sql, contains('SET DATA TYPE jsonb USING "data"::jsonb'));
+        expect(
+          sql,
+          'ALTER TABLE "my_table" ALTER COLUMN "data" DROP NOT NULL;\n'
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE jsonb USING "data"::jsonb;\n',
+        );
       },
     );
   });
