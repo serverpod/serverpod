@@ -11,12 +11,13 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
-  List<ModuleConfig> allModules,
-) {
+  List<ModuleConfig> allModules, {
+  bool serverCode = true,
+}) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
-          classDefinition.tableName != null)
+          classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
           name: classDefinition.tableName!,
@@ -24,7 +25,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           schema: 'public',
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
-              if (column.shouldSerializeFieldForDatabase(true))
+              if (column.shouldSerializeFieldForDatabase(serverCode))
                 ColumnDefinition(
                   name: column.columnName,
                   fieldName: column.name,

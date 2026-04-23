@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
@@ -25,6 +26,41 @@ void main() {
     'src',
     'protocol',
     'protocol.dart',
+  );
+
+  group(
+    'Given a client database table when generating protocol files',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart extends the database serialization manager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('DatabaseSerializationManager'),
+          );
+        },
+      );
+    },
   );
 
   group(

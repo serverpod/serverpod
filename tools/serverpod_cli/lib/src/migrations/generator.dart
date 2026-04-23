@@ -23,10 +23,12 @@ class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
     required this.projectName,
+    this.serverCode = true,
   });
 
   final Directory directory;
   final String projectName;
+  final bool serverCode;
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
@@ -52,8 +54,9 @@ class MigrationGenerator {
   /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
-  MigrationArtifactStore get _artifactStore =>
-      FileSystemMigrationArtifactStore(projectDirectory: directory);
+  MigrationArtifactStore get _artifactStore => serverCode
+      ? FileSystemMigrationArtifactStore(projectDirectory: directory)
+      : throw UnsupportedError('Migrations are not supported on the client.');
 
   Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
@@ -69,9 +72,7 @@ class MigrationGenerator {
       latestVersion,
     );
 
-    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
-      config,
-    );
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
       collector.printErrors();
 
@@ -84,6 +85,7 @@ class MigrationGenerator {
       modelDefinitions,
       config.name,
       config.modulesAll,
+      serverCode: serverCode,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(

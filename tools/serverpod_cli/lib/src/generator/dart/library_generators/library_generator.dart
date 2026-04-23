@@ -65,6 +65,12 @@ class LibraryGenerator {
         .where((model) => !(model is ModelClassDefinition && model.isSealed))
         .toList();
 
+    var hasDatabaseTablesForCurrentSide = allModels.any(
+      (classInfo) =>
+          classInfo is ModelClassDefinition &&
+          classInfo.shouldGenerateTableCode(serverCode),
+    );
+
     // exports
     library.directives.addAll([
       for (var classInfo in topLevelModels)
@@ -80,8 +86,11 @@ class LibraryGenerator {
 
     protocol
       ..name = 'Protocol'
-      ..extend = serverCode
-          ? refer('SerializationManagerServer', serverpodUrl(true))
+      ..extend = (serverCode || hasDatabaseTablesForCurrentSide)
+          ? refer(
+              'DatabaseSerializationManager',
+              serverpodDatabaseRuntimeUrl(serverCode),
+            )
           : refer('SerializationManager', serverpodUrl(false));
 
     protocol.constructors.addAll([
@@ -107,7 +116,7 @@ class LibraryGenerator {
           ..modifier = FieldModifier.final$
           ..assignment = const Code('Protocol._()'),
       ),
-      if (serverCode)
+      if (serverCode || hasDatabaseTablesForCurrentSide)
         Field(
           (f) => f
             ..name = 'targetTableDefinitions'
@@ -123,22 +132,25 @@ class LibraryGenerator {
                   allModels,
                   config.name,
                   config.modulesAll,
+                  serverCode: serverCode,
                 ).toCode(
                   config: config,
                   serverCode: serverCode,
-                  additionalTables: [
-                    for (var module in config.modules)
-                      refer(
-                        'Protocol.targetTableDefinitions',
-                        module.dartImportUrl(serverCode),
-                      ).spread,
-                    if (config.name != 'serverpod' &&
-                        config.type != PackageType.module)
-                      refer(
-                        'Protocol.targetTableDefinitions',
-                        serverpodProtocolUrl(serverCode),
-                      ).spread,
-                  ],
+                  additionalTables: serverCode
+                      ? [
+                          for (var module in config.modules)
+                            refer(
+                              'Protocol.targetTableDefinitions',
+                              module.dartImportUrl(serverCode),
+                            ).spread,
+                          if (config.name != 'serverpod' &&
+                              config.type != PackageType.module)
+                            refer(
+                              'Protocol.targetTableDefinitions',
+                              serverpodProtocolUrl(serverCode),
+                            ).spread,
+                        ]
+                      : const [],
                 ),
         ),
     ]);
@@ -447,7 +459,7 @@ class LibraryGenerator {
             const Code('return super.deserializeByClassName(data);'),
           ]),
       ),
-      if (serverCode)
+      if (serverCode || hasDatabaseTablesForCurrentSide)
         Method(
           (m) => m
             ..name = 'getTableForType'
@@ -455,7 +467,7 @@ class LibraryGenerator {
             ..returns = TypeReference(
               (t) => t
                 ..symbol = 'Table'
-                ..url = serverpodUrl(serverCode)
+                ..url = serverpodDatabaseRuntimeUrl(serverCode)
                 ..isNullable = true,
             )
             ..requiredParameters.add(
@@ -466,29 +478,31 @@ class LibraryGenerator {
               ),
             )
             ..body = Block.of([
-              for (var module in config.modules)
-                Code.scope(
-                  (a) =>
-                      '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t);'
-                      'if(table!=null) {return table;}}',
-                ),
-              if (config.name != 'serverpod' &&
-                  (serverCode || config.dartClientDependsOnServiceClient))
-                Code.scope(
-                  (a) =>
-                      '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
-                      'if(table!=null) {return table;}}',
-                ),
+              if (serverCode) ...[
+                for (var module in config.modules)
+                  Code.scope(
+                    (a) =>
+                        '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t);'
+                        'if(table!=null) {return table;}}',
+                  ),
+                if (config.name != 'serverpod' &&
+                    (serverCode || config.dartClientDependsOnServiceClient))
+                  Code.scope(
+                    (a) =>
+                        '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
+                        'if(table!=null) {return table;}}',
+                  ),
+              ],
               if (allModels.any(
                 (classInfo) =>
                     classInfo is ModelClassDefinition &&
-                    classInfo.tableName != null,
+                    classInfo.shouldGenerateTableCode(serverCode),
               ))
                 Block.of([
                   const Code('switch(t){'),
                   for (var classInfo in allModels)
                     if (classInfo is ModelClassDefinition &&
-                        classInfo.tableName != null)
+                        classInfo.shouldGenerateTableCode(serverCode))
                       Code.scope(
                         (a) =>
                             'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}:'
@@ -499,7 +513,7 @@ class LibraryGenerator {
               const Code('return null;'),
             ]),
         ),
-      if (serverCode)
+      if (serverCode || hasDatabaseTablesForCurrentSide)
         Method(
           (m) => m
             ..name = 'getTargetTableDefinitions'
@@ -511,7 +525,7 @@ class LibraryGenerator {
             )
             ..body = refer('targetTableDefinitions').code,
         ),
-      if (serverCode)
+      if (serverCode || hasDatabaseTablesForCurrentSide)
         Method(
           (m) => m
             ..name = 'getModuleName'
@@ -2078,13 +2092,13 @@ extension on DatabaseDefinition {
           'module': literalString(config.name),
           'columns': literalList([
             for (var column in table.columns)
-              refer('ColumnDefinition', serverpodProtocolUrl(serverCode)).call(
+              refer('ColumnDefinition', serverpodDatabaseUrl(serverCode)).call(
                 [],
                 {
                   'name': literalString(column.name),
                   'columnType': refer(
                     'ColumnType.${column.columnType.name}',
-                    serverpodProtocolUrl(serverCode),
+                    serverpodDatabaseUrl(serverCode),
                   ),
                   // The id column is not null, since it is auto incrementing.
                   'isNullable': literalBool(column.isNullable),
@@ -2101,7 +2115,7 @@ extension on DatabaseDefinition {
             for (var foreignKey in table.foreignKeys)
               refer(
                 'ForeignKeyDefinition',
-                serverpodProtocolUrl(serverCode),
+                serverpodDatabaseUrl(serverCode),
               ).call([], {
                 'constraintName': literalString(foreignKey.constraintName),
                 'columns': literalList([
@@ -2118,19 +2132,19 @@ extension on DatabaseDefinition {
                 'onUpdate': foreignKey.onUpdate != null
                     ? refer(
                         'ForeignKeyAction.${foreignKey.onUpdate!.name}',
-                        serverpodProtocolUrl(serverCode),
+                        serverpodDatabaseUrl(serverCode),
                       )
                     : literalNull,
                 'onDelete': foreignKey.onDelete != null
                     ? refer(
                         'ForeignKeyAction.${foreignKey.onDelete!.name}',
-                        serverpodProtocolUrl(serverCode),
+                        serverpodDatabaseUrl(serverCode),
                       )
                     : literalNull,
                 'matchType': foreignKey.matchType != null
                     ? refer(
                         'ForeignKeyMatchType.${foreignKey.matchType!.name}',
-                        serverpodProtocolUrl(serverCode),
+                        serverpodDatabaseUrl(serverCode),
                       )
                     : literalNull,
               }),
@@ -2139,7 +2153,7 @@ extension on DatabaseDefinition {
             for (var index in table.indexes)
               refer(
                 'IndexDefinition',
-                serverpodProtocolUrl(serverCode),
+                serverpodDatabaseUrl(serverCode),
               ).call([], {
                 'indexName': literalString(index.indexName),
                 'tableSpace': literalNull,
@@ -2147,11 +2161,11 @@ extension on DatabaseDefinition {
                   for (var element in index.elements)
                     refer(
                       'IndexElementDefinition',
-                      serverpodProtocolUrl(serverCode),
+                      serverpodDatabaseUrl(serverCode),
                     ).call([], {
                       'type': refer(
                         'IndexElementDefinitionType.${element.type.name}',
-                        serverpodProtocolUrl(serverCode),
+                        serverpodDatabaseUrl(serverCode),
                       ),
                       'definition': literalString(element.definition),
                     }),
@@ -2162,17 +2176,17 @@ extension on DatabaseDefinition {
                 if (index.ginOperatorClass != null)
                   'ginOperatorClass': refer(
                     'GinOperatorClass.${index.ginOperatorClass!.name}',
-                    serverpodProtocolUrl(serverCode),
+                    serverpodDatabaseUrl(serverCode),
                   ),
                 if (index.vectorDistanceFunction != null)
                   'vectorDistanceFunction': refer(
                     'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',
-                    serverpodProtocolUrl(serverCode),
+                    serverpodDatabaseUrl(serverCode),
                   ),
                 if (index.vectorColumnType != null)
                   'vectorColumnType': refer(
                     'ColumnType.${index.vectorColumnType!.name}',
-                    serverpodProtocolUrl(serverCode),
+                    serverpodDatabaseUrl(serverCode),
                   ),
                 if (index.parameters != null)
                   'parameters': literalMap(index.parameters!),
