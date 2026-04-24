@@ -1,4 +1,6 @@
 @Timeout(Duration(minutes: 5))
+import 'dart:convert';
+
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -206,9 +208,10 @@ void main() {
             'SELECT data::text FROM migrated_table ORDER BY id;',
           ]);
           expect(resultAfterJsonb.numAffectedRows, 3);
-          expect(resultAfterJsonb.data, contains('["dart", "flutter"]'));
-          expect(resultAfterJsonb.data, contains('[]'));
-          expect(resultAfterJsonb.data, contains('["special"]'));
+          var rowsAfterJsonb = jsonDecode(resultAfterJsonb.data) as List;
+          expect(rowsAfterJsonb[0][0], '["dart", "flutter"]');
+          expect(rowsAfterJsonb[1][0], '[]');
+          expect(rowsAfterJsonb[2][0], '["special"]');
 
           // Migrate jsonb → json
           exitCode = await MigrationTestUtils.createMigrationFromProtocols(
@@ -223,9 +226,10 @@ void main() {
             'SELECT data::text FROM migrated_table ORDER BY id;',
           ]);
           expect(resultAfterJson.numAffectedRows, 3);
-          expect(resultAfterJson.data, contains('["dart", "flutter"]'));
-          expect(resultAfterJson.data, contains('[]'));
-          expect(resultAfterJson.data, contains('["special"]'));
+          var rowsAfterJson = jsonDecode(resultAfterJson.data) as List;
+          expect(rowsAfterJson[0][0], '["dart", "flutter"]');
+          expect(rowsAfterJson[1][0], '[]');
+          expect(rowsAfterJson[2][0], '["special"]');
         },
       );
     },
