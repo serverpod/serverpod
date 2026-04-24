@@ -1558,6 +1558,28 @@ class Restrictions {
       );
     }
 
+    var classWithRelation = documentDefinition;
+    if (classWithRelation is ModelClassDefinition &&
+        classWithRelation.tableName != null &&
+        referenceClass is ModelClassDefinition &&
+        referenceClass.tableName != null) {
+      var className = classWithRelation.className;
+      var classDatabase = classWithRelation.database.name;
+      var relatedDatabase = referenceClass.database;
+      if (relatedDatabase != ModelDatabaseDefinition.all &&
+          relatedDatabase != classWithRelation.database) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The class "$className" has database "$classDatabase" but the '
+            'related class "$parsedType" has database "${relatedDatabase.name}". '
+            'Relations can only be defined between tables with the same database '
+            'scope. Either use "database: all" or the same "database" for both tables.',
+            span,
+          ),
+        );
+      }
+    }
+
     return errors;
   }
 
