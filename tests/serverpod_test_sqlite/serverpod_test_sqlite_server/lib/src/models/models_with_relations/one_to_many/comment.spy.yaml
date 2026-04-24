@@ -1,5 +1,6 @@
 class: Comment
 table: comment
+database: all
 fields:
   description: String
   order: Order?, relation(name=order_comments, onDelete=Cascade)

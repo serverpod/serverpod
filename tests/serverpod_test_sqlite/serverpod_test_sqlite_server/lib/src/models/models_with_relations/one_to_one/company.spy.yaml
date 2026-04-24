@@ -1,5 +1,6 @@
 class: Company
 table: company
+database: all
 fields:
   name: String
   town: Town?, relation

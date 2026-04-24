@@ -1,4 +1,5 @@
 class: RelationEmptyModel
 table: relation_empty_model
+database: all
 fields:
   items: List<EmptyModelRelationItem>?, relation

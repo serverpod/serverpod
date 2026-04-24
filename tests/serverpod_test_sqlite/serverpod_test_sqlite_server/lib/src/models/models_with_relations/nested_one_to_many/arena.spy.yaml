@@ -1,5 +1,6 @@
 class: Arena
 table: arena
+database: all
 fields:
   name: String
   team: Team?, relation(name=arena_team)

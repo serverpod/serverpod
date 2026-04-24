@@ -1,5 +1,6 @@
 class: Order
 table: order
+database: all
 fields:
   description: String
   customer: Customer?, relation(name=customer_orders, onDelete=Cascade)

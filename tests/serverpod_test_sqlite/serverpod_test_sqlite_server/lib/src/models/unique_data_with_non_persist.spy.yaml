@@ -1,5 +1,6 @@
 class: UniqueDataWithNonPersist
 table: unique_data_with_non_persist
+database: all
 fields:
   number: int
   email: String

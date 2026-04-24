@@ -1,5 +1,6 @@
 class: Member
 table: member
+database: all
 fields:
   name: String
   blocking: List<Blocking>?, relation(name=member_blocked_by_me)
