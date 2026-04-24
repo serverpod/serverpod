@@ -21,6 +21,7 @@ export 'src/definition/default_keywords.dart';
 export 'src/extensions.dart';
 export 'src/generated/protocol.dart';
 export 'src/interface/analyzer.dart';
+export 'src/interface/client_database_session.dart';
 export 'src/interface/database_pool_manager.dart';
 export 'src/interface/database_session.dart';
 export 'src/interface/definition_restrictions.dart';

@@ -724,6 +724,14 @@ class LibraryGenerator {
 
     var library = LibraryBuilder();
 
+    var clientModels = protocolDefinition.models
+        .where((model) => !model.serverOnly)
+        .where((model) => !model.isSharedModel)
+        .toList();
+    var hasClientDatabaseTables = clientModels.any(
+      (m) => m is ModelClassDefinition && m.shouldGenerateTableCode(false),
+    );
+
     var hasModules =
         config.modules.isNotEmpty && config.type != PackageType.module;
 
@@ -1144,6 +1152,60 @@ class LibraryGenerator {
                           'modules',
                         ).property(module.nickname),
                     }).code,
+                ),
+              if (hasClientDatabaseTables && config.type != PackageType.module)
+                Method(
+                  (m) => m
+                    ..name = 'createSession'
+                    ..modifier = MethodModifier.async
+                    ..returns = TypeReference(
+                      (t) => t
+                        ..symbol = 'Future'
+                        ..url = 'dart:async'
+                        ..types.add(
+                          refer(
+                            'ClientDatabaseSession',
+                            'package:serverpod_database/serverpod_database.dart',
+                          ),
+                        ),
+                    )
+                    ..requiredParameters.add(
+                      Parameter(
+                        (p) => p
+                          ..name = 'path'
+                          ..type = refer('String'),
+                      ),
+                    )
+                    ..optionalParameters.add(
+                      Parameter(
+                        (p) => p
+                          ..name = 'isDebugMode'
+                          ..named = true
+                          ..type = refer('bool')
+                          ..defaultTo = literalFalse.code,
+                      ),
+                    )
+                    ..body =
+                        refer(
+                              'ClientDatabaseSession',
+                              'package:serverpod_database/serverpod_database.dart',
+                            )
+                            .property('open')
+                            .call(
+                              [
+                                refer('path'),
+                                refer('Protocol', 'protocol.dart').call([]),
+                              ],
+                              {
+                                'clientMigrations': refer(
+                                  'MigrationRegistry',
+                                ).property('migrations'),
+                                'isDebugMode': refer('isDebugMode'),
+                              },
+                            )
+                            .awaited
+                            .returned
+                            .statement,
                 ),
             ],
           ),

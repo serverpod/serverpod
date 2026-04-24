@@ -1,7 +1,9 @@
+import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -9,8 +11,10 @@ import '../../../test_util/builders/annotation_definition_builder.dart';
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -383,6 +387,68 @@ void main() {
           );
         },
       );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a client database table when generating client file',
+    () {
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [
+          ModelClassDefinitionBuilder()
+              .withClassName('Example')
+              .withFileName('example')
+              .withTableName('example')
+              .withDatabase(ModelDatabaseDefinition.client)
+              .build(),
+        ],
+        futureCalls: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+
+      late var clientFile = codeMap[expectedFileName];
+
+      test('then the client file contains a createSession method.', () {
+        expect(clientFile, isNotNull);
+        expect(
+          clientFile,
+          matches(r'Future<_i[\d+]\.ClientDatabaseSession> createSession\('),
+        );
+      });
+
+      group('then the createSession method', () {
+        late var clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: 'Client',
+        );
+
+        late var createSessionMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              clientClass!,
+              name: 'createSession',
+            )?.toSource();
+
+        test('has the path parameter as first parameter.', () {
+          expect(createSessionMethod, contains('(String path'));
+        });
+
+        test('has an optional isDebugMode parameter.', () {
+          expect(createSessionMethod, contains('bool isDebugMode = false'));
+        });
+
+        test('calls ClientDatabaseSession.open.', () {
+          expect(createSessionMethod, contains('ClientDatabaseSession.open('));
+        });
+      });
     },
   );
 }
