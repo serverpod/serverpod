@@ -302,7 +302,7 @@ class Serverpod {
   /// Updates the runtime settings and writes the new settings to the database.
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _updateLogSettings(settings);
-    if (Features.enableDatabase) {
+    if (Features.persistRuntimeSettings) {
       await _storeRuntimeSettings(settings);
     }
   }
@@ -314,6 +314,10 @@ class Serverpod {
         'The database is disabled, runtime settings are not stored in '
         'the database.',
       );
+    }
+
+    if (!Features.persistRuntimeSettings) {
+      return;
     }
 
     try {
@@ -929,6 +933,13 @@ class Serverpod {
 
   Future<void> _loadRuntimeSettings() async {
     _internalLogVerbose('Loading runtime settings.');
+
+    if (!Features.persistRuntimeSettings) {
+      _internalLogVerbose(
+        'Runtime settings persistence is disabled (test mode), using defaults.',
+      );
+      return;
+    }
 
     internal.RuntimeSettings? runtimeSettings;
     try {

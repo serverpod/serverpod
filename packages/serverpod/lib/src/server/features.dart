@@ -1,6 +1,8 @@
 import 'package:serverpod/web_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import 'run_mode.dart';
+
 /// Toggles for enabling and disabling features in the server.
 class Features {
   static late Features _instance;
@@ -37,4 +39,15 @@ class Features {
   /// Returns true if the web server is enabled and the health check interval is valid.
   static bool get enableScheduledHealthChecks =>
       enableDatabase && _instance._config.healthCheckInterval > Duration.zero;
+
+  /// Returns true if runtime settings should be persisted to and loaded from
+  /// the database.
+  ///
+  /// In test mode, runtime settings are only managed in-memory. This prevents
+  /// test isolation issues caused by runtime settings (e.g. log settings)
+  /// bleeding across tests. The store/reload mechanism is only needed by
+  /// Serverpod Insights (which syncs [RuntimeSettings] changes via
+  /// [HealthCheckManager]) and is never required in a test context.
+  static bool get persistRuntimeSettings =>
+      enableDatabase && _instance._config.runMode != ServerpodRunMode.test;
 }
