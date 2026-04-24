@@ -499,3 +499,13 @@ class ParentClassRepository {
     );
   }
 }
+
+abstract class ParentClassReactiveFutureCall
+    extends _i2.ReactiveFutureCall<ParentClass> {
+  @override
+  String get tableName => 'parent_class_table';
+
+  _i2.WhereExpressionBuilder<ParentClassTable> get where;
+  @override
+  _i2.Expression? get condition => where(ParentClass.t);
+}

@@ -559,3 +559,13 @@ class GreetingRepository {
     );
   }
 }
+
+abstract class GreetingReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Greeting> {
+  @override
+  String get tableName => 'greeting';
+
+  _i1.WhereExpressionBuilder<GreetingTable> get where;
+  @override
+  _i1.Expression? get condition => where(Greeting.t);
+}

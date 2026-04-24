@@ -534,3 +534,13 @@ class TableWithExplicitColumnNameRepository {
     );
   }
 }
+
+abstract class TableWithExplicitColumnNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<TableWithExplicitColumnName> {
+  @override
+  String get tableName => 'table_with_explicit_column_names';
+
+  _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(TableWithExplicitColumnName.t);
+}

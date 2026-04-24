@@ -541,3 +541,13 @@ class ScopeNoneFieldsRepository {
     );
   }
 }
+
+abstract class ScopeNoneFieldsReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ScopeNoneFields> {
+  @override
+  String get tableName => 'scope_none_fields';
+
+  _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> get where;
+  @override
+  _i1.Expression? get condition => where(ScopeNoneFields.t);
+}

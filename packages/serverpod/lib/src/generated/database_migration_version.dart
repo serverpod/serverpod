@@ -559,3 +559,13 @@ class DatabaseMigrationVersionRepository {
     );
   }
 }
+
+abstract class DatabaseMigrationVersionReactiveFutureCall
+    extends _i2.ReactiveFutureCall<DatabaseMigrationVersion> {
+  @override
+  String get tableName => 'serverpod_migrations';
+
+  _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> get where;
+  @override
+  _i2.Expression? get condition => where(DatabaseMigrationVersion.t);
+}

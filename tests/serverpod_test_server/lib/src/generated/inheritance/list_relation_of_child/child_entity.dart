@@ -585,3 +585,13 @@ class ChildEntityRepository {
     );
   }
 }
+
+abstract class ChildEntityReactiveFutureCall
+    extends _i2.ReactiveFutureCall<ChildEntity> {
+  @override
+  String get tableName => 'child_entity';
+
+  _i2.WhereExpressionBuilder<ChildEntityTable> get where;
+  @override
+  _i2.Expression? get condition => where(ChildEntity.t);
+}

@@ -818,3 +818,13 @@ class StringDefaultPersistRepository {
     );
   }
 }
+
+abstract class StringDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<StringDefaultPersist> {
+  @override
+  String get tableName => 'string_default_persist';
+
+  _i1.WhereExpressionBuilder<StringDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(StringDefaultPersist.t);
+}

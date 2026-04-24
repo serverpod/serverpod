@@ -757,3 +757,13 @@ class UserNoteCollectionDetachRowRepository {
     );
   }
 }
+
+abstract class UserNoteCollectionReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserNoteCollection> {
+  @override
+  String get tableName => 'user_note_collections';
+
+  _i1.WhereExpressionBuilder<UserNoteCollectionTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserNoteCollection.t);
+}

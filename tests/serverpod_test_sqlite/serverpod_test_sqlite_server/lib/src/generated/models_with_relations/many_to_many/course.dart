@@ -698,3 +698,12 @@ class CourseDetachRowRepository {
     );
   }
 }
+
+abstract class CourseReactiveFutureCall extends _i1.ReactiveFutureCall<Course> {
+  @override
+  String get tableName => 'course';
+
+  _i1.WhereExpressionBuilder<CourseTable> get where;
+  @override
+  _i1.Expression? get condition => where(Course.t);
+}

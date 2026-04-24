@@ -49,6 +49,14 @@ abstract class Column<T> {
   String toString() {
     return '"${table.queryPrefix}"."$_columnName"';
   }
+
+  /// Creates an [Expression] that evaluates to true when this column's value
+  /// has changed in a PostgreSQL trigger context.
+  ///
+  /// Produces: `OLD."column_name" IS DISTINCT FROM NEW."column_name"`
+  ///
+  /// Only valid in [ReactiveFutureCall.condition] expressions.
+  Expression hasChanged() => HasChangedExpression(this);
 }
 
 /// A [Column] holding [ByteData].

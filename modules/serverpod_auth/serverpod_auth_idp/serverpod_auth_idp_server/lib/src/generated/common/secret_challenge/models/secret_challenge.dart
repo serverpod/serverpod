@@ -511,3 +511,13 @@ class SecretChallengeRepository {
     );
   }
 }
+
+abstract class SecretChallengeReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SecretChallenge> {
+  @override
+  String get tableName => 'serverpod_auth_idp_secret_challenge';
+
+  _i1.WhereExpressionBuilder<SecretChallengeTable> get where;
+  @override
+  _i1.Expression? get condition => where(SecretChallenge.t);
+}

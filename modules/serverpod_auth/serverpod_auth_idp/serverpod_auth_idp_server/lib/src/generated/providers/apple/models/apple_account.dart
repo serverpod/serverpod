@@ -903,3 +903,13 @@ class AppleAccountAttachRowRepository {
     );
   }
 }
+
+abstract class AppleAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<AppleAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_apple_account';
+
+  _i1.WhereExpressionBuilder<AppleAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(AppleAccount.t);
+}

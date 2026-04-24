@@ -587,3 +587,13 @@ class UuidDefaultMixRepository {
     );
   }
 }
+
+abstract class UuidDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UuidDefaultMix> {
+  @override
+  String get tableName => 'uuid_default_mix';
+
+  _i1.WhereExpressionBuilder<UuidDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(UuidDefaultMix.t);
+}

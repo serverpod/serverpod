@@ -508,3 +508,13 @@ class SimpleDataRepository {
     );
   }
 }
+
+abstract class SimpleDataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SimpleData> {
+  @override
+  String get tableName => 'simple_data';
+
+  _i1.WhereExpressionBuilder<SimpleDataTable> get where;
+  @override
+  _i1.Expression? get condition => where(SimpleData.t);
+}

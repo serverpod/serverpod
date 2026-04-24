@@ -670,3 +670,13 @@ class LegacySessionAttachRowRepository {
     );
   }
 }
+
+abstract class LegacySessionReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LegacySession> {
+  @override
+  String get tableName => 'serverpod_auth_bridge_session';
+
+  _i1.WhereExpressionBuilder<LegacySessionTable> get where;
+  @override
+  _i1.Expression? get condition => where(LegacySession.t);
+}

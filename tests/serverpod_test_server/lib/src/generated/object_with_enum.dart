@@ -631,3 +631,13 @@ class ObjectWithEnumRepository {
     );
   }
 }
+
+abstract class ObjectWithEnumReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithEnum> {
+  @override
+  String get tableName => 'object_with_enum';
+
+  _i1.WhereExpressionBuilder<ObjectWithEnumTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithEnum.t);
+}

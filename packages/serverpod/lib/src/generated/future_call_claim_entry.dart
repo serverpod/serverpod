@@ -541,3 +541,13 @@ class FutureCallClaimEntryRepository {
     );
   }
 }
+
+abstract class FutureCallClaimEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<FutureCallClaimEntry> {
+  @override
+  String get tableName => 'serverpod_future_call_claim';
+
+  _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(FutureCallClaimEntry.t);
+}

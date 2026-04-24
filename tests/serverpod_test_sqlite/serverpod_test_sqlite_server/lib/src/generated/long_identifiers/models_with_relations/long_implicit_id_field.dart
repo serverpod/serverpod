@@ -567,3 +567,13 @@ class LongImplicitIdFieldRepository {
     );
   }
 }
+
+abstract class LongImplicitIdFieldReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LongImplicitIdField> {
+  @override
+  String get tableName => 'long_implicit_id_field';
+
+  _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> get where;
+  @override
+  _i1.Expression? get condition => where(LongImplicitIdField.t);
+}

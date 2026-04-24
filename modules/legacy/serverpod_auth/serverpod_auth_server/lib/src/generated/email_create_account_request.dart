@@ -590,3 +590,13 @@ class EmailCreateAccountRequestRepository {
     );
   }
 }
+
+abstract class EmailCreateAccountRequestReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailCreateAccountRequest> {
+  @override
+  String get tableName => 'serverpod_email_create_request';
+
+  _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailCreateAccountRequest.t);
+}

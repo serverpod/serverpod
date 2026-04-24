@@ -671,3 +671,13 @@ class ObjectWithHalfVectorRepository {
     );
   }
 }
+
+abstract class ObjectWithHalfVectorReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithHalfVector> {
+  @override
+  String get tableName => 'object_with_half_vector';
+
+  _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithHalfVector.t);
+}

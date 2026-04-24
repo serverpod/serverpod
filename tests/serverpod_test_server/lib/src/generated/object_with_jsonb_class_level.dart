@@ -567,3 +567,13 @@ class ObjectWithJsonbClassLevelRepository {
     );
   }
 }
+
+abstract class ObjectWithJsonbClassLevelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithJsonbClassLevel> {
+  @override
+  String get tableName => 'object_with_jsonb_class_level';
+
+  _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithJsonbClassLevel.t);
+}

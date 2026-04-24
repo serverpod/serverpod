@@ -555,3 +555,13 @@ class ModelWithRequiredFieldRepository {
     );
   }
 }
+
+abstract class ModelWithRequiredFieldReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ModelWithRequiredField> {
+  @override
+  String get tableName => 'model_with_required_field';
+
+  _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> get where;
+  @override
+  _i1.Expression? get condition => where(ModelWithRequiredField.t);
+}

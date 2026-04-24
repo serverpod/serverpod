@@ -741,3 +741,13 @@ class LogEntryRepository {
     );
   }
 }
+
+abstract class LogEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LogEntry> {
+  @override
+  String get tableName => 'serverpod_log';
+
+  _i1.WhereExpressionBuilder<LogEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(LogEntry.t);
+}

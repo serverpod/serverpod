@@ -882,3 +882,12 @@ class CityDetachRowRepository {
     );
   }
 }
+
+abstract class CityReactiveFutureCall extends _i1.ReactiveFutureCall<City> {
+  @override
+  String get tableName => 'city';
+
+  _i1.WhereExpressionBuilder<CityTable> get where;
+  @override
+  _i1.Expression? get condition => where(City.t);
+}

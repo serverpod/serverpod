@@ -664,3 +664,13 @@ class RateLimitedRequestAttemptRepository {
     );
   }
 }
+
+abstract class RateLimitedRequestAttemptReactiveFutureCall
+    extends _i1.ReactiveFutureCall<RateLimitedRequestAttempt> {
+  @override
+  String get tableName => 'serverpod_auth_idp_rate_limited_request_attempt';
+
+  _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> get where;
+  @override
+  _i1.Expression? get condition => where(RateLimitedRequestAttempt.t);
+}

@@ -764,3 +764,13 @@ class FacebookAccountAttachRowRepository {
     );
   }
 }
+
+abstract class FacebookAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<FacebookAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_facebook_account';
+
+  _i1.WhereExpressionBuilder<FacebookAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(FacebookAccount.t);
+}

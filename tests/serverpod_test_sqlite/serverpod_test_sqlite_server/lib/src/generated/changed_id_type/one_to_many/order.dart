@@ -740,3 +740,13 @@ class OrderUuidAttachRowRepository {
     );
   }
 }
+
+abstract class OrderUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<OrderUuid> {
+  @override
+  String get tableName => 'order_uuid';
+
+  _i1.WhereExpressionBuilder<OrderUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(OrderUuid.t);
+}

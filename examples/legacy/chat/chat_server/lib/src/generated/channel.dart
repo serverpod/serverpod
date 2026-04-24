@@ -530,3 +530,13 @@ class ChannelRepository {
     );
   }
 }
+
+abstract class ChannelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Channel> {
+  @override
+  String get tableName => 'channel';
+
+  _i1.WhereExpressionBuilder<ChannelTable> get where;
+  @override
+  _i1.Expression? get condition => where(Channel.t);
+}

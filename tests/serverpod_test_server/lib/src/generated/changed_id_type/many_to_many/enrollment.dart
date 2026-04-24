@@ -687,3 +687,13 @@ class EnrollmentIntAttachRowRepository {
     );
   }
 }
+
+abstract class EnrollmentIntReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EnrollmentInt> {
+  @override
+  String get tableName => 'enrollment_int';
+
+  _i1.WhereExpressionBuilder<EnrollmentIntTable> get where;
+  @override
+  _i1.Expression? get condition => where(EnrollmentInt.t);
+}

@@ -569,3 +569,13 @@ class UserNoteWithALongNameRepository {
     );
   }
 }
+
+abstract class UserNoteWithALongNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserNoteWithALongName> {
+  @override
+  String get tableName => 'user_note_with_a_long_name';
+
+  _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserNoteWithALongName.t);
+}

@@ -683,3 +683,13 @@ class GitHubAccountAttachRowRepository {
     );
   }
 }
+
+abstract class GitHubAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<GitHubAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_github_account';
+
+  _i1.WhereExpressionBuilder<GitHubAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(GitHubAccount.t);
+}

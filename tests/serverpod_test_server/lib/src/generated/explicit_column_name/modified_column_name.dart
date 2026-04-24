@@ -532,3 +532,13 @@ class ModifiedColumnNameRepository {
     );
   }
 }
+
+abstract class ModifiedColumnNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ModifiedColumnName> {
+  @override
+  String get tableName => 'modified_column_name';
+
+  _i1.WhereExpressionBuilder<ModifiedColumnNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(ModifiedColumnName.t);
+}

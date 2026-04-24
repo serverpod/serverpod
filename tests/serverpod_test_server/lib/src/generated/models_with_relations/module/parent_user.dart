@@ -525,3 +525,13 @@ class ParentUserRepository {
     );
   }
 }
+
+abstract class ParentUserReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ParentUser> {
+  @override
+  String get tableName => 'parent_user';
+
+  _i1.WhereExpressionBuilder<ParentUserTable> get where;
+  @override
+  _i1.Expression? get condition => where(ParentUser.t);
+}

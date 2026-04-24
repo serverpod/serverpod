@@ -476,3 +476,13 @@ class ServerOnlyChangedIdFieldClassRepository {
     );
   }
 }
+
+abstract class ServerOnlyChangedIdFieldClassReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ServerOnlyChangedIdFieldClass> {
+  @override
+  String get tableName => 'server_only_changed_id_field_class';
+
+  _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable> get where;
+  @override
+  _i1.Expression? get condition => where(ServerOnlyChangedIdFieldClass.t);
+}

@@ -559,3 +559,13 @@ class ChatReadMessageRepository {
     );
   }
 }
+
+abstract class ChatReadMessageReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ChatReadMessage> {
+  @override
+  String get tableName => 'serverpod_chat_read_message';
+
+  _i1.WhereExpressionBuilder<ChatReadMessageTable> get where;
+  @override
+  _i1.Expression? get condition => where(ChatReadMessage.t);
+}

@@ -634,3 +634,13 @@ class LegacyExternalUserIdentifierAttachRowRepository {
     );
   }
 }
+
+abstract class LegacyExternalUserIdentifierReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LegacyExternalUserIdentifier> {
+  @override
+  String get tableName => 'serverpod_auth_bridge_external_user_id';
+
+  _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable> get where;
+  @override
+  _i1.Expression? get condition => where(LegacyExternalUserIdentifier.t);
+}

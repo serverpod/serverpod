@@ -682,3 +682,13 @@ class BlockingAttachRowRepository {
     );
   }
 }
+
+abstract class BlockingReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Blocking> {
+  @override
+  String get tableName => 'blocking';
+
+  _i1.WhereExpressionBuilder<BlockingTable> get where;
+  @override
+  _i1.Expression? get condition => where(Blocking.t);
+}

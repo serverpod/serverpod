@@ -692,3 +692,13 @@ class CustomerDetachRowRepository {
     );
   }
 }
+
+abstract class CustomerReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Customer> {
+  @override
+  String get tableName => 'customer';
+
+  _i1.WhereExpressionBuilder<CustomerTable> get where;
+  @override
+  _i1.Expression? get condition => where(Customer.t);
+}

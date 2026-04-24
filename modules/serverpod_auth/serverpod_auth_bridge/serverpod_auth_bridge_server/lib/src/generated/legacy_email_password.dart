@@ -626,3 +626,13 @@ class LegacyEmailPasswordAttachRowRepository {
     );
   }
 }
+
+abstract class LegacyEmailPasswordReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LegacyEmailPassword> {
+  @override
+  String get tableName => 'serverpod_auth_bridge_email_password';
+
+  _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> get where;
+  @override
+  _i1.Expression? get condition => where(LegacyEmailPassword.t);
+}

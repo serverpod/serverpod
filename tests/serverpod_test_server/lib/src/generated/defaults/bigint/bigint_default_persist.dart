@@ -518,3 +518,13 @@ class BigIntDefaultPersistRepository {
     );
   }
 }
+
+abstract class BigIntDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BigIntDefaultPersist> {
+  @override
+  String get tableName => 'bigint_default_persist';
+
+  _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(BigIntDefaultPersist.t);
+}

@@ -545,3 +545,13 @@ class BigIntDefaultRepository {
     );
   }
 }
+
+abstract class BigIntDefaultReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BigIntDefault> {
+  @override
+  String get tableName => 'bigint_default';
+
+  _i1.WhereExpressionBuilder<BigIntDefaultTable> get where;
+  @override
+  _i1.Expression? get condition => where(BigIntDefault.t);
+}

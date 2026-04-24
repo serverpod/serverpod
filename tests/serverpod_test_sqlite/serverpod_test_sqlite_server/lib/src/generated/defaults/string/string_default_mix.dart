@@ -576,3 +576,13 @@ class StringDefaultMixRepository {
     );
   }
 }
+
+abstract class StringDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<StringDefaultMix> {
+  @override
+  String get tableName => 'string_default_mix';
+
+  _i1.WhereExpressionBuilder<StringDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(StringDefaultMix.t);
+}

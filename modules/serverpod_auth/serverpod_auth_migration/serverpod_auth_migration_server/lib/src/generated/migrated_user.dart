@@ -685,3 +685,13 @@ class MigratedUserAttachRowRepository {
     );
   }
 }
+
+abstract class MigratedUserReactiveFutureCall
+    extends _i1.ReactiveFutureCall<MigratedUser> {
+  @override
+  String get tableName => 'serverpod_auth_migration_migrated_user';
+
+  _i1.WhereExpressionBuilder<MigratedUserTable> get where;
+  @override
+  _i1.Expression? get condition => where(MigratedUser.t);
+}

@@ -543,3 +543,13 @@ class UniqueDataWithNonPersistRepository {
     );
   }
 }
+
+abstract class UniqueDataWithNonPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UniqueDataWithNonPersist> {
+  @override
+  String get tableName => 'unique_data_with_non_persist';
+
+  _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(UniqueDataWithNonPersist.t);
+}

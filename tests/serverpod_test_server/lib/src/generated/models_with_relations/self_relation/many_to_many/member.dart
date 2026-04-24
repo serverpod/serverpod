@@ -762,3 +762,12 @@ class MemberAttachRowRepository {
     );
   }
 }
+
+abstract class MemberReactiveFutureCall extends _i1.ReactiveFutureCall<Member> {
+  @override
+  String get tableName => 'member';
+
+  _i1.WhereExpressionBuilder<MemberTable> get where;
+  @override
+  _i1.Expression? get condition => where(Member.t);
+}

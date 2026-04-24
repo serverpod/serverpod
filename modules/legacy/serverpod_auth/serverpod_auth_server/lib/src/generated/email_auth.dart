@@ -557,3 +557,13 @@ class EmailAuthRepository {
     );
   }
 }
+
+abstract class EmailAuthReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailAuth> {
+  @override
+  String get tableName => 'serverpod_email_auth';
+
+  _i1.WhereExpressionBuilder<EmailAuthTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailAuth.t);
+}

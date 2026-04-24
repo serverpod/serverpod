@@ -637,3 +637,13 @@ class ContractorDetachRowRepository {
     );
   }
 }
+
+abstract class ContractorReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Contractor> {
+  @override
+  String get tableName => 'contractor';
+
+  _i1.WhereExpressionBuilder<ContractorTable> get where;
+  @override
+  _i1.Expression? get condition => where(Contractor.t);
+}

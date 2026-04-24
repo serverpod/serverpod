@@ -689,3 +689,13 @@ class TokenMetadataAttachRowRepository {
     );
   }
 }
+
+abstract class TokenMetadataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<TokenMetadata> {
+  @override
+  String get tableName => 'token_metadata';
+
+  _i1.WhereExpressionBuilder<TokenMetadataTable> get where;
+  @override
+  _i1.Expression? get condition => where(TokenMetadata.t);
+}

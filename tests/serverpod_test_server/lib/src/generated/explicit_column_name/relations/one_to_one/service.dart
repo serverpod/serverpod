@@ -525,3 +525,13 @@ class ServiceRepository {
     );
   }
 }
+
+abstract class ServiceReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Service> {
+  @override
+  String get tableName => 'service';
+
+  _i1.WhereExpressionBuilder<ServiceTable> get where;
+  @override
+  _i1.Expression? get condition => where(Service.t);
+}

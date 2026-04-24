@@ -509,3 +509,13 @@ class ObjectWithByteDataRepository {
     );
   }
 }
+
+abstract class ObjectWithByteDataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithByteData> {
+  @override
+  String get tableName => 'object_with_bytedata';
+
+  _i1.WhereExpressionBuilder<ObjectWithByteDataTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithByteData.t);
+}

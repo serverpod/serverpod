@@ -1,0 +1,30 @@
+### An entry in the reactive future call outbox, created by database
+### triggers when watched data changes.
+class: ReactiveDatabaseCallEntry
+table: serverpod_reactive_db_call
+
+fields:
+    ### Name of the ReactiveFutureCall handler to invoke.
+    handlerName: String
+
+    ### Source table that was modified.
+    sourceTable: String
+
+    ### The operation that triggered the event (INSERT, UPDATE, or DELETE).
+    operation: String
+
+    ### The row data serialized as JSON via row_to_json().
+    rowData: String
+
+    ### When the trigger fired.
+    createdAt: DateTime
+
+    ### The id of the FutureCallEntry that has claimed this event for
+    ### processing. Null means the event is unclaimed and available for pickup.
+    futureCallEntryId: int?, relation(parent=serverpod_future_call, onDelete=Cascade)
+
+indexes:
+    serverpod_reactive_db_call_created_at_idx:
+        fields: createdAt
+    serverpod_reactive_db_call_handler_name_idx:
+        fields: handlerName

@@ -554,3 +554,13 @@ class ChildClassWithoutIdRepository {
     );
   }
 }
+
+abstract class ChildClassWithoutIdReactiveFutureCall
+    extends _i2.ReactiveFutureCall<ChildClassWithoutId> {
+  @override
+  String get tableName => 'child_table_with_inherited_id';
+
+  _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> get where;
+  @override
+  _i2.Expression? get condition => where(ChildClassWithoutId.t);
+}

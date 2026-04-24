@@ -835,3 +835,13 @@ class RefreshTokenAttachRowRepository {
     );
   }
 }
+
+abstract class RefreshTokenReactiveFutureCall
+    extends _i1.ReactiveFutureCall<RefreshToken> {
+  @override
+  String get tableName => 'serverpod_auth_core_jwt_refresh_token';
+
+  _i1.WhereExpressionBuilder<RefreshTokenTable> get where;
+  @override
+  _i1.Expression? get condition => where(RefreshToken.t);
+}

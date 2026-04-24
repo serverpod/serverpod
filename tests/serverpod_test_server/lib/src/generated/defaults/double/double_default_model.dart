@@ -535,3 +535,13 @@ class DoubleDefaultModelRepository {
     );
   }
 }
+
+abstract class DoubleDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DoubleDefaultModel> {
+  @override
+  String get tableName => 'double_default_model';
+
+  _i1.WhereExpressionBuilder<DoubleDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(DoubleDefaultModel.t);
+}

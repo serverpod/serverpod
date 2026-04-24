@@ -530,3 +530,13 @@ class IntDefaultRepository {
     );
   }
 }
+
+abstract class IntDefaultReactiveFutureCall
+    extends _i1.ReactiveFutureCall<IntDefault> {
+  @override
+  String get tableName => 'int_default';
+
+  _i1.WhereExpressionBuilder<IntDefaultTable> get where;
+  @override
+  _i1.Expression? get condition => where(IntDefault.t);
+}

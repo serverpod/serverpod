@@ -608,3 +608,13 @@ class ObjectUserAttachRowRepository {
     );
   }
 }
+
+abstract class ObjectUserReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectUser> {
+  @override
+  String get tableName => 'object_user';
+
+  _i1.WhereExpressionBuilder<ObjectUserTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectUser.t);
+}

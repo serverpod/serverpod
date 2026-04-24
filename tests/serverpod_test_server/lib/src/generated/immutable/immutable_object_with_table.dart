@@ -537,3 +537,13 @@ class ImmutableObjectWithTableRepository {
     );
   }
 }
+
+abstract class ImmutableObjectWithTableReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ImmutableObjectWithTable> {
+  @override
+  String get tableName => 'immutable_object_with_table';
+
+  _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> get where;
+  @override
+  _i1.Expression? get condition => where(ImmutableObjectWithTable.t);
+}

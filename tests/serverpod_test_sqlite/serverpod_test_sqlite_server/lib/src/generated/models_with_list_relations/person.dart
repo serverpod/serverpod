@@ -696,3 +696,12 @@ class PersonDetachRowRepository {
     );
   }
 }
+
+abstract class PersonReactiveFutureCall extends _i1.ReactiveFutureCall<Person> {
+  @override
+  String get tableName => 'person';
+
+  _i1.WhereExpressionBuilder<PersonTable> get where;
+  @override
+  _i1.Expression? get condition => where(Person.t);
+}

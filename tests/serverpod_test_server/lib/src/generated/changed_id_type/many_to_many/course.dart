@@ -702,3 +702,13 @@ class CourseUuidDetachRowRepository {
     );
   }
 }
+
+abstract class CourseUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CourseUuid> {
+  @override
+  String get tableName => 'course_uuid';
+
+  _i1.WhereExpressionBuilder<CourseUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(CourseUuid.t);
+}

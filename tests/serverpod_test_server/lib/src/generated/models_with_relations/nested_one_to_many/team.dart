@@ -808,3 +808,12 @@ class TeamDetachRowRepository {
     );
   }
 }
+
+abstract class TeamReactiveFutureCall extends _i1.ReactiveFutureCall<Team> {
+  @override
+  String get tableName => 'team';
+
+  _i1.WhereExpressionBuilder<TeamTable> get where;
+  @override
+  _i1.Expression? get condition => where(Team.t);
+}

@@ -561,3 +561,13 @@ class EmailResetRepository {
     );
   }
 }
+
+abstract class EmailResetReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailReset> {
+  @override
+  String get tableName => 'serverpod_email_reset';
+
+  _i1.WhereExpressionBuilder<EmailResetTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailReset.t);
+}

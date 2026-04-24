@@ -686,3 +686,13 @@ class ParentEntityDetachRowRepository {
     );
   }
 }
+
+abstract class ParentEntityReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ParentEntity> {
+  @override
+  String get tableName => 'parent_entity';
+
+  _i1.WhereExpressionBuilder<ParentEntityTable> get where;
+  @override
+  _i1.Expression? get condition => where(ParentEntity.t);
+}

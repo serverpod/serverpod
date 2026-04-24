@@ -10,8 +10,13 @@ class ProtocolDefinition {
 
   final List<SerializableModelDefinition> models;
 
-  /// The future calls that are a part of this protocol.
+  /// The future calls that are a part of this protocol, including both
+  /// scheduled and reactive future calls.
   final List<FutureCallDefinition> futureCalls;
+
+  /// The reactive future calls that are a part of this protocol.
+  List<ReactiveFutureCallDefinition> get reactiveFutureCalls =>
+      futureCalls.whereType<ReactiveFutureCallDefinition>().toList();
 
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({

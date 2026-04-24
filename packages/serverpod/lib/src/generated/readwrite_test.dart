@@ -509,3 +509,13 @@ class ReadWriteTestEntryRepository {
     );
   }
 }
+
+abstract class ReadWriteTestEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ReadWriteTestEntry> {
+  @override
+  String get tableName => 'serverpod_readwrite_test';
+
+  _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(ReadWriteTestEntry.t);
+}

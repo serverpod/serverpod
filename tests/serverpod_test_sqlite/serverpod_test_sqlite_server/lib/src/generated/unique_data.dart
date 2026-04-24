@@ -525,3 +525,13 @@ class UniqueDataRepository {
     );
   }
 }
+
+abstract class UniqueDataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UniqueData> {
+  @override
+  String get tableName => 'unique_data';
+
+  _i1.WhereExpressionBuilder<UniqueDataTable> get where;
+  @override
+  _i1.Expression? get condition => where(UniqueData.t);
+}

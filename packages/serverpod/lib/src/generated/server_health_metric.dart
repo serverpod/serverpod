@@ -645,3 +645,13 @@ class ServerHealthMetricRepository {
     );
   }
 }
+
+abstract class ServerHealthMetricReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ServerHealthMetric> {
+  @override
+  String get tableName => 'serverpod_health_metric';
+
+  _i1.WhereExpressionBuilder<ServerHealthMetricTable> get where;
+  @override
+  _i1.Expression? get condition => where(ServerHealthMetric.t);
+}

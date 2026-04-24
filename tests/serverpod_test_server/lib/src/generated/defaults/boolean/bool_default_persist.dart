@@ -551,3 +551,13 @@ class BoolDefaultPersistRepository {
     );
   }
 }
+
+abstract class BoolDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BoolDefaultPersist> {
+  @override
+  String get tableName => 'bool_default_persist';
+
+  _i1.WhereExpressionBuilder<BoolDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(BoolDefaultPersist.t);
+}

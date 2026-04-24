@@ -555,3 +555,13 @@ class DateTimeDefaultPersistRepository {
     );
   }
 }
+
+abstract class DateTimeDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DateTimeDefaultPersist> {
+  @override
+  String get tableName => 'datetime_default_persist';
+
+  _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(DateTimeDefaultPersist.t);
+}

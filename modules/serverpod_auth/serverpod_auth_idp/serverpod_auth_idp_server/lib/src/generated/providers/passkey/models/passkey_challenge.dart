@@ -538,3 +538,13 @@ class PasskeyChallengeRepository {
     );
   }
 }
+
+abstract class PasskeyChallengeReactiveFutureCall
+    extends _i1.ReactiveFutureCall<PasskeyChallenge> {
+  @override
+  String get tableName => 'serverpod_auth_idp_passkey_challenge';
+
+  _i1.WhereExpressionBuilder<PasskeyChallengeTable> get where;
+  @override
+  _i1.Expression? get condition => where(PasskeyChallenge.t);
+}

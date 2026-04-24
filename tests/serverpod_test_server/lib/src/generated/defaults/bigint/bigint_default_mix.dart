@@ -590,3 +590,13 @@ class BigIntDefaultMixRepository {
     );
   }
 }
+
+abstract class BigIntDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BigIntDefaultMix> {
+  @override
+  String get tableName => 'bigint_default_mix';
+
+  _i1.WhereExpressionBuilder<BigIntDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(BigIntDefaultMix.t);
+}

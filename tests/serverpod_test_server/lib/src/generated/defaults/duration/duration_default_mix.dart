@@ -613,3 +613,13 @@ class DurationDefaultMixRepository {
     );
   }
 }
+
+abstract class DurationDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DurationDefaultMix> {
+  @override
+  String get tableName => 'duration_default_mix';
+
+  _i1.WhereExpressionBuilder<DurationDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(DurationDefaultMix.t);
+}

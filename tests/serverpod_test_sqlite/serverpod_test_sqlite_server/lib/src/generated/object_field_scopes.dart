@@ -540,3 +540,13 @@ class ObjectFieldScopesRepository {
     );
   }
 }
+
+abstract class ObjectFieldScopesReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectFieldScopes> {
+  @override
+  String get tableName => 'object_field_scopes';
+
+  _i1.WhereExpressionBuilder<ObjectFieldScopesTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectFieldScopes.t);
+}

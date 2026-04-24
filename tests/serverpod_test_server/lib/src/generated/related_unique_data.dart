@@ -614,3 +614,13 @@ class RelatedUniqueDataAttachRowRepository {
     );
   }
 }
+
+abstract class RelatedUniqueDataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<RelatedUniqueData> {
+  @override
+  String get tableName => 'related_unique_data';
+
+  _i1.WhereExpressionBuilder<RelatedUniqueDataTable> get where;
+  @override
+  _i1.Expression? get condition => where(RelatedUniqueData.t);
+}

@@ -679,3 +679,13 @@ class GoogleAccountAttachRowRepository {
     );
   }
 }
+
+abstract class GoogleAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<GoogleAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_google_account';
+
+  _i1.WhereExpressionBuilder<GoogleAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(GoogleAccount.t);
+}

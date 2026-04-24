@@ -1247,3 +1247,13 @@ class SessionLogEntryAttachRowRepository {
     );
   }
 }
+
+abstract class SessionLogEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SessionLogEntry> {
+  @override
+  String get tableName => 'serverpod_session_log';
+
+  _i1.WhereExpressionBuilder<SessionLogEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(SessionLogEntry.t);
+}

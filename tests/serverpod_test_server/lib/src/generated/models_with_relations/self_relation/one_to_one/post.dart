@@ -732,3 +732,12 @@ class PostDetachRowRepository {
     );
   }
 }
+
+abstract class PostReactiveFutureCall extends _i1.ReactiveFutureCall<Post> {
+  @override
+  String get tableName => 'post';
+
+  _i1.WhereExpressionBuilder<PostTable> get where;
+  @override
+  _i1.Expression? get condition => where(Post.t);
+}

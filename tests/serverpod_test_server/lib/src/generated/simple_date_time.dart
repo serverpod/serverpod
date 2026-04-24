@@ -508,3 +508,13 @@ class SimpleDateTimeRepository {
     );
   }
 }
+
+abstract class SimpleDateTimeReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SimpleDateTime> {
+  @override
+  String get tableName => 'simple_date_time';
+
+  _i1.WhereExpressionBuilder<SimpleDateTimeTable> get where;
+  @override
+  _i1.Expression? get condition => where(SimpleDateTime.t);
+}

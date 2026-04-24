@@ -845,3 +845,13 @@ class UserProfileDetachRowRepository {
     );
   }
 }
+
+abstract class UserProfileReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserProfile> {
+  @override
+  String get tableName => 'serverpod_auth_core_profile';
+
+  _i1.WhereExpressionBuilder<UserProfileTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserProfile.t);
+}

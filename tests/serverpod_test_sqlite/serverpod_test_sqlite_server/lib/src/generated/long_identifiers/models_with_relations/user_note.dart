@@ -562,3 +562,13 @@ class UserNoteRepository {
     );
   }
 }
+
+abstract class UserNoteReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserNote> {
+  @override
+  String get tableName => 'user_note';
+
+  _i1.WhereExpressionBuilder<UserNoteTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserNote.t);
+}

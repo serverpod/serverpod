@@ -557,3 +557,13 @@ class UserImageRepository {
     );
   }
 }
+
+abstract class UserImageReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserImage> {
+  @override
+  String get tableName => 'serverpod_user_image';
+
+  _i1.WhereExpressionBuilder<UserImageTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserImage.t);
+}

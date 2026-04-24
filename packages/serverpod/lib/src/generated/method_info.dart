@@ -531,3 +531,13 @@ class MethodInfoRepository {
     );
   }
 }
+
+abstract class MethodInfoReactiveFutureCall
+    extends _i1.ReactiveFutureCall<MethodInfo> {
+  @override
+  String get tableName => 'serverpod_method';
+
+  _i1.WhereExpressionBuilder<MethodInfoTable> get where;
+  @override
+  _i1.Expression? get condition => where(MethodInfo.t);
+}

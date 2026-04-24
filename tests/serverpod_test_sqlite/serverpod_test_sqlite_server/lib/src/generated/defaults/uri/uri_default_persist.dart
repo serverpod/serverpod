@@ -514,3 +514,13 @@ class UriDefaultPersistRepository {
     );
   }
 }
+
+abstract class UriDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UriDefaultPersist> {
+  @override
+  String get tableName => 'uri_default_persist';
+
+  _i1.WhereExpressionBuilder<UriDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(UriDefaultPersist.t);
+}

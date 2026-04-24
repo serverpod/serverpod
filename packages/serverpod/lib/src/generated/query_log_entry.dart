@@ -743,3 +743,13 @@ class QueryLogEntryRepository {
     );
   }
 }
+
+abstract class QueryLogEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<QueryLogEntry> {
+  @override
+  String get tableName => 'serverpod_query_log';
+
+  _i1.WhereExpressionBuilder<QueryLogEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(QueryLogEntry.t);
+}

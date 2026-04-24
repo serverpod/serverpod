@@ -635,3 +635,13 @@ class PlayerUuidDetachRowRepository {
     );
   }
 }
+
+abstract class PlayerUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<PlayerUuid> {
+  @override
+  String get tableName => 'player_uuid';
+
+  _i1.WhereExpressionBuilder<PlayerUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(PlayerUuid.t);
+}

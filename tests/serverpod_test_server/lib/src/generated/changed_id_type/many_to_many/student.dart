@@ -644,3 +644,13 @@ class StudentUuidAttachRowRepository {
     );
   }
 }
+
+abstract class StudentUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<StudentUuid> {
+  @override
+  String get tableName => 'student_uuid';
+
+  _i1.WhereExpressionBuilder<StudentUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(StudentUuid.t);
+}

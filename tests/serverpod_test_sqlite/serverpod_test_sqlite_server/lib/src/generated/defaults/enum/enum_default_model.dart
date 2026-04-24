@@ -629,3 +629,13 @@ class EnumDefaultModelRepository {
     );
   }
 }
+
+abstract class EnumDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EnumDefaultModel> {
+  @override
+  String get tableName => 'enum_default_model';
+
+  _i1.WhereExpressionBuilder<EnumDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(EnumDefaultModel.t);
+}

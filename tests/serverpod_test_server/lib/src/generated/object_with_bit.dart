@@ -649,3 +649,13 @@ class ObjectWithBitRepository {
     );
   }
 }
+
+abstract class ObjectWithBitReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithBit> {
+  @override
+  String get tableName => 'object_with_bit';
+
+  _i1.WhereExpressionBuilder<ObjectWithBitTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithBit.t);
+}

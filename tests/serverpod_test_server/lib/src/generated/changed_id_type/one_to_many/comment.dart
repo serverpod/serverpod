@@ -609,3 +609,13 @@ class CommentIntAttachRowRepository {
     );
   }
 }
+
+abstract class CommentIntReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CommentInt> {
+  @override
+  String get tableName => 'comment_int';
+
+  _i1.WhereExpressionBuilder<CommentIntTable> get where;
+  @override
+  _i1.Expression? get condition => where(CommentInt.t);
+}

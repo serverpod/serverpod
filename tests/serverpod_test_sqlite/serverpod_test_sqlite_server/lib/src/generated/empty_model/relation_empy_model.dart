@@ -719,3 +719,13 @@ class RelationEmptyModelDetachRowRepository {
     );
   }
 }
+
+abstract class RelationEmptyModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<RelationEmptyModel> {
+  @override
+  String get tableName => 'relation_empty_model';
+
+  _i1.WhereExpressionBuilder<RelationEmptyModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(RelationEmptyModel.t);
+}

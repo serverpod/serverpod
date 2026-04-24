@@ -796,3 +796,13 @@ class EmailAccountRequestDetachRowRepository {
     );
   }
 }
+
+abstract class EmailAccountRequestReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailAccountRequest> {
+  @override
+  String get tableName => 'serverpod_auth_idp_email_account_request';
+
+  _i1.WhereExpressionBuilder<EmailAccountRequestTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailAccountRequest.t);
+}

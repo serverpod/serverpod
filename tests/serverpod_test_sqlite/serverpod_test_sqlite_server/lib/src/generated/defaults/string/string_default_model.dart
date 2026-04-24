@@ -536,3 +536,13 @@ class StringDefaultModelRepository {
     );
   }
 }
+
+abstract class StringDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<StringDefaultModel> {
+  @override
+  String get tableName => 'string_default_model';
+
+  _i1.WhereExpressionBuilder<StringDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(StringDefaultModel.t);
+}

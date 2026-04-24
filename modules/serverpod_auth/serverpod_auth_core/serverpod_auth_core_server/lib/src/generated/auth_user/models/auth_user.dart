@@ -572,3 +572,13 @@ class AuthUserRepository {
     );
   }
 }
+
+abstract class AuthUserReactiveFutureCall
+    extends _i1.ReactiveFutureCall<AuthUser> {
+  @override
+  String get tableName => 'serverpod_auth_core_user';
+
+  _i1.WhereExpressionBuilder<AuthUserTable> get where;
+  @override
+  _i1.Expression? get condition => where(AuthUser.t);
+}

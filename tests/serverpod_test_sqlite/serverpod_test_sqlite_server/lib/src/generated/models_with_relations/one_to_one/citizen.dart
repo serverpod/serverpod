@@ -828,3 +828,13 @@ class CitizenDetachRowRepository {
     );
   }
 }
+
+abstract class CitizenReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Citizen> {
+  @override
+  String get tableName => 'citizen';
+
+  _i1.WhereExpressionBuilder<CitizenTable> get where;
+  @override
+  _i1.Expression? get condition => where(Citizen.t);
+}

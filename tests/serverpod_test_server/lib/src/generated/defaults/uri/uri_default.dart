@@ -535,3 +535,13 @@ class UriDefaultRepository {
     );
   }
 }
+
+abstract class UriDefaultReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UriDefault> {
+  @override
+  String get tableName => 'uri_default';
+
+  _i1.WhereExpressionBuilder<UriDefaultTable> get where;
+  @override
+  _i1.Expression? get condition => where(UriDefault.t);
+}

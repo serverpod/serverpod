@@ -619,3 +619,13 @@ class ArenaUuidDetachRowRepository {
     );
   }
 }
+
+abstract class ArenaUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ArenaUuid> {
+  @override
+  String get tableName => 'arena_uuid';
+
+  _i1.WhereExpressionBuilder<ArenaUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(ArenaUuid.t);
+}

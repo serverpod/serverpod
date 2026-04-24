@@ -797,3 +797,13 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
     );
   }
 }
+
+abstract class LongImplicitIdFieldCollectionReactiveFutureCall
+    extends _i1.ReactiveFutureCall<LongImplicitIdFieldCollection> {
+  @override
+  String get tableName => 'long_implicit_id_field_collection';
+
+  _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable> get where;
+  @override
+  _i1.Expression? get condition => where(LongImplicitIdFieldCollection.t);
+}

@@ -768,3 +768,13 @@ class RelationToMultipleMaxFieldNameDetachRowRepository {
     );
   }
 }
+
+abstract class RelationToMultipleMaxFieldNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<RelationToMultipleMaxFieldName> {
+  @override
+  String get tableName => 'relation_to_multiple_max_field_name';
+
+  _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(RelationToMultipleMaxFieldName.t);
+}

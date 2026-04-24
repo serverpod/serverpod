@@ -526,3 +526,13 @@ class EmployeeRepository {
     );
   }
 }
+
+abstract class EmployeeReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Employee> {
+  @override
+  String get tableName => 'employee';
+
+  _i1.WhereExpressionBuilder<EmployeeTable> get where;
+  @override
+  _i1.Expression? get condition => where(Employee.t);
+}

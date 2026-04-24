@@ -514,3 +514,13 @@ class DoubleDefaultPersistRepository {
     );
   }
 }
+
+abstract class DoubleDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DoubleDefaultPersist> {
+  @override
+  String get tableName => 'double_default_persist';
+
+  _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(DoubleDefaultPersist.t);
+}

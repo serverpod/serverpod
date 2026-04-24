@@ -140,6 +140,7 @@ class Serverpod {
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
 
+  DatabaseProvider? _databaseProvider;
   DatabasePoolManager? _databasePoolManager;
 
   /// The last time a database operation was performed. This can be used to
@@ -556,8 +557,8 @@ class Serverpod {
     var databaseConfiguration = config.database;
     if (Features.enableDatabase && databaseConfiguration != null) {
       final databaseDialect = databaseConfiguration.dialect;
-      final databaseProvider = DatabaseProvider.forDialect(databaseDialect);
-      _databasePoolManager = databaseProvider.createPoolManager(
+      _databaseProvider = DatabaseProvider.forDialect(databaseDialect);
+      _databasePoolManager = _databaseProvider!.createPoolManager(
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
@@ -630,6 +631,9 @@ class Serverpod {
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
         logSession: _internalLoggingSession,
+        serverId: serverId,
+        reactiveTriggerManager: _databaseProvider
+            ?.createReactiveTriggerManager(),
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -869,6 +873,16 @@ class Serverpod {
     required bool applyMigrations,
   }) async {
     bool verified;
+
+    // Drop all reactive database call triggers before applying migrations
+    // Since triggers reference table/column names that may change.
+    try {
+      await _dropAllReactiveTriggers();
+    } catch (e, _) {
+      _internalLogVerbose(
+        'Failed to drop reactive triggers before migration: $e',
+      );
+    }
 
     try {
       _internalLogVerbose('Initializing migration manager.');
@@ -1377,6 +1391,12 @@ class Serverpod {
         'loggingMode: ${loggingMode.name}\n'
         'applyMigrations: $applyMigrations\n'
         'applyRepairMigration: $applyRepairMigration';
+  }
+
+  Future<void> _dropAllReactiveTriggers() async {
+    final triggerManager = _databaseProvider?.createReactiveTriggerManager();
+    if (triggerManager == null) return;
+    await triggerManager.dropAllTriggers(internalSession);
   }
 
   /// The health check service for orchestrator probes.

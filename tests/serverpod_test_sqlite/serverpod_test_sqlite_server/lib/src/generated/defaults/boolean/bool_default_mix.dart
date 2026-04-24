@@ -578,3 +578,13 @@ class BoolDefaultMixRepository {
     );
   }
 }
+
+abstract class BoolDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BoolDefaultMix> {
+  @override
+  String get tableName => 'bool_default_mix';
+
+  _i1.WhereExpressionBuilder<BoolDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(BoolDefaultMix.t);
+}

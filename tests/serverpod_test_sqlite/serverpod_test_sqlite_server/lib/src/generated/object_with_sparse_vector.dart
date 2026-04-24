@@ -609,3 +609,13 @@ class ObjectWithSparseVectorRepository {
     );
   }
 }
+
+abstract class ObjectWithSparseVectorReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithSparseVector> {
+  @override
+  String get tableName => 'object_with_sparse_vector';
+
+  _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithSparseVector.t);
+}

@@ -735,3 +735,12 @@ class OrderAttachRowRepository {
     );
   }
 }
+
+abstract class OrderReactiveFutureCall extends _i1.ReactiveFutureCall<Order> {
+  @override
+  String get tableName => 'order';
+
+  _i1.WhereExpressionBuilder<OrderTable> get where;
+  @override
+  _i1.Expression? get condition => where(Order.t);
+}

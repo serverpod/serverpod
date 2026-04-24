@@ -656,3 +656,13 @@ class UuidDefaultModelRepository {
     );
   }
 }
+
+abstract class UuidDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UuidDefaultModel> {
+  @override
+  String get tableName => 'uuid_default_model';
+
+  _i1.WhereExpressionBuilder<UuidDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(UuidDefaultModel.t);
+}

@@ -605,3 +605,13 @@ class CompanyAttachRowRepository {
     );
   }
 }
+
+abstract class CompanyReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Company> {
+  @override
+  String get tableName => 'company';
+
+  _i1.WhereExpressionBuilder<CompanyTable> get where;
+  @override
+  _i1.Expression? get condition => where(Company.t);
+}

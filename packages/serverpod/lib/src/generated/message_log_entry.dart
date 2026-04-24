@@ -745,3 +745,13 @@ class MessageLogEntryRepository {
     );
   }
 }
+
+abstract class MessageLogEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<MessageLogEntry> {
+  @override
+  String get tableName => 'serverpod_message_log';
+
+  _i1.WhereExpressionBuilder<MessageLogEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(MessageLogEntry.t);
+}

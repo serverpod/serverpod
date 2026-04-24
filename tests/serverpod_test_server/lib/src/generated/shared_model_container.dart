@@ -1259,3 +1259,13 @@ class SharedModelContainerRepository {
     );
   }
 }
+
+abstract class SharedModelContainerReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SharedModelContainer> {
+  @override
+  String get tableName => 'shared_model_container';
+
+  _i1.WhereExpressionBuilder<SharedModelContainerTable> get where;
+  @override
+  _i1.Expression? get condition => where(SharedModelContainer.t);
+}

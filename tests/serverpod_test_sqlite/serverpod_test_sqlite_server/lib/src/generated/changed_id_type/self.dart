@@ -1038,3 +1038,13 @@ class ChangedIdTypeSelfDetachRowRepository {
     );
   }
 }
+
+abstract class ChangedIdTypeSelfReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ChangedIdTypeSelf> {
+  @override
+  String get tableName => 'changed_id_type_self';
+
+  _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> get where;
+  @override
+  _i1.Expression? get condition => where(ChangedIdTypeSelf.t);
+}

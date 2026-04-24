@@ -518,3 +518,13 @@ class DurationDefaultPersistRepository {
     );
   }
 }
+
+abstract class DurationDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DurationDefaultPersist> {
+  @override
+  String get tableName => 'duration_default_persist';
+
+  _i1.WhereExpressionBuilder<DurationDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(DurationDefaultPersist.t);
+}

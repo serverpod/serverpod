@@ -648,3 +648,13 @@ class CloudStorageEntryRepository {
     );
   }
 }
+
+abstract class CloudStorageEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CloudStorageEntry> {
+  @override
+  String get tableName => 'serverpod_cloud_storage';
+
+  _i1.WhereExpressionBuilder<CloudStorageEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(CloudStorageEntry.t);
+}

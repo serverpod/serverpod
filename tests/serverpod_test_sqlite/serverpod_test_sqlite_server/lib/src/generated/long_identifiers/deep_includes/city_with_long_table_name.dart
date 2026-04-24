@@ -929,3 +929,13 @@ class CityWithLongTableNameDetachRowRepository {
     );
   }
 }
+
+abstract class CityWithLongTableNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CityWithLongTableName> {
+  @override
+  String get tableName => 'city_with_long_table_name_that_is_still_valid';
+
+  _i1.WhereExpressionBuilder<CityWithLongTableNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(CityWithLongTableName.t);
+}

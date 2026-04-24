@@ -536,3 +536,13 @@ class ObjectFieldPersistRepository {
     );
   }
 }
+
+abstract class ObjectFieldPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectFieldPersist> {
+  @override
+  String get tableName => 'object_field_persist';
+
+  _i1.WhereExpressionBuilder<ObjectFieldPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectFieldPersist.t);
+}

@@ -877,3 +877,14 @@ class EmailAccountPasswordResetRequestDetachRowRepository {
     );
   }
 }
+
+abstract class EmailAccountPasswordResetRequestReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailAccountPasswordResetRequest> {
+  @override
+  String get tableName =>
+      'serverpod_auth_idp_email_account_password_reset_request';
+
+  _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailAccountPasswordResetRequest.t);
+}

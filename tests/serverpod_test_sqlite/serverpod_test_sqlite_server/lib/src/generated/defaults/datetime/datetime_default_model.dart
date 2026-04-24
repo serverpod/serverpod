@@ -586,3 +586,13 @@ class DateTimeDefaultModelRepository {
     );
   }
 }
+
+abstract class DateTimeDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DateTimeDefaultModel> {
+  @override
+  String get tableName => 'datetime_default_model';
+
+  _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(DateTimeDefaultModel.t);
+}

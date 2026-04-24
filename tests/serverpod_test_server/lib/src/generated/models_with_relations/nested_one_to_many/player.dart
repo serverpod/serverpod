@@ -631,3 +631,12 @@ class PlayerDetachRowRepository {
     );
   }
 }
+
+abstract class PlayerReactiveFutureCall extends _i1.ReactiveFutureCall<Player> {
+  @override
+  String get tableName => 'player';
+
+  _i1.WhereExpressionBuilder<PlayerTable> get where;
+  @override
+  _i1.Expression? get condition => where(Player.t);
+}

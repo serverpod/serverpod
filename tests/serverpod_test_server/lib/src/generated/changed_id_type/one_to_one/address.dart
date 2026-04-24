@@ -638,3 +638,13 @@ class AddressUuidDetachRowRepository {
     );
   }
 }
+
+abstract class AddressUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<AddressUuid> {
+  @override
+  String get tableName => 'address_uuid';
+
+  _i1.WhereExpressionBuilder<AddressUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(AddressUuid.t);
+}

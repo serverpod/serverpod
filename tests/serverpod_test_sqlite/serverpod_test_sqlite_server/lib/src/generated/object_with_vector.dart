@@ -659,3 +659,13 @@ class ObjectWithVectorRepository {
     );
   }
 }
+
+abstract class ObjectWithVectorReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithVector> {
+  @override
+  String get tableName => 'object_with_vector';
+
+  _i1.WhereExpressionBuilder<ObjectWithVectorTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithVector.t);
+}

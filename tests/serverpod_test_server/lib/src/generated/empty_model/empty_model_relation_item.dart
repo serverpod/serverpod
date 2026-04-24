@@ -565,3 +565,13 @@ class EmptyModelRelationItemRepository {
     );
   }
 }
+
+abstract class EmptyModelRelationItemReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmptyModelRelationItem> {
+  @override
+  String get tableName => 'empty_model_relation_item';
+
+  _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmptyModelRelationItem.t);
+}

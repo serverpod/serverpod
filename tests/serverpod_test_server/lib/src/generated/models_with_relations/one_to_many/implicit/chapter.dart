@@ -551,3 +551,13 @@ class ChapterRepository {
     );
   }
 }
+
+abstract class ChapterReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Chapter> {
+  @override
+  String get tableName => 'chapter';
+
+  _i1.WhereExpressionBuilder<ChapterTable> get where;
+  @override
+  _i1.Expression? get condition => where(Chapter.t);
+}

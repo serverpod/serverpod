@@ -463,3 +463,13 @@ class EmptyModelWithTableRepository {
     );
   }
 }
+
+abstract class EmptyModelWithTableReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmptyModelWithTable> {
+  @override
+  String get tableName => 'empty_model_with_table';
+
+  _i1.WhereExpressionBuilder<EmptyModelWithTableTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmptyModelWithTable.t);
+}

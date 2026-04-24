@@ -515,3 +515,13 @@ class MaxFieldNameRepository {
     );
   }
 }
+
+abstract class MaxFieldNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<MaxFieldName> {
+  @override
+  String get tableName => 'max_field_name';
+
+  _i1.WhereExpressionBuilder<MaxFieldNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(MaxFieldName.t);
+}

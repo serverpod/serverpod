@@ -643,3 +643,13 @@ class UserDataAttachRowRepository {
     );
   }
 }
+
+abstract class UserDataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserData> {
+  @override
+  String get tableName => 'user_data';
+
+  _i1.WhereExpressionBuilder<UserDataTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserData.t);
+}

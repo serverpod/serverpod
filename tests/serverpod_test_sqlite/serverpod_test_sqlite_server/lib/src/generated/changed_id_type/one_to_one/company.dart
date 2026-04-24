@@ -607,3 +607,13 @@ class CompanyUuidAttachRowRepository {
     );
   }
 }
+
+abstract class CompanyUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CompanyUuid> {
+  @override
+  String get tableName => 'company_uuid';
+
+  _i1.WhereExpressionBuilder<CompanyUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(CompanyUuid.t);
+}

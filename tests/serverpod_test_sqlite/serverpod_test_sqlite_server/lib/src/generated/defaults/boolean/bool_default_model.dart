@@ -573,3 +573,13 @@ class BoolDefaultModelRepository {
     );
   }
 }
+
+abstract class BoolDefaultModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<BoolDefaultModel> {
+  @override
+  String get tableName => 'bool_default_model';
+
+  _i1.WhereExpressionBuilder<BoolDefaultModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(BoolDefaultModel.t);
+}

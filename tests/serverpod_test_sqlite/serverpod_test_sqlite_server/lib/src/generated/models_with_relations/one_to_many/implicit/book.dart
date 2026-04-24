@@ -713,3 +713,12 @@ class BookDetachRowRepository {
     );
   }
 }
+
+abstract class BookReactiveFutureCall extends _i1.ReactiveFutureCall<Book> {
+  @override
+  String get tableName => 'book';
+
+  _i1.WhereExpressionBuilder<BookTable> get where;
+  @override
+  _i1.Expression? get condition => where(Book.t);
+}

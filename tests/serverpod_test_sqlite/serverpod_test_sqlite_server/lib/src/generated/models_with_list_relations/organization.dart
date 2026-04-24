@@ -812,3 +812,13 @@ class OrganizationDetachRowRepository {
     );
   }
 }
+
+abstract class OrganizationReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Organization> {
+  @override
+  String get tableName => 'organization';
+
+  _i1.WhereExpressionBuilder<OrganizationTable> get where;
+  @override
+  _i1.Expression? get condition => where(Organization.t);
+}

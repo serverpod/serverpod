@@ -757,3 +757,13 @@ class PasskeyAccountAttachRowRepository {
     );
   }
 }
+
+abstract class PasskeyAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<PasskeyAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_passkey_account';
+
+  _i1.WhereExpressionBuilder<PasskeyAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(PasskeyAccount.t);
+}

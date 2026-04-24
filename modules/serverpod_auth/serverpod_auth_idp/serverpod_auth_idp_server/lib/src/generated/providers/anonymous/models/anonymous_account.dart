@@ -623,3 +623,13 @@ class AnonymousAccountAttachRowRepository {
     );
   }
 }
+
+abstract class AnonymousAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<AnonymousAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_anonymous_account';
+
+  _i1.WhereExpressionBuilder<AnonymousAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(AnonymousAccount.t);
+}

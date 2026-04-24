@@ -601,3 +601,13 @@ class AuthKeyRepository {
     );
   }
 }
+
+abstract class AuthKeyReactiveFutureCall
+    extends _i1.ReactiveFutureCall<AuthKey> {
+  @override
+  String get tableName => 'serverpod_auth_key';
+
+  _i1.WhereExpressionBuilder<AuthKeyTable> get where;
+  @override
+  _i1.Expression? get condition => where(AuthKey.t);
+}

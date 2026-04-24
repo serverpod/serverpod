@@ -642,3 +642,13 @@ class DepartmentAttachRowRepository {
     );
   }
 }
+
+abstract class DepartmentReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Department> {
+  @override
+  String get tableName => 'department';
+
+  _i1.WhereExpressionBuilder<DepartmentTable> get where;
+  @override
+  _i1.Expression? get condition => where(Department.t);
+}

@@ -686,3 +686,13 @@ class MicrosoftAccountAttachRowRepository {
     );
   }
 }
+
+abstract class MicrosoftAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<MicrosoftAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_microsoft_account';
+
+  _i1.WhereExpressionBuilder<MicrosoftAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(MicrosoftAccount.t);
+}

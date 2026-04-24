@@ -641,3 +641,13 @@ class StudentAttachRowRepository {
     );
   }
 }
+
+abstract class StudentReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Student> {
+  @override
+  String get tableName => 'student';
+
+  _i1.WhereExpressionBuilder<StudentTable> get where;
+  @override
+  _i1.Expression? get condition => where(Student.t);
+}

@@ -585,3 +585,13 @@ class UriDefaultMixRepository {
     );
   }
 }
+
+abstract class UriDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UriDefaultMix> {
+  @override
+  String get tableName => 'uri_default_mix';
+
+  _i1.WhereExpressionBuilder<UriDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(UriDefaultMix.t);
+}

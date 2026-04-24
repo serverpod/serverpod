@@ -637,3 +637,13 @@ class AddressDetachRowRepository {
     );
   }
 }
+
+abstract class AddressReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Address> {
+  @override
+  String get tableName => 'address';
+
+  _i1.WhereExpressionBuilder<AddressTable> get where;
+  @override
+  _i1.Expression? get condition => where(Address.t);
+}

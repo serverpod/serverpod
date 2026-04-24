@@ -726,3 +726,13 @@ class PersonWithLongTableNameDetachRowRepository {
     );
   }
 }
+
+abstract class PersonWithLongTableNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<PersonWithLongTableName> {
+  @override
+  String get tableName => 'person_with_long_table_name_that_is_still_valid';
+
+  _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(PersonWithLongTableName.t);
+}

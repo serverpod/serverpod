@@ -605,3 +605,13 @@ class CommentAttachRowRepository {
     );
   }
 }
+
+abstract class CommentReactiveFutureCall
+    extends _i1.ReactiveFutureCall<Comment> {
+  @override
+  String get tableName => 'comment';
+
+  _i1.WhereExpressionBuilder<CommentTable> get where;
+  @override
+  _i1.Expression? get condition => where(Comment.t);
+}

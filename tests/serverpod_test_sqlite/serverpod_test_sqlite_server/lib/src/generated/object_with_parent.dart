@@ -505,3 +505,13 @@ class ObjectWithParentRepository {
     );
   }
 }
+
+abstract class ObjectWithParentReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithParent> {
+  @override
+  String get tableName => 'object_with_parent';
+
+  _i1.WhereExpressionBuilder<ObjectWithParentTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithParent.t);
+}

@@ -534,3 +534,13 @@ class GoogleRefreshTokenRepository {
     );
   }
 }
+
+abstract class GoogleRefreshTokenReactiveFutureCall
+    extends _i1.ReactiveFutureCall<GoogleRefreshToken> {
+  @override
+  String get tableName => 'serverpod_google_refresh_token';
+
+  _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> get where;
+  @override
+  _i1.Expression? get condition => where(GoogleRefreshToken.t);
+}

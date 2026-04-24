@@ -696,3 +696,13 @@ class SessionMetadataAttachRowRepository {
     );
   }
 }
+
+abstract class SessionMetadataReactiveFutureCall
+    extends _i1.ReactiveFutureCall<SessionMetadata> {
+  @override
+  String get tableName => 'session_metadata';
+
+  _i1.WhereExpressionBuilder<SessionMetadataTable> get where;
+  @override
+  _i1.Expression? get condition => where(SessionMetadata.t);
+}

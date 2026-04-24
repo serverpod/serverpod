@@ -566,3 +566,13 @@ class IntDefaultMixRepository {
     );
   }
 }
+
+abstract class IntDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<IntDefaultMix> {
+  @override
+  String get tableName => 'int_default_mix';
+
+  _i1.WhereExpressionBuilder<IntDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(IntDefaultMix.t);
+}

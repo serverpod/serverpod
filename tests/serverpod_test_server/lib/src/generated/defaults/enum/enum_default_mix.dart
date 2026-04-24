@@ -597,3 +597,13 @@ class EnumDefaultMixRepository {
     );
   }
 }
+
+abstract class EnumDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EnumDefaultMix> {
+  @override
+  String get tableName => 'enum_default_mix';
+
+  _i1.WhereExpressionBuilder<EnumDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(EnumDefaultMix.t);
+}

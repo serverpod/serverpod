@@ -710,3 +710,13 @@ class FirebaseAccountAttachRowRepository {
     );
   }
 }
+
+abstract class FirebaseAccountReactiveFutureCall
+    extends _i1.ReactiveFutureCall<FirebaseAccount> {
+  @override
+  String get tableName => 'serverpod_auth_idp_firebase_account';
+
+  _i1.WhereExpressionBuilder<FirebaseAccountTable> get where;
+  @override
+  _i1.Expression? get condition => where(FirebaseAccount.t);
+}

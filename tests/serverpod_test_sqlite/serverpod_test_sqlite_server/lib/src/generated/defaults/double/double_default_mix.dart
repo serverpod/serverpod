@@ -577,3 +577,13 @@ class DoubleDefaultMixRepository {
     );
   }
 }
+
+abstract class DoubleDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DoubleDefaultMix> {
+  @override
+  String get tableName => 'double_default_mix';
+
+  _i1.WhereExpressionBuilder<DoubleDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(DoubleDefaultMix.t);
+}

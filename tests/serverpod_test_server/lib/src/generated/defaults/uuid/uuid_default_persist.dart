@@ -588,3 +588,13 @@ class UuidDefaultPersistRepository {
     );
   }
 }
+
+abstract class UuidDefaultPersistReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UuidDefaultPersist> {
+  @override
+  String get tableName => 'uuid_default_persist';
+
+  _i1.WhereExpressionBuilder<UuidDefaultPersistTable> get where;
+  @override
+  _i1.Expression? get condition => where(UuidDefaultPersist.t);
+}

@@ -816,3 +816,13 @@ class TeamIntDetachRowRepository {
     );
   }
 }
+
+abstract class TeamIntReactiveFutureCall
+    extends _i1.ReactiveFutureCall<TeamInt> {
+  @override
+  String get tableName => 'team_int';
+
+  _i1.WhereExpressionBuilder<TeamIntTable> get where;
+  @override
+  _i1.Expression? get condition => where(TeamInt.t);
+}

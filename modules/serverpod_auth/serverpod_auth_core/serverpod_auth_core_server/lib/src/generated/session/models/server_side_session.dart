@@ -854,3 +854,13 @@ class ServerSideSessionAttachRowRepository {
     );
   }
 }
+
+abstract class ServerSideSessionReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ServerSideSession> {
+  @override
+  String get tableName => 'serverpod_auth_core_session';
+
+  _i1.WhereExpressionBuilder<ServerSideSessionTable> get where;
+  @override
+  _i1.Expression? get condition => where(ServerSideSession.t);
+}

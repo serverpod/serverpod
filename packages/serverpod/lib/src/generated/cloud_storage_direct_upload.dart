@@ -598,3 +598,13 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 }
+
+abstract class CloudStorageDirectUploadEntryReactiveFutureCall
+    extends _i1.ReactiveFutureCall<CloudStorageDirectUploadEntry> {
+  @override
+  String get tableName => 'serverpod_cloud_storage_direct_upload';
+
+  _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable> get where;
+  @override
+  _i1.Expression? get condition => where(CloudStorageDirectUploadEntry.t);
+}

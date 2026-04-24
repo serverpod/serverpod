@@ -217,6 +217,14 @@ class SerializableModelLibraryGenerator {
               ),
           ]);
 
+          libraryBuilder.body.add(
+            _buildReactiveFutureCallClass(
+              className,
+              tableName,
+              idTypeReference,
+            ),
+          );
+
           // TODO: Remove this workaround when closing issue
           // https://github.com/serverpod/serverpod/issues/3462
           if (buildRepository.hasRelationWithNonNullableIds(fields)) {
@@ -3038,6 +3046,75 @@ class SerializableModelLibraryGenerator {
       }
     }
     return modelIncludeClassFields;
+  }
+
+  /// Builds an abstract intermediate class for reactive database calls.
+  ///
+  /// Generates e.g.:
+  /// ```dart
+  /// abstract class TripReactiveFutureCall
+  ///     extends _i1.ReactiveFutureCall<Trip> {
+  ///   @override
+  ///   String get tableName => 'trip';
+  ///
+  ///   _i1.WhereExpressionBuilder<TripTable> get where;
+  ///
+  ///   @override
+  ///   _i1.Expression? get condition => where(Trip.t);
+  /// }
+  /// ```
+  Class _buildReactiveFutureCallClass(
+    String className,
+    String tableName,
+    TypeReference idTypeReference,
+  ) {
+    return Class(
+      (c) => c
+        ..name = '${className}ReactiveFutureCall'
+        ..abstract = true
+        ..extend = TypeReference(
+          (t) => t
+            ..symbol = 'ReactiveFutureCall'
+            ..url = serverpodUrl(serverCode)
+            ..types.add(refer(className)),
+        )
+        ..methods.addAll([
+          Method(
+            (m) => m
+              ..name = 'tableName'
+              ..annotations.add(refer('override'))
+              ..type = MethodType.getter
+              ..returns = refer('String')
+              ..lambda = true
+              ..body = Code("'$tableName'"),
+          ),
+          Method(
+            (m) => m
+              ..name = 'where'
+              ..type = MethodType.getter
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'WhereExpressionBuilder'
+                  ..url = serverpodUrl(serverCode)
+                  ..types.add(refer('${className}Table')),
+              ),
+          ),
+          Method(
+            (m) => m
+              ..name = 'condition'
+              ..annotations.add(refer('override'))
+              ..type = MethodType.getter
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'Expression'
+                  ..url = serverpodUrl(serverCode)
+                  ..isNullable = true,
+              )
+              ..lambda = true
+              ..body = Code('where($className.t)'),
+          ),
+        ]),
+    );
   }
 
   Constructor _buildModelIncludeClassConstructor(

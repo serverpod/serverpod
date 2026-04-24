@@ -649,3 +649,13 @@ class ChallengeTrackerAttachRowRepository {
     );
   }
 }
+
+abstract class ChallengeTrackerReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ChallengeTracker> {
+  @override
+  String get tableName => 'challenge_tracker';
+
+  _i1.WhereExpressionBuilder<ChallengeTrackerTable> get where;
+  @override
+  _i1.Expression? get condition => where(ChallengeTracker.t);
+}

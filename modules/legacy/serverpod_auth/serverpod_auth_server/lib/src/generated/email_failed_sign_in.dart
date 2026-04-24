@@ -561,3 +561,13 @@ class EmailFailedSignInRepository {
     );
   }
 }
+
+abstract class EmailFailedSignInReactiveFutureCall
+    extends _i1.ReactiveFutureCall<EmailFailedSignIn> {
+  @override
+  String get tableName => 'serverpod_email_failed_sign_in';
+
+  _i1.WhereExpressionBuilder<EmailFailedSignInTable> get where;
+  @override
+  _i1.Expression? get condition => where(EmailFailedSignIn.t);
+}

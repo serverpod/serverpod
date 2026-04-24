@@ -842,3 +842,14 @@ class OrganizationWithLongTableNameDetachRowRepository {
     );
   }
 }
+
+abstract class OrganizationWithLongTableNameReactiveFutureCall
+    extends _i1.ReactiveFutureCall<OrganizationWithLongTableName> {
+  @override
+  String get tableName =>
+      'organization_with_long_table_name_that_is_still_valid';
+
+  _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable> get where;
+  @override
+  _i1.Expression? get condition => where(OrganizationWithLongTableName.t);
+}

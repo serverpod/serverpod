@@ -709,3 +709,13 @@ class UserProfileImageAttachRowRepository {
     );
   }
 }
+
+abstract class UserProfileImageReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserProfileImage> {
+  @override
+  String get tableName => 'serverpod_auth_core_profile_image';
+
+  _i1.WhereExpressionBuilder<UserProfileImageTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserProfileImage.t);
+}

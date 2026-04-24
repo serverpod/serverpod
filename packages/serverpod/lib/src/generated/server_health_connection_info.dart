@@ -647,3 +647,13 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 }
+
+abstract class ServerHealthConnectionInfoReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ServerHealthConnectionInfo> {
+  @override
+  String get tableName => 'serverpod_health_connection_info';
+
+  _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> get where;
+  @override
+  _i1.Expression? get condition => where(ServerHealthConnectionInfo.t);
+}

@@ -535,3 +535,13 @@ class ObjectWithUuidRepository {
     );
   }
 }
+
+abstract class ObjectWithUuidReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithUuid> {
+  @override
+  String get tableName => 'object_with_uuid';
+
+  _i1.WhereExpressionBuilder<ObjectWithUuidTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithUuid.t);
+}

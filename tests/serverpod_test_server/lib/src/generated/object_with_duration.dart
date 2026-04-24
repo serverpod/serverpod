@@ -508,3 +508,13 @@ class ObjectWithDurationRepository {
     );
   }
 }
+
+abstract class ObjectWithDurationReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithDuration> {
+  @override
+  String get tableName => 'object_with_duration';
+
+  _i1.WhereExpressionBuilder<ObjectWithDurationTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithDuration.t);
+}

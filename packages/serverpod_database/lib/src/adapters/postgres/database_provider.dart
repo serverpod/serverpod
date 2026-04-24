@@ -6,6 +6,7 @@ import 'database_connection.dart';
 import 'postgres_analyzer.dart';
 import 'postgres_migration_runner.dart';
 import 'postgres_pool_manager.dart';
+import 'postgres_reactive_trigger_manager.dart';
 
 /// Provides a [DatabaseProvider] for the Postgres database.
 @internal
@@ -43,5 +44,10 @@ class PostgresDatabaseProvider implements DatabaseProvider {
   @override
   PostgresDatabaseAnalyzer createAnalyzer(Database database) {
     return PostgresDatabaseAnalyzer(database: database);
+  }
+
+  @override
+  PostgresReactiveTriggerManager createReactiveTriggerManager() {
+    return const PostgresReactiveTriggerManager();
   }
 }

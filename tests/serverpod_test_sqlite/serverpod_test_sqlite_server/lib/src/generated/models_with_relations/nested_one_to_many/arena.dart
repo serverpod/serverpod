@@ -616,3 +616,12 @@ class ArenaDetachRowRepository {
     );
   }
 }
+
+abstract class ArenaReactiveFutureCall extends _i1.ReactiveFutureCall<Arena> {
+  @override
+  String get tableName => 'arena';
+
+  _i1.WhereExpressionBuilder<ArenaTable> get where;
+  @override
+  _i1.Expression? get condition => where(Arena.t);
+}
