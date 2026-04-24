@@ -205,13 +205,14 @@ void main() {
 
           // Verify data preserved after json → jsonb
           var resultAfterJsonb = await serviceClient.insights.runQueries([
-            'SELECT data::text FROM migrated_table ORDER BY id;',
+            'SELECT data FROM migrated_table ORDER BY id;',
           ]);
           expect(resultAfterJsonb.numAffectedRows, 3);
           var rowsAfterJsonb = jsonDecode(resultAfterJsonb.data) as List;
-          expect(rowsAfterJsonb[0][0], '["dart", "flutter"]');
-          expect(rowsAfterJsonb[1][0], '[]');
-          expect(rowsAfterJsonb[2][0], '["special"]');
+          expect(rowsAfterJsonb[0][0], isA<List>());
+          expect(rowsAfterJsonb[0][0], ['dart', 'flutter']);
+          expect(rowsAfterJsonb[1][0], []);
+          expect(rowsAfterJsonb[2][0], ['special']);
 
           // Migrate jsonb → json
           exitCode = await MigrationTestUtils.createMigrationFromProtocols(
@@ -223,13 +224,14 @@ void main() {
 
           // Verify data preserved after jsonb → json
           var resultAfterJson = await serviceClient.insights.runQueries([
-            'SELECT data::text FROM migrated_table ORDER BY id;',
+            'SELECT data FROM migrated_table ORDER BY id;',
           ]);
           expect(resultAfterJson.numAffectedRows, 3);
           var rowsAfterJson = jsonDecode(resultAfterJson.data) as List;
-          expect(rowsAfterJson[0][0], '["dart", "flutter"]');
-          expect(rowsAfterJson[1][0], '[]');
-          expect(rowsAfterJson[2][0], '["special"]');
+          expect(rowsAfterJson[0][0], isA<List>());
+          expect(rowsAfterJson[0][0], ['dart', 'flutter']);
+          expect(rowsAfterJson[1][0], []);
+          expect(rowsAfterJson[2][0], ['special']);
         },
       );
     },
