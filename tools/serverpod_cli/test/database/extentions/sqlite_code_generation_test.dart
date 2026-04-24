@@ -243,8 +243,35 @@ void main() {
   );
 
   group('Given a migration changing a column from json to jsonb', () {
-    var sourceDefinition = _singleColumnDefinition(ColumnType.json);
-    var targetDefinition = _withColumnType(sourceDefinition, ColumnType.jsonb);
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.json)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var sourceTable = sourceDefinition.tables.first;
+    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    var targetDefinition = sourceDefinition.copyWith(
+      tables: [
+        sourceTable.copyWith(
+          columns: sourceTable.columns
+              .map(
+                (c) => c == sourceColumn
+                    ? c.copyWith(columnType: ColumnType.jsonb)
+                    : c,
+              )
+              .toList(),
+        ),
+      ],
+    );
 
     var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
@@ -273,8 +300,35 @@ void main() {
   });
 
   group('Given a migration changing a column from jsonb to json', () {
-    var sourceDefinition = _singleColumnDefinition(ColumnType.jsonb);
-    var targetDefinition = _withColumnType(sourceDefinition, ColumnType.json);
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.jsonb)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var sourceTable = sourceDefinition.tables.first;
+    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    var targetDefinition = sourceDefinition.copyWith(
+      tables: [
+        sourceTable.copyWith(
+          columns: sourceTable.columns
+              .map(
+                (c) => c == sourceColumn
+                    ? c.copyWith(columnType: ColumnType.json)
+                    : c,
+              )
+              .toList(),
+        ),
+      ],
+    );
 
     var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,
@@ -301,38 +355,4 @@ void main() {
       },
     );
   });
-}
-
-DatabaseDefinition _singleColumnDefinition(ColumnType columnType) {
-  return DatabaseDefinitionBuilder()
-      .withTable(
-        TableDefinitionBuilder()
-            .withName('my_table')
-            .withColumn(
-              ColumnDefinitionBuilder()
-                  .withName('data')
-                  .withColumnType(columnType)
-                  .withDartType('List<String>')
-                  .build(),
-            )
-            .build(),
-      )
-      .build();
-}
-
-DatabaseDefinition _withColumnType(
-  DatabaseDefinition source,
-  ColumnType columnType,
-) {
-  var table = source.tables.first;
-  var column = table.columns.firstWhere((c) => c.name == 'data');
-  return source.copyWith(
-    tables: [
-      table.copyWith(
-        columns: table.columns
-            .map((c) => c == column ? c.copyWith(columnType: columnType) : c)
-            .toList(),
-      ),
-    ],
-  );
 }

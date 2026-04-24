@@ -202,10 +202,13 @@ void main() {
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
           // Verify data preserved after json → jsonb
-          var rowCount = await serviceClient.insights.executeSql(
-            'SELECT * FROM migrated_table',
-          );
-          expect(rowCount, 3);
+          var resultAfterJsonb = await serviceClient.insights.runQueries([
+            'SELECT data::text FROM migrated_table ORDER BY id;',
+          ]);
+          expect(resultAfterJsonb.numAffectedRows, 3);
+          expect(resultAfterJsonb.data, contains('["dart", "flutter"]'));
+          expect(resultAfterJsonb.data, contains('[]'));
+          expect(resultAfterJsonb.data, contains('["special"]'));
 
           // Migrate jsonb → json
           exitCode = await MigrationTestUtils.createMigrationFromProtocols(
@@ -216,10 +219,13 @@ void main() {
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
           // Verify data preserved after jsonb → json
-          var rowCountAfter = await serviceClient.insights.executeSql(
-            'SELECT * FROM migrated_table',
-          );
-          expect(rowCountAfter, 3);
+          var resultAfterJson = await serviceClient.insights.runQueries([
+            'SELECT data::text FROM migrated_table ORDER BY id;',
+          ]);
+          expect(resultAfterJson.numAffectedRows, 3);
+          expect(resultAfterJson.data, contains('["dart", "flutter"]'));
+          expect(resultAfterJson.data, contains('[]'));
+          expect(resultAfterJson.data, contains('["special"]'));
         },
       );
     },
