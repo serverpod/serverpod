@@ -101,4 +101,38 @@ void main() {
       },
     );
   }
+
+  test(
+    'Given SQLite definition where the last table ends with a basic column after non-basic columns, '
+    'when generating SQL for SQLite, '
+    'then the serverpod_sqlite_schema VALUES list terminates the last row with a semicolon.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            // The id is a non-basic column and the default text name column is
+            // the basic column that should be skipped.
+            TableDefinitionBuilder()
+                .withName('z_last_table')
+                .withIdType(SupportedIdType.uuidV4)
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(
+        sql,
+        contains("('z_last_table', 'id', 'uuid', NULL);"),
+        reason: 'Must close VALUES with ";" to be valid SQL.',
+      );
+      expect(
+        sql,
+        isNot(contains("('z_last_table', 'id', 'uuid', NULL),")),
+        reason: 'Trailing "," after the final row is invalid SQL.',
+      );
+    },
+  );
 }

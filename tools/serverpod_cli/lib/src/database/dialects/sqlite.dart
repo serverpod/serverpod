@@ -493,18 +493,25 @@ String _sqlStoreColumnTypesForMigrations(
   out += '    PRIMARY KEY ("table_name", "column_name")\n';
   out += ');\n';
   out += '\n';
+
+  final allColumns = [
+    for (var t in tables)
+      for (var c in t.columns)
+        if (!c.columnType.isBasicSqliteType) (t.name, c),
+  ];
+  if (allColumns.isEmpty) {
+    return out;
+  }
+
   out += 'INSERT INTO "$_sqliteSchemaTable" VALUES\n';
-  for (var t in tables) {
-    for (var c in t.columns) {
-      if (c.columnType.isBasicSqliteType) continue;
-      out += '    (';
-      out += "'${t.name}', ";
-      out += "'${c.name}', ";
-      out += "'${c.columnType.name}', ";
-      out += "${c.vectorDimension ?? 'NULL'}";
-      out += ')';
-      out += (t == tables.last && c == t.columns.last) ? ';\n' : ',\n';
-    }
+  for (var (index, (tableName, column)) in allColumns.indexed) {
+    out += '    (';
+    out += "'$tableName', ";
+    out += "'${column.name}', ";
+    out += "'${column.columnType.name}', ";
+    out += "${column.vectorDimension ?? 'NULL'}";
+    out += ')';
+    out += (index == allColumns.length - 1) ? ';\n' : ',\n';
   }
   return out;
 }
