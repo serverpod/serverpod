@@ -23,6 +23,16 @@ String vmServiceWsUri(String httpUri) {
 /// on compilation failure.
 typedef ReloadRequestedCallback = Future<String?> Function();
 
+/// Callback for the registered `serverpod-cli.hotReload` VM service method.
+/// Runs the full watch-session reload pipeline (codegen + hooks + compile +
+/// reload). Throws to signal failure to the caller.
+typedef HotReloadCallback = Future<void> Function();
+
+/// Callback for the registered `serverpod-cli.hotRestart` VM service method.
+/// Runs a full recompile and stops/starts the server subprocess - the
+/// restart counterpart to [HotReloadCallback]. Throws on failure.
+typedef HotRestartCallback = Future<void> Function();
+
 /// Manages the server subprocess lifecycle.
 ///
 /// Handles spawning, signal forwarding, output streaming, graceful shutdown,
@@ -37,6 +47,14 @@ class ServerProcess {
 
   /// Callback invoked when an IDE requests a reload via the VM service.
   final ReloadRequestedCallback? _onReloadRequested;
+
+  /// Callback invoked when a client (typically `serverpod_dap`) calls the
+  /// registered `serverpod-cli.hotReload` VM service method.
+  final HotReloadCallback? _onHotReload;
+
+  /// Callback invoked when a client (typically `serverpod_dap`) calls the
+  /// registered `serverpod-cli.hotRestart` VM service method.
+  final HotRestartCallback? _onHotRestart;
 
   /// Path to write the VM service info JSON file to. When set, the file
   /// is passed to the child via `--write-service-info` and the URI is read
@@ -69,6 +87,8 @@ class ServerProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     ReloadRequestedCallback? onReloadRequested,
+    HotReloadCallback? onHotReload,
+    HotRestartCallback? onHotRestart,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
@@ -76,7 +96,9 @@ class ServerProcess {
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
-       _onReloadRequested = onReloadRequested;
+       _onReloadRequested = onReloadRequested,
+       _onHotReload = onHotReload,
+       _onHotRestart = onHotRestart;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -213,7 +235,7 @@ class ServerProcess {
     // Register custom reloadSources service so IDE reload requests
     // go through the FES compilation pipeline.
     if (_onReloadRequested != null) {
-      vmService.registerServiceCallback('reloadSources', (params) async {
+      await _registerCliService(vmService, 'reloadSources', (params) async {
         final dillPath = await _onReloadRequested();
         if (dillPath == null) {
           return {'type': 'ReloadReport', 'success': false};
@@ -225,8 +247,54 @@ class ServerProcess {
         );
         return report.json!;
       });
-      await vmService.registerService('reloadSources', 'serverpod-cli');
     }
+
+    // Register `serverpod-cli.hotReload` so `serverpod_dap` (and any other
+    // VM service client) can drive the full watch-session reload pipeline
+    // - codegen, hooks, compile, reload - rather than calling the VM's
+    // built-in `reloadSources` and bypassing it.
+    if (_onHotReload != null) {
+      await _registerCliService(vmService, 'hotReload', (params) async {
+        try {
+          await _onHotReload();
+          return {'type': 'Success'};
+        } on Object catch (e) {
+          throw RPCError(
+            'serverpod-cli.hotReload',
+            RPCErrorKind.kInternalError.code,
+            e.toString(),
+          );
+        }
+      });
+    }
+
+    // Hot restart counterpart: full recompile + restart the server
+    // subprocess. Registered separately so DAP clients can route VS Code's
+    // "Restart" button to a true restart instead of a reload.
+    if (_onHotRestart != null) {
+      await _registerCliService(vmService, 'hotRestart', (params) async {
+        try {
+          await _onHotRestart();
+          return {'type': 'Success'};
+        } on Object catch (e) {
+          throw RPCError(
+            'serverpod-cli.hotRestart',
+            RPCErrorKind.kInternalError.code,
+            e.toString(),
+          );
+        }
+      });
+    }
+  }
+
+  /// Registers a VM service method under the `serverpod-cli` alias.
+  static Future<void> _registerCliService(
+    VmService vmService,
+    String name,
+    Future<Map<String, dynamic>> Function(Map<String, dynamic>) callback,
+  ) async {
+    vmService.registerServiceCallback(name, callback);
+    await vmService.registerService(name, 'serverpod-cli');
   }
 
   /// Hot reloads the server with a new kernel file.

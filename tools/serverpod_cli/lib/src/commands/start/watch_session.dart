@@ -394,6 +394,55 @@ class WatchSession {
     return _pending;
   }
 
+  /// Forces a full recompile and restarts the server subprocess.
+  ///
+  /// Counterpart to [forceReload] for the "hot restart" path: tear down the
+  /// running server, build a fresh dill, start a new process. Used by the
+  /// DAP `hotRestart` custom request so VS Code's restart button actually
+  /// restarts instead of reloading.
+  Future<void> forceRestart() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    final compiler = _compiler;
+    final createServer = _createServer;
+    if (compiler == null || createServer == null) {
+      throw StateError('Cannot force restart in --no-fes mode.');
+    }
+    _pending = _pending.then((_) => _forceRestart(compiler, createServer));
+    return _pending;
+  }
+
+  Future<void> _forceRestart(
+    KernelCompiler compiler,
+    ServerProcessFactory createServer,
+  ) async {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+
+    _state = SessionState.restarting;
+    try {
+      await compiler.reset();
+      final result = await compileWithProgress(
+        'Compiling server',
+        compiler,
+        rejectOnFailure: true,
+      );
+      if (result == null) {
+        throw StateError('Compilation failed. Server not restarted.');
+      }
+      compiler.accept();
+
+      await _server.stop();
+      _server = await createServer(result.dillOutput!);
+      _monitorExit(_server);
+      log.info(serverRestarted);
+    } finally {
+      _state = SessionState.idle;
+    }
+  }
+
   /// Restarts the server with `--apply-migrations` (one-shot).
   ///
   /// If another restart or migration is in progress, this call waits for it
