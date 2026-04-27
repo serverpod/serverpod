@@ -7,7 +7,7 @@ version: 3.5.0-beta.4
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   http: '>=1.1.0 <2.0.0'

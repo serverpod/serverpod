@@ -9,7 +9,7 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   crypto: ^3.0.2

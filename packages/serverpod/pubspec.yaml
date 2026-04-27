@@ -17,7 +17,7 @@ topics:
   - database
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   args: ^2.7.0

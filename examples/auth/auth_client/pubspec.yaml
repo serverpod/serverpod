@@ -5,7 +5,7 @@ name: auth_client
 description: Starting point for a Serverpod client.
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   serverpod_auth_idp_client: 3.5.0-beta.4

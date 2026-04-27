@@ -7,4 +7,4 @@ description: Templates for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'

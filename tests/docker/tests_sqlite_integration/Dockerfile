@@ -1,5 +1,5 @@
 # Dart SDK from the official image.
-FROM dart:3.8.0 AS dart-sdk
+FROM dart:3.10.3 AS dart-sdk
 FROM ubuntu:24.04 AS build
 
 # Use Ubuntu 24.04 as base image to ensure SQLite >= 3.41.0 is available.
