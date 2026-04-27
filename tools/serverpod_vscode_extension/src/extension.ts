@@ -9,6 +9,7 @@ import {
 } from 'vscode-languageclient/node';
 import { execSync } from 'child_process';
 import { satisfies, coerce } from 'semver';
+import { registerServerpodDebug } from './debug';
 
 let client: LanguageClient;
 
@@ -55,6 +56,8 @@ export function activate(context: ExtensionContext) {
 	);
 
 	client.start();
+
+	registerServerpodDebug(context);
 }
 
 export function deactivate(): Thenable<void> | undefined {
