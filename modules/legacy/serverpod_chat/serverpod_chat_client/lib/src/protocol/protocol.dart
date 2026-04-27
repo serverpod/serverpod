@@ -45,6 +45,71 @@ class Protocol extends _i1.SerializationManager {
 
   final Map<String, _i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.ChatJoinChannel] = (data, protocol) =>
+        _i2.ChatJoinChannel.fromJson(data);
+    map[_i3.ChatJoinChannelFailed] = (data, protocol) =>
+        _i3.ChatJoinChannelFailed.fromJson(data);
+    map[_i4.ChatJoinedChannel] = (data, protocol) =>
+        _i4.ChatJoinedChannel.fromJson(data);
+    map[_i5.ChatLeaveChannel] = (data, protocol) =>
+        _i5.ChatLeaveChannel.fromJson(data);
+    map[_i6.ChatMessage] = (data, protocol) => _i6.ChatMessage.fromJson(data);
+    map[_i7.ChatMessageAttachment] = (data, protocol) =>
+        _i7.ChatMessageAttachment.fromJson(data);
+    map[_i8.ChatMessageAttachmentUploadDescription] = (data, protocol) =>
+        _i8.ChatMessageAttachmentUploadDescription.fromJson(data);
+    map[_i9.ChatMessageChunk] = (data, protocol) =>
+        _i9.ChatMessageChunk.fromJson(data);
+    map[_i10.ChatMessagePost] = (data, protocol) =>
+        _i10.ChatMessagePost.fromJson(data);
+    map[_i11.ChatReadMessage] = (data, protocol) =>
+        _i11.ChatReadMessage.fromJson(data);
+    map[_i12.ChatRequestMessageChunk] = (data, protocol) =>
+        _i12.ChatRequestMessageChunk.fromJson(data);
+    map[_i1.getType<_i2.ChatJoinChannel?>()] = (data, protocol) =>
+        (data != null ? _i2.ChatJoinChannel.fromJson(data) : null);
+    map[_i1.getType<_i3.ChatJoinChannelFailed?>()] = (data, protocol) =>
+        (data != null ? _i3.ChatJoinChannelFailed.fromJson(data) : null);
+    map[_i1.getType<_i4.ChatJoinedChannel?>()] = (data, protocol) =>
+        (data != null ? _i4.ChatJoinedChannel.fromJson(data) : null);
+    map[_i1.getType<_i5.ChatLeaveChannel?>()] = (data, protocol) =>
+        (data != null ? _i5.ChatLeaveChannel.fromJson(data) : null);
+    map[_i1.getType<_i6.ChatMessage?>()] = (data, protocol) =>
+        (data != null ? _i6.ChatMessage.fromJson(data) : null);
+    map[_i1.getType<_i7.ChatMessageAttachment?>()] = (data, protocol) =>
+        (data != null ? _i7.ChatMessageAttachment.fromJson(data) : null);
+    map[_i1.getType<_i8.ChatMessageAttachmentUploadDescription?>()] =
+        (data, protocol) => (data != null
+        ? _i8.ChatMessageAttachmentUploadDescription.fromJson(data)
+        : null);
+    map[_i1.getType<_i9.ChatMessageChunk?>()] = (data, protocol) =>
+        (data != null ? _i9.ChatMessageChunk.fromJson(data) : null);
+    map[_i1.getType<_i10.ChatMessagePost?>()] = (data, protocol) =>
+        (data != null ? _i10.ChatMessagePost.fromJson(data) : null);
+    map[_i1.getType<_i11.ChatReadMessage?>()] = (data, protocol) =>
+        (data != null ? _i11.ChatReadMessage.fromJson(data) : null);
+    map[_i1.getType<_i12.ChatRequestMessageChunk?>()] = (data, protocol) =>
+        (data != null ? _i12.ChatRequestMessageChunk.fromJson(data) : null);
+    map[List<_i7.ChatMessageAttachment>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i7.ChatMessageAttachment>(e))
+        .toList();
+    map[_i1.getType<List<_i7.ChatMessageAttachment>?>()] = (data, protocol) =>
+        (data != null
+        ? (data as List)
+              .map((e) => protocol.deserialize<_i7.ChatMessageAttachment>(e))
+              .toList()
+        : null);
+    map[List<_i6.ChatMessage>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i6.ChatMessage>(e))
+        .toList();
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -81,95 +146,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.ChatJoinChannel) {
-      return _i2.ChatJoinChannel.fromJson(data) as T;
-    }
-    if (t == _i3.ChatJoinChannelFailed) {
-      return _i3.ChatJoinChannelFailed.fromJson(data) as T;
-    }
-    if (t == _i4.ChatJoinedChannel) {
-      return _i4.ChatJoinedChannel.fromJson(data) as T;
-    }
-    if (t == _i5.ChatLeaveChannel) {
-      return _i5.ChatLeaveChannel.fromJson(data) as T;
-    }
-    if (t == _i6.ChatMessage) {
-      return _i6.ChatMessage.fromJson(data) as T;
-    }
-    if (t == _i7.ChatMessageAttachment) {
-      return _i7.ChatMessageAttachment.fromJson(data) as T;
-    }
-    if (t == _i8.ChatMessageAttachmentUploadDescription) {
-      return _i8.ChatMessageAttachmentUploadDescription.fromJson(data) as T;
-    }
-    if (t == _i9.ChatMessageChunk) {
-      return _i9.ChatMessageChunk.fromJson(data) as T;
-    }
-    if (t == _i10.ChatMessagePost) {
-      return _i10.ChatMessagePost.fromJson(data) as T;
-    }
-    if (t == _i11.ChatReadMessage) {
-      return _i11.ChatReadMessage.fromJson(data) as T;
-    }
-    if (t == _i12.ChatRequestMessageChunk) {
-      return _i12.ChatRequestMessageChunk.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.ChatJoinChannel?>()) {
-      return (data != null ? _i2.ChatJoinChannel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.ChatJoinChannelFailed?>()) {
-      return (data != null ? _i3.ChatJoinChannelFailed.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.ChatJoinedChannel?>()) {
-      return (data != null ? _i4.ChatJoinedChannel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.ChatLeaveChannel?>()) {
-      return (data != null ? _i5.ChatLeaveChannel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.ChatMessage?>()) {
-      return (data != null ? _i6.ChatMessage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.ChatMessageAttachment?>()) {
-      return (data != null ? _i7.ChatMessageAttachment.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i8.ChatMessageAttachmentUploadDescription?>()) {
-      return (data != null
-              ? _i8.ChatMessageAttachmentUploadDescription.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.ChatMessageChunk?>()) {
-      return (data != null ? _i9.ChatMessageChunk.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.ChatMessagePost?>()) {
-      return (data != null ? _i10.ChatMessagePost.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.ChatReadMessage?>()) {
-      return (data != null ? _i11.ChatReadMessage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.ChatRequestMessageChunk?>()) {
-      return (data != null ? _i12.ChatRequestMessageChunk.fromJson(data) : null)
-          as T;
-    }
-    if (t == List<_i7.ChatMessageAttachment>) {
-      return (data as List)
-              .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i7.ChatMessageAttachment>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i6.ChatMessage>) {
-      return (data as List).map((e) => deserialize<_i6.ChatMessage>(e)).toList()
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i13.Protocol().deserialize<T>(data, t);

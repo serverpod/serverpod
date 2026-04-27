@@ -25,6 +25,20 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.Channel] = (data, protocol) => _i2.Channel.fromJson(data);
+    map[_i1.getType<_i2.Channel?>()] = (data, protocol) =>
+        (data != null ? _i2.Channel.fromJson(data) : null);
+    map[List<_i3.Channel>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i3.Channel>(e))
+        .toList();
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -52,15 +66,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.Channel) {
-      return _i2.Channel.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.Channel?>()) {
-      return (data != null ? _i2.Channel.fromJson(data) : null) as T;
-    }
-    if (t == List<_i3.Channel>) {
-      return (data as List).map((e) => deserialize<_i3.Channel>(e)).toList()
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i4.Protocol().deserialize<T>(data, t);

@@ -32,6 +32,26 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.UserData] = (data, protocol) => _i2.UserData.fromJson(data);
+    map[_i1.getType<_i2.UserData?>()] = (data, protocol) =>
+        (data != null ? _i2.UserData.fromJson(data) : null);
+    map[Set<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toSet();
+    map[_i1.getType<({_i3.ByteData challenge, _i1.UuidValue id})>()] =
+        (data, protocol) => (
+          challenge: protocol.deserialize<_i3.ByteData>(
+            ((data as Map)['n'] as Map)['challenge'],
+          ),
+          id: protocol.deserialize<_i1.UuidValue>(data['n']['id']),
+        );
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -59,23 +79,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.UserData) {
-      return _i2.UserData.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.UserData?>()) {
-      return (data != null ? _i2.UserData.fromJson(data) : null) as T;
-    }
-    if (t == Set<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
-    }
-    if (t == _i1.getType<({_i3.ByteData challenge, _i1.UuidValue id})>()) {
-      return (
-            challenge: deserialize<_i3.ByteData>(
-              ((data as Map)['n'] as Map)['challenge'],
-            ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
-          )
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i4.Protocol().deserialize<T>(data, t);

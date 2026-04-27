@@ -34,6 +34,35 @@ class Protocol extends _i1.SerializationManager {
 
   final Map<String, _i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.LegacyAuthenticationFailReason] = (data, protocol) =>
+        _i2.LegacyAuthenticationFailReason.fromJson(data);
+    map[_i3.LegacyAuthenticationResponse] = (data, protocol) =>
+        _i3.LegacyAuthenticationResponse.fromJson(data);
+    map[_i4.LegacyUserInfo] = (data, protocol) =>
+        _i4.LegacyUserInfo.fromJson(data);
+    map[_i5.LegacyUserSettingsConfig] = (data, protocol) =>
+        _i5.LegacyUserSettingsConfig.fromJson(data);
+    map[_i1
+        .getType<_i2.LegacyAuthenticationFailReason?>()] = (data, protocol) =>
+        (data != null
+        ? _i2.LegacyAuthenticationFailReason.fromJson(data)
+        : null);
+    map[_i1.getType<_i3.LegacyAuthenticationResponse?>()] = (data, protocol) =>
+        (data != null ? _i3.LegacyAuthenticationResponse.fromJson(data) : null);
+    map[_i1.getType<_i4.LegacyUserInfo?>()] = (data, protocol) =>
+        (data != null ? _i4.LegacyUserInfo.fromJson(data) : null);
+    map[_i1.getType<_i5.LegacyUserSettingsConfig?>()] = (data, protocol) =>
+        (data != null ? _i5.LegacyUserSettingsConfig.fromJson(data) : null);
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -70,39 +99,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.LegacyAuthenticationFailReason) {
-      return _i2.LegacyAuthenticationFailReason.fromJson(data) as T;
-    }
-    if (t == _i3.LegacyAuthenticationResponse) {
-      return _i3.LegacyAuthenticationResponse.fromJson(data) as T;
-    }
-    if (t == _i4.LegacyUserInfo) {
-      return _i4.LegacyUserInfo.fromJson(data) as T;
-    }
-    if (t == _i5.LegacyUserSettingsConfig) {
-      return _i5.LegacyUserSettingsConfig.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.LegacyAuthenticationFailReason?>()) {
-      return (data != null
-              ? _i2.LegacyAuthenticationFailReason.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i3.LegacyAuthenticationResponse?>()) {
-      return (data != null
-              ? _i3.LegacyAuthenticationResponse.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.LegacyUserInfo?>()) {
-      return (data != null ? _i4.LegacyUserInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.LegacyUserSettingsConfig?>()) {
-      return (data != null ? _i5.LegacyUserSettingsConfig.fromJson(data) : null)
-          as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i6.Protocol().deserialize<T>(data, t);
