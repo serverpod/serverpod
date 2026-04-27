@@ -116,6 +116,97 @@ void main() {
   );
 
   group(
+    'Given a client database table and a Dart module dependency that also has client database tables, '
+    'when generating protocol files,',
+    () {
+      var moduleAwareConfig = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withAuthModule()
+          .build();
+
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: moduleAwareConfig,
+      );
+
+      test(
+        'then targetTableDefinitions conditionally merges table definitions from module protocols that implement DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'    \.\.\._i(\d+)\.Protocol\(\) is _i\d+\.DatabaseSerializationManager\n'
+                r'        \? _i\1\.Protocol\.targetTableDefinitions\n'
+                r'        : \[\],\n'
+                r'  \];',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then getTableForType resolves tables from module protocols only when they implement DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            matches(
+              RegExp(
+                r'  @override\n'
+                r'  _i(\d+)\.Table\? getTableForType\(Type t\) \{\n'
+                r'    \{\n'
+                r'      var table = _i(\d+)\.Protocol\(\) is _i\1\.DatabaseSerializationManager\n'
+                r'          \? _i\2\.Protocol\(\).getTableForType\(t\)\n'
+                r'          : null;\n'
+                r'      if \(table != null\) \{\n'
+                r'        return table;\n'
+                r'      \}\n'
+                r'    \}\n'
+                r'    switch \(t\) \{\n'
+                r'      case _i(\d+)\.Example:\n'
+                r'        return _i\3\.Example\.t;\n'
+                r'    \}\n'
+                r'    return null;\n'
+                r'  \}',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart imports the module client package for module table metadata.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains(
+              "import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i",
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given model with server only field with list of server only model when generating protocol files',
     () {
       var serverOnlyModel = 'server_only_model';

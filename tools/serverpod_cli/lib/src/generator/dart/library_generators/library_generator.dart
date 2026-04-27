@@ -150,7 +150,25 @@ class LibraryGenerator {
                               serverpodProtocolUrl(serverCode),
                             ).spread,
                         ]
-                      : const [],
+                      : [
+                          for (var module in config.modules)
+                            refer('Protocol', module.dartImportUrl(serverCode))
+                                .call([])
+                                .isA(
+                                  refer(
+                                    'DatabaseSerializationManager',
+                                    serverpodDatabaseRuntimeUrl(serverCode),
+                                  ),
+                                )
+                                .conditional(
+                                  refer(
+                                    'Protocol',
+                                    module.dartImportUrl(serverCode),
+                                  ).property('targetTableDefinitions'),
+                                  literalList([]),
+                                )
+                                .spread,
+                        ],
                 ),
         ),
     ]);
@@ -490,6 +508,14 @@ class LibraryGenerator {
                   Code.scope(
                     (a) =>
                         '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
+                        'if(table!=null) {return table;}}',
+                  ),
+              ],
+              if (!serverCode) ...[
+                for (var module in config.modules)
+                  Code.scope(
+                    (a) =>
+                        '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}() is ${a(refer('DatabaseSerializationManager', serverpodDatabaseRuntimeUrl(serverCode)))} ? ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t) : null;'
                         'if(table!=null) {return table;}}',
                   ),
               ],
