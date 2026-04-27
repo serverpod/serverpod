@@ -88,19 +88,17 @@
           {
             "name": "Attach to Serverpod",
             "type": "serverpod",
-            "request": "attach",
-            "vmServiceInfoFile": "${workspaceFolder}/.dart_tool/serverpod/vm-service-info.json"
+            "request": "attach"
           }
         ],
         "configurationSnippets": [
           {
             "label": "Serverpod: Attach",
-            "description": "Attach to a running `serverpod start --watch`. Hot-reload routes through serverpod's pipeline (codegen, hooks, compile, reload).",
+            "description": "Attach to a running `serverpod start --watch`. cwd and vmServiceInfoFile are auto-discovered; override either by adding the corresponding attribute, or set vmServiceUri for full manual control.",
             "body": {
               "name": "Attach to Serverpod",
               "type": "serverpod",
-              "request": "attach",
-              "vmServiceInfoFile": "^\"\\${workspaceFolder}/.dart_tool/serverpod/vm-service-info.json\""
+              "request": "attach"
             }
           }
         ]
