@@ -194,4 +194,108 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given a SQLite database table definition with a UUID column, '
+    'when generating SQL, '
+    'then the column uses a BLOB literal X\'hex\'.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('uuid')
+                      .withColumnType(ColumnType.uuid)
+                      .withColumnDefault(
+                        "'550e8400-e29b-41d4-a716-446655440000'",
+                      )
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(
+        sql,
+        contains(
+          '"uuid" BLOB NOT NULL DEFAULT (X\'550e8400e29b41d4a716446655440000\')',
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a SQLite database table definition with a UUID column set to random, '
+    'when generating SQL, '
+    'then the column uses an inline expression with correct "4" bit as the default value.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('uuid')
+                      .withColumnType(ColumnType.uuid)
+                      .withColumnDefault(defaultUuidValueRandom)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(
+        sql,
+        contains(
+          '"uuid" BLOB NOT NULL DEFAULT (unhex(hex(randomblob(6)) || \'4\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a SQLite database table definition with a UUID column set to randomv7, '
+    'when generating SQL, '
+    'then the column uses an inline expression with correct "7" bit as the default value.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('example_table')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('uuid')
+                      .withColumnType(ColumnType.uuid)
+                      .withColumnDefault(defaultUuidValueRandomV7)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(
+        sql,
+        contains(
+          '"uuid" BLOB NOT NULL DEFAULT (unhex(printf(\'%012x\', CAST(unixepoch(\'now\', \'subsecond\') * 1000 AS INTEGER)) || \'7\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
+        ),
+      );
+    },
+  );
 }

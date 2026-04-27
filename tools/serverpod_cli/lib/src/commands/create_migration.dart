@@ -73,7 +73,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load(interactive: interactive);
-    } catch (_) {
+    } catch (e) {
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 

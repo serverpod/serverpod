@@ -18,7 +18,7 @@ class TableWithColumnOverride extends Table<int?> {
 }
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('Given model with an explicit column field name', () {
     test(

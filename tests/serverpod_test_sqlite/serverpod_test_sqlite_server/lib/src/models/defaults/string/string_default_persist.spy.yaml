@@ -1,0 +1,12 @@
+class: StringDefaultPersist
+table: string_default_persist
+fields:
+  stringDefaultPersist: String?, defaultPersist='This is a default persist value'
+  stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote: String?, defaultPersist='This is a \'default persist value'
+  stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote: String?, defaultPersist='This is a \'default\' persist value'
+  stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote: String?, defaultPersist="This is a \"default persist value"
+  stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote: String?, defaultPersist="This is a \"default\" persist value"
+  stringDefaultPersistSingleQuoteWithOneDoubleQuote: String?, defaultPersist='This is a "default persist value'
+  stringDefaultPersistSingleQuoteWithTwoDoubleQuote: String?, defaultPersist='This is a "default" persist value'
+  stringDefaultPersistDoubleQuoteWithOneSingleQuote: String?, defaultPersist="This is a 'default persist value"
+  stringDefaultPersistDoubleQuoteWithTwoSingleQuote: String?, defaultPersist="This is a 'default' persist value"

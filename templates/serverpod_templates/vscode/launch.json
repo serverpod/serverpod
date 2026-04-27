@@ -13,14 +13,20 @@
             "cwd": "${workspaceFolder}/projectname_server",
             "request": "launch",
             "type": "dart",
+            // {{#docker}}
             "preLaunchTask": "docker_compose_up",
+            // {{/docker}}
             "program": "bin/main.dart",
+            // {{#postgres}}
             "env": {
                 "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
             },
+            // {{/postgres}}
+            // {{#database}}
             "args": [
                 "--apply-migrations"
             ]
+            // {{/database}}
         }
     ],
     "compounds": [

@@ -77,7 +77,6 @@ DatabaseMigration generateDatabaseMigration({
         srcTable,
         dstTable,
         warnings,
-        deleteTables: deleteTables,
       );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
@@ -184,9 +183,8 @@ bool _sameColumns(List<String> columns1, List<String> columns2) {
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
-  List<DatabaseMigrationWarning> warnings, {
-  Set<String> deleteTables = const {},
-}) {
+  List<DatabaseMigrationWarning> warnings,
+) {
   var dstByFieldId = <String, ColumnDefinition>{
     for (var c in dstTable.columns) c.effectiveFieldName: c,
   };
@@ -249,6 +247,9 @@ TableMigration? generateTableMigration(
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
         var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
         var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+        var newType = srcColumn.columnType != dstColumn.columnType
+            ? dstColumn.columnType
+            : null;
 
         // Id column can have its model type changed between non-nullable and
         // nullable, but the database type will remain the same. In this case,
@@ -256,7 +257,8 @@ TableMigration? generateTableMigration(
         if (srcColumn.name == defaultPrimaryKeyName &&
             !addNullable &&
             !removeNullable &&
-            !changeDefault) {
+            !changeDefault &&
+            newType == null) {
           continue;
         }
 
@@ -267,6 +269,7 @@ TableMigration? generateTableMigration(
             removeNullable: removeNullable,
             changeDefault: changeDefault,
             newDefault: dstColumn.columnDefault,
+            newType: newType,
           ),
         );
 
@@ -360,11 +363,6 @@ TableMigration? generateTableMigration(
   var deleteForeignKeys = <String>[];
   for (var srcKey in srcTable.foreignKeys) {
     if (!dstTable.containsForeignKeyNamed(srcKey.constraintName)) {
-      // Skip FKs referencing a table being dropped in this migration.
-      // DROP TABLE ... CASCADE automatically drops all foreign key constraints
-      // that reference the dropped table, so generating an explicit
-      // DROP CONSTRAINT would fail with "constraint does not exist".
-      if (deleteTables.contains(srcKey.referenceTable)) continue;
       deleteForeignKeys.add(srcKey.constraintName);
     }
   }

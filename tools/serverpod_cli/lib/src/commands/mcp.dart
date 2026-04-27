@@ -8,6 +8,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/platform_check.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Options for the `mcp` command.
 enum McpOption<V> implements OptionDefinition<V> {
@@ -66,7 +67,7 @@ class McpCommand extends ServerpodCommand<McpOption> {
         interactive: interactive,
       );
     } catch (e) {
-      stderr.writeln('$e');
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
@@ -78,7 +79,7 @@ class McpCommand extends ServerpodCommand<McpOption> {
     // and the connect (TOCTOU), so we catch SocketException too.
     if (FileSystemEntity.typeSync(socketPath) ==
         FileSystemEntityType.notFound) {
-      stderr.writeln(
+      log.error(
         'No running serverpod watch instance found.\n'
         'Start one with: serverpod start --watch',
       );
@@ -89,7 +90,7 @@ class McpCommand extends ServerpodCommand<McpOption> {
     try {
       socket = await connectUnixSocket(socketPath);
     } on SocketException {
-      stderr.writeln(
+      log.error(
         'No running serverpod watch instance found.\n'
         'Start one with: serverpod start --watch',
       );

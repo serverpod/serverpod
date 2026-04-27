@@ -1,0 +1,6 @@
+### Test enum with default serialization (should be byName).
+enum: TestEnumDefaultSerialization
+values:
+  - alpha
+  - beta
+  - gamma

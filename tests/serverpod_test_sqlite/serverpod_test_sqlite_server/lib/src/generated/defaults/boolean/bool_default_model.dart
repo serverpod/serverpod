@@ -1,0 +1,575 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+
+abstract class BoolDefaultModel
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  BoolDefaultModel._({
+    this.id,
+    bool? boolDefaultModelTrue,
+    bool? boolDefaultModelFalse,
+    bool? boolDefaultModelNullFalse,
+  }) : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
+       boolDefaultModelFalse = boolDefaultModelFalse ?? false,
+       boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false;
+
+  factory BoolDefaultModel({
+    int? id,
+    bool? boolDefaultModelTrue,
+    bool? boolDefaultModelFalse,
+    bool? boolDefaultModelNullFalse,
+  }) = _BoolDefaultModelImpl;
+
+  factory BoolDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
+    return BoolDefaultModel(
+      id: jsonSerialization['id'] as int?,
+      boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelTrue'],
+            ),
+      boolDefaultModelFalse: jsonSerialization['boolDefaultModelFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelFalse'],
+            ),
+      boolDefaultModelNullFalse:
+          jsonSerialization['boolDefaultModelNullFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelNullFalse'],
+            ),
+    );
+  }
+
+  static final t = BoolDefaultModelTable();
+
+  static const db = BoolDefaultModelRepository._();
+
+  @override
+  int? id;
+
+  bool boolDefaultModelTrue;
+
+  bool boolDefaultModelFalse;
+
+  bool boolDefaultModelNullFalse;
+
+  @override
+  _i1.Table<int?> get table => t;
+
+  /// Returns a shallow copy of this [BoolDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  BoolDefaultModel copyWith({
+    int? id,
+    bool? boolDefaultModelTrue,
+    bool? boolDefaultModelFalse,
+    bool? boolDefaultModelNullFalse,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'BoolDefaultModel',
+      if (id != null) 'id': id,
+      'boolDefaultModelTrue': boolDefaultModelTrue,
+      'boolDefaultModelFalse': boolDefaultModelFalse,
+      'boolDefaultModelNullFalse': boolDefaultModelNullFalse,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'BoolDefaultModel',
+      if (id != null) 'id': id,
+      'boolDefaultModelTrue': boolDefaultModelTrue,
+      'boolDefaultModelFalse': boolDefaultModelFalse,
+      'boolDefaultModelNullFalse': boolDefaultModelNullFalse,
+    };
+  }
+
+  static BoolDefaultModelInclude include() {
+    return BoolDefaultModelInclude._();
+  }
+
+  static BoolDefaultModelIncludeList includeList({
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    BoolDefaultModelInclude? include,
+  }) {
+    return BoolDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _BoolDefaultModelImpl extends BoolDefaultModel {
+  _BoolDefaultModelImpl({
+    int? id,
+    bool? boolDefaultModelTrue,
+    bool? boolDefaultModelFalse,
+    bool? boolDefaultModelNullFalse,
+  }) : super._(
+         id: id,
+         boolDefaultModelTrue: boolDefaultModelTrue,
+         boolDefaultModelFalse: boolDefaultModelFalse,
+         boolDefaultModelNullFalse: boolDefaultModelNullFalse,
+       );
+
+  /// Returns a shallow copy of this [BoolDefaultModel]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  BoolDefaultModel copyWith({
+    Object? id = _Undefined,
+    bool? boolDefaultModelTrue,
+    bool? boolDefaultModelFalse,
+    bool? boolDefaultModelNullFalse,
+  }) {
+    return BoolDefaultModel(
+      id: id is int? ? id : this.id,
+      boolDefaultModelTrue: boolDefaultModelTrue ?? this.boolDefaultModelTrue,
+      boolDefaultModelFalse:
+          boolDefaultModelFalse ?? this.boolDefaultModelFalse,
+      boolDefaultModelNullFalse:
+          boolDefaultModelNullFalse ?? this.boolDefaultModelNullFalse,
+    );
+  }
+}
+
+class BoolDefaultModelUpdateTable
+    extends _i1.UpdateTable<BoolDefaultModelTable> {
+  BoolDefaultModelUpdateTable(super.table);
+
+  _i1.ColumnValue<bool, bool> boolDefaultModelTrue(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultModelTrue,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultModelFalse(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultModelFalse,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultModelNullFalse(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultModelNullFalse,
+        value,
+      );
+}
+
+class BoolDefaultModelTable extends _i1.Table<int?> {
+  BoolDefaultModelTable({super.tableRelation})
+    : super(tableName: 'bool_default_model') {
+    updateTable = BoolDefaultModelUpdateTable(this);
+    boolDefaultModelTrue = _i1.ColumnBool(
+      'boolDefaultModelTrue',
+      this,
+    );
+    boolDefaultModelFalse = _i1.ColumnBool(
+      'boolDefaultModelFalse',
+      this,
+    );
+    boolDefaultModelNullFalse = _i1.ColumnBool(
+      'boolDefaultModelNullFalse',
+      this,
+    );
+  }
+
+  late final BoolDefaultModelUpdateTable updateTable;
+
+  late final _i1.ColumnBool boolDefaultModelTrue;
+
+  late final _i1.ColumnBool boolDefaultModelFalse;
+
+  late final _i1.ColumnBool boolDefaultModelNullFalse;
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    boolDefaultModelTrue,
+    boolDefaultModelFalse,
+    boolDefaultModelNullFalse,
+  ];
+}
+
+class BoolDefaultModelInclude extends _i1.IncludeObject {
+  BoolDefaultModelInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table<int?> get table => BoolDefaultModel.t;
+}
+
+class BoolDefaultModelIncludeList extends _i1.IncludeList {
+  BoolDefaultModelIncludeList._({
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(BoolDefaultModel.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => BoolDefaultModel.t;
+}
+
+class BoolDefaultModelRepository {
+  const BoolDefaultModelRepository._();
+
+  /// Returns a list of [BoolDefaultModel]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<BoolDefaultModel>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<BoolDefaultModel>(
+      where: where?.call(BoolDefaultModel.t),
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [BoolDefaultModel] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<BoolDefaultModel?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<BoolDefaultModel>(
+      where: where?.call(BoolDefaultModel.t),
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [BoolDefaultModel] by its [id] or null if no such row exists.
+  Future<BoolDefaultModel?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<BoolDefaultModel>(
+      id,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [BoolDefaultModel]s in the list and returns the inserted rows.
+  ///
+  /// The returned [BoolDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<BoolDefaultModel>> insert(
+    _i1.DatabaseSession session,
+    List<BoolDefaultModel> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<BoolDefaultModel>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [BoolDefaultModel] and returns the inserted row.
+  ///
+  /// The returned [BoolDefaultModel] will have its `id` field set.
+  Future<BoolDefaultModel> insertRow(
+    _i1.DatabaseSession session,
+    BoolDefaultModel row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<BoolDefaultModel>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BoolDefaultModel]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<BoolDefaultModel>> update(
+    _i1.DatabaseSession session,
+    List<BoolDefaultModel> rows, {
+    _i1.ColumnSelections<BoolDefaultModelTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<BoolDefaultModel>(
+      rows,
+      columns: columns?.call(BoolDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [BoolDefaultModel]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<BoolDefaultModel> updateRow(
+    _i1.DatabaseSession session,
+    BoolDefaultModel row, {
+    _i1.ColumnSelections<BoolDefaultModelTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<BoolDefaultModel>(
+      row,
+      columns: columns?.call(BoolDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [BoolDefaultModel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BoolDefaultModel?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
+    columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BoolDefaultModel>(
+      id,
+      columnValues: columnValues(BoolDefaultModel.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BoolDefaultModel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BoolDefaultModel>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
+    columnValues,
+    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BoolDefaultModel>(
+      columnValues: columnValues(BoolDefaultModel.t.updateTable),
+      where: where(BoolDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [BoolDefaultModel]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<BoolDefaultModel>> delete(
+    _i1.DatabaseSession session,
+    List<BoolDefaultModel> rows, {
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<BoolDefaultModel>(
+      rows,
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [BoolDefaultModel].
+  Future<BoolDefaultModel> deleteRow(
+    _i1.DatabaseSession session,
+    BoolDefaultModel row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<BoolDefaultModel>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<BoolDefaultModel>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<BoolDefaultModel>(
+      where: where(BoolDefaultModel.t),
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<BoolDefaultModel>(
+      where: where?.call(BoolDefaultModel.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [BoolDefaultModel] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<BoolDefaultModel>(
+      where: where(BoolDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}

@@ -1,16 +1,24 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:serverpod_shared/log.dart';
 
 import '../../serverpod_database.dart';
 import '../migrations/table_comparison_warning.dart';
-import '../util/stderr_util.dart';
-
-/// A function that writes a warning message.
-typedef MigrationWarningWriter = void Function(String message);
 
 /// The migration manager handles migrations of the database.
 abstract class MigrationManager {
   final MigrationArtifactStore _artifactStore;
+
+  /// The run mode of the server.
+  ///
+  /// This is used to determine if additional database integrity checks should
+  /// be run, since they can be expensive and not matter in production.
+  ///
+  /// If the run mode is not set, the migration manager will not run any
+  /// additional database integrity checks. This config only matters if using
+  /// the [MigrationManager] to run migrations. For other use cases, the run
+  /// mode is not relevant.
+  final String? runMode;
 
   /// List of installed migration versions. Available after starting a migration
   /// or repair migration.
@@ -22,7 +30,7 @@ abstract class MigrationManager {
   final List<String> availableVersions = [];
 
   /// Creates a new migration manager.
-  MigrationManager(this._artifactStore);
+  MigrationManager(this._artifactStore, {this.runMode});
 
   /// Loads the installed versions of the migrations from the database.
   ///
@@ -104,8 +112,8 @@ abstract class MigrationManager {
 
       var definitionModuleName = await _loadLatestDefinitionModuleName();
       if (definitionModuleName != null && definitionModuleName != moduleName) {
-        writeError(
-          'WARNING: The module name in the migration definition '
+        log.warning(
+          'The module name in the migration definition '
           '("$definitionModuleName") does not match the module name of the '
           'serialization manager ("$moduleName"). This may indicate that the '
           'wrong Protocol class is being used in "server.dart". Make sure you '
@@ -234,8 +242,7 @@ abstract class MigrationManager {
         );
         migrationsApplied.add(code.version);
       } catch (e) {
-        writeError('Failed to apply migration ${code.version}.');
-        writeError('$e');
+        log.error('Failed to apply migration ${code.version}.', error: e);
         rethrow;
       }
     }
@@ -271,13 +278,10 @@ abstract class MigrationManager {
     }
 
     if (warnings.isNotEmpty) {
-      writeError(
-        'WARNING: The following module migration registries could not be '
-        'loaded:',
+      log.warning(
+        'The following module migration registries could not be loaded:\n'
+        '${warnings.map((w) => ' - $w').join('\n')}',
       );
-      for (var warning in warnings) {
-        writeError(' - $warning');
-      }
     }
   }
 
@@ -286,18 +290,17 @@ abstract class MigrationManager {
     Future<void> Function(Transaction? transaction) action,
   ) async {
     final provider = DatabaseProvider.forDialect(session.db.dialect);
-    final migrationRunner = provider.createMigrationRunner();
+    final migrationRunner = provider.createMigrationRunner(runMode: runMode);
     await migrationRunner.runMigrations(session, action);
   }
 
-  /// Returns true if the database structure is up to date. If not, it will
-  /// print a warning using [writeWarning].
+  /// Returns true if the database structure is up to date. If not, it
+  /// logs a warning via the global [log].
   static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
     var liveDatabase = await session.db.analyzer.analyze();
-    var targetTables = session.db.serializationManager
-        .getTargetTableDefinitions();
+    var targetTables = session.db.analyzer.getTargetTableDefinitions();
 
     for (var table in targetTables) {
       var liveTable = liveDatabase.findTableNamed(table.name);
@@ -316,11 +319,9 @@ abstract class MigrationManager {
       }
     }
     if (warnings.isNotEmpty) {
-      writeError('WARNING: The database does not match the target database:');
-      for (var warning in warnings) {
-        writeError(' - $warning');
-      }
-      writeError(
+      log.warning(
+        'The database does not match the target database:\n'
+        '${warnings.map((w) => ' - $w').join('\n')}\n'
         'Hint: Did you forget to run `serverpod generate`, apply the migrations '
         '(--apply-migrations), or run a repair migration (--apply-repair-migration)?',
       );

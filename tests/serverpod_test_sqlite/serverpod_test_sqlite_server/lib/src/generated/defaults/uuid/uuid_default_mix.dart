@@ -1,0 +1,589 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+
+abstract class UuidDefaultMix
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  UuidDefaultMix._({
+    this.id,
+    _i1.UuidValue? uuidDefaultAndDefaultModel,
+    _i1.UuidValue? uuidDefaultAndDefaultPersist,
+    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+  }) : uuidDefaultAndDefaultModel =
+           uuidDefaultAndDefaultModel ??
+           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+       uuidDefaultAndDefaultPersist =
+           uuidDefaultAndDefaultPersist ??
+           _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
+       uuidDefaultModelAndDefaultPersist =
+           uuidDefaultModelAndDefaultPersist ??
+           _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
+
+  factory UuidDefaultMix({
+    int? id,
+    _i1.UuidValue? uuidDefaultAndDefaultModel,
+    _i1.UuidValue? uuidDefaultAndDefaultPersist,
+    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+  }) = _UuidDefaultMixImpl;
+
+  factory UuidDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
+    return UuidDefaultMix(
+      id: jsonSerialization['id'] as int?,
+      uuidDefaultAndDefaultModel:
+          jsonSerialization['uuidDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultAndDefaultModel'],
+            ),
+      uuidDefaultAndDefaultPersist:
+          jsonSerialization['uuidDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultAndDefaultPersist'],
+            ),
+      uuidDefaultModelAndDefaultPersist:
+          jsonSerialization['uuidDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultModelAndDefaultPersist'],
+            ),
+    );
+  }
+
+  static final t = UuidDefaultMixTable();
+
+  static const db = UuidDefaultMixRepository._();
+
+  @override
+  int? id;
+
+  _i1.UuidValue uuidDefaultAndDefaultModel;
+
+  _i1.UuidValue uuidDefaultAndDefaultPersist;
+
+  _i1.UuidValue uuidDefaultModelAndDefaultPersist;
+
+  @override
+  _i1.Table<int?> get table => t;
+
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  UuidDefaultMix copyWith({
+    int? id,
+    _i1.UuidValue? uuidDefaultAndDefaultModel,
+    _i1.UuidValue? uuidDefaultAndDefaultPersist,
+    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UuidDefaultMix',
+      if (id != null) 'id': id,
+      'uuidDefaultAndDefaultModel': uuidDefaultAndDefaultModel.toJson(),
+      'uuidDefaultAndDefaultPersist': uuidDefaultAndDefaultPersist.toJson(),
+      'uuidDefaultModelAndDefaultPersist': uuidDefaultModelAndDefaultPersist
+          .toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'UuidDefaultMix',
+      if (id != null) 'id': id,
+      'uuidDefaultAndDefaultModel': uuidDefaultAndDefaultModel.toJson(),
+      'uuidDefaultAndDefaultPersist': uuidDefaultAndDefaultPersist.toJson(),
+      'uuidDefaultModelAndDefaultPersist': uuidDefaultModelAndDefaultPersist
+          .toJson(),
+    };
+  }
+
+  static UuidDefaultMixInclude include() {
+    return UuidDefaultMixInclude._();
+  }
+
+  static UuidDefaultMixIncludeList includeList({
+    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    UuidDefaultMixInclude? include,
+  }) {
+    return UuidDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _UuidDefaultMixImpl extends UuidDefaultMix {
+  _UuidDefaultMixImpl({
+    int? id,
+    _i1.UuidValue? uuidDefaultAndDefaultModel,
+    _i1.UuidValue? uuidDefaultAndDefaultPersist,
+    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+  }) : super._(
+         id: id,
+         uuidDefaultAndDefaultModel: uuidDefaultAndDefaultModel,
+         uuidDefaultAndDefaultPersist: uuidDefaultAndDefaultPersist,
+         uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
+       );
+
+  /// Returns a shallow copy of this [UuidDefaultMix]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  UuidDefaultMix copyWith({
+    Object? id = _Undefined,
+    _i1.UuidValue? uuidDefaultAndDefaultModel,
+    _i1.UuidValue? uuidDefaultAndDefaultPersist,
+    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+  }) {
+    return UuidDefaultMix(
+      id: id is int? ? id : this.id,
+      uuidDefaultAndDefaultModel:
+          uuidDefaultAndDefaultModel ?? this.uuidDefaultAndDefaultModel,
+      uuidDefaultAndDefaultPersist:
+          uuidDefaultAndDefaultPersist ?? this.uuidDefaultAndDefaultPersist,
+      uuidDefaultModelAndDefaultPersist:
+          uuidDefaultModelAndDefaultPersist ??
+          this.uuidDefaultModelAndDefaultPersist,
+    );
+  }
+}
+
+class UuidDefaultMixUpdateTable extends _i1.UpdateTable<UuidDefaultMixTable> {
+  UuidDefaultMixUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultModel(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.uuidDefaultAndDefaultModel,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultPersist(
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.uuidDefaultAndDefaultPersist,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue>
+  uuidDefaultModelAndDefaultPersist(_i1.UuidValue value) => _i1.ColumnValue(
+    table.uuidDefaultModelAndDefaultPersist,
+    value,
+  );
+}
+
+class UuidDefaultMixTable extends _i1.Table<int?> {
+  UuidDefaultMixTable({super.tableRelation})
+    : super(tableName: 'uuid_default_mix') {
+    updateTable = UuidDefaultMixUpdateTable(this);
+    uuidDefaultAndDefaultModel = _i1.ColumnUuid(
+      'uuidDefaultAndDefaultModel',
+      this,
+      hasDefault: true,
+    );
+    uuidDefaultAndDefaultPersist = _i1.ColumnUuid(
+      'uuidDefaultAndDefaultPersist',
+      this,
+      hasDefault: true,
+    );
+    uuidDefaultModelAndDefaultPersist = _i1.ColumnUuid(
+      'uuidDefaultModelAndDefaultPersist',
+      this,
+      hasDefault: true,
+    );
+  }
+
+  late final UuidDefaultMixUpdateTable updateTable;
+
+  late final _i1.ColumnUuid uuidDefaultAndDefaultModel;
+
+  late final _i1.ColumnUuid uuidDefaultAndDefaultPersist;
+
+  late final _i1.ColumnUuid uuidDefaultModelAndDefaultPersist;
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    uuidDefaultAndDefaultModel,
+    uuidDefaultAndDefaultPersist,
+    uuidDefaultModelAndDefaultPersist,
+  ];
+}
+
+class UuidDefaultMixInclude extends _i1.IncludeObject {
+  UuidDefaultMixInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table<int?> get table => UuidDefaultMix.t;
+}
+
+class UuidDefaultMixIncludeList extends _i1.IncludeList {
+  UuidDefaultMixIncludeList._({
+    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(UuidDefaultMix.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => UuidDefaultMix.t;
+}
+
+class UuidDefaultMixRepository {
+  const UuidDefaultMixRepository._();
+
+  /// Returns a list of [UuidDefaultMix]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<UuidDefaultMix>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<UuidDefaultMix>(
+      where: where?.call(UuidDefaultMix.t),
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [UuidDefaultMix] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<UuidDefaultMix?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<UuidDefaultMix>(
+      where: where?.call(UuidDefaultMix.t),
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [UuidDefaultMix] by its [id] or null if no such row exists.
+  Future<UuidDefaultMix?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<UuidDefaultMix>(
+      id,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [UuidDefaultMix]s in the list and returns the inserted rows.
+  ///
+  /// The returned [UuidDefaultMix]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<UuidDefaultMix>> insert(
+    _i1.DatabaseSession session,
+    List<UuidDefaultMix> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<UuidDefaultMix>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [UuidDefaultMix] and returns the inserted row.
+  ///
+  /// The returned [UuidDefaultMix] will have its `id` field set.
+  Future<UuidDefaultMix> insertRow(
+    _i1.DatabaseSession session,
+    UuidDefaultMix row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<UuidDefaultMix>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefaultMix]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<UuidDefaultMix>> update(
+    _i1.DatabaseSession session,
+    List<UuidDefaultMix> rows, {
+    _i1.ColumnSelections<UuidDefaultMixTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<UuidDefaultMix>(
+      rows,
+      columns: columns?.call(UuidDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UuidDefaultMix]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<UuidDefaultMix> updateRow(
+    _i1.DatabaseSession session,
+    UuidDefaultMix row, {
+    _i1.ColumnSelections<UuidDefaultMixTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<UuidDefaultMix>(
+      row,
+      columns: columns?.call(UuidDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UuidDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UuidDefaultMix?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UuidDefaultMix>(
+      id,
+      columnValues: columnValues(UuidDefaultMix.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UuidDefaultMix>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UuidDefaultMix>(
+      columnValues: columnValues(UuidDefaultMix.t.updateTable),
+      where: where(UuidDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [UuidDefaultMix]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<UuidDefaultMix>> delete(
+    _i1.DatabaseSession session,
+    List<UuidDefaultMix> rows, {
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<UuidDefaultMix>(
+      rows,
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [UuidDefaultMix].
+  Future<UuidDefaultMix> deleteRow(
+    _i1.DatabaseSession session,
+    UuidDefaultMix row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<UuidDefaultMix>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<UuidDefaultMix>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<UuidDefaultMix>(
+      where: where(UuidDefaultMix.t),
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<UuidDefaultMix>(
+      where: where?.call(UuidDefaultMix.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UuidDefaultMix] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UuidDefaultMix>(
+      where: where(UuidDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}

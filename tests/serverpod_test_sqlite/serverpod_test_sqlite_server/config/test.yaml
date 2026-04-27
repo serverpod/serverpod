@@ -1,0 +1,30 @@
+# Duplicate of production.yaml (see serverpod_test_server/config/test.yaml).
+# test.yaml and production.yaml must use the same SQLite filePath so pre-test
+# `--apply-migrations` (Docker uses `-m production`) targets the same file as
+# `withServerpod` (test mode loads test.yaml).
+apiServer:
+  port: 0
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 0
+  publicScheme: http
+
+insightsServer:
+  port: 0
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 0
+  publicScheme: http
+
+webServer:
+  port: 0
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 0
+  publicScheme: http
+
+database:
+  filePath: sqlite_data/serverpod_test_prod.db
+
+sessionLogs:
+  persistentEnabled: false
+  consoleEnabled: false
+
+futureCallExecutionEnabled: false

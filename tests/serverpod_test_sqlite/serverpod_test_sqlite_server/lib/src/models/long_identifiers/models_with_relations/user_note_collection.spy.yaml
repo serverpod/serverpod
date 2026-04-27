@@ -1,0 +1,5 @@
+class: UserNoteCollection
+table: user_note_collections
+fields:
+  name: String
+  userNotesPropertyName: List<UserNote>?, relation

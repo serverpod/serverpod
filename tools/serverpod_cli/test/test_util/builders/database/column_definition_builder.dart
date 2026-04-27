@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ColumnDefinitionBuilder {
   String _name;
@@ -39,7 +38,6 @@ class ColumnDefinitionBuilder {
     String tableName, {
     SupportedIdType? type,
     bool nullableModelField = false,
-    DatabaseDialect dialect = DatabaseDialect.postgres,
   }) {
     var idType = type ?? SupportedIdType.int;
 

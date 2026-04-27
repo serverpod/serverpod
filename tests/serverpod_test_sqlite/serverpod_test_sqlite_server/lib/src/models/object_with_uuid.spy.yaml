@@ -1,0 +1,5 @@
+class: ObjectWithUuid
+table: object_with_uuid
+fields:
+  uuid: UuidValue
+  uuidNullable: UuidValue?

@@ -877,6 +877,30 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateIndexOperatorClassKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
+
+    if (!index.isGinIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.operatorClass}" property can only be used with gin indexes.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateIndexDistanceFunctionKey(
     String parentNodeName,
     dynamic content,
@@ -1532,7 +1556,11 @@ class Restrictions {
         ),
     ];
 
-    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
+    return [
+      ...missingFieldErrors,
+      ...duplicateFieldErrors,
+      ...vectorErrors,
+    ];
   }
 
   List<SourceSpanSeverityException> validateIndexDistanceFunctionValue(
@@ -1719,6 +1747,22 @@ class Restrictions {
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
+
+      if (content == 'gin') {
+        var nonJsonbFields = indexFields
+            .where((f) => !f.type.isJsonbSerialized)
+            .map((f) => f.name)
+            .toList();
+        if (nonJsonbFields.isNotEmpty) {
+          return [
+            SourceSpanSeverityException(
+              'The "gin" index type requires all indexed fields to use '
+              '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
+              span,
+            ),
+          ];
+        }
+      }
     }
 
     if (content is! String || !validIndexTypes.contains(content)) {
@@ -1857,6 +1901,45 @@ class Restrictions {
           span,
           severity: SourceSpanSeverity.hint,
           tags: [SourceSpanTag.unnecessary],
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateFieldSerializationDataTypeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
+          span,
+        ),
+      );
+    }
+
+    var field = definition.fields
+        .where((f) => f.name == parentNodeName)
+        .firstOrNull;
+    if (field != null &&
+        !field.type.isColumnSerializable &&
+        !field.type.isColumnStructured) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is only valid on serializable '
+          'field types (e.g. lists, maps, serializable models or custom classes).',
+          span,
         ),
       );
     }

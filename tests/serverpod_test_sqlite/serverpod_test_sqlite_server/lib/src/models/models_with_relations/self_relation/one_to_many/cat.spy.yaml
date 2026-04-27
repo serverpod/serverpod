@@ -1,0 +1,6 @@
+class: Cat
+table: cat
+fields:
+  name: String
+  mother: Cat?, relation(name=cat_kittens, optional, onDelete=SetNull)
+  kittens: List<Cat>?, relation(name=cat_kittens)

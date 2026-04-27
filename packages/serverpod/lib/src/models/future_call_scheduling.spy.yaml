@@ -1,0 +1,3 @@
+### Generic interface that specifies how recurring calls should be scheduled.
+class: FutureCallScheduling
+sealed: true

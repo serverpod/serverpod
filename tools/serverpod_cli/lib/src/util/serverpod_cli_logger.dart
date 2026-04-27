@@ -1,17 +1,164 @@
 import 'dart:io';
 
-import 'package:cli_tools/cli_tools.dart';
+import 'package:cli_tools/cli_tools.dart' as cli;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/util/isolated_logger.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/log_io.dart';
+
+import 'std_out_log_writer.dart';
+
+// ---------------------------------------------------------------------------
+// ServerpodCliLogger - bridges cli_tools.Logger to the serverpod_shared Log
+// ---------------------------------------------------------------------------
+
+/// A [cli.Logger] that delegates to a serverpod_shared [Log].
+///
+/// This bridges the cli_tools logging interface with the serverpod_shared
+/// log writer architecture, allowing multi-backend logging (terminal, TUI,
+/// file, etc.) via [LogWriter] and [MultiLogWriter].
+///
+/// [cli.LogType] is preserved by stashing it in [LogEntry.metadata]
+/// under [logTypeKey], so writers like [StdOutLogWriter] can format
+/// output accordingly.
+class ServerpodCliLogger extends cli.Logger {
+  final Log _log;
+  final LogWriter _writer;
+
+  ServerpodCliLogger(LogWriter writer, {LogLevel logLevel = LogLevel.info})
+    : _writer = writer,
+      _log = Log(writer, logLevel: logLevel),
+      super(_mapLevel(logLevel));
+
+  /// Releases any resources held by the underlying writer. Without this
+  /// an [IsolatedLogWriter] would keep its background isolate alive and
+  /// prevent the Dart process from exiting.
+  Future<void> close() async {
+    await _log.close();
+    await _writer.close();
+  }
+
+  @override
+  set logLevel(cli.LogLevel level) {
+    super.logLevel = level;
+    _log.logLevel = _mapLogLevel(level);
+  }
+
+  @override
+  int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
+
+  @override
+  void debug(
+    String message, {
+    bool newParagraph = false,
+    cli.LogType type = cli.TextLogType.normal,
+  }) {
+    _call(LogLevel.debug, message, type: type);
+  }
+
+  @override
+  void info(
+    String message, {
+    bool newParagraph = false,
+    cli.LogType type = cli.TextLogType.normal,
+  }) {
+    _call(LogLevel.info, message, type: type);
+  }
+
+  @override
+  void warning(
+    String message, {
+    bool newParagraph = false,
+    cli.LogType type = cli.TextLogType.normal,
+  }) {
+    _call(LogLevel.warning, message, type: type);
+  }
+
+  @override
+  void error(
+    String message, {
+    bool newParagraph = false,
+    StackTrace? stackTrace,
+    cli.LogType type = cli.TextLogType.normal,
+  }) {
+    final msg = stackTrace != null
+        ? '$message\n${stackTrace.toString()}'
+        : message;
+    _call(LogLevel.error, msg, type: type);
+  }
+
+  @override
+  void log(
+    String message,
+    cli.LogLevel level, {
+    bool newParagraph = false,
+    cli.LogType type = cli.TextLogType.normal,
+  }) {
+    _call(_mapLogLevel(level), message, type: type);
+  }
+
+  @override
+  void write(
+    String message,
+    cli.LogLevel logLevel, {
+    bool newParagraph = false,
+    bool newLine = true,
+  }) {
+    _call(_mapLogLevel(logLevel), message);
+  }
+
+  @override
+  Future<bool> progress(
+    String message,
+    Future<bool> Function() runner, {
+    bool newParagraph = false,
+  }) {
+    return _log.progress(message, runner);
+  }
+
+  @override
+  Future<void> flush() async {}
+
+  void _call(LogLevel level, String message, {cli.LogType? type}) {
+    _log(
+      level,
+      () => LogEntry(
+        time: DateTime.now(),
+        level: level,
+        message: message,
+        scope: _log.currentScope,
+        metadata: type != null ? {logTypeKey: type} : null,
+      ),
+    );
+  }
+
+  static cli.LogLevel _mapLevel(LogLevel level) => switch (level) {
+    LogLevel.debug => cli.LogLevel.debug,
+    LogLevel.info => cli.LogLevel.info,
+    LogLevel.warning => cli.LogLevel.warning,
+    LogLevel.error || LogLevel.fatal => cli.LogLevel.error,
+  };
+
+  static LogLevel _mapLogLevel(cli.LogLevel level) => switch (level) {
+    cli.LogLevel.debug => LogLevel.debug,
+    cli.LogLevel.info => LogLevel.info,
+    cli.LogLevel.warning => LogLevel.warning,
+    cli.LogLevel.error => LogLevel.error,
+    cli.LogLevel.nothing => LogLevel.debug,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Singleton logger
+// ---------------------------------------------------------------------------
 
 /// Singleton instance of logger.
-Logger? _logger;
+cli.Logger? _logger;
 
 /// Replacements for emojis that are not supported on Windows.
 final Map<String, String> _windowsLoggerReplacements = {
   '🥳': '=D',
-  '✅': AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+  '✅': cli.AnsiStyle.bold.wrap(cli.AnsiStyle.lightGreen.wrap('✓')),
   '🚀': '',
   '📦': '',
 };
@@ -25,27 +172,30 @@ void initializeLogger() {
     'Only one logger initialization is allowed.',
   );
 
-  _logger = Platform.isWindows
-      ? IsolatedLogger(LogLevel.info, replacements: _windowsLoggerReplacements)
-      : IsolatedLogger(LogLevel.info);
+  _logger = ServerpodCliLogger(
+    IsolatedLogWriter(
+      () => StdOutLogWriter(
+        replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
+      ),
+    ),
+  );
 }
 
-/// Initializer for logger singleton.
-/// Uses passed in [logger] to initialize the singleton.
-/// This should only be called once from runtime entry points.
-void initializeLoggerWith(Logger logger) {
-  assert(
-    _logger == null,
-    'Only one logger initialization is allowed.',
-  );
-
+/// Replaces the logger singleton with the given [logger].
+///
+/// Preserves the current log level if a logger was already set.
+void initializeLoggerWith(cli.Logger logger) {
+  final previous = _logger;
+  if (previous != null) {
+    logger.logLevel = previous.logLevel;
+  }
   _logger = logger;
 }
 
 /// Singleton accessor for logger.
-/// Default initializes a [StdOutLogger] if initialization is not run before
-/// this call.
-Logger get log {
+/// Default initializes a [ServerpodCliLogger] if initialization is not run
+/// before this call.
+cli.Logger get log {
   if (_logger == null) {
     initializeLogger();
   }
@@ -53,7 +203,7 @@ Logger get log {
   return _logger!;
 }
 
-extension SourceSpanExceptionLogger on Logger {
+extension SourceSpanExceptionLogger on cli.Logger {
   /// Display a [SourceSpanException] to the user.
   /// Commands should use this to log [SourceSpanException] with
   /// enhanced highlighting if possible.
@@ -61,7 +211,7 @@ extension SourceSpanExceptionLogger on Logger {
     SourceSpanException sourceSpan, {
     bool newParagraph = false,
   }) {
-    var logLevel = LogLevel.error;
+    var logLevel = cli.LogLevel.error;
     bool isHint = false;
 
     if (sourceSpan is SourceSpanSeverityException) {
@@ -83,38 +233,38 @@ extension SourceSpanExceptionLogger on Logger {
 }
 
 abstract class _SeveritySpanHelpers {
-  static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
+  static cli.LogLevel severityToLogLevel(SourceSpanSeverity severity) {
     switch (severity) {
       case SourceSpanSeverity.error:
-        return LogLevel.error;
+        return cli.LogLevel.error;
       case SourceSpanSeverity.warning:
-        return LogLevel.warning;
+        return cli.LogLevel.warning;
       case SourceSpanSeverity.info:
       case SourceSpanSeverity.hint:
-        return LogLevel.info;
+        return cli.LogLevel.info;
     }
   }
 
-  static String highlightAnsiCode(LogLevel severity, bool isHint) {
-    if (severity == LogLevel.info && isHint) {
-      return AnsiStyle.cyan.ansiCode;
+  static String highlightAnsiCode(cli.LogLevel severity, bool isHint) {
+    if (severity == cli.LogLevel.info && isHint) {
+      return cli.AnsiStyle.cyan.ansiCode;
     }
 
     switch (severity) {
-      case LogLevel.nothing:
+      case cli.LogLevel.nothing:
         assert(
-          severity != LogLevel.nothing,
+          severity != cli.LogLevel.nothing,
           'Log level nothing should never be used for a log message',
         );
-        return AnsiStyle.terminalDefault.ansiCode;
-      case LogLevel.error:
-        return AnsiStyle.red.ansiCode;
-      case LogLevel.warning:
-        return AnsiStyle.yellow.ansiCode;
-      case LogLevel.info:
-        return AnsiStyle.blue.ansiCode;
-      case LogLevel.debug:
-        return AnsiStyle.cyan.ansiCode;
+        return cli.AnsiStyle.terminalDefault.ansiCode;
+      case cli.LogLevel.error:
+        return cli.AnsiStyle.red.ansiCode;
+      case cli.LogLevel.warning:
+        return cli.AnsiStyle.yellow.ansiCode;
+      case cli.LogLevel.info:
+        return cli.AnsiStyle.blue.ansiCode;
+      case cli.LogLevel.debug:
+        return cli.AnsiStyle.cyan.ansiCode;
     }
   }
 }
@@ -125,7 +275,7 @@ Future<void> closeLogger() async {
   _logger = null;
   if (logger == null) return;
   await logger.flush();
-  if (logger is IsolatedLogger) {
+  if (logger is ServerpodCliLogger) {
     await logger.close();
   }
 }

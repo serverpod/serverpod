@@ -58,8 +58,9 @@ class FrontendServerClient {
     this._entrypoint,
     this._feServer,
     this._feServerStdoutLines,
+    IOSink errorSink,
   ) : _state = _ClientState.waitingForFirstCompile {
-    _feServer.stderr.transform(utf8.decoder).listen(stderr.write);
+    _feServer.stderr.transform(utf8.decoder).listen(errorSink.write);
   }
 
   static Future<FrontendServerClient> start(
@@ -69,6 +70,7 @@ class FrontendServerClient {
     required String sdkRoot,
     String target = 'vm',
     String? packagesJson,
+    IOSink? errorSink,
   }) async {
     final entrypointUri = Uri.file(p.absolute(entrypoint));
     final arguments = <String>[
@@ -113,6 +115,7 @@ class FrontendServerClient {
       '$entrypointUri',
       feServer,
       feServerStdoutLines,
+      errorSink ?? stderr,
     );
   }
 

@@ -195,7 +195,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1.7.3
+      - uses: browser-actions/setup-chrome@4f8e94349a351df0f048634f25fec36c3c91eded # v2.1.1
       - name: Run unit tests
         run: >-
           dart test
@@ -385,6 +385,21 @@ jobs:
       - name: Run integration tests
         run: util/run_tests_integration_concurrently
 
+  integration_test_sqlite_server:
+    name: Serverpod SQLite integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite integration tests
+        run: util/run_tests_sqlite_integration
+
   bootstrap_tests:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
@@ -411,7 +426,10 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test --concurrency=1 --reporter=failures-only
+        shell: bash
+        run: |
+          export SERVERPOD_HOME="$(cd ../.. && pwd)"
+          dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
@@ -428,6 +446,21 @@ jobs:
           cache: true
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
+
+  migration_e2e_tests_sqlite:
+    name: Migration e2e tests (SQLite)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite e2e migration tests
+        run: util/run_tests_sqlite_migrations_e2e
 
   cli_e2e_tests:
     name: CLI e2e tests

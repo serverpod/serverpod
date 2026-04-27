@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -22,6 +23,16 @@ void main() {
             );
           },
         );
+
+        test(
+          'when converting to SQLite SQL code, then it should not have the default value',
+          () {
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byNameEnumDefault" TEXT NOT NULL',
+            );
+          },
+        );
       });
 
       group('with a specific default value', () {
@@ -39,6 +50,11 @@ void main() {
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefault" text NOT NULL DEFAULT \'byName1\'::text',
+            );
+
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byNameEnumDefault" TEXT NOT NULL DEFAULT (\'byName1\')',
             );
           },
         );
@@ -59,6 +75,11 @@ void main() {
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefaultNull" text',
             );
+
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byNameEnumDefaultNull" TEXT',
+            );
           },
         );
 
@@ -76,6 +97,11 @@ void main() {
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byNameEnumDefaultNull" text DEFAULT \'byName1\'::text',
+            );
+
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byNameEnumDefaultNull" TEXT DEFAULT (\'byName1\')',
             );
           },
         );
@@ -100,6 +126,16 @@ void main() {
             );
           },
         );
+
+        test(
+          'when converting to SQLite SQL code, then it should not have the default value',
+          () {
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byIndexEnumDefault" INTEGER NOT NULL',
+            );
+          },
+        );
       });
 
       group('with 0 as default value', () {
@@ -117,6 +153,16 @@ void main() {
             expect(
               defaultColumn.toPgSqlFragment(),
               '"byIndexEnumDefault" bigint NOT NULL DEFAULT 0',
+            );
+          },
+        );
+
+        test(
+          'when converting to SQLite SQL code, then it should have the correct default value',
+          () {
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"byIndexEnumDefault" INTEGER NOT NULL DEFAULT (0)',
             );
           },
         );

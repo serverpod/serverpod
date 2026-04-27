@@ -1,0 +1,5 @@
+class: Course
+table: course
+fields:
+  name: String
+  enrollments: List<Enrollment>?, relation(name=course_enrollments)

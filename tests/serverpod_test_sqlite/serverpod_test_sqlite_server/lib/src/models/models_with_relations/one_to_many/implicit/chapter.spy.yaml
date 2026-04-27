@@ -1,0 +1,4 @@
+class: Chapter
+table: chapter
+fields:
+  title: String

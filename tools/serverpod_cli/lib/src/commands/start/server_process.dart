@@ -78,6 +78,9 @@ class ServerProcess {
   /// Whether the VM service is connected.
   bool get isVmServiceConnected => _vmService != null;
 
+  /// The VM service connection, if connected.
+  VmService? get vmService => _vmService;
+
   /// Completes with the process exit code when the server exits.
   Future<int> get exitCode => _exitCodeCompleter.future;
 

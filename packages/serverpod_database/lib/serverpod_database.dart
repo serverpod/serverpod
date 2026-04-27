@@ -1,4 +1,7 @@
+export 'package:serverpod_shared/serverpod_shared.dart' show DatabaseDialect;
+
 export 'src/adapters/postgres/postgres_error_codes.dart';
+export 'src/adapters/sqlite/sqlite_error_codes.dart';
 export 'src/bulk_data.dart';
 export 'src/concepts/column_value.dart';
 export 'src/concepts/columns.dart';
@@ -20,6 +23,7 @@ export 'src/generated/protocol.dart';
 export 'src/interface/analyzer.dart';
 export 'src/interface/database_pool_manager.dart';
 export 'src/interface/database_session.dart';
+export 'src/interface/definition_restrictions.dart';
 export 'src/interface/provider.dart';
 export 'src/interface/serialization_manager.dart';
 export 'src/interface/value_encoder.dart';

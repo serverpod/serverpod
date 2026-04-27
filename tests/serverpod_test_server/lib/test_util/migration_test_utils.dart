@@ -8,6 +8,8 @@ import 'package:serverpod/protocol.dart' as serverProtocol;
 
 var _moduleName = 'serverpod_test';
 
+var _databaseDialect = DatabaseDialect.postgres;
+
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
     required List<Map<String, String>> migrationProtocols,
@@ -91,14 +93,23 @@ abstract class MigrationTestUtils {
     String? resetSql,
     required Client serviceClient,
   }) async {
-    removeAllTaggedMigrations();
-    removeRepairMigration();
-    _removeMigrationTestProtocolFolder();
-    await _recreateMigrationRegistryFile();
+    await migrationArtifactsCleanup();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  /// Removes tagged migrations, repair migration, protocol test files, and
+  /// rewrites the migration registry from disk, without contacting the server.
+  ///
+  /// For tests that only run `create-migration` (no apply) and must not require
+  /// a running database.
+  static Future<void> migrationArtifactsCleanup() async {
+    removeAllTaggedMigrations();
+    removeRepairMigration();
+    _removeMigrationTestProtocolFolder();
+    await _recreateMigrationRegistryFile();
   }
 
   static Future<void> _recreateMigrationRegistryFile() async {
@@ -217,6 +228,10 @@ abstract class MigrationTestUtils {
     _moduleName = moduleName;
   }
 
+  static void setDatabaseDialect(DatabaseDialect dialect) {
+    _databaseDialect = dialect;
+  }
+
   static Directory _migrationProtocolTestDirectory() => Directory(
     path.join(
       Directory.current.path,
@@ -261,10 +276,15 @@ abstract class MigrationTestUtils {
     var versions = await loadMigrationRegistry();
     var latestMigration = versions.lastOrNull;
 
+    var timestampSql = switch (_databaseDialect) {
+      DatabaseDialect.sqlite => "(unixepoch('subsecond') * 1000)",
+      DatabaseDialect.postgres => 'now()',
+    };
+
     await serviceClient.insights.executeSql('''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")
-    VALUES ('$_moduleName', '$latestMigration', now())
+    VALUES ('$_moduleName', '$latestMigration', $timestampSql)
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
 ''');

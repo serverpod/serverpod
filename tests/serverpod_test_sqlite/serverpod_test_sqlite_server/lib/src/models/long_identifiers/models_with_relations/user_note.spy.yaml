@@ -1,0 +1,4 @@
+class: UserNote
+table: user_note
+fields:
+  name: String

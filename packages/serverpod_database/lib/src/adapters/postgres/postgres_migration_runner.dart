@@ -4,8 +4,8 @@ import '../../../serverpod_database.dart';
 import '../../interface/migration_runner.dart';
 
 @internal
-class PostgresDatabaseMigrationRunner implements MigrationRunner {
-  const PostgresDatabaseMigrationRunner();
+class PostgresDatabaseMigrationRunner extends MigrationRunner {
+  const PostgresDatabaseMigrationRunner({required super.runMode});
 
   /// Migrations on Postgres use a transaction to ensure that the advisory lock
   /// is retained until the transaction is completed.

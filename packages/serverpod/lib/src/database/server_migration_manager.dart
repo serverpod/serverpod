@@ -7,10 +7,12 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// The server migration manager handles migrations of the database.
 class ServerMigrationManager extends MigrationManager {
   /// Creates a new server migration manager.
-  ServerMigrationManager(Directory projectDirectory)
-    : super(
-        FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
-      );
+  ServerMigrationManager(
+    Directory projectDirectory, {
+    super.runMode,
+  }) : super(
+         FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
+       );
 
   @override
   Future<List<DatabaseMigrationVersion>> loadInstalledVersions(

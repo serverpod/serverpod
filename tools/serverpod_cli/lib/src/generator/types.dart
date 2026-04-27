@@ -8,6 +8,7 @@ import 'package:code_builder/code_builder.dart' hide RecordType;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -57,6 +58,9 @@ class TypeDefinition {
   /// Stores the dimension of Vector type (e.g., 1536 for Vector(1536)).
   /// Only populated for Vector types.
   final d.int? vectorDimension;
+
+  /// If set, the data type of the database JSON column this type definition should use for serialization.
+  SerializationDataType? serializationDataType;
 
   EnumDefinition? enumDefinition;
 
@@ -117,6 +121,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
+    this.serializationDataType,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -164,6 +169,11 @@ class TypeDefinition {
   bool get isEnumType => enumDefinition != null;
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
+
+  bool get isColumnStructured => columnType == 'ColumnStructured';
+
+  bool get isJsonbSerialized =>
+      serializationDataType == SerializationDataType.jsonb;
 
   bool get isSerializableDartType => ![
     ValueType.record,
@@ -230,6 +240,7 @@ class TypeDefinition {
     customClass: customClass,
     dartType: dartType,
     generics: generics,
+    serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
@@ -244,6 +255,7 @@ class TypeDefinition {
     customClass: customClass,
     dartType: dartType,
     generics: generics,
+    serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
@@ -258,6 +270,7 @@ class TypeDefinition {
     customClass: customClass,
     dartType: dartType,
     generics: generics,
+    serializationDataType: serializationDataType,
     enumDefinition: enumDefinition,
     projectModelDefinition: projectModelDefinition,
     recordFieldName: recordFieldName,
@@ -462,7 +475,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
-
+    if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
 
@@ -490,6 +503,7 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
 
+    if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
   }
 
@@ -768,6 +782,7 @@ class TypeDefinition {
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
+      serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,

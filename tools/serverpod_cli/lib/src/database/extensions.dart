@@ -6,6 +6,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 // Export underlying dialect implementations.
 export 'package:serverpod_database/src/extensions.dart';
 export 'dialects/postgres.dart';
+export 'dialects/sqlite.dart';
 
 //
 // Comparisons of database models
@@ -45,6 +46,12 @@ extension ColumnComparisons on ColumnDefinition {
     // Vector dimension changes require dropping and recreating the column.
     if (vectorDimension != other.vectorDimension) {
       return false;
+    }
+
+    const jsonEquivalentTypes = {ColumnType.json, ColumnType.jsonb};
+    if (jsonEquivalentTypes.contains(columnType) &&
+        jsonEquivalentTypes.contains(other.columnType)) {
+      return true;
     }
 
     return other.columnType == columnType;

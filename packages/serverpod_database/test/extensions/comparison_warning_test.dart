@@ -4,7 +4,7 @@ import 'package:serverpod_database/src/migrations/table_comparison_warning.dart'
 import 'package:test/test.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   group('ComparisonWarning toString output', () {
     test(

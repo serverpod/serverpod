@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-
+import 'package:serverpod_shared/log.dart' hide LogLevel;
 import 'future_call_diagnostics_service.dart';
 import 'future_call_scanner.dart';
 import 'serverpod_task_scheduler.dart';
@@ -137,11 +137,13 @@ class FutureCallManager {
   Future<void> runScheduledFutureCalls() async {
     await _checkBrokenFutureCalls();
     if (_futureCalls.isEmpty) {
-      stdout.writeln('No future calls registered. Skipping processing.');
+      log.info(
+        'No future calls registered. Skipping processing.',
+      );
       return;
     }
 
-    stdout.writeln('Processing future calls.');
+    log.info('Processing future calls.');
 
     await _scanner.scanFutureCallEntries();
 
@@ -157,13 +159,15 @@ class FutureCallManager {
   /// - [time]: The time at which the future call should execute.
   /// - [serverId]: The ID of the server responsible for executing the call.
   /// - [identifier]: An optional unique identifier for the call, used for cancellation.
+  /// - [scheduling]: An optional scheduling configuration for recurring calls.
   Future<void> scheduleFutureCall(
     String name,
     SerializableModel? object,
     DateTime time,
     String serverId,
-    String? identifier,
-  ) async {
+    String? identifier, {
+    FutureCallScheduling? scheduling,
+  }) async {
     String? serialization;
     if (object != null) {
       serialization = SerializationManager.encode(object.toJson());
@@ -175,6 +179,7 @@ class FutureCallManager {
       time: time,
       serverId: serverId,
       identifier: identifier,
+      scheduling: scheduling,
     );
 
     var session = _internalSession;
@@ -346,6 +351,8 @@ class FutureCallManager {
     // claim will run the call and clean up after running.
     if (heartbeatTimer == null) return;
 
+    await _scheduleNextRecurringCallIfNeeded(futureCallEntry);
+
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
 
     try {
@@ -374,6 +381,43 @@ class FutureCallManager {
         where: (t) => t.id.equals(futureCallEntry.id),
       );
     }
+  }
+
+  /// Returns the next time the [futureCallEntry] should run
+  /// if it is a recurring future call.
+  /// Otherwise, returns null.
+  DateTime? _getNextRecurringRunTime(FutureCallEntry futureCallEntry) {
+    var scheduling = futureCallEntry.scheduling;
+    if (scheduling == null) return null;
+
+    switch (scheduling) {
+      case CronFutureCallScheduling(cron: var cron):
+        return Cron.parse(cron).nextTime();
+      case IntervalFutureCallScheduling(
+        interval: var interval,
+        start: var start,
+      ):
+        final now = clock.now().toUtc();
+        final startTime = start ?? futureCallEntry.time;
+        final difference = now.difference(startTime);
+        final count = (difference.inMilliseconds / interval.inMilliseconds)
+            .ceil();
+        return startTime.add(interval * count);
+    }
+  }
+
+  /// Schedules [futureCallEntry] for its next recurring run.
+  /// This method does nothing if [futureCallEntry] is not recurring.
+  Future<void> _scheduleNextRecurringCallIfNeeded(
+    FutureCallEntry futureCallEntry,
+  ) async {
+    final nextRunTime = _getNextRecurringRunTime(futureCallEntry);
+    if (futureCallEntry.scheduling == null || nextRunTime == null) return;
+
+    await FutureCallEntry.db.insertRow(
+      _internalSession,
+      futureCallEntry.copyWith(id: null, time: nextRunTime),
+    );
   }
 
   /// Returns `true` if the server is configured to check for broken
@@ -443,7 +487,9 @@ class FutureCallManager {
         }
       }
     }
-    _logSession.log(buffer.toString(), level: LogLevel.warning);
+    if (buffer.isNotEmpty) {
+      _logSession.log(buffer.toString(), level: LogLevel.warning);
+    }
 
     final allCalls = unregisteredCalls + brokenCalls;
 

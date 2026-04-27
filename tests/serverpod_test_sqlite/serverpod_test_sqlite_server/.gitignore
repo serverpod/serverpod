@@ -1,0 +1,15 @@
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# Conventional directory for build outputs
+build/
+
+# Ignore the flutter web app directory
+web/app
+
+# Directory created by dartdoc
+doc/api/
+
+# SQLite database file
+serverpod_*.db*

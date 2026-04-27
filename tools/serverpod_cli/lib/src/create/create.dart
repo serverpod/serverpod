@@ -10,6 +10,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
@@ -26,6 +27,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
+import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
   mini('mini'),
@@ -50,12 +52,17 @@ Future<bool> performCreate(
   ServerpodTemplateType template,
   bool force, {
   required bool? interactive,
+  required TemplateContext context,
 }) async {
   // If the name is a dot, we can either create a new project in the current
   // directory or upgrade an existing project.
   if (name == '.') {
     if (findServerDirectory(Directory.current) != null) {
-      return await _performUpgrade(template, interactive: interactive);
+      return await _performUpgrade(
+        template,
+        interactive: interactive,
+        context: context,
+      );
     }
 
     // If we are creating a new project in the current directory, we need to
@@ -150,6 +157,8 @@ Future<bool> performCreate(
       },
     );
   }
+
+  success &= await _renderTemplates(serverpodDirs.projectDir, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
     return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
@@ -253,6 +262,7 @@ Future<bool> performCreate(
 Future<bool> _performUpgrade(
   ServerpodTemplateType template, {
   required bool? interactive,
+  required TemplateContext context,
 }) async {
   if (template != ServerpodTemplateType.server) {
     log.error(
@@ -296,6 +306,8 @@ Future<bool> _performUpgrade(
     },
   );
 
+  success &= await _renderTemplates(serverpodDir.projectDir, context);
+
   success &= await _runGenerate(
     serverpodDir.serverDir,
     CommandLineExperimentalFeatures.instance.features,
@@ -321,6 +333,14 @@ Future<bool> _performUpgrade(
   }
 
   return success;
+}
+
+/// Parses and renders the template files in the given directory.
+Future<bool> _renderTemplates(Directory dir, TemplateContext context) async {
+  return await log.progress('Applying template options', () async {
+    await TemplateRenderer(dir: dir).render(context);
+    return true;
+  });
 }
 
 void _logMiniStartInstructions(String relativeServerPath) {

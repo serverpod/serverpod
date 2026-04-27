@@ -18,6 +18,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  bool _serializeAsJsonbByDefault;
   List<ServerpodFeature> _enabledFeatures;
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
@@ -49,6 +50,7 @@ class GeneratorConfigBuilder {
         ),
       ],
       _extraClasses = [],
+      _serializeAsJsonbByDefault = false,
       _enabledFeatures = [ServerpodFeature.database],
       _databaseDialect = DatabaseDialect.postgres,
       _enabledExperimentalFeatures = [];
@@ -127,6 +129,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withEnabledSerializeAsJsonbByDefault() {
+    _serializeAsJsonbByDefault = true;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
     _enabledFeatures = features;
     return this;
@@ -163,6 +170,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
       enabledFeatures: _enabledFeatures,
       databaseDialect: _databaseDialect,
       experimentalFeatures: _enabledExperimentalFeatures,

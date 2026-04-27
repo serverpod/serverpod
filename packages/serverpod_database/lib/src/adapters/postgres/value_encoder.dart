@@ -8,6 +8,9 @@ import '../../interface/value_encoder.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
 class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
+  /// Creates a new [PostgresValueEncoder].
+  const PostgresValueEncoder();
+
   @override
   String convert(
     dynamic input, {

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
-import 'package:serverpod_test_server/test_util/mock_stdout.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -18,7 +18,7 @@ void main() {
       final migrationName = MigrationGenerator.createVersionName(null);
       late List<String> existingMigrations;
 
-      // Use 'serverpod' (the package module name) as the wrong module —
+      // Use 'serverpod' (the package module name) as the wrong module -
       // the test server's Protocol returns 'serverpod_test'.
       const wrongModuleName = 'serverpod';
 
@@ -89,29 +89,30 @@ void main() {
       });
 
       test(
-        'when migrateToLatest is called then prints warning about module name mismatch to stderr.',
+        'when migrateToLatest is called then logs warning about module name mismatch.',
         () async {
-          var record = MockStdout();
+          var testWriter = TestLogWriter();
+          logWriter.add(testWriter);
+          addTearDown(() => logWriter.remove(testWriter));
 
-          await IOOverrides.runZoned(
-            () async {
-              var migrationManager = ServerMigrationManager(
-                Directory(d.sandbox),
-              );
-              await migrationManager.migrateToLatest(sessionBuilder.build());
-            },
-            stderr: () => record,
+          var migrationManager = ServerMigrationManager(
+            Directory(d.sandbox),
           );
+          await migrationManager.migrateToLatest(sessionBuilder.build());
 
+          var warnings = testWriter.entries
+              .where((e) => e.level == LogLevel.warning)
+              .map((e) => e.message)
+              .toList();
           expect(
-            record.output,
-            equals(
-              'WARNING: The module name in the migration definition '
+            warnings,
+            contains(
+              'The module name in the migration definition '
               '("$wrongModuleName") does not match the module name of the '
               'serialization manager ("serverpod_test"). This may indicate that the '
               'wrong Protocol class is being used in "server.dart". Make sure you '
               'are using the Protocol class generated under "src/generated/protocol.dart" '
-              'and not one from an external package.\n',
+              'and not one from an external package.',
             ),
           );
         },

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:test/test.dart';
 
@@ -31,6 +32,9 @@ void main() {
           await IOOverrides.runZoned(
             () async {
               await sessionBuilder.build().close(error: TestError());
+              // Error goes through Serverpod.log on the _logManager ==
+              // null path; flush to ensure it lands before asserting.
+              await log.flush();
             },
             stdout: () => record,
           );
@@ -48,6 +52,7 @@ void main() {
                 error: TestError(),
                 stackTrace: StackTrace.fromString('TestStackTrace'),
               );
+              await log.flush();
             },
             stdout: () => record,
           );

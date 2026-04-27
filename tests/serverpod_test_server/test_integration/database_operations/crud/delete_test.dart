@@ -205,7 +205,7 @@ void main() async {
         var simpleData = SimpleData(num: 1);
         var inserted = await SimpleData.db.insertRow(session, simpleData);
 
-        var deleted = await await SimpleData.db.deleteRow(
+        var deleted = await SimpleData.db.deleteRow(
           session,
           inserted,
         );

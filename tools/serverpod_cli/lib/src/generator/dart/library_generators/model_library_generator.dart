@@ -2373,7 +2373,9 @@ class SerializableModelLibraryGenerator {
                   ..symbol = field.type.columnType
                   ..url = serverpodUrl(true)
                   ..types.addAll(
-                    field.type.isEnumType || field.type.isColumnSerializable
+                    field.type.isEnumType ||
+                            field.type.isColumnSerializable ||
+                            field.type.isColumnStructured
                         ? [
                             field.type.reference(
                               serverCode,
@@ -2755,7 +2757,7 @@ class SerializableModelLibraryGenerator {
         ..symbol = field.type.columnType
         ..url = serverpodUrl(true)
         ..types.addAll(
-          field.type.isColumnSerializable
+          field.type.isColumnSerializable || field.type.isColumnStructured
               ? [
                   field.type.reference(
                     serverCode,

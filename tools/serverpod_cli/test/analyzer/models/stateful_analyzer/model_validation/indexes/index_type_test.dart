@@ -12,9 +12,9 @@ void main() {
   var validIndexTypes = [
     'btree',
     'hash',
+    'gin',
     'gist',
     'spgist',
-    'gin',
     'brin',
   ];
 
@@ -28,10 +28,10 @@ void main() {
             class: Example
             table: example
             fields:
-              name: String
+              tags: List<String>, serializationDataType=jsonb
             indexes:
               example_index:
-                fields: name
+                fields: tags
                 type: $indexType
             ''',
           ).build(),
@@ -53,6 +53,81 @@ void main() {
       },
     );
   }
+
+  test(
+    'Given a class with a gin index on a non-jsonb field, '
+    'then collect an error that gin requires jsonb fields.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+          indexes:
+            example_index:
+              fields: name
+              type: gin
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
+      expect(
+        collector.errors.first.message,
+        'The "gin" index type requires all indexed fields to use '
+        '"serializationDataType: jsonb" (fields: name).',
+      );
+    },
+  );
+
+  test(
+    'Given a class with a gin index on a jsonb field, '
+    'then no error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>, serializationDataType=jsonb
+          indexes:
+            example_index:
+              fields: tags
+              type: gin
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+    },
+  );
 
   test(
     'Given a class with an index without a type set, then default to type btree',
@@ -84,6 +159,81 @@ void main() {
       var index = definition.indexes.first;
 
       expect(index.type, 'btree');
+    },
+  );
+
+  test(
+    'Given a class with an index on a jsonb field with no explicit type, '
+    'then the index type defaults to gin.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>, serializationDataType=jsonb
+          indexes:
+            tags_ndx:
+              fields: tags
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.indexes.first.type, 'gin');
+    },
+  );
+
+  test(
+    'Given a class with an index on both a jsonb field and a non-jsonb field with no explicit type, '
+    'then the index type defaults to btree.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>, serializationDataType=jsonb
+            name: String
+          indexes:
+            combined_ndx:
+              fields: tags,name
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.indexes.first.type, 'btree');
     },
   );
 

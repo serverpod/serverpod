@@ -11,9 +11,7 @@ class CommandLineExperimentalFeatures {
 }
 
 enum ExperimentalFeature {
-  all,
-  // TODO: Remove when column override is enabled by default.
-  columnOverride;
+  all;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {

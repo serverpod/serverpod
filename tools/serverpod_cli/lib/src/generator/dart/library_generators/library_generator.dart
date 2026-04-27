@@ -123,7 +123,6 @@ class LibraryGenerator {
                   allModels,
                   config.name,
                   config.modulesAll,
-                  dialect: config.databaseDialect,
                 ).toCode(
                   config: config,
                   serverCode: serverCode,
@@ -2160,6 +2159,11 @@ extension on DatabaseDefinition {
                 'type': literalString(index.type),
                 'isUnique': literalBool(index.isUnique),
                 'isPrimary': literalBool(index.isPrimary),
+                if (index.ginOperatorClass != null)
+                  'ginOperatorClass': refer(
+                    'GinOperatorClass.${index.ginOperatorClass!.name}',
+                    serverpodProtocolUrl(serverCode),
+                  ),
                 if (index.vectorDistanceFunction != null)
                   'vectorDistanceFunction': refer(
                     'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',

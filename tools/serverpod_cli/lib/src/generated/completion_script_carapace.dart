@@ -53,6 +53,15 @@ commands:
       flag:
         template: ["mini", "server", "module"]
 
+  - name: quickstart
+    flags:
+      -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
+      -t, --template=: "Template to use when creating a new project"
+      -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
+    completion:
+      flag:
+        template: ["server", "module"]
+
   - name: generate
     flags:
       -w, --watch: "Watch for changes and continuously generate code."

@@ -10,11 +10,18 @@ import 'postgres_pool_manager.dart';
 /// Provides a [DatabaseProvider] for the Postgres database.
 @internal
 class PostgresDatabaseProvider implements DatabaseProvider {
+  /// Creates a new [PostgresDatabaseProvider].
+  const PostgresDatabaseProvider();
+
+  @override
+  DatabaseDefinitionRestrictions get definitionRestrictions =>
+      const DatabaseDefinitionRestrictions();
+
   @override
   PostgresPoolManager createPoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    DatabaseConfig config,
+    PostgresDatabaseConfig config,
   ) {
     return PostgresPoolManager(
       serializationManager,
@@ -24,16 +31,13 @@ class PostgresDatabaseProvider implements DatabaseProvider {
   }
 
   @override
-  PostgresDatabaseConnection createConnection(DatabasePoolManager poolManager) {
-    if (poolManager is! PostgresPoolManager) {
-      throw ArgumentError('Pool manager must be a "PostgresPoolManager".');
-    }
+  PostgresDatabaseConnection createConnection(PostgresPoolManager poolManager) {
     return PostgresDatabaseConnection(poolManager);
   }
 
   @override
-  PostgresDatabaseMigrationRunner createMigrationRunner() {
-    return const PostgresDatabaseMigrationRunner();
+  PostgresDatabaseMigrationRunner createMigrationRunner({String? runMode}) {
+    return PostgresDatabaseMigrationRunner(runMode: runMode);
   }
 
   @override

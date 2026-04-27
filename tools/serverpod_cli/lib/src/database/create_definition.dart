@@ -11,9 +11,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
-  List<ModuleConfig> allModules, {
-  DatabaseDialect dialect = DatabaseDialect.postgres,
-}) {
+  List<ModuleConfig> allModules,
+) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
@@ -54,6 +53,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
+                ginOperatorClass: index.isGinIndex
+                    ? index.ginOperatorClass
+                    : null,
                 vectorDistanceFunction: index.isVectorIndex
                     ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
                     : null,

@@ -32,7 +32,6 @@ export 'package:serverpod_database/serverpod_database.dart'
         MigrationArtifactStore,
         MigrationManager,
         MigrationVersionArtifacts,
-        MigrationWarningWriter,
         Protocol,
         RepairMigration,
         TableDefinition,

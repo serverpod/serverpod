@@ -1,0 +1,32 @@
+# Dart SDK from the official image.
+FROM dart:3.8.0 AS dart-sdk
+FROM ubuntu:24.04 AS build
+
+# Copy SQLite >= 3.41.0 from Ubuntu 24.04.
+COPY --from=dart-sdk /usr/lib/dart /usr/lib/dart
+ENV PATH="/usr/lib/dart/bin:${PATH}"
+
+# Install SQLite and xz.
+RUN apt-get update && apt-get install -y curl git libsqlite3-dev xz-utils
+
+# Install flutter.
+ENV FLUTTER_HOME=/opt/flutter
+ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.12-stable.tar.xz"
+ENV PATH="$PATH:$FLUTTER_HOME/bin"
+
+RUN curl -o flutter.tar.xz $FLUTTER_URL \
+  && mkdir -p $FLUTTER_HOME \
+  && tar xf flutter.tar.xz -C /opt \
+  && rm flutter.tar.xz
+
+# Mark flutter directory as safe.
+RUN git config --global --add safe.directory /opt/flutter
+
+# Set the working directory.
+WORKDIR /app
+
+# Copy the whole serverpod repo into the container.
+COPY . .
+
+# Setup database tables and start the server.
+CMD ["tests/docker/tests_sqlite_e2e_migrations/run-tests.sh"]
