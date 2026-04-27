@@ -331,7 +331,7 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     );
 
     final needsRebuild =
-        modifyColumns.isNotEmpty ||
+        modifyColumns.hasColumnMigrationThatRequiresRebuild ||
         deleteForeignKeys.isNotEmpty ||
         addForeignKeys.isNotEmpty ||
         addColumns.any((c) => c.addColumnNeedsRebuild(targetTable));
@@ -352,10 +352,11 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     }
 
     // Rename columns (must happen before add to avoid name collisions)
-    if (renameColumns != null) {
-      for (var entry in renameColumns!.entries) {
-        out +=
-            'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+    for (var modifiedColumn in modifyColumns) {
+      var fromName = modifiedColumn.columnName;
+      var toName = modifiedColumn.newColumnName;
+      if (toName != null && toName != fromName) {
+        out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
       }
     }
 
@@ -371,6 +372,7 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
       out += addIndex.toSql(tableName: name);
     }
 
+    out += '\n';
     return out;
   }
 
@@ -406,15 +408,10 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
       final colListNew = copyColumns.map((c) => '"${c.name}"').join(', ');
       final selectList = copyColumns
           .map((c) {
-            final sourceName = _sqliteSourceColumnNameForInsert(
-              c.name,
-              renameColumns,
-            );
-            final newType = modifyColumns
-                .where((m) => m.columnName == c.name)
-                .firstOrNull
-                ?.newType;
-            return switch (newType) {
+            final columnMigration = _getColumnMigrationByName(c.name);
+            final sourceName = columnMigration?.columnName ?? c.name;
+
+            return switch (columnMigration?.newType) {
               ColumnType.jsonb => 'jsonb("$sourceName")',
               ColumnType.json => 'json("$sourceName")',
               _ => '"$sourceName"',
@@ -447,6 +444,28 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     out += '\n';
 
     return out;
+  }
+
+  /// Returns the [ColumnMigration] for [targetColumnName].
+  ///
+  /// Prefer a rename whose destination is [targetColumnName] over an in-place
+  /// change on a column that kept that name, so the copy uses the correct
+  /// source column name when both could match.
+  ColumnMigration? _getColumnMigrationByName(String targetColumnName) {
+    // Find column migrations for renamed columns.
+    for (final columnMigration in modifyColumns) {
+      if (columnMigration.newColumnName == targetColumnName) {
+        return columnMigration;
+      }
+    }
+    // Find column migrations for in-place changes.
+    for (final columnMigration in modifyColumns) {
+      if (columnMigration.newColumnName == null &&
+          columnMigration.columnName == targetColumnName) {
+        return columnMigration;
+      }
+    }
+    return null;
   }
 }
 
@@ -523,19 +542,16 @@ extension on ColumnType {
   };
 }
 
-/// Returns the physical column name on the source table for [targetColumnName]
-/// when copying into a rebuilt table, accounting for pending renames.
-String _sqliteSourceColumnNameForInsert(
-  String targetColumnName,
-  Map<String, String>? renameColumns,
-) {
-  if (renameColumns == null) return targetColumnName;
-  for (final entry in renameColumns.entries) {
-    if (entry.value == targetColumnName) {
-      return entry.key;
-    }
-  }
-  return targetColumnName;
+extension on List<ColumnMigration> {
+  /// Whether any of the column migrations require a table rebuild. The only
+  /// operation that does not require a table rebuild is a column rename.
+  bool get hasColumnMigrationThatRequiresRebuild => any(
+    (m) =>
+        m.addNullable ||
+        m.removeNullable ||
+        m.changeDefault ||
+        m.newType != null,
+  );
 }
 
 String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersionModel> modules) {
