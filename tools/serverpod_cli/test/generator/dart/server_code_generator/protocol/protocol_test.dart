@@ -924,11 +924,11 @@ void main() {
         () {
           var protocolContent = codeMap[expectedFileName]!;
 
-          // Count occurrences of List<Person>? type check
-          // This should appear only once even though it's referenced in multiple models
-          // Pattern matches: getType<List<Person>?>() or similar variations
+          // Count occurrences of `map[...List<Person>?...] =` deserializer
+          // entries. This should appear only once even though Person is
+          // referenced in multiple models.
           var listPersonPattern = RegExp(
-            r'if\s*\(\s*t\s*==\s*[^)]*List<[^>]*Person[^>]*>\?[^)]*\)',
+            r'map\[[^\]]*List<[^>]*Person[^>]*>\?[^\]]*\]\s*=',
             multiLine: true,
           );
 
