@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
+import 'package:serverpod_cli/src/commands/dap.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
@@ -114,6 +115,7 @@ ServerpodCommandRunner buildCommandRunner() {
     AnalyzePubspecsCommand(),
     CreateCommand(),
     QuickstartCommand(),
+    DapCommand(),
     GenerateCommand(),
     GeneratePubspecsCommand(),
     LanguageServerCommand(),
