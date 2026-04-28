@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dds/dap.dart';
 // `DartCliDebugAdapter` is the right base class but it lives in `dds/src/`
 // and isn't re-exported from `package:dds/dap.dart`. Subclassing it is what
@@ -5,6 +7,8 @@ import 'package:dds/dap.dart';
 // the SDK floor) bounds the risk that the surface changes under us.
 // ignore: implementation_imports
 import 'package:dds/src/dap/adapters/dart_cli_adapter.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:vm_service/vm_service.dart' as vm;
 
 /// Service alias the `serverpod start` process uses when it registers its
@@ -39,6 +43,65 @@ class ServerpodDebugAdapter extends DartCliDebugAdapter {
     super.logger,
     super.onError,
   });
+
+  /// Enriches incoming attach args with `cwd` and `vmServiceInfoFile`
+  /// derived from [ServerDirectoryFinder] so the user's launch.json can be
+  /// just `{name, type: 'serverpod', request: 'attach'}`. Both fields are
+  /// only filled when missing - a user-supplied value always wins.
+  ///
+  /// `args` is `late final` on the base class, so we substitute an enriched
+  /// copy *before* delegating to super (which sets it).
+  @override
+  Future<void> attachRequest(
+    Request request,
+    DartAttachRequestArguments args,
+    void Function() sendResponse,
+  ) async {
+    final enriched = await _enrichAttachArgs(args);
+    return super.attachRequest(request, enriched, sendResponse);
+  }
+
+  Future<DartAttachRequestArguments> _enrichAttachArgs(
+    DartAttachRequestArguments args,
+  ) async {
+    final hasUri = args.vmServiceUri != null;
+    final hasInfoFile = args.vmServiceInfoFile != null;
+    final hasCwd = args.cwd != null;
+    if (hasCwd && (hasUri || hasInfoFile)) return args;
+
+    // Only run the directory walk when we actually need a server dir.
+    // If the user already provided cwd, derive vmServiceInfoFile from it.
+    if (hasCwd) {
+      final json = Map<String, Object?>.from(args.toJson());
+      json['vmServiceInfoFile'] = p.join(
+        args.cwd!,
+        '.dart_tool',
+        'serverpod',
+        'vm-service-info.json',
+      );
+      return DartAttachRequestArguments.fromJson(json);
+    }
+
+    final Directory dir;
+    try {
+      dir = await ServerDirectoryFinder.findOrPrompt(interactive: false);
+    } on Object {
+      // Discovery failed; let the base adapter raise its standard error.
+      return args;
+    }
+
+    final json = Map<String, Object?>.from(args.toJson());
+    json['cwd'] = dir.path;
+    if (!hasUri && !hasInfoFile) {
+      json['vmServiceInfoFile'] = p.join(
+        dir.path,
+        '.dart_tool',
+        'serverpod',
+        'vm-service-info.json',
+      );
+    }
+    return DartAttachRequestArguments.fromJson(json);
+  }
 
   @override
   Future<void> handleServiceEvent(vm.Event event) async {
