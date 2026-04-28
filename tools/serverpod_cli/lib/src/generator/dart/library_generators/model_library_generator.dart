@@ -1592,6 +1592,7 @@ class SerializableModelLibraryGenerator {
             const Code('?'),
             toJsonForProtocolExpression.call([]).code,
             const Code(':'),
+            const Code('// ignore: dead_code\n'),
             toJsonExpression.call([]).code,
           ],
         ),
