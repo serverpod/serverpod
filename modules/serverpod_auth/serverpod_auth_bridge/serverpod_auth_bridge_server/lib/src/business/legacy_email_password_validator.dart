@@ -55,7 +55,8 @@ enum _PasswordHashType {
   ///
   /// This is used to migrate legacy password hashes to safer Argon2id
   /// password hashes without forcing users to change their passwords.
-  migratedLegacy;
+  migratedLegacy,
+  ;
 
   factory _PasswordHashType.fromPasswordHash(final String passwordHash) {
     final passwordHashParts = passwordHash.split('\$');

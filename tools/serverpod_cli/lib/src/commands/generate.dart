@@ -36,7 +36,8 @@ enum GenerateOption<V> implements OptionDefinition<V> {
       helpText:
           'The directory to generate code for (defaults to current directory).',
     ),
-  );
+  ),
+  ;
 
   const GenerateOption(this.option);
 

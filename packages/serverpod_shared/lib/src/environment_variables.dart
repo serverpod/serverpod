@@ -190,7 +190,8 @@ enum ServerpodEnv {
   validateHeaders,
 
   /// The interval in seconds between websocket ping messages.
-  websocketPingInterval;
+  websocketPingInterval,
+  ;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -328,7 +329,8 @@ enum ServerpodPassword {
   serviceSecret,
 
   /// The password for the redis broker.
-  redisPassword;
+  redisPassword,
+  ;
 
   /// The key used in the password configuration file.
   String get configKey {

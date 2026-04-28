@@ -76,7 +76,8 @@ enum StartOption<V> implements OptionDefinition<V> {
       defaultsTo: true,
       helpText: 'Show interactive terminal UI.',
     ),
-  );
+  ),
+  ;
 
   const StartOption(this.option);
 

@@ -20,7 +20,8 @@ enum McpOption<V> implements OptionDefinition<V> {
       helpText:
           'The server directory (defaults to auto-detect from current directory).',
     ),
-  );
+  ),
+  ;
 
   const McpOption(this.option);
 

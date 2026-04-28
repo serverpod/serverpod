@@ -74,7 +74,8 @@ class DependencySourcePath extends DependencySource {
 
 enum DependencyType {
   normal('dependencies'),
-  override('dependency_overrides');
+  override('dependency_overrides'),
+  ;
 
   final String keyword;
   const DependencyType(this.keyword);

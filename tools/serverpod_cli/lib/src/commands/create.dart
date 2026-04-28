@@ -54,7 +54,8 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  );
+  ),
+  ;
 
   static const _templateGroup = MutuallyExclusive(
     'Project Template',

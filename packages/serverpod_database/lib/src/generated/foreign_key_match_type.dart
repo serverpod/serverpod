@@ -24,7 +24,8 @@ enum ForeignKeyMatchType implements _i1.SerializableModel {
   /// [simple] allows any of the foreign key columns to be null.
   /// If any of them are null, the row is not required to have a
   /// match in the referenced table. (Default)
-  simple;
+  simple
+  ;
 
   static ForeignKeyMatchType fromJson(int index) {
     switch (index) {

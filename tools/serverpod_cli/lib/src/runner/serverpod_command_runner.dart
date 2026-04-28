@@ -159,7 +159,8 @@ enum GlobalOption<V> implements OptionDefinition<V> {
       helpText:
           'Enable experimental features. Experimental features might be removed at any time.',
     ),
-  );
+  ),
+  ;
 
   const GlobalOption(this.option);
 

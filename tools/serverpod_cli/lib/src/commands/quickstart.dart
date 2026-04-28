@@ -49,7 +49,8 @@ enum QuickstartOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  );
+  ),
+  ;
 
   const QuickstartOption(this.option);
 
