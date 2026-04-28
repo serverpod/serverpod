@@ -4,8 +4,6 @@ import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/downloads/resource_manager.dart';
-import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -27,20 +25,13 @@ Future<void> _preCommandEnvironmentChecks() async {
     );
     throw ExitException.error();
   }
-
-  if (!loadEnvironmentVars()) {
-    throw ExitException.error();
-  }
 }
 
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
   if (runner._productionMode) {
     await promptToUpdateIfNeeded(runner._cliVersion);
   } else {
-    log.debug(
-      'Development mode. Using templates from: ${resourceManager.templateDirectory.path}',
-    );
-    log.debug('SERVERPOD_HOME is set to $serverpodHome');
+    log.debug('Development mode.');
   }
 }
 
