@@ -19,7 +19,7 @@ Use the same pinned Serverpod version across all packages.
 
 ## Major upgrade: to Serverpod 3.0
 
-Requirements: Dart 3.10.3+, Flutter 3.32.0+.
+Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
 ### Steps
 
