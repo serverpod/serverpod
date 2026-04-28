@@ -35,9 +35,10 @@ enum DapOption<V> implements OptionDefinition<V> {
 ///
 /// - When [hasUnixSocketSupport] holds (macOS / Linux always; Windows on
 ///   Dart 3.11+) and the server package can be discovered, binds a Unix
-///   domain socket at `<server-dir>/.dart_tool/serverpod/dap.sock` and
-///   announces `SERVERPOD_DAP_SOCKET=<path>`. The extension connects via
-///   VS Code's `DebugAdapterNamedPipeServer`.
+///   domain socket at `<systemTemp>/serverpod-dap-<hash>.sock` (hashed by
+///   the absolute server-dir path so projects don't collide) and announces
+///   `SERVERPOD_DAP_SOCKET=<path>`. The extension connects via VS Code's
+///   `DebugAdapterNamedPipeServer`.
 /// - Otherwise announces `SERVERPOD_DAP_STDIO` and speaks DAP on
 ///   stdin/stdout. The extension drops its monitoring spawn and returns
 ///   `DebugAdapterExecutable` so VS Code respawns the CLI with its own
@@ -99,13 +100,23 @@ class DapCommand extends ServerpodCommand<DapOption> {
       return false;
     }
 
+    // Socket lives in systemTemp, not under the server's .dart_tool/, because
+    // macOS limits sockaddr_un.sun_path to 104 bytes (incl. NUL): a typical
+    // <home>/Projects/.../<name>_server/.dart_tool/serverpod/dap.sock easily
+    // exceeds that. bindUnixSocket's shortestPath helper makes our bind side
+    // fit by going relative, but the announcement (and VS Code's connect on
+    // it) is absolute - which hits the limit on the client. systemTemp gives
+    // a short, predictable base on every platform. It is also already a
+    // per-user directory on macOS (0700) and Windows (per-user ACL); on Linux
+    // /tmp is world-traversable but the socket file inherits umask 022 -> 0644
+    // which denies connect to non-owners (UDS connect needs write).
+    final hash = serverDir.absolute.path.hashCode
+        .toUnsigned(32)
+        .toRadixString(36);
     final socketPath = p.join(
-      serverDir.path,
-      '.dart_tool',
-      'serverpod',
-      'dap.sock',
+      Directory.systemTemp.path,
+      'serverpod-dap-$hash.sock',
     );
-    await Directory(p.dirname(socketPath)).create(recursive: true);
 
     final ServerSocket server;
     try {
