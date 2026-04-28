@@ -1332,14 +1332,14 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (_isUnsupportedType(fieldType)) {
+    if (typeText != null && typeText.contains('dynamic?')) {
       errors.add(
         SourceSpanSeverityException(
-          'The datatype "${fieldType.className}" is not supported in models.',
+          'The type "$typeText" contains a redundant "?" mark. Remove the "?" '
+          'mark to use the type "dynamic" instead, since it is already nullable.',
           span,
         ),
       );
-      return errors;
     }
 
     var moduleAlias = fieldType.moduleAlias;
@@ -2497,10 +2497,6 @@ class Restrictions {
     return valueCount;
   }
 
-  var blackListedTypes = [
-    'dynamic',
-  ];
-
   bool _isNoValidationType(String type) {
     return type.startsWith('package:') || type.startsWith('project:');
   }
@@ -2510,10 +2506,6 @@ class Restrictions {
         _isModelType(type) ||
         _isCustomType(type) ||
         _isRecordType(type);
-  }
-
-  bool _isUnsupportedType(TypeDefinition type) {
-    return blackListedTypes.contains(type.className);
   }
 
   bool _isUnresolvedModuleType(TypeDefinition type) {
