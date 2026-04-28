@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';

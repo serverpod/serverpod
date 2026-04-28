@@ -16,10 +16,11 @@ class LoggingUtil {
     );
   }
 
-  /// Fetches log entries for a specific session log ID returned by
-  /// [Session.close]. This is preferred over [findAllLogs] when you need to
-  /// assert on logs from a specific session, as it avoids interference from
-  /// concurrent test sessions and log cleanup.
+  /// Fetches log entries for a specific session log ID.
+  ///
+  /// This is preferred over [findAllLogs] when you need to assert on logs from
+  /// a specific session, as it avoids interference from concurrent test
+  /// sessions and log cleanup.
   static Future<List<LogEntry>> findLogsForSession(
     Session session,
     int? sessionLogId,
@@ -37,6 +38,40 @@ class LoggingUtil {
       where: (t) => t.sessionLogId.equals(sessionLogId),
       orderBy: (t) => t.order,
     );
+  }
+
+  /// Attempts to resolve the `serverpod_session_log.id` (session log id) for
+  /// [loggedSession].
+  ///
+  /// Serverpod no longer returns a session log id from [Session.close], so
+  /// tests that need to assert on a specific session's logs must locate the
+  /// corresponding [SessionLogEntry] row in the database.
+  static Future<int?> findSessionLogIdForSession(
+    Session querySession,
+    Session loggedSession,
+  ) async {
+    final candidates = await SessionLogEntry.db.find(
+      querySession,
+      where: (t) =>
+          t.serverId.equals(loggedSession.server.serverId) &
+          t.endpoint.equals(loggedSession.endpoint) &
+          t.method.equals(loggedSession.method),
+      orderBy: (t) => t.id.desc(),
+      limit: 20,
+    );
+
+    if (candidates.isEmpty) return null;
+
+    final startTime = loggedSession.startTime;
+    for (final row in candidates) {
+      final deltaMs = row.time.difference(startTime).inMilliseconds.abs();
+      if (deltaMs <= 2000) {
+        return row.id;
+      }
+    }
+
+    // Fall back to the most recent matching entry (best effort).
+    return candidates.first.id;
   }
 
   static Future<List<SessionLogInfo>> findAllLogs(

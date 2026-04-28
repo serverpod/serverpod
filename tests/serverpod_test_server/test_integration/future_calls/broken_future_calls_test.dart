@@ -122,7 +122,11 @@ void main() {
         test(
           'then unregistered and broken future calls are not logged',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,
@@ -149,7 +153,11 @@ void main() {
         test(
           'then a warning is logged about skipping the check for broken future calls',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,
@@ -222,7 +230,11 @@ void main() {
         test(
           'then unregistered future calls are logged',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,
@@ -246,7 +258,11 @@ void main() {
         test(
           'then broken future calls are logged',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,
@@ -329,7 +345,11 @@ void main() {
         test(
           'then unregistered future calls are logged',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,
@@ -355,7 +375,11 @@ void main() {
         test(
           'then broken future calls are logged',
           () async {
-            final sessionLogId = await server.internalLoggingSession.close();
+            await server.internalLoggingSession.close();
+            final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+              session,
+              server.internalLoggingSession,
+            );
             final allLogs = await LoggingUtil.findLogsForSession(
               session,
               sessionLogId,

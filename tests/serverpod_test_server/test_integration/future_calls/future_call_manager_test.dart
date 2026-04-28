@@ -790,8 +790,11 @@ void main() async {
           await futureCallManager.runScheduledFutureCalls();
 
           // Close logSession to flush buffered logs to the database.
-          // Capture the sessionLogId so we can query exactly those log entries.
-          final sessionLogId = await logSession.close();
+          await logSession.close();
+          final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+            session,
+            logSession,
+          );
 
           final allLogs = await LoggingUtil.findLogsForSession(
             session,
