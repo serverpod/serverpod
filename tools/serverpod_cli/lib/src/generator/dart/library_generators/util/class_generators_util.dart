@@ -170,6 +170,19 @@ Expression _buildFromJson(
         serverCode,
         field,
       );
+    case ValueType.dynamicType:
+      return CodeExpression(
+        getProtocolReference(
+              serverCode,
+              config,
+              currentSharedPackageName: currentSharedPackageName,
+            )
+            .call([])
+            .property('decodeDynamicFieldValue')
+            .call([valueExpression])
+            .checkIfNull(type, valueExpression: valueExpression)
+            .code,
+      );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
       if (enumSerialization == null) {

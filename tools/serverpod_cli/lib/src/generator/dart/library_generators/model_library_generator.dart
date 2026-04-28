@@ -892,19 +892,30 @@ class SerializableModelLibraryGenerator {
 
       Expression valueDefinition;
       if (field.type.nullable) {
-        valueDefinition = refer(field.name)
-            .isA(
-              field.type.reference(
-                serverCode,
-                nullable: field.type.nullable,
-                subDirParts: subDirParts,
-                config: config,
-              ),
-            )
-            .conditional(
-              refer(field.name),
-              assignment,
-            );
+        if (field.type.className == 'dynamic') {
+          // Since `dynamic` also covers `_Undefined`, the check for `param`
+          // must be inverted to explicitly not be `_Undefined`.
+          valueDefinition = refer(field.name)
+              .isNotA(refer('_Undefined'))
+              .conditional(
+                refer(field.name),
+                assignment,
+              );
+        } else {
+          valueDefinition = refer(field.name)
+              .isA(
+                field.type.reference(
+                  serverCode,
+                  nullable: field.type.nullable,
+                  subDirParts: subDirParts,
+                  config: config,
+                ),
+              )
+              .conditional(
+                refer(field.name),
+                assignment,
+              );
+        }
       } else {
         valueDefinition = refer(field.name).ifNullThen(
           assignment,
@@ -1101,7 +1112,7 @@ class SerializableModelLibraryGenerator {
   ) {
     var isNonMutableType =
         type.isEnumType || nonMutableTypeNames.contains(type.className);
-    if (isNonMutableType) {
+    if (isNonMutableType || type.className == 'dynamic') {
       return isRoot
           ? refer(Keyword.thisKeyword).property(variableName)
           : refer(variableName);
@@ -1549,6 +1560,12 @@ class SerializableModelLibraryGenerator {
       config,
       currentSharedPackageName: currentSharedPackageName,
     );
+    if (fieldType.className == 'dynamic') {
+      var encodeMethod = methodName == _toJsonForProtocolMethodName
+          ? 'encodeWithTypeForProtocol'
+          : 'encodeWithType';
+      return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
+    }
     if (fieldType.isRecordType) {
       return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
         [

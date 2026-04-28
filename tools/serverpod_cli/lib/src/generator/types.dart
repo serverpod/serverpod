@@ -435,7 +435,9 @@ class TypeDefinition {
         } else {
           t.url = url;
         }
-        t.isNullable = nullable ?? this.nullable;
+        // The `dynamic` type is already nullable. Using `dynamic?` is invalid
+        // and triggers analyzer "unnecessary_question_mark".
+        t.isNullable = (nullable ?? this.nullable) && className != 'dynamic';
         t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
         t.types.addAll(
           generics.map(
@@ -711,6 +713,13 @@ class TypeDefinition {
         ...generics.first.generateDeserialization(serverCode, config: config),
         ...generics[1].generateDeserialization(serverCode, config: config),
       ];
+    } else if (className == 'dynamic') {
+      return [
+        MapEntry(
+          refer('dynamic'),
+          const Code('decodeDynamicFieldValue(data) as T'),
+        ),
+      ];
     } else if (customClass) {
       // This is the only place the customClass bool is used.
       // It could be moved as we already know that we are working on custom classes
@@ -811,6 +820,7 @@ class TypeDefinition {
     if (className == 'Map') return ValueType.map;
     if (className == '_Record') return ValueType.record;
     if (isEnumType) return ValueType.isEnum;
+    if (className == 'dynamic') return ValueType.dynamicType;
     return ValueType.classType;
   }
 
@@ -1030,6 +1040,7 @@ enum ValueType {
   map,
   record,
   isEnum,
+  dynamicType,
   classType,
   vector,
   halfVector,
