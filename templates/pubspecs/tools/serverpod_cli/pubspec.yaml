@@ -20,7 +20,12 @@ dependencies:
   collection: ^1.18.0
   config: ^0.8.3
   dart_mcp: '>=0.4.1 <0.6.0'
-  dart_style: ^3.0.0
+  # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
+  # to 3.12 due to a bug on the formatter that was fixed in 3.1.6, but only
+  # released to `dart format` in 3.12. Otherwise, the generated code will
+  # produce a different style than `dart format` and break the CI. For more
+  # details, see: https://github.com/dart-lang/dart_style/issues/1785
+  dart_style: 3.1.5
   http: '>=1.1.0 <2.0.0'
   intl: '>=0.19.0 <0.21.0'
   json_rpc_2: ^4.0.0
