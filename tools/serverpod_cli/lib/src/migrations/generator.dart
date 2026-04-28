@@ -54,11 +54,11 @@ class MigrationGenerator {
   /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
-  MigrationArtifactStore get _artifactStore => serverCode
+  late final _artifactStore = serverCode
       ? FileSystemMigrationArtifactStore(projectDirectory: directory)
       : throw UnsupportedError('Migrations are not supported on the client.');
 
-  Future<MigrationVersionArtifacts?> createMigration({
+  Future<MigrationVersionDefinition?> createMigration({
     String? tag,
     required bool force,
     required GeneratorConfig config,
@@ -125,12 +125,16 @@ class MigrationGenerator {
       return null;
     }
 
-    var sqlGenerator = SqlGenerator.forDialect(config.databaseDialect);
+    final dialect = serverCode
+        ? config.databaseDialect
+        : DatabaseDialect.sqlite;
+
+    var sqlGenerator = SqlGenerator.forDialect(dialect);
 
     // Filter the elements here to keep the definition files complete. Only
     // the migration and definition SQL will be filtered by the dialect.
     var databaseDefinitionNextForDialect = databaseDefinitionNext.forDialect(
-      config.databaseDialect,
+      dialect,
       logWarnings: log.warning,
     );
 
@@ -309,7 +313,9 @@ class MigrationGenerator {
     }
 
     try {
-      var artifacts = await _artifactStore.readVersion(migrationVersionName);
+      var artifacts = await _artifactStore.readVersionDefinition(
+        migrationVersionName,
+      );
       if (artifacts == null) {
         throw MigrationVersionLoadException(
           versionName: migrationVersionName,
@@ -357,7 +363,7 @@ class MigrationGenerator {
     return false;
   }
 
-  Future<List<MigrationVersionArtifacts>> _loadMigrationVersionsFromModules(
+  Future<List<MigrationVersionDefinition>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     required Directory directory,
   }) async {
@@ -365,7 +371,7 @@ class MigrationGenerator {
       (module) => module.migrationVersions.isNotEmpty,
     );
 
-    var moduleMigrationArtifacts = <MigrationVersionArtifacts>[];
+    var moduleMigrationArtifacts = <MigrationVersionDefinition>[];
 
     for (var module in selectedModules) {
       var versionName = module.migrationVersions.last;
@@ -377,7 +383,9 @@ class MigrationGenerator {
         projectDirectory: Directory.fromUri(uri),
       );
 
-      var artifacts = await moduleArtifactStore.readVersion(versionName);
+      var artifacts = await moduleArtifactStore.readVersionDefinition(
+        versionName,
+      );
       if (artifacts == null) {
         throw MigrationVersionLoadException(
           versionName: versionName,

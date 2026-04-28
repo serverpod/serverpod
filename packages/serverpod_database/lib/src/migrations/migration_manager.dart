@@ -94,7 +94,9 @@ abstract class MigrationManager {
     if (availableVersions.isEmpty) return null;
 
     var latestVersion = availableVersions.last;
-    return (await _artifactStore.readVersion(latestVersion))?.moduleName;
+    return (await _artifactStore.readVersionDefinition(
+      latestVersion,
+    ))?.moduleName;
   }
 
   /// Migrates all modules to the latest version.
@@ -192,7 +194,7 @@ abstract class MigrationManager {
     var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
-      var latestArtifacts = await _artifactStore.readVersion(
+      var latestArtifacts = await _artifactStore.readVersionSql(
         latestVersion,
       );
       var sqlDefinition = latestArtifacts?.definitionSql;
@@ -207,7 +209,9 @@ abstract class MigrationManager {
       var newerVersions = _getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
-        var versionArtifacts = await _artifactStore.readVersion(version);
+        var versionArtifacts = await _artifactStore.readVersionSql(
+          version,
+        );
         var sqlMigration = versionArtifacts?.migrationSql;
         if (sqlMigration == null) {
           throw Exception(
