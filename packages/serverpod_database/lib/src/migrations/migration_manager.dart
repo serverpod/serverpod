@@ -167,9 +167,14 @@ abstract class MigrationManager {
 
     var index = availableVersions.indexOf(fromVersion);
     if (index == -1) {
-      throw Exception(
-        'DB has migration version $fromVersion registered but it is not found in the project files.',
-      );
+      final errorMessage =
+          'WARNING: Database has migration version "$fromVersion" '
+          'registered but it is not found in the project files.';
+      if (runMode != 'production') {
+        throw Exception(errorMessage);
+      }
+      writeError(errorMessage);
+      return [];
     }
     return availableVersions.sublist(index + 1);
   }
