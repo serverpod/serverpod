@@ -375,7 +375,7 @@ void _logMiniStartInstructions(String relativeServerPath) {
       newParagraph: true,
     );
     log.info(
-      'dart bin/main.dart',
+      'dart run bin/main.dart',
       type: TextLogType.command,
     );
   }
@@ -422,7 +422,7 @@ void _logStartInstructions(String relativeServerPath) {
       type: TextLogType.command,
     );
     log.info(
-      'dart bin/main.dart --apply-migrations',
+      'dart run bin/main.dart --apply-migrations',
       type: TextLogType.command,
     );
   }

@@ -18,7 +18,7 @@ echo ""
 # We apply migrations to database
 echo "### Apply migrations"
 pwd
-dart bin/main.dart -m production -r maintenance --apply-migrations
+dart run bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"

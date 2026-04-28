@@ -9,4 +9,4 @@ echo ""
 # We are all set to start the server
 echo "### Starting test server"
 pwd
-dart bin/main.dart -m production --apply-migrations
+dart run bin/main.dart -m production --apply-migrations
