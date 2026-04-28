@@ -617,7 +617,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
         error = e;
       }
 
-      connectionDetails.outputController.addError(error);
+      if (!connectionDetails.outputController.isClosed) {
+        connectionDetails.outputController.addError(error);
+      }
       connectionDetails.outputController.close();
     });
 

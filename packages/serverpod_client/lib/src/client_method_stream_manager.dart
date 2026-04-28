@@ -448,6 +448,7 @@ final class ClientMethodStreamManager {
       return false;
     }
 
+    if (inboundStreamContext.controller.isClosed) return false;
     inboundStreamContext.controller.add(message.object);
     return true;
   }
@@ -480,7 +481,9 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    inboundStreamContext.controller.addError(message.exception);
+    if (!inboundStreamContext.controller.isClosed) {
+      inboundStreamContext.controller.addError(message.exception);
+    }
     await _closeControllers([inboundStreamContext.controller]);
   }
 
