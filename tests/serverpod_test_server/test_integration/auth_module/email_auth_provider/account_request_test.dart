@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
@@ -9,7 +9,8 @@ void main() async {
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     late UserInfo? response;
     setUp(
@@ -40,7 +41,8 @@ void main() async {
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var username = 'test';
     var password = 'password';
     var email = 'test@serverpod.dev';

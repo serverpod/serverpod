@@ -9,7 +9,8 @@ void main() {
   withServerpod(
     'Given TestToolsEndpoint',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test(
         'when calling createSimpleData then creates a SimpleData in the database',
@@ -109,7 +110,8 @@ void main() {
   withServerpod(
     'Given TestToolsEndpoint and rollbackDatabase afterEach',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       group('when calling createSimpleDatasInsideTransactions', () {
         setUpAll(() async {
           await endpoints.testTools.createSimpleDatasInsideTransactions(
@@ -195,7 +197,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           setUpAll(() async {
             await endpoints.testTools.createSimpleDatasInsideTransactions(
@@ -228,7 +231,8 @@ void main() {
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -242,7 +246,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           setUpAll(() async {
             try {
@@ -267,7 +272,8 @@ void main() {
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -306,7 +312,8 @@ void main() {
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
@@ -323,7 +330,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
             await endpoints.testTools.createSimpleDatasInsideTransactions(
               sessionBuilder,
@@ -356,7 +364,8 @@ void main() {
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           tearDownAll(() async {
             await SimpleData.db.deleteWhere(
               session,
@@ -384,7 +393,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
             try {
               await endpoints.testTools
@@ -409,7 +419,8 @@ void main() {
       withServerpod(
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           tearDownAll(() async {
             await SimpleData.db.deleteWhere(
@@ -432,7 +443,8 @@ void main() {
     withServerpod(
       'when calling createSimpleDatasInParallelTransactionCalls',
       (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+        late Session session;
+        setUp(() => session = sessionBuilder.build());
         setUpAll(() async {
           await endpoints.testTools.createSimpleDatasInParallelTransactionCalls(
             sessionBuilder,
@@ -461,7 +473,8 @@ void main() {
     'Given rollbackDatabase is not disabled (transaction active) ',
     rollbackDatabase: RollbackDatabase.afterEach,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       group('when creating UniqueData with the same unique value', () {
         late Future failingInsert;

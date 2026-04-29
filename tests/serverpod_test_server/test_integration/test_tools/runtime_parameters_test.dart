@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
@@ -8,7 +8,8 @@ void main() {
   withServerpod(
     'Given withServerpod without runtimeParametersBuilder',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test('when querying runtime parameters globally '
           'then no database parameters are set.', () async {
@@ -73,7 +74,8 @@ void main() {
       ),
     ],
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       Future<void> validateParameters() async {
         var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
@@ -126,7 +128,8 @@ void main() {
       ),
     ],
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test('then local parameters override global ones temporarily.', () async {
         await session.db.ensureVectorLoaded();

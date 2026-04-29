@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -7,7 +8,8 @@ void main() {
   withServerpod(
     'Given a child class with explicit column name that extends another class',
     (sessionBuilder, endpoints) {
-      final session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       const parentValue = 'parentValue';
       const childValue = 'childValue';
 
