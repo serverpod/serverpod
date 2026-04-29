@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/util/platform_check.dart';
 import 'package:test/test.dart';
 
@@ -93,6 +95,41 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a project name that pushes the socket path past the platform limit',
+    skip: !hasUnixSocketSupport(),
+    () {
+      test(
+        'when starting an McpSocketServer, '
+        'then start throws a SocketException with an actionable message',
+        () async {
+          // Build a project name long enough that the resulting socket path
+          // exceeds the platform's sun_path limit even after shortening.
+          final budget = maxUnixSocketPathBytes();
+          final templatePath = serverpodMcpSocketPath(pid: pid, project: 'x');
+          final overhead = p.basename(templatePath).length - 1;
+          final projectLen = budget - overhead + 16;
+          final project = 'p' * projectLen;
+
+          final server = McpSocketServer(project: project);
+          await expectLater(
+            server.start,
+            throwsA(
+              isA<SocketException>().having(
+                (e) => e.message,
+                'message',
+                allOf(
+                  contains('Unix socket path'),
+                  contains('too long'),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Given Windows with Dart < 3.11',
