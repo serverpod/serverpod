@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -43,7 +44,8 @@ void main() {
   withServerpod(
     'Given a table model with dynamic fields,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       group('when inserting the model with all dynamic fields ', () {
         late Future<ObjectWithDynamic> insert;
@@ -67,7 +69,8 @@ void main() {
   withServerpod(
     'Given a table model with dynamic fields and an entry that has been inserted,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       setUp(() async {
         await ObjectWithDynamic.db.insertRow(session, object);

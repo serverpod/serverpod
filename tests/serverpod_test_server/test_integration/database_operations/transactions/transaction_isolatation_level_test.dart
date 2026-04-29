@@ -8,10 +8,11 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
   withServerpod(
-    'Given read committed transaction isolation level and single row in database',
+    'Given read committed transaction isolation level and single row in database,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -75,10 +76,11 @@ void main() async {
   );
 
   withServerpod(
-    'Given repeatable read transaction isolation level',
+    'Given repeatable read transaction isolation level,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -200,10 +202,11 @@ void main() async {
   );
 
   withServerpod(
-    'Given serializable transaction isolation level',
+    'Given serializable transaction isolation level,',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(

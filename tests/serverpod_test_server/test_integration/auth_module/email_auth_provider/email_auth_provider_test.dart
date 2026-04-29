@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
@@ -14,8 +15,9 @@ void main() async {
     ),
   );
 
-  withServerpod('Given create account request ', (sessionBuilder, _) {
-    var session = sessionBuilder.build();
+  withServerpod('Given create account request,', (sessionBuilder, _) {
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
@@ -49,8 +51,9 @@ void main() async {
     );
   });
 
-  withServerpod('Given a created user', (sessionBuilder, _) {
-    var session = sessionBuilder.build();
+  withServerpod('Given a created user,', (sessionBuilder, _) {
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'password';
@@ -82,11 +85,12 @@ void main() async {
     );
   });
 
-  withServerpod('Given user with legacy password hash when authenticating', (
+  withServerpod('Given user with legacy password hash, when authenticating,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var userName = 'test';
     var email = 'test@serverpod.dev';
     var password = 'hunter2';
@@ -136,11 +140,12 @@ void main() async {
     });
   });
 
-  withServerpod('Given all password hash types in database', (
+  withServerpod('Given all password hash types in database,', (
     sessionBuilder,
     _,
   ) {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     setUp(
       () async => await EmailAuth.db.insert(session, [
@@ -360,33 +365,36 @@ void main() async {
     });
   });
 
-  group('Given password not matching the hash when validating password', () {
-    // This is the hash from the password 'hunter4'
-    var hunter4PasswordHash =
-        '2ee3dc6432300eabf9630ac7827d6dd23fd23cc9120ec4cd58f8f66bd3ce2db9';
-    var notHunter4PasswordHash =
-        '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
+  withServerpod(
+    'Given password not matching the hash, when validating password,',
+    (_, _) {
+      // This is the hash from the password 'hunter4'
+      var hunter4PasswordHash =
+          '2ee3dc6432300eabf9630ac7827d6dd23fd23cc9120ec4cd58f8f66bd3ce2db9';
+      var notHunter4PasswordHash =
+          '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
 
-    test(
-      'then validation returns PasswordValidationFailed with generated and passed in hash.',
-      () async {
-        late String actualStoredHash;
-        late String actualPasswordHash;
-        final validationResponse = await Emails.validatePasswordHash(
-          'notHunter4',
-          'test7@serverpod.dev',
-          hunter4PasswordHash,
-        );
-        expect(validationResponse, isA<PasswordValidationFailed>());
+      test(
+        'then validation returns PasswordValidationFailed with generated and passed in hash',
+        () async {
+          late String actualStoredHash;
+          late String actualPasswordHash;
+          final validationResponse = await Emails.validatePasswordHash(
+            'notHunter4',
+            'test7@serverpod.dev',
+            hunter4PasswordHash,
+          );
+          expect(validationResponse, isA<PasswordValidationFailed>());
 
-        if (validationResponse is PasswordValidationFailed) {
-          actualPasswordHash = validationResponse.passwordHash;
-          actualStoredHash = validationResponse.storedHash;
-        }
+          if (validationResponse is PasswordValidationFailed) {
+            actualPasswordHash = validationResponse.passwordHash;
+            actualStoredHash = validationResponse.storedHash;
+          }
 
-        expect(actualStoredHash, hunter4PasswordHash);
-        expect(actualPasswordHash, notHunter4PasswordHash);
-      },
-    );
-  });
+          expect(actualStoredHash, hunter4PasswordHash);
+          expect(actualPasswordHash, notHunter4PasswordHash);
+        },
+      );
+    },
+  );
 }
