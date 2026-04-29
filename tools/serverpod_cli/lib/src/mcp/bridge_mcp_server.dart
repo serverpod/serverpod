@@ -13,8 +13,11 @@ import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 ///
 /// The bridge is long-lived: it survives runner restarts, and lets the
 /// client switch between running instances via the `connect`/`disconnect`
-/// tools. Tool calls that target the runner (`apply_migrations`) are
-/// forwarded over the runner's Unix socket using `dart_mcp`'s client API.
+/// tools. Tools and resources defined on the connected runner are
+/// auto-forwarded: on `connect` the bridge enumerates upstream tools and
+/// resources via `dart_mcp`'s client API, registers a thin forwarder for
+/// each, and unregisters them again on `disconnect`. The MCP capability
+/// `listChanged` propagates these registrations to the AI client.
 base class BridgeMcpServer extends MCPServer
     with ToolsSupport, ResourcesSupport {
   final ServerpodMcpBridge bridge;
@@ -27,22 +30,33 @@ base class BridgeMcpServer extends MCPServer
   String? _connectedId;
   int? _connectedPid;
 
+  /// Tool names owned by the bridge itself; never forwarded from the runner
+  /// even if the runner happens to register a tool with the same name.
+  static const _bridgeNativeToolNames = {
+    'connect',
+    'disconnect',
+    'spawn',
+    'stop',
+  };
+
+  /// Resource URIs owned by the bridge itself; never forwarded.
+  static const _bridgeNativeResourceUris = {'serverpod://instances'};
+
+  /// Forwarded tools registered on the current connection, by name.
+  /// Cleared and unregistered on disconnect.
+  final _forwardedToolNames = <String>{};
+
+  /// Forwarded resources registered on the current connection, by URI.
+  /// Stored as `Resource` (not just URI) so we can call `updateResource`
+  /// when the upstream emits a `notifications/resources/updated`.
+  final _forwardedResources = <String, Resource>{};
+
   static final _instancesResource = Resource(
     uri: 'serverpod://instances',
     name: 'Instances',
     description:
         'List of running `serverpod start --watch` instances discovered '
         'on this machine.',
-    mimeType: 'application/json',
-  );
-
-  static final _vmServiceResource = Resource(
-    uri: 'serverpod://vm-service',
-    name: 'VM service',
-    description:
-        'Dart VM service HTTP URI for the connected serverpod instance. '
-        'Stable across hot reloads; changes on restart. Subscribe to be '
-        'notified when the URI changes.',
     mimeType: 'application/json',
   );
 
@@ -57,20 +71,16 @@ base class BridgeMcpServer extends MCPServer
         instructions:
             'Bridge to a running `serverpod start --watch` instance. Read '
             'serverpod://instances to discover running instances, then call '
-            'the `connect` tool to attach to one. Tools that act on the '
-            'running instance are forwarded over its MCP socket.',
+            'the `connect` tool to attach to one. Tools and resources from '
+            'the connected instance are forwarded over its MCP socket and '
+            'appear here automatically.',
       ) {
     registerTool(_connectTool, _connect);
     registerTool(_disconnectTool, _disconnect);
     registerTool(_spawnTool, _spawn);
     registerTool(_stopTool, _stop);
-    registerTool(_applyMigrationsTool, _forwardApplyMigrations);
-    registerTool(_createMigrationTool, _forwardCreateMigration);
-    registerTool(_hotReloadTool, _forwardHotReload);
-    registerTool(_tailLogsTool, _forwardTailLogs);
 
     addResource(_instancesResource, _readInstances);
-    addResource(_vmServiceResource, _readVmService);
 
     bridge.onSocketsChanged = () {
       if (ready) updateResource(_instancesResource);
@@ -207,25 +217,18 @@ base class BridgeMcpServer extends MCPServer
 
       // Relay resource-updated notifications for forwarded resources.
       _resourceUpdatedSub = connection.resourceUpdated.listen((n) {
-        if (n.uri == _vmServiceResource.uri && ready) {
-          updateResource(_vmServiceResource);
-        }
+        final res = _forwardedResources[n.uri];
+        if (res != null && ready) updateResource(res);
       });
-      try {
-        await connection.subscribeResource(
-          SubscribeRequest(uri: _vmServiceResource.uri),
-        );
-      } catch (_) {
-        // The instance may not support subscription; reads still work.
-      }
 
-      // Drop our state and update the resource if the instance dies on us.
+      await _registerForwardedItems(connection);
+
+      // Drop our state if the instance dies on us. Forwarded tools and
+      // resources are unregistered too so the AI client sees them disappear.
       unawaited(
-        connection.done.then((_) {
+        connection.done.then((_) async {
           if (_connection == connection) {
-            _connection = null;
-            _connectedId = null;
-            _connectedPid = null;
+            await _disconnectInternal();
             if (ready) updateResource(_instancesResource);
           }
         }),
@@ -287,6 +290,16 @@ base class BridgeMcpServer extends MCPServer
     _connectedPid = null;
     await _resourceUpdatedSub?.cancel();
     _resourceUpdatedSub = null;
+
+    for (final name in _forwardedToolNames) {
+      unregisterTool(name);
+    }
+    _forwardedToolNames.clear();
+    for (final uri in _forwardedResources.keys.toList()) {
+      removeResource(uri);
+    }
+    _forwardedResources.clear();
+
     if (conn != null) {
       try {
         await conn.shutdown();
@@ -294,7 +307,64 @@ base class BridgeMcpServer extends MCPServer
         // Already gone.
       }
     }
-    if (ready) updateResource(_vmServiceResource);
+  }
+
+  /// Enumerate the connected runner's tools and resources, register a
+  /// forwarder for each, and subscribe to per-resource updates so they
+  /// surface as `notifications/resources/updated` upstream.
+  ///
+  /// Tools and resources whose name/URI matches a bridge-native item are
+  /// skipped to avoid clobbering the bridge's own surface.
+  Future<void> _registerForwardedItems(ServerConnection connection) async {
+    final tools = await connection.listTools();
+    for (final tool in tools.tools) {
+      if (_bridgeNativeToolNames.contains(tool.name)) continue;
+      registerTool(tool, _makeToolForwarder(tool.name));
+      _forwardedToolNames.add(tool.name);
+    }
+
+    final resources = await connection.listResources();
+    for (final resource in resources.resources) {
+      if (_bridgeNativeResourceUris.contains(resource.uri)) continue;
+      addResource(resource, _makeResourceReader(resource.uri));
+      _forwardedResources[resource.uri] = resource;
+      try {
+        await connection.subscribeResource(
+          SubscribeRequest(uri: resource.uri),
+        );
+      } catch (_) {
+        // Resource may not support subscription; reads still work.
+      }
+    }
+  }
+
+  Future<CallToolResult> Function(CallToolRequest) _makeToolForwarder(
+    String name,
+  ) {
+    return (request) async {
+      if (!_isConnected) return _notConnectedError();
+      return _connection!.callTool(
+        CallToolRequest(name: name, arguments: request.arguments),
+      );
+    };
+  }
+
+  Future<ReadResourceResult> Function(ReadResourceRequest) _makeResourceReader(
+    String uri,
+  ) {
+    return (request) async {
+      if (!_isConnected) {
+        return ReadResourceResult(
+          contents: [
+            TextResourceContents(
+              uri: request.uri,
+              text: jsonEncode({'uri': null, 'error': 'not-connected'}),
+            ),
+          ],
+        );
+      }
+      return _connection!.readResource(ReadResourceRequest(uri: uri));
+    };
   }
 
   // ---------------------------------------------------------------------------
@@ -437,118 +507,8 @@ base class BridgeMcpServer extends MCPServer
   }
 
   // ---------------------------------------------------------------------------
-  // Forwarded tools
+  // Bridge-native resources
   // ---------------------------------------------------------------------------
-
-  static final _applyMigrationsTool = Tool(
-    name: 'apply_migrations',
-    description:
-        'Apply pending database migrations on the connected serverpod '
-        'instance. The server restarts with `--apply-migrations`. Call after '
-        '`create_migration` (or `serverpod create-migration`) has written the '
-        'migration files.',
-    inputSchema: Schema.object(),
-  );
-
-  Future<CallToolResult> _forwardApplyMigrations(
-    CallToolRequest request,
-  ) async {
-    if (!_isConnected) return _notConnectedError();
-    return _connection!.callTool(
-      CallToolRequest(name: 'apply_migrations', arguments: request.arguments),
-    );
-  }
-
-  static final _createMigrationTool = Tool(
-    name: 'create_migration',
-    description:
-        'Create a new database migration from the current model definitions '
-        'on the connected serverpod instance. Writes the migration files to '
-        'disk; does not restart the server or apply the migration. Follow up '
-        'with `apply_migrations` to run it against the database.',
-    inputSchema: Schema.object(
-      properties: {
-        'tag': Schema.string(
-          description: 'Optional tag appended to the migration version name.',
-        ),
-        'force': Schema.bool(
-          description:
-              'Create the migration even if warnings are present (data may '
-              'be destroyed).',
-        ),
-      },
-    ),
-  );
-
-  Future<CallToolResult> _forwardCreateMigration(
-    CallToolRequest request,
-  ) async {
-    if (!_isConnected) return _notConnectedError();
-    return _connection!.callTool(
-      CallToolRequest(name: 'create_migration', arguments: request.arguments),
-    );
-  }
-
-  static final _hotReloadTool = Tool(
-    name: 'hot_reload',
-    description:
-        'Recompile the server kernel and hot-reload the running isolate on '
-        'the connected serverpod instance. Falls back to a full restart if '
-        'reload is not possible.',
-    inputSchema: Schema.object(),
-  );
-
-  Future<CallToolResult> _forwardHotReload(CallToolRequest request) async {
-    if (!_isConnected) return _notConnectedError();
-    return _connection!.callTool(
-      CallToolRequest(name: 'hot_reload', arguments: request.arguments),
-    );
-  }
-
-  static final _tailLogsTool = Tool(
-    name: 'tail_logs',
-    description:
-        'Return recent log entries from the connected serverpod instance '
-        '(structured log entries plus completed operations). Newest last.',
-    inputSchema: Schema.object(
-      properties: {
-        'limit': Schema.int(
-          description: 'Max entries to return (default 200, max 10000).',
-          minimum: 1,
-          maximum: 10000,
-        ),
-      },
-    ),
-  );
-
-  Future<CallToolResult> _forwardTailLogs(CallToolRequest request) async {
-    if (!_isConnected) return _notConnectedError();
-    return _connection!.callTool(
-      CallToolRequest(name: 'tail_logs', arguments: request.arguments),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Resources
-  // ---------------------------------------------------------------------------
-
-  Future<ReadResourceResult> _readVmService(
-    ReadResourceRequest request,
-  ) async {
-    if (!_isConnected) {
-      return ReadResourceResult(
-        contents: [
-          TextResourceContents(
-            uri: request.uri,
-            text: jsonEncode({'uri': null, 'error': 'not-connected'}),
-          ),
-        ],
-      );
-    }
-    return _connection!.readResource(
-      ReadResourceRequest(uri: _vmServiceResource.uri),
-    );
-  }
 
   ReadResourceResult _readInstances(ReadResourceRequest request) {
     final instances = bridge.sockets

@@ -15,7 +15,7 @@ During development with `serverpod start --watch`, file watching, code generatio
 
 These operations currently require stopping the server, re-running with flags, or manual SQL. An MCP server lets AI agents trigger them in-context during a development session.
 
-The bridge layer solves a separate problem: when the runner restarts (e.g. after `apply_migrations`), the runner's MCP socket goes away. AI clients like Claude Code do not automatically reconnect to a dropped MCP server, so without a bridge the integration breaks the moment migrations are applied. A persistent stdio bridge stays up across runner restarts and lets the client `connect` again.
+The bridge layer solves a separate problem: when the runner process (`serverpod start --watch`) exits or is restarted, the MCP socket it owns goes with it. AI clients do not automatically reconnect to a dropped MCP server, so without a bridge the integration breaks every time the dev process is restarted. A persistent stdio bridge stays up across runner restarts and lets the client `connect` again. The MCP socket is owned by the CLI process, not the pod subprocess, so a pod restart leaves the socket intact.
 
 ## Architecture
 
@@ -25,13 +25,13 @@ The bridge layer solves a separate problem: when the runner restarts (e.g. after
 AI client (e.g. Claude Code)
     │  stdio  (long-lived)
     ▼
-serverpod mcp           ← BridgeMcpServer (this process)
+serverpod mcp             <- BridgeMcpServer (this process)
     │
     │  scans .../serverpod/serverpod-<pid>-<project>.sock
     │  connects to one at a time
     │
     ▼  unix socket  (re-established on each connect)
-serverpod start --watch ← ServerpodMcpServer (per-runner)
+serverpod start --watch   <- ServerpodMcpServer (per-runner)
 ```
 
 The bridge is **single-instance**: at any moment it forwards to at most one runner. Switching runners is an explicit `disconnect` then `connect` from the client. To bridge multiple AI windows to multiple projects, run one `serverpod mcp` per window.
@@ -51,11 +51,13 @@ Sockets live in a shared, per-machine temp directory:
 └── serverpod-<pid>-<project>.sock
 ```
 
-- `<systemTemp>` is `Directory.systemTemp.path` (`/tmp` on Linux/macOS, `C:\Users\<user>\AppData\Local\Temp` on Windows).
+- `<systemTemp>` is `Directory.systemTemp.path` (`/tmp` on Linux when `TMPDIR` is unset, `/var/folders/.../T/` on macOS, `C:\Users\<user>\AppData\Local\Temp` on Windows).
 - `<pid>` is the runner's OS process id.
 - `<project>` is the serverpod app name (`config.name`, with the `_server` suffix already stripped) sanitized to `[a-z0-9-]+`.
 
 **Why a shared dir, not project-local.** A bridge process needs to discover all running instances on the machine via a single `Directory.listSync()`. Embedding the PID in the filename means discovery is stat-only - there is no separate manifest file to keep in sync, and stale files are easy to identify by checking whether the PID is still alive.
+
+**Permissions.** The `serverpod/` directory is created with mode 0700 on POSIX so other local users cannot enter it - on Linux, where `<systemTemp>` is the shared `/tmp`, this is what keeps the per-runner sockets inaccessible to other users on the same machine. The directory is created via `Directory.systemTemp.createTempSync()` (which goes through `mkdtemp(3)` and gives 0700) and then renamed to the canonical name; rename preserves the inode and mode. Since the parent directory blocks traversal, the socket files inside don't need their own restrictive mode. On macOS and Windows the parent path is already per-user, so the 0700 is incidental there.
 
 The bridge cleans up dead-PID sockets opportunistically the next time it scans.
 
@@ -74,26 +76,28 @@ The bridge cleans up dead-PID sockets opportunistically the next time it scans.
 
 The bridge does not need a `--directory` flag - it discovers running instances by directory scan. The AI client picks one with the `connect` tool.
 
-#### Tools exposed by the bridge
+#### Tools and resources exposed by the bridge
 
-| Tool                | Behavior                                                                                                                                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `connect`           | Attach to a running instance. `instanceId` accepts the project name or PID shown in `serverpod://instances`. Auto-picks if exactly one instance is running and the argument is omitted. Calling `connect` again switches instances. |
-| `disconnect`        | Detach from the current instance without stopping it.                                                                                                                                                                          |
-| `spawn`             | Start a new `serverpod start --watch` process detached from the bridge. Optional `directory` to choose the server dir; optional `args` appended to the CLI. Polls the socket dir for up to ~10s for the new instance to appear. Does **not** auto-connect. |
-| `stop`              | Send SIGTERM to the named instance. Auto-disconnects if it was the connected one.                                                                                                                                              |
-| `apply_migrations`  | **Forwarded** to the connected instance. Errors with a not-connected message if no instance is attached.                                                                                                                       |
-| `create_migration`  | **Forwarded** to the connected instance. Writes migration files for the current model definitions; does not restart the server. Accepts optional `tag` and `force`.                                                           |
-| `hot_reload`        | **Forwarded** to the connected instance. Recompiles the server kernel and hot-reloads the running isolate.                                                                                                                     |
-| `tail_logs`         | **Forwarded** to the connected instance. Returns recent log entries.                                                                                                                                                           |
+The bridge owns four native tools and one native resource. Everything else is **auto-forwarded**: on `connect`, the bridge calls `listTools()` and `listResources()` on the upstream runner and registers a thin forwarder for each item not already owned natively. On `disconnect` the forwarders are unregistered. The MCP `listChanged` capability propagates these registrations to the AI client, so the upstream surface appears and disappears as the connection state changes.
 
-#### Resources exposed by the bridge
+Native tools (always present):
 
-| Resource                  | Behavior                                                                                                                                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `serverpod://instances`   | JSON list of `{pid, project, socketPath, connected}` for each live runner. Updated when the socket directory changes or when the bridge connects/disconnects.     |
+| Tool         | Behavior                                                                                                                                                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connect`    | Attach to a running instance. `instanceId` accepts the project name or PID shown in `serverpod://instances`. Auto-picks if exactly one instance is running and the argument is omitted. Calling `connect` again switches instances. |
+| `disconnect` | Detach from the current instance without stopping it.                                                                                                                                                                          |
+| `spawn`      | Start a new `serverpod start --watch` process detached from the bridge. Optional `directory` to choose the server dir; optional `args` appended to the CLI. Polls the socket dir for up to ~10s for the new instance to appear. Does **not** auto-connect. |
+| `stop`       | Send SIGTERM to the named instance. Auto-disconnects if it was the connected one.                                                                                                                                              |
 
-The bridge currently exposes no forwarded state resources. If runner-side resources are added later (e.g. compile state), the bridge will need to declare matching forwarded resources at registration time - `dart_mcp` does not enumerate resources from the upstream automatically.
+Native resource (always present):
+
+| Resource                | Behavior                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `serverpod://instances` | JSON list of `{pid, project, socketPath, connected}` for each live runner. Updated when the socket directory changes or when the bridge connects/disconnects. |
+
+Currently auto-forwarded from the runner once connected: the tools `apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`, and the resource `serverpod://vm-service`. Adding a new tool or resource on the runner side requires no bridge changes - it appears in the AI client automatically on the next `connect`. Names that collide with a native bridge tool (`connect`/`disconnect`/`spawn`/`stop`) or URI (`serverpod://instances`) are skipped to keep the bridge's surface authoritative.
+
+For per-resource updates, the bridge subscribes to each forwarded resource on `connect` and re-emits `notifications/resources/updated` upstream. Resources that don't support subscription are silently skipped (reads still work).
 
 ### `apply_migrations` tool (runner side)
 
@@ -126,7 +130,7 @@ The runner's MCP socket survives the server-subprocess restart because the socke
 ### Bridge side (`lib/src/mcp/`)
 
 - `ServerpodMcpBridge` - owns the discovered socket list. `scan()` re-reads the dir; `startWatching()` subscribes to `Directory.watch()` and coalesces bursts into single rescans via `asyncMapBuffer`; `findSocket(id)` matches by project then PID; `dispose()` cancels the watcher.
-- `BridgeMcpServer extends MCPServer with ToolsSupport, ResourcesSupport` - registers `connect`/`disconnect`/`spawn`/`stop`, the forwarded tools (`apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`), and the `serverpod://instances` / `serverpod://vm-service` resources. Holds at most one `ServerConnection` at a time. Forwarding is a direct `_connection.callTool(...)`. When the upstream connection completes (runner died), bridge state is cleared and the instances resource is updated.
+- `BridgeMcpServer extends MCPServer with ToolsSupport, ResourcesSupport` - registers the native tools `connect`/`disconnect`/`spawn`/`stop` and the native `serverpod://instances` resource at construction. On each `connect`, calls `listTools()`/`listResources()` on the upstream `ServerConnection`, then `registerTool` / `addResource` for every item not in the bridge-native deny set, with thin closures that delegate via `_connection.callTool`/`readResource`. The corresponding `unregisterTool`/`removeResource` happens in `_disconnectInternal`, so `listChanged` notifications cleanly publish and unpublish the upstream surface as the connection toggles. When the upstream connection completes (runner died), `_disconnectInternal` runs from the `connection.done` callback so forwarded tools/resources disappear from the AI client.
 
 ### CLI command (`lib/src/commands/mcp.dart`)
 
@@ -148,7 +152,7 @@ A project-local socket (e.g. under `.dart_tool/serverpod/`) is invisible to a br
 
 ### Why a bridge at all
 
-Without a bridge, the MCP connection is bound to the runner's lifetime. Any operation that restarts the runner (notably `apply_migrations`) would tear down the AI client's MCP server, and Claude Code does not auto-reconnect. A persistent stdio bridge breaks that coupling: the runner is ephemeral, the bridge survives, and the client just calls `connect` again.
+Without a bridge, the MCP connection is bound to the runner's lifetime: stopping or restarting the `serverpod start --watch` process tears down the AI client's MCP server, and Claude Code does not auto-reconnect. A persistent stdio bridge breaks that coupling: runners are ephemeral, the bridge survives, and the client just calls `connect` again. (The MCP client never talks to the server subprocess directly, so server restarts triggered by `apply_migrations` or hot reload do not break the connection.)
 
 ### Single-instance bridge
 

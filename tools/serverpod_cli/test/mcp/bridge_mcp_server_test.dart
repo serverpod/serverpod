@@ -79,10 +79,36 @@ void main() {
       });
 
       test(
-        'when listing tools, '
-        'then connect/disconnect/spawn/stop and the forwarded tools are '
-        'exposed',
+        'when listing tools before connect, '
+        'then only the bridge-native tools are exposed',
         () async {
+          final result = await client.listTools();
+          final names = result.tools.map((t) => t.name).toSet();
+          expect(
+            names,
+            containsAll(<String>{'connect', 'disconnect', 'spawn', 'stop'}),
+          );
+          // Forwarded tools are not registered until connect.
+          expect(names, isNot(contains('apply_migrations')));
+          expect(names, isNot(contains('create_migration')));
+          expect(names, isNot(contains('hot_reload')));
+          expect(names, isNot(contains('tail_logs')));
+        },
+      );
+
+      test(
+        'when listing tools after connect, '
+        'then forwarded runner tools also appear',
+        () async {
+          runner.connect(onApplyMigration: () async {});
+
+          await client.callTool(
+            CallToolRequest(
+              name: 'connect',
+              arguments: {'instanceId': project},
+            ),
+          );
+
           final result = await client.listTools();
           final names = result.tools.map((t) => t.name).toSet();
           expect(
@@ -121,16 +147,12 @@ void main() {
 
       test(
         'when calling apply_migrations before connect, '
-        'then the bridge returns a not-connected error',
+        'then it errors because the tool is not yet registered',
         () async {
           final result = await client.callTool(
             CallToolRequest(name: 'apply_migrations'),
           );
           expect(result.isError, isTrue);
-          expect(
-            (result.content.first as TextContent).text,
-            contains('Not connected'),
-          );
         },
       );
 
