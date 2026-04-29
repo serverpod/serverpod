@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -11,7 +12,8 @@ void main() {
     // Rollbacks must be disabled or SQLite will have the test transaction.
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       late Future<void> writeTransaction;
       late Completer<void> finishedWriting;
