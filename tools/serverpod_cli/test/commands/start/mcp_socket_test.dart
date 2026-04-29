@@ -119,10 +119,7 @@ void main() {
               isA<SocketException>().having(
                 (e) => e.message,
                 'message',
-                allOf(
-                  contains('Unix socket path'),
-                  contains('too long'),
-                ),
+                startsWith('Unix socket path is too long for this platform'),
               ),
             ),
           );

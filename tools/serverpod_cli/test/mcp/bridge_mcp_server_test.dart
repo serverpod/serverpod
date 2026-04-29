@@ -240,25 +240,25 @@ void main() {
           },
         );
 
-        group('Given the bridge is then disconnected', () {
-          setUp(() async {
-            final result = await client.callTool(
+        test(
+          'when calling apply_migrations after disconnect, '
+          'then it errors because the forwarded tool has been unregistered',
+          () async {
+            var result = await client.callTool(
               CallToolRequest(name: 'disconnect'),
             );
-            expect(result.isError, anyOf(isNull, isFalse));
-          });
+            expect(
+              result.isError,
+              anyOf(isNull, isFalse),
+              reason: '(precondition)',
+            );
 
-          test(
-            'when calling apply_migrations, '
-            'then it errors because the forwarded tool has been unregistered',
-            () async {
-              final result = await client.callTool(
-                CallToolRequest(name: 'apply_migrations'),
-              );
-              expect(result.isError, isTrue);
-            },
-          );
-        });
+            result = await client.callTool(
+              CallToolRequest(name: 'apply_migrations'),
+            );
+            expect(result.isError, isTrue);
+          },
+        );
       });
     },
   );
