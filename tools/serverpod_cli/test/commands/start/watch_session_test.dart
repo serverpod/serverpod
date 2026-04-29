@@ -731,115 +731,121 @@ void main() {
     );
   });
 
-  group('Given a protocol-change classifier that returns false', () {
-    late _FakeCompiler classifierCompiler;
-    late _FakeServer classifierServer;
-    late List<Set<String>> classifierGenerateCalls;
-    late WatchSession classifierSession;
+  group(
+    'Given a watch session where no dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
 
-    setUp(() {
-      classifierCompiler = _FakeCompiler();
-      classifierServer = _FakeServer();
-      classifierGenerateCalls = [];
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
 
-      classifierSession = WatchSession(
-        compiler: classifierCompiler,
-        generate: (affectedPaths, requirements) async {
-          classifierGenerateCalls.add(affectedPaths);
-          return (success: true, generatedFiles: <String>{});
+        classifierSession = WatchSession(
+          compiler: classifierCompiler,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) async =>
+                  classifierServer,
+          initialServer: classifierServer,
+          generatedDirPaths: {'/generated'},
+          classifyProtocolChange: (_) async => false,
+        );
+      });
+
+      test(
+        'when only a dart file changes, '
+        'then code generation is skipped and only compile + reload run',
+        () async {
+          final event = FileChangeEvent(dartFiles: {'/lib/helper.dart'});
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, isEmpty);
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/helper.dart]',
+            'accept',
+          ]);
+          expect(classifierServer.calls, ['reload:/out.dill']);
         },
-        createServer:
-            (String dillPath, {List<String> extraArgs = const []}) async =>
-                classifierServer,
-        initialServer: classifierServer,
-        generatedDirPaths: {'/generated'},
-        classifyProtocolChange: (_) async => false,
       );
-    });
 
-    test(
-      'when a non-protocol dart file changes, '
-      'then generation is skipped and only compile + reload run',
-      () async {
-        final event = FileChangeEvent(dartFiles: {'/lib/helper.dart'});
+      test(
+        'when a model file changes alongside a dart file, '
+        'then code generation still runs because model changes always force regeneration',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/helper.dart'},
+            modelFiles: {'/lib/src/models/user.spy.yaml'},
+          );
 
-        await classifierSession.handleFileChange(event);
+          await classifierSession.handleFileChange(event);
 
-        expect(classifierGenerateCalls, isEmpty);
-        expect(classifierCompiler.calls, [
-          'compile(changed):[/lib/helper.dart]',
-          'accept',
-        ]);
-        expect(classifierServer.calls, ['reload:/out.dill']);
-      },
-    );
-
-    test(
-      'when a model (.spy) file changes alongside a non-protocol dart file, '
-      'then generation still runs (models force regen)',
-      () async {
-        final event = FileChangeEvent(
-          dartFiles: {'/lib/helper.dart'},
-          modelFiles: {'/lib/src/models/user.spy.yaml'},
-        );
-
-        await classifierSession.handleFileChange(event);
-
-        expect(classifierGenerateCalls, hasLength(1));
-        expect(
-          classifierGenerateCalls.first,
-          containsAll(<String>{'/lib/src/models/user.spy.yaml'}),
-        );
-      },
-    );
-  });
-
-  group('Given a protocol-change classifier that returns true', () {
-    late _FakeCompiler classifierCompiler;
-    late _FakeServer classifierServer;
-    late List<Set<String>> classifierGenerateCalls;
-    late WatchSession classifierSession;
-
-    setUp(() {
-      classifierCompiler = _FakeCompiler();
-      classifierServer = _FakeServer();
-      classifierGenerateCalls = [];
-
-      classifierSession = WatchSession(
-        compiler: classifierCompiler,
-        generate: (affectedPaths, requirements) async {
-          classifierGenerateCalls.add(affectedPaths);
-          return (success: true, generatedFiles: <String>{});
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(
+            classifierGenerateCalls.first,
+            containsAll(<String>{'/lib/src/models/user.spy.yaml'}),
+          );
         },
-        createServer:
-            (String dillPath, {List<String> extraArgs = const []}) async =>
-                classifierServer,
-        initialServer: classifierServer,
-        generatedDirPaths: {'/generated'},
-        classifyProtocolChange: (_) async => true,
       );
-    });
+    },
+  );
 
-    test(
-      'when a protocol-relevant dart file changes, '
-      'then generation runs with that file in affectedPaths',
-      () async {
-        final event = FileChangeEvent(dartFiles: {'/lib/endpoints/user.dart'});
+  group(
+    'Given a watch session where every dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
 
-        await classifierSession.handleFileChange(event);
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
 
-        expect(classifierGenerateCalls, hasLength(1));
-        expect(
-          classifierGenerateCalls.first,
-          {'/lib/endpoints/user.dart'},
+        classifierSession = WatchSession(
+          compiler: classifierCompiler,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) async =>
+                  classifierServer,
+          initialServer: classifierServer,
+          generatedDirPaths: {'/generated'},
+          classifyProtocolChange: (_) async => true,
         );
-        expect(classifierCompiler.calls, [
-          'compile(changed):[/lib/endpoints/user.dart]',
-          'accept',
-        ]);
-      },
-    );
-  });
+      });
+
+      test(
+        'when a dart file changes, '
+        'then code generation runs and the changed file is included in '
+        'the regenerated paths',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/endpoints/user.dart'},
+          );
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(classifierGenerateCalls.first, {'/lib/endpoints/user.dart'});
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/endpoints/user.dart]',
+            'accept',
+          ]);
+        },
+      );
+    },
+  );
 
   group('Given defaultProtocolChangeClassifier', () {
     test(
