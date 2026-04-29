@@ -1,3 +1,5 @@
+import 'dart:convert' show jsonEncode;
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -13,8 +15,8 @@ import 'passwordless_login_request_store.dart';
 /// without the two-step [SecretChallengeUtil] pattern, because the
 /// passwordless flow does not need a separate completion phase.
 /// {@endtemplate}
-class PasswordlessIdpLoginUtil<THandle> {
-  final PasswordlessIdpConfig<THandle> _config;
+class PasswordlessIdpLoginUtil {
+  final PasswordlessIdpConfig _config;
   final Argon2HashUtil _hashUtil;
   final PasswordlessLoginRequestStore _requestStore;
   final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
@@ -22,7 +24,7 @@ class PasswordlessIdpLoginUtil<THandle> {
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
   PasswordlessIdpLoginUtil({
-    required final PasswordlessIdpConfig<THandle> config,
+    required final PasswordlessIdpConfig config,
   }) : _config = config,
        // 19MiB memory cost as recommended by OWASP:
        // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
@@ -92,28 +94,24 @@ class PasswordlessIdpLoginUtil<THandle> {
     required final String? handleType,
     required final Transaction transaction,
   }) async {
-    final THandle typedHandle;
-    final String serializedHandle;
-    try {
-      typedHandle = _config.deserializeHandle(handle);
-      serializedHandle = _config.serializeHandle(typedHandle);
-    } on FormatException {
-      throw PasswordlessLoginInvalidException();
-    }
+    final rateLimitNonce = _loginRequestRateLimitNonce(
+      handle: handle,
+      handleType: handleType,
+    );
 
     if (await _requestRateLimiter.hasTooManyAttempts(
       session,
-      nonce: serializedHandle,
+      nonce: rateLimitNonce,
     )) {
       throw PasswordlessLoginTooManyAttemptsException();
     }
 
     await _requestStore.deleteByHandle(
       session,
-      serializedHandle: serializedHandle,
+      handle: handle,
+      handleType: handleType,
       transaction: transaction,
     );
-
     final verificationCode = _config.loginVerificationCodeGenerator();
     final verificationCodeHash = await _hashUtil.createHashFromString(
       secret: verificationCode,
@@ -127,7 +125,7 @@ class PasswordlessIdpLoginUtil<THandle> {
 
     final requestId = await _requestStore.createRequest(
       session,
-      serializedHandle: serializedHandle,
+      handle: handle,
       handleType: handleType,
       challengeId: challenge.id!,
       transaction: transaction,
@@ -135,7 +133,7 @@ class PasswordlessIdpLoginUtil<THandle> {
 
     await _config.sendLoginVerificationCode?.call(
       session,
-      handle: typedHandle,
+      handle: handle,
       handleType: handleType,
       requestId: requestId,
       verificationCode: verificationCode,
@@ -224,6 +222,13 @@ class PasswordlessIdpLoginUtil<THandle> {
     return request.createdAt
         .add(_config.loginVerificationCodeLifetime)
         .isBefore(clock.now());
+  }
+
+  String _loginRequestRateLimitNonce({
+    required final String handle,
+    required final String? handleType,
+  }) {
+    return jsonEncode([handle, handleType]);
   }
 
   Future<void> _recordVerificationFailureAttempt(

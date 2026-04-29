@@ -1,0 +1,70 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "serverpod_auth_idp_passwordless_login_request",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "serverpod_auth_idp_passwordless_login_request_handle",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "handle"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "handleType"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "deleteIndexes": [
+          "serverpod_auth_idp_passwordless_login_request_handle"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "uniqueIndexCreated",
+            "message": "Unique index \"serverpod_auth_idp_passwordless_login_request_handle\" is added to table \"serverpod_auth_idp_passwordless_login_request\". If there are existing rows with duplicate values, this migration will fail.",
+            "table": "serverpod_auth_idp_passwordless_login_request",
+            "columns": [
+              "handle",
+              "handleType"
+            ],
+            "destrucive": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "uniqueIndexCreated",
+      "message": "Unique index \"serverpod_auth_idp_passwordless_login_request_handle\" is added to table \"serverpod_auth_idp_passwordless_login_request\". If there are existing rows with duplicate values, this migration will fail.",
+      "table": "serverpod_auth_idp_passwordless_login_request",
+      "columns": [
+        "handle",
+        "handleType"
+      ],
+      "destrucive": false
+    }
+  ],
+  "migrationApiVersion": 1
+}

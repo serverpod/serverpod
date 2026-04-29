@@ -69,9 +69,9 @@ abstract class PasswordlessLoginRequest
   /// The time when this request was created.
   DateTime createdAt;
 
-  /// Serialized login handle for this pending request (e.g., email), a hash
-  /// (e.g., phoneHash), or any other deterministic value the provider can
-  /// resolve to an auth user.
+  /// Login handle for this pending request (e.g., email), a hash (e.g.,
+  /// phoneHash), or any other deterministic value the provider can resolve to
+  /// an auth user.
   String handle;
 
   /// Optional type tag for the handle (e.g., "email", "sms").
@@ -250,9 +250,9 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// The time when this request was created.
   late final _i1.ColumnDateTime createdAt;
 
-  /// Serialized login handle for this pending request (e.g., email), a hash
-  /// (e.g., phoneHash), or any other deterministic value the provider can
-  /// resolve to an auth user.
+  /// Login handle for this pending request (e.g., email), a hash (e.g.,
+  /// phoneHash), or any other deterministic value the provider can resolve to
+  /// an auth user.
   late final _i1.ColumnString handle;
 
   /// Optional type tag for the handle (e.g., "email", "sms").

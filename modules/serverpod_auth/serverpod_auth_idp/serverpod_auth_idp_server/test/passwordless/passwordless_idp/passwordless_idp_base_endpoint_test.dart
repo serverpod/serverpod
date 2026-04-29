@@ -14,42 +14,30 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late _StringPasswordlessEndpoint stringEndpoint;
-      late _IntPasswordlessEndpoint intEndpoint;
+      late _PasswordlessEndpoint endpoint;
 
-      late Map<String, UuidValue> stringHandleToUserId;
-      late String stringVerificationCode;
-      late String deliveredStringHandle;
-      late String resolvedStringHandle;
-      late UuidValue deliveredStringRequestId;
-      late String deliveredStringVerificationCode;
+      late Map<String, UuidValue> handleToUserId;
+      late String verificationCode;
+      late String deliveredHandle;
+      late String resolvedHandle;
+      late UuidValue deliveredRequestId;
+      late String deliveredVerificationCode;
 
-      late Map<int, UuidValue> intHandleToUserId;
-      late String intVerificationCode;
-      late int deliveredIntHandle;
-      late int resolvedIntHandle;
-      late UuidValue deliveredIntRequestId;
-      late String deliveredIntVerificationCode;
-
-      const stringHandle = 'string-handle';
-      const intHandle = '42';
+      const handle = 'test-handle';
 
       setUp(() async {
         session = sessionBuilder.build();
-        stringEndpoint = _StringPasswordlessEndpoint();
-        intEndpoint = _IntPasswordlessEndpoint();
+        endpoint = _PasswordlessEndpoint();
 
-        stringHandleToUserId = {};
-        intHandleToUserId = {};
-        stringVerificationCode = const Uuid().v4().toString();
-        intVerificationCode = const Uuid().v4().toString();
+        handleToUserId = {};
+        verificationCode = const Uuid().v4().toString();
 
         AuthServices.set(
           tokenManagerBuilders: [
             ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
           ],
           identityProviderBuilders: [
-            PasswordlessIdpConfig<String>(
+            PasswordlessIdpConfig(
               secretHashPepper: 'pepper',
               resolveAuthUserId:
                   (
@@ -58,10 +46,10 @@ void main() {
                     required final String? handleType,
                     required final Transaction? transaction,
                   }) async {
-                    resolvedStringHandle = handle;
-                    return stringHandleToUserId[handle]!;
+                    resolvedHandle = handle;
+                    return handleToUserId[handle]!;
                   },
-              loginVerificationCodeGenerator: () => stringVerificationCode,
+              loginVerificationCodeGenerator: () => verificationCode,
               sendLoginVerificationCode:
                   (
                     final Session session, {
@@ -71,46 +59,16 @@ void main() {
                     required final Transaction? transaction,
                     required final String? handleType,
                   }) async {
-                    deliveredStringHandle = handle;
-                    deliveredStringRequestId = requestId;
-                    deliveredStringVerificationCode = verificationCode;
-                  },
-            ),
-            PasswordlessIdpConfig<int>(
-              secretHashPepper: 'pepper',
-              resolveAuthUserId:
-                  (
-                    final Session session, {
-                    required final int handle,
-                    required final String? handleType,
-                    required final Transaction? transaction,
-                  }) async {
-                    resolvedIntHandle = handle;
-                    return intHandleToUserId[handle]!;
-                  },
-              loginVerificationCodeGenerator: () => intVerificationCode,
-              sendLoginVerificationCode:
-                  (
-                    final Session session, {
-                    required final int handle,
-                    required final UuidValue requestId,
-                    required final String verificationCode,
-                    required final Transaction? transaction,
-                    required final String? handleType,
-                  }) async {
-                    deliveredIntHandle = handle;
-                    deliveredIntRequestId = requestId;
-                    deliveredIntVerificationCode = verificationCode;
+                    deliveredHandle = handle;
+                    deliveredRequestId = requestId;
+                    deliveredVerificationCode = verificationCode;
                   },
             ),
           ],
         );
 
         final authUsers = AuthServices.instance.authUsers;
-        stringHandleToUserId[stringHandle] = (await authUsers.create(
-          session,
-        )).id;
-        intHandleToUserId[42] = (await authUsers.create(session)).id;
+        handleToUserId[handle] = (await authUsers.create(session)).id;
       });
 
       tearDown(() async {
@@ -141,43 +99,40 @@ void main() {
       });
 
       test(
-        'when using explicit String base endpoint then it resolves the String provider and keeps String handle semantics',
+        'when using base endpoint then it resolves the passwordless provider and keeps String handle semantics',
         () async {
           expect(
-            stringEndpoint.passwordlessIdp,
-            same(AuthServices.getIdentityProvider<PasswordlessIdp<String>>()),
+            endpoint.passwordlessIdp,
+            same(AuthServices.getIdentityProvider<PasswordlessIdp>()),
           );
 
-          final requestId = await stringEndpoint.startLogin(
+          final requestId = await endpoint.startLogin(
             session,
-            handle: stringHandle,
+            handle: handle,
           );
 
-          expect(requestId, equals(deliveredStringRequestId));
-          expect(deliveredStringHandle, equals(stringHandle));
-          expect(
-            deliveredStringVerificationCode,
-            equals(stringVerificationCode),
-          );
+          expect(requestId, equals(deliveredRequestId));
+          expect(deliveredHandle, equals(handle));
+          expect(deliveredVerificationCode, equals(verificationCode));
 
-          final authSuccess = await stringEndpoint.finishLogin(
+          final authSuccess = await endpoint.finishLogin(
             session,
             loginRequestId: requestId,
-            verificationCode: deliveredStringVerificationCode,
+            verificationCode: deliveredVerificationCode,
           );
 
           expect(authSuccess, isA<AuthSuccess>());
-          expect(resolvedStringHandle, equals(stringHandle));
+          expect(resolvedHandle, equals(handle));
         },
       );
 
       test(
         'when finishLogin is called through the base endpoint with a missing request then it surfaces invalid',
         () async {
-          final result = stringEndpoint.finishLogin(
+          final result = endpoint.finishLogin(
             session,
             loginRequestId: UuidValue.withValidation(const Uuid().v4()),
-            verificationCode: stringVerificationCode,
+            verificationCode: verificationCode,
           );
 
           await expectLater(
@@ -196,18 +151,18 @@ void main() {
       test(
         'when finishLogin is called through the base endpoint for an expired request then it surfaces expired',
         () async {
-          final requestId = await stringEndpoint.startLogin(
+          final requestId = await endpoint.startLogin(
             session,
-            handle: stringHandle,
+            handle: handle,
           );
 
           await withClock(
             Clock.fixed(clock.now().add(const Duration(minutes: 11))),
             () async {
-              final result = stringEndpoint.finishLogin(
+              final result = endpoint.finishLogin(
                 session,
                 loginRequestId: requestId,
-                verificationCode: deliveredStringVerificationCode,
+                verificationCode: deliveredVerificationCode,
               );
 
               await expectLater(
@@ -228,25 +183,25 @@ void main() {
       test(
         'when finishLogin is called through the base endpoint after too many invalid verification attempts then it surfaces tooManyAttempts',
         () async {
-          final requestId = await stringEndpoint.startLogin(
+          final requestId = await endpoint.startLogin(
             session,
-            handle: stringHandle,
+            handle: handle,
           );
 
           for (
             var i = 0;
             i <
-                stringEndpoint
+                endpoint
                     .passwordlessIdp
                     .config
                     .loginVerificationCodeAllowedAttempts;
             i++
           ) {
             await expectLater(
-              stringEndpoint.finishLogin(
+              endpoint.finishLogin(
                 session,
                 loginRequestId: requestId,
-                verificationCode: '$deliveredStringVerificationCode-invalid-$i',
+                verificationCode: '$deliveredVerificationCode-invalid-$i',
               ),
               throwsA(
                 isA<PasswordlessLoginException>().having(
@@ -258,10 +213,10 @@ void main() {
             );
           }
 
-          final result = stringEndpoint.finishLogin(
+          final result = endpoint.finishLogin(
             session,
             loginRequestId: requestId,
-            verificationCode: deliveredStringVerificationCode,
+            verificationCode: deliveredVerificationCode,
           );
 
           await expectLater(
@@ -280,80 +235,28 @@ void main() {
       test(
         'when finishLogin is called through the base endpoint for a blocked auth user then it surfaces AuthUserBlockedException',
         () async {
-          final requestId = await stringEndpoint.startLogin(
+          final requestId = await endpoint.startLogin(
             session,
-            handle: stringHandle,
+            handle: handle,
           );
 
           await AuthServices.instance.authUsers.update(
             session,
-            authUserId: stringHandleToUserId[stringHandle]!,
+            authUserId: handleToUserId[handle]!,
             blocked: true,
           );
 
-          final result = stringEndpoint.finishLogin(
+          final result = endpoint.finishLogin(
             session,
             loginRequestId: requestId,
-            verificationCode: deliveredStringVerificationCode,
+            verificationCode: deliveredVerificationCode,
           );
 
           await expectLater(result, throwsA(isA<AuthUserBlockedException>()));
-        },
-      );
-
-      test(
-        'when using a non-String base endpoint then it resolves the exact provider type and passes typed handles to both callbacks',
-        () async {
-          expect(
-            intEndpoint.passwordlessIdp,
-            same(AuthServices.getIdentityProvider<PasswordlessIdp<int>>()),
-          );
-
-          final requestId = await intEndpoint.startLogin(
-            session,
-            handle: intHandle,
-          );
-
-          expect(requestId, equals(deliveredIntRequestId));
-          expect(deliveredIntHandle, equals(42));
-          expect(deliveredIntVerificationCode, equals(intVerificationCode));
-
-          final authSuccess = await intEndpoint.finishLogin(
-            session,
-            loginRequestId: requestId,
-            verificationCode: deliveredIntVerificationCode,
-          );
-
-          expect(authSuccess, isA<AuthSuccess>());
-          expect(resolvedIntHandle, equals(42));
-        },
-      );
-
-      test(
-        'when startLogin is called through a non-String base endpoint with an invalid handle then it surfaces invalid',
-        () async {
-          final result = intEndpoint.startLogin(
-            session,
-            handle: 'not-a-number',
-          );
-
-          await expectLater(
-            result,
-            throwsA(
-              isA<PasswordlessLoginException>().having(
-                (final e) => e.reason,
-                'reason',
-                PasswordlessLoginExceptionReason.invalid,
-              ),
-            ),
-          );
         },
       );
     },
   );
 }
 
-final class _IntPasswordlessEndpoint extends PasswordlessIdpBaseEndpoint<int> {}
-
-final class _StringPasswordlessEndpoint
-    extends PasswordlessIdpBaseEndpoint<String> {}
+final class _PasswordlessEndpoint extends PasswordlessIdpBaseEndpoint {}

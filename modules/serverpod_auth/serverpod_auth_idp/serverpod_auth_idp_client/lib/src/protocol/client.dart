@@ -384,10 +384,9 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   ///
   /// Returns the login request ID.
   ///
-  /// Throws a [PasswordlessLoginException] in case of errors, with reason:
-  /// - [PasswordlessLoginExceptionReason.invalid] if the handle is invalid.
-  /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
-  ///   too many login attempts.
+  /// Throws a [PasswordlessLoginException] with reason
+  /// [PasswordlessLoginExceptionReason.tooManyAttempts] if too many login attempts
+  /// have been made.
   _i2.Future<_i1.UuidValue> startLogin({
     required String handle,
     String? handleType,

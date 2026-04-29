@@ -3,15 +3,15 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 
-/// DB-backed request store using [PasswordlessLoginRequest].
+/// Stores pending passwordless login requests.
 class PasswordlessLoginRequestStore {
-  /// Creates a DB-backed store.
+  /// Creates a request store.
   const PasswordlessLoginRequestStore();
 
   /// Creates a new request row.
   Future<UuidValue> createRequest(
     final Session session, {
-    required final String serializedHandle,
+    required final String handle,
     required final String? handleType,
     required final UuidValue challengeId,
     required final Transaction transaction,
@@ -20,7 +20,7 @@ class PasswordlessLoginRequestStore {
       session,
       PasswordlessLoginRequest(
         createdAt: clock.now(),
-        handle: serializedHandle,
+        handle: handle,
         handleType: handleType,
         challengeId: challengeId,
       ),
@@ -29,15 +29,17 @@ class PasswordlessLoginRequestStore {
     return request.id!;
   }
 
-  /// Deletes requests and their associated challenges for [serializedHandle].
+  /// Deletes requests and their associated challenges for [handle] and [handleType].
   Future<void> deleteByHandle(
     final Session session, {
-    required final String serializedHandle,
+    required final String handle,
+    required final String? handleType,
     required final Transaction transaction,
   }) async {
     final deleted = await PasswordlessLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.handle.equals(serializedHandle),
+      where: (final t) =>
+          t.handle.equals(handle) & t.handleType.equals(handleType),
       transaction: transaction,
     );
     await _deleteChallenges(session, deleted, transaction: transaction);
@@ -74,7 +76,7 @@ class PasswordlessLoginRequestStore {
     await _deleteChallenges(session, deleted, transaction: transaction);
   }
 
-  /// Loads request data with its single verification challenge.
+  /// Loads request data with its verification challenge.
   Future<PasswordlessLoginRequestData?> getRequestWithChallenge(
     final Session session, {
     required final UuidValue requestId,
@@ -115,20 +117,20 @@ class PasswordlessLoginRequestData {
   /// Request creation timestamp.
   final DateTime createdAt;
 
-  /// Serialized handle stored with the request.
-  final String serializedHandle;
+  /// Handle stored with the request.
+  final String handle;
 
   /// Optional type tag for the handle (e.g., "email", "sms").
   final String? handleType;
 
-  /// The single verification challenge for this request.
+  /// The verification challenge for this request.
   final SecretChallenge? challenge;
 
   /// Creates a [PasswordlessLoginRequestData].
   const PasswordlessLoginRequestData({
     required this.id,
     required this.createdAt,
-    required this.serializedHandle,
+    required this.handle,
     this.handleType,
     required this.challenge,
   });
@@ -139,7 +141,7 @@ extension on PasswordlessLoginRequest {
     return PasswordlessLoginRequestData(
       id: id!,
       createdAt: createdAt,
-      serializedHandle: handle,
+      handle: handle,
       handleType: handleType,
       challenge: challenge,
     );

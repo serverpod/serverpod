@@ -2,14 +2,14 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passwordless.dart';
 
-final class PasswordlessIdpTestFixture<THandle> {
-  late final PasswordlessIdp<THandle> passwordlessIdp;
+final class PasswordlessIdpTestFixture {
+  late final PasswordlessIdp passwordlessIdp;
   late final TokenManager tokenManager;
   final AuthUsers authUsers = const AuthUsers();
   final UserProfiles userProfiles = const UserProfiles();
 
   PasswordlessIdpTestFixture({
-    required final PasswordlessIdpConfig<THandle> config,
+    required final PasswordlessIdpConfig config,
     TokenManager? tokenManager,
   }) {
     tokenManager ??= AuthServices(

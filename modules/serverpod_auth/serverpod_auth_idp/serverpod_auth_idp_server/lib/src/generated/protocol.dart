@@ -1021,6 +1021,10 @@ class Protocol extends _i1.SerializationManagerServer {
               type: _i2.IndexElementDefinitionType.column,
               definition: 'handle',
             ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'handleType',
+            ),
           ],
           type: 'btree',
           isUnique: true,

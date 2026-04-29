@@ -210,30 +210,6 @@ test:
   );
 
   group(
-    'Given missing passwordlessSecretHashPepper password',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      test(
-        'when constructing PasswordlessIdpConfigFromPasswords then throws.',
-        () {
-          expect(
-            () => PasswordlessIdpConfigFromPasswords<String>(
-              resolveAuthUserId:
-                  (
-                    final session, {
-                    required final handle,
-                    required final handleType,
-                    required final transaction,
-                  }) async => throw UnimplementedError(),
-            ),
-            throwsA(isA<PasswordNotFoundException>()),
-          );
-        },
-      );
-    },
-  );
-
-  group(
     'Given passwordlessSecretHashPepper password is present',
     tags: TestTags.concurrencyOneTestTags,
     () {
@@ -268,7 +244,7 @@ test:
       test(
         'when constructing PasswordlessIdpConfigFromPasswords then succeeds.',
         () {
-          final config = PasswordlessIdpConfigFromPasswords<String>(
+          final config = PasswordlessIdpConfigFromPasswords(
             resolveAuthUserId:
                 (
                   final session, {
@@ -277,7 +253,52 @@ test:
                   required final transaction,
                 }) async => throw UnimplementedError(),
           );
-          expect(config, isA<PasswordlessIdpConfig<String>>());
+          expect(config, isA<PasswordlessIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given missing passwordlessSecretHashPepper password',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
+
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file('passwords.yaml', 'test:\n  database: "test"'),
+        ]).create();
+        Directory.current = d.sandbox;
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
+
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
+      });
+
+      test(
+        'when constructing PasswordlessIdpConfigFromPasswords then throws.',
+        () {
+          expect(
+            () => PasswordlessIdpConfigFromPasswords(
+              resolveAuthUserId:
+                  (
+                    final session, {
+                    required final handle,
+                    required final handleType,
+                    required final transaction,
+                  }) async => throw UnimplementedError(),
+            ),
+            throwsA(isA<PasswordNotFoundException>()),
+          );
         },
       );
     },

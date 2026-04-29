@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert' show jsonEncode;
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
@@ -19,7 +20,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late PasswordlessIdpTestFixture<String> fixture;
+      late PasswordlessIdpTestFixture fixture;
       late Map<String, UuidValue> handleToUserId;
 
       const handle = 'test-handle';
@@ -29,8 +30,6 @@ void main() {
       late String deliveredVerificationCode;
 
       Future<void> initializeFixture({
-        final SerializeHandleFunction<String>? serializeHandle,
-        final DeserializeHandleFunction<String>? deserializeHandle,
         final Duration loginVerificationCodeLifetime = const Duration(
           minutes: 10,
         ),
@@ -54,8 +53,6 @@ void main() {
                   }
                   return authUserId;
                 },
-            serializeHandle: serializeHandle,
-            deserializeHandle: deserializeHandle,
             loginVerificationCodeLifetime: loginVerificationCodeLifetime,
             loginVerificationCodeGenerator: () => verificationCode,
             sendLoginVerificationCode:
@@ -240,7 +237,7 @@ void main() {
             expect(
               await _countPasswordlessLoginRequestAttempts(
                 session,
-                serializedHandle: handle,
+                handle: handle,
               ),
               equals(0),
             );
@@ -267,7 +264,7 @@ void main() {
             expect(
               await _countPasswordlessLoginRequestAttempts(
                 session,
-                serializedHandle: handle,
+                handle: handle,
               ),
               equals(1),
             );
@@ -287,11 +284,11 @@ void main() {
       });
 
       group('Given passwordless provider rotating secret hash peppers', () {
-        late PasswordlessIdpTestFixture<String> oldPepperFixture;
-        late PasswordlessIdpTestFixture<String> rotatedPepperFixture;
-        late PasswordlessIdpTestFixture<String> noFallbackFixture;
+        late PasswordlessIdpTestFixture oldPepperFixture;
+        late PasswordlessIdpTestFixture rotatedPepperFixture;
+        late PasswordlessIdpTestFixture noFallbackFixture;
 
-        Future<PasswordlessIdpTestFixture<String>> createFixture({
+        Future<PasswordlessIdpTestFixture> createFixture({
           required final String secretHashPepper,
           final List<String> fallbackSecretHashPeppers = const [],
         }) async {
@@ -544,6 +541,52 @@ void main() {
               firstChallengeId,
             );
             expect(oldChallenge, isNull);
+          },
+        );
+
+        test(
+          'when startLogin is called for the same handle with a different handleType then previous request is kept',
+          () async {
+            final firstRequestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+              handleType: 'email',
+            );
+            final secondRequestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+              handleType: 'sms',
+            );
+
+            final firstRequest = await PasswordlessLoginRequest.db.findById(
+              session,
+              firstRequestId,
+            );
+            final secondRequest = await PasswordlessLoginRequest.db.findById(
+              session,
+              secondRequestId,
+            );
+
+            expect(firstRequest, isNotNull);
+            expect(firstRequest!.handleType, equals('email'));
+            expect(secondRequest, isNotNull);
+            expect(secondRequest!.handleType, equals('sms'));
+            expect(
+              await _countPasswordlessLoginRequestAttempts(
+                session,
+                handle: handle,
+                handleType: 'email',
+              ),
+              equals(1),
+            );
+            expect(
+              await _countPasswordlessLoginRequestAttempts(
+                session,
+                handle: handle,
+                handleType: 'sms',
+              ),
+              equals(1),
+            );
           },
         );
       });
@@ -1248,530 +1291,6 @@ void main() {
             expect(challenge, isNotNull);
           },
         );
-
-        test(
-          'when an expired login is finished inside a caller transaction then cleanup rolls back with the savepoint',
-          () async {
-            final request = await PasswordlessLoginRequest.db.findById(
-              session,
-              requestId,
-            );
-            final challengeId = request!.challengeId;
-
-            await session.db.transaction((final transaction) async {
-              await withClock(
-                Clock.fixed(clock.now().add(const Duration(minutes: 2))),
-                () async {
-                  final result = fixture.passwordlessIdp.finishLogin(
-                    session,
-                    loginRequestId: requestId,
-                    verificationCode: deliveredVerificationCode,
-                    transaction: transaction,
-                  );
-                  await expectLater(
-                    result,
-                    throwsA(
-                      isA<PasswordlessLoginException>().having(
-                        (final e) => e.reason,
-                        'reason',
-                        PasswordlessLoginExceptionReason.expired,
-                      ),
-                    ),
-                  );
-                },
-              );
-
-              expect(
-                await PasswordlessLoginRequest.db.findById(
-                  session,
-                  requestId,
-                  transaction: transaction,
-                ),
-                isNotNull,
-              );
-              expect(
-                await SecretChallenge.db.findById(
-                  session,
-                  challengeId,
-                  transaction: transaction,
-                ),
-                isNotNull,
-              );
-            });
-
-            expect(
-              await PasswordlessLoginRequest.db.findById(
-                session,
-                requestId,
-              ),
-              isNotNull,
-            );
-            expect(
-              await SecretChallenge.db.findById(session, challengeId),
-              isNotNull,
-            );
-          },
-        );
-      });
-
-      group('Given a custom deserializer that reports invalid handle format', () {
-        setUp(() async {
-          session = sessionBuilder.build();
-          await initializeFixture(
-            deserializeHandle: (final handle) {
-              throw const FormatException('invalid handle format');
-            },
-          );
-        });
-
-        tearDown(() async {
-          await fixture.tearDown(session);
-        });
-
-        test(
-          'when startLogin is called then it throws PasswordlessLoginException with reason "invalid"',
-          () async {
-            final result = fixture.passwordlessIdp.startLogin(
-              session,
-              handle: handle,
-            );
-
-            await expectLater(
-              result,
-              throwsA(
-                isA<PasswordlessLoginException>().having(
-                  (final e) => e.reason,
-                  'reason',
-                  PasswordlessLoginExceptionReason.invalid,
-                ),
-              ),
-            );
-          },
-        );
-      });
-
-      group(
-        'Given a stored handle that reports invalid serialized format',
-        () {
-          late UuidValue requestId;
-
-          setUp(() async {
-            session = sessionBuilder.build();
-            await initializeFixture(
-              deserializeHandle: (final handle) {
-                if (handle == 'test-handle') return handle;
-                throw const FormatException('invalid stored handle format');
-              },
-              serializeHandle: (final handle) => 'stored:$handle',
-            );
-
-            requestId = await fixture.passwordlessIdp.startLogin(
-              session,
-              handle: handle,
-            );
-          });
-
-          tearDown(() async {
-            await fixture.tearDown(session);
-          });
-
-          test(
-            'when finishLogin is called then it throws PasswordlessLoginException with reason "invalid"',
-            () async {
-              final result = fixture.passwordlessIdp.finishLogin(
-                session,
-                loginRequestId: requestId,
-                verificationCode: deliveredVerificationCode,
-              );
-
-              await expectLater(
-                result,
-                throwsA(
-                  isA<PasswordlessLoginException>().having(
-                    (final e) => e.reason,
-                    'reason',
-                    PasswordlessLoginExceptionReason.invalid,
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-
-      group('Given a stored handle that triggers a custom deserializer bug', () {
-        late UuidValue requestId;
-
-        setUp(() async {
-          session = sessionBuilder.build();
-          await initializeFixture(
-            deserializeHandle: (final handle) {
-              if (handle == 'test-handle') return handle;
-              throw StateError('broken stored handle parser');
-            },
-            serializeHandle: (final handle) => 'stored:$handle',
-          );
-
-          requestId = await fixture.passwordlessIdp.startLogin(
-            session,
-            handle: handle,
-          );
-        });
-
-        tearDown(() async {
-          await fixture.tearDown(session);
-        });
-
-        test(
-          'when finishLogin is called then it surfaces the deserializer error',
-          () async {
-            final result = fixture.passwordlessIdp.finishLogin(
-              session,
-              loginRequestId: requestId,
-              verificationCode: deliveredVerificationCode,
-            );
-
-            await expectLater(result, throwsA(isA<StateError>()));
-          },
-        );
-      });
-
-      group('Given passwordless provider with default int handle support', () {
-        late PasswordlessIdpTestFixture<int> intFixture;
-        late Map<int, UuidValue> intHandleToUserId;
-        late int deliveredIntHandle;
-        const intHandle = '42';
-
-        setUp(() async {
-          session = sessionBuilder.build();
-          intHandleToUserId = {};
-          verificationCode = const Uuid().v4().toString();
-
-          intFixture = PasswordlessIdpTestFixture(
-            config: PasswordlessIdpConfig<int>(
-              secretHashPepper: 'pepper',
-              resolveAuthUserId:
-                  (
-                    final Session session, {
-                    required final int handle,
-                    required final String? handleType,
-                    required final Transaction? transaction,
-                  }) async {
-                    final authUserId = intHandleToUserId[handle];
-                    if (authUserId == null) {
-                      throw PasswordlessLoginNotFoundException();
-                    }
-                    return authUserId;
-                  },
-              loginVerificationCodeGenerator: () => verificationCode,
-              sendLoginVerificationCode:
-                  (
-                    final Session session, {
-                    required final int handle,
-                    required final UuidValue requestId,
-                    required final String verificationCode,
-                    required final Transaction? transaction,
-                    required final String? handleType,
-                  }) async {
-                    deliveredIntHandle = handle;
-                    deliveredRequestId = requestId;
-                    deliveredVerificationCode = verificationCode;
-                  },
-            ),
-          );
-
-          final authUser = await intFixture.authUsers.create(session);
-          intHandleToUserId[42] = authUser.id;
-        });
-
-        tearDown(() async {
-          await intFixture.tearDown(session);
-        });
-
-        test(
-          'when login completes then it resolves the int handle and stores its plain serialization',
-          () async {
-            final requestId = await intFixture.passwordlessIdp.startLogin(
-              session,
-              handle: intHandle,
-            );
-
-            final authSuccess = await intFixture.passwordlessIdp.finishLogin(
-              session,
-              loginRequestId: requestId,
-              verificationCode: deliveredVerificationCode,
-            );
-
-            expect(authSuccess, isA<AuthSuccess>());
-            expect(deliveredIntHandle, equals(42));
-            final request = await PasswordlessLoginRequest.db.findFirstRow(
-              session,
-              where: (final t) => t.id.equals(deliveredRequestId),
-            );
-            expect(request, isNull);
-
-            final attempts = await RateLimitedRequestAttempt.db.find(
-              session,
-              where: (final t) =>
-                  t.domain.equals('passwordless') &
-                  t.source.equals('login_request'),
-            );
-            expect(attempts.single.nonce, equals(intHandle));
-          },
-        );
-
-        test(
-          'when startLogin is called with an invalid raw handle then it throws PasswordlessLoginException with reason "invalid"',
-          () async {
-            final result = intFixture.passwordlessIdp.startLogin(
-              session,
-              handle: 'not-a-number',
-            );
-
-            await expectLater(
-              result,
-              throwsA(
-                isA<PasswordlessLoginException>().having(
-                  (final e) => e.reason,
-                  'reason',
-                  PasswordlessLoginExceptionReason.invalid,
-                ),
-              ),
-            );
-          },
-        );
-      });
-
-      group(
-        'Given passwordless provider with default UuidValue handle support',
-        () {
-          late PasswordlessIdpTestFixture<UuidValue> uuidFixture;
-          late Map<UuidValue, UuidValue> handleToAuthUserId;
-          late UuidValue deliveredUuidHandle;
-          late UuidValue typedUuidHandle;
-          late String uuidHandle;
-
-          setUp(() async {
-            session = sessionBuilder.build();
-            handleToAuthUserId = {};
-            verificationCode = const Uuid().v4().toString();
-            typedUuidHandle = UuidValue.withValidation(const Uuid().v4());
-            uuidHandle = typedUuidHandle.uuid;
-
-            uuidFixture = PasswordlessIdpTestFixture(
-              config: PasswordlessIdpConfig<UuidValue>(
-                secretHashPepper: 'pepper',
-                resolveAuthUserId:
-                    (
-                      final Session session, {
-                      required final UuidValue handle,
-                      required final String? handleType,
-                      required final Transaction? transaction,
-                    }) async {
-                      final authUserId = handleToAuthUserId[handle];
-                      if (authUserId == null) {
-                        throw PasswordlessLoginNotFoundException();
-                      }
-                      return authUserId;
-                    },
-                loginVerificationCodeGenerator: () => verificationCode,
-                sendLoginVerificationCode:
-                    (
-                      final Session session, {
-                      required final UuidValue handle,
-                      required final UuidValue requestId,
-                      required final String verificationCode,
-                      required final Transaction? transaction,
-                      required final String? handleType,
-                    }) async {
-                      deliveredUuidHandle = handle;
-                      deliveredRequestId = requestId;
-                      deliveredVerificationCode = verificationCode;
-                    },
-              ),
-            );
-
-            final authUser = await uuidFixture.authUsers.create(session);
-            handleToAuthUserId[typedUuidHandle] = authUser.id;
-          });
-
-          tearDown(() async {
-            await uuidFixture.tearDown(session);
-          });
-
-          test(
-            'when login completes then it resolves the UuidValue handle using default callbacks',
-            () async {
-              final requestId = await uuidFixture.passwordlessIdp.startLogin(
-                session,
-                handle: uuidHandle,
-              );
-
-              final authSuccess = await uuidFixture.passwordlessIdp.finishLogin(
-                session,
-                loginRequestId: requestId,
-                verificationCode: deliveredVerificationCode,
-              );
-
-              expect(authSuccess, isA<AuthSuccess>());
-              expect(deliveredUuidHandle, equals(typedUuidHandle));
-              final attempts = await RateLimitedRequestAttempt.db.find(
-                session,
-                where: (final t) =>
-                    t.domain.equals('passwordless') &
-                    t.source.equals('login_request'),
-              );
-              expect(attempts.single.nonce, equals(uuidHandle));
-            },
-          );
-        },
-      );
-
-      group(
-        'Given passwordless provider with unsupported default handle type',
-        () {
-          late PasswordlessIdpTestFixture<_UnsupportedDefaultHandle>
-          unsupportedFixture;
-
-          setUp(() async {
-            session = sessionBuilder.build();
-            verificationCode = const Uuid().v4().toString();
-
-            unsupportedFixture = PasswordlessIdpTestFixture(
-              config: PasswordlessIdpConfig<_UnsupportedDefaultHandle>(
-                secretHashPepper: 'pepper',
-                resolveAuthUserId:
-                    (
-                      final Session session, {
-                      required final _UnsupportedDefaultHandle handle,
-                      required final String? handleType,
-                      required final Transaction? transaction,
-                    }) async {
-                      throw UnimplementedError();
-                    },
-                loginVerificationCodeGenerator: () => verificationCode,
-              ),
-            );
-          });
-
-          tearDown(() async {
-            await unsupportedFixture.tearDown(session);
-          });
-
-          test(
-            'when startLogin is called then it surfaces the unsupported default deserializer error',
-            () async {
-              final result = unsupportedFixture.passwordlessIdp.startLogin(
-                session,
-                handle: handle,
-              );
-
-              await expectLater(
-                result,
-                throwsA(
-                  isA<DeserializationTypeNotFoundException>().having(
-                    (final e) => e.type,
-                    'type',
-                    _UnsupportedDefaultHandle,
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-
-      group('Given passwordless provider with custom handle serialization', () {
-        late PasswordlessIdpTestFixture<_TestHandle> customFixture;
-        late _TestHandle deliveredCustomHandle;
-        late Map<String, UuidValue> serializedHandleToUserId;
-
-        setUp(() async {
-          session = sessionBuilder.build();
-          serializedHandleToUserId = {};
-          verificationCode = const Uuid().v4().toString();
-
-          customFixture = PasswordlessIdpTestFixture(
-            config: PasswordlessIdpConfig<_TestHandle>(
-              secretHashPepper: 'pepper',
-              resolveAuthUserId:
-                  (
-                    final Session session, {
-                    required final _TestHandle handle,
-                    required final String? handleType,
-                    required final Transaction? transaction,
-                  }) async {
-                    final authUserId =
-                        serializedHandleToUserId['custom:${handle.value}'];
-                    if (authUserId == null) {
-                      throw PasswordlessLoginNotFoundException();
-                    }
-                    return authUserId;
-                  },
-              deserializeHandle: (final handle) => _TestHandle(
-                handle.startsWith('custom:')
-                    ? handle.substring('custom:'.length)
-                    : handle,
-              ),
-              serializeHandle: (final handle) => 'custom:${handle.value}',
-              loginVerificationCodeGenerator: () => verificationCode,
-              sendLoginVerificationCode:
-                  (
-                    final Session session, {
-                    required final _TestHandle handle,
-                    required final UuidValue requestId,
-                    required final String verificationCode,
-                    required final Transaction? transaction,
-                    required final String? handleType,
-                  }) async {
-                    deliveredCustomHandle = handle;
-                    deliveredRequestId = requestId;
-                    deliveredVerificationCode = verificationCode;
-                  },
-            ),
-          );
-
-          final authUser = await customFixture.authUsers.create(session);
-          serializedHandleToUserId['custom:test-handle'] = authUser.id;
-        });
-
-        tearDown(() async {
-          await customFixture.tearDown(session);
-        });
-
-        test(
-          'when login completes then rate limit, persistence, and auth resolution use the same serialized handle',
-          () async {
-            final requestId = await customFixture.passwordlessIdp.startLogin(
-              session,
-              handle: 'test-handle',
-            );
-
-            final request = await PasswordlessLoginRequest.db.findById(
-              session,
-              deliveredRequestId,
-            );
-
-            final authSuccess = await customFixture.passwordlessIdp.finishLogin(
-              session,
-              loginRequestId: requestId,
-              verificationCode: deliveredVerificationCode,
-            );
-
-            expect(authSuccess, isA<AuthSuccess>());
-            expect(deliveredCustomHandle.value, equals('test-handle'));
-            expect(request, isNotNull);
-            expect(request!.handle, equals('custom:test-handle'));
-
-            final attempts = await RateLimitedRequestAttempt.db.find(
-              session,
-              where: (final t) =>
-                  t.domain.equals('passwordless') &
-                  t.source.equals('login_request'),
-            );
-            expect(attempts.single.nonce, equals('custom:test-handle'));
-          },
-        );
       });
 
       group('Given rate-limited login verification attempts', () {
@@ -2069,14 +1588,14 @@ void main() {
                 where: (final t) =>
                     t.domain.equals('passwordless') &
                     t.source.equals('login_request') &
-                    t.nonce.equals(staleHandle),
+                    t.nonce.equals(_loginRequestRateLimitNonce(staleHandle)),
               );
               final recentAttempts = await RateLimitedRequestAttempt.db.find(
                 session,
                 where: (final t) =>
                     t.domain.equals('passwordless') &
                     t.source.equals('login_request') &
-                    t.nonce.equals(recentHandle),
+                    t.nonce.equals(_loginRequestRateLimitNonce(recentHandle)),
               );
 
               expect(staleAttempts, isEmpty);
@@ -2091,14 +1610,22 @@ void main() {
 
 Future<int> _countPasswordlessLoginRequestAttempts(
   final Session session, {
-  required final String serializedHandle,
+  required final String handle,
+  final String? handleType,
 }) => RateLimitedRequestAttempt.db.count(
   session,
   where: (final t) =>
       t.domain.equals('passwordless') &
       t.source.equals('login_request') &
-      t.nonce.equals(serializedHandle),
+      t.nonce.equals(
+        _loginRequestRateLimitNonce(handle, handleType: handleType),
+      ),
 );
+
+String _loginRequestRateLimitNonce(
+  final String handle, {
+  final String? handleType,
+}) => jsonEncode([handle, handleType]);
 
 Future<int> _countPasswordlessLoginVerifyAttempts(
   final Session session, {
@@ -2110,13 +1637,3 @@ Future<int> _countPasswordlessLoginVerifyAttempts(
       t.source.equals('login_verify') &
       t.nonce.equals(loginRequestId.uuid),
 );
-
-final class _TestHandle {
-  final String value;
-
-  const _TestHandle(this.value);
-}
-
-final class _UnsupportedDefaultHandle {
-  const _UnsupportedDefaultHandle();
-}

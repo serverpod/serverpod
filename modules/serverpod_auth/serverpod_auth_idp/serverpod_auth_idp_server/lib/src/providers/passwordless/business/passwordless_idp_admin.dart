@@ -3,12 +3,12 @@ import 'package:serverpod/serverpod.dart';
 import 'utils/passwordless_idp_login_util.dart';
 
 /// Collection of passwordless admin methods.
-class PasswordlessIdpAdmin<THandle> {
-  final PasswordlessIdpLoginUtil<THandle> _loginUtil;
+class PasswordlessIdpAdmin {
+  final PasswordlessIdpLoginUtil _loginUtil;
 
   /// Creates a new instance of [PasswordlessIdpAdmin].
   PasswordlessIdpAdmin({
-    required final PasswordlessIdpLoginUtil<THandle> loginUtil,
+    required final PasswordlessIdpLoginUtil loginUtil,
   }) : _loginUtil = loginUtil;
 
   /// {@macro passwordless_idp_login_util.delete_incomplete_login_attempts}
