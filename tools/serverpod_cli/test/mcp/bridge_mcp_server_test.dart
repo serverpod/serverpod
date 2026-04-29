@@ -22,7 +22,7 @@ import 'package:test/test.dart';
 /// `apply_migrations` to it.
 void main() {
   group(
-    'Given a BridgeMcpServer connected to a real runner socket',
+    'Given a BridgeMcpServer that has discovered a runner socket',
     skip: !hasUnixSocketSupport(),
     () {
       late McpSocketServer runner;
@@ -79,7 +79,7 @@ void main() {
       });
 
       test(
-        'when listing tools before connect, '
+        'when listing tools, '
         'then only the bridge-native tools are exposed',
         () async {
           final result = await client.listTools();
@@ -93,37 +93,6 @@ void main() {
           expect(names, isNot(contains('create_migration')));
           expect(names, isNot(contains('hot_reload')));
           expect(names, isNot(contains('tail_logs')));
-        },
-      );
-
-      test(
-        'when listing tools after connect, '
-        'then forwarded runner tools also appear',
-        () async {
-          runner.connect(onApplyMigration: () async {});
-
-          await client.callTool(
-            CallToolRequest(
-              name: 'connect',
-              arguments: {'instanceId': project},
-            ),
-          );
-
-          final result = await client.listTools();
-          final names = result.tools.map((t) => t.name).toSet();
-          expect(
-            names,
-            containsAll(<String>{
-              'connect',
-              'disconnect',
-              'spawn',
-              'stop',
-              'apply_migrations',
-              'create_migration',
-              'hot_reload',
-              'tail_logs',
-            }),
-          );
         },
       );
 
@@ -157,84 +126,6 @@ void main() {
       );
 
       test(
-        'when calling connect then apply_migrations, '
-        'then the runner-side callback is invoked',
-        () async {
-          var called = 0;
-          runner.connect(
-            onApplyMigration: () async {
-              called++;
-            },
-          );
-
-          final connectResult = await client.callTool(
-            CallToolRequest(
-              name: 'connect',
-              arguments: {'instanceId': project},
-            ),
-          );
-          expect(
-            connectResult.isError,
-            anyOf(isNull, isFalse),
-            reason:
-                'connect should succeed: '
-                '${(connectResult.content.first as TextContent).text}',
-          );
-
-          final applyResult = await client.callTool(
-            CallToolRequest(name: 'apply_migrations'),
-          );
-          expect(applyResult.isError, anyOf(isNull, isFalse));
-          expect(called, 1);
-          expect(
-            (applyResult.content.first as TextContent).text,
-            contains('Migrations applied'),
-          );
-        },
-      );
-
-      test(
-        'when calling connect then create_migration with tag and force, '
-        'then the runner-side callback receives the arguments',
-        () async {
-          String? receivedTag;
-          bool? receivedForce;
-          runner.connect(
-            onApplyMigration: () async {},
-            onCreateMigration: ({String? tag, bool force = false}) async {
-              receivedTag = tag;
-              receivedForce = force;
-              return const CreateMigrationMcpResult(
-                message: 'Migration "v1" created at /tmp/v1.',
-              );
-            },
-          );
-
-          await client.callTool(
-            CallToolRequest(
-              name: 'connect',
-              arguments: {'instanceId': project},
-            ),
-          );
-
-          final result = await client.callTool(
-            CallToolRequest(
-              name: 'create_migration',
-              arguments: {'tag': 'add-users', 'force': true},
-            ),
-          );
-
-          expect(result.isError, anyOf(isNull, isFalse));
-          expect(receivedTag, 'add-users');
-          expect(receivedForce, isTrue);
-          expect(
-            (result.content.first as TextContent).text,
-            contains('Migration "v1" created'),
-          );
-        },
-      );
-
-      test(
         'when connect is called with an unknown instanceId, '
         'then it returns an error listing available instances',
         () async {
@@ -247,38 +138,128 @@ void main() {
           expect(result.isError, isTrue);
           expect(
             (result.content.first as TextContent).text,
-            allOf(
-              contains('No instance found'),
-              contains(project),
-            ),
+            allOf(contains('No instance found'), contains(project)),
           );
         },
       );
 
-      test(
-        'when disconnect is called after connect, '
-        'then subsequent apply_migrations errors',
-        () async {
-          runner.connect(onApplyMigration: () async {});
+      group('Given the bridge is connected to the runner', () {
+        late int applyMigrationCalls;
+        late String? receivedTag;
+        late bool? receivedForce;
 
-          await client.callTool(
+        setUp(() async {
+          applyMigrationCalls = 0;
+          receivedTag = null;
+          receivedForce = null;
+
+          runner.connect(
+            onApplyMigration: () async {
+              applyMigrationCalls++;
+            },
+            onCreateMigration: ({String? tag, bool force = false}) async {
+              receivedTag = tag;
+              receivedForce = force;
+              return const CreateMigrationMcpResult(
+                message: 'Migration "v1" created at /tmp/v1.',
+              );
+            },
+          );
+
+          final result = await client.callTool(
             CallToolRequest(
               name: 'connect',
               arguments: {'instanceId': project},
             ),
           );
-
-          final disconnectResult = await client.callTool(
-            CallToolRequest(name: 'disconnect'),
+          expect(
+            result.isError,
+            anyOf(isNull, isFalse),
+            reason:
+                'connect should succeed: '
+                '${(result.content.first as TextContent).text}',
           );
-          expect(disconnectResult.isError, anyOf(isNull, isFalse));
+        });
 
-          final applyResult = await client.callTool(
-            CallToolRequest(name: 'apply_migrations'),
+        test(
+          'when listing tools, '
+          'then forwarded runner tools also appear alongside the bridge-native tools',
+          () async {
+            final result = await client.listTools();
+            final names = result.tools.map((t) => t.name).toSet();
+            expect(
+              names,
+              containsAll(<String>{
+                'connect',
+                'disconnect',
+                'spawn',
+                'stop',
+                'apply_migrations',
+                'create_migration',
+                'hot_reload',
+                'tail_logs',
+              }),
+            );
+          },
+        );
+
+        test(
+          'when calling apply_migrations, '
+          'then the runner-side callback is invoked',
+          () async {
+            final result = await client.callTool(
+              CallToolRequest(name: 'apply_migrations'),
+            );
+            expect(result.isError, anyOf(isNull, isFalse));
+            expect(applyMigrationCalls, 1);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Migrations applied'),
+            );
+          },
+        );
+
+        test(
+          'when calling create_migration with tag and force, '
+          'then the runner-side callback receives the arguments',
+          () async {
+            final result = await client.callTool(
+              CallToolRequest(
+                name: 'create_migration',
+                arguments: {'tag': 'add-users', 'force': true},
+              ),
+            );
+
+            expect(result.isError, anyOf(isNull, isFalse));
+            expect(receivedTag, 'add-users');
+            expect(receivedForce, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Migration "v1" created'),
+            );
+          },
+        );
+
+        group('Given the bridge is then disconnected', () {
+          setUp(() async {
+            final result = await client.callTool(
+              CallToolRequest(name: 'disconnect'),
+            );
+            expect(result.isError, anyOf(isNull, isFalse));
+          });
+
+          test(
+            'when calling apply_migrations, '
+            'then it errors because the forwarded tool has been unregistered',
+            () async {
+              final result = await client.callTool(
+                CallToolRequest(name: 'apply_migrations'),
+              );
+              expect(result.isError, isTrue);
+            },
           );
-          expect(applyResult.isError, isTrue);
-        },
-      );
+        });
+      });
     },
   );
 }
