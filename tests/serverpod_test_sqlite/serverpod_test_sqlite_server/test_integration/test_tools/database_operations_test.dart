@@ -6,9 +6,10 @@ import 'serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given TestToolsEndpoint',
+    'Given TestToolsEndpoint,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test(
         'when calling createSimpleData then creates a SimpleData in the database',
@@ -106,9 +107,10 @@ void main() {
   );
 
   withServerpod(
-    'Given TestToolsEndpoint and rollbackDatabase afterEach',
+    'Given TestToolsEndpoint and rollbackDatabase afterEach,',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       group('when calling createSimpleDatasInsideTransactions', () {
         setUpAll(() async {
           await endpoints.testTools.createSimpleDatasInsideTransactions(
@@ -189,12 +191,13 @@ void main() {
     rollbackDatabase: RollbackDatabase.afterEach,
   );
 
-  group('Given TestToolsEndpoint and rollbackDatabase afterAll', () {
-    group('when calling createSimpleDatasInsideTransactions', () {
+  group('Given TestToolsEndpoint and rollbackDatabase afterAll,', () {
+    group('when calling createSimpleDatasInsideTransactions,', () {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           setUpAll(() async {
             await endpoints.testTools.createSimpleDatasInsideTransactions(
@@ -225,9 +228,10 @@ void main() {
       );
 
       withServerpod(
-        'when fetching SimpleData in the next withServerpod',
+        'when fetching SimpleData in the next withServerpod,',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -237,11 +241,12 @@ void main() {
       );
     });
 
-    group('when calling createSimpleDataAndThrowInsideTransaction', () {
+    group('when calling createSimpleDataAndThrowInsideTransaction,', () {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           setUpAll(() async {
             try {
@@ -267,9 +272,10 @@ void main() {
       );
 
       withServerpod(
-        'when fetching SimpleData in the next withServerpod',
+        'when fetching SimpleData in the next withServerpod,',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
 
@@ -279,7 +285,7 @@ void main() {
       );
     });
 
-    group('when calling createSimpleDatasInParallelTransactionCalls', () {
+    group('when calling createSimpleDatasInParallelTransactionCalls,', () {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
@@ -306,9 +312,10 @@ void main() {
       );
 
       withServerpod(
-        'when fetching SimpleData in the next withServerpod',
+        'when fetching SimpleData in the next withServerpod,',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test('then should have been rolled back', () async {
             var simpleDatas = await SimpleData.db.find(session);
@@ -320,12 +327,13 @@ void main() {
     });
   });
 
-  group('Given TestToolsEndpoint and rollbackDatabase disabled', () {
-    group('when calling createSimpleDatasInsideTransactions', () {
+  group('Given TestToolsEndpoint and rollbackDatabase disabled,', () {
+    group('when calling createSimpleDatasInsideTransactions,', () {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
             await endpoints.testTools.createSimpleDatasInsideTransactions(
               sessionBuilder,
@@ -355,9 +363,10 @@ void main() {
       );
 
       withServerpod(
-        'when fetching SimpleData in the next withServerpod',
+        'when fetching SimpleData in the next withServerpod,',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test(
             'then there is no data because each group has its own database',
@@ -372,11 +381,12 @@ void main() {
       );
     });
 
-    group('when calling createSimpleDataAndThrowInsideTransaction', () {
+    group('when calling createSimpleDataAndThrowInsideTransaction,', () {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
             try {
               await endpoints.testTools
@@ -401,9 +411,10 @@ void main() {
       );
 
       withServerpod(
-        'when fetching SimpleData in the next withServerpod',
+        'when fetching SimpleData in the next withServerpod,',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test(
             'then there is no data because each group has its own database',
@@ -419,9 +430,10 @@ void main() {
     });
 
     withServerpod(
-      'when calling createSimpleDatasInParallelTransactionCalls',
+      'when calling createSimpleDatasInParallelTransactionCalls,',
       (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+        late Session session;
+        setUp(() => session = sessionBuilder.build());
 
         setUpAll(() async {
           await endpoints.testTools.createSimpleDatasInParallelTransactionCalls(
@@ -447,10 +459,11 @@ void main() {
   });
 
   withServerpod(
-    'Given rollbackDatabase is not disabled (transaction active) ',
+    'Given rollbackDatabase is not disabled (transaction active),',
     rollbackDatabase: RollbackDatabase.afterEach,
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       group('when creating UniqueData with the same unique value', () {
         late Future<UniqueData> Function() failingInsert;
