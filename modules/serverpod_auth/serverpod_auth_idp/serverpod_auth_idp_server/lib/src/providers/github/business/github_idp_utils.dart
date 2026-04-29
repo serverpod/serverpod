@@ -146,6 +146,16 @@ class GitHubIdpUtils {
         transaction: transaction,
       );
 
+      final getExtraInfoCallback = config.getExtraGitHubInfoCallback;
+      if (getExtraInfoCallback != null) {
+        await getExtraInfoCallback(
+          session,
+          accountDetails: accountDetails,
+          accessToken: accessToken,
+          transaction: transaction,
+        );
+      }
+
       await config.onAfterGitHubAccountCreated?.call(
         session,
         authUser,
@@ -203,18 +213,40 @@ class GitHubIdpUtils {
       session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
-    try {
-      final getExtraInfoCallback = config.getExtraGitHubInfoCallback;
-      if (getExtraInfoCallback != null) {
-        await getExtraInfoCallback(
-          session,
-          accountDetails: details,
-          accessToken: accessToken,
-          transaction: null,
-        );
+    if (details.email == null) {
+      final emailResponse = await http.get(
+        Uri.https('api.github.com', '/user/emails'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      );
+      if (emailResponse.statusCode == 200) {
+        try {
+          final emails = jsonDecode(emailResponse.body) as List<dynamic>;
+          final primary = emails.firstWhere(
+            (final e) => e['primary'] == true && e['verified'] == true,
+            orElse: () => null,
+          );
+          if (primary != null && primary['email'] is String) {
+            details = (
+              userIdentifier: details.userIdentifier,
+              email: (primary['email'] as String).toLowerCase(),
+              name: details.name,
+              image: details.image,
+            );
+          }
+        } catch (e) {
+          session.log(e.toString(), level: LogLevel.debug);
+        }
       }
+    }
+
+    try {
+      config.githubAccountDetailsValidation(details);
     } catch (e) {
-      session.logAndThrow('Failed to get extra GitHub account info: $e');
+      throw GitHubUserInfoMissingDataException();
     }
 
     return details;
@@ -236,12 +268,6 @@ class GitHubIdpUtils {
       name: name,
       image: avatarUrl != null ? Uri.tryParse(avatarUrl) : null,
     );
-
-    try {
-      config.githubAccountDetailsValidation(details);
-    } catch (e) {
-      throw GitHubUserInfoMissingDataException();
-    }
 
     return details;
   }
