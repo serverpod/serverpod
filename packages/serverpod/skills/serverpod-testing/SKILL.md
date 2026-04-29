@@ -29,6 +29,8 @@ void main() {
 
 Use `sessionBuilder.copyWith(...)` to create modified sessions. Call `sessionBuilder.build()` to get a `Session` for DB operations or passing to helpers.
 
+> **Important:** `sessionBuilder.build()` and `copyWith()` only work after the framework's `setUpAll` has run - calling them at declaration time throws `LateInitializationError` and stops the test file from loading. Defer them into `setUp`, `setUpAll`, `tearDown`, or the test body. When a hook already seeds data, build the session at the top of that hook instead of registering a second one.
+
 ### Authenticated tests
 
 ```dart
@@ -36,9 +38,12 @@ withServerpod('Given AuthEndpoint', (sessionBuilder, endpoints) {
   final userId = '550e8400-e29b-41d4-a716-446655440000';
 
   group('when authenticated', () {
-    var authed = sessionBuilder.copyWith(
-      authentication: AuthenticationOverride.authenticationInfo(userId, {Scope('user')}),
-    );
+    late TestSessionBuilder authed;
+    setUp(() {
+      authed = sessionBuilder.copyWith(
+        authentication: AuthenticationOverride.authenticationInfo(userId, {Scope('user')}),
+      );
+    });
 
     test('then hello succeeds', () async {
       final greeting = await endpoints.authExample.hello(authed, 'Michael');
@@ -47,9 +52,12 @@ withServerpod('Given AuthEndpoint', (sessionBuilder, endpoints) {
   });
 
   group('when unauthenticated', () {
-    var unauthed = sessionBuilder.copyWith(
-      authentication: AuthenticationOverride.unauthenticated(),
-    );
+    late TestSessionBuilder unauthed;
+    setUp(() {
+      unauthed = sessionBuilder.copyWith(
+        authentication: AuthenticationOverride.unauthenticated(),
+      );
+    });
 
     test('then hello throws', () async {
       await expectLater(
@@ -65,9 +73,9 @@ withServerpod('Given AuthEndpoint', (sessionBuilder, endpoints) {
 
 ```dart
 withServerpod('Given Products endpoint', (sessionBuilder, endpoints) {
-  var session = sessionBuilder.build();
-
+  late Session session;
   setUp(() async {
+    session = sessionBuilder.build();
     await Product.db.insert(session, [
       Product(name: 'Apple', price: 10),
       Product(name: 'Banana', price: 10),
@@ -108,9 +116,9 @@ If logic lives outside endpoints but needs a `Session`, use `withServerpod` and 
 
 ```dart
 withServerpod('Given product quantity is zero', (sessionBuilder, _) {
-  var session = sessionBuilder.build();
-
+  late Session session;
   setUp(() async {
+    session = sessionBuilder.build();
     await Product.db.insertRow(session, Product(id: 123, name: 'Apple', quantity: 0));
   });
 
@@ -129,10 +137,14 @@ Use `flushEventQueue()` to ensure a generator executes up to its `yield` before 
 
 ```dart
 withServerpod('Given shared stream', (sessionBuilder, endpoints) {
-  final user1 = sessionBuilder.copyWith(
-    authentication: AuthenticationOverride.authenticationInfo('user-1', {}));
-  final user2 = sessionBuilder.copyWith(
-    authentication: AuthenticationOverride.authenticationInfo('user-2', {}));
+  late TestSessionBuilder user1;
+  late TestSessionBuilder user2;
+  setUp(() {
+    user1 = sessionBuilder.copyWith(
+      authentication: AuthenticationOverride.authenticationInfo('user-1', {}));
+    user2 = sessionBuilder.copyWith(
+      authentication: AuthenticationOverride.authenticationInfo('user-2', {}));
+  });
 
   test('when posting numbers then listener receives them', () async {
     var stream = endpoints.comm.listenForNumbers(user1);
@@ -168,6 +180,29 @@ dart test -x integration      # Only unit tests
 **Nothing has to be started first — do NOT run `docker compose up`.** `withServerpod` boots the server in the `test` run mode, and the test database comes with it: projects created by `serverpod create` use an embedded PostgreSQL that Serverpod launches and manages, or a SQLite file. A generated `docker-compose.yaml` is present even in those projects, so seeing that file is not a reason to start Docker.
 
 Only when a run actually fails to reach the database is it worth opening `config/test.yaml`: a `database` section with `host`/`port` and no `dataPath` points at an external database, which does have to be running (`docker compose up -d` starts the one the project ships). With `dataPath` or `filePath` set, fix the configuration or runtime instead — starting Docker will not help.
+
+## Test exceptions
+
+Exported from generated test tools:
+
+- `ServerpodUnauthenticatedException` - endpoint called without auth
+- `ServerpodInsufficientAccessException` - auth key lacks required scope
+- `ConnectionClosedException` - stream connection closed with error
+- `InvalidConfigurationException` - invalid config (e.g. nested transactions with rollback enabled)
+
+## DB connection limits
+
+`sessionBuilder.build()` always runs inside `setUp`/`setUpAll`/`test` (see Session builder section). For shared connections across tests in a group, prefer `setUpAll` over per-test `setUp`:
+
+```dart
+withServerpod('Given example', (sessionBuilder, endpoints) {
+  late Session session;
+  setUpAll(() => session = sessionBuilder.build());
+  // ...
+});
+```
+
+Trade-off: `setUpAll` creates one shared `Session` for the group (saves connections); `setUp` creates one per test (better isolation). Both share the underlying transaction manager, so DB visibility is identical.
 
 ## Project structure
 
