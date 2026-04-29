@@ -914,25 +914,46 @@ Future<void> _runTuiBackend({
   }
 }
 
+/// Maps a [CreateMigrationOutcome] to a `(message, isError)` pair shared by
+/// the TUI and MCP wrappers. [forceHint] is the surface-specific instruction
+/// for retrying past warnings (e.g. `--force` for the CLI/TUI, `force: true`
+/// for the MCP tool).
+({String message, bool isError}) _describeCreateMigration(
+  CreateMigrationOutcome outcome, {
+  required String forceHint,
+}) {
+  return switch (outcome) {
+    CreateMigrationCreated(:final versionName, :final migrationDirectory) => (
+      message: 'Migration "$versionName" created at $migrationDirectory.',
+      isError: false,
+    ),
+    CreateMigrationNoChanges() => (
+      message: 'No schema changes detected; no migration created.',
+      isError: false,
+    ),
+    CreateMigrationAborted() => (
+      message: 'Migration aborted due to warnings. $forceHint',
+      isError: true,
+    ),
+    CreateMigrationFailed(:final message) => (
+      message: message,
+      isError: true,
+    ),
+  };
+}
+
 /// Runs `create-migration` for the TUI's Create Migration button.
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
 Future<void> _runCreateMigrationForTui(GeneratorConfig config) async {
   final outcome = await createMigrationAction(config: config);
-  switch (outcome) {
-    case CreateMigrationCreated(:final versionName):
-      log.info('Migration created: $versionName');
-    case CreateMigrationNoChanges():
-      log.info('No schema changes detected; no migration created.');
-    case CreateMigrationAborted():
-      throw Exception(
-        'Migration aborted due to warnings. Run `serverpod create-migration '
-        '--force` to create it anyway.',
-      );
-    case CreateMigrationFailed(:final message):
-      throw Exception(message);
-  }
+  final result = _describeCreateMigration(
+    outcome,
+    forceHint: 'Run `serverpod create-migration --force` to create it anyway.',
+  );
+  if (result.isError) throw Exception(result.message);
+  log.info(result.message);
 }
 
 /// Runs `create-migration` for the MCP `create_migration` tool. Returns a
@@ -947,25 +968,15 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
     tag: tag,
     force: force,
   );
-  return switch (outcome) {
-    CreateMigrationCreated(:final versionName, :final migrationDirectory) =>
-      CreateMigrationMcpResult(
-        message:
-            'Migration "$versionName" created at $migrationDirectory. '
-            'Call `apply_migrations` to run it against the database.',
-      ),
-    CreateMigrationNoChanges() => const CreateMigrationMcpResult(
-      message: 'No schema changes detected; no migration created.',
-    ),
-    CreateMigrationAborted() => const CreateMigrationMcpResult(
-      message:
-          'Migration aborted due to warnings. Call again with `force: true` '
-          'to create it anyway.',
-      isError: true,
-    ),
-    CreateMigrationFailed(:final message) => CreateMigrationMcpResult(
-      message: message,
-      isError: true,
-    ),
-  };
+  final result = _describeCreateMigration(
+    outcome,
+    forceHint: 'Call again with `force: true` to create it anyway.',
+  );
+  final followUp = outcome is CreateMigrationCreated
+      ? ' Call `apply_migrations` to run it against the database.'
+      : '';
+  return CreateMigrationMcpResult(
+    message: result.message + followUp,
+    isError: result.isError,
+  );
 }
