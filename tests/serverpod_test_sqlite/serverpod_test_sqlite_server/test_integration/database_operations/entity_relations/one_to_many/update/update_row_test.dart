@@ -1,12 +1,14 @@
 import '../../../../test_tools/serverpod_test_tools.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() async {
   withServerpod(
-    'Given an entity with an implicit one-to-many relation',
+    'Given an entity with an implicit one-to-many relation,',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       setUp(() async {
         var book = await Book.db.insertRow(
