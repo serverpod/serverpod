@@ -87,10 +87,6 @@ base class BridgeMcpServer extends MCPServer
     };
   }
 
-  // ---------------------------------------------------------------------------
-  // Connection state
-  // ---------------------------------------------------------------------------
-
   bool get _isConnected => _connection != null;
 
   CallToolResult _notConnectedError() => CallToolResult(
@@ -104,10 +100,6 @@ base class BridgeMcpServer extends MCPServer
     ],
     isError: true,
   );
-
-  // ---------------------------------------------------------------------------
-  // connect / disconnect
-  // ---------------------------------------------------------------------------
 
   static final _connectTool = Tool(
     name: 'connect',
@@ -367,10 +359,6 @@ base class BridgeMcpServer extends MCPServer
     };
   }
 
-  // ---------------------------------------------------------------------------
-  // spawn / stop
-  // ---------------------------------------------------------------------------
-
   static final _spawnTool = Tool(
     name: 'spawn',
     description:
@@ -505,10 +493,6 @@ base class BridgeMcpServer extends MCPServer
       ],
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // Bridge-native resources
-  // ---------------------------------------------------------------------------
 
   ReadResourceResult _readInstances(ReadResourceRequest request) {
     final instances = bridge.sockets
