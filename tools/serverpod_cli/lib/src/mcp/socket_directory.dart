@@ -16,10 +16,23 @@ final serverpodMcpSocketDir = p.join(
 );
 
 /// Ensure [serverpodMcpSocketDir] exists, creating it if necessary.
+///
+/// On POSIX, [Directory.systemTemp] resolves to `/tmp` when `TMPDIR` is unset
+/// (typical Linux desktop), and a plain `mkdir` would inherit umask (0755) and
+/// expose the dir to other local users. Going through `createTempSync` (which
+/// uses `mkdtemp(3)`) forces 0700, and a `rename` preserves the inode so the
+/// final dir keeps that mode. macOS/Windows already give a per-user temp dir,
+/// but this hardens Linux without any platform-specific calls.
 void ensureServerpodMcpSocketDir() {
   final dir = Directory(serverpodMcpSocketDir);
-  if (!dir.existsSync()) {
-    dir.createSync(recursive: true);
+  if (dir.existsSync()) return;
+
+  final temp = Directory.systemTemp.createTempSync('serverpod-mcp-init-');
+  try {
+    temp.renameSync(serverpodMcpSocketDir);
+  } on FileSystemException {
+    // Lost the race against another runner that created the dir first.
+    temp.deleteSync();
   }
 }
 
