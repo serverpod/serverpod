@@ -56,8 +56,7 @@ void main() {
 
     test(
       'when listing tools, '
-      'then apply_migrations, create_migration, hot_reload, and tail_logs are '
-      'available',
+      'then apply_migrations, create_migration, hot_reload, and tail_logs are available',
       () async {
         final result = await connection.listTools();
 
