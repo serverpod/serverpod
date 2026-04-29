@@ -17,12 +17,24 @@ final serverpodMcpSocketDir = p.join(
 
 /// Ensure [serverpodMcpSocketDir] exists, creating it if necessary.
 ///
-/// On POSIX, [Directory.systemTemp] resolves to `/tmp` when `TMPDIR` is unset
-/// (typical Linux desktop), and a plain `mkdir` would inherit umask (0755) and
-/// expose the dir to other local users. Going through `createTempSync` (which
-/// uses `mkdtemp(3)`) forces 0700, and a `rename` preserves the inode so the
-/// final dir keeps that mode. macOS/Windows already give a per-user temp dir,
-/// but this hardens Linux without any platform-specific calls.
+/// On POSIX, [Directory.systemTemp] resolves to `/tmp` when `TMPDIR` is
+/// unset (typical Linux desktop). A plain `Directory.createSync()` calls
+/// `mkdir(2)`, which derives the new directory's mode from `0777 & ~umask`.
+/// With the typical desktop umask of 0022 that yields mode 0755, leaving
+/// the directory (and the sockets inside it) world-readable. Unix domain
+/// sockets accept any client that can `connect(2)` to the path, so any
+/// other local user could attach to a developer's `serverpod start --watch`
+/// MCP socket and call `apply_migrations`.
+///
+/// `Directory.createTempSync()` is specified to call `mkdtemp(3)`, which
+/// always creates with mode 0700. We then `rename(2)` to the canonical
+/// path: the syscall preserves the inode (and therefore the mode) and
+/// avoids a separate `chmod` step that Dart's `Directory` API does not
+/// expose without `Process.runSync('chmod', ...)`. On `EEXIST` we lose the
+/// race against another runner that created the dir first, which is fine.
+///
+/// macOS and Windows already give each user a private temp dir, but this
+/// path hardens Linux without any platform-specific calls.
 void ensureServerpodMcpSocketDir() {
   final dir = Directory(serverpodMcpSocketDir);
   if (dir.existsSync()) return;
@@ -39,7 +51,11 @@ void ensureServerpodMcpSocketDir() {
 /// Build the canonical socket path for a `serverpod start --watch` instance.
 ///
 /// Project name is sanitized via [sanitizeProjectName] so it is safe to use
-/// in a filename across platforms.
+/// in a filename across platforms. The PID - guaranteed unique per running
+/// process - is the disambiguator: two distinct runners can never produce
+/// the same filename even if their sanitized project names collide. The
+/// project segment is purely for human discoverability in
+/// `serverpod://instances` and the bridge's `connect`/`stop` tools.
 String serverpodMcpSocketPath({required int pid, required String project}) {
   final name = sanitizeProjectName(project);
   final suffix = name.isEmpty ? '' : '-$name';
@@ -49,7 +65,10 @@ String serverpodMcpSocketPath({required int pid, required String project}) {
 /// Sanitize [name] so it is safe to embed in a filename.
 ///
 /// Lower-cases, replaces non-alphanumeric (other than hyphens) with hyphens,
-/// collapses runs of hyphens, and strips leading/trailing hyphens.
+/// collapses runs of hyphens, and strips leading/trailing hyphens. Purely
+/// cosmetic - distinct projects whose sanitized names happen to collide
+/// (e.g. `my_app` and `my-app`) are still uniquely identified by the PID
+/// embedded in the socket filename.
 String sanitizeProjectName(String name) {
   return name
       .toLowerCase()
