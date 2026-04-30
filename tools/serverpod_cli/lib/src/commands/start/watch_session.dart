@@ -11,6 +11,8 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+import '../../migrations/cli_migration_runner.dart';
+
 /// Runs code generation for the given affected file paths.
 ///
 /// The function should update analyzer contexts and generate code as needed.
@@ -94,6 +96,13 @@ final _endpointOrFutureCallRegex = RegExp(
   r'\bextends\s+(?:\w*Endpoint|FutureCall)\b',
 );
 
+/// Action invoked by [WatchSession.applyMigration].
+///
+/// Runs migrations against the live database without restarting the
+/// pod. Returns the list of versions applied (empty if already up to
+/// date). Throws on failure.
+typedef ApplyMigrationsAction = Future<List<String>> Function();
+
 class WatchSession {
   final KernelCompiler? _compiler;
   final NativeAssetsBuilder? _nativeAssetsBuilder;
@@ -101,6 +110,7 @@ class WatchSession {
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
+  final ApplyMigrationsAction? _applyMigrationsAction;
 
   final Completer<int> _done = Completer<int>();
 
@@ -128,13 +138,15 @@ class WatchSession {
     required Set<String> generatedDirPaths,
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
+    ApplyMigrationsAction? applyMigrationsAction,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
        _createServer = createServer,
        _server = initialServer,
        _generatedDirPaths = generatedDirPaths,
-       _classifyProtocolChange = classifyProtocolChange {
+       _classifyProtocolChange = classifyProtocolChange,
+       _applyMigrationsAction = applyMigrationsAction {
     assert(
       (compiler == null) == (createServer == null),
       'compiler and createServer must both be provided or both be null.',
@@ -394,15 +406,29 @@ class WatchSession {
     return _pending;
   }
 
-  /// Restarts the server with `--apply-migrations` (one-shot).
+  /// Applies pending database migrations.
   ///
-  /// If another restart or migration is in progress, this call waits for it
-  /// to finish before proceeding. Throws a [StateError] if the session has
-  /// been disposed or the compiler is not available (--no-fes mode). Throws
-  /// on compilation failure so the caller (MCP server) can report the error.
+  /// When an [ApplyMigrationsAction] was supplied at construction time,
+  /// migrations are applied via that callback (typically a CLI-side
+  /// runner that connects to the database directly), and the running
+  /// pod is left in place - hot reload covers any model code changes.
+  ///
+  /// When no callback is supplied (legacy path), the pod is recompiled
+  /// and restarted with `--apply-migrations`.
+  ///
+  /// If another restart or migration is in progress, this call waits
+  /// for it to finish before proceeding. Throws a [StateError] if the
+  /// session has been disposed or, on the legacy path, if the compiler
+  /// is not available (--no-fes mode).
   Future<void> applyMigration() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
+    }
+
+    final action = _applyMigrationsAction;
+    if (action != null) {
+      _pending = _pending.then((_) => _applyMigrationInPlace(action));
+      return _pending;
     }
 
     final createServer = _createServer;
@@ -414,11 +440,29 @@ class WatchSession {
       );
     }
 
-    _pending = _pending.then((_) => _applyMigration(compiler, createServer));
+    _pending = _pending.then(
+      (_) => _applyMigrationByRestart(compiler, createServer),
+    );
     return _pending;
   }
 
-  Future<void> _applyMigration(
+  Future<void> _applyMigrationInPlace(ApplyMigrationsAction action) async {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+
+    _state = SessionState.applyingMigration;
+    try {
+      final applied = await action();
+      log.info(formatAppliedMigrations(applied));
+    } finally {
+      if (_state == SessionState.applyingMigration) {
+        _state = SessionState.idle;
+      }
+    }
+  }
+
+  Future<void> _applyMigrationByRestart(
     KernelCompiler compiler,
     ServerProcessFactory createServer,
   ) async {

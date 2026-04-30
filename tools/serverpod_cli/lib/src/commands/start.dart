@@ -26,6 +26,7 @@ import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -585,6 +586,16 @@ Future<int> _startWatchSession({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: generatedDirPaths,
+    applyMigrationsAction: noFes
+        ? null
+        : () => applyPendingMigrations(
+            serverDir: serverDir,
+            // TODO: thread runMode from `serverpod start --mode` once the
+            // command grows that flag. The pod today receives mode via
+            // server-args passthrough; the CLI defaults to development.
+            runMode: 'development',
+            moduleName: config.name,
+          ),
   );
 
   // Start MCP socket server for AI agent integration.
@@ -925,6 +936,12 @@ Future<void> _runTuiBackend({
       createServer: serverProcessFactory,
       initialServer: initialServer,
       generatedDirPaths: config.generatedDirPaths,
+      applyMigrationsAction: () => applyPendingMigrations(
+        serverDir: serverDir,
+        // TODO: thread runMode from `serverpod start --mode`.
+        runMode: 'development',
+        moduleName: config.name,
+      ),
     );
 
     // Start MCP socket server.
