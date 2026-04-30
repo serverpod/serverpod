@@ -1,44 +1,29 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "projectname_flutter",
-            "cwd": "${workspaceFolder}/projectname_flutter",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart"
-        },
-        {
-            "name": "projectname_server",
-            "cwd": "${workspaceFolder}/projectname_server",
-            "request": "launch",
-            "type": "dart",
-            // {{#docker}}
-            "preLaunchTask": "docker_compose_up",
-            // {{/docker}}
-            "program": "bin/main.dart",
-            // {{#postgres}}
-            "env": {
-                "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
-            },
-            // {{/postgres}}
-            // {{#database}}
-            "args": [
-                "--apply-migrations"
-            ]
-            // {{/database}}
-        }
-    ],
-    "compounds": [
-        {
-            "name": "projectname (full stack)",
-            "configurations": [
-                "projectname_server",
-                "projectname_flutter"
-            ],
-            "presentation": {
-                "order": 1
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "projectname_flutter",
+      "cwd": "${workspaceFolder}/projectname_flutter",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "projectname_server",
+      "type": "dart",
+      "request": "attach",
+      "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/vm-service-info.json",
+      "preLaunchTask": "serverpod_start",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "projectname (full stack)",
+      "configurations": ["projectname_server", "projectname_flutter"],
+      "presentation": {
+        "order": 1
+      }
+    }
+  ]
 }
