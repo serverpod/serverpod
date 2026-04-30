@@ -210,14 +210,7 @@ class GitHubIdpUtils {
       session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
-    GitHubAccountDetails details;
-    try {
-      details = _parseAccountDetails(data);
-    } catch (e) {
-      session.logAndThrow('Invalid user info from GitHub: $e');
-    }
-
-    if (details.email == null) {
+    if (data['email'] == null) {
       final emailResponse = await http.get(
         Uri.https('api.github.com', '/user/emails'),
         headers: {
@@ -231,17 +224,11 @@ class GitHubIdpUtils {
           final emails = (jsonDecode(emailResponse.body) as List)
               .cast<Map<String, dynamic>>();
           final primary = emails.firstWhere(
-            (final Map<String, dynamic> e) =>
-                e['primary'] == true && e['verified'] == true,
+            (final e) => e['primary'] == true && e['verified'] == true,
             orElse: () => <String, dynamic>{},
           );
           if (primary['email'] is String) {
-            details = (
-              userIdentifier: details.userIdentifier,
-              email: (primary['email'] as String).toLowerCase(),
-              name: details.name,
-              image: details.image,
-            );
+            data['email'] = primary['email'];
           }
         } catch (e) {
           session.log(
@@ -251,6 +238,13 @@ class GitHubIdpUtils {
           );
         }
       }
+    }
+
+    GitHubAccountDetails details;
+    try {
+      details = _parseAccountDetails(data);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
     try {
