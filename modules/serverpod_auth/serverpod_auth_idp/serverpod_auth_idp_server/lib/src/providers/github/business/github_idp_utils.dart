@@ -244,7 +244,11 @@ class GitHubIdpUtils {
             );
           }
         } catch (e) {
-          session.log(e.toString(), level: LogLevel.debug);
+          session.log(
+            'Failed to fetch primary email from GitHub: $e',
+            level: LogLevel.debug,
+            exception: e,
+          );
         }
       }
     }
