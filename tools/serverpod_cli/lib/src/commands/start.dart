@@ -543,24 +543,6 @@ Future<int> _startWatchSession({
       return 1;
     }
 
-    // IDE reload callback: re-run native build hooks (manifest may have
-    // changed since the last cycle if the developer edited C source), then
-    // compile and return the dill path.
-    Future<String?> onReloadRequested() async {
-      if (!await _runHooksFor(localBuilder, localCompiler)) {
-        return null;
-      }
-      await localCompiler.reset();
-      final result = await compileWithProgress(
-        'Compiling server (IDE reload)',
-        localCompiler,
-        rejectOnFailure: true,
-      );
-      if (result == null) return null;
-      localCompiler.accept();
-      return result.dillOutput ?? initialDill;
-    }
-
     serverProcessFactory = (String dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
@@ -568,7 +550,6 @@ Future<int> _startWatchSession({
         dartExecutable: localCompiler.dartExecutable,
         enableVmService: true,
         vmServiceInfoFile: podInfoFile,
-        onReloadRequested: onReloadRequested,
       );
       await serverProcess.start(dillPath: dillPath);
       await serverProcess.connectToVmService();
@@ -889,26 +870,6 @@ Future<void> _runTuiBackend({
     final stdoutSink = TuiLogSink(holder);
     final stderrSink = TuiLogSink(holder);
 
-    // IDE reload callback. Re-runs build hooks first so manifest changes
-    // (e.g. edited C source) are picked up before recompiling.
-    Future<String?> onReloadRequested() async {
-      if (!await _runHooksFor(
-        nativeAssetsBuilder,
-        compiler,
-      )) {
-        return null;
-      }
-      await compiler.reset();
-      final result = await compileWithProgress(
-        'Compiling server (IDE reload)',
-        compiler,
-        rejectOnFailure: true,
-      );
-      if (result == null) return null;
-      compiler.accept();
-      return result.dillOutput ?? initialDill;
-    }
-
     late final WatchSession session;
     VmServiceProxy? proxy;
 
@@ -922,7 +883,6 @@ Future<void> _runTuiBackend({
         dartExecutable: compiler.dartExecutable,
         enableVmService: true,
         vmServiceInfoFile: podInfoFile,
-        onReloadRequested: onReloadRequested,
         stdoutSink: stdoutSink,
         stderrSink: stderrSink,
       );

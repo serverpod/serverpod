@@ -17,12 +17,6 @@ String vmServiceWsUri(String httpUri) {
   return base.endsWith('/') ? '${base}ws' : '$base/ws';
 }
 
-/// Callback for IDE-initiated reload requests.
-///
-/// Should compile changes and return the dill path on success, or `null`
-/// on compilation failure.
-typedef ReloadRequestedCallback = Future<String?> Function();
-
 /// Manages the server subprocess lifecycle.
 ///
 /// Handles spawning, signal forwarding, output streaming, graceful shutdown,
@@ -34,9 +28,6 @@ class ServerProcess {
   final bool _enableVmService;
   final IOSink _stdout;
   final IOSink _stderr;
-
-  /// Callback invoked when an IDE requests a reload via the VM service.
-  final ReloadRequestedCallback? _onReloadRequested;
 
   /// Path to write the VM service info JSON file to. When set, the file
   /// is passed to the child via `--write-service-info` and the URI is read
@@ -69,15 +60,13 @@ class ServerProcess {
     String? vmServiceInfoFile,
     IOSink? stdoutSink,
     IOSink? stderrSink,
-    ReloadRequestedCallback? onReloadRequested,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr,
-       _onReloadRequested = onReloadRequested;
+       _stderr = stderrSink ?? stderr;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -210,24 +199,6 @@ class ServerProcess {
     _mainIsolateId = vm.isolates!.first.id!;
 
     if (!_vmServiceReady.isCompleted) _vmServiceReady.complete();
-
-    // Register custom reloadSources service so IDE reload requests
-    // go through the FES compilation pipeline.
-    if (_onReloadRequested != null) {
-      vmService.registerServiceCallback('reloadSources', (params) async {
-        final dillPath = await _onReloadRequested();
-        if (dillPath == null) {
-          return {'type': 'ReloadReport', 'success': false};
-        }
-        final dillUri = Uri.file(p.absolute(dillPath)).toString();
-        final report = await vmService.reloadSources(
-          _mainIsolateId!,
-          rootLibUri: dillUri,
-        );
-        return report.json!;
-      });
-      await vmService.registerService('reloadSources', 'serverpod-cli');
-    }
   }
 
   /// Hot reloads the server with a new kernel file.
