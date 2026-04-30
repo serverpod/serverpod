@@ -1,10 +1,15 @@
 import 'dart:io';
 
-import 'package:serverpod/src/generated/database_migration_version.dart';
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// The server migration manager handles migrations of the database.
+///
+/// Thin wrapper over [MigrationManager] kept for source compatibility:
+/// historically this class overrode `loadInstalledVersions` and
+/// `loadInstalledRepairMigration` to query the `serverpod_migrations`
+/// table via the generated `DatabaseMigrationVersion` model. Those
+/// queries now live in [MigrationManager] itself as raw SQL, so the
+/// CLI can drive migrations without depending on the server runtime.
 class ServerMigrationManager extends MigrationManager {
   /// Creates a new server migration manager.
   ServerMigrationManager(
@@ -13,30 +18,6 @@ class ServerMigrationManager extends MigrationManager {
   }) : super(
          FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
        );
-
-  @override
-  Future<List<DatabaseMigrationVersion>> loadInstalledVersions(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    return await DatabaseMigrationVersion.db.find(
-      session,
-      transaction: transaction,
-    );
-  }
-
-  @override
-  Future<DatabaseMigrationVersion?> loadInstalledRepairMigration(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    return await DatabaseMigrationVersion.db.findFirstRow(
-      session,
-      where: (t) =>
-          t.module.equals(MigrationConstants.repairMigrationModuleName),
-      transaction: transaction,
-    );
-  }
 
   /// Verifies the integrity of the database.
   ///

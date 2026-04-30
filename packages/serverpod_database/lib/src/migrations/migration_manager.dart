@@ -1,12 +1,24 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show MigrationConstants;
 
 import '../../serverpod_database.dart';
 import '../migrations/table_comparison_warning.dart';
 
+/// Name of the database table that records installed migration versions.
+/// Schema: `(id, module, version, timestamp)`. Defined in
+/// `packages/serverpod/lib/src/models/database_migration_version.spy.yaml`.
+const _migrationVersionTable = 'serverpod_migrations';
+
 /// The migration manager handles migrations of the database.
-abstract class MigrationManager {
+///
+/// Concrete by design: callers (server, CLI) instantiate this directly
+/// against a [FileSystemMigrationArtifactStore]. [ClientMigrationManager]
+/// extends it to override the version-loading queries for the
+/// client-side database, which doesn't have access to the server's
+/// generated `serverpod_migrations` model.
+class MigrationManager {
   final MigrationArtifactStoreReader _artifactStore;
 
   /// The run mode of the server.
@@ -34,21 +46,45 @@ abstract class MigrationManager {
 
   /// Loads the installed versions of the migrations from the database.
   ///
-  /// This method depends on the table model that will be available only in the
-  /// server/client package.
+  /// Only `module` and `version` are read - the manager doesn't use the
+  /// stored timestamp, and skipping it side-steps dialect differences in
+  /// how the timestamp is encoded (sqlite stores ms-since-epoch integers,
+  /// postgres stores native timestamps).
   Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
     DatabaseSession session, {
     Transaction? transaction,
-  });
+  }) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT module, version FROM $_migrationVersionTable',
+      transaction: transaction,
+    );
+    return [
+      for (final row in result)
+        DatabaseMigrationVersionModel(
+          module: row[0] as String,
+          version: row[1] as String,
+        ),
+    ];
+  }
 
   /// Loads the installed repair migration from the database.
-  ///
-  /// This method depends on the table model that will be available only in the
-  /// server/client package.
   Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
     DatabaseSession session, {
     Transaction? transaction,
-  });
+  }) async {
+    final result = await session.db.unsafeQuery(
+      'SELECT module, version FROM $_migrationVersionTable '
+      "WHERE module = '${MigrationConstants.repairMigrationModuleName}' "
+      'LIMIT 1',
+      transaction: transaction,
+    );
+    if (result.isEmpty) return null;
+    final row = result.first;
+    return DatabaseMigrationVersionModel(
+      module: row[0] as String,
+      version: row[1] as String,
+    );
+  }
 
   /// Lists all available migration versions.
   Future<List<String>> listAvailableVersions() async {
