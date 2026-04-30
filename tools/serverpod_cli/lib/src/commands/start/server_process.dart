@@ -170,7 +170,7 @@ class ServerProcess {
 
     final httpUri = await _readVmServiceUri(infoPath);
     if (httpUri == null) {
-      log.warning('VM service URI not found in service info file.');
+      log.warning('VM service URI not found in $infoPath');
       return;
     }
     _vmServiceUri = httpUri;
@@ -194,9 +194,21 @@ class ServerProcess {
 
     log.info('The Dart VM service is listening on $httpUri');
 
-    final vmService = _vmService!;
-    final vm = await vmService.getVM();
-    _mainIsolateId = vm.isolates!.first.id!;
+    // The pod may exit between connect and getVM (crash during init,
+    // race with our exit listener disposing the connection). Treat that
+    // as "no VM service available" so the watch session can keep running.
+    final vmService = _vmService;
+    if (vmService == null) {
+      log.warning('VM service connection lost before initialisation.');
+      return;
+    }
+    try {
+      final vm = await vmService.getVM();
+      _mainIsolateId = vm.isolates!.first.id!;
+    } on RPCError catch (e) {
+      log.warning('VM service connection lost during initialisation: $e');
+      return;
+    }
 
     if (!_vmServiceReady.isCompleted) _vmServiceReady.complete();
   }
@@ -278,7 +290,8 @@ class ServerProcess {
   /// and may not appear immediately. Polls with a short delay.
   Future<String?> _readVmServiceUri(String path) async {
     final file = File(path);
-    const maxAttempts = 50;
+    log.debug('Polling VM service info file: ${file.absolute.path}');
+    const maxAttempts = 300;
     const delay = Duration(milliseconds: 100);
 
     for (var i = 0; i < maxAttempts; i++) {

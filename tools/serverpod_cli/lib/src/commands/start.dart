@@ -636,7 +636,11 @@ Future<int> _startWatchSession({
 /// the proxy's URI to [userInfoFile]), or retargets [existing] in place
 /// when called for a subsequent pod restart so the published proxy URI
 /// stays stable across pod swaps.
-Future<VmServiceProxy> _mountOrRetargetProxy({
+///
+/// Returns the (possibly retargeted) proxy on success, or [existing] when
+/// the pod hasn't published a VM service URI - the watch session keeps
+/// running without an attachable proxy in that case.
+Future<VmServiceProxy?> _mountOrRetargetProxy({
   required ServerProcess serverProcess,
   required VmServiceProxy? existing,
   required String userInfoFile,
@@ -644,9 +648,12 @@ Future<VmServiceProxy> _mountOrRetargetProxy({
 }) async {
   final podHttp = serverProcess.vmServiceUri;
   if (podHttp == null) {
-    throw StateError(
-      'Cannot mount VM-service proxy: pod has no VM service URI.',
+    log.warning(
+      'Pod did not publish a VM service URI; IDE attach will not be '
+      'available for this pod. (Reload, restart, and the rest of the '
+      'watch loop continue to work.)',
     );
+    return existing;
   }
   final podWs = Uri.parse(vmServiceWsUri(podHttp));
 
@@ -663,6 +670,9 @@ Future<VmServiceProxy> _mountOrRetargetProxy({
   await File(userInfoFile).writeAsString(
     jsonEncode({'uri': proxy.httpUri.toString()}),
   );
+  // The "VM service proxy listening on" prefix is matched by the
+  // serverpod_start task's problemMatcher in tasks.json. If you reword this
+  // line, update the endsPattern there too.
   log.info('VM service proxy listening on ${proxy.httpUri}');
   return proxy;
 }
