@@ -146,6 +146,15 @@ class GitHubIdpUtils {
         transaction: transaction,
       );
 
+      await config.onAfterGitHubAccountCreated?.call(
+        session,
+        authUser,
+        githubAccount,
+        transaction: transaction,
+      );
+    }
+
+    try {
       final getExtraInfoCallback = config.getExtraGitHubInfoCallback;
       if (getExtraInfoCallback != null) {
         await getExtraInfoCallback(
@@ -155,13 +164,8 @@ class GitHubIdpUtils {
           transaction: transaction,
         );
       }
-
-      await config.onAfterGitHubAccountCreated?.call(
-        session,
-        authUser,
-        githubAccount,
-        transaction: transaction,
-      );
+    } catch (e) {
+      session.logAndThrow('Failed to get extra GitHub account info: $e');
     }
 
     return (
@@ -224,12 +228,14 @@ class GitHubIdpUtils {
       );
       if (emailResponse.statusCode == 200) {
         try {
-          final emails = jsonDecode(emailResponse.body) as List<dynamic>;
+          final emails = (jsonDecode(emailResponse.body) as List)
+              .cast<Map<String, dynamic>>();
           final primary = emails.firstWhere(
-            (final e) => e['primary'] == true && e['verified'] == true,
-            orElse: () => null,
+            (final Map<String, dynamic> e) =>
+                e['primary'] == true && e['verified'] == true,
+            orElse: () => <String, dynamic>{},
           );
-          if (primary != null && primary['email'] is String) {
+          if (primary['email'] is String) {
             details = (
               userIdentifier: details.userIdentifier,
               email: (primary['email'] as String).toLowerCase(),
