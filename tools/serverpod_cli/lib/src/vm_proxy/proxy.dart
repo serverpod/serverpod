@@ -20,7 +20,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// pod-side VM service URI in `vm-service-info.json`.
 class VmServiceProxy {
   /// Upstream WebSocket URI (typically the pod's DDS `ws://.../<token>=/ws`).
-  final Uri _upstreamWs;
+  /// Mutable so the proxy can survive pod restarts ([retarget]) without
+  /// changing its own URI - existing clients reconnect at the same
+  /// proxy URL after they observe their connection drop.
+  Uri _upstreamWs;
   RpcInterceptor _interceptor;
 
   /// Directions whose frames are JSON-decoded and dispatched to
@@ -48,6 +51,16 @@ class VmServiceProxy {
   /// Replace the live interceptor. The next frame uses the new hook.
   @visibleForTesting
   set interceptor(RpcInterceptor i) => _interceptor = i;
+
+  /// Point future client connections at a different upstream WS URI and
+  /// drop any pairs that are still live - they belong to a now-dead pod.
+  /// Clients reconnect on their own; the proxy's published URI is stable.
+  Future<void> retarget(Uri upstreamWs) async {
+    _upstreamWs = upstreamWs;
+    final live = List.of(_pairs);
+    _pairs.clear();
+    await [for (final p in live) p.close()].wait;
+  }
 
   /// HTTP base URI of the proxy (e.g. `http://127.0.0.1:NNNN/<token>=/`).
   /// Format matches `dart --enable-vm-service` so consumers that derive a

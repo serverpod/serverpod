@@ -54,7 +54,8 @@ class ServerProcess {
 
   /// The HTTP VM service URI, set once [connectToVmService] has read it from
   /// the service info file. `null` before the child has published it (or if
-  /// publication failed).
+  /// publication failed). Used by the `vm_proxy` to point its upstream at
+  /// the live pod.
   String? _vmServiceUri;
 
   final Completer<int> _exitCodeCompleter = Completer<int>();

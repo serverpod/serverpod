@@ -32,6 +32,8 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -487,6 +489,14 @@ Future<int> _startWatchSession({
   NativeAssetsBuilder? nativeAssetsBuilder;
   ServerProcessFactory? serverProcessFactory;
   ServerProcess initialServerProcess;
+  late final WatchSession session;
+  VmServiceProxy? proxy;
+
+  // The user-facing vm-service-info.json receives the proxy's URI instead.
+  // In --no-fes mode there is no proxy, so the pod writes directly to the user path.
+  final podInfoFile = noFes
+      ? vmServiceInfoFile
+      : p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
   if (noFes) {
     // No compiler - the IDE handles compilation and hot reload.
@@ -496,7 +506,7 @@ Future<int> _startWatchSession({
       serverDir: serverDir,
       serverArgs: serverArgs,
       enableVmService: true,
-      vmServiceInfoFile: vmServiceInfoFile,
+      vmServiceInfoFile: podInfoFile,
     );
     await log.progress('Starting server', () async {
       await serverProcess.start();
@@ -557,11 +567,17 @@ Future<int> _startWatchSession({
         serverArgs: serverArgs,
         dartExecutable: localCompiler.dartExecutable,
         enableVmService: true,
-        vmServiceInfoFile: vmServiceInfoFile,
+        vmServiceInfoFile: podInfoFile,
         onReloadRequested: onReloadRequested,
       );
       await serverProcess.start(dillPath: dillPath);
       await serverProcess.connectToVmService();
+      proxy = await _mountOrRetargetProxy(
+        serverProcess: serverProcess,
+        existing: proxy,
+        userInfoFile: vmServiceInfoFile,
+        reload: () => session.forceReload(),
+      );
       return serverProcess;
     };
 
@@ -576,7 +592,7 @@ Future<int> _startWatchSession({
   }
 
   final runMode = runModeFromServerArgs(serverArgs);
-  final session = WatchSession(
+  session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
     generate: generate,
@@ -629,8 +645,45 @@ Future<int> _startWatchSession({
   await fileChangeSub.cancel();
   await mcpSocket?.close();
   await session.dispose();
+  await proxy?.close();
+  if (!noFes) await File(vmServiceInfoFile).deleteIfExists();
 
   return exitCode;
+}
+
+/// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
+/// the proxy's URI to [userInfoFile]), or retargets [existing] in place
+/// when called for a subsequent pod restart so the published proxy URI
+/// stays stable across pod swaps.
+Future<VmServiceProxy> _mountOrRetargetProxy({
+  required ServerProcess serverProcess,
+  required VmServiceProxy? existing,
+  required String userInfoFile,
+  required Future<void> Function() reload,
+}) async {
+  final podHttp = serverProcess.vmServiceUri;
+  if (podHttp == null) {
+    throw StateError(
+      'Cannot mount VM-service proxy: pod has no VM service URI.',
+    );
+  }
+  final podWs = Uri.parse(vmServiceWsUri(podHttp));
+
+  if (existing != null) {
+    await existing.retarget(podWs);
+    return existing;
+  }
+
+  final proxy = VmServiceProxy(
+    upstreamWs: podWs,
+    interceptor: reloadSourcesInterceptor(reload),
+  );
+  await proxy.bind();
+  await File(userInfoFile).writeAsString(
+    jsonEncode({'uri': proxy.httpUri.toString()}),
+  );
+  log.info('VM service proxy listening on ${proxy.httpUri}');
+  return proxy;
 }
 
 /// Listens for SIGINT/SIGTERM and exposes a [future] that completes when
@@ -774,6 +827,7 @@ Future<void> _runTuiBackend({
 
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
     final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
+    final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
     // Start analyzer initialization on a worker isolate in the background.
     final analyzersFuture = IsolatedAnalyzers.create(config);
@@ -855,6 +909,9 @@ Future<void> _runTuiBackend({
       return result.dillOutput ?? initialDill;
     }
 
+    late final WatchSession session;
+    VmServiceProxy? proxy;
+
     // Server process factory. Subscribes to VM service extension events
     // on each new server process so restarts pick up the new connection.
     ServerProcessFactory serverProcessFactory;
@@ -864,7 +921,7 @@ Future<void> _runTuiBackend({
         serverArgs: serverArgs,
         dartExecutable: compiler.dartExecutable,
         enableVmService: true,
-        vmServiceInfoFile: vmServiceInfoFile,
+        vmServiceInfoFile: podInfoFile,
         onReloadRequested: onReloadRequested,
         stdoutSink: stdoutSink,
         stderrSink: stderrSink,
@@ -880,6 +937,13 @@ Future<void> _runTuiBackend({
         );
       }
 
+      proxy = await _mountOrRetargetProxy(
+        serverProcess: serverProcess,
+        existing: proxy,
+        userInfoFile: vmServiceInfoFile,
+        reload: () => session.forceReload(),
+      );
+
       return serverProcess;
     };
 
@@ -891,7 +955,7 @@ Future<void> _runTuiBackend({
 
     // Create watch session.
     final runMode = runModeFromServerArgs(serverArgs);
-    final session = WatchSession(
+    session = WatchSession(
       compiler: compiler,
       nativeAssetsBuilder: nativeAssetsBuilder,
       generate: (affectedPaths, requirements) async {
@@ -960,6 +1024,8 @@ Future<void> _runTuiBackend({
       await fileChangeSub?.cancel();
       await mcpSocket?.close();
       await session.dispose();
+      await proxy?.close();
+      await File(vmServiceInfoFile).deleteIfExists();
       if (startedDocker) {
         await _stopDockerServices(serverDir);
       }
@@ -995,6 +1061,8 @@ Future<void> _runTuiBackend({
     await fileChangeSub?.cancel();
     await mcpSocket?.close();
     await session.dispose();
+    await proxy?.close();
+    await File(vmServiceInfoFile).deleteIfExists();
   } catch (e, st) {
     // Show the error in the TUI. Keep it open so the user can read it.
     holder.state.showSplash = false;
