@@ -400,15 +400,21 @@ Future<int> _runWatchMode({
   final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
 
-  if (noFes) {
-    // Check if a server is already running by verifying the service info file.
-    final existingUri = await _checkExistingServer(vmServiceInfoFile);
-    if (existingUri != null) {
-      log.info('Existing server found.');
+  // If a server is already running (FES proxy or --no-fes pod), no-op so
+  // the IDE can attach to the existing instance via the unchanged info
+  // file. Stale files are cleaned up by _checkExistingServer.
+  final existingUri = await _checkExistingServer(vmServiceInfoFile);
+  if (existingUri != null) {
+    log.info('Existing server found.');
+    // In FES mode, the URI is the proxy's. Emit the same "ready" line as
+    // a fresh start so the VS Code task matcher fires either way.
+    if (noFes) {
       log.info('The Dart VM service is listening on $existingUri');
-      log.info('Server running.');
-      return 0;
+    } else {
+      log.info('VM service proxy listening on $existingUri');
     }
+    log.info('Server running.');
+    return 0;
   }
 
   // Start analyzer initialization in the background.
@@ -819,6 +825,20 @@ Future<void> _runTuiBackend({
     final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
     final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
     final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+
+    // If a server is already running, exit cleanly so the IDE can attach
+    // to the existing instance via the unchanged info file. Stale files
+    // are cleaned up by _checkExistingServer. TUI mode is always FES so
+    // the URI is the proxy's; emit the "ready" line a fresh start would
+    // emit so the VS Code task matcher fires either way.
+    final existingUri = await _checkExistingServer(vmServiceInfoFile);
+    if (existingUri != null) {
+      log.info('Existing server found.');
+      log.info('VM service proxy listening on $existingUri');
+      onExitCode(0);
+      shutdownApp(0);
+      return;
+    }
 
     // Start analyzer initialization on a worker isolate in the background.
     final analyzersFuture = IsolatedAnalyzers.create(config);
