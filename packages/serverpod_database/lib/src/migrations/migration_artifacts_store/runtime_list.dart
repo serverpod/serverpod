@@ -2,7 +2,8 @@ import '../migration_artifacts.dart';
 
 /// A [MigrationArtifactStore] backed by a fixed list that is used to apply
 /// [MigrationVersionSql] instances at runtime.
-class RuntimeListMigrationArtifactStore implements MigrationArtifactStore {
+class RuntimeListMigrationArtifactStore
+    implements MigrationArtifactStoreReader {
   /// Creates a store from the given [migrations] (same [moduleName] for all).
   RuntimeListMigrationArtifactStore(
     this.migrations, {
@@ -36,25 +37,6 @@ class RuntimeListMigrationArtifactStore implements MigrationArtifactStore {
   }
 
   @override
-  Future<MigrationVersionDefinition?> readVersionDefinition(
-    String version,
-  ) async {
-    throw UnsupportedError(
-      'This artifact store only exposes the SQL for running migrations.',
-    );
-  }
-
-  @override
-  Future<void> writeVersion(MigrationVersionDefinition artifacts) {
-    throw UnsupportedError('This artifact store is read-only.');
-  }
-
-  @override
-  Future<void> writeVersionRegistry(List<String> versions) {
-    throw UnsupportedError('This artifact store is read-only.');
-  }
-
-  @override
   Future<RepairMigration?> readRepairMigration() async {
     throw UnsupportedError(
       'This artifact store does not support repair migrations.',
@@ -62,7 +44,7 @@ class RuntimeListMigrationArtifactStore implements MigrationArtifactStore {
   }
 
   @override
-  Future<void> writeRepairMigration(RepairMigration repairMigration) {
-    throw UnsupportedError('This artifact store is read-only.');
+  Future<String?> loadDefinitionModuleName(String version) async {
+    return _byVersion[version]?.moduleName;
   }
 }

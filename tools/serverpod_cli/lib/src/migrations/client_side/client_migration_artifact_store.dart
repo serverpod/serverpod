@@ -11,7 +11,7 @@ import 'client_migration_dart_emitter.dart';
 
 /// File-system [MigrationArtifactStore] for the Dart client package: JSON and
 /// generated [migration.dart] files under [lib/migrations/].
-class ClientMigrationArtifactStore implements MigrationArtifactStore {
+class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
   ClientMigrationArtifactStore({required this.clientPackageRoot})
     : _projectDirectory = clientPackageRoot;
 
@@ -72,14 +72,6 @@ class ClientMigrationArtifactStore implements MigrationArtifactStore {
   }
 
   @override
-  Future<MigrationVersionSql?> readVersionSql(String version) async {
-    throw UnsupportedError(
-      'Reading version SQL from the migration artifact store is not supported '
-      'for client migrations. The SQL is only available at runtime.',
-    );
-  }
-
-  @override
   Future<void> writeVersion(MigrationVersionArtifacts artifacts) async {
     var versionDir = MigrationConstants.clientMigrationVersionDirectory(
       _projectDirectory,
@@ -124,11 +116,6 @@ class ClientMigrationArtifactStore implements MigrationArtifactStore {
     );
     await _migrationsBase.create(recursive: true);
     await File(registryFile).writeAsString(_dartEmitter.emitRegistry(versions));
-  }
-
-  @override
-  Future<RepairMigration?> readRepairMigration() async {
-    throw UnsupportedError('Repair migrations are not used on the client');
   }
 
   @override

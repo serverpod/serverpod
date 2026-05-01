@@ -7,7 +7,7 @@ import '../migrations/table_comparison_warning.dart';
 
 /// The migration manager handles migrations of the database.
 abstract class MigrationManager {
-  final MigrationArtifactStore _artifactStore;
+  final MigrationArtifactStoreReader _artifactStore;
 
   /// The run mode of the server.
   ///
@@ -94,9 +94,7 @@ abstract class MigrationManager {
     if (availableVersions.isEmpty) return null;
 
     var latestVersion = availableVersions.last;
-    return (await _artifactStore.readVersionDefinition(
-      latestVersion,
-    ))?.moduleName;
+    return await _artifactStore.loadDefinitionModuleName(latestVersion);
   }
 
   /// Migrates all modules to the latest version.
@@ -376,10 +374,5 @@ class ClientMigrationManager extends MigrationManager {
     Transaction? transaction,
   }) async {
     return null;
-  }
-
-  @override
-  Future<String?> _loadLatestDefinitionModuleName() async {
-    return (_artifactStore as RuntimeListMigrationArtifactStore).moduleName;
   }
 }

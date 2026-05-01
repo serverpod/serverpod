@@ -90,17 +90,33 @@ class RepairMigration {
   });
 }
 
-/// Persists and loads migration artifacts from a storage implementation.
-abstract interface class MigrationArtifactStore {
+/// Base class for a migration artifacts storage.
+abstract interface class BaseMigrationArtifactStore {
   /// Lists all available migration versions in ascending order.
   Future<List<String>> listVersions();
+}
 
+/// Loads migration SQL for running migrations.
+abstract interface class MigrationArtifactStoreReader
+    implements BaseMigrationArtifactStore {
   /// Reads the stored migration SQL for running migrations.
   ///
   /// Does not include the project definition. Returns `null` if the version
   /// cannot be found.
   Future<MigrationVersionSql?> readVersionSql(String version);
 
+  /// Reads the currently available repair migration, if any.
+  Future<RepairMigration?> readRepairMigration();
+
+  /// Loads the module name from the definition of the given migration version.
+  ///
+  /// Returns `null` if the version cannot be found.
+  Future<String?> loadDefinitionModuleName(String version);
+}
+
+/// Persists migration artifacts from a storage implementation.
+abstract interface class MigrationArtifactStoreWriter
+    implements BaseMigrationArtifactStore {
   /// Reads the stored definition for a migration version.
   ///
   /// Does not include the migration SQL. Returns `null` if the version cannot
@@ -115,9 +131,6 @@ abstract interface class MigrationArtifactStore {
 
   /// Writes the ordered list of migration versions.
   Future<void> writeVersionRegistry(List<String> versions);
-
-  /// Reads the currently available repair migration, if any.
-  Future<RepairMigration?> readRepairMigration();
 
   /// Persists the provided repair migration, replacing any existing one.
   ///

@@ -8,7 +8,8 @@ import '../../../serverpod_database.dart';
 import '../../definition/definition_normalizer.dart';
 
 /// Stores migration artifacts using the current file-system based format.
-class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
+class FileSystemMigrationArtifactStore
+    implements MigrationArtifactStoreReader, MigrationArtifactStoreWriter {
   /// Creates a new file system migration artifact store.
   FileSystemMigrationArtifactStore({
     required Directory projectDirectory,
@@ -108,6 +109,12 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
           ? normalizeMigrationToV2(migration, definition)
           : migration,
     );
+  }
+
+  @override
+  Future<String?> loadDefinitionModuleName(String version) async {
+    final definition = await readVersionDefinition(version);
+    return definition?.moduleName;
   }
 
   Future<Directory?> _resolveVersionDirectory(String version) async {
