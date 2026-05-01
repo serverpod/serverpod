@@ -36,6 +36,9 @@ Future<List<String>> applyPendingMigrations({
   pool.start();
 
   try {
+    // Session and Database have a circular construction dependency:
+    // DatabaseConstructor.create needs a session, the session needs a
+    // db. We break the cycle by initializing _db post-construction.
     final session = _CliDatabaseSession();
     session._db = DatabaseConstructor.create(
       session: session,
@@ -91,6 +94,11 @@ String runModeFromServerArgs(List<String> serverArgs) {
 /// Loads `config/<runMode>.yaml` + `config/passwords.yaml` from
 /// [serverDir]. Bridges around [ServerpodConfig.load]'s relative-path
 /// behaviour by chdir'ing for the duration of the call.
+///
+/// TODO: replace this with a base-directory parameter on
+/// [ServerpodConfig.load] / [PasswordManager]. Mutating
+/// [Directory.current] is racy with anything else in the isolate that
+/// reads cwd while this call is in flight.
 Future<ServerpodConfig> _loadServerpodConfig({
   required String serverDir,
   required String runMode,
@@ -109,6 +117,11 @@ Future<ServerpodConfig> _loadServerpodConfig({
 /// access to the project's generated serialization manager, but the
 /// migration code path only needs the module-name check; raw-SQL paths
 /// don't touch the table-for-type or target-table-definitions methods.
+///
+/// Load-bearing assumption: [MigrationManager.migrateToLatest] never
+/// reads [getTargetTableDefinitions] or [getTableForType]. If that
+/// changes (e.g. drift detection over the running schema), this stub
+/// will silently report no tables - update both sides together.
 class _CliSerializationManager extends DatabaseSerializationManager {
   _CliSerializationManager(this._moduleName);
   final String _moduleName;
