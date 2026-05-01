@@ -158,11 +158,9 @@ void main() {
       (sessionBuilder, endpoints) {
         late Session session;
         late Session newSession;
-        setUp(() {
+        setUp(() async {
           session = sessionBuilder.build();
           newSession = sessionBuilder.copyWith().build();
-        });
-        setUp(() async {
           await SimpleData.db.insert(newSession, [
             SimpleData(num: 111),
             SimpleData(num: 222),
@@ -264,8 +262,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
           setUp(() async {
+            session = sessionBuilder.build();
             await SimpleData.db.insert(session, [
               SimpleData(num: 111),
               SimpleData(num: 222),
