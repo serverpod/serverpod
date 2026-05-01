@@ -357,15 +357,10 @@ class ClientMigrationManager extends MigrationManager {
     // NOTE: This should be replaced by a proper find on the model once tables
     // are available for shared package models. Currently, only the server and
     // client packages have access to the [DatabaseMigrationVersion] model.
-    late DatabaseResult result;
-    try {
-      result = await session.db.unsafeQuery(
-        'SELECT * FROM "serverpod_migrations";',
-        transaction: transaction,
-      );
-    } catch (_) {
-      return [];
-    }
+    final result = await session.db.unsafeQuery(
+      'SELECT * FROM "serverpod_migrations";',
+      transaction: transaction,
+    );
 
     return [
       for (final row in result)
