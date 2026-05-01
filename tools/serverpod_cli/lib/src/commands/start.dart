@@ -579,6 +579,7 @@ Future<int> _startWatchSession({
     nativeAssetsBuilder = localBuilder;
   }
 
+  final runMode = runModeFromServerArgs(serverArgs);
   final session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
@@ -590,10 +591,7 @@ Future<int> _startWatchSession({
         ? null
         : () => applyPendingMigrations(
             serverDir: serverDir,
-            // TODO: thread runMode from `serverpod start --mode` once the
-            // command grows that flag. The pod today receives mode via
-            // server-args passthrough; the CLI defaults to development.
-            runMode: 'development',
+            runMode: runMode,
             moduleName: config.name,
           ),
   );
@@ -921,6 +919,7 @@ Future<void> _runTuiBackend({
     });
 
     // Create watch session.
+    final runMode = runModeFromServerArgs(serverArgs);
     final session = WatchSession(
       compiler: compiler,
       nativeAssetsBuilder: nativeAssetsBuilder,
@@ -938,8 +937,7 @@ Future<void> _runTuiBackend({
       generatedDirPaths: config.generatedDirPaths,
       applyMigrationsAction: () => applyPendingMigrations(
         serverDir: serverDir,
-        // TODO: thread runMode from `serverpod start --mode`.
-        runMode: 'development',
+        runMode: runMode,
         moduleName: config.name,
       ),
     );
