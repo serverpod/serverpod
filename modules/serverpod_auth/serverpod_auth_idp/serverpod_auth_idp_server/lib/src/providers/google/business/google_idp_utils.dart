@@ -139,7 +139,9 @@ class GoogleIdpUtils {
     try {
       data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
-        config: const GoogleIdTokenConfig(),
+        config: GoogleIdTokenConfig(
+          clockSkewTolerance: config.clockSkewTolerance,
+        ),
         audience: clientId,
       );
     } catch (e) {

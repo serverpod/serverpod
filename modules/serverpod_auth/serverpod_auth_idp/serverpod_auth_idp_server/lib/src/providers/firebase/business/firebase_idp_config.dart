@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier_config.dart';
 import '../../../utils/get_passwords_extension.dart';
 import 'firebase_idp.dart';
 import 'firebase_idp_utils.dart';
@@ -32,10 +33,14 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
   /// email or specific email domains.
   final FirebaseAccountDetailsValidation firebaseAccountDetailsValidation;
 
+  /// Tolerance for clock skew when validating Firebase ID token timestamps.
+  final Duration clockSkewTolerance;
+
   /// Creates a new instance of [FirebaseIdpConfig].
   const FirebaseIdpConfig({
     required this.credentials,
     this.firebaseAccountDetailsValidation = validateFirebaseAccountDetails,
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
   });
 
   /// Default validation function for extracted Firebase account details.
@@ -78,6 +83,7 @@ class FirebaseIdpConfigFromPasswords extends FirebaseIdpConfig {
   /// Creates a new [FirebaseIdpConfigFromPasswords] instance.
   FirebaseIdpConfigFromPasswords({
     super.firebaseAccountDetailsValidation,
+    super.clockSkewTolerance,
   }) : super(
          credentials: FirebaseServiceAccountCredentials.fromJsonString(
            Serverpod.instance.getPasswordOrThrow('firebaseServiceAccountKey'),
