@@ -1,20 +1,17 @@
 import 'dart:io';
 
-import 'package:serverpod_cli/src/util/cli_instrumentation.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../create/copier.dart';
 
 /// The internal tool for generating the pubspec.yaml files in the Serverpod
 /// repo.
-Future<void> performGeneratePubspecs({
+void performGeneratePubspecs({
   required String version,
   required String dartVersion,
   required String flutterVersion,
   required String mode,
-}) async {
-  cliInstrument('generate_pubspecs', 'enter cwd=${Directory.current.path}');
-
+}) {
   // Verify that we are in the serverpod directory
   var dirPackages = Directory('packages');
   var dirTemplates = Directory('templates/pubspecs');
@@ -27,10 +24,7 @@ Future<void> performGeneratePubspecs({
     return;
   }
 
-  cliInstrument('generate_pubspecs', 'layout ok; before log.info');
   log.info('Doing some fancy generation');
-  await log.flush();
-  cliInstrument('generate_pubspecs', 'after log.info flush');
 
   var sharedReplacements = [
     Replacement(
@@ -73,10 +67,6 @@ Future<void> performGeneratePubspecs({
       processUncommentMarker: false,
     );
     copier.copyFiles();
-    cliInstrument(
-      'generate_pubspecs',
-      'development copier.copyFiles() returned',
-    );
   } else {
     // Production mode
     var copier = Copier(
@@ -96,10 +86,5 @@ Future<void> performGeneratePubspecs({
       processUncommentMarker: false,
     );
     copier.copyFiles();
-    cliInstrument(
-      'generate_pubspecs',
-      'production copier.copyFiles() returned',
-    );
   }
-  cliInstrument('generate_pubspecs', 'exit');
 }

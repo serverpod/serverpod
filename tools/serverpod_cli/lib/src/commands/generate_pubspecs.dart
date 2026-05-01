@@ -53,7 +53,7 @@ class GeneratePubspecsCommand extends ServerpodCommand<GeneratePubspecsOption> {
   @override
   FutureOr<void>? runWithConfig(
     Configuration<GeneratePubspecsOption> commandConfig,
-  ) async {
+  ) {
     var version = commandConfig.value(GeneratePubspecsOption.version);
     var dartVersion = commandConfig.value(GeneratePubspecsOption.dartVersion);
     var flutterVersion = commandConfig.value(
@@ -61,7 +61,7 @@ class GeneratePubspecsCommand extends ServerpodCommand<GeneratePubspecsOption> {
     );
     var mode = commandConfig.value(GeneratePubspecsOption.mode);
 
-    await performGeneratePubspecs(
+    performGeneratePubspecs(
       version: version,
       dartVersion: dartVersion,
       flutterVersion: flutterVersion,

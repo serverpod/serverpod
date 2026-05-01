@@ -19,14 +19,6 @@ echo "### Installing CLI tools"
 
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
-serverpod_cli_instrument() {
-  case "${SERVERPOD_CLI_INSTRUMENT:-}" in
-    1|true|TRUE|yes|YES)
-      echo "[run_tests_update_pubspecs][instrument] $(date -u +"%Y-%m-%dT%H:%M:%SZ") UTC | $1" >&2
-      ;;
-  esac
-}
-
 export SERVERPOD_HOME=$(pwd)
 echo "### Serverpod home: $SERVERPOD_HOME"
 
@@ -45,8 +37,6 @@ util/update_pubspecs
 util/ensure_no_changes
 
 echo "### Analyze pubspecs"
-serverpod_cli_instrument "before serverpod analyze-pubspecs"
 serverpod analyze-pubspecs
-serverpod_cli_instrument "after serverpod analyze-pubspecs"
 
 echo "### Test complete"
