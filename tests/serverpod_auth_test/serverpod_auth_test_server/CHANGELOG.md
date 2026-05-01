@@ -1,3 +1,18 @@
+## 3.5.0-beta.5
+
+- feat(EXPERIMENTAL): Introduces a new `database` keyword on models that generates a client-side database.
+- feat: Adds support for `dynamic` fields on models, database and endpoints.
+- feat: Adds support for `jsonb` columns and `GIN` indexes, with lossless `json` <-> `jsonb` column type migration. ([@developerjamiu][https://github.com/developerjamiu])
+- feat: Makes the Serverpod MCP server always running regardless of a running project server with `serverpod start` command.
+- feat: Adds a new `serverpod quickstart` command to the `serverpod_cli`.
+- fix: Ensures `serverpod start` works with build hook dependencies.
+- fix: Fixes Postgres throwing when using row-lock on `find` methods with `includes`.
+- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
+- refactor: Moves the column rename from `TableMigration` to `ColumnMigration` (breaking change since last beta version).
+- perf: Reduces the size of SQLlite migration SQL by only storing metadata for non-basic types.
+- chore: Removes the requirement for Flutter to run the `serverpod_cli` on CI.
+- chore: Bumps minimum Dart version to 3.10.3 and Flutter version to 3.38.4.
+
 ## 3.5.0-beta.4
 
 - feat(EXPERIMENTAL): Adds `nocterm` based TUI to `serverpod start` command.
