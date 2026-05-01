@@ -145,10 +145,9 @@ void main() async {
     _,
   ) {
     late Session session;
-    setUp(() => session = sessionBuilder.build());
-
-    setUp(
-      () async => await EmailAuth.db.insert(session, [
+    setUp(() async {
+      session = sessionBuilder.build();
+      await EmailAuth.db.insert(session, [
         // These entries where generated using the hash algorithms.
         // The salt for all passwords is 'serverpod password salt'.
         EmailAuth(
@@ -200,8 +199,8 @@ void main() async {
           hash:
               r'$argon2id$c2VydmVycG9kIHBhc3N3b3JkIHNhbHQ=$lratTXSlVuxb6xwzHQzMu4Ra0pPVl1YLDdR8AwPY0gRlvF/5M7jxf6tODW9+KOgowfbP1tSGFHQebAjEOsmvL5NvAOrFDI3u0mD/414W8wR0Cni1KpATP7p5MHr5OZ2O4gEtOWfSJfgPTcq0X/uWZjRi1m4mc40TkyIFbMOfyO05JtoX0hi6r/4fTlIgIp1s7KgXEwF7B8IrmEb5zdnDgUs4qUifUM+SEH2S59fNBAt5CIviCOK7VreBztQw+L5S58ZHYSWWyB7bHJLcg1pDV9uiBb+q7qmXWJqDUBQjeJMH4nePzDmy7zarA04zQFhd6d5wIfZilJxJb8XXVGKZrQ==',
         ),
-      ]),
-    );
+      ]);
+    });
 
     test(
       'when migrating auth entries then updated rows matches legacy hashes stored.',

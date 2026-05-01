@@ -70,9 +70,8 @@ void main() {
     'Given a table model with dynamic fields and an entry that has been inserted,',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await ObjectWithDynamic.db.insertRow(session, object);
       });
 

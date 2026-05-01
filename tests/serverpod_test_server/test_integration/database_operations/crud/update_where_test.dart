@@ -11,9 +11,8 @@ void main() {
     'Given database entries with basic matching criteria',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -188,9 +187,8 @@ void main() {
     'Given database entries for transaction testing',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -241,9 +239,8 @@ void main() {
     'Given no matching database entries',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -271,9 +268,8 @@ void main() {
     'Given database entries with null values',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insertRow(
           session,
           Types(
@@ -582,9 +578,8 @@ void main() {
     'Given database entries with all supported data types',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await Types.db.insert(
           session,
           [
@@ -895,9 +890,8 @@ void main() {
     'Given an inserted entry,',
     (sessionBuilder, endpoints) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         await UniqueData.db.insert(session, [
           UniqueData(number: 1, email: 'a@serverpod.dev'),
         ]);

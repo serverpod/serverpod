@@ -197,9 +197,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
-
           setUpAll(() async {
+            session = sessionBuilder.build();
             await endpoints.testTools.createSimpleDatasInsideTransactions(
               sessionBuilder,
               123,
@@ -246,9 +245,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
-
           setUpAll(() async {
+            session = sessionBuilder.build();
             try {
               await endpoints.testTools
                   .createSimpleDataAndThrowInsideTransaction(
@@ -330,8 +328,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
+            session = sessionBuilder.build();
             await endpoints.testTools.createSimpleDatasInsideTransactions(
               sessionBuilder,
               123,
@@ -383,8 +381,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
+            session = sessionBuilder.build();
             try {
               await endpoints.testTools
                   .createSimpleDataAndThrowInsideTransaction(
@@ -427,8 +425,8 @@ void main() {
       'when calling createSimpleDatasInParallelTransactionCalls',
       (sessionBuilder, endpoints) {
         late Session session;
-        setUp(() => session = sessionBuilder.build());
         setUpAll(() async {
+          session = sessionBuilder.build();
           await endpoints.testTools.createSimpleDatasInParallelTransactionCalls(
             sessionBuilder,
           );
