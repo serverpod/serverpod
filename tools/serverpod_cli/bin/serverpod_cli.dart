@@ -49,18 +49,18 @@ final Analytics _analytics = CompoundAnalytics([
 void main(List<String> args) async {
   await runZonedGuarded(
     () async {
+      var exitCode = 0;
       try {
         await _main(args);
-        await _preExit();
       } on ExitException catch (e) {
-        await _preExit();
-        exit(e.exitCode);
+        exitCode = e.exitCode;
       } catch (error, stackTrace) {
-        // Last resort error handling.
         printInternalError(error, stackTrace);
+        exitCode = ExitException.codeError;
+      } finally {
         await _preExit();
-        exit(ExitException.codeError);
       }
+      exit(exitCode);
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
