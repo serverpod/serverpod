@@ -1,4 +1,5 @@
 import 'package:args/args.dart';
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -19,7 +20,8 @@ Future<void> _preCommandEnvironmentChecks() async {
     );
     throw ExitException.error();
   }
-  if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
+  if (!ci.isCI &&
+      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
       'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
     );
