@@ -21,6 +21,7 @@ import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/browser_launcher.dart';
+import 'package:serverpod_cli/src/util/cli_instrumentation.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -97,7 +98,12 @@ Future<void> _main(List<String> args) async {
   initializeLogger();
   var runner = buildCommandRunner();
   try {
+    cliInstrument(
+      'main',
+      'runner.run start firstArg=${args.isNotEmpty ? args.first : "(none)"}',
+    );
     await runner.run(args);
+    cliInstrument('main', 'runner.run completed');
   } on UsageException catch (e) {
     log.error(e.toString());
     throw ExitException.error();
@@ -128,6 +134,9 @@ ServerpodCommandRunner buildCommandRunner() {
 }
 
 Future<void> _preExit() async {
+  cliInstrument('preExit', 'before analytics.cleanUp');
   _analytics.cleanUp();
+  cliInstrument('preExit', 'before closeLogger');
   await closeLogger();
+  cliInstrument('preExit', 'after closeLogger');
 }

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Set SERVERPOD_CLI_INSTRUMENT=1 with util/update_pubspecs for phase markers.
+serverpod_cli_instrument() {
+  case "${SERVERPOD_CLI_INSTRUMENT:-}" in
+    1|true|TRUE|yes|YES)
+      echo "[sort_pubspec_dependencies][instrument] $(date -u +"%Y-%m-%dT%H:%M:%SZ") UTC | $1" >&2
+      ;;
+  esac
+}
+
 sort_pubspec() {
     local pubspec_path="$1"
 
@@ -14,6 +23,10 @@ export -f sort_pubspec
 
 echo "Sort all pubspecs dependencies"
 
+serverpod_cli_instrument "start parallel sort (cores=$(util/get_max_cores))"
+
 # Exclude the top level pubspec.yaml to avoid breaking the `dart run` for other processes.
 pubspecs=$(find . -name "pubspec.yaml" -type f ! -path "./pubspec.yaml")
 echo "$pubspecs" | xargs -P $(util/get_max_cores) -I {} bash -c 'sort_pubspec "{}"'
+
+serverpod_cli_instrument "done parallel sort"

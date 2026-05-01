@@ -153,6 +153,8 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Run serverpod update pubspecs
+        env:
+          SERVERPOD_CLI_INSTRUMENT: '1'
         run: bash util/run_tests_update_pubspecs
 
   unit_io_tests:
@@ -518,6 +520,8 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Run version change test
+        env:
+          SERVERPOD_CLI_INSTRUMENT: '1'
         run: util/run_tests_version_change
 
   cloud_storage_check_secrets:

@@ -119,7 +119,9 @@ class ServerpodCliLogger extends cli.Logger {
   }
 
   @override
-  Future<void> flush() async {}
+  Future<void> flush() async {
+    await _log.flush();
+  }
 
   void _call(LogLevel level, String message, {cli.LogType? type}) {
     if (_silent) return;

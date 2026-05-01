@@ -9,6 +9,14 @@ fi
 # Makes script exit on first non-zero error code
 set -e
 
+serverpod_cli_instrument() {
+  case "${SERVERPOD_CLI_INSTRUMENT:-}" in
+    1|true|TRUE|yes|YES)
+      echo "[run_tests_version_change][instrument] $(date -u +"%Y-%m-%dT%H:%M:%SZ") UTC | $1" >&2
+      ;;
+  esac
+}
+
 echo "### Incrementing major version in SERVERPOD_VERSION"
 if [ ! -f SERVERPOD_VERSION ]; then
     echo "Error: SERVERPOD_VERSION file not found in the root of the repository"
@@ -30,4 +38,6 @@ echo "### Running update pubspecs"
 util/update_pubspecs
 
 echo "### Running pub get all"
+serverpod_cli_instrument "before melos bootstrap"
 melos bootstrap
+serverpod_cli_instrument "after melos bootstrap"

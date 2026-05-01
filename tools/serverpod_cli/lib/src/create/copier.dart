@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/cli_instrumentation.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class Copier {
@@ -19,6 +20,8 @@ class Copier {
 
   bool processUncommentMarker;
 
+  int _instrumentFilesCopied = 0;
+
   Copier({
     required this.srcDir,
     required this.dstDir,
@@ -30,10 +33,29 @@ class Copier {
   });
 
   void copyFiles() {
+    _instrumentFilesCopied = 0;
+    if (isCliInstrumentationEnabled) {
+      cliInstrument(
+        'copier',
+        'copyFiles start src=${srcDir.path} dst=${dstDir.path}',
+      );
+    }
     _copyDirectory(srcDir, '');
+    if (isCliInstrumentationEnabled) {
+      cliInstrument(
+        'copier',
+        'copyFiles finished files=$_instrumentFilesCopied',
+      );
+    }
   }
 
   void _copyDirectory(Directory dir, String relativePath) {
+    if (isCliInstrumentationEnabled) {
+      cliInstrument(
+        'copier',
+        'listSync rel=${relativePath.isEmpty ? "." : relativePath}',
+      );
+    }
     for (var model in dir.listSync()) {
       var modelName = p.basename(model.path);
       if (ignoreFileNames.contains(modelName)) continue;
@@ -71,6 +93,10 @@ class Copier {
     }
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
+    if (isCliInstrumentationEnabled) {
+      _instrumentFilesCopied++;
+      cliInstrument('copier', 'wrote #$_instrumentFilesCopied $dstFileName');
+    }
   }
 
   String _replace(String str, List<Replacement> replacements) {

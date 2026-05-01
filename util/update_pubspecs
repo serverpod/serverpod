@@ -9,6 +9,18 @@ fi
 # Makes script exit on first non-zero error code
 set -e
 
+# Set SERVERPOD_CLI_INSTRUMENT=1 for stderr phase markers (bash + CLI). See
+# tools/serverpod_cli/lib/src/util/cli_instrumentation.dart
+serverpod_cli_instrument() {
+  case "${SERVERPOD_CLI_INSTRUMENT:-}" in
+    1|true|TRUE|yes|YES)
+      echo "[update_pubspecs][instrument] $(date -u +"%Y-%m-%dT%H:%M:%SZ") UTC | $1" >&2
+      ;;
+  esac
+}
+
+serverpod_cli_instrument "start pwd=$(pwd)"
+
 VERSION=`cat SERVERPOD_VERSION`
 DART_VERSION=`cat DART_VERSION`
 FLUTTER_VERSION=`cat FLUTTER_VERSION`
@@ -17,16 +29,22 @@ BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
 
+serverpod_cli_instrument "before dart pub get in tools/serverpod_cli"
 echo "pub get cli"
 cd $CLI_DIR
 dart pub get
 cd $BASE
+serverpod_cli_instrument "after dart pub get in tools/serverpod_cli"
 
+serverpod_cli_instrument "before util/sort_pubspec_dependencies"
 ./util/sort_pubspec_dependencies
+serverpod_cli_instrument "after util/sort_pubspec_dependencies"
 
 echo "Update all pubspecs. Version is $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)."
 
+serverpod_cli_instrument "before dart generate-pubspecs"
 dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode development
+serverpod_cli_instrument "after dart generate-pubspecs"
 
 echo "Copying CHANGELOG.md"
 cp CHANGELOG.md packages/serverpod/CHANGELOG.md

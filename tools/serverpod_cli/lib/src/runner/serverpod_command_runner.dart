@@ -6,6 +6,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
+import 'package:serverpod_cli/src/util/cli_instrumentation.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -13,6 +14,10 @@ import '../commands/version.dart' show VersionCommand;
 import '../generated/completion_script_carapace.dart';
 
 Future<void> _preCommandEnvironmentChecks() async {
+  cliInstrument(
+    'preCommandEnv',
+    'start ci=${ci.isCI}',
+  );
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
@@ -20,13 +25,19 @@ Future<void> _preCommandEnvironmentChecks() async {
     );
     throw ExitException.error();
   }
-  if (!ci.isCI &&
-      !await CommandLineTools.existsCommand('flutter', ['--version'])) {
-    log.error(
-      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
-    );
-    throw ExitException.error();
+  cliInstrument('preCommandEnv', 'dart ok');
+  if (!ci.isCI) {
+    if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
+      log.error(
+        'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+      );
+      throw ExitException.error();
+    }
+    cliInstrument('preCommandEnv', 'flutter ok');
+  } else {
+    cliInstrument('preCommandEnv', 'flutter check skipped (CI)');
   }
+  cliInstrument('preCommandEnv', 'done');
 }
 
 Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
@@ -38,8 +49,10 @@ Future<void> _preCommandPrints(ServerpodCommandRunner runner) async {
 }
 
 Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
+  cliInstrument('onBeforeRunCommand', 'start');
   await _preCommandEnvironmentChecks();
   await _preCommandPrints(runner as ServerpodCommandRunner);
+  cliInstrument('onBeforeRunCommand', 'end');
 }
 
 class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
