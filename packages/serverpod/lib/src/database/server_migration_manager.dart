@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
 
-/// The server migration manager handles migrations of the database.
+/// Server-side entrypoint for [MigrationManager]. Wraps the constructor
+/// to take a [Directory] (the project root) instead of a
+/// [MigrationArtifactStore], and re-exports
+/// [MigrationManager.verifyDatabaseIntegrity] as a static for callers
+/// that don't need a manager instance.
 ///
-/// Thin wrapper over [MigrationManager] kept for source compatibility:
-/// historically this class overrode `loadInstalledVersions` and
-/// `loadInstalledRepairMigration` to query the `serverpod_migrations`
-/// table via the generated `DatabaseMigrationVersion` model. Those
-/// queries now live in [MigrationManager] itself as raw SQL, so the
-/// CLI can drive migrations without depending on the server runtime.
+/// The CLI uses [MigrationManager] directly; this class exists so server
+/// code keeps a familiar surface and doesn't have to know about the
+/// artifact-store abstraction.
 class ServerMigrationManager extends MigrationManager {
   /// Creates a new server migration manager.
   ServerMigrationManager(
