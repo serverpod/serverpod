@@ -331,8 +331,8 @@ void main() {
         '',
         (sessionBuilder, endpoints) {
           late Session session;
-          setUp(() => session = sessionBuilder.build());
           setUpAll(() async {
+            session = sessionBuilder.build();
             await endpoints.testTools.createSimpleDatasInsideTransactions(
               sessionBuilder,
               123,
