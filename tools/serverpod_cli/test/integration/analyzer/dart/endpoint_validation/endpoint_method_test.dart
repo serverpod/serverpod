@@ -578,30 +578,29 @@ class ExampleEndpoint extends Endpoint {
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
-      test('then no validation errors are reported.', () {
-        expect(collector.errors, isEmpty);
+      test('then a validation error is reported.', () {
+        expect(collector.errors, hasLength(1));
       });
+
+      test(
+        'then validation error informs that return type needs explicit type argument.',
+        () {
+          expect(
+            collector.errors.first.message,
+            'Use an explicit Future type argument. E.g. Future<String> or '
+            'Future<dynamic>.',
+          );
+        },
+      );
 
       test('then endpoint definition is created.', () {
         expect(endpointDefinitions, hasLength(1));
       });
 
-      test('then the endpoint method definition is created.', () {
+      test('then no endpoint method definition is created.', () {
         var methods = endpointDefinitions.firstOrNull?.methods;
-        expect(methods, isNotEmpty);
+        expect(methods, isEmpty);
       });
-
-      test(
-        'then the endpoint method definition has a return type of Future<dynamic>.',
-        () {
-          var returnType =
-              endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
-          expect(returnType, isNotNull);
-          expect(returnType!.className, 'Future');
-          expect(returnType.generics, hasLength(1));
-          expect(returnType.generics.firstOrNull?.className, 'dynamic');
-        },
-      );
     },
   );
 
