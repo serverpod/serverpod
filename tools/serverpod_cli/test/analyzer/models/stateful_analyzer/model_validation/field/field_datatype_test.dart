@@ -1312,6 +1312,40 @@ fields:
         );
       },
     );
+
+    test(
+      'Given a field typed "Mydynamic?", '
+      'when validating, '
+      'then the warning about redundant "dynamic?" is not reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            ref: Mydynamic?
+          ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('my_dynamic').withYaml(
+            '''
+          class: Mydynamic
+          fields:
+            name: String
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        analyzer.validateAll();
+
+        expect(collector.errors, isEmpty);
+      },
+    );
   });
 
   group('Given a class with a type starting with package: ', () {

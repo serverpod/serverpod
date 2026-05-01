@@ -1399,7 +1399,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (typeText != null && typeText.contains('dynamic?')) {
+    if (typeText != null &&
+        (typeText == 'dynamic?' || typeText.contains('<dynamic?>'))) {
       errors.add(
         SourceSpanSeverityException(
           'The type "$typeText" contains a redundant "?" mark. Remove the "?" '
