@@ -732,6 +732,14 @@ class LibraryGenerator {
       (m) => m is ModelClassDefinition && m.shouldGenerateTableCode(false),
     );
 
+    if (hasClientDatabaseTables && config.type != PackageType.module) {
+      library.directives.addAll([
+        Directive.import(
+          'package:${config.dartClientPackage}/migrations/migration_registry.dart',
+        ),
+      ]);
+    }
+
     var hasModules =
         config.modules.isNotEmpty && config.type != PackageType.module;
 

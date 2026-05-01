@@ -30,6 +30,7 @@ export 'src/interface/serialization_manager.dart';
 export 'src/interface/value_encoder.dart';
 export 'src/migrations/migration_artifacts.dart';
 export 'src/migrations/migration_artifacts_store/file_system.dart';
+export 'src/migrations/migration_artifacts_store/runtime_list.dart';
 export 'src/migrations/migration_manager.dart';
 export 'src/query_parameters.dart';
 export 'src/util/database_util.dart';

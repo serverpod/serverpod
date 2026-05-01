@@ -1006,24 +1006,46 @@ Future<void> _runTuiBackend({
 ({String message, bool isError}) _describeCreateMigration(
   CreateMigrationOutcome outcome, {
   required String forceHint,
+  bool isServer = true,
 }) {
+  final label = '${isServer ? 'Server' : 'Client'} migration';
   return switch (outcome) {
     CreateMigrationCreated(:final versionName, :final migrationDirectory) => (
-      message: 'Migration "$versionName" created at $migrationDirectory.',
+      message: '$label "$versionName" created at $migrationDirectory.',
       isError: false,
     ),
     CreateMigrationNoChanges() => (
-      message: 'No schema changes detected; no migration created.',
+      message: '$label skipped. No changes detected.',
       isError: false,
     ),
     CreateMigrationAborted() => (
-      message: 'Migration aborted due to warnings. $forceHint',
+      message: '$label aborted due to warnings. $forceHint',
       isError: true,
     ),
     CreateMigrationFailed(:final message) => (
       message: message,
       isError: true,
     ),
+    CreateMigrationServerClientCreated(
+      :final serverResult,
+      :final clientResult,
+    ) =>
+      () {
+        final serverDescription = _describeCreateMigration(
+          serverResult,
+          forceHint: forceHint,
+          isServer: true,
+        );
+        final clientDescription = _describeCreateMigration(
+          clientResult,
+          forceHint: forceHint,
+          isServer: false,
+        );
+        return (
+          message: '${serverDescription.message}\n${clientDescription.message}',
+          isError: serverDescription.isError || clientDescription.isError,
+        );
+      }(),
   };
 }
 

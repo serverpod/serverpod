@@ -89,6 +89,24 @@ abstract class MigrationConstants {
       'migration.json',
     ),
   );
+
+  /// Base directory for client-side migrations: `<client package>/lib/migrations`.
+  static Directory clientMigrationsBaseDirectory(
+    Directory clientPackageRoot,
+  ) => Directory(
+    path.join(clientPackageRoot.path, 'lib', 'migrations'),
+  );
+
+  /// A single version directory under the client [lib/migrations/] root.
+  static Directory clientMigrationVersionDirectory(
+    Directory clientPackageRoot,
+    String version,
+  ) => Directory(
+    path.join(
+      clientMigrationsBaseDirectory(clientPackageRoot).path,
+      version,
+    ),
+  );
 }
 
 /// Serverpod URL constants used by the serverpod framework.

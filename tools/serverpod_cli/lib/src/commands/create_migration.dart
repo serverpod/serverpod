@@ -83,29 +83,49 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         tag: tag,
         force: force,
       );
-      return switch (outcome) {
-        CreateMigrationCreated() || CreateMigrationNoChanges() => true,
-        CreateMigrationAborted() || CreateMigrationFailed() => false,
-      };
+      return outcome.success;
     });
 
-    switch (outcome) {
-      case CreateMigrationFailed(:final message):
-        log.error(message);
-        throw ExitException.error();
-      case CreateMigrationAborted():
-        throw ExitException.error();
-      case CreateMigrationNoChanges():
-        return;
-      case CreateMigrationCreated(:final migrationDirectory):
-        log.info(
-          'Migration created: ${path.relative(
-            migrationDirectory,
-            from: Directory.current.path,
-          )}',
-          type: TextLogType.bullet,
-        );
-        log.info('Done.', type: TextLogType.success);
+    _logMigrationOutcome(outcome);
+    if (outcome.success) {
+      log.info('Done.', type: TextLogType.success);
+    } else {
+      throw ExitException.error();
     }
+  }
+}
+
+void _logMigrationOutcome(
+  CreateMigrationOutcome outcome, {
+  bool isServer = true,
+}) {
+  final label = '${isServer ? 'Server' : 'Client'} migration';
+  switch (outcome) {
+    case CreateMigrationFailed(:final message):
+      log.error(message);
+    case CreateMigrationAborted():
+      log.error(
+        '$label aborted. Use --force to ignore warnings.',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationNoChanges():
+      log.info(
+        '$label skipped. No changes detected.',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationCreated(:final migrationDirectory):
+      log.info(
+        '$label created: ${path.relative(
+          migrationDirectory,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+    case CreateMigrationServerClientCreated(
+      :final serverResult,
+      :final clientResult,
+    ):
+      _logMigrationOutcome(serverResult, isServer: true);
+      _logMigrationOutcome(clientResult, isServer: false);
   }
 }

@@ -7,6 +7,8 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import 'context.dart';
+
 /// Outcome of a [createMigrationAction] call.
 sealed class CreateMigrationOutcome {
   const CreateMigrationOutcome();
@@ -26,6 +28,17 @@ class CreateMigrationCreated extends CreateMigrationOutcome {
   final String migrationDirectory;
 }
 
+/// Result of a [createMigrationAction] call.
+class CreateMigrationServerClientCreated extends CreateMigrationOutcome {
+  const CreateMigrationServerClientCreated({
+    required this.serverResult,
+    required this.clientResult,
+  });
+
+  final CreateMigrationOutcome serverResult;
+  final CreateMigrationOutcome clientResult;
+}
+
 /// No schema changes were detected; nothing was written.
 class CreateMigrationNoChanges extends CreateMigrationOutcome {
   const CreateMigrationNoChanges();
@@ -42,6 +55,19 @@ class CreateMigrationFailed extends CreateMigrationOutcome {
 
   /// User-facing description of the failure.
   final String message;
+}
+
+extension MigrationOutcomeExtension on CreateMigrationOutcome {
+  bool get success => switch (this) {
+    CreateMigrationNoChanges() => true,
+    CreateMigrationCreated() => true,
+    CreateMigrationServerClientCreated(
+      :final serverResult,
+      :final clientResult,
+    ) =>
+      serverResult.success && clientResult.success,
+    _ => false,
+  };
 }
 
 /// Shared implementation behind the `serverpod create-migration` command, the
@@ -72,17 +98,76 @@ Future<CreateMigrationOutcome> createMigrationAction({
     );
   }
 
-  final generator = MigrationGenerator(
+  MigrationGenerationContext generationContext;
+  try {
+    generationContext = await MigrationGenerationContext.load(config);
+  } on GenerateMigrationDatabaseDefinitionException {
+    return const CreateMigrationFailed(
+      'Unable to generate database definition for project.',
+    );
+  }
+
+  final hasClientMigrations = generationContext.hasClientDatabaseTables;
+  final serverGenerator = MigrationGenerator(
     directory: serverDirectory,
     projectName: projectName,
   );
+  final clientDirectory = hasClientMigrations
+      ? Directory(path.joinAll(config.clientPackagePathParts))
+      : null;
 
+  final clientGenerator = clientDirectory != null
+      ? MigrationGenerator(
+          directory: clientDirectory,
+          projectName: projectName,
+          serverCode: false,
+        )
+      : null;
+
+  final precomputedVersion = MigrationGenerator.createVersionName(tag);
+
+  final results = await Future.wait([
+    _createMigration(
+      force: force,
+      config: config,
+      precomputedVersion: precomputedVersion,
+      generator: serverGenerator,
+      context: generationContext,
+    ),
+    if (hasClientMigrations)
+      _createMigration(
+        config: config,
+        force: force,
+        precomputedVersion: precomputedVersion,
+        generator: clientGenerator!,
+        context: generationContext,
+      ),
+  ]);
+
+  if (!hasClientMigrations) {
+    return results.first;
+  }
+
+  return CreateMigrationServerClientCreated(
+    serverResult: results.first,
+    clientResult: results.last,
+  );
+}
+
+Future<CreateMigrationOutcome> _createMigration({
+  required MigrationGenerator generator,
+  required GeneratorConfig config,
+  required bool force,
+  required MigrationGenerationContext context,
+  required String precomputedVersion,
+}) async {
   MigrationVersionArtifacts? migration;
   try {
     migration = await generator.createMigration(
-      tag: tag,
       force: force,
       config: config,
+      context: context,
+      precomputedVersion: precomputedVersion,
     );
   } on MigrationVersionLoadException catch (e) {
     return CreateMigrationFailed(
@@ -109,9 +194,14 @@ Future<CreateMigrationOutcome> createMigrationAction({
 
   return CreateMigrationCreated(
     versionName: migration.version,
-    migrationDirectory: MigrationConstants.migrationVersionDirectory(
-      serverDirectory,
-      migration.version,
-    ).path,
+    migrationDirectory: generator.serverCode
+        ? MigrationConstants.migrationVersionDirectory(
+            generator.directory,
+            migration.version,
+          ).path
+        : MigrationConstants.clientMigrationVersionDirectory(
+            generator.directory,
+            migration.version,
+          ).path,
   );
 }

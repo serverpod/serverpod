@@ -334,3 +334,57 @@ abstract class MigrationManager {
     return warnings.isEmpty;
   }
 }
+
+/// Handles migrations for client-side databases.
+class ClientMigrationManager extends MigrationManager {
+  /// Creates a manager for the given in-memory [migrations] and [moduleName].
+  ClientMigrationManager({
+    required super.runMode,
+    required List<MigrationVersionSql> migrations,
+    required String moduleName,
+  }) : super(
+         RuntimeListMigrationArtifactStore(
+           migrations,
+           moduleName: moduleName,
+         ),
+       );
+
+  @override
+  Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
+    DatabaseSession session, {
+    Transaction? transaction,
+  }) async {
+    // NOTE: This should be replaced by a proper find on the model once tables
+    // are available for shared package models. Currently, only the server and
+    // client packages have access to the [DatabaseMigrationVersion] model.
+    late DatabaseResult result;
+    try {
+      result = await session.db.unsafeQuery(
+        'SELECT * FROM "serverpod_migrations";',
+        transaction: transaction,
+      );
+    } catch (_) {
+      return [];
+    }
+
+    return [
+      for (final row in result)
+        DatabaseMigrationVersionModel.fromJson(
+          row.toColumnMap(),
+        ),
+    ];
+  }
+
+  @override
+  Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
+    DatabaseSession session, {
+    Transaction? transaction,
+  }) async {
+    return null;
+  }
+
+  @override
+  Future<String?> _loadLatestDefinitionModuleName() async {
+    return (_artifactStore as RuntimeListMigrationArtifactStore).moduleName;
+  }
+}

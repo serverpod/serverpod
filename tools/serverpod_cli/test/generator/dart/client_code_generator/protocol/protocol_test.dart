@@ -27,6 +27,21 @@ void main() {
     'protocol',
     'protocol.dart',
   );
+  var expectedClientFileName = path.join(
+    '..',
+    'example_project_client',
+    'lib',
+    'src',
+    'protocol',
+    'client.dart',
+  );
+  var expectedMigrationRegistryFileName = path.join(
+    '..',
+    'example_project_client',
+    'lib',
+    'migrations',
+    'migration_registry.dart',
+  );
 
   group(
     'Given a client database table when generating protocol files',
@@ -57,6 +72,43 @@ void main() {
           expect(
             codeMap[expectedFileName],
             contains('DatabaseSerializationManager'),
+          );
+        },
+      );
+
+      test(
+        'then the protocol.dart does not expose client migrations directly.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains('clientMigrations')),
+          );
+        },
+      );
+
+      test(
+        'then the client.dart wires the generated migration registry into createSession.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            contains('clientMigrations: MigrationRegistry.migrations'),
+          );
+          expect(
+            codeMap[expectedClientFileName],
+            contains(
+              'package:example_project_client/migrations/migration_registry.dart',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then the migration registry placeholder file is created.',
+        () {
+          expect(codeMap[expectedMigrationRegistryFileName], isNotNull);
+          expect(
+            codeMap[expectedMigrationRegistryFileName],
+            contains('class MigrationRegistry'),
           );
         },
       );
