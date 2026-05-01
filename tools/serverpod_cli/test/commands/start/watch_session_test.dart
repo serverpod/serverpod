@@ -703,6 +703,154 @@ void main() {
     );
   });
 
+  group('Given applyMigration is called with an in-place action', () {
+    late List<String> appliedVersions;
+    late int actionCalls;
+    late Completer<List<String>>? gate;
+    late WatchSession inPlaceSession;
+
+    setUp(() {
+      appliedVersions = ['20251030_120000_user'];
+      actionCalls = 0;
+      gate = null;
+
+      inPlaceSession = WatchSession(
+        compiler: compiler,
+        generate: (affectedPaths, requirements) async {
+          generateCalls.add(affectedPaths);
+          return (success: generateSuccess, generatedFiles: generatedFiles);
+        },
+        createServer:
+            (String dillPath, {List<String> extraArgs = const []}) async {
+              factoryCalls.add('createServer:$dillPath');
+              return factoryServer;
+            },
+        initialServer: server,
+        generatedDirPaths: {'/generated'},
+        applyMigrationsAction: () async {
+          actionCalls++;
+          final localGate = gate;
+          if (localGate != null) return localGate.future;
+          return appliedVersions;
+        },
+      );
+    });
+
+    test(
+      'when the action returns versions, '
+      'then it runs the action and leaves the pod alone',
+      () async {
+        await inPlaceSession.applyMigration();
+
+        expect(actionCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when the action returns an empty list, '
+      'then it succeeds (already up to date)',
+      () async {
+        appliedVersions = [];
+
+        await inPlaceSession.applyMigration();
+
+        expect(actionCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when the action throws, '
+      'then the error propagates and state returns to idle',
+      () async {
+        final session = WatchSession(
+          compiler: compiler,
+          generate: (affectedPaths, requirements) async =>
+              (success: true, generatedFiles: <String>{}),
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) =>
+                  throw StateError('not used'),
+          initialServer: server,
+          generatedDirPaths: {'/generated'},
+          applyMigrationsAction: () async => throw StateError('boom'),
+        );
+
+        await expectLater(
+          session.applyMigration(),
+          throwsA(
+            isA<StateError>().having((e) => e.message, 'message', 'boom'),
+          ),
+        );
+
+        // State must be idle again - a follow-up call should reach the
+        // action rather than hit the in-flight latch.
+        var followUpRan = false;
+        final followUp = WatchSession(
+          compiler: compiler,
+          generate: (affectedPaths, requirements) async =>
+              (success: true, generatedFiles: <String>{}),
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) =>
+                  throw StateError('not used'),
+          initialServer: server,
+          generatedDirPaths: {'/generated'},
+          applyMigrationsAction: () async {
+            followUpRan = true;
+            return const <String>[];
+          },
+        );
+        await followUp.applyMigration();
+        expect(followUpRan, isTrue);
+      },
+    );
+
+    test(
+      'when applyMigration is called after dispose, '
+      'then it throws a StateError without invoking the action',
+      () async {
+        await inPlaceSession.dispose();
+
+        expect(
+          inPlaceSession.applyMigration,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(actionCalls, 0);
+      },
+    );
+
+    test(
+      'when applyMigration is called twice, '
+      'then the calls serialize via _pending',
+      () async {
+        gate = Completer<List<String>>();
+
+        final firstCall = inPlaceSession.applyMigration();
+        // Second call queues behind the first.
+        final secondCall = inPlaceSession.applyMigration();
+
+        // Yield so any eager work runs.
+        await Future<void>.delayed(Duration.zero);
+        expect(actionCalls, 1, reason: 'second call must wait for first');
+
+        gate!.complete(['v1']);
+        await firstCall;
+        await secondCall;
+
+        expect(actionCalls, 2);
+      },
+    );
+  });
+
   group('Given dispose is called', () {
     test(
       'when disposing, '
