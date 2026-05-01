@@ -67,8 +67,8 @@ class MigrateCommand extends ServerpodCommand<MigrateOption> {
         runMode: runMode,
         moduleName: moduleName,
       );
-    } on Object catch (e) {
-      log.error('Migration failed: $e');
+    } catch (e, s) {
+      log.error('Migration failed: $e', stackTrace: s);
       throw ExitException.error();
     }
 
