@@ -876,8 +876,15 @@ class SerializableModelLibraryGenerator {
                 config: config,
               );
 
-              var type = field.type.nullable ? refer('Object?') : fieldType;
-              var defaultValue = field.type.nullable
+              // `dynamic` is stored as non-null in [TypeDefinition], but like
+              // nullable fields it needs the `_Undefined` sentinel so omitted
+              // `copyWith` args are not confused with explicit `null`.
+              final usesUndefinedCopyWithDefault =
+                  field.type.nullable || field.type.className == 'dynamic';
+              var type = usesUndefinedCopyWithDefault
+                  ? refer('Object?')
+                  : fieldType;
+              var defaultValue = usesUndefinedCopyWithDefault
                   ? const Code('_Undefined')
                   : null;
 
@@ -930,31 +937,29 @@ class SerializableModelLibraryGenerator {
       );
 
       Expression valueDefinition;
-      if (field.type.nullable) {
-        if (field.type.className == 'dynamic') {
-          // Since `dynamic` also covers `_Undefined`, the check for `param`
-          // must be inverted to explicitly not be `_Undefined`.
-          valueDefinition = refer(field.name)
-              .isNotA(refer('_Undefined'))
-              .conditional(
-                refer(field.name),
-                assignment,
-              );
-        } else {
-          valueDefinition = refer(field.name)
-              .isA(
-                field.type.reference(
-                  serverCode,
-                  nullable: field.type.nullable,
-                  subDirParts: subDirParts,
-                  config: config,
-                ),
-              )
-              .conditional(
-                refer(field.name),
-                assignment,
-              );
-        }
+      if (field.type.className == 'dynamic') {
+        // Since `dynamic` also covers `_Undefined`, the check for `param`
+        // must be inverted to explicitly not be `_Undefined`.
+        valueDefinition = refer(field.name)
+            .isNotA(refer('_Undefined'))
+            .conditional(
+              refer(field.name),
+              assignment,
+            );
+      } else if (field.type.nullable) {
+        valueDefinition = refer(field.name)
+            .isA(
+              field.type.reference(
+                serverCode,
+                nullable: field.type.nullable,
+                subDirParts: subDirParts,
+                config: config,
+              ),
+            )
+            .conditional(
+              refer(field.name),
+              assignment,
+            );
       } else {
         valueDefinition = refer(field.name).ifNullThen(
           assignment,

@@ -144,8 +144,8 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   @override
   ObjectWithDynamic copyWith({
     Object? id = _Undefined,
-    dynamic payload,
-    dynamic jsonbPayload,
+    Object? payload = _Undefined,
+    Object? jsonbPayload = _Undefined,
     List<dynamic>? payloadList,
     Map<String, dynamic>? payloadMap,
     Set<dynamic>? payloadSet,
@@ -153,8 +153,10 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   }) {
     return ObjectWithDynamic(
       id: id is int? ? id : this.id,
-      payload: payload ?? this.payload,
-      jsonbPayload: jsonbPayload ?? this.jsonbPayload,
+      payload: payload is! _Undefined ? payload : this.payload,
+      jsonbPayload: jsonbPayload is! _Undefined
+          ? jsonbPayload
+          : this.jsonbPayload,
       payloadList: payloadList ?? this.payloadList.map((e0) => e0).toList(),
       payloadMap:
           payloadMap ??
