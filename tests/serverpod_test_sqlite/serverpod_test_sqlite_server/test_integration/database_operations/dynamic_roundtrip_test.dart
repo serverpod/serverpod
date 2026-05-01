@@ -14,7 +14,7 @@ void main() {
   );
 
   /// Small abstraction to keep expectations close to the source model.
-  void _expectDynamicFields(ObjectWithDynamic retrieved) {
+  void expectDynamicFields(ObjectWithDynamic retrieved) {
     expect(retrieved, isNotNull);
     expect(retrieved.payload, 42);
     expect(retrieved.jsonbPayload, 10.23);
@@ -58,7 +58,7 @@ void main() {
 
         test('then the value roundtrips correctly.', () async {
           final retrieved = await insert;
-          _expectDynamicFields(retrieved);
+          expectDynamicFields(retrieved);
         });
       });
     },
@@ -78,7 +78,7 @@ void main() {
         final retrieved = await ObjectWithDynamic.db.findFirstRow(session);
 
         expect(retrieved, isNotNull);
-        _expectDynamicFields(retrieved!);
+        expectDynamicFields(retrieved!);
       });
     },
   );
