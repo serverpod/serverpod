@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
+import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../../migrations/cli_migration_runner.dart';
@@ -506,7 +507,9 @@ class WatchSession {
       _trackVmServiceUri(_server);
       log.info('Server restarted with --apply-migrations.');
     } finally {
-      _state = SessionState.idle;
+      if (_state == SessionState.applyingMigration) {
+        _state = SessionState.idle;
+      }
     }
   }
 
@@ -519,7 +522,9 @@ class WatchSession {
       _trackVmServiceUri(_server);
       log.info(serverRestarted);
     } finally {
-      _state = SessionState.idle;
+      if (_state == SessionState.restarting) {
+        _state = SessionState.idle;
+      }
     }
   }
 
