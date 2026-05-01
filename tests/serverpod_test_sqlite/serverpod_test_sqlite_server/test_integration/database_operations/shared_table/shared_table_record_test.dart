@@ -78,9 +78,8 @@ void main() {
     late Session session;
     late SharedTableRecord inserted;
 
-    setUp(() => session = sessionBuilder.build());
-
     setUp(() async {
+      session = sessionBuilder.build();
       inserted = await SharedTableRecord.db.insertRow(
         session,
         SharedTableRecord(

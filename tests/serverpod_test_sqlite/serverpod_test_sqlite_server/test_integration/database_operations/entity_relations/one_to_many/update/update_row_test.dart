@@ -8,9 +8,8 @@ void main() async {
     'Given an entity with an implicit one-to-many relation',
     (sessionBuilder, _) {
       late Session session;
-      setUp(() => session = sessionBuilder.build());
-
       setUp(() async {
+        session = sessionBuilder.build();
         var book = await Book.db.insertRow(
           session,
           Book(title: 'Book 1'),
