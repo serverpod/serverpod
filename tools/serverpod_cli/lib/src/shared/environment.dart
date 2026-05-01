@@ -18,9 +18,9 @@ String? _serverpodHome;
 ///
 /// If in dev mode and the SERVERPOD_HOME environment variable is not set,
 /// it will throw an ExitException.error().
-bool loadEnvironmentVars() {
+void loadEnvironmentVars() {
   if (_serverpodHome != null) {
-    return true;
+    return;
   }
 
   if (!productionMode) {
@@ -43,5 +43,5 @@ bool loadEnvironmentVars() {
   }
 
   _serverpodHome ??= '';
-  return true;
+  return;
 }
