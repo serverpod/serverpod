@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
 
 /// An [IOSink] implementation that captures server stdout/stderr output
-/// and routes it to the TUI's "Raw Output" tab.
+/// and routes it to the TUI's "Raw server output" tab.
 class TuiLogSink implements IOSink {
   TuiLogSink(this._holder);
 

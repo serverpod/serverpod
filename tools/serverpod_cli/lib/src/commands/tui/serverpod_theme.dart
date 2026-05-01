@@ -15,6 +15,32 @@ class ServerpodThemeData {
     required this.subtleDivider,
   });
 
+  ServerpodThemeData copyWith({
+    Color? activationKey,
+    Color? activeTab,
+    Color? spinner,
+    Color? debugLevel,
+    Color? infoLevel,
+    Color? warningLevel,
+    Color? errorLevel,
+    Color? success,
+    Color? failure,
+    Color? subtleDivider,
+  }) {
+    return ServerpodThemeData(
+      activationKey: activationKey ?? this.activationKey,
+      activeTab: activeTab ?? this.activeTab,
+      spinner: spinner ?? this.spinner,
+      debugLevel: debugLevel ?? this.debugLevel,
+      infoLevel: infoLevel ?? this.infoLevel,
+      warningLevel: warningLevel ?? this.warningLevel,
+      errorLevel: errorLevel ?? this.errorLevel,
+      success: success ?? this.success,
+      failure: failure ?? this.failure,
+      subtleDivider: subtleDivider ?? this.subtleDivider,
+    );
+  }
+
   /// Color for button activation characters (R, M, A, Q).
   final Color activationKey;
 
@@ -46,7 +72,7 @@ class ServerpodThemeData {
   /// uses `secondary` to stand apart from the active-tab color.
   factory ServerpodThemeData.fromTuiTheme(TuiThemeData theme) {
     return ServerpodThemeData(
-      activationKey: theme.secondary,
+      activationKey: Colors.magenta,
       activeTab: theme.primary,
       spinner: theme.primary,
       debugLevel: theme.outline,

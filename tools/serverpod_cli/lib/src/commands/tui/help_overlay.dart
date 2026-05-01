@@ -4,10 +4,14 @@ import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 typedef HelpOverlayBindings = List<(String, List<(String, String)>)>;
 
 /// Help overlay showing all keybindings.
+///
+/// Pass [controller] to drive the help body's scroll position from outside.
+/// hen null, the overlay manages its own controller.
 class HelpOverlay extends StatefulComponent {
-  const HelpOverlay({super.key, this.bindings});
+  const HelpOverlay({super.key, this.bindings, this.controller});
 
   final HelpOverlayBindings? bindings;
+  final ScrollController? controller;
 
   @override
   State<StatefulComponent> createState() => _HelpOverlayState();
@@ -33,9 +37,10 @@ class _HelpOverlayState extends State<HelpOverlay> {
     (
       'Tabs',
       [
-        ('Tab', 'Switch tab'),
+        ('Tab / →', 'Next tab'),
+        ('←', 'Previous tab'),
         ('1', 'Log Messages'),
-        ('2', 'Raw Output'),
+        ('2', 'Raw server output'),
       ],
     ),
     (
@@ -49,11 +54,14 @@ class _HelpOverlayState extends State<HelpOverlay> {
     ),
   ];
 
-  final _scrollController = ScrollController();
+  ScrollController? _ownedController;
+
+  ScrollController get _effectiveController =>
+      component.controller ?? (_ownedController ??= ScrollController());
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _ownedController?.dispose();
     super.dispose();
   }
 
@@ -63,6 +71,7 @@ class _HelpOverlayState extends State<HelpOverlay> {
 
     final theme = TuiTheme.of(context);
     final effectiveBindings = component.bindings ?? _bindings;
+    final scrollController = _effectiveController;
 
     return Center(
       child: SizedBox(
@@ -87,10 +96,10 @@ class _HelpOverlayState extends State<HelpOverlay> {
               children: [
                 Expanded(
                   child: Scrollbar(
-                    controller: _scrollController,
+                    controller: scrollController,
                     thumbVisibility: true,
                     child: ListView(
-                      controller: _scrollController,
+                      controller: scrollController,
                       children: [
                         for (final (section, bindings)
                             in effectiveBindings) ...[

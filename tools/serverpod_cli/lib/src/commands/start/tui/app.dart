@@ -78,6 +78,7 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
 class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
+  final helpScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
@@ -138,6 +139,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         showSplash: state.showSplash,
         logScrollController: logScrollController,
         rawScrollController: rawScrollController,
+        helpScrollController: helpScrollController,
         onToggleHelp: () {
           state.showHelp = !state.showHelp;
           _rebuild();
@@ -157,17 +159,28 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   bool _handleKeyEvent(KeyboardEvent event) {
     final state = component.holder.state;
 
-    // Dismiss help overlay.
-    if (state.showHelp && event.logicalKey == LogicalKey.escape) {
-      state.showHelp = false;
+    if (state.showHelp) {
+      if (event.logicalKey == LogicalKey.escape) {
+        state.showHelp = false;
+        _rebuild();
+        return true;
+      }
+      // Route navigation keys to the help overlay's controller; absorb the
+      // rest so they don't fall through to tab/scroll handling underneath.
+      _handleScrollKey(helpScrollController, event);
+      return true;
+    }
+
+    // Tab cycling: Tab and Right cycle forward, Left cycles back.
+    const tabCount = 2;
+    if (event.logicalKey == LogicalKey.tab ||
+        event.logicalKey == LogicalKey.arrowRight) {
+      state.selectedTab = (state.selectedTab + 1) % tabCount;
       _rebuild();
       return true;
     }
-    // When help is open, absorb all keys except H (toggle) and Q (quit).
-    if (state.showHelp) return true;
-
-    if (event.logicalKey == LogicalKey.tab) {
-      state.selectedTab = (state.selectedTab + 1) % 2;
+    if (event.logicalKey == LogicalKey.arrowLeft) {
+      state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
       _rebuild();
       return true;
     }
@@ -181,45 +194,65 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    // Scrolling.
+
     final c = state.selectedTab == 0
         ? logScrollController
         : rawScrollController;
-    final quarter = c.viewportDimension / 4;
-    final half = c.viewportDimension / 2;
+    return _handleScrollKey(c, event);
+  }
+
+  /// Handles scroll keyboard [event] for [controller].
+  ///
+  /// When the controller is in reverse mode ([controller.isReversed]),
+  /// up/down semantics are inverted.
+  bool _handleScrollKey(ScrollController controller, KeyboardEvent event) {
+    final reverse = controller.isReversed;
+    final quarter = controller.viewportDimension / 4;
+    final half = controller.viewportDimension / 2;
+
+    void up([double amount = 1.0]) =>
+        reverse ? controller.scrollDown(amount) : controller.scrollUp(amount);
+    void down([double amount = 1.0]) =>
+        reverse ? controller.scrollUp(amount) : controller.scrollDown(amount);
+    void pageUp() => reverse ? controller.pageDown() : controller.pageUp();
+    void pageDown() => reverse ? controller.pageUp() : controller.pageDown();
+    void toStart() =>
+        reverse ? controller.scrollToEnd() : controller.scrollToStart();
+    void toEnd() =>
+        reverse ? controller.scrollToStart() : controller.scrollToEnd();
 
     switch (event.logicalKey) {
       // Quarter screen (Shift+arrows) - before plain arrows.
       case LogicalKey.arrowUp when event.isShiftPressed:
-        c.scrollUp(quarter);
+        up(quarter);
       case LogicalKey.arrowDown when event.isShiftPressed:
-        c.scrollDown(quarter);
+        down(quarter);
 
       // Single line
       case LogicalKey.arrowUp || LogicalKey.keyK:
-        c.scrollUp();
+        up();
       case LogicalKey.arrowDown || LogicalKey.keyJ || LogicalKey.enter:
-        c.scrollDown();
+        down();
 
       // Half screen
       case LogicalKey.keyU:
-        c.scrollUp(half);
+        up(half);
       case LogicalKey.keyD:
-        c.scrollDown(half);
+        down(half);
 
       // Full screen
       case LogicalKey.pageUp || LogicalKey.backspace || LogicalKey.keyB:
-        c.pageUp();
+        pageUp();
       case LogicalKey.pageDown || LogicalKey.space || LogicalKey.keyF:
-        c.pageDown();
+        pageDown();
 
       // Start / end - G with shift = end, g without = start.
       case LogicalKey.keyG when event.isShiftPressed:
-        c.scrollToEnd();
+        toEnd();
       case LogicalKey.home || LogicalKey.keyG:
-        c.scrollToStart();
+        toStart();
       case LogicalKey.end:
-        c.scrollToEnd();
+        toEnd();
 
       default:
         return false;

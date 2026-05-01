@@ -21,6 +21,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.logScrollController,
     required this.rawScrollController,
+    required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
     this.onCreateMigration,
@@ -33,6 +34,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController logScrollController;
   final ScrollController rawScrollController;
+  final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
@@ -78,13 +80,13 @@ class MainScreen extends StatelessComponent {
           ],
         ),
         LoadingScreen(visible: showSplash),
-        if (state.showHelp) const HelpOverlay(),
+        if (state.showHelp) HelpOverlay(controller: helpScrollController),
       ],
     );
   }
 
   Component _buildTabBar(ServerpodThemeData st) {
-    const labels = ['Log Messages', 'Raw Output'];
+    const labels = ['Log Messages', 'Raw server output'];
     return Row(
       children: [
         for (var i = 0; i < labels.length; i++)

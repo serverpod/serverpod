@@ -44,7 +44,7 @@ abstract class ServerpodState {
   /// [CompletedOperation].
   BoundedQueueList<Object> get logHistory;
 
-  /// Raw stdout/stderr lines for the "Raw Output" tab.
+  /// Raw stdout/stderr lines for the "Raw server output" tab.
   BoundedQueueList<String> get rawLines => BoundedQueueList(0);
 
   /// Currently active tracked operations (keyed by ID).

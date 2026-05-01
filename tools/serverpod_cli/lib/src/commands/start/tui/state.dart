@@ -10,7 +10,7 @@ class ServerWatchState extends ServerpodState {
   @override
   final logHistory = BoundedQueueList<Object>(maxLogEntries);
 
-  /// Raw stdout/stderr lines for the "Raw Output" tab.
+  /// Raw stdout/stderr lines for the "Raw server output" tab.
   @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
@@ -18,7 +18,7 @@ class ServerWatchState extends ServerpodState {
   @override
   final Map<String, TrackedOperation> activeOperations = {};
 
-  /// Currently selected tab index (0 = Log Messages, 1 = Raw Output).
+  /// Currently selected tab index (0 = Log Messages, 1 = Raw server output).
   int selectedTab = 0;
 
   /// Whether a tracked action (hot reload, migration) is in progress.

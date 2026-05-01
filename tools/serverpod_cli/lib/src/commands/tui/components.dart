@@ -11,19 +11,28 @@ import 'state.dart';
 
 /// A container with a rounded border and optional title.
 class BorderedBox extends StatelessComponent {
-  const BorderedBox({super.key, required this.child, this.title, this.color});
+  const BorderedBox({
+    super.key,
+    required this.child,
+    this.title,
+    this.color,
+    this.backgroundColor,
+  });
 
   final Component child;
   final BorderTitle? title;
   final Color? color;
+  final Color? backgroundColor;
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return Container(
       decoration: BoxDecoration(
+        color: backgroundColor ?? theme.background,
         border: BoxBorder.all(
           style: BoxBorderStyle.rounded,
-          color: color ?? TuiTheme.of(context).outline,
+          color: color ?? theme.outline,
         ),
         title: title,
       ),
@@ -317,15 +326,18 @@ class ButtonBar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(width: 1),
-        for (var index = 0; index < buttons.length; index++) ...[
-          if (index > 0) const SizedBox(width: 2),
-          buttons[index],
+    return Container(
+      color: Color.defaultColor,
+      child: Row(
+        children: [
+          const SizedBox(width: 1),
+          for (var index = 0; index < buttons.length; index++) ...[
+            if (index > 0) const SizedBox(width: 2),
+            buttons[index],
+          ],
+          const SizedBox(width: 1),
         ],
-        const SizedBox(width: 1),
-      ],
+      ),
     );
   }
 }
