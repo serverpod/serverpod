@@ -66,6 +66,18 @@ abstract class ServerpodCodeGenerator {
         log.debug('Generating ${file.key}.');
         var out = File(file.key);
 
+        // The protocol generator's migration_registry.dart has no `part` directives.
+        // `create-migration` adds `part` lines so each migration can ship generated
+        // code; if the file on disk already has `part` declarations, skip the write
+        // so we do not erase that registry.
+        if (p
+                .normalize(file.key)
+                .endsWith(p.join('migrations', 'migration_registry.dart')) &&
+            out.existsSync() &&
+            (await out.readAsString()).contains("part '")) {
+          continue;
+        }
+
         // Skip the write if the file already has the same content.
         if (out.existsSync()) {
           final existing = await out.readAsString();

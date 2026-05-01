@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -64,11 +66,41 @@ enum SessionState {
 /// When [compiler] is `null` (--no-fes mode), the session still runs code
 /// generation and triggers VM service reloads for static file changes, but
 /// leaves compilation and hot reload to the IDE.
+/// Decides whether a source `.dart` file change may have altered the protocol
+/// (endpoint or future call class). Used by [WatchSession] to skip generation
+/// when the change is in a pure helper file.
+typedef ProtocolChangeClassifier = Future<bool> Function(String path);
+
+/// Default classifier. Reads the file and looks for endpoint / future-call
+/// class declarations.
+///
+/// Conservative: missing files and I/O errors default to `true` so a deleted
+/// endpoint file still triggers regen to drop stale generated code.
+Future<bool> defaultProtocolChangeClassifier(String path) async {
+  try {
+    final file = File(path);
+    if (!await file.exists()) return true;
+    final contents = await file.readAsString();
+    return _endpointOrFutureCallRegex.hasMatch(contents);
+  } catch (_) {
+    return true;
+  }
+}
+
+/// Matches `extends X` where `X` is any `*Endpoint` class or `FutureCall`/
+/// `FutureCall<...>`-shaped base. Covers user-defined bases like
+/// `BaseEndpoint` so subclassing hierarchies still regen correctly.
+final _endpointOrFutureCallRegex = RegExp(
+  r'\bextends\s+(?:\w*Endpoint|FutureCall)\b',
+);
+
 class WatchSession {
   final KernelCompiler? _compiler;
+  final NativeAssetsBuilder? _nativeAssetsBuilder;
   final GenerateAction _generate;
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
+  final ProtocolChangeClassifier _classifyProtocolChange;
 
   final Completer<int> _done = Completer<int>();
 
@@ -84,22 +116,35 @@ class WatchSession {
   /// the previous one via [_pending], so concurrent calls execute in order.
   Future<void> _pending = Future.value();
 
+  final StreamController<void> _vmServiceUriChangesController =
+      StreamController<void>.broadcast();
+
   WatchSession({
     KernelCompiler? compiler,
+    NativeAssetsBuilder? nativeAssetsBuilder,
     required GenerateAction generate,
     ServerProcessFactory? createServer,
     required ServerProcess initialServer,
     required Set<String> generatedDirPaths,
+    ProtocolChangeClassifier classifyProtocolChange =
+        defaultProtocolChangeClassifier,
   }) : _compiler = compiler,
+       _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
        _createServer = createServer,
        _server = initialServer,
-       _generatedDirPaths = generatedDirPaths {
+       _generatedDirPaths = generatedDirPaths,
+       _classifyProtocolChange = classifyProtocolChange {
     assert(
       (compiler == null) == (createServer == null),
       'compiler and createServer must both be provided or both be null.',
     );
+    assert(
+      nativeAssetsBuilder == null || compiler != null,
+      'nativeAssetsBuilder requires a compiler.',
+    );
     _monitorExit(initialServer);
+    _trackVmServiceUri(initialServer);
   }
 
   /// Completes when the server exits unexpectedly (crash).
@@ -107,6 +152,14 @@ class WatchSession {
 
   /// Returns `true` if the server is currently running.
   bool get isRunning => !_done.isCompleted;
+
+  /// The current HTTP VM service URI of the running server, or `null` if not
+  /// yet available.
+  String? get vmServiceUri => _server.vmServiceUri;
+
+  /// Fires each time a new server process publishes its VM service URI. The
+  /// URI itself is read via [vmServiceUri]; the stream just signals "changed".
+  Stream<void> get vmServiceUriChanges => _vmServiceUriChangesController.stream;
 
   /// Processes a single (merged) file change event.
   Future<void> handleFileChange(FileChangeEvent event) async {
@@ -141,22 +194,29 @@ class WatchSession {
     if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
     if (event.packageConfigChanged) log.debug('  package_config.json changed');
 
-    // Only source files and model files trigger generation. Generated files
-    // from the watcher are just forwarded to the compiler.
+    // Narrow source files to those that may affect the generated protocol.
+    // Helper files and pure business logic that don't declare endpoints or
+    // future calls can skip the regen step - compile alone picks up their
+    // changes.
+    final protocolSourceFiles = <String>{};
+    for (final f in sourceDartFiles) {
+      if (await _classifyProtocolChange(f)) protocolSourceFiles.add(f);
+    }
+
     final needsGeneration =
-        sourceDartFiles.isNotEmpty || event.modelFiles.isNotEmpty;
+        protocolSourceFiles.isNotEmpty || event.modelFiles.isNotEmpty;
 
     Set<String> genOutputFiles = const {};
     if (needsGeneration) {
       final affectedPaths = {
-        ...sourceDartFiles,
+        ...protocolSourceFiles,
         ...event.modelFiles,
       };
 
       final genRequirements = GenerationRequirements(
         generateModels: event.modelFiles.isNotEmpty,
         generateProtocol:
-            sourceDartFiles.isNotEmpty || event.modelFiles.isNotEmpty,
+            protocolSourceFiles.isNotEmpty || event.modelFiles.isNotEmpty,
       );
 
       final genResult = await _generate(affectedPaths, genRequirements);
@@ -209,10 +269,33 @@ class WatchSession {
     // compiles so the FES re-invalidates them (reject rolls back its state).
     final changedPaths = {..._pendingPaths, ...dartFiles};
 
+    // 1. Run native build hooks (if configured). The hook runner caches on
+    //    input hashes, so this is cheap when nothing changed. A manifest
+    //    content change requires a fresh FES because `--native-assets` is
+    //    only read at startup; the apply step restarts in that case and
+    //    reports back so we don't double-restart below.
+    var compilerRestartedByHooks = false;
+    final builder = _nativeAssetsBuilder;
+    if (builder != null) {
+      if (packageConfigChanged) builder.reset();
+      switch (await builder.applyTo(compiler)) {
+        case NativeAssetsApplyFailure(:final message):
+          log.error('$message Server not reloaded.');
+          if (changedPaths.isNotEmpty) _pendingPaths.addAll(changedPaths);
+          return;
+        case NativeAssetsApplySuccess(:final restarted):
+          if (restarted) {
+            compilerRestartedByHooks = true;
+            _pendingPaths.clear();
+          }
+      }
+    }
+
+    // 2. Bring the FES into the right state for this cycle.
     CompileResult? result;
     if (forceFullCompile) {
       _pendingPaths.clear();
-      await compiler.reset();
+      if (!compilerRestartedByHooks) await compiler.reset();
       result = await compileWithProgress(
         'Compiling server',
         compiler,
@@ -222,13 +305,13 @@ class WatchSession {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       _pendingPaths.clear();
-      await compiler.restart();
+      if (!compilerRestartedByHooks) await compiler.restart();
       result = await compileWithProgress(
         'Compiling server',
         compiler,
         rejectOnFailure: true,
       );
-    } else if (changedPaths.isNotEmpty) {
+    } else if (changedPaths.isNotEmpty || compilerRestartedByHooks) {
       result = await compileWithProgress(
         'Compiling server',
         compiler,
@@ -345,8 +428,21 @@ class WatchSession {
 
     _state = SessionState.applyingMigration;
     try {
+      // Re-run native build hooks first; if the manifest changed the
+      // restart they trigger replaces the explicit reset() below.
+      var restartedByHooks = false;
+      final builder = _nativeAssetsBuilder;
+      if (builder != null) {
+        switch (await builder.applyTo(compiler)) {
+          case NativeAssetsApplyFailure(:final message):
+            throw StateError('$message Migration not applied.');
+          case NativeAssetsApplySuccess(:final restarted):
+            restartedByHooks = restarted;
+        }
+      }
+
       // Full compile so we have a complete kernel for the new process.
-      await compiler.reset();
+      if (!restartedByHooks) await compiler.reset();
       final result = await compileWithProgress(
         'Compiling server',
         compiler,
@@ -363,6 +459,7 @@ class WatchSession {
         extraArgs: ['--apply-migrations'],
       );
       _monitorExit(_server);
+      _trackVmServiceUri(_server);
       log.info('Server restarted with --apply-migrations.');
     } finally {
       _state = SessionState.idle;
@@ -375,6 +472,7 @@ class WatchSession {
       await _server.stop();
       _server = await _createServer!(dillPath);
       _monitorExit(_server);
+      _trackVmServiceUri(_server);
       log.info(serverRestarted);
     } finally {
       _state = SessionState.idle;
@@ -384,6 +482,7 @@ class WatchSession {
   /// Disposes the session: stops server and disposes compiler.
   Future<void> dispose() async {
     _state = SessionState.disposed;
+    await _vmServiceUriChangesController.close();
     await _server.stop();
     await _compiler?.dispose();
   }
@@ -393,6 +492,16 @@ class WatchSession {
       server.exitCode.then((code) {
         if (_state == SessionState.idle && !_done.isCompleted) {
           _done.complete(code);
+        }
+      }),
+    );
+  }
+
+  void _trackVmServiceUri(ServerProcess server) {
+    unawaited(
+      server.vmServiceReady.then((_) {
+        if (_server == server && !_vmServiceUriChangesController.isClosed) {
+          _vmServiceUriChangesController.add(null);
         }
       }),
     );

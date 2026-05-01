@@ -258,6 +258,73 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateDatabaseKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property can only be used on classes with a "table" property.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDatabase(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var database = ModelDatabaseDefinition.values
+        .where((e) => e.name == content)
+        .firstOrNull;
+
+    if (database == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property must be one of: '
+          '${ModelDatabaseDefinition.values.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition ||
+        database == ModelDatabaseDefinition.server) {
+      return [];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var invalidScopedFields = definition.fieldsIncludingInherited.where(
+      (field) =>
+          field.shouldPersist &&
+          field.scope == ModelFieldScopeDefinition.serverOnly &&
+          field.name != defaultPrimaryKeyName,
+    );
+
+    for (var field in invalidScopedFields) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field "${field.name}" must use scope "all" when the class has '
+          '"database: ${database.name}".',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,
@@ -1489,6 +1556,28 @@ class Restrictions {
           span,
         ),
       );
+    }
+
+    var classWithRelation = documentDefinition;
+    if (classWithRelation is ModelClassDefinition &&
+        classWithRelation.tableName != null &&
+        referenceClass is ModelClassDefinition &&
+        referenceClass.tableName != null) {
+      var className = classWithRelation.className;
+      var classDatabase = classWithRelation.database.name;
+      var relatedDatabase = referenceClass.database;
+      if (relatedDatabase != ModelDatabaseDefinition.all &&
+          relatedDatabase != classWithRelation.database) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The class "$className" has database "$classDatabase" but the '
+            'related class "$parsedType" has database "${relatedDatabase.name}". '
+            'Relations can only be defined between tables with the same database '
+            'scope. Either use "database: all" or the same "database" for both tables.',
+            span,
+          ),
+        );
+      }
     }
 
     return errors;

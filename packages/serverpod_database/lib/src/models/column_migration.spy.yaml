@@ -1,6 +1,7 @@
 class: ColumnMigration
 fields:
   columnName: String
+  newColumnName: String?
 
   addNullable: bool
   removeNullable: bool

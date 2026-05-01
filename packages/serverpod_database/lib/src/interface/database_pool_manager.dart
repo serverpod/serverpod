@@ -14,7 +14,7 @@ abstract interface class DatabasePoolManager {
   DateTime? lastDatabaseOperationTime;
 
   /// Access to the serialization manager.
-  SerializationManagerServer get serializationManager;
+  DatabaseSerializationManager get serializationManager;
 
   /// The encoder used to encode objects for storing in the database.
   ValueEncoder get encoder;

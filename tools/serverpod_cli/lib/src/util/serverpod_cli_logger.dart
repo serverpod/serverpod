@@ -41,6 +41,7 @@ class ServerpodCliLogger extends cli.Logger {
   @override
   set logLevel(cli.LogLevel level) {
     super.logLevel = level;
+    if (level == cli.LogLevel.nothing) return;
     _log.logLevel = _mapLogLevel(level);
   }
 
@@ -113,6 +114,7 @@ class ServerpodCliLogger extends cli.Logger {
     Future<bool> Function() runner, {
     bool newParagraph = false,
   }) {
+    if (_silent) return runner();
     return _log.progress(message, runner);
   }
 
@@ -120,6 +122,7 @@ class ServerpodCliLogger extends cli.Logger {
   Future<void> flush() async {}
 
   void _call(LogLevel level, String message, {cli.LogType? type}) {
+    if (_silent) return;
     _log(
       level,
       () => LogEntry(
@@ -131,6 +134,13 @@ class ServerpodCliLogger extends cli.Logger {
       ),
     );
   }
+
+  // serverpod_shared LogLevel has no "nothing" sentinel - its lowest-passing
+  // level is fatal, and the filter check is strict-`<` so fatal still leaks
+  // through. Progress / scope events bypass logLevel entirely. So when the
+  // caller sets cli.LogLevel.nothing we gate at the bridge instead of mapping
+  // through to _log.logLevel.
+  bool get _silent => super.logLevel == cli.LogLevel.nothing;
 
   static cli.LogLevel _mapLevel(LogLevel level) => switch (level) {
     LogLevel.debug => cli.LogLevel.debug,
@@ -144,7 +154,15 @@ class ServerpodCliLogger extends cli.Logger {
     cli.LogLevel.info => LogLevel.info,
     cli.LogLevel.warning => LogLevel.warning,
     cli.LogLevel.error => LogLevel.error,
-    cli.LogLevel.nothing => LogLevel.debug,
+    // The setter early-returns before reaching here, so this branch only
+    // fires from log() / write() being called with nothing as a message
+    // level - which is a programmer error worth surfacing.
+    cli.LogLevel.nothing => throw ArgumentError.value(
+      level,
+      'level',
+      'cli.LogLevel.nothing is a filter sentinel; it cannot be used as a '
+          'message level',
+    ),
   };
 }
 

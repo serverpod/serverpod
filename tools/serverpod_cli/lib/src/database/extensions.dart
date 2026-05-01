@@ -96,7 +96,6 @@ extension TableDiffComparisons on TableMigration {
       addColumns.isEmpty &&
       deleteColumns.isEmpty &&
       modifyColumns.isEmpty &&
-      (renameColumns?.isEmpty ?? true) &&
       addIndexes.isEmpty &&
       deleteIndexes.isEmpty &&
       addForeignKeys.isEmpty &&

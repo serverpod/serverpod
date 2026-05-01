@@ -16,6 +16,7 @@ dependencies:
   built_collection: ^5.1.1
   ci: ^0.1.0
   cli_tools: ^0.11.0
+  code_assets: ^1.0.0
   code_builder: ^4.5.0
   collection: ^1.18.0
   config: ^0.8.3
@@ -26,9 +27,17 @@ dependencies:
   # produce a different style than `dart format` and break the CI. For more
   # details, see: https://github.com/dart-lang/dart_style/issues/1785
   dart_style: 3.1.5
+  data_assets: '>=0.19.0 <0.20.0'
+  file: ^7.0.1
+  hooks: ^1.0.0
+  hooks_runner: ^1.2.1
   http: '>=1.1.0 <2.0.0'
   intl: '>=0.19.0 <0.21.0'
   json_rpc_2: ^4.0.0
+  # Bridge type only: hooks_runner's NativeAssetsBuildRunner requires a
+  # Logger argument. All log records are forwarded to the serverpod CLI
+  # logger; we never call package:logging methods directly.
+  logging: ^1.2.0
   lsp_server: ^0.4.0
   meta: ^1.15.0
   nocterm: ^0.6.0
@@ -36,7 +45,7 @@ dependencies:
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
   pub_semver: ^2.1.4
-  pubspec_parse: ^1.4.0
+  pubspec_parse: ^1.5.0
   recase: ^4.1.0
   serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION

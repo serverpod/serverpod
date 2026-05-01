@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 import 'main_screen.dart';
-import 'serverpod_theme.dart';
+import 'spinner.dart';
 import 'state.dart';
 
 /// Provides access to the shared [ServerWatchState] and a way to trigger
@@ -13,7 +14,25 @@ import 'state.dart';
 /// a rebuild. This avoids proxying every mutation method and survives
 /// `NoctermApp` rebuilds that recreate the widget state.
 class AppStateHolder {
-  AppStateHolder(this.state);
+  AppStateHolder(this.state) {
+    _dirtySub = _dirtyController.stream
+        .throttle(_rebuildInterval, trailing: true)
+        .listen((_) => _widgetState?._rebuild());
+  }
+
+  /// Throttle window for [markDirty]. A trickle of log events from an
+  /// idle `--verbose` pod (health checks, session logs, VM extension
+  /// events) would otherwise drive one `setState` per event and
+  /// consume a full CPU core. `trailing: true` means the first mark
+  /// in a window renders immediately (keypresses stay responsive),
+  /// and any further marks inside the window coalesce into a single
+  /// trailing rebuild so the final state is never missed.
+  ///
+  /// 80ms matches the spinner tick cadence - faster rebuilds aren't
+  /// perceptible since the spinner is the fastest-moving element on
+  /// screen. At ~7ms/frame (layout+paint dominated), 12.5 FPS keeps
+  /// the CPU floor around ~9% vs ~21% at 30 FPS.
+  static const _rebuildInterval = Duration(milliseconds: 80);
 
   final ServerWatchState state;
   ServerpodWatchAppState? _widgetState;
@@ -21,6 +40,9 @@ class AppStateHolder {
   VoidCallback? _onCreateMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
+
+  final StreamController<void> _dirtyController = StreamController<void>();
+  late final StreamSubscription<void> _dirtySub;
 
   void _attach(ServerpodWatchAppState s) {
     _widgetState = s;
@@ -34,8 +56,17 @@ class AppStateHolder {
     if (_widgetState == s) _widgetState = null;
   }
 
-  /// Trigger a rebuild on the currently mounted state.
-  void markDirty() => _widgetState?._rebuild();
+  /// Schedule a rebuild on the currently mounted state. Coalesced
+  /// via a throttled stream; see [_rebuildInterval].
+  void markDirty() => _dirtyController.add(null);
+
+  /// Releases the dirty-event stream. The holder typically lives for
+  /// the process lifetime, but tests that construct it directly
+  /// should call this so the subscription doesn't outlive the test.
+  Future<void> dispose() async {
+    await _dirtySub.cancel();
+    await _dirtyController.close();
+  }
 
   set onHotReload(VoidCallback? cb) {
     _onHotReload = cb;
@@ -123,8 +154,8 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   Component build(BuildContext context) {
     final state = component.holder.state;
 
-    return ServerpodTheme(
-      data: ServerpodThemeData.dark,
+    return SpinnerScope(
+      active: state.activeOperations.isNotEmpty,
       child: Focusable(
         focused: true,
         onKeyEvent: _handleKeyEvent,

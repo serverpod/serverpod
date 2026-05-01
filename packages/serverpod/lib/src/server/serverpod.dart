@@ -135,8 +135,8 @@ class Serverpod {
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
-  final SerializationManagerServer serializationManager;
-  late SerializationManagerServer _internalSerializationManager;
+  final DatabaseSerializationManager serializationManager;
+  late DatabaseSerializationManager _internalSerializationManager;
 
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;

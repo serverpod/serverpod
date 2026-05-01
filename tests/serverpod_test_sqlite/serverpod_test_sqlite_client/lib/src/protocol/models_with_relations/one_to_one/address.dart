@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _i4;
 
-abstract class Address implements _i1.SerializableModel {
+abstract class Address implements _i1.TableRow<int?> {
   Address._({
     this.id,
     required this.street,
@@ -42,9 +44,11 @@ abstract class Address implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
+  static final t = AddressTable();
+
+  static const db = AddressRepository._();
+
+  @override
   int? id;
 
   String street;
@@ -53,9 +57,12 @@ abstract class Address implements _i1.SerializableModel {
 
   _i2.Citizen? inhabitant;
 
+  @override
+  _i1.Table<int?> get table => t;
+
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   Address copyWith({
     int? id,
     String? street,
@@ -73,9 +80,35 @@ abstract class Address implements _i1.SerializableModel {
     };
   }
 
+  static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
+    return AddressInclude._(inhabitant: inhabitant);
+  }
+
+  static AddressIncludeList includeList({
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    AddressInclude? include,
+  }) {
+    return AddressIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(Address.t),
+      include: include,
+    );
+  }
+
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i4.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +129,7 @@ class _AddressImpl extends Address {
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   @override
   Address copyWith({
     Object? id = _Undefined,
@@ -111,6 +144,484 @@ class _AddressImpl extends Address {
       inhabitant: inhabitant is _i2.Citizen?
           ? inhabitant
           : this.inhabitant?.copyWith(),
+    );
+  }
+}
+
+class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
+  AddressUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+    table.street,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
+    table.inhabitantId,
+    value,
+  );
+}
+
+class AddressTable extends _i1.Table<int?> {
+  AddressTable({super.tableRelation}) : super(tableName: 'address') {
+    updateTable = AddressUpdateTable(this);
+    street = _i1.ColumnString(
+      'street',
+      this,
+    );
+    inhabitantId = _i1.ColumnInt(
+      'inhabitantId',
+      this,
+    );
+  }
+
+  late final AddressUpdateTable updateTable;
+
+  late final _i1.ColumnString street;
+
+  late final _i1.ColumnInt inhabitantId;
+
+  _i2.CitizenTable? _inhabitant;
+
+  _i2.CitizenTable get inhabitant {
+    if (_inhabitant != null) return _inhabitant!;
+    _inhabitant = _i1.createRelationTable(
+      relationFieldName: 'inhabitant',
+      field: Address.t.inhabitantId,
+      foreignField: _i2.Citizen.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CitizenTable(tableRelation: foreignTableRelation),
+    );
+    return _inhabitant!;
+  }
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    street,
+    inhabitantId,
+  ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'inhabitant') {
+      return inhabitant;
+    }
+    return null;
+  }
+}
+
+class AddressInclude extends _i1.IncludeObject {
+  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
+    _inhabitant = inhabitant;
+  }
+
+  _i2.CitizenInclude? _inhabitant;
+
+  @override
+  Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
+
+  @override
+  _i1.Table<int?> get table => Address.t;
+}
+
+class AddressIncludeList extends _i1.IncludeList {
+  AddressIncludeList._({
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Address.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => Address.t;
+}
+
+class AddressRepository {
+  const AddressRepository._();
+
+  final attachRow = const AddressAttachRowRepository._();
+
+  final detachRow = const AddressDetachRowRepository._();
+
+  /// Returns a list of [Address]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Address>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<Address>(
+      where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Address] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Address?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<Address>(
+      where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Address] by its [id] or null if no such row exists.
+  Future<Address?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<Address>(
+      id,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [Address]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Address]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<Address>> insert(
+    _i1.DatabaseSession session,
+    List<Address> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<Address>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [Address] and returns the inserted row.
+  ///
+  /// The returned [Address] will have its `id` field set.
+  Future<Address> insertRow(
+    _i1.DatabaseSession session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Address]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<Address>> update(
+    _i1.DatabaseSession session,
+    List<Address> rows, {
+    _i1.ColumnSelections<AddressTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<Address>(
+      rows,
+      columns: columns?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Address]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<Address> updateRow(
+    _i1.DatabaseSession session,
+    Address row, {
+    _i1.ColumnSelections<AddressTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<Address>(
+      row,
+      columns: columns?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Address] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Address?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Address>(
+      id,
+      columnValues: columnValues(Address.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Address]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Address>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AddressTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Address>(
+      columnValues: columnValues(Address.t.updateTable),
+      where: where(Address.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [Address]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Address>> delete(
+    _i1.DatabaseSession session,
+    List<Address> rows, {
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<Address>(
+      rows,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [Address].
+  Future<Address> deleteRow(
+    _i1.DatabaseSession session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<Address>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<AddressTable> where,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<Address>(
+      where: where(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<Address>(
+      where: where?.call(Address.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Address] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<AddressTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Address>(
+      where: where(Address.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}
+
+class AddressAttachRowRepository {
+  const AddressAttachRowRepository._();
+
+  /// Creates a relation between the given [Address] and [Citizen]
+  /// by setting the [Address]'s foreign key `inhabitantId` to refer to the [Citizen].
+  Future<void> inhabitant(
+    _i1.DatabaseSession session,
+    Address address,
+    _i2.Citizen inhabitant, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+    if (inhabitant.id == null) {
+      throw ArgumentError.notNull('inhabitant.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: inhabitant.id);
+    await session.db.updateRow<Address>(
+      $address,
+      columns: [Address.t.inhabitantId],
+      transaction: transaction,
+    );
+  }
+}
+
+class AddressDetachRowRepository {
+  const AddressDetachRowRepository._();
+
+  /// Detaches the relation between this [Address] and the [Citizen] set in `inhabitant`
+  /// by setting the [Address]'s foreign key `inhabitantId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> inhabitant(
+    _i1.DatabaseSession session,
+    Address address, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: null);
+    await session.db.updateRow<Address>(
+      $address,
+      columns: [Address.t.inhabitantId],
+      transaction: transaction,
     );
   }
 }

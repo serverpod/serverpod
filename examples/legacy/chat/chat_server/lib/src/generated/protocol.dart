@@ -18,7 +18,7 @@ import 'channel.dart' as _i5;
 import 'package:chat_server/src/generated/channel.dart' as _i6;
 export 'channel.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

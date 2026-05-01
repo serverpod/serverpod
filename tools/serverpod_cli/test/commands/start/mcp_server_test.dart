@@ -56,12 +56,19 @@ void main() {
 
     test(
       'when listing tools, '
-      'then apply_migrations is available',
+      'then apply_migrations, create_migration, hot_reload, and tail_logs are available',
       () async {
         final result = await connection.listTools();
 
-        expect(result.tools, hasLength(1));
-        expect(result.tools.first.name, 'apply_migrations');
+        expect(
+          result.tools.map((t) => t.name),
+          containsAll([
+            'apply_migrations',
+            'create_migration',
+            'hot_reload',
+            'tail_logs',
+          ]),
+        );
       },
     );
 
@@ -72,6 +79,22 @@ void main() {
         () async {
           final result = await connection.callTool(
             CallToolRequest(name: 'apply_migrations'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('not connected'),
+          );
+        },
+      );
+
+      test(
+        'when calling create_migration, '
+        'then it returns an error',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'create_migration'),
           );
 
           expect(result.isError, isTrue);
@@ -122,6 +145,101 @@ void main() {
           expect(
             (result.content.first as TextContent).text,
             contains('database locked'),
+          );
+        },
+      );
+
+      test(
+        'when calling create_migration without args, '
+        'then the callback is invoked with null tag and force=false',
+        () async {
+          String? receivedTag;
+          bool? receivedForce;
+          server.onCreateMigration = ({String? tag, bool force = false}) async {
+            receivedTag = tag;
+            receivedForce = force;
+            return const CreateMigrationMcpResult(
+              message: 'Migration "v1" created at /tmp/v1.',
+            );
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'create_migration'),
+          );
+
+          expect(receivedTag, isNull);
+          expect(receivedForce, isFalse);
+          expect(result.isError, isNull);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Migration "v1" created'),
+          );
+        },
+      );
+
+      test(
+        'when calling create_migration with tag and force, '
+        'then the callback receives them',
+        () async {
+          String? receivedTag;
+          bool? receivedForce;
+          server.onCreateMigration = ({String? tag, bool force = false}) async {
+            receivedTag = tag;
+            receivedForce = force;
+            return const CreateMigrationMcpResult(message: 'ok');
+          };
+
+          await connection.callTool(
+            CallToolRequest(
+              name: 'create_migration',
+              arguments: {'tag': 'add-users', 'force': true},
+            ),
+          );
+
+          expect(receivedTag, 'add-users');
+          expect(receivedForce, isTrue);
+        },
+      );
+
+      test(
+        'when create_migration returns an error result, '
+        'then the tool result is flagged as error',
+        () async {
+          server.onCreateMigration = ({String? tag, bool force = false}) async {
+            return const CreateMigrationMcpResult(
+              message: 'database feature disabled',
+              isError: true,
+            );
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'create_migration'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('database feature disabled'),
+          );
+        },
+      );
+
+      test(
+        'when the create_migration callback throws, '
+        'then the tool result is an error with the message',
+        () async {
+          server.onCreateMigration = ({String? tag, bool force = false}) async {
+            throw Exception('model parse failed');
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'create_migration'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('model parse failed'),
           );
         },
       );

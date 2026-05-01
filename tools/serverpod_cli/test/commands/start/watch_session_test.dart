@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
@@ -61,6 +62,7 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 class _FakeServer extends Fake implements ServerProcess {
   final List<String> calls = [];
   final Completer<int> _exitCodeCompleter = Completer<int>();
+  final Completer<void> _vmServiceReadyCompleter = Completer<void>();
 
   bool _vmServiceConnected;
   bool reloadSuccess = true;
@@ -75,6 +77,12 @@ class _FakeServer extends Fake implements ServerProcess {
 
   @override
   Future<int> get exitCode => _exitCodeCompleter.future;
+
+  @override
+  Future<void> get vmServiceReady => _vmServiceReadyCompleter.future;
+
+  @override
+  String? get vmServiceUri => null;
 
   /// Completes [exitCode] with the given code, simulating a crash.
   void simulateExit(int code) => _exitCodeCompleter.complete(code);
@@ -719,6 +727,211 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(doneCompleted, isFalse);
+      },
+    );
+  });
+
+  group(
+    'Given a watch session where no dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
+
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
+
+        classifierSession = WatchSession(
+          compiler: classifierCompiler,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) async =>
+                  classifierServer,
+          initialServer: classifierServer,
+          generatedDirPaths: {'/generated'},
+          classifyProtocolChange: (_) async => false,
+        );
+      });
+
+      test(
+        'when only a dart file changes, '
+        'then code generation is skipped and only compile + reload run',
+        () async {
+          final event = FileChangeEvent(dartFiles: {'/lib/helper.dart'});
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, isEmpty);
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/helper.dart]',
+            'accept',
+          ]);
+          expect(classifierServer.calls, ['reload:/out.dill']);
+        },
+      );
+
+      test(
+        'when a model file changes alongside a dart file, '
+        'then code generation still runs because model changes always force regeneration',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/helper.dart'},
+            modelFiles: {'/lib/src/models/user.spy.yaml'},
+          );
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(
+            classifierGenerateCalls.first,
+            containsAll(<String>{'/lib/src/models/user.spy.yaml'}),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where every dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
+
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
+
+        classifierSession = WatchSession(
+          compiler: classifierCompiler,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer:
+              (String dillPath, {List<String> extraArgs = const []}) async =>
+                  classifierServer,
+          initialServer: classifierServer,
+          generatedDirPaths: {'/generated'},
+          classifyProtocolChange: (_) async => true,
+        );
+      });
+
+      test(
+        'when a dart file changes, '
+        'then code generation runs and the changed file is included in '
+        'the regenerated paths',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/endpoints/user.dart'},
+          );
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(classifierGenerateCalls.first, {'/lib/endpoints/user.dart'});
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/endpoints/user.dart]',
+            'accept',
+          ]);
+        },
+      );
+    },
+  );
+
+  group('Given defaultProtocolChangeClassifier', () {
+    test(
+      'when the file does not exist, '
+      'then it returns true (conservative default for deletes)',
+      () async {
+        final result = await defaultProtocolChangeClassifier(
+          '/nonexistent/path/that/does/not/exist.dart',
+        );
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends Endpoint, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/endpoint.dart');
+        await file.writeAsString('''
+import 'package:serverpod/serverpod.dart';
+class MyEndpoint extends Endpoint {
+  Future<String> hello(Session session) async => 'hi';
+}
+''');
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends StreamingEndpoint, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/stream.dart');
+        await file.writeAsString(
+          'class S extends StreamingEndpoint { }',
+        );
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends FutureCall, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/fcall.dart');
+        await file.writeAsString(
+          'class F extends FutureCall<MyModel> { }',
+        );
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file is pure helper code with no endpoint markers, '
+      'then it returns false',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/helper.dart');
+        await file.writeAsString('''
+String greet(String name) => 'Hello, \$name';
+class Counter {
+  int value = 0;
+  void increment() => value++;
+}
+''');
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isFalse);
       },
     );
   });

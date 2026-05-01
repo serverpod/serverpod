@@ -19,6 +19,15 @@ Pubspec parsePubspec(File pubspecFile) {
   }
 }
 
+/// Returns the parsed `pubspec.yaml` at [dir], or `null` if the file is
+/// absent. Parse errors propagate so an unparseable pubspec is surfaced
+/// rather than masquerading as "no pubspec here" during ancestor walks.
+Future<Pubspec?> tryParsePubspecAt(String dir) async {
+  final file = File(p.join(dir, 'pubspec.yaml'));
+  if (!await file.exists()) return null;
+  return Pubspec.parse(await file.readAsString());
+}
+
 List<File> findPubspecsFiles(
   Directory dir, {
   List<String> ignorePaths = const [],

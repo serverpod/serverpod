@@ -74,6 +74,19 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeColumnValueListBuilder(
+  String className,
+  bool serverCode, {
+  nullable = false,
+}) {
+  return _typeWithTableCallback(
+    '${className}Update',
+    'ColumnValueListBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
 /// Deprecation annotation for the [orderDescending] parameter.
 Expression deprecatedOrderDescendingAnnotation() {
   return refer('Deprecated').call([
@@ -113,7 +126,7 @@ TypeReference _typeWithTableCallback(
       ..types.addAll([
         refer('${className}Table'),
       ])
-      ..url = serverpodUrl(serverCode)
+      ..url = serverpodDatabaseRuntimeUrl(serverCode)
       ..isNullable = nullable,
   );
 }
