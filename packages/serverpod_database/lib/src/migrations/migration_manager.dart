@@ -74,9 +74,12 @@ class MigrationManager {
   }) async {
     final result = await session.db.unsafeQuery(
       'SELECT module, version FROM $_migrationVersionTable '
-      "WHERE module = '${MigrationConstants.repairMigrationModuleName}' "
+      'WHERE module = @module '
       'LIMIT 1',
       transaction: transaction,
+      parameters: QueryParameters.named({
+        'module': MigrationConstants.repairMigrationModuleName,
+      }),
     );
     if (result.isEmpty) return null;
     final row = result.first;
