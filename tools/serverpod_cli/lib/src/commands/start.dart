@@ -40,8 +40,8 @@ enum StartOption<V> implements OptionDefinition<V> {
     FlagOption(
       argName: 'watch',
       argAbbrev: 'w',
-      defaultsTo: false,
-      negatable: false,
+      defaultsTo: true,
+      negatable: true,
       helpText: 'Watch for changes and hot reload the server.',
     ),
   ),
