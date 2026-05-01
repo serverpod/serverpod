@@ -1845,8 +1845,8 @@ class Restrictions {
         if (nonJsonbFields.isNotEmpty) {
           return [
             SourceSpanSeverityException(
-              'The "gin" index type requires all indexed fields to use '
-              '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
+              'The "gin" index type requires all indexed fields to be stored '
+              'as jsonb columns (fields: ${nonJsonbFields.join(', ')}).',
               span,
             ),
           ];

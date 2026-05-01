@@ -88,8 +88,8 @@ void main() {
       );
       expect(
         collector.errors.first.message,
-        'The "gin" index type requires all indexed fields to use '
-        '"serializationDataType: jsonb" (fields: name).',
+        'The "gin" index type requires all indexed fields to be stored '
+        'as jsonb columns (fields: name).',
       );
     },
   );
@@ -159,6 +159,49 @@ void main() {
       var index = definition.indexes.first;
 
       expect(index.type, 'btree');
+    },
+  );
+
+  test(
+    'Given a project with `serializeAsJsonbByDefault` set and an index on scalar fields with no explicit type, '
+    'when validating, '
+    'then the index type defaults to btree.',
+    () {
+      var jsonbDefaultConfig = GeneratorConfigBuilder()
+          .withEnabledSerializeAsJsonbByDefault()
+          .build();
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            userId: int
+            name: String
+          indexes:
+            example_scalar_idx:
+              fields: userId, name
+              unique: true
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        jsonbDefaultConfig,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.indexes.first.type, 'btree');
     },
   );
 
