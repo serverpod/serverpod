@@ -1,3 +1,8 @@
+## 3.4.8
+
+- fix: Fixes Postgres throwing when using row-lock on `find` methods with `includes`.
+- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
+
 ## 3.4.7
 
 - fix: Fixes constraints drop failing on Postgres due to already removed columns.
