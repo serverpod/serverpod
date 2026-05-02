@@ -55,7 +55,7 @@ class ClientDatabaseSession implements DatabaseSession {
     required bool isDebugMode,
   }) async {
     if (clientMigrations.isEmpty) return;
-    final manager = ClientMigrationManager(
+    final manager = MigrationManager.fromMigrations(
       runMode: isDebugMode ? 'development' : 'production',
       migrations: clientMigrations,
       moduleName: moduleName,

@@ -12,8 +12,6 @@ import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-import '../../migrations/cli_migration_runner.dart';
-
 /// Runs code generation for the given affected file paths.
 ///
 /// The function should update analyzer contexts and generate code as needed.

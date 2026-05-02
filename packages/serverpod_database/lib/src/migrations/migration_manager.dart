@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/log.dart';
@@ -11,13 +13,7 @@ import '../migrations/table_comparison_warning.dart';
 /// `packages/serverpod/lib/src/models/database_migration_version.spy.yaml`.
 const _migrationVersionTable = 'serverpod_migrations';
 
-/// The migration manager handles migrations of the database.
-///
-/// Concrete by design: callers (server, CLI) instantiate this directly
-/// against a [FileSystemMigrationArtifactStore]. [ClientMigrationManager]
-/// extends it to override the version-loading queries for the
-/// client-side database, which doesn't have access to the server's
-/// generated `serverpod_migrations` model.
+/// Handles applying database migrations.
 class MigrationManager {
   final MigrationArtifactStoreReader _artifactStore;
 
@@ -43,6 +39,26 @@ class MigrationManager {
 
   /// Creates a new migration manager.
   MigrationManager(this._artifactStore, {this.runMode});
+
+  /// Reads migrations from `<projectDirectory>/migrations/`.
+  MigrationManager.fromDirectory(
+    Directory projectDirectory, {
+    String? runMode,
+  }) : this(
+         FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
+         runMode: runMode,
+       );
+
+  /// Reads migrations from an in-memory list. Repair migrations are not
+  /// supported.
+  MigrationManager.fromMigrations({
+    required List<MigrationVersionSql> migrations,
+    required String moduleName,
+    String? runMode,
+  }) : this(
+         RuntimeListMigrationArtifactStore(migrations, moduleName: moduleName),
+         runMode: runMode,
+       );
 
   /// Loads the installed versions of the migrations from the database.
   ///
@@ -369,49 +385,5 @@ class MigrationManager {
     }
 
     return warnings.isEmpty;
-  }
-}
-
-/// Handles migrations for client-side databases.
-class ClientMigrationManager extends MigrationManager {
-  /// Creates a manager for the given in-memory [migrations] and [moduleName].
-  ClientMigrationManager({
-    required super.runMode,
-    required List<MigrationVersionSql> migrations,
-    required String moduleName,
-  }) : super(
-         RuntimeListMigrationArtifactStore(
-           migrations,
-           moduleName: moduleName,
-         ),
-       );
-
-  @override
-  Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    // NOTE: This should be replaced by a proper find on the model once tables
-    // are available for shared package models. Currently, only the server and
-    // client packages have access to the [DatabaseMigrationVersion] model.
-    final result = await session.db.unsafeQuery(
-      'SELECT * FROM "serverpod_migrations";',
-      transaction: transaction,
-    );
-
-    return [
-      for (final row in result)
-        DatabaseMigrationVersionModel.fromJson(
-          row.toColumnMap(),
-        ),
-    ];
-  }
-
-  @override
-  Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
-    DatabaseSession session, {
-    Transaction? transaction,
-  }) async {
-    return null;
   }
 }

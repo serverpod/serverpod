@@ -45,10 +45,8 @@ Future<List<String>> applyPendingMigrations({
       poolManager: pool,
     );
 
-    final manager = MigrationManager(
-      FileSystemMigrationArtifactStore(
-        projectDirectory: Directory(serverDir),
-      ),
+    final manager = MigrationManager.fromDirectory(
+      Directory(serverDir),
       runMode: runMode,
     );
     final applied = await manager.migrateToLatest(session);
