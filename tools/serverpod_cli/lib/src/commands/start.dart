@@ -126,8 +126,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final watch = commandConfig.value(StartOption.watch);
     final noFes = commandConfig.value(StartOption.noFes);
-    final useTui =
-        commandConfig.value(StartOption.tui) && stdout.hasTerminal && !noFes;
+    final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
