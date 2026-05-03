@@ -195,107 +195,20 @@ class StartCommand extends ServerpodCommand<StartOption> {
         moduleName: config.name,
       );
 
-      if (watch) {
-        final exitCode = await _runWatchMode(
-          config: config,
-          serverDir: serverDir,
-          serverArgs: serverArgs,
-          shutdownSignal: shutdown.future,
-          noFes: noFes,
-        );
-        if (exitCode != 0) throw ExitException(exitCode);
-      } else {
-        // One-shot: generate, then run.
-        final success = await performOneShotGenerate(config: config);
-
-        if (!success) {
-          log.error('Code generation failed.');
-          throw ExitException.error();
-        }
-
-        await _startOnce(
-          serverDir: serverDir,
-          serverArgs: serverArgs,
-          noFes: noFes,
-          watchDirs: config.watchPaths(
-            includeWeb: true,
-            includeClientPackage: true,
-          ),
-        );
-      }
+      final exitCode = await _runSession(
+        config: config,
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+        shutdownSignal: shutdown.future,
+        watch: watch,
+        noFes: noFes,
+      );
+      if (exitCode != 0) throw ExitException(exitCode);
     } finally {
       shutdown.dispose();
       if (startedDocker) {
         await _stopDockerServices(serverDir);
       }
-    }
-  }
-
-  /// Starts the server once and waits for it to exit.
-  ///
-  /// When [noFes] is false (default), compiles the server to a .dill file
-  /// using the Frontend Server and starts from the compiled kernel.
-  /// When [noFes] is true, starts the server with `dart run`.
-  Future<void> _startOnce({
-    required String serverDir,
-    required List<String> serverArgs,
-    required bool noFes,
-    required Set<String> watchDirs,
-  }) async {
-    log.info('Starting server...');
-
-    if (noFes) {
-      final serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-      );
-
-      await serverProcess.start();
-      log.info('Server running.');
-
-      final exitCode = await serverProcess.exitCode;
-      if (exitCode != 0) throw ExitException(exitCode);
-      return;
-    }
-
-    final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
-    final entryPoint = p.join(serverDir, 'bin', 'main.dart');
-    final dillPath = p.join(serverpodToolDir, 'server.dill');
-
-    final compiler = KernelCompiler(
-      entryPoint: entryPoint,
-      outputDill: dillPath,
-    );
-
-    final nativeAssetsBuilder = _createNativeAssetsBuilder(
-      serverDir: serverDir,
-      serverpodToolDir: serverpodToolDir,
-      dartExecutable: compiler.dartExecutable,
-    );
-    if (!await _runHooksFor(nativeAssetsBuilder, compiler)) {
-      throw ExitException.error();
-    }
-
-    await compiler.start();
-
-    try {
-      if (!await compiler.compileIfNeeded(watchDirs)) {
-        log.error('Compilation failed.');
-        throw ExitException.error();
-      }
-
-      final serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        dartExecutable: compiler.dartExecutable,
-      );
-      await serverProcess.start(dillPath: dillPath);
-      log.info('Server running.');
-
-      final exitCode = await serverProcess.exitCode;
-      if (exitCode != 0) throw ExitException(exitCode);
-    } finally {
-      await compiler.dispose();
     }
   }
 }
@@ -411,29 +324,28 @@ Future<void> _applyMigrationsOnBoot({
 ///
 /// Analyzers are created once and updated incrementally on each file change,
 /// avoiding the cost of re-initializing them from scratch every time.
-Future<int> _runWatchMode({
+Future<int> _runSession({
   required GeneratorConfig config,
   required String serverDir,
   required List<String> serverArgs,
   required Future<int> shutdownSignal,
+  required bool watch,
   required bool noFes,
 }) async {
-  log.info('Starting server in watch mode...');
+  log.info(
+    watch ? 'Starting server in watch mode...' : 'Starting server...',
+  );
 
   final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
 
-  // If a server is already running (FES proxy or --no-fes pod), no-op so
-  // the IDE can attach to the existing instance via the unchanged info
-  // file. Stale files are cleaned up by _checkExistingServer.
+  // If a server is already running, no-op so the IDE can attach to the
+  // existing instance via the unchanged info file. Stale files are cleaned
+  // up by _checkExistingServer.
   final existingUri = await _checkExistingServer(vmServiceInfoFile);
   if (existingUri != null) {
     log.info('Existing server found.');
-    if (noFes) {
-      log.info('The Dart VM service is listening on $existingUri');
-    } else {
-      log.info('VM service proxy listening on $existingUri');
-    }
+    log.info('VM service proxy listening on $existingUri');
     log.info('Server running.');
     return 0;
   }
@@ -461,23 +373,27 @@ Future<int> _runWatchMode({
     }
   }
 
-  return _startWatchSession(
+  return _startSession(
     config: config,
     serverDir: serverDir,
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
     shutdownSignal: shutdownSignal,
-    watcher: FileWatcher(
-      watchPaths: {
-        p.absolute(p.joinAll(config.libSourcePathParts)),
-        ...config.sharedModelsLibSourcePaths.map(p.absolute),
-        p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
-        p.absolute(
-          p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
-        ),
-      },
-    ),
+    watcher: watch
+        ? FileWatcher(
+            watchPaths: {
+              p.absolute(p.joinAll(config.libSourcePathParts)),
+              ...config.sharedModelsLibSourcePaths.map(p.absolute),
+              p.absolute(
+                p.joinAll([...config.clientPackagePathParts, 'lib']),
+              ),
+              p.absolute(
+                p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
+              ),
+            },
+          )
+        : null,
     generatedDirPaths: config.generatedDirPaths,
     generate: (affectedPaths, requirements) async {
       final analyzers = await analyzersFuture;
@@ -493,20 +409,25 @@ Future<int> _runWatchMode({
   );
 }
 
-/// Sets up the server process, creates a [WatchSession], and runs the
-/// file-change loop until the server exits or a termination signal arrives.
+/// Sets up the server process, creates a [WatchSession], and runs until the
+/// server exits or a termination signal arrives.
+///
+/// When [watcher] is non-null, file change events are routed into the
+/// session for incremental reload. When `null`, the server runs without a
+/// file-watch subscription; manual reloads still work via the proxy / MCP /
+/// TUI buttons.
 ///
 /// When [noFes] is true, the server is started with `dart run` and no
 /// Frontend Server is created; reloads against the running pod are routed
 /// through the VM's own kernel service via the vm-service proxy.
-Future<int> _startWatchSession({
+Future<int> _startSession({
   required GeneratorConfig config,
   required String serverDir,
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
   required Future<int> shutdownSignal,
-  required FileWatcher watcher,
+  required FileWatcher? watcher,
   required Set<String> generatedDirPaths,
   required GenerateAction generate,
   required bool noFes,
@@ -546,7 +467,9 @@ Future<int> _startWatchSession({
     // Compile if the cached dill is stale. The FES starts in the background
     // (KernelCompiler gates compile/reset calls internally until start
     // completes), so if the dill is up to date we boot immediately.
-    if (!await localCompiler.compileIfNeeded(watcher.watchPaths)) {
+    if (!await localCompiler.compileIfNeeded(
+      config.watchPaths(includeWeb: true, includeClientPackage: true),
+    )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
       return 1;
@@ -617,7 +540,7 @@ Future<int> _startWatchSession({
     mcpSocket = null;
   }
 
-  final fileChangeSub = watcher.onFilesChanged
+  final fileChangeSub = watcher?.onFilesChanged
       .asyncMapBuffer(
         (events) => session.handleFileChange(events.merge()),
       )
@@ -630,7 +553,7 @@ Future<int> _startWatchSession({
   log.info('Server stopped (exitCode: $exitCode).');
 
   // Clean up.
-  await fileChangeSub.cancel();
+  await fileChangeSub?.cancel();
   await mcpSocket?.close();
   await session.dispose();
   await proxy?.close();
