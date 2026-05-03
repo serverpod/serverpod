@@ -498,9 +498,8 @@ Future<int> _runWatchMode({
 /// file-change loop until the server exits or a termination signal arrives.
 ///
 /// When [noFes] is true, the server is started with `dart run` and no
-/// compiler is created - the IDE handles compilation and hot reload.
-/// The session still runs code generation and triggers VM service reloads
-/// for static file changes.
+/// Frontend Server is created; reloads against the running pod are routed
+/// through the VM's own kernel service via the vm-service proxy.
 Future<int> _startWatchSession({
   required GeneratorConfig config,
   required String serverDir,
@@ -515,34 +514,17 @@ Future<int> _startWatchSession({
 }) async {
   KernelCompiler? compiler;
   NativeAssetsBuilder? nativeAssetsBuilder;
-  ServerProcessFactory? serverProcessFactory;
-  ServerProcess initialServerProcess;
+  late final ServerProcess initialServerProcess;
   late final WatchSession session;
   VmServiceProxy? proxy;
 
-  // The user-facing vm-service-info.json receives the proxy's URI instead.
-  // In --no-fes mode there is no proxy, so the pod writes directly to the user path.
-  final podInfoFile = noFes
-      ? vmServiceInfoFile
-      : p.join(serverpodToolDir, 'vm-service-info.pod.json');
+  // The pod always writes its raw VM service URI to a separate file; the
+  // user-facing vm-service-info.json receives the proxy URI written by
+  // _mountOrRetargetProxy.
+  final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  if (noFes) {
-    // No compiler - the IDE handles compilation and hot reload.
-    // Start the server with dart run; the VM's kernel_service gets its
-    // own compiler, so IDE-initiated reloadSources calls work natively.
-    final serverProcess = ServerProcess(
-      serverDir: serverDir,
-      serverArgs: serverArgs,
-      enableVmService: true,
-      vmServiceInfoFile: podInfoFile,
-    );
-    await log.progress('Starting server', () async {
-      await serverProcess.start();
-      await serverProcess.connectToVmService();
-      return true;
-    });
-    initialServerProcess = serverProcess;
-  } else {
+  String? dartExecutable;
+  if (!noFes) {
     // Set up incremental compiler.
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
@@ -571,34 +553,35 @@ Future<int> _startWatchSession({
       return 1;
     }
 
-    serverProcessFactory = (String? dillPath) async {
-      final serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        dartExecutable: localCompiler.dartExecutable,
-        enableVmService: true,
-        vmServiceInfoFile: podInfoFile,
-      );
-      await serverProcess.start(dillPath: dillPath);
-      await serverProcess.connectToVmService();
-      proxy = await _mountOrRetargetProxy(
-        serverProcess: serverProcess,
-        existing: proxy,
-        userInfoFile: vmServiceInfoFile,
-        reload: () => session.forceReload(),
-      );
-      return serverProcess;
-    };
-
-    late final ServerProcess started;
-    await log.progress('Starting server', () async {
-      started = await serverProcessFactory!(initialDill);
-      return true;
-    });
-    initialServerProcess = started;
     compiler = localCompiler;
     nativeAssetsBuilder = localBuilder;
+    dartExecutable = localCompiler.dartExecutable;
   }
+
+  Future<ServerProcess> serverProcessFactory(String? dillPath) async {
+    final serverProcess = ServerProcess(
+      serverDir: serverDir,
+      serverArgs: serverArgs,
+      dartExecutable: dartExecutable,
+      enableVmService: true,
+      vmServiceInfoFile: podInfoFile,
+    );
+    await serverProcess.start(dillPath: dillPath);
+    await serverProcess.connectToVmService();
+    proxy = await _mountOrRetargetProxy(
+      serverProcess: serverProcess,
+      existing: proxy,
+      userInfoFile: vmServiceInfoFile,
+      reload: () => session.forceReload(),
+    );
+    return serverProcess;
+  }
+
+  await log.progress('Starting server', () async {
+    final initialDill = noFes ? null : p.join(serverpodToolDir, 'server.dill');
+    initialServerProcess = await serverProcessFactory(initialDill);
+    return true;
+  });
 
   final runMode = runModeFromServerArgs(serverArgs);
   session = WatchSession(
@@ -655,7 +638,7 @@ Future<int> _startWatchSession({
   await mcpSocket?.close();
   await session.dispose();
   await proxy?.close();
-  if (!noFes) await File(vmServiceInfoFile).deleteIfExists();
+  await File(vmServiceInfoFile).deleteIfExists();
 
   return exitCode;
 }
