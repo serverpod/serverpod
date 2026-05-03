@@ -45,7 +45,9 @@ enum StartOption<V> implements OptionDefinition<V> {
       argAbbrev: 'w',
       defaultsTo: true,
       negatable: true,
-      helpText: 'Watch for changes and hot reload the server.',
+      helpText:
+          'Watch files and use the Frontend Server for fast incremental compilation. '
+          'With --no-watch, the server is started via `dart run`.',
     ),
   ),
   directory(
@@ -63,17 +65,6 @@ enum StartOption<V> implements OptionDefinition<V> {
       defaultsTo: true,
       helpText:
           'Start Docker Compose services if a docker-compose.yaml exists.',
-    ),
-  ),
-  noFes(
-    FlagOption(
-      argName: 'no-fes',
-      defaultsTo: false,
-      negatable: false,
-      helpText:
-          'Skip the Frontend Server compilation pipeline. '
-          'The server is started with dart run and the VM service info file '
-          'is kept so an IDE debugger can attach and handle hot reload.',
     ),
   ),
   tui(
@@ -125,7 +116,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
     Configuration<StartOption> commandConfig,
   ) async {
     final watch = commandConfig.value(StartOption.watch);
-    final noFes = commandConfig.value(StartOption.noFes);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
@@ -201,7 +191,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
         serverArgs: serverArgs,
         shutdownSignal: shutdown.future,
         watch: watch,
-        noFes: noFes,
       );
       if (exitCode != 0) throw ExitException(exitCode);
     } finally {
@@ -330,7 +319,6 @@ Future<int> _runSession({
   required List<String> serverArgs,
   required Future<int> shutdownSignal,
   required bool watch,
-  required bool noFes,
 }) async {
   log.info(
     watch ? 'Starting server in watch mode...' : 'Starting server...',
@@ -405,7 +393,6 @@ Future<int> _runSession({
         requirements: requirements,
       );
     },
-    noFes: noFes,
   );
 }
 
@@ -413,13 +400,11 @@ Future<int> _runSession({
 /// server exits or a termination signal arrives.
 ///
 /// When [watcher] is non-null, file change events are routed into the
-/// session for incremental reload. When `null`, the server runs without a
-/// file-watch subscription; manual reloads still work via the proxy / MCP /
-/// TUI buttons.
-///
-/// When [noFes] is true, the server is started with `dart run` and no
-/// Frontend Server is created; reloads against the running pod are routed
-/// through the VM's own kernel service via the vm-service proxy.
+/// session for incremental reload and the Frontend Server pipeline is used
+/// for compilation. When `null`, the server is started with `dart run` and
+/// reloads against the running pod are routed through the VM's own kernel
+/// service via the vm-service proxy; manual reloads still work via the
+/// proxy / MCP / TUI buttons.
 Future<int> _startSession({
   required GeneratorConfig config,
   required String serverDir,
@@ -430,8 +415,8 @@ Future<int> _startSession({
   required FileWatcher? watcher,
   required Set<String> generatedDirPaths,
   required GenerateAction generate,
-  required bool noFes,
 }) async {
+  final watch = watcher != null;
   KernelCompiler? compiler;
   NativeAssetsBuilder? nativeAssetsBuilder;
   late final ServerProcess initialServerProcess;
@@ -444,7 +429,7 @@ Future<int> _startSession({
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
   String? dartExecutable;
-  if (!noFes) {
+  if (watch) {
     // Set up incremental compiler.
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
@@ -500,7 +485,7 @@ Future<int> _startSession({
   }
 
   await log.progress('Starting server', () async {
-    final initialDill = noFes ? null : p.join(serverpodToolDir, 'server.dill');
+    final initialDill = watch ? p.join(serverpodToolDir, 'server.dill') : null;
     initialServerProcess = await serverProcessFactory(initialDill);
     return true;
   });
@@ -712,7 +697,6 @@ Future<void> _runTuiBackend({
   required bool? interactive,
   required void Function(int) onExitCode,
 }) async {
-  final noFes = commandConfig.value(StartOption.noFes);
   final tuiWriter = TuiLogWriter();
 
   try {
@@ -796,7 +780,7 @@ Future<void> _runTuiBackend({
     KernelCompiler? compiler;
     NativeAssetsBuilder? nativeAssetsBuilder;
     String? dartExecutable;
-    if (!noFes) {
+    if (watch) {
       final entryPoint = p.join(serverDir, 'bin', 'main.dart');
       final initialDill = p.join(serverpodToolDir, 'server.dill');
       final localCompiler = KernelCompiler(
@@ -873,9 +857,9 @@ Future<void> _runTuiBackend({
 
     late final ServerProcess initialServer;
     await log.progress('Starting server', () async {
-      final initialDill = noFes
-          ? null
-          : p.join(serverpodToolDir, 'server.dill');
+      final initialDill = watch
+          ? p.join(serverpodToolDir, 'server.dill')
+          : null;
       initialServer = await serverProcessFactory(initialDill);
       return true;
     });

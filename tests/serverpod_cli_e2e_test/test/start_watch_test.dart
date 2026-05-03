@@ -253,11 +253,11 @@ fields:
     });
 
     group(
-      "when running 'serverpod start --watch --no-fes'",
+      "when running 'serverpod start --no-watch'",
       () {
         setUp(() async {
           (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
-            ['start', '--watch', '--no-fes'],
+            ['start', '--no-watch'],
             workingDirectory: path.join(sandboxDir, serverDir),
             keywords: startWatchKeywords,
           );
