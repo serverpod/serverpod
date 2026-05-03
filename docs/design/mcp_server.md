@@ -142,7 +142,7 @@ In `_startWatchSession()` and `_runTuiBackend()` (`start.dart`), the runner-side
 
 ### One-shot migration flag
 
-`WatchSession.applyMigration()` does a full compile, stops the server, and creates a new server with `extraArgs: ['--apply-migrations']`. The method throws on failure (compilation error, already in progress, `--no-fes` mode) so the MCP server can report errors to the client.
+`WatchSession.applyMigration()` stops the running pod and creates a new pod with `extraArgs: ['--apply-migrations']`. In `--watch` mode it runs a full FES compile first and starts the new pod from the resulting `.dill`; in `--no-watch` mode it skips the compile and starts the new pod via `dart run`. The method throws on failure (compilation error, already in progress, no factory configured) so the MCP server can report errors to the client.
 
 ## Design Decisions
 
