@@ -598,27 +598,24 @@ Future<int> _startWatchSession({
     ),
   );
 
-  // Start MCP socket server for AI agent integration.
-  // Only available when using the built-in compiler (not --no-fes), since all
-  // current MCP tools require the compiler and process lifecycle.
-  McpSocketServer? mcpSocket;
-  if (!noFes) {
-    mcpSocket = McpSocketServer(project: config.name);
-    try {
-      await mcpSocket.start();
-      mcpSocket.connect(
-        onApplyMigration: session.applyMigration,
-        onCreateMigration: ({String? tag, bool force = false}) =>
-            _createMigrationForMcp(config, tag: tag, force: force),
-        onHotReload: session.forceReload,
-        getVmServiceUri: () => session.vmServiceUri,
-        vmServiceUriChanges: session.vmServiceUriChanges,
-      );
-      log.info('MCP server listening on ${mcpSocket.socketPath}');
-    } on SocketException catch (e) {
-      log.warning('Failed to start MCP server: $e');
-      mcpSocket = null;
-    }
+  // Start MCP socket server for AI agent integration. Exposes the proxy
+  // URI (not the pod's) so MCP-initiated reloads flow through the same
+  // interceptor that IDE attach uses.
+  McpSocketServer? mcpSocket = McpSocketServer(project: config.name);
+  try {
+    await mcpSocket.start();
+    mcpSocket.connect(
+      onApplyMigration: session.applyMigration,
+      onCreateMigration: ({String? tag, bool force = false}) =>
+          _createMigrationForMcp(config, tag: tag, force: force),
+      onHotReload: session.forceReload,
+      getVmServiceUri: () => proxy?.httpUri.toString(),
+      vmServiceUriChanges: session.vmServiceUriChanges,
+    );
+    log.info('MCP server listening on ${mcpSocket.socketPath}');
+  } on SocketException catch (e) {
+    log.warning('Failed to start MCP server: $e');
+    mcpSocket = null;
   }
 
   final fileChangeSub = watcher.onFilesChanged
@@ -973,9 +970,10 @@ Future<void> _runTuiBackend({
       ),
     );
 
-    // Start MCP socket server.
-    McpSocketServer? mcpSocket;
-    mcpSocket = McpSocketServer(project: config.name);
+    // Start MCP socket server. Exposes the proxy URI (not the pod's) so
+    // MCP-initiated reloads flow through the same interceptor that IDE
+    // attach uses.
+    McpSocketServer? mcpSocket = McpSocketServer(project: config.name);
     try {
       await mcpSocket.start();
       mcpSocket.connect(
@@ -984,7 +982,7 @@ Future<void> _runTuiBackend({
             _createMigrationForMcp(config, tag: tag, force: force),
         onHotReload: session.forceReload,
         getLogHistory: () => holder.state.logHistory.toList(),
-        getVmServiceUri: () => session.vmServiceUri,
+        getVmServiceUri: () => proxy?.httpUri.toString(),
         vmServiceUriChanges: session.vmServiceUriChanges,
       );
       log.info('MCP server listening on ${mcpSocket.socketPath}');
