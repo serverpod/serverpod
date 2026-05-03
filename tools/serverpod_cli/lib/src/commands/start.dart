@@ -712,6 +712,7 @@ Future<void> _runTuiBackend({
   required bool? interactive,
   required void Function(int) onExitCode,
 }) async {
+  final noFes = commandConfig.value(StartOption.noFes);
   final tuiWriter = TuiLogWriter();
 
   try {
@@ -791,34 +792,43 @@ Future<void> _runTuiBackend({
       }
     }
 
-    // Compilation.
-    final entryPoint = p.join(serverDir, 'bin', 'main.dart');
-    final initialDill = p.join(serverpodToolDir, 'server.dill');
-    final compiler = KernelCompiler(
-      entryPoint: entryPoint,
-      outputDill: initialDill,
-    );
+    // Compilation (FES mode only).
+    KernelCompiler? compiler;
+    NativeAssetsBuilder? nativeAssetsBuilder;
+    String? dartExecutable;
+    if (!noFes) {
+      final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+      final initialDill = p.join(serverpodToolDir, 'server.dill');
+      final localCompiler = KernelCompiler(
+        entryPoint: entryPoint,
+        outputDill: initialDill,
+      );
 
-    final nativeAssetsBuilder = _createNativeAssetsBuilder(
-      serverDir: serverDir,
-      serverpodToolDir: serverpodToolDir,
-      dartExecutable: compiler.dartExecutable,
-    );
-    if (!await _runHooksFor(nativeAssetsBuilder, compiler)) {
-      onExitCode(1);
-      return;
-    }
+      final localBuilder = _createNativeAssetsBuilder(
+        serverDir: serverDir,
+        serverpodToolDir: serverpodToolDir,
+        dartExecutable: localCompiler.dartExecutable,
+      );
+      if (!await _runHooksFor(localBuilder, localCompiler)) {
+        onExitCode(1);
+        return;
+      }
 
-    await compiler.start();
+      await localCompiler.start();
 
-    if (!await compiler.compileIfNeeded(
-      config.watchPaths(includeWeb: true, includeClientPackage: true),
-    )) {
-      await compiler.dispose();
-      log.error('Initial compilation failed.');
-      onExitCode(1);
-      shutdownApp(1);
-      return;
+      if (!await localCompiler.compileIfNeeded(
+        config.watchPaths(includeWeb: true, includeClientPackage: true),
+      )) {
+        await localCompiler.dispose();
+        log.error('Initial compilation failed.');
+        onExitCode(1);
+        shutdownApp(1);
+        return;
+      }
+
+      compiler = localCompiler;
+      nativeAssetsBuilder = localBuilder;
+      dartExecutable = localCompiler.dartExecutable;
     }
 
     // Create TUI log sinks for server output.
@@ -830,12 +840,11 @@ Future<void> _runTuiBackend({
 
     // Server process factory. Subscribes to VM service extension events
     // on each new server process so restarts pick up the new connection.
-    ServerProcessFactory serverProcessFactory;
-    serverProcessFactory = (String? dillPath) async {
+    Future<ServerProcess> serverProcessFactory(String? dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
-        dartExecutable: compiler.dartExecutable,
+        dartExecutable: dartExecutable,
         enableVmService: true,
         vmServiceInfoFile: podInfoFile,
         stdoutSink: stdoutSink,
@@ -860,10 +869,13 @@ Future<void> _runTuiBackend({
       );
 
       return serverProcess;
-    };
+    }
 
     late final ServerProcess initialServer;
     await log.progress('Starting server', () async {
+      final initialDill = noFes
+          ? null
+          : p.join(serverpodToolDir, 'server.dill');
       initialServer = await serverProcessFactory(initialDill);
       return true;
     });
