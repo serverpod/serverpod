@@ -571,7 +571,7 @@ Future<int> _startWatchSession({
       return 1;
     }
 
-    serverProcessFactory = (String dillPath) async {
+    serverProcessFactory = (String? dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
@@ -929,7 +929,7 @@ Future<void> _runTuiBackend({
     // Server process factory. Subscribes to VM service extension events
     // on each new server process so restarts pick up the new connection.
     ServerProcessFactory serverProcessFactory;
-    serverProcessFactory = (String dillPath) async {
+    serverProcessFactory = (String? dillPath) async {
       final serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,

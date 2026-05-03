@@ -25,7 +25,11 @@ typedef GenerateAction =
 
 /// Creates a new server process, starts it, connects VM service,
 /// and returns it ready for use.
-typedef ServerProcessFactory = Future<ServerProcess> Function(String dillPath);
+///
+/// [dillPath] is the compiled kernel file to boot from. Pass `null`
+/// when no Frontend Server is configured; the factory then starts the
+/// server via `dart run` and the VM's own kernel service drives reloads.
+typedef ServerProcessFactory = Future<ServerProcess> Function(String? dillPath);
 
 /// The lifecycle state of a [WatchSession].
 ///
@@ -57,9 +61,9 @@ enum SessionState {
 /// incremental compiler sees all `.dart` changes, including those produced
 /// by code generation.
 ///
-/// When [compiler] is `null` (--no-fes mode), the session still runs code
-/// generation and triggers VM service reloads for static file changes, but
-/// leaves compilation and hot reload to the IDE.
+/// When [compiler] is `null`, the session runs code generation and triggers
+/// VM service reloads via the VM's built-in kernel service rather than the
+/// Frontend Server. Static file change handling is unaffected.
 /// Decides whether a source `.dart` file change may have altered the protocol
 /// (endpoint or future call class). Used by [WatchSession] to skip generation
 /// when the change is in a pure helper file.
@@ -112,6 +116,7 @@ class WatchSession {
   final Set<String> _pendingPaths = {};
 
   ServerProcess _server;
+
   SessionState _state = SessionState.idle;
 
   /// Serializes restart and migration operations. Each operation chains onto
@@ -147,10 +152,6 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction {
-    assert(
-      (compiler == null) == (createServer == null),
-      'compiler and createServer must both be provided or both be null.',
-    );
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -239,8 +240,12 @@ class WatchSession {
       genOutputFiles = genResult.generatedFiles;
     }
 
-    // Without a compiler (--no-fes), the IDE handles compilation and reload.
-    if (_compiler == null) return;
+    // Without a compiler, drive a reload through the VM's own kernel
+    // service instead of the FES pipeline.
+    if (_compiler == null) {
+      await _reloadOrRestart(null);
+      return;
+    }
 
     // Merge all .dart paths for the compiler: source files, generated files
     // from generation output, and generated files detected by the watcher.
@@ -347,31 +352,30 @@ class WatchSession {
     await _reloadOrRestart(result);
   }
 
-  /// Attempts hot reload; falls back to full server restart if reload fails.
-  Future<void> _reloadOrRestart(CompileResult result) async {
-    if (_server.isVmServiceConnected) {
-      final reloaded = await _server.reload(result.dillOutput!);
-      if (reloaded) {
-        log.info(serverReloaded);
-        return;
-      }
-      log.warning('Hot reload failed, falling back to restart.');
-    }
+  /// Attempts hot reload; falls back to a server restart if reload fails.
+  ///
+  /// With a [KernelCompiler], the fallback resets the compiler and produces a
+  /// fresh full dill to boot the new pod. Without one, the new pod is spawned
+  /// via `dart run` and the VM's kernel service compiles on the next reload.
+  Future<void> _reloadOrRestart(CompileResult? result) async {
+    if (await _reload(result?.dillOutput)) return;
 
-    // Fall back to restart: need a full dill to boot a new process.
-    // The incremental dill only contains deltas. Reset the compiler
-    // so the next compile produces a complete kernel.
-    final compiler = _compiler!;
-    await compiler.reset();
-    final fullResult = await compileWithProgress(
-      'Compiling server',
-      compiler,
-      rejectOnFailure: true,
-    );
-    if (fullResult == null) {
-      return;
+    // Fall back to restart. With a compiler, produce a full dill (incremental
+    // dills only contain deltas, so they can't boot a new process). Without
+    // one, restart via `dart run` and let the VM's kernel service take over.
+    String? dillPath;
+    final compiler = _compiler;
+    if (compiler != null) {
+      await compiler.reset();
+      final fullResult = await compileWithProgress(
+        'Compiling server',
+        compiler,
+        rejectOnFailure: true,
+      );
+      if (fullResult == null) return;
+      compiler.accept();
+      dillPath = fullResult.dillOutput!;
     }
-    compiler.accept();
 
     switch (_state) {
       case SessionState.idle:
@@ -382,9 +386,11 @@ class WatchSession {
         return;
     }
 
-    await _restartServer(fullResult.dillOutput!);
+    await _restartServer(dillPath);
   }
 
+  /// Forces a hot reload.
+  ///
   /// Forces a full recompile and hot reload (or restart).
   ///
   /// Useful when the user explicitly requests a reload via a button press.
@@ -392,9 +398,9 @@ class WatchSession {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
     }
-    final compiler = _compiler;
-    if (compiler == null) {
-      throw StateError('Cannot force reload in --no-fes mode.');
+    if (_compiler == null) {
+      _pending = _pending.then((_) => _reload(null));
+      return _pending;
     }
     return _chain(
       () => _compileAndReload(
@@ -436,7 +442,27 @@ class WatchSession {
     });
   }
 
-  Future<void> _restartServer(String dillPath) async {
+  /// Hot-reloads via `vmService.reloadSources`. With a non-null [dillPath],
+  /// the VM loads the pre-compiled dill; with `null`, the VM's own kernel
+  /// service compiles changed sources. Logs success or failure.
+  ///
+  /// Returns `true` on success, `false` if the VM service is not connected
+  /// or the reload itself reports failure.
+  Future<bool> _reload(String? dillPath) async {
+    if (!_server.isVmServiceConnected) {
+      log.warning('Cannot reload: VM service not connected.');
+      return false;
+    }
+    final reloaded = await _server.reload(dillPath);
+    if (reloaded) {
+      log.info(serverReloaded);
+    } else {
+      log.warning('Hot reload failed.');
+    }
+    return reloaded;
+  }
+
+  Future<void> _restartServer(String? dillPath) async {
     _state = SessionState.restarting;
     try {
       await _server.stop();

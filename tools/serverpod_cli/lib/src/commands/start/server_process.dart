@@ -213,17 +213,22 @@ class ServerProcess {
     if (!_vmServiceReady.isCompleted) _vmServiceReady.complete();
   }
 
-  /// Hot reloads the server with a new kernel file.
+  /// Hot reloads the server with a new kernel file at [dillPath].
+  ///
+  /// Pass `null` if VmService handles compile internally, ie.
+  /// when not using watcher and incremental compilation.
   ///
   /// Returns `true` if the reload was successful.
-  Future<bool> reload(String dillPath) async {
+  Future<bool> reload(String? dillPath) async {
     final vmService = _vmService;
     final isolateId = _mainIsolateId;
     if (vmService == null || isolateId == null) {
       return false;
     }
 
-    final dillUri = Uri.file(p.absolute(dillPath)).toString();
+    final dillUri = dillPath == null
+        ? null
+        : Uri.file(p.absolute(dillPath)).toString();
     final report = await vmService.reloadSources(
       isolateId,
       rootLibUri: dillUri,

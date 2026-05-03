@@ -88,7 +88,7 @@ class _FakeServer extends Fake implements ServerProcess {
   void simulateExit(int code) => _exitCodeCompleter.complete(code);
 
   @override
-  Future<bool> reload(String dillPath) async {
+  Future<bool> reload(String? dillPath) async {
     calls.add('reload:$dillPath');
     return reloadSuccess;
   }
@@ -147,7 +147,7 @@ void main() {
           },
       createServer:
           createServer ??
-          (String dillPath) async {
+          (String? dillPath) async {
             factoryCalls.add('createServer:$dillPath');
             return factoryServer;
           },
@@ -821,7 +821,7 @@ void main() {
             classifierGenerateCalls.add(affectedPaths);
             return (success: true, generatedFiles: <String>{});
           },
-          createServer: (String dillPath) async => classifierServer,
+          createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => false,
         );
       });
@@ -884,7 +884,7 @@ void main() {
             classifierGenerateCalls.add(affectedPaths);
             return (success: true, generatedFiles: <String>{});
           },
-          createServer: (String dillPath) async => classifierServer,
+          createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => true,
         );
       });
