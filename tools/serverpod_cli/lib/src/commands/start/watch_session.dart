@@ -175,7 +175,10 @@ class WatchSession {
   Stream<void> get vmServiceUriChanges => _vmServiceUriChangesController.stream;
 
   /// Processes a single (merged) file change event.
-  Future<void> handleFileChange(FileChangeEvent event) async {
+  Future<void> handleFileChange(FileChangeEvent event) =>
+      _chain(() => _handleFileChange(event));
+
+  Future<void> _handleFileChange(FileChangeEvent event) async {
     final hasDartChanges =
         event.dartFiles.isNotEmpty ||
         event.modelFiles.isNotEmpty ||
@@ -199,7 +202,7 @@ class WatchSession {
       }
     }
 
-    log.info('\nFiles changed, reloading server...');
+    log.info('Files changed');
     if (sourceDartFiles.isNotEmpty) log.debug('  .dart: $sourceDartFiles');
     if (generatedDartFiles.isNotEmpty) {
       log.debug('  .dart (generated): $generatedDartFiles');
