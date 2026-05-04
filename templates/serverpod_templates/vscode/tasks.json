@@ -5,13 +5,7 @@
       "label": "serverpod_start",
       "type": "shell",
       "command": "serverpod",
-      "args": [
-        "start",
-        // {{#database}}
-        "--",
-        "--apply-migrations"
-        // {{/database}}
-      ],
+      "args": ["start"],
       "options": {
         "cwd": "${workspaceFolder}/projectname_server",
         // {{#postgres}}

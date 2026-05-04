@@ -190,6 +190,12 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Extract passthrough args (everything after '--').
       final serverArgs = argResults?.rest ?? [];
 
+      await _applyMigrationsOnBoot(
+        serverDir: serverDir,
+        runMode: runModeFromServerArgs(serverArgs),
+        moduleName: config.name,
+      );
+
       if (watch) {
         final exitCode = await _runWatchMode(
           config: config,
@@ -382,6 +388,24 @@ Future<void> _stopDockerServices(String serverDir) async {
     ['compose', 'stop'],
     workingDirectory: serverDir,
   );
+}
+
+/// Applies pending database migrations before the pod starts.
+Future<void> _applyMigrationsOnBoot({
+  required String serverDir,
+  required String runMode,
+  required String moduleName,
+}) async {
+  try {
+    final applied = await applyPendingMigrations(
+      serverDir: serverDir,
+      runMode: runMode,
+      moduleName: moduleName,
+    );
+    log.info(formatAppliedMigrations(applied));
+  } on StateError {
+    // No database configured for this run mode - nothing to apply.
+  }
 }
 
 /// Runs the entire watch-mode loop.
@@ -832,6 +856,12 @@ Future<void> _runTuiBackend({
       shutdownApp(0);
       return;
     }
+
+    await _applyMigrationsOnBoot(
+      serverDir: serverDir,
+      runMode: runModeFromServerArgs(serverArgs),
+      moduleName: config.name,
+    );
 
     // Start analyzer initialization on a worker isolate in the background.
     final analyzersFuture = IsolatedAnalyzers.create(config);
