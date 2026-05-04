@@ -183,6 +183,57 @@ void main() {
         expect(response.statusCode, HttpStatus.notFound);
       },
     );
+
+    test(
+      'when retarget is called with a new upstream, '
+      'then the published URI is stable and new connections hit the '
+      'new upstream',
+      () async {
+        final upstream2 = await _FakeUpstream.start();
+        addTearDown(upstream2.close);
+
+        // Establish an initial pair against the original upstream.
+        final client1 = await _connectClient(proxy);
+        client1.listen((_) {}, onError: (_) {});
+        await upstream.connectionAttached;
+
+        final preRetargetHttpUri = proxy.httpUri;
+        await proxy.retarget(upstream2.wsUri);
+
+        // The proxy's published URI is stable across retarget so consumers
+        // can simply reconnect without re-reading vm-service-info.json.
+        expect(proxy.httpUri, preRetargetHttpUri);
+
+        // A fresh connection lands on the new upstream and round-trips.
+        final client2 = await _connectClient(proxy);
+        addTearDown(client2.close);
+        await upstream2.connectionAttached;
+
+        final responses = StreamController<Map<String, Object?>>();
+        client2.listen(
+          (data) =>
+              responses.add(jsonDecode(data as String) as Map<String, Object?>),
+          onDone: responses.close,
+        );
+
+        client2.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'id': 99,
+            'method': 'getVersion',
+            'params': <String, Object?>{},
+          }),
+        );
+
+        final response = await responses.stream.first;
+        expect(response['id'], 99);
+        expect(
+          upstream2.received.first['method'],
+          'getVersion',
+          reason: 'post-retarget frames must reach the new upstream',
+        );
+      },
+    );
   });
 }
 
