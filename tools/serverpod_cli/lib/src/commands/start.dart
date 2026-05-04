@@ -479,7 +479,7 @@ Future<int> _startSession({
       serverProcess: serverProcess,
       existing: proxy,
       userInfoFile: vmServiceInfoFile,
-      reload: () => session.forceReload(),
+      reload: watch ? () => session.forceReload() : null,
     );
     return serverProcess;
   }
@@ -552,6 +552,13 @@ Future<int> _startSession({
 /// when called for a subsequent pod restart so the published proxy URI
 /// stays stable across pod swaps.
 ///
+/// When [reload] is non-null, IDE-initiated `reloadSources` requests are
+/// intercepted and routed through it (so the FES + codegen pipeline runs
+/// before the VM reloads). When `null` - i.e. `--no-watch` mode, where
+/// there is no FES to drive - reloadSources passes through verbatim so
+/// the IDE keeps full request/response fidelity (notices, `pause`, etc.)
+/// against the VM's own kernel service.
+///
 /// Returns the (possibly retargeted) proxy on success, or [existing] when
 /// the pod hasn't published a VM service URI - the watch session keeps
 /// running without an attachable proxy in that case.
@@ -559,7 +566,7 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   required ServerProcess serverProcess,
   required VmServiceProxy? existing,
   required String userInfoFile,
-  required Future<void> Function() reload,
+  required Future<void> Function()? reload,
 }) async {
   final podHttp = serverProcess.vmServiceUri;
   if (podHttp == null) {
@@ -579,7 +586,7 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
 
   final proxy = VmServiceProxy(
     upstreamWs: podWs,
-    interceptor: reloadSourcesInterceptor(reload),
+    interceptor: reload == null ? null : reloadSourcesInterceptor(reload),
   );
   await proxy.bind();
   await File(userInfoFile).writeAsString(
@@ -849,7 +856,7 @@ Future<void> _runTuiBackend({
         serverProcess: serverProcess,
         existing: proxy,
         userInfoFile: vmServiceInfoFile,
-        reload: () => session.forceReload(),
+        reload: watch ? () => session.forceReload() : null,
       );
 
       return serverProcess;
