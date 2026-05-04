@@ -660,13 +660,13 @@ void main() {
   });
 
   group('Given applyMigration is called with an in-place action', () {
-    late List<String> appliedVersions;
+    late List<String> Function() appliedVersions;
     late int actionCalls;
     late Completer<List<String>>? gate;
     late WatchSession inPlaceSession;
 
     setUp(() {
-      appliedVersions = ['20251030_120000_user'];
+      appliedVersions = () => ['20251030_120000_user'];
       actionCalls = 0;
       gate = null;
 
@@ -677,7 +677,7 @@ void main() {
           actionCalls++;
           final localGate = gate;
           if (localGate != null) return localGate.future;
-          return appliedVersions;
+          return appliedVersions();
         },
       );
     });
@@ -699,7 +699,7 @@ void main() {
       'when the action returns an empty list, '
       'then it succeeds (already up to date)',
       () async {
-        appliedVersions = [];
+        appliedVersions = () => const [];
 
         await inPlaceSession.applyMigration();
 
@@ -713,34 +713,20 @@ void main() {
       'when the action throws, '
       'then the error propagates and state returns to idle',
       () async {
-        final session = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          createServer: (String dillPath) => throw StateError('not used'),
-          applyMigrationsAction: () async => throw StateError('boom'),
-        );
+        appliedVersions = () => throw StateError('boom');
 
         await expectLater(
-          session.applyMigration(),
+          inPlaceSession.applyMigration(),
           throwsA(
             isA<StateError>().having((e) => e.message, 'message', 'boom'),
           ),
         );
 
-        // State must be idle again - a follow-up call should reach the
-        // action rather than hit the in-flight latch.
-        var followUpRan = false;
-        final followUp = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          createServer: (String dillPath) => throw StateError('not used'),
-          applyMigrationsAction: () async {
-            followUpRan = true;
-            return const <String>[];
-          },
-        );
-        await followUp.applyMigration();
-        expect(followUpRan, isTrue);
+        // Same session: a follow-up call must reach the action rather
+        // than hit the in-flight latch.
+        appliedVersions = () => const [];
+        await inPlaceSession.applyMigration();
+        expect(actionCalls, 2);
       },
     );
 
