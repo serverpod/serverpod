@@ -25,14 +25,7 @@ typedef GenerateAction =
 
 /// Creates a new server process, starts it, connects VM service,
 /// and returns it ready for use.
-///
-/// [extraArgs] are appended to the server args for this invocation only
-/// (e.g. `--apply-migrations` for a one-shot migration).
-typedef ServerProcessFactory =
-    Future<ServerProcess> Function(
-      String dillPath, {
-      List<String> extraArgs,
-    });
+typedef ServerProcessFactory = Future<ServerProcess> Function(String dillPath);
 
 /// The lifecycle state of a [WatchSession].
 ///
@@ -45,7 +38,7 @@ enum SessionState {
   /// The server is being restarted due to a hot reload failure.
   restarting,
 
-  /// The server is being restarted with `--apply-migrations`.
+  /// Migrations are being applied against the live database.
   applyingMigration,
 
   /// The session has been disposed. No further operations are expected.
@@ -109,7 +102,7 @@ class WatchSession {
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
-  final ApplyMigrationsAction? _applyMigrationsAction;
+  final ApplyMigrationsAction _applyMigrationsAction;
 
   final Completer<int> _done = Completer<int>();
 
@@ -137,7 +130,7 @@ class WatchSession {
     required Set<String> generatedDirPaths,
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
-    ApplyMigrationsAction? applyMigrationsAction,
+    required ApplyMigrationsAction applyMigrationsAction,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -407,108 +400,34 @@ class WatchSession {
 
   /// Applies pending database migrations.
   ///
-  /// When an [ApplyMigrationsAction] was supplied at construction time,
-  /// migrations are applied via that callback (typically a CLI-side
-  /// runner that connects to the database directly), and the running
-  /// pod is left in place - hot reload covers any model code changes.
-  ///
-  /// When no callback is supplied (legacy path), the pod is recompiled
-  /// and restarted with `--apply-migrations`.
+  /// Migrations are applied via the [ApplyMigrationsAction] supplied at
+  /// construction time (typically a CLI-side runner that connects to
+  /// the database directly), and the running pod is left in place -
+  /// hot reload covers any model code changes.
   ///
   /// If another restart or migration is in progress, this call waits
   /// for it to finish before proceeding. Throws a [StateError] if the
-  /// session has been disposed or, on the legacy path, if the compiler
-  /// is not available (--no-fes mode).
+  /// session has been disposed.
   Future<void> applyMigration() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
     }
-
-    final action = _applyMigrationsAction;
-    if (action != null) {
-      _pending = _pending.then((_) => _applyMigrationInPlace(action));
-      return _pending;
-    }
-
-    final createServer = _createServer;
-    final compiler = _compiler;
-    if (compiler == null || createServer == null) {
-      throw StateError(
-        'Cannot apply migrations in --no-fes mode. '
-        'Restart the server manually with --apply-migrations.',
-      );
-    }
-
-    _pending = _pending.then(
-      (_) => _applyMigrationByRestart(compiler, createServer),
-    );
-    return _pending;
-  }
-
-  Future<void> _applyMigrationInPlace(ApplyMigrationsAction action) async {
-    if (_state == SessionState.disposed) {
-      throw StateError('Session has been disposed.');
-    }
-
-    _state = SessionState.applyingMigration;
-    try {
-      final applied = await action();
-      log.info(formatAppliedMigrations(applied));
-    } finally {
-      if (_state == SessionState.applyingMigration) {
-        _state = SessionState.idle;
+    _pending = _pending.then((_) async {
+      // The session may have been disposed while this call was queued.
+      if (_state == SessionState.disposed) {
+        throw StateError('Session has been disposed.');
       }
-    }
-  }
-
-  Future<void> _applyMigrationByRestart(
-    KernelCompiler compiler,
-    ServerProcessFactory createServer,
-  ) async {
-    if (_state == SessionState.disposed) {
-      throw StateError('Session has been disposed.');
-    }
-
-    _state = SessionState.applyingMigration;
-    try {
-      // Re-run native build hooks first; if the manifest changed the
-      // restart they trigger replaces the explicit reset() below.
-      var restartedByHooks = false;
-      final builder = _nativeAssetsBuilder;
-      if (builder != null) {
-        switch (await builder.applyTo(compiler)) {
-          case NativeAssetsApplyFailure(:final message):
-            throw StateError('$message Migration not applied.');
-          case NativeAssetsApplySuccess(:final restarted):
-            restartedByHooks = restarted;
+      _state = SessionState.applyingMigration;
+      try {
+        final applied = await _applyMigrationsAction();
+        log.info(formatAppliedMigrations(applied));
+      } finally {
+        if (_state == SessionState.applyingMigration) {
+          _state = SessionState.idle;
         }
       }
-
-      // Full compile so we have a complete kernel for the new process.
-      if (!restartedByHooks) await compiler.reset();
-      final result = await compileWithProgress(
-        'Compiling server',
-        compiler,
-        rejectOnFailure: true,
-      );
-      if (result == null) {
-        throw StateError('Compilation failed. Migration not applied.');
-      }
-      compiler.accept();
-
-      await _server.stop();
-      _server = await createServer(
-        result.dillOutput!,
-        extraArgs: ['--apply-migrations'],
-      );
-      _monitorExit(_server);
-      _trackVmServiceUri(_server);
-      log.info('Server restarted with --apply-migrations.');
-    } finally {
-      if (_state == SessionState.applyingMigration) {
-        _state = SessionState.idle;
-      }
-    }
+    });
+    return _pending;
   }
 
   Future<void> _restartServer(String dillPath) async {

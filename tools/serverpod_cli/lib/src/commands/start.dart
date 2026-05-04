@@ -551,23 +551,19 @@ Future<int> _startWatchSession({
       return result.dillOutput ?? initialDill;
     }
 
-    serverProcessFactory =
-        (
-          String dillPath, {
-          List<String> extraArgs = const [],
-        }) async {
-          final serverProcess = ServerProcess(
-            serverDir: serverDir,
-            serverArgs: [...serverArgs, ...extraArgs],
-            dartExecutable: localCompiler.dartExecutable,
-            enableVmService: true,
-            vmServiceInfoFile: vmServiceInfoFile,
-            onReloadRequested: onReloadRequested,
-          );
-          await serverProcess.start(dillPath: dillPath);
-          await serverProcess.connectToVmService();
-          return serverProcess;
-        };
+    serverProcessFactory = (String dillPath) async {
+      final serverProcess = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+        dartExecutable: localCompiler.dartExecutable,
+        enableVmService: true,
+        vmServiceInfoFile: vmServiceInfoFile,
+        onReloadRequested: onReloadRequested,
+      );
+      await serverProcess.start(dillPath: dillPath);
+      await serverProcess.connectToVmService();
+      return serverProcess;
+    };
 
     late final ServerProcess started;
     await log.progress('Starting server', () async {
@@ -587,13 +583,11 @@ Future<int> _startWatchSession({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: generatedDirPaths,
-    applyMigrationsAction: noFes
-        ? null
-        : () => applyPendingMigrations(
-            serverDir: serverDir,
-            runMode: runMode,
-            moduleName: config.name,
-          ),
+    applyMigrationsAction: () => applyPendingMigrations(
+      serverDir: serverDir,
+      runMode: runMode,
+      moduleName: config.name,
+    ),
   );
 
   // Start MCP socket server for AI agent integration.
@@ -883,34 +877,30 @@ Future<void> _runTuiBackend({
     // Server process factory. Subscribes to VM service extension events
     // on each new server process so restarts pick up the new connection.
     ServerProcessFactory serverProcessFactory;
-    serverProcessFactory =
-        (
-          String dillPath, {
-          List<String> extraArgs = const [],
-        }) async {
-          final serverProcess = ServerProcess(
-            serverDir: serverDir,
-            serverArgs: [...serverArgs, ...extraArgs],
-            dartExecutable: compiler.dartExecutable,
-            enableVmService: true,
-            vmServiceInfoFile: vmServiceInfoFile,
-            onReloadRequested: onReloadRequested,
-            stdoutSink: stdoutSink,
-            stderrSink: stderrSink,
-          );
-          await serverProcess.start(dillPath: dillPath);
-          await serverProcess.connectToVmService();
+    serverProcessFactory = (String dillPath) async {
+      final serverProcess = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+        dartExecutable: compiler.dartExecutable,
+        enableVmService: true,
+        vmServiceInfoFile: vmServiceInfoFile,
+        onReloadRequested: onReloadRequested,
+        stdoutSink: stdoutSink,
+        stderrSink: stderrSink,
+      );
+      await serverProcess.start(dillPath: dillPath);
+      await serverProcess.connectToVmService();
 
-          final vmService = serverProcess.vmService;
-          if (vmService != null) {
-            await vmService.streamListen('Extension');
-            vmService.onExtensionEvent.listen(
-              (event) => handleServerLogEvent(holder, event),
-            );
-          }
+      final vmService = serverProcess.vmService;
+      if (vmService != null) {
+        await vmService.streamListen('Extension');
+        vmService.onExtensionEvent.listen(
+          (event) => handleServerLogEvent(holder, event),
+        );
+      }
 
-          return serverProcess;
-        };
+      return serverProcess;
+    };
 
     late final ServerProcess initialServer;
     await log.progress('Starting server', () async {
