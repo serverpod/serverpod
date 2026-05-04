@@ -41,13 +41,11 @@ class MigrationManager {
   MigrationManager(this._artifactStore, {this.runMode});
 
   /// Reads migrations from `<projectDirectory>/migrations/`.
-  MigrationManager.fromDirectory(
-    Directory projectDirectory, {
-    String? runMode,
-  }) : this(
-         FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
-         runMode: runMode,
-       );
+  MigrationManager.fromDirectory(Directory projectDirectory, {String? runMode})
+    : this(
+        FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
+        runMode: runMode,
+      );
 
   /// Reads migrations from an in-memory list. Repair migrations are not
   /// supported.
@@ -76,10 +74,7 @@ class MigrationManager {
     );
     return [
       for (final row in result)
-        DatabaseMigrationVersionModel(
-          module: row[0] as String,
-          version: row[1] as String,
-        ),
+        DatabaseMigrationVersionModel.fromJson(row.toColumnMap()),
     ];
   }
 
@@ -99,10 +94,7 @@ class MigrationManager {
     );
     if (result.isEmpty) return null;
     final row = result.first;
-    return DatabaseMigrationVersionModel(
-      module: row[0] as String,
-      version: row[1] as String,
-    );
+    return DatabaseMigrationVersionModel.fromJson(row.toColumnMap());
   }
 
   /// Lists all available migration versions.
@@ -247,9 +239,7 @@ class MigrationManager {
     var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
-      var latestArtifacts = await _artifactStore.readVersionSql(
-        latestVersion,
-      );
+      var latestArtifacts = await _artifactStore.readVersionSql(latestVersion);
       var sqlDefinition = latestArtifacts?.definitionSql;
       if (sqlDefinition == null) {
         throw Exception(
@@ -262,9 +252,7 @@ class MigrationManager {
       var newerVersions = _getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
-        var versionArtifacts = await _artifactStore.readVersionSql(
-          version,
-        );
+        var versionArtifacts = await _artifactStore.readVersionSql(version);
         var sqlMigration = versionArtifacts?.migrationSql;
         if (sqlMigration == null) {
           throw Exception(
@@ -325,9 +313,7 @@ class MigrationManager {
     availableVersions.clear();
     var warnings = <String>[];
     try {
-      availableVersions.addAll(
-        await _artifactStore.listVersions(),
-      );
+      availableVersions.addAll(await _artifactStore.listVersions());
     } catch (e) {
       warnings.add(
         'Failed to determine migration versions for project: ${e.toString()}',
