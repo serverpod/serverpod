@@ -59,11 +59,6 @@ class MigrationManager {
        );
 
   /// Loads the installed versions of the migrations from the database.
-  ///
-  /// Only `module` and `version` are read - the manager doesn't use the
-  /// stored timestamp, and skipping it side-steps dialect differences in
-  /// how the timestamp is encoded (sqlite stores ms-since-epoch integers,
-  /// postgres stores native timestamps).
   Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
     DatabaseSession session, {
     Transaction? transaction,
