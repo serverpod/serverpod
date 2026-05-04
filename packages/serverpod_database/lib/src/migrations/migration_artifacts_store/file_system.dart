@@ -8,7 +8,8 @@ import '../../../serverpod_database.dart';
 import '../../definition/definition_normalizer.dart';
 
 /// Stores migration artifacts using the current file-system based format.
-class FileSystemMigrationArtifactStore implements MigrationArtifactStoreReader, MigrationArtifactStoreWriter {
+class FileSystemMigrationArtifactStore
+    implements MigrationArtifactStoreReader, MigrationArtifactStoreWriter {
   /// Creates a new file system migration artifact store.
   FileSystemMigrationArtifactStore({
     required Directory projectDirectory,
@@ -35,17 +36,19 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStoreReader, 
       return [];
     }
 
-    var versions = await migrationsDirectory
-        .list()
-        .where((entity) => entity is Directory)
-        .cast<Directory>()
-        .map((directory) => path.basename(directory.path))
-        .toList()
-      ..sort();
+    var versions =
+        await migrationsDirectory
+              .list()
+              .where((entity) => entity is Directory)
+              .cast<Directory>()
+              .map((directory) => path.basename(directory.path))
+              .toList()
+          ..sort();
 
-    final prunedAny = await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
-      versions,
-    );
+    final prunedAny =
+        await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+          versions,
+        );
 
     if (prunedAny && await _migrationRegistryFile().exists()) {
       await writeVersionRegistry(versions);
@@ -114,7 +117,9 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStoreReader, 
           ),
         ),
       ),
-      migration: definition.schemaVersion < 2 ? normalizeMigrationToV2(migration, definition) : migration,
+      migration: definition.schemaVersion < 2
+          ? normalizeMigrationToV2(migration, definition)
+          : migration,
     );
   }
 
@@ -186,11 +191,11 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStoreReader, 
   }
 
   File _migrationRegistryFile() => File(
-        path.join(
-          MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
-          'migration_registry.txt',
-        ),
-      );
+    path.join(
+      MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
+      'migration_registry.txt',
+    ),
+  );
 
   @override
   Future<void> writeVersionRegistry(List<String> versions) async {
@@ -235,9 +240,10 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStoreReader, 
   @override
   Future<void> writeRepairMigration(RepairMigration repairMigration) async {
     try {
-      var repairMigrationDirectory = MigrationConstants.repairMigrationDirectory(
-        _projectDirectory,
-      );
+      var repairMigrationDirectory =
+          MigrationConstants.repairMigrationDirectory(
+            _projectDirectory,
+          );
       if (await repairMigrationDirectory.exists()) {
         await repairMigrationDirectory.delete(recursive: true);
       }
