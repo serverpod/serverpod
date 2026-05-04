@@ -406,8 +406,6 @@ Future<int> _runWatchMode({
   final existingUri = await _checkExistingServer(vmServiceInfoFile);
   if (existingUri != null) {
     log.info('Existing server found.');
-    // In FES mode, the URI is the proxy's. Emit the same "ready" line as
-    // a fresh start so the VS Code task matcher fires either way.
     if (noFes) {
       log.info('The Dart VM service is listening on $existingUri');
     } else {
@@ -676,9 +674,6 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   await File(userInfoFile).writeAsString(
     jsonEncode({'uri': proxy.httpUri.toString()}),
   );
-  // The "VM service proxy listening on" prefix is matched by the
-  // serverpod_start task's problemMatcher in tasks.json. If you reword this
-  // line, update the endsPattern there too.
   log.info('VM service proxy listening on ${proxy.httpUri}');
   return proxy;
 }
@@ -828,9 +823,7 @@ Future<void> _runTuiBackend({
 
     // If a server is already running, exit cleanly so the IDE can attach
     // to the existing instance via the unchanged info file. Stale files
-    // are cleaned up by _checkExistingServer. TUI mode is always FES so
-    // the URI is the proxy's; emit the "ready" line a fresh start would
-    // emit so the VS Code task matcher fires either way.
+    // are cleaned up by _checkExistingServer.
     final existingUri = await _checkExistingServer(vmServiceInfoFile);
     if (existingUri != null) {
       log.info('Existing server found.');
