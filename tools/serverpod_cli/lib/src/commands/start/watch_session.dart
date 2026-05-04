@@ -399,8 +399,7 @@ class WatchSession {
       throw StateError('Session has been disposed.');
     }
     if (_compiler == null) {
-      _pending = _pending.then((_) => _reload(null));
-      return _pending;
+      return _chain(() => _reload(null));
     }
     return _chain(
       () => _compileAndReload(
