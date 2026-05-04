@@ -1020,14 +1020,10 @@ class Counter {
           noCompilerGenerateCalls.add(affectedPaths);
           return (success: true, generatedFiles: noCompilerGeneratedFiles);
         },
-        createServer:
-            (String? dillPath, {List<String> extraArgs = const []}) async {
-              final suffix = extraArgs.isEmpty
-                  ? ''
-                  : '(${extraArgs.join(',')})';
-              noCompilerFactoryCalls.add('createServer:$dillPath$suffix');
-              return noCompilerFactoryServer;
-            },
+        createServer: (String? dillPath) async {
+          noCompilerFactoryCalls.add('createServer:$dillPath');
+          return noCompilerFactoryServer;
+        },
         initialServer: noCompilerServer,
         generatedDirPaths: {'/generated'},
         applyMigrationsAction: () async => const <String>[],
