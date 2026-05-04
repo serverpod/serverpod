@@ -207,7 +207,7 @@ class GitHubIdpUtils {
     try {
       data = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      session.logAndThrow('Invalid user info from GitHub: $e');
+      session.logAndThrow('Failed to decode GitHub user response: $e');
     }
 
     if (data['email'] == null) {
@@ -244,13 +244,13 @@ class GitHubIdpUtils {
     try {
       details = _parseAccountDetails(data);
     } catch (e) {
-      session.logAndThrow('Invalid user info from GitHub: $e');
+      session.logAndThrow('Failed to parse GitHub account details: $e');
     }
 
     try {
       config.githubAccountDetailsValidation(details);
     } catch (e) {
-      throw GitHubUserInfoMissingDataException();
+      session.logAndThrow('Failed to get extra GitHub account info: $e');
     }
 
     return details;
