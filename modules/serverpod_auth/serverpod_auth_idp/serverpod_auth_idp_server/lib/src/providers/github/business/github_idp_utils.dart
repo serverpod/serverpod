@@ -207,7 +207,7 @@ class GitHubIdpUtils {
     try {
       data = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      session.logAndThrow('Failed to decode GitHub user response: $e');
+      session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
     if (data['email'] == null) {
@@ -244,13 +244,7 @@ class GitHubIdpUtils {
     try {
       details = _parseAccountDetails(data);
     } catch (e) {
-      session.logAndThrow('Failed to parse GitHub account details: $e');
-    }
-
-    try {
-      config.githubAccountDetailsValidation(details);
-    } catch (e) {
-      session.logAndThrow('Failed to get extra GitHub account info: $e');
+      session.logAndThrow('Invalid user info from GitHub: $e');
     }
 
     return details;
@@ -272,6 +266,12 @@ class GitHubIdpUtils {
       name: name,
       image: avatarUrl != null ? Uri.tryParse(avatarUrl) : null,
     );
+
+    try {
+      config.githubAccountDetailsValidation(details);
+    } catch (e) {
+      throw GitHubUserInfoMissingDataException();
+    }
 
     return details;
   }
