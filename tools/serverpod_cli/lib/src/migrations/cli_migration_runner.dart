@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -21,7 +22,7 @@ Future<List<String>> applyPendingMigrations({
   required String runMode,
   required String moduleName,
 }) async {
-  final config = await _loadServerpodConfig(
+  final config = _loadServerpodConfig(
     serverDir: serverDir,
     runMode: runMode,
   );
@@ -89,23 +90,22 @@ String runModeFromServerArgs(List<String> serverArgs) {
   return 'development';
 }
 
-/// Loads `config/<runMode>.yaml` + `config/passwords.yaml` from
-/// [serverDir]. Bridges around [ServerpodConfig.load]'s relative-path
-/// behaviour by chdir'ing for the duration of the call.
+/// Wraps [ConfigInfo] with a chdir into [serverDir] so it picks up
+/// `config/<runMode>.yaml` + `config/passwords.yaml` from the project
+/// regardless of the caller's cwd.
 ///
 /// TODO: replace this with a base-directory parameter on
 /// [ServerpodConfig.load] / [PasswordManager]. Mutating
 /// [Directory.current] is racy with anything else in the isolate that
 /// reads cwd while this call is in flight.
-Future<ServerpodConfig> _loadServerpodConfig({
+ServerpodConfig _loadServerpodConfig({
   required String serverDir,
   required String runMode,
-}) async {
+}) {
   final originalCwd = Directory.current;
   Directory.current = Directory(serverDir);
   try {
-    final passwords = PasswordManager(runMode: runMode).loadPasswords();
-    return ServerpodConfig.load(runMode, null, passwords);
+    return ConfigInfo(runMode).config;
   } finally {
     Directory.current = originalCwd;
   }
