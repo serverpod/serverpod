@@ -37,61 +37,25 @@ void main() {
     );
 
     test(
-      'when creating migration then MigrationVersionLoadException is thrown.',
+      'when creating migration then empty folder is skipped and no exception is thrown.',
       () async {
-        expect(
-          generator.createMigration(force: false, config: config),
-          throwsA(
-            isA<MigrationVersionLoadException>()
-                .having(
-                  (e) => e.moduleName,
-                  'Matching module name',
-                  equals(projectName),
-                )
-                .having(
-                  (e) => e.versionName,
-                  'Matching version name',
-                  '00000000000000',
-                )
-                .having(
-                  (e) => e.exception,
-                  'Matching exception',
-                  contains('Required migration artifact is missing'),
-                ),
-          ),
+        var result = await generator.createMigration(
+          force: false,
+          config: config,
         );
+        expect(result, isNull);
       },
     );
 
     test(
-      'when creating repair migration then MigrationVersionLoadException exception is thrown.',
+      'when creating repair migration then empty folder is skipped and no exception is thrown.',
       () async {
-        expect(
-          generator.repairMigration(
-            runMode:
-                CreateRepairMigrationOption.runModes.first /* development */,
-            force: false,
-            dialect: DatabaseDialect.postgres,
-          ),
-          throwsA(
-            isA<MigrationVersionLoadException>()
-                .having(
-                  (e) => e.moduleName,
-                  'Matching module name',
-                  equals(projectName),
-                )
-                .having(
-                  (e) => e.versionName,
-                  'Matching version name',
-                  '00000000000000',
-                )
-                .having(
-                  (e) => e.exception,
-                  'Matching exception',
-                  contains('Required migration artifact is missing'),
-                ),
-          ),
+        var result = await generator.repairMigration(
+          runMode: CreateRepairMigrationOption.runModes.first /* development */,
+          force: false,
+          dialect: DatabaseDialect.postgres,
         );
+        expect(result, isNull);
       },
     );
   });
@@ -108,13 +72,7 @@ void main() {
       testDirectory.createSync(recursive: true);
 
       var modelFile = File(
-        path.join(
-          testDirectory.path,
-          'lib',
-          'src',
-          'protocol',
-          'example.yaml',
-        ),
+        path.join(testDirectory.path, 'lib', 'src', 'protocol', 'example.yaml'),
       );
       modelFile.createSync(recursive: true);
       modelFile.writeAsStringSync('''
@@ -212,13 +170,7 @@ fields:
       testDirectory.createSync(recursive: true);
 
       var modelFile = File(
-        path.join(
-          testDirectory.path,
-          'lib',
-          'src',
-          'protocol',
-          'example.yaml',
-        ),
+        path.join(testDirectory.path, 'lib', 'src', 'protocol', 'example.yaml'),
       );
       modelFile.createSync(recursive: true);
       modelFile.writeAsStringSync('''
@@ -301,28 +253,20 @@ void _writeMigrationFiles({
     SerializationManager.encode(databaseDefinition, formatted: true),
   );
 
-  var definitionJson = File(
-    path.join(migrationDir.path, 'definition.json'),
-  );
+  var definitionJson = File(path.join(migrationDir.path, 'definition.json'));
   definitionJson.writeAsStringSync(
     SerializationManager.encode(databaseDefinition, formatted: true),
   );
 
-  var migrationJson = File(
-    path.join(migrationDir.path, 'migration.json'),
-  );
+  var migrationJson = File(path.join(migrationDir.path, 'migration.json'));
   migrationJson.writeAsStringSync(
     SerializationManager.encode(migration, formatted: true),
   );
 
-  var definitionSql = File(
-    path.join(migrationDir.path, 'definition.sql'),
-  );
+  var definitionSql = File(path.join(migrationDir.path, 'definition.sql'));
   definitionSql.writeAsStringSync('-- initial definition');
 
-  var migrationSql = File(
-    path.join(migrationDir.path, 'migration.sql'),
-  );
+  var migrationSql = File(path.join(migrationDir.path, 'migration.sql'));
   migrationSql.writeAsStringSync('-- initial migration');
 
   var registryFile = File(

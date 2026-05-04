@@ -187,9 +187,13 @@ class MigrationGenerator {
     required DatabaseDialect dialect,
     String? targetMigrationVersion,
   }) async {
-    var migrationVersion =
-        targetMigrationVersion ??
-        (await _artifactStore.listVersions()).lastOrNull;
+    var versions = await _artifactStore.listVersions();
+    var migrationVersion = targetMigrationVersion ?? versions.lastOrNull;
+
+    if (migrationVersion == null) {
+      log.info('No migration versions found to repair.');
+      return null;
+    }
 
     await _validateRepairMigrationVersion(migrationVersion);
 
