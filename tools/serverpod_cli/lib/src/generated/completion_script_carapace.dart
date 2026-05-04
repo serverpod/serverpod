@@ -91,6 +91,10 @@ commands:
       flag:
         mode: ["development", "staging", "production"]
 
+  - name: migrate
+    flags:
+      --mode=: "The run mode whose config + passwords are used to connect to the database."
+
   - name: run
     flags:
       --script=: "The name of the script to run."
