@@ -126,6 +126,40 @@ void main() {
   late Set<String> generatedFiles;
   late WatchSession session;
 
+  WatchSession buildSession({
+    required KernelCompiler compiler,
+    required ServerProcess initialServer,
+    ServerProcessFactory? createServer,
+    GenerateAction? generate,
+    ApplyMigrationsAction? applyMigrationsAction,
+    ProtocolChangeClassifier? classifyProtocolChange,
+  }) {
+    return WatchSession(
+      compiler: compiler,
+      generate:
+          generate ??
+          (affectedPaths, requirements) async {
+            generateCalls.add(affectedPaths);
+            return (
+              success: generateSuccess,
+              generatedFiles: generatedFiles,
+            );
+          },
+      createServer:
+          createServer ??
+          (String dillPath) async {
+            factoryCalls.add('createServer:$dillPath');
+            return factoryServer;
+          },
+      initialServer: initialServer,
+      generatedDirPaths: {'/generated'},
+      applyMigrationsAction:
+          applyMigrationsAction ?? () async => const <String>[],
+      classifyProtocolChange:
+          classifyProtocolChange ?? defaultProtocolChangeClassifier,
+    );
+  }
+
   setUp(() {
     compiler = _FakeCompiler();
     server = _FakeServer();
@@ -135,23 +169,7 @@ void main() {
     generateSuccess = true;
     generatedFiles = {};
 
-    session = WatchSession(
-      compiler: compiler,
-      generate: (affectedPaths, requirements) async {
-        generateCalls.add(affectedPaths);
-        return (
-          success: generateSuccess,
-          generatedFiles: generatedFiles,
-        );
-      },
-      createServer: (String dillPath) async {
-        factoryCalls.add('createServer:$dillPath');
-        return factoryServer;
-      },
-      initialServer: server,
-      generatedDirPaths: {'/generated'},
-      applyMigrationsAction: () async => const <String>[],
-    );
+    session = buildSession(compiler: compiler, initialServer: server);
   });
 
   group('Given static-only file changes and VM service connected', () {
@@ -652,18 +670,9 @@ void main() {
       actionCalls = 0;
       gate = null;
 
-      inPlaceSession = WatchSession(
+      inPlaceSession = buildSession(
         compiler: compiler,
-        generate: (affectedPaths, requirements) async {
-          generateCalls.add(affectedPaths);
-          return (success: generateSuccess, generatedFiles: generatedFiles);
-        },
-        createServer: (String dillPath) async {
-          factoryCalls.add('createServer:$dillPath');
-          return factoryServer;
-        },
         initialServer: server,
-        generatedDirPaths: {'/generated'},
         applyMigrationsAction: () async {
           actionCalls++;
           final localGate = gate;
@@ -704,13 +713,10 @@ void main() {
       'when the action throws, '
       'then the error propagates and state returns to idle',
       () async {
-        final session = WatchSession(
+        final session = buildSession(
           compiler: compiler,
-          generate: (affectedPaths, requirements) async =>
-              (success: true, generatedFiles: <String>{}),
-          createServer: (String dillPath) => throw StateError('not used'),
           initialServer: server,
-          generatedDirPaths: {'/generated'},
+          createServer: (String dillPath) => throw StateError('not used'),
           applyMigrationsAction: () async => throw StateError('boom'),
         );
 
@@ -724,13 +730,10 @@ void main() {
         // State must be idle again - a follow-up call should reach the
         // action rather than hit the in-flight latch.
         var followUpRan = false;
-        final followUp = WatchSession(
+        final followUp = buildSession(
           compiler: compiler,
-          generate: (affectedPaths, requirements) async =>
-              (success: true, generatedFiles: <String>{}),
-          createServer: (String dillPath) => throw StateError('not used'),
           initialServer: server,
-          generatedDirPaths: {'/generated'},
+          createServer: (String dillPath) => throw StateError('not used'),
           applyMigrationsAction: () async {
             followUpRan = true;
             return const <String>[];
@@ -825,17 +828,15 @@ void main() {
         classifierServer = _FakeServer();
         classifierGenerateCalls = [];
 
-        classifierSession = WatchSession(
+        classifierSession = buildSession(
           compiler: classifierCompiler,
+          initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
             return (success: true, generatedFiles: <String>{});
           },
           createServer: (String dillPath) async => classifierServer,
-          initialServer: classifierServer,
-          generatedDirPaths: {'/generated'},
           classifyProtocolChange: (_) async => false,
-          applyMigrationsAction: () async => const <String>[],
         );
       });
 
@@ -890,17 +891,15 @@ void main() {
         classifierServer = _FakeServer();
         classifierGenerateCalls = [];
 
-        classifierSession = WatchSession(
+        classifierSession = buildSession(
           compiler: classifierCompiler,
+          initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
             return (success: true, generatedFiles: <String>{});
           },
           createServer: (String dillPath) async => classifierServer,
-          initialServer: classifierServer,
-          generatedDirPaths: {'/generated'},
           classifyProtocolChange: (_) async => true,
-          applyMigrationsAction: () async => const <String>[],
         );
       });
 
