@@ -103,8 +103,8 @@ class VmServiceProxy {
     WebSocket upstream;
     try {
       upstream = await WebSocket.connect(_upstreamWs.toString());
-    } catch (e) {
-      await downstream.close(WebSocketStatus.internalServerError, '$e');
+    } catch (_) {
+      await downstream.close(WebSocketStatus.internalServerError);
       return;
     }
 
