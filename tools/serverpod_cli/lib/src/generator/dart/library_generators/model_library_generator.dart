@@ -63,9 +63,9 @@ class SerializableModelLibraryGenerator {
   Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
     var fields = definition.fields;
     var className = definition.className;
-    var nonNullableField = fields
+    var needsUndefinedClass = fields
         .where((field) => field.shouldIncludeField(serverCode))
-        .any((field) => field.type.nullable);
+        .any(_fieldUsesUndefinedCopyWithSentinel);
 
     return Library(
       (libraryBuilder) {
@@ -75,7 +75,7 @@ class SerializableModelLibraryGenerator {
             definition,
             fields,
           ),
-          if (nonNullableField) _buildUndefinedClass(),
+          if (needsUndefinedClass) _buildUndefinedClass(),
           _buildModelImplClass(
             className,
             null,
@@ -563,6 +563,12 @@ class SerializableModelLibraryGenerator {
     });
   }
 
+  /// Nullable params and `dynamic` fields use `Object? ... = _Undefined` so
+  /// omitted args differ from explicit `null`.
+  bool _fieldUsesUndefinedCopyWithSentinel(
+    SerializableModelFieldDefinition field,
+  ) => field.type.nullable || field.type.className == 'dynamic';
+
   bool _shouldCreateUndefinedClass(
     ModelClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
@@ -570,7 +576,7 @@ class SerializableModelLibraryGenerator {
     if (classDefinition.sealedTopNode == null) {
       return fields
           .where((field) => field.shouldIncludeField(serverCode))
-          .any((field) => field.type.nullable);
+          .any(_fieldUsesUndefinedCopyWithSentinel);
     }
 
     if (!classDefinition.isSealedTopNode) {
@@ -586,7 +592,7 @@ class SerializableModelLibraryGenerator {
 
     return descendantFields
         .where((field) => field.shouldIncludeField(serverCode))
-        .any((field) => field.type.nullable);
+        .any(_fieldUsesUndefinedCopyWithSentinel);
   }
 
   Class _buildUndefinedClass() {
@@ -876,11 +882,8 @@ class SerializableModelLibraryGenerator {
                 config: config,
               );
 
-              // `dynamic` is stored as non-null in [TypeDefinition], but like
-              // nullable fields it needs the `_Undefined` sentinel so omitted
-              // `copyWith` args are not confused with explicit `null`.
               final usesUndefinedCopyWithDefault =
-                  field.type.nullable || field.type.className == 'dynamic';
+                  _fieldUsesUndefinedCopyWithSentinel(field);
               var type = usesUndefinedCopyWithDefault
                   ? refer('Object?')
                   : fieldType;
