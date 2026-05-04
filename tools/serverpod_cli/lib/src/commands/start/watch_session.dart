@@ -49,21 +49,6 @@ enum SessionState {
   disposed,
 }
 
-/// Orchestrates the watch-mode reload cycle.
-///
-/// Handles file change events by determining whether code generation,
-/// compilation (incremental or full restart), and hot reload or server
-/// restart are needed.
-///
-/// Generated directory paths ([generatedDirPaths]) are used to split
-/// incoming `.dart` file changes into source files (which trigger generation)
-/// and generated files (which only need compilation). This ensures the
-/// incremental compiler sees all `.dart` changes, including those produced
-/// by code generation.
-///
-/// When [compiler] is `null`, the session runs code generation and triggers
-/// VM service reloads via the VM's built-in kernel service rather than the
-/// Frontend Server. Static file change handling is unaffected.
 /// Decides whether a source `.dart` file change may have altered the protocol
 /// (endpoint or future call class). Used by [WatchSession] to skip generation
 /// when the change is in a pure helper file.
@@ -99,6 +84,21 @@ final _endpointOrFutureCallRegex = RegExp(
 /// date). Throws on failure.
 typedef ApplyMigrationsAction = Future<List<String>> Function();
 
+/// Orchestrates the watch-mode reload cycle.
+///
+/// Handles file change events by determining whether code generation,
+/// compilation (incremental or full restart), and hot reload or server
+/// restart are needed.
+///
+/// Generated directory paths ([generatedDirPaths]) are used to split
+/// incoming `.dart` file changes into source files (which trigger generation)
+/// and generated files (which only need compilation). This ensures the
+/// incremental compiler sees all `.dart` changes, including those produced
+/// by code generation.
+///
+/// When [compiler] is `null`, the session runs code generation and triggers
+/// VM service reloads via the VM's built-in kernel service rather than the
+/// Frontend Server. Static file change handling is unaffected.
 class WatchSession {
   final KernelCompiler? _compiler;
   final NativeAssetsBuilder? _nativeAssetsBuilder;
