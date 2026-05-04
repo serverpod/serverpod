@@ -116,7 +116,15 @@ class WatchSession {
 
   /// Serializes restart and migration operations. Each operation chains onto
   /// the previous one via [_pending], so concurrent calls execute in order.
+  /// Always use [_chain] to update.
   Future<void> _pending = Future.value();
+
+  /// Queues [body] behind [_pending].
+  Future<void> _chain(Future<void> Function() body) {
+    final task = _pending.then((_) => body());
+    _pending = task.catchError((_) {}); // ensure errors don't block queue..
+    return task; // .. but raise to caller
+  }
 
   final StreamController<void> _vmServiceUriChangesController =
       StreamController<void>.broadcast();
@@ -388,14 +396,13 @@ class WatchSession {
     if (compiler == null) {
       throw StateError('Cannot force reload in --no-fes mode.');
     }
-    _pending = _pending.then(
-      (_) => _compileAndReload(
+    return _chain(
+      () => _compileAndReload(
         dartFiles: const {},
         packageConfigChanged: false,
         forceFullCompile: true,
       ),
     );
-    return _pending;
   }
 
   /// Applies pending database migrations.
@@ -412,7 +419,7 @@ class WatchSession {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
     }
-    _pending = _pending.then((_) async {
+    return _chain(() async {
       // The session may have been disposed while this call was queued.
       if (_state == SessionState.disposed) {
         throw StateError('Session has been disposed.');
@@ -427,7 +434,6 @@ class WatchSession {
         }
       }
     });
-    return _pending;
   }
 
   Future<void> _restartServer(String dillPath) async {
