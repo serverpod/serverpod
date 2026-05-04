@@ -33,6 +33,9 @@ class MigrateCommand extends ServerpodCommand<MigrateOption> {
   final name = 'migrate';
 
   @override
+  final bool hidden = true;
+
+  @override
   final description =
       'Applies pending database migrations using the project config and '
       'passwords. Does not require a running pod; safe to run while a '
