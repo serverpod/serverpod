@@ -12,8 +12,7 @@ import 'client_migration_dart_emitter.dart';
 /// File-system [MigrationArtifactStore] for the Dart client package: JSON and
 /// generated [migration.dart] files under [lib/migrations/].
 class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
-  ClientMigrationArtifactStore({required this.clientPackageRoot})
-    : _projectDirectory = clientPackageRoot;
+  ClientMigrationArtifactStore({required this.clientPackageRoot}) : _projectDirectory = clientPackageRoot;
 
   static const _dartEmitter = ClientMigrationDartEmitter();
 
@@ -22,21 +21,69 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
   /// The client package root (contains pubspec and `lib/migrations/` directory).
   final Directory clientPackageRoot;
 
-  Directory get _migrationsBase =>
-      MigrationConstants.clientMigrationsBaseDirectory(_projectDirectory);
+  Directory get _migrationsBase => MigrationConstants.clientMigrationsBaseDirectory(_projectDirectory);
 
   @override
   Future<List<String>> listVersions() async {
     if (!await _migrationsBase.exists()) {
       return [];
     }
-    return await _migrationsBase
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((dir) => path.basename(dir.path))
-          .toList()
+    var versions = await _migrationsBase
+        .list()
+        .where((entity) => entity is Directory)
+        .cast<Directory>()
+        .map((dir) => path.basename(dir.path))
+        .toList()
       ..sort();
+
+    final prunedAny = await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+      versions,
+    );
+
+    if (prunedAny) {
+      final registryFile = File(
+        path.join(_migrationsBase.path, 'migration_registry.dart'),
+      );
+      if (await registryFile.exists()) {
+        await writeVersionRegistry(versions);
+      }
+    }
+
+    return versions;
+  }
+
+  /// Same semantics as
+  /// [FileSystemMigrationArtifactStore._deleteTrailingCompletelyEmptyMigrationVersionDirectories].
+  Future<bool> _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+    List<String> versions,
+  ) async {
+    var prunedAny = false;
+    while (versions.isNotEmpty) {
+      final version = versions.last;
+      final versionDir = MigrationConstants.clientMigrationVersionDirectory(
+        _projectDirectory,
+        version,
+      );
+      if (!await versionDir.exists()) {
+        versions.removeLast();
+        prunedAny = true;
+        continue;
+      }
+      if (!await _directoryHasNoEntities(versionDir)) {
+        break;
+      }
+      await versionDir.delete(recursive: false);
+      versions.removeLast();
+      prunedAny = true;
+    }
+    return prunedAny;
+  }
+
+  static Future<bool> _directoryHasNoEntities(Directory dir) async {
+    await for (final _ in dir.list(followLinks: false)) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -65,9 +112,7 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
           _definitionProjectJsonPath(version),
         ),
       ),
-      migration: definition.schemaVersion < 2
-          ? normalizeMigrationToV2(migration, definition)
-          : migration,
+      migration: definition.schemaVersion < 2 ? normalizeMigrationToV2(migration, definition) : migration,
     );
   }
 
@@ -124,34 +169,34 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
   }
 
   File _definitionJsonPath(String v) => File(
-    path.join(
-      MigrationConstants.clientMigrationVersionDirectory(
-        _projectDirectory,
-        v,
-      ).path,
-      'definition.json',
-    ),
-  );
+        path.join(
+          MigrationConstants.clientMigrationVersionDirectory(
+            _projectDirectory,
+            v,
+          ).path,
+          'definition.json',
+        ),
+      );
 
   File _definitionProjectJsonPath(String v) => File(
-    path.join(
-      MigrationConstants.clientMigrationVersionDirectory(
-        _projectDirectory,
-        v,
-      ).path,
-      'definition_project.json',
-    ),
-  );
+        path.join(
+          MigrationConstants.clientMigrationVersionDirectory(
+            _projectDirectory,
+            v,
+          ).path,
+          'definition_project.json',
+        ),
+      );
 
   File _migrationJsonPath(String v) => File(
-    path.join(
-      MigrationConstants.clientMigrationVersionDirectory(
-        _projectDirectory,
-        v,
-      ).path,
-      'migration.json',
-    ),
-  );
+        path.join(
+          MigrationConstants.clientMigrationVersionDirectory(
+            _projectDirectory,
+            v,
+          ).path,
+          'migration.json',
+        ),
+      );
 }
 
 Future<T> _readRequiredProtocolFile<T>(File file) async {
