@@ -16,7 +16,6 @@ import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Book implements _i1.TableRow<int?> {
   Book._({
@@ -421,10 +420,10 @@ class BookRepository {
   Future<List<Book>> upsert(
     _i1.DatabaseSession session,
     List<Book> rows, {
-    required _i5.ColumnSelections<BookTable> conflictColumns,
-    _i5.ColumnSelections<BookTable>? updateColumns,
-    _i5.WhereExpressionBuilder<BookTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<BookTable> conflictColumns,
+    _i1.ColumnSelections<BookTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Book>(
       rows,
@@ -444,10 +443,10 @@ class BookRepository {
   Future<Book> upsertRow(
     _i1.DatabaseSession session,
     Book row, {
-    required _i5.ColumnSelections<BookTable> conflictColumns,
-    _i5.ColumnSelections<BookTable>? updateColumns,
-    _i5.WhereExpressionBuilder<BookTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<BookTable> conflictColumns,
+    _i1.ColumnSelections<BookTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Book>(
       row,

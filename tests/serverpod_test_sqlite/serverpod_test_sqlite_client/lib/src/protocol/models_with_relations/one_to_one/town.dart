@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Town implements _i1.TableRow<int?> {
   Town._({
@@ -413,10 +412,10 @@ class TownRepository {
   Future<List<Town>> upsert(
     _i1.DatabaseSession session,
     List<Town> rows, {
-    required _i5.ColumnSelections<TownTable> conflictColumns,
-    _i5.ColumnSelections<TownTable>? updateColumns,
-    _i5.WhereExpressionBuilder<TownTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<TownTable> conflictColumns,
+    _i1.ColumnSelections<TownTable>? updateColumns,
+    _i1.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Town>(
       rows,
@@ -436,10 +435,10 @@ class TownRepository {
   Future<Town> upsertRow(
     _i1.DatabaseSession session,
     Town row, {
-    required _i5.ColumnSelections<TownTable> conflictColumns,
-    _i5.ColumnSelections<TownTable>? updateColumns,
-    _i5.WhereExpressionBuilder<TownTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<TownTable> conflictColumns,
+    _i1.ColumnSelections<TownTable>? updateColumns,
+    _i1.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Town>(
       row,

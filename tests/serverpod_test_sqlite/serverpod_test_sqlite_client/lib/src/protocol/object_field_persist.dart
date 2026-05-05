@@ -14,7 +14,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class ObjectFieldPersist implements _i1.TableRow<int?> {
   ObjectFieldPersist._({
@@ -367,10 +366,10 @@ class ObjectFieldPersistRepository {
   Future<List<ObjectFieldPersist>> upsert(
     _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
-    required _i5.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
-    _i5.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i5.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectFieldPersist>(
       rows,
@@ -390,10 +389,10 @@ class ObjectFieldPersistRepository {
   Future<ObjectFieldPersist> upsertRow(
     _i1.DatabaseSession session,
     ObjectFieldPersist row, {
-    required _i5.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
-    _i5.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i5.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectFieldPersist>(
       row,

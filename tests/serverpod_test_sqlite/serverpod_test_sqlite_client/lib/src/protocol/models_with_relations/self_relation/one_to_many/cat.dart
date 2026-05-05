@@ -16,7 +16,6 @@ import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Cat implements _i1.TableRow<int?> {
   Cat._({
@@ -490,10 +489,10 @@ class CatRepository {
   Future<List<Cat>> upsert(
     _i1.DatabaseSession session,
     List<Cat> rows, {
-    required _i5.ColumnSelections<CatTable> conflictColumns,
-    _i5.ColumnSelections<CatTable>? updateColumns,
-    _i5.WhereExpressionBuilder<CatTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<CatTable> conflictColumns,
+    _i1.ColumnSelections<CatTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CatTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Cat>(
       rows,
@@ -513,10 +512,10 @@ class CatRepository {
   Future<Cat> upsertRow(
     _i1.DatabaseSession session,
     Cat row, {
-    required _i5.ColumnSelections<CatTable> conflictColumns,
-    _i5.ColumnSelections<CatTable>? updateColumns,
-    _i5.WhereExpressionBuilder<CatTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<CatTable> conflictColumns,
+    _i1.ColumnSelections<CatTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CatTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Cat>(
       row,

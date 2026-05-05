@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Comment implements _i1.TableRow<int?> {
   Comment._({
@@ -411,10 +410,10 @@ class CommentRepository {
   Future<List<Comment>> upsert(
     _i1.DatabaseSession session,
     List<Comment> rows, {
-    required _i5.ColumnSelections<CommentTable> conflictColumns,
-    _i5.ColumnSelections<CommentTable>? updateColumns,
-    _i5.WhereExpressionBuilder<CommentTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<CommentTable> conflictColumns,
+    _i1.ColumnSelections<CommentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CommentTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Comment>(
       rows,
@@ -434,10 +433,10 @@ class CommentRepository {
   Future<Comment> upsertRow(
     _i1.DatabaseSession session,
     Comment row, {
-    required _i5.ColumnSelections<CommentTable> conflictColumns,
-    _i5.ColumnSelections<CommentTable>? updateColumns,
-    _i5.WhereExpressionBuilder<CommentTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<CommentTable> conflictColumns,
+    _i1.ColumnSelections<CommentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CommentTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Comment>(
       row,

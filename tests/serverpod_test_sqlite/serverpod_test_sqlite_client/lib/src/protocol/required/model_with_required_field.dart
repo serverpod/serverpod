@@ -12,7 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class ModelWithRequiredField implements _i1.TableRow<int?> {
   ModelWithRequiredField._({
@@ -387,10 +386,10 @@ class ModelWithRequiredFieldRepository {
   Future<List<ModelWithRequiredField>> upsert(
     _i1.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
-    required _i3.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
-    _i3.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i3.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
+    _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ModelWithRequiredField>(
       rows,
@@ -410,10 +409,10 @@ class ModelWithRequiredFieldRepository {
   Future<ModelWithRequiredField> upsertRow(
     _i1.DatabaseSession session,
     ModelWithRequiredField row, {
-    required _i3.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
-    _i3.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i3.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
+    _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ModelWithRequiredField>(
       row,

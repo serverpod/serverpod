@@ -12,7 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class Chapter implements _i1.TableRow<int?> {
   Chapter._({
@@ -387,10 +386,10 @@ class ChapterRepository {
   Future<List<Chapter>> upsert(
     _i1.DatabaseSession session,
     List<Chapter> rows, {
-    required _i3.ColumnSelections<ChapterTable> conflictColumns,
-    _i3.ColumnSelections<ChapterTable>? updateColumns,
-    _i3.WhereExpressionBuilder<ChapterTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<ChapterTable> conflictColumns,
+    _i1.ColumnSelections<ChapterTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Chapter>(
       rows,
@@ -410,10 +409,10 @@ class ChapterRepository {
   Future<Chapter> upsertRow(
     _i1.DatabaseSession session,
     Chapter row, {
-    required _i3.ColumnSelections<ChapterTable> conflictColumns,
-    _i3.ColumnSelections<ChapterTable>? updateColumns,
-    _i3.WhereExpressionBuilder<ChapterTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<ChapterTable> conflictColumns,
+    _i1.ColumnSelections<ChapterTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Chapter>(
       row,

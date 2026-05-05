@@ -16,7 +16,6 @@ import 'package:serverpod_client/serverpod_client.dart' as _i3;
 import 'test_enum.dart' as _i4;
 import 'test_enum_stringified.dart' as _i5;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i6;
-import 'package:serverpod/serverpod.dart' as _i7;
 
 abstract class Types implements _i1.TableRow<int?> {
   Types._({
@@ -869,10 +868,10 @@ class TypesRepository {
   Future<List<Types>> upsert(
     _i1.DatabaseSession session,
     List<Types> rows, {
-    required _i7.ColumnSelections<TypesTable> conflictColumns,
-    _i7.ColumnSelections<TypesTable>? updateColumns,
-    _i7.WhereExpressionBuilder<TypesTable>? conflictWhere,
-    _i7.Transaction? transaction,
+    required _i1.ColumnSelections<TypesTable> conflictColumns,
+    _i1.ColumnSelections<TypesTable>? updateColumns,
+    _i1.WhereExpressionBuilder<TypesTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Types>(
       rows,
@@ -892,10 +891,10 @@ class TypesRepository {
   Future<Types> upsertRow(
     _i1.DatabaseSession session,
     Types row, {
-    required _i7.ColumnSelections<TypesTable> conflictColumns,
-    _i7.ColumnSelections<TypesTable>? updateColumns,
-    _i7.WhereExpressionBuilder<TypesTable>? conflictWhere,
-    _i7.Transaction? transaction,
+    required _i1.ColumnSelections<TypesTable> conflictColumns,
+    _i1.ColumnSelections<TypesTable>? updateColumns,
+    _i1.WhereExpressionBuilder<TypesTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Types>(
       row,

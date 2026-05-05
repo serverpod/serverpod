@@ -16,7 +16,6 @@ import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Blocking implements _i1.TableRow<int?> {
   Blocking._({
@@ -464,10 +463,10 @@ class BlockingRepository {
   Future<List<Blocking>> upsert(
     _i1.DatabaseSession session,
     List<Blocking> rows, {
-    required _i5.ColumnSelections<BlockingTable> conflictColumns,
-    _i5.ColumnSelections<BlockingTable>? updateColumns,
-    _i5.WhereExpressionBuilder<BlockingTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<BlockingTable> conflictColumns,
+    _i1.ColumnSelections<BlockingTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BlockingTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Blocking>(
       rows,
@@ -487,10 +486,10 @@ class BlockingRepository {
   Future<Blocking> upsertRow(
     _i1.DatabaseSession session,
     Blocking row, {
-    required _i5.ColumnSelections<BlockingTable> conflictColumns,
-    _i5.ColumnSelections<BlockingTable>? updateColumns,
-    _i5.WhereExpressionBuilder<BlockingTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<BlockingTable> conflictColumns,
+    _i1.ColumnSelections<BlockingTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BlockingTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Blocking>(
       row,

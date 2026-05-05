@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Student implements _i1.TableRow<int?> {
   Student._({
@@ -416,10 +415,10 @@ class StudentRepository {
   Future<List<Student>> upsert(
     _i1.DatabaseSession session,
     List<Student> rows, {
-    required _i5.ColumnSelections<StudentTable> conflictColumns,
-    _i5.ColumnSelections<StudentTable>? updateColumns,
-    _i5.WhereExpressionBuilder<StudentTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<StudentTable> conflictColumns,
+    _i1.ColumnSelections<StudentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Student>(
       rows,
@@ -439,10 +438,10 @@ class StudentRepository {
   Future<Student> upsertRow(
     _i1.DatabaseSession session,
     Student row, {
-    required _i5.ColumnSelections<StudentTable> conflictColumns,
-    _i5.ColumnSelections<StudentTable>? updateColumns,
-    _i5.WhereExpressionBuilder<StudentTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<StudentTable> conflictColumns,
+    _i1.ColumnSelections<StudentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Student>(
       row,

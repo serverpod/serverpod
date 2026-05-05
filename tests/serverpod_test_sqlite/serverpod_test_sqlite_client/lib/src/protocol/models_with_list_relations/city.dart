@@ -16,7 +16,6 @@ import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 import 'package:serverpod_client/serverpod_client.dart' as _i5;
-import 'package:serverpod/serverpod.dart' as _i6;
 
 abstract class City implements _i1.TableRow<int?> {
   City._({
@@ -493,10 +492,10 @@ class CityRepository {
   Future<List<City>> upsert(
     _i1.DatabaseSession session,
     List<City> rows, {
-    required _i6.ColumnSelections<CityTable> conflictColumns,
-    _i6.ColumnSelections<CityTable>? updateColumns,
-    _i6.WhereExpressionBuilder<CityTable>? conflictWhere,
-    _i6.Transaction? transaction,
+    required _i1.ColumnSelections<CityTable> conflictColumns,
+    _i1.ColumnSelections<CityTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CityTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<City>(
       rows,
@@ -516,10 +515,10 @@ class CityRepository {
   Future<City> upsertRow(
     _i1.DatabaseSession session,
     City row, {
-    required _i6.ColumnSelections<CityTable> conflictColumns,
-    _i6.ColumnSelections<CityTable>? updateColumns,
-    _i6.WhereExpressionBuilder<CityTable>? conflictWhere,
-    _i6.Transaction? transaction,
+    required _i1.ColumnSelections<CityTable> conflictColumns,
+    _i1.ColumnSelections<CityTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CityTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<City>(
       row,

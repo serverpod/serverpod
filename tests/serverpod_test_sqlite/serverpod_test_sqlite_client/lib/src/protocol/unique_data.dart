@@ -12,7 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class UniqueData implements _i1.TableRow<int?> {
   UniqueData._({
@@ -360,10 +359,10 @@ class UniqueDataRepository {
   Future<List<UniqueData>> upsert(
     _i1.DatabaseSession session,
     List<UniqueData> rows, {
-    required _i3.ColumnSelections<UniqueDataTable> conflictColumns,
-    _i3.ColumnSelections<UniqueDataTable>? updateColumns,
-    _i3.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<UniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<UniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UniqueData>(
       rows,
@@ -383,10 +382,10 @@ class UniqueDataRepository {
   Future<UniqueData> upsertRow(
     _i1.DatabaseSession session,
     UniqueData row, {
-    required _i3.ColumnSelections<UniqueDataTable> conflictColumns,
-    _i3.ColumnSelections<UniqueDataTable>? updateColumns,
-    _i3.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    required _i1.ColumnSelections<UniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<UniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UniqueData>(
       row,

@@ -16,7 +16,6 @@ import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 import 'package:serverpod_client/serverpod_client.dart' as _i5;
-import 'package:serverpod/serverpod.dart' as _i6;
 
 abstract class Order implements _i1.TableRow<int?> {
   Order._({
@@ -490,10 +489,10 @@ class OrderRepository {
   Future<List<Order>> upsert(
     _i1.DatabaseSession session,
     List<Order> rows, {
-    required _i6.ColumnSelections<OrderTable> conflictColumns,
-    _i6.ColumnSelections<OrderTable>? updateColumns,
-    _i6.WhereExpressionBuilder<OrderTable>? conflictWhere,
-    _i6.Transaction? transaction,
+    required _i1.ColumnSelections<OrderTable> conflictColumns,
+    _i1.ColumnSelections<OrderTable>? updateColumns,
+    _i1.WhereExpressionBuilder<OrderTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Order>(
       rows,
@@ -513,10 +512,10 @@ class OrderRepository {
   Future<Order> upsertRow(
     _i1.DatabaseSession session,
     Order row, {
-    required _i6.ColumnSelections<OrderTable> conflictColumns,
-    _i6.ColumnSelections<OrderTable>? updateColumns,
-    _i6.WhereExpressionBuilder<OrderTable>? conflictWhere,
-    _i6.Transaction? transaction,
+    required _i1.ColumnSelections<OrderTable> conflictColumns,
+    _i1.ColumnSelections<OrderTable>? updateColumns,
+    _i1.WhereExpressionBuilder<OrderTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Order>(
       row,

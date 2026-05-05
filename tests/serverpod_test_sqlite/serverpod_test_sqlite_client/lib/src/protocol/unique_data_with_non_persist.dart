@@ -12,7 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class UniqueDataWithNonPersist implements _i1.TableRow<int?> {
   UniqueDataWithNonPersist._({
@@ -375,11 +374,11 @@ class UniqueDataWithNonPersistRepository {
   Future<List<UniqueDataWithNonPersist>> upsert(
     _i1.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
-    required _i3.ColumnSelections<UniqueDataWithNonPersistTable>
+    required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
-    _i3.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i3.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UniqueDataWithNonPersist>(
       rows,
@@ -399,11 +398,11 @@ class UniqueDataWithNonPersistRepository {
   Future<UniqueDataWithNonPersist> upsertRow(
     _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
-    required _i3.ColumnSelections<UniqueDataWithNonPersistTable>
+    required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
-    _i3.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i3.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
-    _i3.Transaction? transaction,
+    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UniqueDataWithNonPersist>(
       row,

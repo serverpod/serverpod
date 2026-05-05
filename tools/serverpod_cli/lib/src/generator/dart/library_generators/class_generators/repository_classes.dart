@@ -855,7 +855,7 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'conflictColumns'
               ..named = true
@@ -867,14 +867,14 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'updateColumns'
               ..named = true,
           ),
           Parameter(
             (p) => p
-              ..type = typeWhereExpressionBuilder(className, true)
+              ..type = typeWhereExpressionBuilder(className, serverCode)
               ..name = 'conflictWhere'
               ..named = true,
           ),
@@ -884,7 +884,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -949,7 +949,7 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'conflictColumns'
               ..named = true
@@ -961,14 +961,14 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'updateColumns'
               ..named = true,
           ),
           Parameter(
             (p) => p
-              ..type = typeWhereExpressionBuilder(className, true)
+              ..type = typeWhereExpressionBuilder(className, serverCode)
               ..name = 'conflictWhere'
               ..named = true,
           ),
@@ -978,7 +978,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,

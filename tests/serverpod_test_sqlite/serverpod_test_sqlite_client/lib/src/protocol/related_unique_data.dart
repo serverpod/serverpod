@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'unique_data.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class RelatedUniqueData implements _i1.TableRow<int?> {
   RelatedUniqueData._({
@@ -417,10 +416,10 @@ class RelatedUniqueDataRepository {
   Future<List<RelatedUniqueData>> upsert(
     _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
-    required _i5.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
-    _i5.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i5.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<RelatedUniqueData>(
       rows,
@@ -440,10 +439,10 @@ class RelatedUniqueDataRepository {
   Future<RelatedUniqueData> upsertRow(
     _i1.DatabaseSession session,
     RelatedUniqueData row, {
-    required _i5.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
-    _i5.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i5.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RelatedUniqueData>(
       row,

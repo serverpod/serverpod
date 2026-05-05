@@ -16,7 +16,6 @@ import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Post implements _i1.TableRow<int?> {
   Post._({
@@ -460,10 +459,10 @@ class PostRepository {
   Future<List<Post>> upsert(
     _i1.DatabaseSession session,
     List<Post> rows, {
-    required _i5.ColumnSelections<PostTable> conflictColumns,
-    _i5.ColumnSelections<PostTable>? updateColumns,
-    _i5.WhereExpressionBuilder<PostTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Post>(
       rows,
@@ -483,10 +482,10 @@ class PostRepository {
   Future<Post> upsertRow(
     _i1.DatabaseSession session,
     Post row, {
-    required _i5.ColumnSelections<PostTable> conflictColumns,
-    _i5.ColumnSelections<PostTable>? updateColumns,
-    _i5.WhereExpressionBuilder<PostTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Post>(
       row,

@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Arena implements _i1.TableRow<int?> {
   Arena._({
@@ -390,10 +389,10 @@ class ArenaRepository {
   Future<List<Arena>> upsert(
     _i1.DatabaseSession session,
     List<Arena> rows, {
-    required _i5.ColumnSelections<ArenaTable> conflictColumns,
-    _i5.ColumnSelections<ArenaTable>? updateColumns,
-    _i5.WhereExpressionBuilder<ArenaTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<ArenaTable> conflictColumns,
+    _i1.ColumnSelections<ArenaTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ArenaTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Arena>(
       rows,
@@ -413,10 +412,10 @@ class ArenaRepository {
   Future<Arena> upsertRow(
     _i1.DatabaseSession session,
     Arena row, {
-    required _i5.ColumnSelections<ArenaTable> conflictColumns,
-    _i5.ColumnSelections<ArenaTable>? updateColumns,
-    _i5.WhereExpressionBuilder<ArenaTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<ArenaTable> conflictColumns,
+    _i1.ColumnSelections<ArenaTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ArenaTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Arena>(
       row,

@@ -15,7 +15,6 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
-import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Player implements _i1.TableRow<int?> {
   Player._({
@@ -413,10 +412,10 @@ class PlayerRepository {
   Future<List<Player>> upsert(
     _i1.DatabaseSession session,
     List<Player> rows, {
-    required _i5.ColumnSelections<PlayerTable> conflictColumns,
-    _i5.ColumnSelections<PlayerTable>? updateColumns,
-    _i5.WhereExpressionBuilder<PlayerTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<PlayerTable> conflictColumns,
+    _i1.ColumnSelections<PlayerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Player>(
       rows,
@@ -436,10 +435,10 @@ class PlayerRepository {
   Future<Player> upsertRow(
     _i1.DatabaseSession session,
     Player row, {
-    required _i5.ColumnSelections<PlayerTable> conflictColumns,
-    _i5.ColumnSelections<PlayerTable>? updateColumns,
-    _i5.WhereExpressionBuilder<PlayerTable>? conflictWhere,
-    _i5.Transaction? transaction,
+    required _i1.ColumnSelections<PlayerTable> conflictColumns,
+    _i1.ColumnSelections<PlayerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Player>(
       row,
