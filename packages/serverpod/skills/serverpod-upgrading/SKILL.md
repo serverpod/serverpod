@@ -48,7 +48,3 @@ After following the regular upgrade process, ensure that the following breaking 
 4. `SerializableEntity` → `SerializableModel`, YAML keywords
 5. Auth usage updates
 6. Migration + tests
-
-## Mini to full Serverpod
-
-From server directory: `serverpod create .` with the default/server template — adds full config and structure. Do not pass `--mini` for this upgrade path. Back up first. Then add database configuration and follow the [migration workflow](../serverpod-migrations/SKILL.md).
