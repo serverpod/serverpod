@@ -142,8 +142,8 @@ class Serverpod {
 
   DatabasePoolManager? _databasePoolManager;
 
-  /// Future for the eager database pool start kicked off in the constructor.
-  late final Future<void> _databasePoolInit;
+  /// Future for the most recent database pool start.
+  Future<void> _databasePoolInit = Future.value();
 
   /// The last time a database operation was performed. This can be used to
   /// determine if the database is sleeping.
@@ -612,8 +612,6 @@ class Serverpod {
       _databasePoolInit = databasePoolManager.start();
       _databasePoolManager = databasePoolManager;
       unawaited(_databasePoolInit.catchError((_) {})); // if pool never used
-    } else {
-      _databasePoolInit = Future.value();
     }
 
     if (Features.enableDatabase) {
@@ -768,7 +766,9 @@ class Serverpod {
       CloudStoragePublicEndpoint().register(this);
     }
 
-    // Ensure database pool manager has started
+    // Ensure database pool manager has started.
+    // Re-kick start() in case there was a shutdown() in between
+    _databasePoolInit = _databasePoolManager?.start() ?? Future.value();
     await _databasePoolInit;
 
     if (Features.enableMigrations) {

@@ -28,6 +28,11 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   SqliteDatabase? _db;
 
+  /// In-flight [start] future, used to coalesce concurrent callers onto
+  /// a single start cycle. Cleared once the cycle completes (or fails)
+  /// and again by [stop] so a restart kicks off a fresh cycle.
+  Future<void>? _starting;
+
   /// The SQLite database instance.
   ///
   /// Throws a [StateError] if the database has not been started.
@@ -53,21 +58,32 @@ class SqlitePoolManager implements DatabasePoolManager {
   }
 
   /// Starts the database connection.
+  ///
+  /// Safe to call concurrently or repeatedly: in-flight calls share the
+  /// same future, and a call after [stop] begins a fresh start cycle.
   @override
   Future<void> start() async {
     if (_db != null) return;
-    final db = SqliteDatabase(
-      path: config.filePath,
-      // This will only be available from 0.14 onwards.
-      // options: SqliteOptions(
-      //   maxReaders:
-      //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
-      // ),
-    );
-    await db.execute('PRAGMA foreign_keys = ON');
-    // Assign after the await so a failed start leaves _db null and the
-    // caller can retry.
-    _db = db;
+    return _starting ??= _start();
+  }
+
+  Future<void> _start() async {
+    try {
+      final db = SqliteDatabase(
+        path: config.filePath,
+        // This will only be available from 0.14 onwards.
+        // options: SqliteOptions(
+        //   maxReaders:
+        //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
+        // ),
+      );
+      await db.execute('PRAGMA foreign_keys = ON');
+      // Assign after the await so a failed start leaves _db null and the
+      // caller can retry.
+      _db = db;
+    } finally {
+      _starting = null;
+    }
   }
 
   /// Closes the database.
@@ -75,6 +91,7 @@ class SqlitePoolManager implements DatabasePoolManager {
   Future<void> stop() async {
     await _db?.close();
     _db = null;
+    _starting = null;
   }
 
   /// Tests the database connection.
