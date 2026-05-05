@@ -15,6 +15,8 @@ import 'dart:async' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/simple_data.dart'
     as _i3;
 import 'protocol.dart' as _i4;
+import 'package:serverpod_database/serverpod_database.dart' as _i5;
+import 'package:serverpod_test_sqlite_client/migrations/migration_registry.dart';
 
 /// {@category Endpoint}
 class EndpointTestTools extends _i1.EndpointRef {
@@ -100,4 +102,16 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
+
+  _i2.Future<_i5.ClientDatabaseSession> createSession(
+    String path, {
+    bool isDebugMode = false,
+  }) async {
+    return await _i5.ClientDatabaseSession.open(
+      path,
+      _i4.Protocol(),
+      clientMigrations: MigrationRegistry.migrations,
+      isDebugMode: isDebugMode,
+    );
+  }
 }

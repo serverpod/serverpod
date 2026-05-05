@@ -10,6 +10,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
@@ -26,11 +27,13 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
+import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
   mini('mini'),
   server('server'),
-  module('module');
+  module('module'),
+  ;
 
   final String name;
   const ServerpodTemplateType(this.name);
@@ -45,17 +48,53 @@ enum ServerpodTemplateType {
   }
 }
 
-Future<bool> performCreate(
+extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
+  bool get isServer => this == ServerpodTemplateType.server;
+  bool get isModule => this == ServerpodTemplateType.module;
+  bool get isMini => this == ServerpodTemplateType.mini;
+}
+
+/// Holds error messages to be flushed at a later time.
+/// This is typically used to replay logs to the terminal
+/// after exiting the tui's alternate screen
+/// but before killing the Dart process.
+List<String> _errorBuffer = [];
+
+/// Logs a message with error level and adds it to the error buffer.
+void _logError(String message) {
+  _errorBuffer.add(message);
+  log.error(message);
+}
+
+/// Log all messages in the error buffer with error level.
+void flushPerformCreateErrors() {
+  _errorBuffer.forEach(log.error);
+  _errorBuffer.clear();
+}
+
+/// Creates a project for the provided [template].
+/// If successful, a future that resolves to the project directory path
+/// is returned. Otherwise, a future that resolves to null is returned.
+Future<String?> performCreate(
   String name,
   ServerpodTemplateType template,
   bool force, {
+  Completer<int>? flutterBuildCompleter,
+  bool dryRun = false,
   required bool? interactive,
+  required TemplateContext context,
 }) async {
+  _errorBuffer.clear();
   // If the name is a dot, we can either create a new project in the current
   // directory or upgrade an existing project.
   if (name == '.') {
     if (findServerDirectory(Directory.current) != null) {
-      return await _performUpgrade(template, interactive: interactive);
+      return await _performUpgrade(
+        template,
+        dryRun: dryRun,
+        interactive: interactive,
+        context: context,
+      );
     }
 
     // If we are creating a new project in the current directory, we need to
@@ -66,11 +105,11 @@ Future<bool> performCreate(
 
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
-    log.error(
+    _logError(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return false;
+    return null;
   }
 
   var serverpodDirs = ServerpodDirectories(
@@ -79,9 +118,11 @@ Future<bool> performCreate(
   );
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
   if (pubspecFile.existsSync()) {
-    log.error('Project $name already exists.');
-    return false;
+    _logError('Project $name already exists.');
+    return null;
   }
+
+  if (dryRun) return p.basename(serverpodDirs.projectDir.path);
 
   if (template == ServerpodTemplateType.module) {
     log.info(
@@ -151,6 +192,8 @@ Future<bool> performCreate(
     );
   }
 
+  success &= await _renderTemplates(serverpodDirs.projectDir, context);
+
   success &= await log.progress('Getting workspace dependencies.', () {
     return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
   });
@@ -188,19 +231,20 @@ Future<bool> performCreate(
   }
 
   if (template == ServerpodTemplateType.server) {
+    String skipKey = interactive == true ? 'S' : 'CTRL+C';
     await log.progress(
-      'Building Flutter web app (press CTRL+C to skip).',
+      'Building Flutter web app (press $skipKey to skip).',
       () async {
         final Script? script;
         try {
           script = _locateFlutterBuildScript(serverpodDirs.serverDir);
         } catch (e) {
-          log.error('Error when locating flutter build script: $e');
+          _logError('Error when locating flutter build script: $e');
           return false;
         }
 
         if (script == null) {
-          log.error('Failed to locate flutter build script, skipping build.');
+          _logError('Failed to locate flutter build script, skipping build.');
           return false;
         }
 
@@ -214,15 +258,20 @@ Future<bool> performCreate(
         stderrController.stream
             .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
-            .listen((data) => log.error(data));
+            .listen((data) => _logError(data));
         final toErrorLog = IOSink(stderrController);
 
-        final exitCode = await execute(
+        final executionFuture = execute(
           script.command,
           workingDirectory: serverpodDirs.serverDir,
           stdout: toDebugLog,
           stderr: toErrorLog,
         );
+
+        final exitCode = await Future.any([
+          ?flutterBuildCompleter?.future,
+          executionFuture,
+        ]);
 
         return exitCode == 0;
       },
@@ -236,46 +285,47 @@ Future<bool> performCreate(
       type: TextLogType.success,
     );
 
-    var relativeServerPath = p.relative(
-      serverpodDirs.serverDir.path,
-      from: serverpodDirs.projectDir.path,
-    );
+    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
+
     if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(relativeServerPath);
+      logStartInstructions(projectDirPath);
     } else if (template == ServerpodTemplateType.mini) {
-      _logMiniStartInstructions(relativeServerPath);
+      _logMiniStartInstructions(projectDirPath);
     }
+
+    return projectDirPath;
   }
 
-  return success;
+  return null;
 }
 
-Future<bool> _performUpgrade(
+/// Upgrades a server project.
+/// If successful, a future that resolves to the project directory path
+/// is returned. Otherwise, a future that resolves to null is returned.
+Future<String?> _performUpgrade(
   ServerpodTemplateType template, {
+  bool dryRun = false,
   required bool? interactive,
+  required TemplateContext context,
 }) async {
   if (template != ServerpodTemplateType.server) {
-    log.error(
-      'The upgrade command can only be used with server templates.',
-    );
-    return false;
+    _logError('The upgrade command can only be used with server templates.');
+    return null;
   }
 
   var serverDir = findServerDirectory(Directory.current);
   if (serverDir == null) {
-    log.error(
-      'Could not find a Serverpod project in the current directory.',
-    );
-    return false;
+    _logError('Could not find a Serverpod project in the current directory.');
+    return null;
   }
 
   var name = await getProjectName(serverDir);
   if (name == null) {
-    log.error(
-      'Could not find a project name in the pubspec.yaml file.',
-    );
-    return false;
+    _logError('Could not find a project name in the pubspec.yaml file.');
+    return null;
   }
+
+  if (dryRun) return name;
 
   var serverpodDir = ServerpodDirectories(
     name: name,
@@ -295,6 +345,8 @@ Future<bool> _performUpgrade(
       return true;
     },
   );
+
+  success &= await _renderTemplates(serverpodDir.projectDir, context);
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -317,13 +369,22 @@ Future<bool> _performUpgrade(
       type: TextLogType.success,
     );
 
-    _logStartInstructions(name);
+    logStartInstructions(name);
+    return name;
   }
 
-  return success;
+  return null;
 }
 
-void _logMiniStartInstructions(String relativeServerPath) {
+/// Parses and renders the template files in the given directory.
+Future<bool> _renderTemplates(Directory dir, TemplateContext context) async {
+  return await log.progress('Applying template options', () async {
+    await TemplateRenderer(dir: dir).render(context);
+    return true;
+  });
+}
+
+void _logMiniStartInstructions(String relativeProjectPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -339,30 +400,28 @@ void _logMiniStartInstructions(String relativeServerPath) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\$relativeServerPath\\',
+      'cd .\\$relativeProjectPath\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'dart .\\bin\\main.dart',
-      type: TextLogType.command,
     );
   } else {
     log.info(
-      'cd $relativeServerPath',
+      'cd $relativeProjectPath',
       type: TextLogType.command,
       newParagraph: true,
     );
-    log.info(
-      'dart bin/main.dart',
-      type: TextLogType.command,
-    );
   }
+
+  log.info(
+    'serverpod start',
+    type: TextLogType.command,
+    newParagraph: true,
+  );
 
   log.info(' ');
 }
 
-void _logStartInstructions(String relativeServerPath) {
+void logStartInstructions(String relativeProjectPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -378,33 +437,23 @@ void _logStartInstructions(String relativeServerPath) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\$relativeServerPath\\',
+      'cd .\\$relativeProjectPath\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart .\\bin\\main.dart --apply-migrations',
-      type: TextLogType.command,
     );
   } else {
     log.info(
-      'cd $relativeServerPath',
+      'cd $relativeProjectPath',
       type: TextLogType.command,
       newParagraph: true,
     );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart bin/main.dart --apply-migrations',
-      type: TextLogType.command,
-    );
   }
+
+  log.info(
+    'serverpod start',
+    type: TextLogType.command,
+    newParagraph: true,
+  );
 
   log.info(' ');
 }

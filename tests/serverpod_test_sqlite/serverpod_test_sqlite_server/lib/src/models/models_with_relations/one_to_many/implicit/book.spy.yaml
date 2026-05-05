@@ -1,5 +1,6 @@
 class: Book
 table: book
+database: all
 fields:
-    title: String
-    chapters: List<Chapter>?, relation
+  title: String
+  chapters: List<Chapter>?, relation

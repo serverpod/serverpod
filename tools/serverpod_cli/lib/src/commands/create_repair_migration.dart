@@ -35,7 +35,8 @@ enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
           'fetching the live database definition.',
       allowedValues: runModes,
     ),
-  );
+  ),
+  ;
 
   static const runModes = <String>['development', 'staging', 'production'];
 

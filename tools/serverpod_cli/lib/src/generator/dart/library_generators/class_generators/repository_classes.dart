@@ -3,6 +3,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 
 class BuildRepositoryClass {
   final bool serverCode;
@@ -13,9 +14,11 @@ class BuildRepositoryClass {
     required this.config,
   });
 
+  String get _databaseRuntimeUrl => serverpodDatabaseRuntimeUrl(serverCode);
+
   Reference get _sessionReference => refer(
     'DatabaseSession',
-    'package:serverpod/serverpod.dart',
+    _databaseRuntimeUrl,
   );
 
   Class buildModelRepositoryClass(
@@ -213,9 +216,15 @@ class BuildRepositoryClass {
   }
 
   bool hasImplicitClassOperations(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
-    return fields.any((e) => e.hiddenSerializableField(serverCode));
+    List<SerializableModelFieldDefinition> fields, {
+    required bool hasTableForModel,
+  }) {
+    return fields.any(
+      (e) => e.shouldIncludeHiddenFieldInModelClass(
+        serverCode,
+        modelHasTable: hasTableForModel,
+      ),
+    );
   }
 
   bool _isListRelation(SerializableModelFieldDefinition field) {
@@ -348,7 +357,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -370,7 +379,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -381,7 +390,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -512,7 +521,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -534,7 +543,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -545,7 +554,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -627,7 +636,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -649,7 +658,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -660,7 +669,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -725,7 +734,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -787,7 +796,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1034,7 +1043,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columns'
               ..named = true,
@@ -1045,7 +1054,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1102,7 +1111,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columns'
               ..named = true,
@@ -1113,7 +1122,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1177,7 +1186,7 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columnValues'
               ..named = true
@@ -1189,7 +1198,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1244,23 +1253,22 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
               ..name = 'columnValues'
+              ..type = typeColumnValueListBuilder(
+                className,
+                serverCode,
+              )
               ..named = true
               ..required = true,
           ),
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'WhereExpressionBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
               ..name = 'where'
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+                nullable: false,
+              )
               ..named = true
               ..required = true,
           ),
@@ -1278,33 +1286,23 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'OrderByBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart'
-                  ..isNullable = true,
-              )
               ..name = 'orderBy'
-              ..named = true,
+              ..named = true
+              ..type = typeOrderByBuilder(className, serverCode),
           ),
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'OrderByListBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart'
-                  ..isNullable = true,
-              )
               ..name = 'orderByList'
-              ..named = true,
+              ..named = true
+              ..type = typeOrderByListBuilder(className, serverCode),
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool', 'dart:core')
               ..name = 'orderDescending'
               ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..named = true
-              ..defaultTo = const Code('false'),
+              ..defaultTo = const Code('false')
+              ..type = refer('bool'),
           ),
           Parameter(
             (p) => p
@@ -1312,7 +1310,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1417,7 +1415,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1483,7 +1481,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1574,7 +1572,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1653,7 +1651,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1707,14 +1705,14 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('LockMode', 'package:serverpod/serverpod.dart')
+              ..type = refer('LockMode', _databaseRuntimeUrl)
               ..name = 'lockMode'
               ..named = true
               ..required = true,
           ),
           Parameter(
             (p) => p
-              ..type = refer('Transaction', 'package:serverpod/serverpod.dart')
+              ..type = refer('Transaction', _databaseRuntimeUrl)
               ..name = 'transaction'
               ..named = true
               ..required = true,
@@ -1724,13 +1722,13 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true
               ..defaultTo = refer(
                 'LockBehavior',
-                'package:serverpod/serverpod.dart',
+                _databaseRuntimeUrl,
               ).property('wait').code,
           ),
         ])
@@ -1853,7 +1851,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1930,7 +1928,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2005,7 +2003,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2224,7 +2222,7 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-            refer(classFieldName, 'package:serverpod/serverpod.dart');
+            refer(classFieldName, _databaseRuntimeUrl);
           }),
         ])
         ..optionalParameters.add(
@@ -2234,7 +2232,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2311,7 +2309,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2376,7 +2374,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,

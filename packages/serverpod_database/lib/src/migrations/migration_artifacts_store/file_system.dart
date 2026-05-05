@@ -8,7 +8,8 @@ import '../../../serverpod_database.dart';
 import '../../definition/definition_normalizer.dart';
 
 /// Stores migration artifacts using the current file-system based format.
-class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
+class FileSystemMigrationArtifactStore
+    implements MigrationArtifactStoreReader, MigrationArtifactStoreWriter {
   /// Creates a new file system migration artifact store.
   FileSystemMigrationArtifactStore({
     required Directory projectDirectory,
@@ -45,12 +46,40 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
   }
 
   @override
-  Future<MigrationVersionArtifacts?> readVersion(String version) async {
-    var versionDirectory = MigrationConstants.migrationVersionDirectory(
-      _projectDirectory,
-      version,
+  Future<MigrationVersionSql?> readVersionSql(String version) async {
+    final versionDirectory = await _resolveVersionDirectory(version);
+    if (versionDirectory == null) {
+      return null;
+    }
+
+    final definition = await _readRequiredProtocolFile<DatabaseDefinition>(
+      MigrationConstants.databaseDefinitionJSONPath(_projectDirectory, version),
     );
-    if (!await versionDirectory.exists()) {
+
+    return MigrationVersionSql(
+      version: version,
+      moduleName: definition.moduleName,
+      definitionSql: await _readRequiredFile(
+        MigrationConstants.databaseDefinitionSQLPath(
+          _projectDirectory,
+          version,
+        ),
+      ),
+      migrationSql: await _readRequiredFile(
+        MigrationConstants.databaseMigrationSQLPath(
+          _projectDirectory,
+          version,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<MigrationVersionDefinition?> readVersionDefinition(
+    String version,
+  ) async {
+    final versionDirectory = await _resolveVersionDirectory(version);
+    if (versionDirectory == null) {
       return null;
     }
 
@@ -65,17 +94,8 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
       ),
     );
 
-    return MigrationVersionArtifacts(
+    return MigrationVersionDefinition(
       version: version,
-      definitionSql: await _readRequiredFile(
-        MigrationConstants.databaseDefinitionSQLPath(
-          _projectDirectory,
-          version,
-        ),
-      ),
-      migrationSql: await _readRequiredFile(
-        MigrationConstants.databaseMigrationSQLPath(_projectDirectory, version),
-      ),
       definition: normalizeDefinitionToV2(definition),
       projectDefinition: normalizeDefinitionToV2(
         await _readRequiredProtocolFile<DatabaseDefinition>(
@@ -89,6 +109,23 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
           ? normalizeMigrationToV2(migration, definition)
           : migration,
     );
+  }
+
+  @override
+  Future<String?> loadDefinitionModuleName(String version) async {
+    final definition = await readVersionDefinition(version);
+    return definition?.moduleName;
+  }
+
+  Future<Directory?> _resolveVersionDirectory(String version) async {
+    var versionDirectory = MigrationConstants.migrationVersionDirectory(
+      _projectDirectory,
+      version,
+    );
+    if (!await versionDirectory.exists()) {
+      return null;
+    }
+    return versionDirectory;
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:system_resources_2/system_resources_2.dart';
 
@@ -38,14 +39,14 @@ class HealthCheckManager {
     if (interval < const Duration(seconds: 1)) {
       throw ArgumentError('Interval must be at least 1 second.');
     } else if (interval < const Duration(minutes: 1)) {
-      stderr.writeln(
-        'WARNING: Using a health check interval less than 1 minute can cause '
+      log.warning(
+        'Using a health check interval less than 1 minute can cause '
         'excessive database activity and considerably reduce performance. '
         'It is recommended to use a minimum interval of 1 minute.',
       );
     } else if (interval > const Duration(minutes: 5)) {
-      stderr.writeln(
-        'WARNING: Using a health check interval greater than 5 minutes in '
+      log.warning(
+        'Using a health check interval greater than 5 minutes in '
         'servers with lower load can lead to the health check manager waking '
         'the database unnecessarily. The recommended interval is between 1 and '
         '5 minutes.',
@@ -58,8 +59,8 @@ class HealthCheckManager {
     _running = true;
 
     if (Platform.isWindows) {
-      stderr.writeln(
-        'WARNING: CPU and memory usage metrics are not supported on Windows.',
+      log.warning(
+        'CPU and memory usage metrics are not supported on Windows.',
       );
       return;
     }
@@ -67,11 +68,10 @@ class HealthCheckManager {
     try {
       await SystemResources.init();
     } catch (e, stackTrace) {
-      stderr.writeln(
-        'WARNING: CPU and memory usage metrics are not supported on this platform.',
+      log.warning(
+        'CPU and memory usage metrics are not supported on this platform.',
+        metadata: {'error': '$e', 'stackTrace': '$stackTrace'},
       );
-      stderr.writeln('Error: $e');
-      stderr.writeln('Stack trace: $stackTrace');
     }
 
     _scheduleNextCheck();
@@ -126,7 +126,7 @@ class HealthCheckManager {
 
   Future<void> _innerPerformHealthCheck() async {
     if (_pod.config.role == ServerpodRole.maintenance) {
-      stdout.writeln('Performing health checks.');
+      log.info('Performing health checks.');
     }
 
     var session = _pod.internalSession;
@@ -440,12 +440,11 @@ class HealthCheckManager {
     StackTrace stackTrace, {
     String? message,
   }) {
-    var now = DateTime.now().toUtc();
-    if (message != null) {
-      stderr.writeln('$now ERROR: $message');
-    }
-    stderr.writeln('$now ERROR: $e');
-    stderr.writeln('$stackTrace');
+    log.error(
+      message ?? 'Unhandled exception',
+      error: e,
+      stackTrace: stackTrace,
+    );
 
     _pod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),

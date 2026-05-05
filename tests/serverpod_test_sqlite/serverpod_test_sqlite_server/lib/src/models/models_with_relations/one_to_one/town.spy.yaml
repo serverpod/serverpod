@@ -1,5 +1,6 @@
 class: Town
 table: town
+database: all
 fields:
   name: String
   mayor: Citizen?, relation(optional)

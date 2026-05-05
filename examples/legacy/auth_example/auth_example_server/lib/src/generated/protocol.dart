@@ -16,7 +16,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'example.dart' as _i4;
 export 'example.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

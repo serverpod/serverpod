@@ -25,7 +25,8 @@ enum AnalyzePubspecsOption<V> implements OptionDefinition<V> {
       defaultsTo: false,
       helpText: 'Ignore serverpod packages when checking for latest version.',
     ),
-  );
+  ),
+  ;
 
   const AnalyzePubspecsOption(this.option);
 

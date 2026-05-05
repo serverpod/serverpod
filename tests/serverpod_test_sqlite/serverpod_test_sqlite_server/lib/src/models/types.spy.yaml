@@ -1,5 +1,6 @@
 class: Types
 table: types
+database: all
 fields:
   anInt: int?
   aBool: bool?

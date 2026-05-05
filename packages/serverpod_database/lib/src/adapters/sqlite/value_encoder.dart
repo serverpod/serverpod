@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:sqlite3/common.dart' as sqlite3;
 
 import '../../../serverpod_database.dart';
 
@@ -120,6 +121,7 @@ class SqliteValueEncoder implements ValueEncoder {
       ColumnDuration() => DurationJsonExtension.fromJson(value),
       ColumnUuid() => UuidValueJsonExtension.fromJson(value),
       ColumnByteData() => ByteDataJsonExtension.fromJson(value),
+      ColumnStructured() => _decodeJsonbValue(value),
       ColumnSerializable() => _decodeJsonValue(value),
       _ => value,
     };
@@ -131,12 +133,24 @@ class SqliteValueEncoder implements ValueEncoder {
     dynamic value, {
     bool hasDefaults = false,
   }) {
-    return convert(
-      column is ColumnSerializable
-          ? SerializationManager.encode(value)
-          : coerceColumnValue(column, value),
+    var encoded = convert(
+      switch (column) {
+        ColumnSerializable() || ColumnStructured() =>
+          value != null ? SerializationManager.encode(value) : null,
+        _ => coerceColumnValue(column, value),
+      },
       hasDefaults: hasDefaults,
     );
+    return column is ColumnStructured && value != null
+        ? 'jsonb($encoded)'
+        : encoded;
+  }
+
+  static dynamic _decodeJsonbValue(dynamic value) {
+    if (value is Uint8List) {
+      return _normalizeDecodedJson(sqlite3.jsonb.decode(value));
+    }
+    return _decodeJsonValue(value);
   }
 
   static dynamic _decodeJsonValue(dynamic value) {

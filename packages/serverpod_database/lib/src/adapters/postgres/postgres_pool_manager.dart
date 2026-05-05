@@ -20,10 +20,11 @@ class PostgresPoolManager implements DatabasePoolManager {
   /// Database configuration.
   final PostgresDatabaseConfig config;
 
-  late SerializationManagerServer _serializationManager;
+  late DatabaseSerializationManager _serializationManager;
 
   @override
-  SerializationManagerServer get serializationManager => _serializationManager;
+  DatabaseSerializationManager get serializationManager =>
+      _serializationManager;
 
   pg.Pool? _pgPool;
 
@@ -47,7 +48,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
   /// when starting the [Server].
   PostgresPoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
   ) : _poolSettings = pg.PoolSettings(

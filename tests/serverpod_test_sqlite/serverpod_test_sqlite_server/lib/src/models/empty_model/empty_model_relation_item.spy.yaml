@@ -1,4 +1,5 @@
 class: EmptyModelRelationItem
 table: empty_model_relation_item
+database: all
 fields:
   name: String

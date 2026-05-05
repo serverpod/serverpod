@@ -29,7 +29,7 @@ class TestDatabaseProxy implements Database {
   DatabaseDialect get dialect => _db.dialect;
 
   @override
-  SerializationManagerServer get serializationManager =>
+  DatabaseSerializationManager get serializationManager =>
       _db.serializationManager;
 
   @override

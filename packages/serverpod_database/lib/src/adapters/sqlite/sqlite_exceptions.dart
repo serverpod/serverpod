@@ -35,7 +35,12 @@ final class _SqliteDatabaseQueryException extends DatabaseQueryException {
   factory _SqliteDatabaseQueryException.fromSqliteException(Object e) {
     if (e is! SqliteException) {
       int? code;
-      if (e.toString().toLowerCase().contains('recursive lock')) code = 6;
+      if ([
+        'recursive lock',
+        'LockError',
+      ].any((s) => e.toString().contains(s))) {
+        code = 6;
+      }
       return _SqliteDatabaseQueryException(e.toString(), code: code.toString());
     }
 

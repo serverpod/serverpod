@@ -1,4 +1,5 @@
 class: Chapter
 table: chapter
+database: all
 fields:
   title: String

@@ -1,3 +1,4 @@
+import 'package:recase/recase.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 
 // This is a temporary internal import since the normalize functions are not
@@ -197,6 +198,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.json:
         type = 'json';
         break;
+      case ColumnType.jsonb:
+        type = 'jsonb';
+        break;
       case ColumnType.text:
         type = 'text';
         break;
@@ -260,6 +264,12 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
+    String ginOperatorClassStr = '';
+
+    if (type == 'gin' && ginOperatorClass != null) {
+      ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
+    }
+
     String distanceStr = '';
     String pgvectorParams = '';
 
@@ -275,9 +285,15 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
 
     return out;
+  }
+}
+
+extension GinIndexOperatorClass on GinOperatorClass {
+  String asOperator() {
+    return name.snakeCase;
   }
 }
 
@@ -487,10 +503,10 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
     }
 
     // Rename columns (must happen before add/modify to avoid naming conflicts)
-    if (renameColumns != null) {
-      for (var entry in renameColumns!.entries) {
-        var fromName = entry.key;
-        var toName = entry.value;
+    for (var modifiedColumn in modifyColumns) {
+      var fromName = modifiedColumn.columnName;
+      var toName = modifiedColumn.newColumnName;
+      if (toName != null && toName != fromName) {
         out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
       }
     }
@@ -506,7 +522,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += alterColumn.toPgSql(
         tableName: name,
         columnDefinition: targetColumns.firstWhere(
-          (c) => c.name == alterColumn.columnName,
+          (c) => c.name == alterColumn.physicalName,
         ),
       );
     }
@@ -533,6 +549,11 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 }
 
 extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
+  /// The physical name of the column to be used in the SQL statements, taking
+  /// renames into consideration. Ensure that any using statement happen after
+  /// the rename statements.
+  String get physicalName => newColumnName ?? columnName;
+
   String toPgSql({
     required String tableName,
     required ColumnDefinition columnDefinition,
@@ -540,17 +561,17 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
     var out = '';
     if (addNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' DROP NOT NULL;\n';
     } else if (removeNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' SET NOT NULL;\n';
     }
     if (changeDefault) {
       if (newDefault == null) {
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
       } else {
@@ -559,9 +580,16 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
           tableName,
         );
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' SET DEFAULT $newDefaultSql;\n';
       }
+    }
+
+    if (newType != null) {
+      var typeName = newType!.name;
+      out +=
+          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          ' SET DATA TYPE $typeName USING "$columnName"::$typeName;\n';
     }
 
     return out;

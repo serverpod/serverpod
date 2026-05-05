@@ -870,7 +870,8 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text;
+  text,
+  ;
 
   /// Returns a list of all enum names.
   static final List<String> allEnumNames = ConsoleLogFormat.values

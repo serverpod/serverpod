@@ -8,14 +8,16 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _i4;
 
-abstract class Blocking implements _i1.SerializableModel {
+abstract class Blocking implements _i1.TableRow<int?> {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -50,9 +52,11 @@ abstract class Blocking implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
+  static final t = BlockingTable();
+
+  static const db = BlockingRepository._();
+
+  @override
   int? id;
 
   int blockedId;
@@ -63,9 +67,12 @@ abstract class Blocking implements _i1.SerializableModel {
 
   _i2.Member? blockedBy;
 
+  @override
+  _i1.Table<int?> get table => t;
+
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
@@ -85,9 +92,41 @@ abstract class Blocking implements _i1.SerializableModel {
     };
   }
 
+  static BlockingInclude include({
+    _i2.MemberInclude? blocked,
+    _i2.MemberInclude? blockedBy,
+  }) {
+    return BlockingInclude._(
+      blocked: blocked,
+      blockedBy: blockedBy,
+    );
+  }
+
+  static BlockingIncludeList includeList({
+    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    BlockingInclude? include,
+  }) {
+    return BlockingIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(Blocking.t),
+      include: include,
+    );
+  }
+
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i4.SerializationManager.encode(this);
   }
 }
 
@@ -110,7 +149,7 @@ class _BlockingImpl extends Blocking {
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,
@@ -127,6 +166,506 @@ class _BlockingImpl extends Blocking {
       blockedBy: blockedBy is _i2.Member?
           ? blockedBy
           : this.blockedBy?.copyWith(),
+    );
+  }
+}
+
+class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
+  BlockingUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
+    table.blockedId,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> blockedById(int value) => _i1.ColumnValue(
+    table.blockedById,
+    value,
+  );
+}
+
+class BlockingTable extends _i1.Table<int?> {
+  BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
+    updateTable = BlockingUpdateTable(this);
+    blockedId = _i1.ColumnInt(
+      'blockedId',
+      this,
+    );
+    blockedById = _i1.ColumnInt(
+      'blockedById',
+      this,
+    );
+  }
+
+  late final BlockingUpdateTable updateTable;
+
+  late final _i1.ColumnInt blockedId;
+
+  _i2.MemberTable? _blocked;
+
+  late final _i1.ColumnInt blockedById;
+
+  _i2.MemberTable? _blockedBy;
+
+  _i2.MemberTable get blocked {
+    if (_blocked != null) return _blocked!;
+    _blocked = _i1.createRelationTable(
+      relationFieldName: 'blocked',
+      field: Blocking.t.blockedId,
+      foreignField: _i2.Member.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.MemberTable(tableRelation: foreignTableRelation),
+    );
+    return _blocked!;
+  }
+
+  _i2.MemberTable get blockedBy {
+    if (_blockedBy != null) return _blockedBy!;
+    _blockedBy = _i1.createRelationTable(
+      relationFieldName: 'blockedBy',
+      field: Blocking.t.blockedById,
+      foreignField: _i2.Member.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.MemberTable(tableRelation: foreignTableRelation),
+    );
+    return _blockedBy!;
+  }
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    blockedId,
+    blockedById,
+  ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'blocked') {
+      return blocked;
+    }
+    if (relationField == 'blockedBy') {
+      return blockedBy;
+    }
+    return null;
+  }
+}
+
+class BlockingInclude extends _i1.IncludeObject {
+  BlockingInclude._({
+    _i2.MemberInclude? blocked,
+    _i2.MemberInclude? blockedBy,
+  }) {
+    _blocked = blocked;
+    _blockedBy = blockedBy;
+  }
+
+  _i2.MemberInclude? _blocked;
+
+  _i2.MemberInclude? _blockedBy;
+
+  @override
+  Map<String, _i1.Include?> get includes => {
+    'blocked': _blocked,
+    'blockedBy': _blockedBy,
+  };
+
+  @override
+  _i1.Table<int?> get table => Blocking.t;
+}
+
+class BlockingIncludeList extends _i1.IncludeList {
+  BlockingIncludeList._({
+    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Blocking.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => Blocking.t;
+}
+
+class BlockingRepository {
+  const BlockingRepository._();
+
+  final attachRow = const BlockingAttachRowRepository._();
+
+  /// Returns a list of [Blocking]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Blocking>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    _i1.Transaction? transaction,
+    BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<Blocking>(
+      where: where?.call(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Blocking] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Blocking?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    _i1.Transaction? transaction,
+    BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<Blocking>(
+      where: where?.call(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Blocking] by its [id] or null if no such row exists.
+  Future<Blocking?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<Blocking>(
+      id,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [Blocking]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Blocking]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<Blocking>> insert(
+    _i1.DatabaseSession session,
+    List<Blocking> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<Blocking>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [Blocking] and returns the inserted row.
+  ///
+  /// The returned [Blocking] will have its `id` field set.
+  Future<Blocking> insertRow(
+    _i1.DatabaseSession session,
+    Blocking row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<Blocking>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Blocking]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<Blocking>> update(
+    _i1.DatabaseSession session,
+    List<Blocking> rows, {
+    _i1.ColumnSelections<BlockingTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<Blocking>(
+      rows,
+      columns: columns?.call(Blocking.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Blocking]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<Blocking> updateRow(
+    _i1.DatabaseSession session,
+    Blocking row, {
+    _i1.ColumnSelections<BlockingTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<Blocking>(
+      row,
+      columns: columns?.call(Blocking.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Blocking] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Blocking?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Blocking>(
+      id,
+      columnValues: columnValues(Blocking.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Blocking>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Blocking>(
+      columnValues: columnValues(Blocking.t.updateTable),
+      where: where(Blocking.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [Blocking]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Blocking>> delete(
+    _i1.DatabaseSession session,
+    List<Blocking> rows, {
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<Blocking>(
+      rows,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [Blocking].
+  Future<Blocking> deleteRow(
+    _i1.DatabaseSession session,
+    Blocking row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<Blocking>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<Blocking>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<Blocking>(
+      where: where(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<Blocking>(
+      where: where?.call(Blocking.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Blocking] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Blocking>(
+      where: where(Blocking.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}
+
+class BlockingAttachRowRepository {
+  const BlockingAttachRowRepository._();
+
+  /// Creates a relation between the given [Blocking] and [Member]
+  /// by setting the [Blocking]'s foreign key `blockedId` to refer to the [Member].
+  Future<void> blocked(
+    _i1.DatabaseSession session,
+    Blocking blocking,
+    _i2.Member blocked, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.id == null) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+    if (blocked.id == null) {
+      throw ArgumentError.notNull('blocked.id');
+    }
+
+    var $blocking = blocking.copyWith(blockedId: blocked.id);
+    await session.db.updateRow<Blocking>(
+      $blocking,
+      columns: [Blocking.t.blockedId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between the given [Blocking] and [Member]
+  /// by setting the [Blocking]'s foreign key `blockedById` to refer to the [Member].
+  Future<void> blockedBy(
+    _i1.DatabaseSession session,
+    Blocking blocking,
+    _i2.Member blockedBy, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.id == null) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+    if (blockedBy.id == null) {
+      throw ArgumentError.notNull('blockedBy.id');
+    }
+
+    var $blocking = blocking.copyWith(blockedById: blockedBy.id);
+    await session.db.updateRow<Blocking>(
+      $blocking,
+      columns: [Blocking.t.blockedById],
+      transaction: transaction,
     );
   }
 }

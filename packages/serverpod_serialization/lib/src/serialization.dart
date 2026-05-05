@@ -57,6 +57,19 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
+  /// Decodes a value for a `dynamic` model field from protocol or database
+  /// shapes: a JSON [String] from [encodeWithType], or a [Map] when JSON was
+  /// parsed before deserialization.
+  dynamic decodeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is String) return decodeWithType(value);
+    if (value is Map<String, dynamic>) return deserializeByClassName(value);
+    throw FormatException(
+      'Dynamic fields are serialized as a Map with the type, but got '
+      '${value.runtimeType} instead.',
+    );
+  }
+
   bool _isType<T1, T2>(Type t) => t == T1 || t == T2;
 
   bool _isNullableType<T>(Type t) => _isType<T, T?>(t);

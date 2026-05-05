@@ -35,7 +35,8 @@ enum ForeignKeyAction implements _i1.SerializableModel {
 
   /// [cascade] specifies that deletion or updating of a
   /// referred row, should be propagated down.
-  cascade;
+  cascade
+  ;
 
   static ForeignKeyAction fromJson(int index) {
     switch (index) {

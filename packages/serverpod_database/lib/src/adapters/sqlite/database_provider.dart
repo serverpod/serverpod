@@ -19,7 +19,7 @@ class SqliteDatabaseProvider implements DatabaseProvider {
 
   @override
   SqlitePoolManager createPoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     SqliteDatabaseConfig config,
   ) {

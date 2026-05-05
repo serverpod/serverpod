@@ -1,13 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:dart_mcp/stdio.dart';
+import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
+import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/platform_check.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Options for the `mcp` command.
 enum McpOption<V> implements OptionDefinition<V> {
@@ -19,7 +20,8 @@ enum McpOption<V> implements OptionDefinition<V> {
       helpText:
           'The server directory (defaults to auto-detect from current directory).',
     ),
-  );
+  ),
+  ;
 
   const McpOption(this.option);
 
@@ -27,89 +29,47 @@ enum McpOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Connects to a running serverpod watch instance's MCP socket and bridges
-/// stdin/stdout for use as an MCP transport.
-class McpCommand extends ServerpodCommand<McpOption> {
+/// Long-lived stdio MCP server that bridges to running
+/// `serverpod start --watch` instances.
+///
+/// Discovers instances via the shared socket directory, lets the client
+/// pick one with the `connect` tool, and forwards tool calls to it.
+/// Survives runner restarts - the client can `connect` again after the
+/// runner comes back up without restarting the bridge.
+class McpCommand extends ServerpodCommand {
   @override
   final name = 'mcp';
 
   @override
   final description =
-      "Create stdio bridge to a running `serverpod start --watch` process's MCP server.";
+      'Start an MCP bridge that discovers running '
+      '`serverpod start --watch` instances and forwards tool calls to one '
+      'at a time.';
 
   @override
   String get invocation => 'serverpod mcp';
 
-  McpCommand() : super(options: McpOption.values);
-
   @override
-  Configuration<McpOption> resolveConfiguration(ArgResults? argResults) {
-    return Configuration.resolveNoExcept(
-      options: options,
-      argResults: argResults,
-      env: envVariables,
-    );
-  }
-
-  @override
-  Future<void> runWithConfig(Configuration<McpOption> commandConfig) async {
-    final directory = commandConfig.value(McpOption.directory);
-
-    final interactive = serverpodRunner.globalConfiguration.optionalValue(
-      GlobalOption.interactive,
-    );
-
-    GeneratorConfig config;
-    try {
-      config = await GeneratorConfig.load(
-        serverRootDir: directory,
-        interactive: interactive,
-      );
-    } catch (e) {
-      stderr.writeln('$e');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-    final socketPath = p.join(serverDir, '.dart_tool', 'serverpod', 'mcp.sock');
-
-    // Connect to the Unix socket. The existence check is a fast-fail for a
-    // better error message, but the socket could disappear between the check
-    // and the connect (TOCTOU), so we catch SocketException too.
-    if (FileSystemEntity.typeSync(socketPath) ==
-        FileSystemEntityType.notFound) {
-      stderr.writeln(
-        'No running serverpod watch instance found.\n'
-        'Start one with: serverpod start --watch',
+  Future<void> runWithConfig(Configuration commandConfig) async {
+    if (!hasUnixSocketSupport()) {
+      log.error(
+        'The serverpod MCP bridge requires Unix domain socket support, '
+        'which on Windows requires Dart 3.11+ '
+        '(current: ${Platform.version.split(' ').first}).',
       );
       throw ExitException.error();
     }
 
-    Socket socket;
-    try {
-      socket = await connectUnixSocket(socketPath);
-    } on SocketException {
-      stderr.writeln(
-        'No running serverpod watch instance found.\n'
-        'Start one with: serverpod start --watch',
-      );
-      throw ExitException.error();
-    }
+    final bridge = ServerpodMcpBridge();
+    await bridge.scan();
+    bridge.startWatching();
 
-    // stdin -> socket. Close socket on stdin EOF so the server sees disconnect.
-    final stdinSub = stdin.listen(
-      socket.add,
-      onDone: () => socket.close(),
-    );
+    final channel = stdioChannel(input: stdin, output: stdout);
+    final server = BridgeMcpServer(channel, bridge: bridge);
 
-    // socket -> stdout (with explicit flush for non-TTY stdout).
-    try {
-      await for (final data in socket) {
-        stdout.add(data);
-        await stdout.flush();
-      }
-    } finally {
-      await stdinSub.cancel();
-    }
+    // Block until the MCP client (stdin) disconnects, then shut everything
+    // down cleanly.
+    await server.done;
+    await bridge.dispose();
   }
 }

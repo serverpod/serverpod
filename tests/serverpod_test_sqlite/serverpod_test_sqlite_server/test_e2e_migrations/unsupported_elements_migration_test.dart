@@ -92,7 +92,7 @@ indexes:
 
           final indexMentions = stdout
               .split('\n')
-              .where((line) => line.contains('- v_hnsw (hnsw)'));
+              .where((line) => line.contains('v_hnsw (hnsw)'));
 
           // Ensure only one mention, with no duplicates.
           expect(indexMentions, hasLength(1));

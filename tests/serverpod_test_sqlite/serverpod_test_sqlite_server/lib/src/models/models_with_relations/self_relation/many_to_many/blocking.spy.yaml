@@ -1,5 +1,6 @@
 class: Blocking
 table: blocking
+database: all
 fields:
   blocked: Member?, relation(name=member_blocking_me, onDelete=Cascade)
   blockedBy: Member?, relation(name=member_blocked_by_me, onDelete=Cascade)

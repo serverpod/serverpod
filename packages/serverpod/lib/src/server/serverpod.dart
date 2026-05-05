@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod/src/server/log_manager/session_log.dart';
+import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -15,7 +18,6 @@ import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
@@ -35,6 +37,11 @@ typedef HealthCheckHandler =
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
 class Serverpod {
   static Serverpod? _instance;
+
+  /// The [ServerpodLogSetup] driving this Serverpod's log output,
+  /// constructed via [ServerpodLogSetup.installDefaults]. Shutdown
+  /// closes it.
+  final ServerpodLogSetup _loggingSetup = ServerpodLogSetup.installDefaults();
 
   late Session _internalSession;
 
@@ -59,7 +66,7 @@ class Serverpod {
 
   void _writeLifecycleMessage(String message) {
     if (_shouldPrintLifecycleMessages) {
-      stdout.writeln(message);
+      log.info(message);
     }
   }
 
@@ -127,8 +134,8 @@ class Serverpod {
   /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
-  final SerializationManagerServer serializationManager;
-  late SerializationManagerServer _internalSerializationManager;
+  final DatabaseSerializationManager serializationManager;
+  late DatabaseSerializationManager _internalSerializationManager;
 
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
@@ -438,14 +445,39 @@ class Serverpod {
         config: config,
       );
     } on ExitException catch (e) {
+      // Construction failed - the object is half-initialized so we
+      // can't let control return to the caller. Emit the message
+      // synchronously and exit before any async drain could return.
       if (e.message.isNotEmpty) {
         stderr.writeln(e.message);
       }
       exit(e.exitCode);
     } catch (e, stackTrace) {
-      _reportException(e, stackTrace, message: 'Error initializing Serverpod');
+      stderr.writeln('Error initializing Serverpod: $e');
+      stderr.writeln(stackTrace);
       exit(1);
     }
+  }
+
+  /// Drains the framework log chain and flushes the OS-level stdio
+  /// buffers (not drained by [exit] on non-terminal pipes), then exits.
+  void _exitAfterFlush(int code, {String? message}) {
+    () async {
+      if (message != null && message.isNotEmpty) {
+        log.error(message);
+      }
+      try {
+        await _drainLogging();
+        await (stdout.flush(), stderr.flush()).wait;
+      } catch (_) {}
+      exit(code);
+    }();
+  }
+
+  /// Drains the log chains and disposes the writers [_loggingSetup]
+  /// added.
+  Future<void> _drainLogging() async {
+    await _loggingSetup.close();
   }
 
   void _initializeServerpod(
@@ -512,6 +544,19 @@ class Serverpod {
     // Sync instance serverId from config so Server, Caches, and log entries
     // use the same id (e.g. from --server-id) instead of staying 'default'.
     this.serverId = this.config.serverId;
+
+    // Sync Log's level with the configured loggingMode now that config is
+    // loaded. Without this, [logVerbose] (which dispatches through
+    // log.debug) would be silently filtered even when the user asked for
+    // verbose output.
+    if (this.config.loggingMode == ServerpodLoggingMode.verbose) {
+      log.logLevel = LogLevel.debug;
+    }
+
+    // Now that config is loaded, let the logging setup add the
+    // config-dependent session writers (text / json echo and the
+    // database persistence writer).
+    _loggingSetup.applyConfig(this.config);
 
     _writeLifecycleMessage(_getCommandLineArgsString());
 
@@ -609,6 +654,10 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+
+    // Attach the internal session to the database log writer (if installed)
+    // now that the database pool is up and a Session can be constructed.
+    _loggingSetup.databaseWriter?.attach(_internalSession);
     _internalLoggingSession = InternalSession(
       server: server,
       enableLogging: true,
@@ -655,7 +704,7 @@ class Serverpod {
       if (_isValidSecret(config.serviceSecret)) {
         _insightsServer = _configureInsightsServer();
       } else {
-        stderr.write(
+        log.warning(
           'Invalid serviceSecret in password file, Insights server disabled.',
         );
       }
@@ -678,10 +727,8 @@ class Serverpod {
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
-        if (error.message != '') {
-          stderr.writeln(error.message);
-        }
-        exit(error.exitCode);
+        _exitAfterFlush(error.exitCode, message: error.message);
+        return;
       }
 
       _exitCode = 1;
@@ -738,7 +785,7 @@ class Serverpod {
 
       await _loadRuntimeSettings();
     } else if (config.applyMigrations || config.applyRepairMigration) {
-      stderr.writeln(
+      log.warning(
         'Migrations are disabled in this project, skipping applying migration(s).',
       );
       _exitCode = 1;
@@ -865,7 +912,7 @@ class Serverpod {
 
     try {
       _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = ServerMigrationManager(
+      var migrationManager = MigrationManager.fromDirectory(
         Directory.current,
         runMode: runMode,
       );
@@ -875,7 +922,7 @@ class Serverpod {
         var appliedRepairMigration = await migrationManager
             .applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
-          stderr.writeln('Failed to apply database repair migration.');
+          log.error('Failed to apply database repair migration.');
         } else {
           _writeLifecycleMessage(
             'Database repair migration "$appliedRepairMigration" applied.',
@@ -902,7 +949,7 @@ class Serverpod {
       }
 
       _internalLogVerbose('Verifying database integrity.');
-      verified = await ServerMigrationManager.verifyDatabaseIntegrity(
+      verified = await MigrationManager.verifyDatabaseIntegrity(
         internalSession,
       );
     } catch (e, stackTrace) {
@@ -1033,7 +1080,8 @@ class Serverpod {
       _writeLifecycleMessage(
         'SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}',
       );
-      exit(128 + signal.signalNumber);
+      _exitAfterFlush(128 + signal.signalNumber);
+      return;
     }
 
     _interruptSignalSent = true;
@@ -1215,6 +1263,25 @@ class Serverpod {
       },
     );
 
+    // Drain the database log writer before tearing the pool down so its
+    // in-flight close rows reach the database instead of racing pool.stop().
+    // Dispose is idempotent; if the caller owns the log setup and later
+    // closes it, the duplicate dispose is a no-op.
+    try {
+      final dbWriter = _loggingSetup.databaseWriter;
+      if (dbWriter != null) {
+        sessionLogWriter.remove(dbWriter);
+        await dbWriter.dispose();
+      }
+    } catch (e, stackTrace) {
+      shutdownError = e;
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error draining database log writer',
+      );
+    }
+
     // This needs to be closed last as it is used by the other services.
     try {
       await _databasePoolManager?.stop();
@@ -1231,9 +1298,16 @@ class Serverpod {
       'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}',
     );
 
+    await _drainLogging();
+
     if (exitProcess) {
-      // For SIGTERM, use exit code 0 for graceful shutdown.
-      // For SIGINT and other signals, use the conventional 128 + signalNumber.
+      // On non-terminals (docker pipes, redirects) stdout is
+      // block-buffered and [exit] does not drain it, so flush
+      // explicitly before exiting.
+      await stdout.flush().catchError((_) {});
+      await stderr.flush().catchError((_) {});
+
+      // SIGTERM -> 0 (graceful), SIGINT and others -> 128 + signalNumber.
       final conventionalExitCode = switch (signalNumber) {
         15 => 0, // SIGTERM
         null => 0,
@@ -1249,6 +1323,11 @@ class Serverpod {
 
   /// Logs a message to the console if the logging command line argument is set
   /// to verbose.
+  ///
+  /// Writes directly to stdout rather than through the [log] chain so that
+  /// framework-level verbose output (e.g. the error path in [Session.close]
+  /// when session logging is disabled) is visible regardless of
+  /// `sessionLogs.consoleEnabled` or writer configuration.
   void logVerbose(String message) {
     if (config.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
@@ -1268,12 +1347,11 @@ class Serverpod {
     StackTrace stackTrace, {
     String? message,
   }) {
-    var now = DateTime.now().toUtc();
-    if (message != null) {
-      stderr.writeln('$now ERROR: $message');
-    }
-    stderr.writeln('$now ERROR: $e');
-    stderr.writeln('$stackTrace');
+    log.error(
+      message ?? 'Unhandled exception',
+      error: e,
+      stackTrace: stackTrace,
+    );
 
     internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
@@ -1324,10 +1402,9 @@ class Serverpod {
           _reportException(e, stackTrace, message: message);
         }
 
-        stderr.writeln('Retrying to connect to the database in 10 seconds.');
+        log.warning('Retrying to connect to the database in 10 seconds.');
         if (!printedDatabaseConnectionError) {
-          stderr.writeln('Database configuration:');
-          stderr.writeln(config.database.toString());
+          log.warning('Database configuration: ${config.database}');
           printedDatabaseConnectionError = true;
         }
 
@@ -1385,7 +1462,6 @@ Future<void>? _shutdownTestAuditor() {
     return null;
   }
   return Future(() {
-    stderr.writeln('serverpod shutdown test auditor enabled');
     if (testThrowerDelaySeconds == 0) {
       throw Exception('serverpod shutdown test auditor throwing');
     } else {

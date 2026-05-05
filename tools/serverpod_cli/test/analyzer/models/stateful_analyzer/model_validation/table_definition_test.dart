@@ -377,4 +377,31 @@ void main() {
       expect(pkeyIndexes, isFalse);
     },
   );
+
+  test(
+    'Given a client database table '
+    'when parsing the server TableDefinition '
+    'then no table is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
+          class: Example
+          table: example
+          database: client
+          fields:
+            name: String
+        ''').build(),
+      ];
+      var collector = CodeGenerationCollector();
+      var definitions = validateAndGetDefinitions(models, collector);
+      var dbDef = createDatabaseDefinitionFromModels(
+        definitions,
+        moduleName,
+        config.modules,
+      );
+
+      expect(collector.errors, isEmpty);
+      expect(dbDef.tables, isEmpty);
+    },
+  );
 }

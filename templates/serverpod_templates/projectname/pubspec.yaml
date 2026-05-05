@@ -2,7 +2,7 @@ name: projectname
 publish_to: none
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 #workspace: #--UNCOMMENT_LINE--#
 #  - projectname_client #--UNCOMMENT_LINE--#

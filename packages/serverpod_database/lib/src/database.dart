@@ -42,7 +42,7 @@ class Database {
   DatabaseDialect get dialect => _databaseConnection.poolManager.dialect;
 
   /// The serialization manager to use for the database.
-  SerializationManagerServer get serializationManager =>
+  DatabaseSerializationManager get serializationManager =>
       _databaseConnection.poolManager.serializationManager;
 
   /// The analyzer for this database.

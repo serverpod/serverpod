@@ -152,6 +152,7 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
         type = 'REAL';
       case ColumnType.uuid: // Storing UUIDs as BLOB for efficiency
       case ColumnType.bytea:
+      case ColumnType.jsonb:
         type = 'BLOB';
       case ColumnType.text:
       case ColumnType.json:
@@ -330,7 +331,7 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     );
 
     final needsRebuild =
-        modifyColumns.isNotEmpty ||
+        modifyColumns.hasColumnMigrationThatRequiresRebuild ||
         deleteForeignKeys.isNotEmpty ||
         addForeignKeys.isNotEmpty ||
         addColumns.any((c) => c.addColumnNeedsRebuild(targetTable));
@@ -351,10 +352,11 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     }
 
     // Rename columns (must happen before add to avoid name collisions)
-    if (renameColumns != null) {
-      for (var entry in renameColumns!.entries) {
-        out +=
-            'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+    for (var modifiedColumn in modifyColumns) {
+      var fromName = modifiedColumn.columnName;
+      var toName = modifiedColumn.newColumnName;
+      if (toName != null && toName != fromName) {
+        out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
       }
     }
 
@@ -370,6 +372,7 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
       out += addIndex.toSql(tableName: name);
     }
 
+    out += '\n';
     return out;
   }
 
@@ -404,10 +407,16 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     if (copyColumns.isNotEmpty) {
       final colListNew = copyColumns.map((c) => '"${c.name}"').join(', ');
       final selectList = copyColumns
-          .map(
-            (c) =>
-                '"${_sqliteSourceColumnNameForInsert(c.name, renameColumns)}"',
-          )
+          .map((c) {
+            final columnMigration = _getColumnMigrationByName(c.name);
+            final sourceName = columnMigration?.columnName ?? c.name;
+
+            return switch (columnMigration?.newType) {
+              ColumnType.jsonb => 'jsonb("$sourceName")',
+              ColumnType.json => 'json("$sourceName")',
+              _ => '"$sourceName"',
+            };
+          })
           .join(', ');
       out +=
           'INSERT INTO "$newTableName" ($colListNew) '
@@ -436,6 +445,28 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
 
     return out;
   }
+
+  /// Returns the [ColumnMigration] for [targetColumnName].
+  ///
+  /// Prefer a rename whose destination is [targetColumnName] over an in-place
+  /// change on a column that kept that name, so the copy uses the correct
+  /// source column name when both could match.
+  ColumnMigration? _getColumnMigrationByName(String targetColumnName) {
+    // Find column migrations for renamed columns.
+    for (final columnMigration in modifyColumns) {
+      if (columnMigration.newColumnName == targetColumnName) {
+        return columnMigration;
+      }
+    }
+    // Find column migrations for in-place changes.
+    for (final columnMigration in modifyColumns) {
+      if (columnMigration.newColumnName == null &&
+          columnMigration.columnName == targetColumnName) {
+        return columnMigration;
+      }
+    }
+    return null;
+  }
 }
 
 String _sqlStoreMigrationVersion({
@@ -458,7 +489,7 @@ String _sqlStoreMigrationVersion({
   return out;
 }
 
-/// Stores all column types on a table to be able to compare schema changes
+/// Stores non-basic column types on a table to be able to compare schema changes
 /// in migrations. This is required since column types on SQLite are simpler
 /// and comparing only the actual column types would be too permissive and
 /// generate deserialization errors in case the dart type being stored changes
@@ -481,34 +512,53 @@ String _sqlStoreColumnTypesForMigrations(
   out += '    PRIMARY KEY ("table_name", "column_name")\n';
   out += ');\n';
   out += '\n';
+
+  final allColumns = [
+    for (var t in tables)
+      for (var c in t.columns)
+        if (!c.columnType.isBasicSqliteType) (t.name, c),
+  ];
+  if (allColumns.isEmpty) {
+    return out;
+  }
+
   out += 'INSERT INTO "$_sqliteSchemaTable" VALUES\n';
-  for (var t in tables) {
-    for (var c in t.columns) {
-      out += '    (';
-      out += "'${t.name}', ";
-      out += "'${c.name}', ";
-      out += "'${c.columnType.name}', ";
-      out += "${c.vectorDimension ?? 'NULL'}";
-      out += ')';
-      out += (t == tables.last && c == t.columns.last) ? ';\n' : ',\n';
-    }
+  for (var (index, (tableName, column)) in allColumns.indexed) {
+    out += '    (';
+    out += "'$tableName', ";
+    out += "'${column.name}', ";
+    out += "'${column.columnType.name}', ";
+    out += "${column.vectorDimension ?? 'NULL'}";
+    out += ')';
+    out += (index == allColumns.length - 1) ? ';\n' : ',\n';
   }
   return out;
 }
 
-/// Returns the physical column name on the source table for [targetColumnName]
-/// when copying into a rebuilt table, accounting for pending renames.
-String _sqliteSourceColumnNameForInsert(
-  String targetColumnName,
-  Map<String, String>? renameColumns,
-) {
-  if (renameColumns == null) return targetColumnName;
-  for (final entry in renameColumns.entries) {
-    if (entry.value == targetColumnName) {
-      return entry.key;
-    }
-  }
-  return targetColumnName;
+extension on ColumnType {
+  bool get isBasicSqliteType => switch (this) {
+    ColumnType.integer => true,
+    // Integer and bigint are the same type on SQLite, and the migration system
+    // already skips migrations between them, so it is safe to skip bigint. It
+    // is also the type with most columns (all ID columns are bigint).
+    ColumnType.bigint => true,
+    ColumnType.doublePrecision => true,
+    ColumnType.bytea => true,
+    ColumnType.text => true,
+    _ => false,
+  };
+}
+
+extension on List<ColumnMigration> {
+  /// Whether any of the column migrations require a table rebuild. The only
+  /// operation that does not require a table rebuild is a column rename.
+  bool get hasColumnMigrationThatRequiresRebuild => any(
+    (m) =>
+        m.addNullable ||
+        m.removeNullable ||
+        m.changeDefault ||
+        m.newType != null,
+  );
 }
 
 String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersionModel> modules) {
