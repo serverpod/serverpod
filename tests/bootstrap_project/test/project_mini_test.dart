@@ -278,6 +278,14 @@ void main() async {
           );
         });
 
+        test('has a root Dockerfile', () {
+          expect(
+            File(path.join(tempPath, projectName, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Root Dockerfile does not exist.',
+          );
+        });
+
         test('root pubspec.yaml has name: _', () {
           final content = File(
             path.join(tempPath, projectName, 'pubspec.yaml'),
@@ -523,7 +531,7 @@ void main() async {
 
         test('then the project contains a dockerfile', () {
           var dockerFile = File(
-            path.join(tempPath, serverDir, 'Dockerfile'),
+            path.join(tempPath, projectName, 'Dockerfile'),
           ).existsSync();
           expect(
             dockerFile,
