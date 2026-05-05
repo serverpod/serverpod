@@ -64,6 +64,17 @@ String formatAppliedMigrations(List<String> applied) {
   return 'Applied ${applied.length} migration$plural: ${applied.join(", ")}';
 }
 
+/// Whether [error] is a FFI resolver failure
+///
+/// The CLI may be installed as a `pub global activate` snapshot, that doesn't
+/// run build hooks for transitive deps.
+bool isMissingNativeAssetError(Object error) {
+  if (error is! ArgumentError) return false;
+  final s = error.toString();
+  return s.contains("Couldn't resolve native function") ||
+      s.contains('No available native assets');
+}
+
 /// Extracts `--mode` / `-m` from [serverArgs] (the passthrough args
 /// that `serverpod start [-- <server-args>]` forwards to the pod), so
 /// the CLI applies migrations against the same config the pod will

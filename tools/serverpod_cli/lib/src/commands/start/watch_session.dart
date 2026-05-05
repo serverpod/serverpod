@@ -77,12 +77,26 @@ final _endpointOrFutureCallRegex = RegExp(
   r'\bextends\s+(?:\w*Endpoint|FutureCall)\b',
 );
 
-/// Action invoked by [WatchSession.applyMigration].
+/// Outcome of an [ApplyMigrationsAction].
+sealed class ApplyMigrationsOutcome {
+  const ApplyMigrationsOutcome();
+}
+
+/// Migrations were applied in-process.
 ///
-/// Runs migrations against the live database without restarting the
-/// pod. Returns the list of versions applied (empty if already up to
-/// date). Throws on failure.
-typedef ApplyMigrationsAction = Future<List<String>> Function();
+/// [versions] are the versions just applied (empty when nothing was pending).
+class MigrationsApplied extends ApplyMigrationsOutcome {
+  final List<String> versions;
+  const MigrationsApplied(this.versions);
+}
+
+/// In-process apply was skipped. Session must restart pod to apply migrations.
+class MigrationsRequirePodRestart extends ApplyMigrationsOutcome {
+  const MigrationsRequirePodRestart();
+}
+
+/// Action invoked by [WatchSession.applyMigration].
+typedef ApplyMigrationsAction = Future<ApplyMigrationsOutcome> Function();
 
 /// Orchestrates the watch-mode reload cycle.
 ///
@@ -417,8 +431,7 @@ class WatchSession {
   ///
   /// Migrations are applied via the [ApplyMigrationsAction] supplied at
   /// construction time (typically a CLI-side runner that connects to
-  /// the database directly), and the running pod is left in place -
-  /// hot reload covers any model code changes.
+  /// the database directly).
   ///
   /// If another restart or migration is in progress, this call waits
   /// for it to finish before proceeding. Throws a [StateError] if the
@@ -434,8 +447,13 @@ class WatchSession {
       }
       _state = SessionState.applyingMigration;
       try {
-        final applied = await _applyMigrationsAction();
-        log.info(formatAppliedMigrations(applied));
+        final outcome = await _applyMigrationsAction();
+        switch (outcome) {
+          case MigrationsApplied(:final versions):
+            log.info(formatAppliedMigrations(versions));
+          case MigrationsRequirePodRestart():
+            await _restartServer(_compiler?.outputDill);
+        }
       } finally {
         if (_state == SessionState.applyingMigration) {
           _state = SessionState.idle;

@@ -34,6 +34,9 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   CompileResult nextIncrementalResult = _successResult();
 
   @override
+  String get outputDill => '/tmp/fake.dill';
+
+  @override
   Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
     if (changedPaths.isEmpty) {
       calls.add('compile');
@@ -154,7 +157,7 @@ void main() {
       initialServer: initialServer,
       generatedDirPaths: {'/generated'},
       applyMigrationsAction:
-          applyMigrationsAction ?? () async => const <String>[],
+          applyMigrationsAction ?? () async => const MigrationsApplied([]),
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
     );
@@ -660,13 +663,13 @@ void main() {
   });
 
   group('Given applyMigration is called with an in-place action', () {
-    late List<String> Function() appliedVersions;
+    late ApplyMigrationsOutcome Function() outcomeBuilder;
     late int actionCalls;
-    late Completer<List<String>>? gate;
+    late Completer<ApplyMigrationsOutcome>? gate;
     late WatchSession inPlaceSession;
 
     setUp(() {
-      appliedVersions = () => ['20251030_120000_user'];
+      outcomeBuilder = () => const MigrationsApplied(['20251030_120000_user']);
       actionCalls = 0;
       gate = null;
 
@@ -677,7 +680,7 @@ void main() {
           actionCalls++;
           final localGate = gate;
           if (localGate != null) return localGate.future;
-          return appliedVersions();
+          return outcomeBuilder();
         },
       );
     });
@@ -699,7 +702,7 @@ void main() {
       'when the action returns an empty list, '
       'then it succeeds (already up to date)',
       () async {
-        appliedVersions = () => const [];
+        outcomeBuilder = () => const MigrationsApplied([]);
 
         await inPlaceSession.applyMigration();
 
@@ -713,7 +716,7 @@ void main() {
       'when the action throws, '
       'then the error propagates and state returns to idle',
       () async {
-        appliedVersions = () => throw StateError('boom');
+        outcomeBuilder = () => throw StateError('boom');
 
         await expectLater(
           inPlaceSession.applyMigration(),
@@ -724,7 +727,7 @@ void main() {
 
         // Same session: a follow-up call must reach the action rather
         // than hit the in-flight latch.
-        appliedVersions = () => const [];
+        outcomeBuilder = () => const MigrationsApplied([]);
         await inPlaceSession.applyMigration();
         expect(actionCalls, 2);
       },
@@ -754,7 +757,7 @@ void main() {
       'when applyMigration is called twice, '
       'then the calls serialize via _pending',
       () async {
-        gate = Completer<List<String>>();
+        gate = Completer<ApplyMigrationsOutcome>();
 
         final firstCall = inPlaceSession.applyMigration();
         // Second call queues behind the first.
@@ -764,11 +767,31 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(actionCalls, 1, reason: 'second call must wait for first');
 
-        gate!.complete(['v1']);
+        gate!.complete(const MigrationsApplied(['v1']));
         await firstCall;
         await secondCall;
 
         expect(actionCalls, 2);
+      },
+    );
+  });
+
+  group('Given the action returns MigrationsRequirePodRestart', () {
+    test(
+      'when applyMigration completes, '
+      'then the pod is restarted via the factory with the compiler dill',
+      () async {
+        final fallbackSession = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          applyMigrationsAction: () async =>
+              const MigrationsRequirePodRestart(),
+        );
+
+        await fallbackSession.applyMigration();
+
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/tmp/fake.dill']);
       },
     );
   });
@@ -1026,7 +1049,7 @@ class Counter {
         },
         initialServer: noCompilerServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const <String>[],
+        applyMigrationsAction: () async => const MigrationsApplied([]),
       );
     });
 
@@ -1128,7 +1151,7 @@ class Counter {
             (success: true, generatedFiles: <String>{}),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const <String>[],
+        applyMigrationsAction: () async => const MigrationsApplied([]),
       );
     });
 

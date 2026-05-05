@@ -178,13 +178,14 @@ class StartCommand extends ServerpodCommand<StartOption> {
       if (shutdown.isShutdown) return;
 
       // Extract passthrough args (everything after '--').
-      final serverArgs = argResults?.rest ?? [];
+      var serverArgs = argResults?.rest ?? [];
 
-      await _applyMigrationsOnBoot(
+      final deferToPod = await _applyMigrationsOnBoot(
         serverDir: serverDir,
         runMode: runModeFromServerArgs(serverArgs),
         moduleName: config.name,
       );
+      if (deferToPod) serverArgs = _withApplyMigrations(serverArgs);
 
       final exitCode = await _runSession(
         config: config,
@@ -293,7 +294,10 @@ Future<void> _stopDockerServices(String serverDir) async {
 }
 
 /// Applies pending database migrations before the pod starts.
-Future<void> _applyMigrationsOnBoot({
+///
+/// Returns `true` when the caller should pass `--apply-migrations` to the
+/// pod because the in-process apply was skipped.
+Future<bool> _applyMigrationsOnBoot({
   required String serverDir,
   required String runMode,
   required String moduleName,
@@ -305,8 +309,48 @@ Future<void> _applyMigrationsOnBoot({
       moduleName: moduleName,
     );
     log.info(formatAppliedMigrations(applied));
+    return false;
   } on StateError {
     // No database configured for this run mode - nothing to apply.
+    return false;
+  } catch (e) {
+    if (!isMissingNativeAssetError(e)) rethrow;
+    log.warning(
+      'Cannot apply migrations from the CLI: this build is missing the '
+      'native asset for the configured database driver (typically SQLite). '
+      'Falling back to --apply-migrations on the pod.',
+    );
+    return true;
+  }
+}
+
+/// Prepends `--apply-migrations` to [serverArgs] unless it is already
+/// present. Used by the boot path when [_applyMigrationsOnBoot] defers
+/// migration apply to the pod.
+List<String> _withApplyMigrations(List<String> serverArgs) {
+  if (serverArgs.contains('--apply-migrations')) return serverArgs;
+  return ['--apply-migrations', ...serverArgs];
+}
+
+/// Watch-session [ApplyMigrationsAction] that wraps [applyPendingMigrations]
+/// with the same FFI-resolver fallback policy as the boot path
+Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
+  required String serverDir,
+  required String runMode,
+  required String moduleName,
+  required void Function() onDeferToPod,
+}) async {
+  try {
+    final applied = await applyPendingMigrations(
+      serverDir: serverDir,
+      runMode: runMode,
+      moduleName: moduleName,
+    );
+    return MigrationsApplied(applied);
+  } catch (e) {
+    if (!isMissingNativeAssetError(e)) rethrow;
+    onDeferToPod();
+    return const MigrationsRequirePodRestart();
   }
 }
 
@@ -499,10 +543,17 @@ Future<int> _startSession({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: generatedDirPaths,
-    applyMigrationsAction: () => applyPendingMigrations(
+    applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
       moduleName: config.name,
+      onDeferToPod: () {
+        log.warning(
+          'Cannot apply migrations from the CLI.\n'
+          'Falling back to restarting the pod with --apply-migrations.',
+        );
+        serverArgs = _withApplyMigrations(serverArgs);
+      },
     ),
   );
 
@@ -752,11 +803,12 @@ Future<void> _runTuiBackend({
       return;
     }
 
-    await _applyMigrationsOnBoot(
+    final deferToPod = await _applyMigrationsOnBoot(
       serverDir: serverDir,
       runMode: runModeFromServerArgs(serverArgs),
       moduleName: config.name,
     );
+    if (deferToPod) serverArgs = _withApplyMigrations(serverArgs);
 
     // Start analyzer initialization on a worker isolate in the background.
     final analyzersFuture = IsolatedAnalyzers.create(config);
@@ -889,10 +941,17 @@ Future<void> _runTuiBackend({
       createServer: serverProcessFactory,
       initialServer: initialServer,
       generatedDirPaths: config.generatedDirPaths,
-      applyMigrationsAction: () => applyPendingMigrations(
+      applyMigrationsAction: () => _applyMigrationsForSession(
         serverDir: serverDir,
         runMode: runMode,
         moduleName: config.name,
+        onDeferToPod: () {
+          log.warning(
+            'Cannot apply migrations from the CLI.\n'
+            'Falling back to restarting the pod with --apply-migrations.',
+          );
+          serverArgs = _withApplyMigrations(serverArgs);
+        },
       ),
     );
 
