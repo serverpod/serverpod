@@ -11,11 +11,14 @@ Run: from project root or server package directory.
 ## serverpod create
 
 ```bash
-serverpod create <project_name>          # Full project (server, client, Flutter)
-serverpod create --template module <name> # Module (server + client)
+serverpod create <project_name> --no-interactive            # Full project (server, client, Flutter)
+serverpod create --mini <project_name> --no-interactive     # Minimal project without database
+serverpod create --template module <name> --no-interactive  # Module (server + client)
 ```
 
 Project name: valid Dart package name (lowercase, underscores).
+
+To upgrade a mini server directory to full Serverpod, run `serverpod create .` with the default/server template without the `--mini` flag.
 
 ## serverpod generate
 
@@ -25,7 +28,9 @@ Regenerate client and server code from endpoints and `.spy.yaml` models.
 serverpod generate
 ```
 
-Run after adding or changing endpoints or models. Do not edit generated files.
+Run after adding or changing endpoints, stream methods, future calls, or models. Do not edit generated files.
+
+In workspace/melos setups, run `serverpod generate -d <server-package>` pointing to the server package.
 
 ## serverpod create-migration
 
@@ -51,10 +56,14 @@ Options: `--mode production`, `--version <migration-name>`, `--force`, `--tag`.
 
 Apply: `dart run bin/main.dart --apply-repair-migration`. Repair runs before normal migrations.
 
+## serverpod run
+
+`serverpod run <script>` runs scripts declared in `pubspec.yaml` under `serverpod/scripts`.
+
 ## Workflow
 
 1. **New project:** `serverpod create my_app` → start DB → run server with `--apply-migrations` → run Flutter app
 2. **After endpoint/model changes:** `serverpod generate`
 3. **After table/index changes:** `serverpod create-migration` → run server with `--apply-migrations`
 
-Use `serverpod --help` and `serverpod <command> --help` for all flags. In workspace/melos setups, run `serverpod generate` from root or with `-d` pointing to the server package.
+Use `serverpod --help` and `serverpod <command> --help` for all flags.

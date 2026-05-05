@@ -1,15 +1,15 @@
 ---
 name: serverpod-configuration
-description: Configure Serverpod — YAML config, environment variables, passwords, run modes, generator.yaml, TLS. Use when setting up environments, API/database/Redis settings, or managing secrets.
+description: Configure Serverpod — YAML config, environment variables, passwords, run modes, generator.yaml, TLS. Use when setting up environments, API/database/Redis settings, managing secrets or overriding configurations for tests.
 ---
 
 # Serverpod Configuration
 
-Priority (highest wins): **Dart config object** > **environment variables** > **YAML config files**. YAML lives in `config/`. Secrets in `config/passwords.yaml` or env vars with `SERVERPOD_PASSWORD_` prefix.
+Priority (highest wins): **Dart config object** > **environment variables** > **YAML config files**. The config uses YAML files that live in `config/`. Secrets are in `config/passwords.yaml` or env vars with `SERVERPOD_PASSWORD_` prefix.
 
 ## Run mode
 
-Config files by mode: `config/development.yaml`, `config/staging.yaml`, `config/production.yaml`, `testing.yaml`. Set via `--mode` when starting server or `SERVERPOD_RUN_MODE` (default: `development`).
+Config files by mode: `config/development.yaml`, `config/staging.yaml`, `config/production.yaml`, `config/test.yaml`. Set via `--mode` when starting server or `SERVERPOD_RUN_MODE` (default: `development`).
 
 ## API server (minimum)
 
@@ -25,6 +25,10 @@ apiServer:
 
 ## Database
 
+It is possible to use either PostgreSQL or SQLite as the database.
+
+### PostgreSQL
+
 ```yaml
 database:
   host: localhost
@@ -34,6 +38,15 @@ database:
 ```
 
 Password in `passwords.yaml` under run mode or `SERVERPOD_PASSWORD_database`. Optional: `searchPaths`, `maxConnectionCount`, `requireSsl`, `isUnixSocket`.
+
+### SQLite
+
+```yaml
+database:
+  filePath: my_project.sqlite
+```
+
+No password is needed for SQLite.
 
 ## Redis
 
@@ -63,6 +76,7 @@ Password in `passwords.yaml` under run mode or `SERVERPOD_PASSWORD_database`. Op
 | | `SERVERPOD_DATABASE_IS_UNIX_SOCKET` | database.isUnixSocket |
 | | `SERVERPOD_DATABASE_SEARCH_PATHS` | database.searchPaths |
 | | `SERVERPOD_DATABASE_MAX_CONNECTION_COUNT` | database.maxConnectionCount / 10 |
+| | `SERVERPOD_DATABASE_FILE_PATH` | database.filePath |
 | Redis | `SERVERPOD_REDIS_HOST`, `_PORT`, `_USER`, `_ENABLED`, `_REQUIRE_SSL` | redis.* |
 | Other | `SERVERPOD_MAX_REQUEST_SIZE` | maxRequestSize / 524288 |
 | | `SERVERPOD_WEBSOCKET_PING_INTERVAL` | websocketPingInterval / 30s |
@@ -99,7 +113,9 @@ In `config/generator.yaml`:
 
 ## Dart config override
 
-Pass `config: ServerpodConfig(...)` to `Serverpod(...)` to override YAML/env. At minimum: `apiServer: ServerConfig(...)`. Useful for tests.
+Pass `config: ServerpodConfig(...)` to `Serverpod(...)` to skip file/env loading and use a Dart config object, with CLI flags still merged in.
+
+For tests, it is possible to use `configOverride: (config) => config.copyWith(...)` to adjust the loaded config after YAML/env/CLI processing.
 
 ## TLS/SSL
 

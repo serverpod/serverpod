@@ -31,11 +31,11 @@ outStream.listen((message) => print('Received: $message'));
 inStream.add('Hello');
 ```
 
-Close the `StreamController` when done. Cancelling the subscription closes both sides. We can use the in/out stream independently (often only need for stream from server).
+Close the `StreamController` when done. Cancelling the subscription closes both sides. We can use the in/out stream independently (often only need for stream from server). Methods may take multiple stream parameters when needed. Keep the API shape explicit and regenerate after changes.
 
 ## Lifecycle
 
-- Each call creates a server `Session`; closed when the method ends.
+- Each call creates a server `Session`; for return-stream methods, the session stays alive until the returned stream completes or is cancelled.
 - WebSocket disconnect closes streams on both sides.
 - Return-stream methods stay alive until cancelled or completed.
 
@@ -45,4 +45,4 @@ Throwing a serializable exception closes the stream; the client receives it in `
 
 ## Deprecated pattern
 
-The older `streamOpened`/`handleStreamMessage`/`sendStreamMessage` pattern and `openStreamingConnection()` is deprecated. Use streaming methods (Stream as parameter/return type) for new code.
+The older `streamOpened`/`handleStreamMessage`/`sendStreamMessage` pattern and `openStreamingConnection()` still exists for legacy code but is deprecated. Use only streaming methods (Stream as parameter/return type) for new code.

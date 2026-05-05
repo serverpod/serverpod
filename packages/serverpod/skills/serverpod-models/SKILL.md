@@ -30,7 +30,7 @@ fields:
 
 ## Database table
 
-Add `table` for PostgreSQL table + ORM:
+Add `table` for a database table + ORM:
 
 ```yaml
 class: Company
@@ -40,7 +40,7 @@ fields:
   foundedDate: DateTime?
 ```
 
-Run `serverpod create-migration` after schema changes, start server with `--apply-migrations`.
+Run `serverpod create-migration` after schema changes, start server with `--apply-migrations`. Skip migrations if database generation is disabled (`features.database: false`) or the project is Serverpod Mini.
 
 ## Scope
 
@@ -132,6 +132,24 @@ Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`lim
 1. Add/edit `.spy.yaml` under server `lib/`
 2. `serverpod generate`
 3. If table/index changed: `serverpod create-migration`, start server with `--apply-migrations`
+
+## Client-side database
+
+Models with the `table` keyword can also generate a client-side database with the `database` keyword:
+
+```yaml
+class: Company
+table: company
+database: client
+```
+
+| Value | Description |
+| ------- | ----------- |
+| `server` | Generates tables only on the server, and a non-table model on the client package (default). |
+| `client` | Generates tables only on the client, and a non-table model on the server package. |
+| `all` | Generates table models on both server and client. |
+
+For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database#client-side-database) skill.
 
 ## Backward compatibility
 

@@ -14,7 +14,7 @@ Use the same pinned Serverpod version across all packages.
    - Server: `serverpod`, `serverpod_test` (dev), module server packages
    - Client: `serverpod_client`, module client packages
    - Flutter: `serverpod_flutter`, module Flutter packages
-3. **Fetch and regenerate:** `dart pub upgrade` + `serverpod generate` from server directory
+3. **Fetch and regenerate:** `dart pub upgrade` + `serverpod generate` from server directory (or `serverpod generate -d <server-package>` in workspaces)
 4. **Migrations (if needed):** `serverpod create-migration` + `dart run bin/main.dart --apply-migrations`
 
 ## Major upgrade: to Serverpod 3.0
@@ -59,4 +59,4 @@ Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
 ## Mini to full Serverpod
 
-From server directory: `serverpod create .` — adds full config and structure. Back up first. Then add DB, create-migration, apply.
+From server directory: `serverpod create .` with the default/server template — adds full config and structure. Do not pass `--mini` for this upgrade path. Back up first. Then add DB config, generate, create migration, apply.

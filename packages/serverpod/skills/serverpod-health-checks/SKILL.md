@@ -5,7 +5,7 @@ description: Serverpod health endpoints — /livez, /readyz, /startupz, custom H
 
 # Serverpod Health Checks
 
-Kubernetes-style HTTP health endpoints. Unauthenticated: HTTP status only (200/503). Authenticated: detailed JSON (RFC Health Check Response Format).
+Kubernetes-style HTTP health endpoints on the main API server (default port 8080), not the optional web server (default port 8082). Unauthenticated: HTTP status only (200/503). Authenticated requests get detailed JSON (RFC Health Check Response Format) through the server's normal authentication handler.
 
 ## Endpoints
 
@@ -16,7 +16,7 @@ Kubernetes-style HTTP health endpoints. Unauthenticated: HTTP status only (200/5
 ## Built-in indicators
 
 - **ServerpodStartupIndicator** — startup complete
-- **DatabaseHealthIndicator** — PostgreSQL (if configured)
+- **DatabaseHealthIndicator** — configured database (if enabled)
 - **RedisHealthIndicator** — Redis (if enabled)
 
 ## Custom health indicator
@@ -46,11 +46,11 @@ class StripeApiIndicator extends HealthIndicator<double> {
 ```dart
 final pod = Serverpod(args, Protocol(), Endpoints(),
   healthConfig: HealthConfig(
-    cacheTtl: Duration(seconds: 2),
+    cacheTtl: Duration(seconds: 2), // default is 1 second
     additionalReadinessIndicators: [StripeApiIndicator()],
     additionalStartupIndicators: [CacheWarmupIndicator()],
   ),
 );
 ```
 
-Each indicator can override `timeout` (default 5s). `cacheTtl` caches results to reduce load under frequent probing.
+Each indicator can override `timeout` (default 5s). `cacheTtl` caches results to reduce load under frequent probing. Serverpod also has a legacy `GET /` health response with a different, simpler contract; use `/livez`, `/readyz`, and `/startupz` for Kubernetes probes.

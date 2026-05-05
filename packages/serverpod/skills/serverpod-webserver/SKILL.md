@@ -1,11 +1,11 @@
 ---
 name: serverpod-webserver
-description: Serverpod web server (Relic) — REST APIs, webhooks, static files, middleware, server-rendered HTML, SPAs, Flutter web. Use when adding HTTP routes, serving web pages, or working with the Relic web server.
+description: Serverpod web server (Relic) — REST APIs, webhooks, middleware, static files, server-rendered HTML, SPAs, Flutter web. Use when adding HTTP routes, serving web pages or web apps, intercepting requests, or working with the Relic web server.
 ---
 
 # Serverpod Web Server (Relic)
 
-Built on Relic, shares `Session` (DB, logging, auth) with the main server. Runs on `webServer` port (default 8082). Use for REST, webhooks, static files, SPAs, or server-rendered pages.
+Built on Relic, shares `Session` (DB, logging, auth) with the main server. This skill is for the optional `webServer` listener (default port 8082), not the main API server (default port 8080).
 
 ## Routes
 
@@ -129,6 +129,7 @@ Response.created(body: Body.fromString('Created'));
 Response.noContent();
 Response.badRequest(body: Body.fromString('Invalid'));
 Response.unauthorized(body: Body.fromString('Not authenticated'));
+Response.forbidden(body: Body.fromString('Forbidden'));
 Response.notFound(body: Body.fromString('Not found'));
 Response.internalServerError(body: Body.fromString('Error'));
 ```
@@ -157,7 +158,7 @@ class UserCrudModule extends Route {
   }
 
   Future<Result> _list(Request request) async {
-    final session = request.session;
+    final session = await request.session;
     final users = await User.db.find(session);
     return Response.ok(
       body: Body.fromString(jsonEncode(users.map((u) => u.toJson()).toList()),
@@ -167,8 +168,9 @@ class UserCrudModule extends Route {
 
   static const _idParam = IntPathParam(#id);
   Future<Result> _get(Request request) async {
+    final session = await request.session;
     int userId = request.pathParameters.get(_idParam);
-    final user = await User.db.findById(request.session, userId);
+    final user = await User.db.findById(session, userId);
     if (user == null) return Response.notFound();
     return Response.ok(
       body: Body.fromString(jsonEncode(user.toJson()), mimeType: MimeType.json),
@@ -180,7 +182,7 @@ pod.webServer.addRoute(UserCrudModule(), '/api/users');
 // Creates GET /api/users and GET /api/users/:id
 ```
 
-Note: `injectIn` handlers receive only `Request`; access `Session` via `request.session`.
+Note: `injectIn` handlers receive only `Request`; access `Session` with `await request.session`.
 
 ## Middleware
 
@@ -227,7 +229,8 @@ extension TenantEx on Request {
 
 Handler tenantMiddleware(Handler next) {
   return (Request request) async {
-    final tenant = await extractTenant(request.session, request.headers.host);
+    final session = await request.session;
+    final tenant = await extractTenant(session, request.headers.host);
     if (tenant == null) return Response.notFound();
     _tenantProperty[request] = tenant;
     return await next(request);

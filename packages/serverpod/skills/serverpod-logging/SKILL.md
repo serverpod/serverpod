@@ -25,7 +25,7 @@ Uncaught endpoint exceptions are logged as session failures in `serverpod_sessio
 - **Database:** Tables `serverpod_log`, `serverpod_query_log`, `serverpod_session_log` (when persistent enabled)
 - **Console:** When console logging enabled (format: `text` or `json`)
 
-Defaults: with database configured, persistent on + console off; without database, persistent off + console on.
+Defaults: with database configured (PostgreSQL only), persistent on + console off; without database, persistent off + console on.
 
 ## Configuration
 
@@ -38,7 +38,7 @@ Under `sessionLogs:` in config YAML or env vars:
 | consoleLogFormat | `SERVERPOD_SESSION_CONSOLE_LOG_FORMAT` | text |
 | cleanupInterval | `SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL` | 24h |
 | retentionPeriod | `SERVERPOD_SESSION_LOG_RETENTION_PERIOD` | 90d |
-| retentionCount | `SERVERPOD_SESSION_LOG_RETENTION_COUNT` | — |
+| retentionCount | `SERVERPOD_SESSION_LOG_RETENTION_COUNT` | 100000 |
 
 Set retention so log tables don't grow unbounded. Avoid logging sensitive data.
 
