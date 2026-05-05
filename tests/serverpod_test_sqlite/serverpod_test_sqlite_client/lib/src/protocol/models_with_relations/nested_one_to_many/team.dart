@@ -16,6 +16,7 @@ import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod/serverpod.dart' as _i6;
 
 abstract class Team implements _i1.TableRow<int?> {
   Team._({
@@ -473,6 +474,55 @@ class TeamRepository {
   }) async {
     return session.db.insertRow<Team>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Team]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Team]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Team>> upsert(
+    _i1.DatabaseSession session,
+    List<Team> rows, {
+    required _i6.ColumnSelections<TeamTable> conflictColumns,
+    _i6.ColumnSelections<TeamTable>? updateColumns,
+    _i6.WhereExpressionBuilder<TeamTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Team>(
+      rows,
+      conflictColumns: conflictColumns(Team.t),
+      updateColumns: updateColumns?.call(Team.t),
+      conflictWhere: conflictWhere?.call(Team.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Team] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Team] will have its `id` field set.
+  Future<Team> upsertRow(
+    _i1.DatabaseSession session,
+    Team row, {
+    required _i6.ColumnSelections<TeamTable> conflictColumns,
+    _i6.ColumnSelections<TeamTable>? updateColumns,
+    _i6.WhereExpressionBuilder<TeamTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Team>(
+      row,
+      conflictColumns: conflictColumns(Team.t),
+      updateColumns: updateColumns?.call(Team.t),
+      conflictWhere: conflictWhere?.call(Team.t),
       transaction: transaction,
     );
   }

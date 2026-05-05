@@ -377,6 +377,55 @@ class BigIntDefaultRepository {
     );
   }
 
+  /// Upserts all [BigIntDefault]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [BigIntDefault]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<BigIntDefault>> upsert(
+    _i1.DatabaseSession session,
+    List<BigIntDefault> rows, {
+    required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
+    _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BigIntDefaultTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<BigIntDefault>(
+      rows,
+      conflictColumns: conflictColumns(BigIntDefault.t),
+      updateColumns: updateColumns?.call(BigIntDefault.t),
+      conflictWhere: conflictWhere?.call(BigIntDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [BigIntDefault] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [BigIntDefault] will have its `id` field set.
+  Future<BigIntDefault> upsertRow(
+    _i1.DatabaseSession session,
+    BigIntDefault row, {
+    required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
+    _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BigIntDefaultTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<BigIntDefault>(
+      row,
+      conflictColumns: conflictColumns(BigIntDefault.t),
+      updateColumns: updateColumns?.call(BigIntDefault.t),
+      conflictWhere: conflictWhere?.call(BigIntDefault.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [BigIntDefault]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

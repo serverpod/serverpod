@@ -459,6 +459,55 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Upserts all [EnumDefaultModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EnumDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EnumDefaultModel>> upsert(
+    _i1.DatabaseSession session,
+    List<EnumDefaultModel> rows, {
+    required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EnumDefaultModel>(
+      rows,
+      conflictColumns: conflictColumns(EnumDefaultModel.t),
+      updateColumns: updateColumns?.call(EnumDefaultModel.t),
+      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EnumDefaultModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EnumDefaultModel] will have its `id` field set.
+  Future<EnumDefaultModel> upsertRow(
+    _i1.DatabaseSession session,
+    EnumDefaultModel row, {
+    required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EnumDefaultModel>(
+      row,
+      conflictColumns: conflictColumns(EnumDefaultModel.t),
+      updateColumns: updateColumns?.call(EnumDefaultModel.t),
+      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EnumDefaultModel]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class EmptyModelWithTable implements _i1.TableRow<int?> {
   EmptyModelWithTable._({this.id});
@@ -281,6 +282,55 @@ class EmptyModelWithTableRepository {
   }) async {
     return session.db.insertRow<EmptyModelWithTable>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [EmptyModelWithTable]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmptyModelWithTable]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EmptyModelWithTable>> upsert(
+    _i1.DatabaseSession session,
+    List<EmptyModelWithTable> rows, {
+    required _i3.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
+    _i3.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
+    _i3.WhereExpressionBuilder<EmptyModelWithTableTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EmptyModelWithTable>(
+      rows,
+      conflictColumns: conflictColumns(EmptyModelWithTable.t),
+      updateColumns: updateColumns?.call(EmptyModelWithTable.t),
+      conflictWhere: conflictWhere?.call(EmptyModelWithTable.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EmptyModelWithTable] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmptyModelWithTable] will have its `id` field set.
+  Future<EmptyModelWithTable> upsertRow(
+    _i1.DatabaseSession session,
+    EmptyModelWithTable row, {
+    required _i3.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
+    _i3.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
+    _i3.WhereExpressionBuilder<EmptyModelWithTableTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmptyModelWithTable>(
+      row,
+      conflictColumns: conflictColumns(EmptyModelWithTable.t),
+      updateColumns: updateColumns?.call(EmptyModelWithTable.t),
+      conflictWhere: conflictWhere?.call(EmptyModelWithTable.t),
       transaction: transaction,
     );
   }

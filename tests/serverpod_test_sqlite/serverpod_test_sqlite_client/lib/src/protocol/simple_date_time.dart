@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _i3;
 
 /// Just some simple data.
 abstract class SimpleDateTime implements _i1.TableRow<int?> {
@@ -327,6 +328,55 @@ class SimpleDateTimeRepository {
   }) async {
     return session.db.insertRow<SimpleDateTime>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [SimpleDateTime]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleDateTime]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SimpleDateTime>> upsert(
+    _i1.DatabaseSession session,
+    List<SimpleDateTime> rows, {
+    required _i3.ColumnSelections<SimpleDateTimeTable> conflictColumns,
+    _i3.ColumnSelections<SimpleDateTimeTable>? updateColumns,
+    _i3.WhereExpressionBuilder<SimpleDateTimeTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SimpleDateTime>(
+      rows,
+      conflictColumns: conflictColumns(SimpleDateTime.t),
+      updateColumns: updateColumns?.call(SimpleDateTime.t),
+      conflictWhere: conflictWhere?.call(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SimpleDateTime] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleDateTime] will have its `id` field set.
+  Future<SimpleDateTime> upsertRow(
+    _i1.DatabaseSession session,
+    SimpleDateTime row, {
+    required _i3.ColumnSelections<SimpleDateTimeTable> conflictColumns,
+    _i3.ColumnSelections<SimpleDateTimeTable>? updateColumns,
+    _i3.WhereExpressionBuilder<SimpleDateTimeTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SimpleDateTime>(
+      row,
+      conflictColumns: conflictColumns(SimpleDateTime.t),
+      updateColumns: updateColumns?.call(SimpleDateTime.t),
+      conflictWhere: conflictWhere?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }

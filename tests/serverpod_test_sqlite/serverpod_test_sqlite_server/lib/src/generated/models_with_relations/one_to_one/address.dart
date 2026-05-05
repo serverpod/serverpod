@@ -416,6 +416,55 @@ class AddressRepository {
     );
   }
 
+  /// Upserts all [Address]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Address]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Address>> upsert(
+    _i1.DatabaseSession session,
+    List<Address> rows, {
+    required _i1.ColumnSelections<AddressTable> conflictColumns,
+    _i1.ColumnSelections<AddressTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Address>(
+      rows,
+      conflictColumns: conflictColumns(Address.t),
+      updateColumns: updateColumns?.call(Address.t),
+      conflictWhere: conflictWhere?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Address] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Address] will have its `id` field set.
+  Future<Address> upsertRow(
+    _i1.DatabaseSession session,
+    Address row, {
+    required _i1.ColumnSelections<AddressTable> conflictColumns,
+    _i1.ColumnSelections<AddressTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Address>(
+      row,
+      conflictColumns: conflictColumns(Address.t),
+      updateColumns: updateColumns?.call(Address.t),
+      conflictWhere: conflictWhere?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Address]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

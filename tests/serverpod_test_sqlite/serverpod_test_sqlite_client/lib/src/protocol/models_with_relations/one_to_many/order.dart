@@ -16,6 +16,7 @@ import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod/serverpod.dart' as _i6;
 
 abstract class Order implements _i1.TableRow<int?> {
   Order._({
@@ -473,6 +474,55 @@ class OrderRepository {
   }) async {
     return session.db.insertRow<Order>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Order]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Order]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Order>> upsert(
+    _i1.DatabaseSession session,
+    List<Order> rows, {
+    required _i6.ColumnSelections<OrderTable> conflictColumns,
+    _i6.ColumnSelections<OrderTable>? updateColumns,
+    _i6.WhereExpressionBuilder<OrderTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Order>(
+      rows,
+      conflictColumns: conflictColumns(Order.t),
+      updateColumns: updateColumns?.call(Order.t),
+      conflictWhere: conflictWhere?.call(Order.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Order] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Order] will have its `id` field set.
+  Future<Order> upsertRow(
+    _i1.DatabaseSession session,
+    Order row, {
+    required _i6.ColumnSelections<OrderTable> conflictColumns,
+    _i6.ColumnSelections<OrderTable>? updateColumns,
+    _i6.WhereExpressionBuilder<OrderTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Order>(
+      row,
+      conflictColumns: conflictColumns(Order.t),
+      updateColumns: updateColumns?.call(Order.t),
+      conflictWhere: conflictWhere?.call(Order.t),
       transaction: transaction,
     );
   }

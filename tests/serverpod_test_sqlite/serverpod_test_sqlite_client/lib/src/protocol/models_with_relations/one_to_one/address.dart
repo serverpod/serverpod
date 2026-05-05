@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Address implements _i1.TableRow<int?> {
   Address._({
@@ -400,6 +401,55 @@ class AddressRepository {
   }) async {
     return session.db.insertRow<Address>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Address]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Address]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Address>> upsert(
+    _i1.DatabaseSession session,
+    List<Address> rows, {
+    required _i5.ColumnSelections<AddressTable> conflictColumns,
+    _i5.ColumnSelections<AddressTable>? updateColumns,
+    _i5.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Address>(
+      rows,
+      conflictColumns: conflictColumns(Address.t),
+      updateColumns: updateColumns?.call(Address.t),
+      conflictWhere: conflictWhere?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Address] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Address] will have its `id` field set.
+  Future<Address> upsertRow(
+    _i1.DatabaseSession session,
+    Address row, {
+    required _i5.ColumnSelections<AddressTable> conflictColumns,
+    _i5.ColumnSelections<AddressTable>? updateColumns,
+    _i5.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Address>(
+      row,
+      conflictColumns: conflictColumns(Address.t),
+      updateColumns: updateColumns?.call(Address.t),
+      conflictWhere: conflictWhere?.call(Address.t),
       transaction: transaction,
     );
   }

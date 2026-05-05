@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Player implements _i1.TableRow<int?> {
   Player._({
@@ -396,6 +397,55 @@ class PlayerRepository {
   }) async {
     return session.db.insertRow<Player>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Player]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Player]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Player>> upsert(
+    _i1.DatabaseSession session,
+    List<Player> rows, {
+    required _i5.ColumnSelections<PlayerTable> conflictColumns,
+    _i5.ColumnSelections<PlayerTable>? updateColumns,
+    _i5.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Player>(
+      rows,
+      conflictColumns: conflictColumns(Player.t),
+      updateColumns: updateColumns?.call(Player.t),
+      conflictWhere: conflictWhere?.call(Player.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Player] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Player] will have its `id` field set.
+  Future<Player> upsertRow(
+    _i1.DatabaseSession session,
+    Player row, {
+    required _i5.ColumnSelections<PlayerTable> conflictColumns,
+    _i5.ColumnSelections<PlayerTable>? updateColumns,
+    _i5.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Player>(
+      row,
+      conflictColumns: conflictColumns(Player.t),
+      updateColumns: updateColumns?.call(Player.t),
+      conflictWhere: conflictWhere?.call(Player.t),
       transaction: transaction,
     );
   }

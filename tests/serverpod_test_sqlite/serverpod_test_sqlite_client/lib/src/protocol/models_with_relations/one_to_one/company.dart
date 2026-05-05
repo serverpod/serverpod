@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Company implements _i1.TableRow<int?> {
   Company._({
@@ -394,6 +395,55 @@ class CompanyRepository {
   }) async {
     return session.db.insertRow<Company>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Company]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Company]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Company>> upsert(
+    _i1.DatabaseSession session,
+    List<Company> rows, {
+    required _i5.ColumnSelections<CompanyTable> conflictColumns,
+    _i5.ColumnSelections<CompanyTable>? updateColumns,
+    _i5.WhereExpressionBuilder<CompanyTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Company>(
+      rows,
+      conflictColumns: conflictColumns(Company.t),
+      updateColumns: updateColumns?.call(Company.t),
+      conflictWhere: conflictWhere?.call(Company.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Company] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Company] will have its `id` field set.
+  Future<Company> upsertRow(
+    _i1.DatabaseSession session,
+    Company row, {
+    required _i5.ColumnSelections<CompanyTable> conflictColumns,
+    _i5.ColumnSelections<CompanyTable>? updateColumns,
+    _i5.WhereExpressionBuilder<CompanyTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Company>(
+      row,
+      conflictColumns: conflictColumns(Company.t),
+      updateColumns: updateColumns?.call(Company.t),
+      conflictWhere: conflictWhere?.call(Company.t),
       transaction: transaction,
     );
   }

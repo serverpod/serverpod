@@ -370,6 +370,55 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Upserts all [ObjectFieldScopes]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectFieldScopes]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectFieldScopes>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectFieldScopes> rows, {
+    required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectFieldScopes>(
+      rows,
+      conflictColumns: conflictColumns(ObjectFieldScopes.t),
+      updateColumns: updateColumns?.call(ObjectFieldScopes.t),
+      conflictWhere: conflictWhere?.call(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectFieldScopes] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectFieldScopes] will have its `id` field set.
+  Future<ObjectFieldScopes> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectFieldScopes row, {
+    required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? conflictWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectFieldScopes>(
+      row,
+      conflictColumns: conflictColumns(ObjectFieldScopes.t),
+      updateColumns: updateColumns?.call(ObjectFieldScopes.t),
+      conflictWhere: conflictWhere?.call(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ObjectFieldScopes]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

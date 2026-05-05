@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Town implements _i1.TableRow<int?> {
   Town._({
@@ -396,6 +397,55 @@ class TownRepository {
   }) async {
     return session.db.insertRow<Town>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Town]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Town]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Town>> upsert(
+    _i1.DatabaseSession session,
+    List<Town> rows, {
+    required _i5.ColumnSelections<TownTable> conflictColumns,
+    _i5.ColumnSelections<TownTable>? updateColumns,
+    _i5.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Town>(
+      rows,
+      conflictColumns: conflictColumns(Town.t),
+      updateColumns: updateColumns?.call(Town.t),
+      conflictWhere: conflictWhere?.call(Town.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Town] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Town] will have its `id` field set.
+  Future<Town> upsertRow(
+    _i1.DatabaseSession session,
+    Town row, {
+    required _i5.ColumnSelections<TownTable> conflictColumns,
+    _i5.ColumnSelections<TownTable>? updateColumns,
+    _i5.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Town>(
+      row,
+      conflictColumns: conflictColumns(Town.t),
+      updateColumns: updateColumns?.call(Town.t),
+      conflictWhere: conflictWhere?.call(Town.t),
       transaction: transaction,
     );
   }

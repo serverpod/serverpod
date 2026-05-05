@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class RelationEmptyModel implements _i1.TableRow<int?> {
   RelationEmptyModel._({
@@ -387,6 +388,55 @@ class RelationEmptyModelRepository {
   }) async {
     return session.db.insertRow<RelationEmptyModel>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [RelationEmptyModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [RelationEmptyModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<RelationEmptyModel>> upsert(
+    _i1.DatabaseSession session,
+    List<RelationEmptyModel> rows, {
+    required _i5.ColumnSelections<RelationEmptyModelTable> conflictColumns,
+    _i5.ColumnSelections<RelationEmptyModelTable>? updateColumns,
+    _i5.WhereExpressionBuilder<RelationEmptyModelTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<RelationEmptyModel>(
+      rows,
+      conflictColumns: conflictColumns(RelationEmptyModel.t),
+      updateColumns: updateColumns?.call(RelationEmptyModel.t),
+      conflictWhere: conflictWhere?.call(RelationEmptyModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [RelationEmptyModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [RelationEmptyModel] will have its `id` field set.
+  Future<RelationEmptyModel> upsertRow(
+    _i1.DatabaseSession session,
+    RelationEmptyModel row, {
+    required _i5.ColumnSelections<RelationEmptyModelTable> conflictColumns,
+    _i5.ColumnSelections<RelationEmptyModelTable>? updateColumns,
+    _i5.WhereExpressionBuilder<RelationEmptyModelTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RelationEmptyModel>(
+      row,
+      conflictColumns: conflictColumns(RelationEmptyModel.t),
+      updateColumns: updateColumns?.call(RelationEmptyModel.t),
+      conflictWhere: conflictWhere?.call(RelationEmptyModel.t),
       transaction: transaction,
     );
   }

@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Comment implements _i1.TableRow<int?> {
   Comment._({
@@ -394,6 +395,55 @@ class CommentRepository {
   }) async {
     return session.db.insertRow<Comment>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Comment]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Comment]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Comment>> upsert(
+    _i1.DatabaseSession session,
+    List<Comment> rows, {
+    required _i5.ColumnSelections<CommentTable> conflictColumns,
+    _i5.ColumnSelections<CommentTable>? updateColumns,
+    _i5.WhereExpressionBuilder<CommentTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Comment>(
+      rows,
+      conflictColumns: conflictColumns(Comment.t),
+      updateColumns: updateColumns?.call(Comment.t),
+      conflictWhere: conflictWhere?.call(Comment.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Comment] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Comment] will have its `id` field set.
+  Future<Comment> upsertRow(
+    _i1.DatabaseSession session,
+    Comment row, {
+    required _i5.ColumnSelections<CommentTable> conflictColumns,
+    _i5.ColumnSelections<CommentTable>? updateColumns,
+    _i5.WhereExpressionBuilder<CommentTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Comment>(
+      row,
+      conflictColumns: conflictColumns(Comment.t),
+      updateColumns: updateColumns?.call(Comment.t),
+      conflictWhere: conflictWhere?.call(Comment.t),
       transaction: transaction,
     );
   }

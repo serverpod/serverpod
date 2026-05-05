@@ -16,6 +16,7 @@ import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/city.dart' as _i3;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
 import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod/serverpod.dart' as _i6;
 
 abstract class Organization implements _i1.TableRow<int?> {
   Organization._({
@@ -473,6 +474,55 @@ class OrganizationRepository {
   }) async {
     return session.db.insertRow<Organization>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Organization]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Organization]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Organization>> upsert(
+    _i1.DatabaseSession session,
+    List<Organization> rows, {
+    required _i6.ColumnSelections<OrganizationTable> conflictColumns,
+    _i6.ColumnSelections<OrganizationTable>? updateColumns,
+    _i6.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Organization>(
+      rows,
+      conflictColumns: conflictColumns(Organization.t),
+      updateColumns: updateColumns?.call(Organization.t),
+      conflictWhere: conflictWhere?.call(Organization.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Organization] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Organization] will have its `id` field set.
+  Future<Organization> upsertRow(
+    _i1.DatabaseSession session,
+    Organization row, {
+    required _i6.ColumnSelections<OrganizationTable> conflictColumns,
+    _i6.ColumnSelections<OrganizationTable>? updateColumns,
+    _i6.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i6.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Organization>(
+      row,
+      conflictColumns: conflictColumns(Organization.t),
+      updateColumns: updateColumns?.call(Organization.t),
+      conflictWhere: conflictWhere?.call(Organization.t),
       transaction: transaction,
     );
   }

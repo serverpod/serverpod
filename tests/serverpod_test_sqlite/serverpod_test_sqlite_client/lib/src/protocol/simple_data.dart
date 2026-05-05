@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _i3;
 
 /// Just some simple data.
 abstract class SimpleData implements _i1.TableRow<int?> {
@@ -327,6 +328,55 @@ class SimpleDataRepository {
   }) async {
     return session.db.insertRow<SimpleData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [SimpleData]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SimpleData>> upsert(
+    _i1.DatabaseSession session,
+    List<SimpleData> rows, {
+    required _i3.ColumnSelections<SimpleDataTable> conflictColumns,
+    _i3.ColumnSelections<SimpleDataTable>? updateColumns,
+    _i3.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SimpleData>(
+      rows,
+      conflictColumns: conflictColumns(SimpleData.t),
+      updateColumns: updateColumns?.call(SimpleData.t),
+      conflictWhere: conflictWhere?.call(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SimpleData] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleData] will have its `id` field set.
+  Future<SimpleData> upsertRow(
+    _i1.DatabaseSession session,
+    SimpleData row, {
+    required _i3.ColumnSelections<SimpleDataTable> conflictColumns,
+    _i3.ColumnSelections<SimpleDataTable>? updateColumns,
+    _i3.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SimpleData>(
+      row,
+      conflictColumns: conflictColumns(SimpleData.t),
+      updateColumns: updateColumns?.call(SimpleData.t),
+      conflictWhere: conflictWhere?.call(SimpleData.t),
       transaction: transaction,
     );
   }

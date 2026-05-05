@@ -16,6 +16,7 @@ import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Book implements _i1.TableRow<int?> {
   Book._({
@@ -404,6 +405,55 @@ class BookRepository {
   }) async {
     return session.db.insertRow<Book>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Book]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Book]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Book>> upsert(
+    _i1.DatabaseSession session,
+    List<Book> rows, {
+    required _i5.ColumnSelections<BookTable> conflictColumns,
+    _i5.ColumnSelections<BookTable>? updateColumns,
+    _i5.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Book>(
+      rows,
+      conflictColumns: conflictColumns(Book.t),
+      updateColumns: updateColumns?.call(Book.t),
+      conflictWhere: conflictWhere?.call(Book.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Book] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Book] will have its `id` field set.
+  Future<Book> upsertRow(
+    _i1.DatabaseSession session,
+    Book row, {
+    required _i5.ColumnSelections<BookTable> conflictColumns,
+    _i5.ColumnSelections<BookTable>? updateColumns,
+    _i5.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Book>(
+      row,
+      conflictColumns: conflictColumns(Book.t),
+      updateColumns: updateColumns?.call(Book.t),
+      conflictWhere: conflictWhere?.call(Book.t),
       transaction: transaction,
     );
   }

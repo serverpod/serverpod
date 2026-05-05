@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _i3;
 
 abstract class Chapter implements _i1.TableRow<int?> {
   Chapter._({
@@ -370,6 +371,55 @@ class ChapterRepository {
   }) async {
     return session.db.insertRow<Chapter>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Chapter]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Chapter]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Chapter>> upsert(
+    _i1.DatabaseSession session,
+    List<Chapter> rows, {
+    required _i3.ColumnSelections<ChapterTable> conflictColumns,
+    _i3.ColumnSelections<ChapterTable>? updateColumns,
+    _i3.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Chapter>(
+      rows,
+      conflictColumns: conflictColumns(Chapter.t),
+      updateColumns: updateColumns?.call(Chapter.t),
+      conflictWhere: conflictWhere?.call(Chapter.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Chapter] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Chapter] will have its `id` field set.
+  Future<Chapter> upsertRow(
+    _i1.DatabaseSession session,
+    Chapter row, {
+    required _i3.ColumnSelections<ChapterTable> conflictColumns,
+    _i3.ColumnSelections<ChapterTable>? updateColumns,
+    _i3.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i3.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Chapter>(
+      row,
+      conflictColumns: conflictColumns(Chapter.t),
+      updateColumns: updateColumns?.call(Chapter.t),
+      conflictWhere: conflictWhere?.call(Chapter.t),
       transaction: transaction,
     );
   }

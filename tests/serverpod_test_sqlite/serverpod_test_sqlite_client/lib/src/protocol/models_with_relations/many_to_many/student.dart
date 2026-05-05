@@ -15,6 +15,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 import 'package:serverpod_client/serverpod_client.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _i5;
 
 abstract class Student implements _i1.TableRow<int?> {
   Student._({
@@ -399,6 +400,55 @@ class StudentRepository {
   }) async {
     return session.db.insertRow<Student>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Student]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Student]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Student>> upsert(
+    _i1.DatabaseSession session,
+    List<Student> rows, {
+    required _i5.ColumnSelections<StudentTable> conflictColumns,
+    _i5.ColumnSelections<StudentTable>? updateColumns,
+    _i5.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Student>(
+      rows,
+      conflictColumns: conflictColumns(Student.t),
+      updateColumns: updateColumns?.call(Student.t),
+      conflictWhere: conflictWhere?.call(Student.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Student] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Student] will have its `id` field set.
+  Future<Student> upsertRow(
+    _i1.DatabaseSession session,
+    Student row, {
+    required _i5.ColumnSelections<StudentTable> conflictColumns,
+    _i5.ColumnSelections<StudentTable>? updateColumns,
+    _i5.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i5.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Student>(
+      row,
+      conflictColumns: conflictColumns(Student.t),
+      updateColumns: updateColumns?.call(Student.t),
+      conflictWhere: conflictWhere?.call(Student.t),
       transaction: transaction,
     );
   }
