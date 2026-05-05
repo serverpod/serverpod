@@ -204,9 +204,8 @@ class MainScreen extends StatelessComponent {
   Component _buildButtonBar(ServerpodThemeData theme) {
     final state = holder.state;
     final creatingProject = state.creatingProject;
-    return Row(
-      children: [
-        const SizedBox(width: 1),
+    return ButtonBar(
+      buttons: [
         Button(
           name: 'Create Project',
           activationChar: 'Enter',
@@ -218,8 +217,6 @@ class MainScreen extends StatelessComponent {
             onCreate.call();
           },
         ),
-        const SizedBox(width: 2),
-
         Button(
           name: 'Navigate Options',
           activationChar: '↑↓',
@@ -247,7 +244,6 @@ class MainScreen extends StatelessComponent {
             holder.markDirty();
           },
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Select Option',
           activationChar: '←→',
@@ -265,7 +261,6 @@ class MainScreen extends StatelessComponent {
             holder.markDirty();
           },
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Help',
           activationChar: 'H',
@@ -274,7 +269,6 @@ class MainScreen extends StatelessComponent {
             onToggleHelp.call();
           },
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Quit',
           activationChar: 'Q',

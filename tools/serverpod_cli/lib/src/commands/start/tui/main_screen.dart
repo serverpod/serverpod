@@ -174,9 +174,8 @@ class MainScreen extends StatelessComponent {
   Component _buildButtonBar() {
     final actionsEnabled = state.serverReady && !state.actionBusy;
 
-    return Row(
-      children: [
-        const SizedBox(width: 1),
+    return ButtonBar(
+      buttons: [
         Button(
           name: 'Hot Reload',
           activationChar: 'R',
@@ -186,7 +185,6 @@ class MainScreen extends StatelessComponent {
           },
           enabled: actionsEnabled && onHotReload != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Create Migration',
           activationChar: 'M',
@@ -196,7 +194,6 @@ class MainScreen extends StatelessComponent {
           },
           enabled: actionsEnabled && onCreateMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Apply Migration',
           activationChar: 'A',
@@ -206,7 +203,6 @@ class MainScreen extends StatelessComponent {
           },
           enabled: actionsEnabled && onApplyMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Help',
           activationChar: 'H',
@@ -216,7 +212,6 @@ class MainScreen extends StatelessComponent {
           },
           enabled: onToggleHelp != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Quit',
           activationChar: 'Q',
