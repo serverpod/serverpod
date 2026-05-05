@@ -138,24 +138,7 @@ pod.configureAppleIdpRoutes(
 );
 ```
 
-## 4. Migrations
-
-```bash
-# Create models, database bindings, and generate code
-serverpod generate
-```
-
-```bash
-# Create migration
-serverpod create-migration
-```
-
-```bash
-# Apply migration and start server locally
-serverpod start
-```
-
-## 5. Flutter client setup
+## 4. Flutter client setup
 
 ```dart
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -168,7 +151,7 @@ client = Client(serverUrl)
 await client.auth.initialize();
 ```
 
-## 6. Sign-in UI
+## 5. Sign-in UI
 
 Minimal `sign_in_screen.dart`:
 

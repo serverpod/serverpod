@@ -5,29 +5,21 @@ description: Upgrade Serverpod — minor/patch updates, major upgrade to v3, pub
 
 # Serverpod Upgrading
 
-## Minor/patch upgrades
+Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
 Use the same pinned Serverpod version across all packages.
 
-1. **Update CLI:** `dart pub global activate serverpod_cli`
-2. **Update pubspecs** in every package:
-   - Server: `serverpod`, `serverpod_test` (dev), module server packages
-   - Client: `serverpod_client`, module client packages
-   - Flutter: `serverpod_flutter`, module Flutter packages
-3. **Fetch and regenerate:** `dart pub upgrade` + `serverpod generate` from server directory (or `serverpod generate -d <server-package>` in workspaces)
-4. **Migrations (if needed):** `serverpod create-migration` + `dart run bin/main.dart --apply-migrations`
+1. Update the CLI to the latest version: `dart install serverpod_cli`
+2. Run `serverpod version` to get the updated Serverpod version.
+4. Update all Serverpod packages in all pubspecs to the Serverpod version.
+5. Run `dart pub upgrade` + `serverpod generate` from the server directory.
+6. Follow the [migration workflow](../serverpod-migrations/SKILL.md).
+
+Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
 
 ## Major upgrade: to Serverpod 3.0
 
-Requirements: Dart 3.10.3+, Flutter 3.38.4+.
-
-### Steps
-
-1. Update CLI: `dart pub global activate serverpod_cli`
-2. Update all pubspecs to `3.0.0`+ and SDK constraint: `sdk: '>=3.10.3 <4.0.0'`
-3. Update Dockerfile: `FROM dart:3.10.3 AS build`
-4. `dart pub upgrade` + `serverpod generate`
-5. Create and apply migration (session log user ID changed to String)
+After following the regular upgrade process, ensure that the following breaking changes are addressed.
 
 ### Breaking changes
 
@@ -59,4 +51,4 @@ Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
 ## Mini to full Serverpod
 
-From server directory: `serverpod create .` with the default/server template — adds full config and structure. Do not pass `--mini` for this upgrade path. Back up first. Then add DB config, generate, create migration, apply.
+From server directory: `serverpod create .` with the default/server template — adds full config and structure. Do not pass `--mini` for this upgrade path. Back up first. Then add database configuration and follow the [migration workflow](../serverpod-migrations/SKILL.md).

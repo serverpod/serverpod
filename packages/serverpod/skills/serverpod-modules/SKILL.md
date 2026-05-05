@@ -17,7 +17,7 @@ modules:
     nickname: auth
 ```
 
-Then `dart pub get`, `serverpod generate`. If the module adds tables and database generation is enabled: `serverpod create-migration` and apply (start server with `--apply-migrations`).
+Then `dart pub get`, `serverpod generate`. If the module adds tables and database generation is enabled, follow [`../serverpod-migrations/SKILL.md`](../serverpod-migrations/SKILL.md).
 
 **Client:** Add module client package (e.g. `serverpod_auth_idp_client: <serverpod-version>`).
 

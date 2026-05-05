@@ -1,6 +1,6 @@
 ---
 name: serverpod-database
-description: Serverpod ORM with PostgreSQL or SQLite — CRUD, filters, sorting, pagination, relations, migrations, transactions, raw SQL, client-side database. Use when querying the database or working with relations. Also include serverpod-models skill if you need to change models and serverpod-migration skill if you need to create/apply migrations.
+description: Serverpod ORM with PostgreSQL or SQLite — CRUD, filters, sorting, pagination, relations, transactions, raw SQL, client-side database. Use when querying the database or working with relations.
 ---
 
 # Serverpod Database
@@ -97,12 +97,6 @@ On SQLite, trying to lock rows will be a no-op, since it only supports one write
 ## Runtime parameters
 
 Set Postgres params globally: `runtimeParametersBuilder: (params) => [params.searchPaths(['my_schema', 'public'])]` at Serverpod init. Per-transaction: `await tx.setRuntimeParameters(...)`. Use for search path, vector index options, or custom `MapRuntimeParameters`. Cannot set at session level due to connection pooling.
-
-## Migrations
-
-After changing models with `table`/indexes: call the `create-migration` MCP tool. If the MCP tool is not available, run `serverpod create-migration` from the command line.
-
-**Repair migrations:** If DB was changed outside migrations: `serverpod create-repair-migration` (options: `--mode production`, `--version <name>`, `--force`, `--tag`). Apply: `--apply-repair-migration`. Runs before normal migrations.
 
 ## Raw SQL
 

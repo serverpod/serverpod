@@ -5,7 +5,9 @@ description: Define Serverpod data models in YAML (.spy.yaml), serialization, da
 
 # Serverpod Models
 
-Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables. Run `serverpod generate` after changes.
+Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables.
+
+After each change to models, ensure that the code is generated (automatically when a `serverpod start` is running or manually with `serverpod generate`). If models with `table` have changed, the database schema must be updated following the [migration workflow](../serverpod-migrations/SKILL.md).
 
 ## Basic class
 
@@ -39,8 +41,6 @@ fields:
   name: String
   foundedDate: DateTime?
 ```
-
-Run `serverpod create-migration` after schema changes, start server with `--apply-migrations`. Skip migrations if database generation is disabled (`features.database: false`) or the project is Serverpod Mini.
 
 ## Scope
 
@@ -126,12 +126,6 @@ indexes:
 **Many-to-many:** Use a join table model with two relation fields.
 
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
-
-## Workflow
-
-1. Add/edit `.spy.yaml` under server `lib/`
-2. `serverpod generate`
-3. If table/index changed: `serverpod create-migration`, start server with `--apply-migrations`
 
 ## Client-side database
 
