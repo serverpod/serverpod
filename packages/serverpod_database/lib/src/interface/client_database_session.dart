@@ -37,7 +37,8 @@ class ClientDatabaseSession implements DatabaseSession {
     final poolManager = SqlitePoolManager(
       serializationManager,
       SqliteDatabaseConfig(filePath: path),
-    )..start();
+    );
+    await poolManager.start();
     final session = ClientDatabaseSession._(poolManager);
     if (runMigrations) {
       await session._runMigrations(

@@ -606,7 +606,18 @@ class Serverpod {
       // This is required because other operations in Serverpod assumes that
       // the database is connected when the Serverpod is created
       // (such as createSession(...)).
-      _databasePoolManager?.start();
+      //
+      // The constructor is sync, so we can't await `start()` here. Attach
+      // a swallowing error handler so a failed eager start doesn't surface
+      // as an unhandled async error; the same `start()` is awaited inside
+      // `_unguardedStart` (it is idempotent), which surfaces the failure
+      // to the awaited caller.
+      unawaited(
+        _databasePoolManager?.start().catchError(
+              (Object _, StackTrace _) {},
+            ) ??
+            Future.value(),
+      );
     }
 
     if (Features.enableDatabase) {
@@ -763,7 +774,7 @@ class Serverpod {
 
     // It is important that we start the database pool manager before
     // attempting to connect to the database.
-    _databasePoolManager?.start();
+    await _databasePoolManager?.start();
 
     if (Features.enableMigrations) {
       int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;

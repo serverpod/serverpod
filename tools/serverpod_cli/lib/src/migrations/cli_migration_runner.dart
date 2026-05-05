@@ -34,7 +34,7 @@ Future<List<String>> applyPendingMigrations({
   final pool = DatabaseProvider.forDialect(
     dbConfig.dialect,
   ).createPoolManager(_CliSerializationManager(moduleName), null, dbConfig);
-  pool.start();
+  await pool.start();
 
   try {
     // Session and Database have a circular construction dependency:

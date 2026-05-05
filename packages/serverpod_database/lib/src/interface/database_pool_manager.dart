@@ -20,7 +20,7 @@ abstract interface class DatabasePoolManager {
   ValueEncoder get encoder;
 
   /// Starts the database pool.
-  void start();
+  Future<void> start();
 
   /// Closes the database pool.
   Future<void> stop();

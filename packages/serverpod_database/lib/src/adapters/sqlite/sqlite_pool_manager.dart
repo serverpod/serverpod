@@ -54,15 +54,20 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Starts the database connection.
   @override
-  void start() {
-    _db ??= SqliteDatabase(
+  Future<void> start() async {
+    if (_db != null) return;
+    final db = SqliteDatabase(
       path: config.filePath,
       // This will only be available from 0.14 onwards.
       // options: SqliteOptions(
       //   maxReaders:
       //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
       // ),
-    )..execute('PRAGMA foreign_keys = ON');
+    );
+    await db.execute('PRAGMA foreign_keys = ON');
+    // Assign after the await so a failed start leaves _db null and the
+    // caller can retry.
+    _db = db;
   }
 
   /// Closes the database.

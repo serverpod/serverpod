@@ -82,7 +82,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   @override
-  void start() {
+  Future<void> start() async {
     // Setup database connection pool
     _pgPool ??= pg.Pool.withEndpoints(
       [
