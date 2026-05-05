@@ -726,25 +726,38 @@ Future<int> _runWithTui({
   // Shared shutdown signal
   final shutdown = _ShutdownSignal(listenForSignals: false);
 
+  // Captured so the renderer tear-down listener can wait for the
+  // backend's cleanup (ctx.dispose) to finish before calling
+  // shutdownApp. Default to a no-op so the listener is safe to invoke
+  // even if SIGINT arrives before onReady fires.
+  Future<void> backendFuture = Future.value();
+
   void onReady(StartAppStateHolder h) {
     if (backendStarted) return;
     backendStarted = true;
 
-    _runTuiBackend(
-      holder: h,
-      commandConfig: commandConfig,
-      watch: watch,
-      serverArgs: serverArgs,
-      interactive: interactive,
-      shutdown: shutdown,
-    ).catchError((Object e, StackTrace st) {
-      log.error('Fatal error: $e', stackTrace: st);
-      shutdown.complete(1);
-    });
+    backendFuture =
+        _runTuiBackend(
+          holder: h,
+          commandConfig: commandConfig,
+          watch: watch,
+          serverArgs: serverArgs,
+          interactive: interactive,
+          shutdown: shutdown,
+        ).catchError((Object e, StackTrace st) {
+          // Show the error in the TUI.
+          // The TUI stays open until Ctrl-C / Quit completes shutdown.
+          log.error('Fatal error: $e', stackTrace: st);
+        });
   }
 
-  // Single tear-down point for the nocterm renderer.
-  unawaited(shutdown.future.then(shutdownApp));
+  // Wait for the backend's dispose to finish before calling shutdownApp
+  unawaited(
+    shutdown.future.then((code) async {
+      await backendFuture;
+      shutdownApp(code);
+    }),
+  );
 
   await runServerpodApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
