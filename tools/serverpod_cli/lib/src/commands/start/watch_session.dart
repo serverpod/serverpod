@@ -82,12 +82,10 @@ sealed class ApplyMigrationsOutcome {
   const ApplyMigrationsOutcome();
 }
 
-/// Migrations were applied in-process.
-///
-/// [versions] are the versions just applied (empty when nothing was pending).
+/// Migrations were applied in-process. The action is responsible for
+/// any user-facing logging (e.g. via [formatAppliedMigrations]).
 class MigrationsApplied extends ApplyMigrationsOutcome {
-  final List<String> versions;
-  const MigrationsApplied(this.versions);
+  const MigrationsApplied();
 }
 
 /// In-process apply was skipped. Session must restart pod to apply migrations.
@@ -449,8 +447,8 @@ class WatchSession {
       try {
         final outcome = await _applyMigrationsAction();
         switch (outcome) {
-          case MigrationsApplied(:final versions):
-            log.info(formatAppliedMigrations(versions));
+          case MigrationsApplied():
+            break;
           case MigrationsRequirePodRestart():
             await _restartServer(_compiler?.outputDill);
         }
@@ -497,12 +495,14 @@ class WatchSession {
     }
   }
 
-  /// Disposes the session: stops server and disposes compiler.
+  /// Disposes the session: stops server and disposes compiler. After
+  /// this returns, [done] is guaranteed to be completed.
   Future<void> dispose() async {
     _state = SessionState.disposed;
     await _vmServiceUriChangesController.close();
-    await _server.stop();
+    final code = await _server.stop();
     await _compiler?.dispose();
+    if (!_done.isCompleted) _done.complete(code);
   }
 
   void _monitorExit(ServerProcess server) {

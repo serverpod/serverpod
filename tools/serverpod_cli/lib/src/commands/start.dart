@@ -19,12 +19,12 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
-import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -164,42 +164,33 @@ class StartCommand extends ServerpodCommand<StartOption> {
     // cleanup) rather than killing the process.
     final shutdown = _ShutdownSignal();
 
-    // Start Docker Compose services if needed.
-    var startedDocker = false;
-    if (docker) {
-      await log.progress('Starting Docker services', () async {
-        startedDocker = await _ensureDockerServices(serverDir);
-        return true;
-      });
-    }
-
     try {
-      // If a signal arrived during Docker startup, skip starting the server.
-      if (shutdown.isShutdown) return;
+      // Extract passthrough args (everything after '--'). _setupWatchLoop
+      // mutates the ref's value if the in-process migration apply has
+      // to defer to the pod's `--apply-migrations`.
+      final serverArgs = ServerArgsRef(argResults?.rest ?? []);
 
-      // Extract passthrough args (everything after '--').
-      var serverArgs = argResults?.rest ?? [];
-
-      final deferToPod = await _applyMigrationsOnBoot(
-        serverDir: serverDir,
-        runMode: runModeFromServerArgs(serverArgs),
-        moduleName: config.name,
-      );
-      if (deferToPod) serverArgs = _withApplyMigrations(serverArgs);
-
-      final exitCode = await _runSession(
+      final result = await _setupWatchLoop(
         config: config,
         serverDir: serverDir,
         serverArgs: serverArgs,
-        shutdownSignal: shutdown.future,
         watch: watch,
+        docker: docker,
+        shutdown: shutdown,
       );
-      if (exitCode != 0) throw ExitException(exitCode);
+      switch (result) {
+        case WatchLoopAborted(:final exitCode):
+          if (exitCode != 0) throw ExitException(exitCode);
+          return;
+        case WatchLoopReady(:final ctx):
+          if (ctx.session.isRunning) log.info(serverRunning);
+          final exitCode = await shutdown.future;
+          log.info('Server stopped (exitCode: $exitCode).');
+          await ctx.dispose();
+          if (exitCode != 0) throw ExitException(exitCode);
+      }
     } finally {
       shutdown.dispose();
-      if (startedDocker) {
-        await _stopDockerServices(serverDir);
-      }
     }
   }
 }
@@ -346,7 +337,8 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
       runMode: runMode,
       moduleName: moduleName,
     );
-    return MigrationsApplied(applied);
+    log.info(formatAppliedMigrations(applied));
+    return const MigrationsApplied();
   } catch (e) {
     if (!isMissingNativeAssetError(e)) rethrow;
     onDeferToPod();
@@ -354,46 +346,69 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   }
 }
 
-/// Runs the entire watch-mode loop.
-///
-/// Analyzers are created once and updated incrementally on each file change,
-/// avoiding the cost of re-initializing them from scratch every time.
-Future<int> _runSession({
+/// Runs the unified watch-loop setup shared by the TUI and non-TUI flows.
+Future<WatchLoopSetupResult> _setupWatchLoop({
   required GeneratorConfig config,
   required String serverDir,
-  required List<String> serverArgs,
-  required Future<int> shutdownSignal,
+  required ServerArgsRef serverArgs,
   required bool watch,
+  required bool docker,
+  required _ShutdownSignal shutdown,
+  IOSink? serverStdoutSink,
+  IOSink? serverStderrSink,
+  Future<void> Function(ServerProcess server)? onServerStart,
+  List<Object> Function()? mcpGetLogHistory,
 }) async {
-  log.info(
-    watch ? 'Starting server in watch mode...' : 'Starting server...',
-  );
+  log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
   final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
+  // The pod always writes its raw VM service URI to a separate file; the
+  // user-facing vm-service-info.json receives the proxy URI written by
+  // _mountOrRetargetProxy.
+  final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  // If a server is already running, no-op so the IDE can attach to the
-  // existing instance via the unchanged info file. Stale files are cleaned
-  // up by _checkExistingServer.
+  // Start Docker Compose services if needed.
+  var startedDocker = false;
+  if (docker) {
+    await log.progress('Starting Docker services', () async {
+      startedDocker = await _ensureDockerServices(serverDir);
+      return true;
+    });
+  }
+
+  Future<void> stopDockerIfStarted() async {
+    if (startedDocker) await _stopDockerServices(serverDir);
+  }
+
+  // If a server is already running, abort so the IDE can attach to the
+  // existing instance via the unchanged info file.
   final existingUri = await _checkExistingServer(vmServiceInfoFile);
   if (existingUri != null) {
     log.info('Existing server found.');
     log.info('VM service proxy listening on $existingUri');
-    log.info('Server running.');
-    return 0;
+    await stopDockerIfStarted();
+    return const WatchLoopAborted(0);
   }
 
-  // Start analyzer initialization in the background.
-  final analyzersFuture = Analyzers.createAndUpdate(config);
+  // Apply pending migrations from the CLI before booting the pod.
+  try {
+    final deferToPod = await _applyMigrationsOnBoot(
+      serverDir: serverDir,
+      runMode: runModeFromServerArgs(serverArgs.value),
+      moduleName: config.name,
+    );
+    if (deferToPod) serverArgs.value = _withApplyMigrations(serverArgs.value);
+  } catch (_) {
+    await stopDockerIfStarted();
+    rethrow;
+  }
 
-  // Ensure generated code is up to date (runs concurrently with analyzers).
+  final analyzers = await IsolatedAnalyzers.create(config);
+
+  // Code generation staleness check.
   final allSources = await enumerateSourceFiles(config);
   if (!await isGenerationUpToDate(config, allSources)) {
-    late final Analyzers analyzers;
-    await log.progress('Initializing analyzers', () async {
-      analyzers = await analyzersFuture;
-      return true;
-    });
     final genResult = await analyzeAndGenerate(
       analyzers: analyzers,
       config: config,
@@ -402,80 +417,17 @@ Future<int> _runSession({
     );
     if (!genResult.success) {
       log.error('Code generation failed.');
-      return 1;
+      await analyzers.close();
+      await stopDockerIfStarted();
+      return const WatchLoopAborted(1);
     }
   }
 
-  return _startSession(
-    config: config,
-    serverDir: serverDir,
-    serverArgs: serverArgs,
-    serverpodToolDir: serverpodToolDir,
-    vmServiceInfoFile: vmServiceInfoFile,
-    shutdownSignal: shutdownSignal,
-    watcher: watch
-        ? FileWatcher(
-            watchPaths: {
-              p.absolute(p.joinAll(config.libSourcePathParts)),
-              ...config.sharedModelsLibSourcePaths.map(p.absolute),
-              p.absolute(
-                p.joinAll([...config.clientPackagePathParts, 'lib']),
-              ),
-              p.absolute(
-                p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
-              ),
-            },
-          )
-        : null,
-    generatedDirPaths: config.generatedDirPaths,
-    generate: (affectedPaths, requirements) async {
-      final analyzers = await analyzersFuture;
-      return analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
-        requirements: requirements,
-      );
-    },
-  );
-}
-
-/// Sets up the server process, creates a [WatchSession], and runs until the
-/// server exits or a termination signal arrives.
-///
-/// When [watcher] is non-null, file change events are routed into the
-/// session for incremental reload and the Frontend Server pipeline is used
-/// for compilation. When `null`, the server is started with `dart run` and
-/// reloads against the running pod are routed through the VM's own kernel
-/// service via the vm-service proxy; manual reloads still work via the
-/// proxy / MCP / TUI buttons.
-Future<int> _startSession({
-  required GeneratorConfig config,
-  required String serverDir,
-  required List<String> serverArgs,
-  required String serverpodToolDir,
-  required String vmServiceInfoFile,
-  required Future<int> shutdownSignal,
-  required FileWatcher? watcher,
-  required Set<String> generatedDirPaths,
-  required GenerateAction generate,
-}) async {
-  final watch = watcher != null;
+  // FES setup (watch mode only).
   KernelCompiler? compiler;
   NativeAssetsBuilder? nativeAssetsBuilder;
-  late final ServerProcess initialServerProcess;
-  late final WatchSession session;
-  VmServiceProxy? proxy;
-
-  // The pod always writes its raw VM service URI to a separate file; the
-  // user-facing vm-service-info.json receives the proxy URI written by
-  // _mountOrRetargetProxy.
-  final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
-
   String? dartExecutable;
   if (watch) {
-    // Set up incremental compiler.
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
     final localCompiler = KernelCompiler(
@@ -489,7 +441,9 @@ Future<int> _startSession({
       dartExecutable: localCompiler.dartExecutable,
     );
     if (!await _runHooksFor(localBuilder, localCompiler)) {
-      return 1;
+      await analyzers.close();
+      await stopDockerIfStarted();
+      return const WatchLoopAborted(1);
     }
 
     await localCompiler.start();
@@ -502,7 +456,9 @@ Future<int> _startSession({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      return 1;
+      await analyzers.close();
+      await stopDockerIfStarted();
+      return const WatchLoopAborted(1);
     }
 
     compiler = localCompiler;
@@ -510,16 +466,23 @@ Future<int> _startSession({
     dartExecutable = localCompiler.dartExecutable;
   }
 
+  // Server process factory. Invoked for the initial start and for each
+  // subsequent restart driven by the WatchSession
+  late final WatchSession session;
+  VmServiceProxy? proxy;
   Future<ServerProcess> serverProcessFactory(String? dillPath) async {
     final serverProcess = ServerProcess(
       serverDir: serverDir,
-      serverArgs: serverArgs,
+      serverArgs: serverArgs.value,
       dartExecutable: dartExecutable,
       enableVmService: true,
       vmServiceInfoFile: podInfoFile,
+      stdoutSink: serverStdoutSink,
+      stderrSink: serverStderrSink,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();
+    if (onServerStart != null) await onServerStart(serverProcess);
     proxy = await _mountOrRetargetProxy(
       serverProcess: serverProcess,
       existing: proxy,
@@ -529,20 +492,30 @@ Future<int> _startSession({
     return serverProcess;
   }
 
+  late final ServerProcess initialServerProcess;
   await log.progress('Starting server', () async {
     final initialDill = watch ? p.join(serverpodToolDir, 'server.dill') : null;
     initialServerProcess = await serverProcessFactory(initialDill);
     return true;
   });
 
-  final runMode = runModeFromServerArgs(serverArgs);
+  // Construct the watch session.
+  final runMode = runModeFromServerArgs(serverArgs.value);
   session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
-    generate: generate,
+    generate: (affectedPaths, requirements) async {
+      return analyzeAndGenerate(
+        analyzers: analyzers,
+        config: config,
+        affectedPaths: affectedPaths,
+        skipStalenessCheck: true,
+        requirements: requirements,
+      );
+    },
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
-    generatedDirPaths: generatedDirPaths,
+    generatedDirPaths: config.generatedDirPaths,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -552,10 +525,14 @@ Future<int> _startSession({
           'Cannot apply migrations from the CLI.\n'
           'Falling back to restarting the pod with --apply-migrations.',
         );
-        serverArgs = _withApplyMigrations(serverArgs);
+        serverArgs.value = _withApplyMigrations(serverArgs.value);
       },
     ),
   );
+
+  // Forward server exit into the shutdown signal so the wait-for-exit
+  // point only ever has to await [shutdown.future]
+  unawaited(session.done.then(shutdown.complete));
 
   // Start MCP socket server for AI agent integration. Exposes the proxy
   // URI (not the pod's) so MCP-initiated reloads flow through the same
@@ -568,6 +545,7 @@ Future<int> _startSession({
       onCreateMigration: ({String? tag, bool force = false}) =>
           _createMigrationForMcp(config, tag: tag, force: force),
       onHotReload: session.forceReload,
+      getLogHistory: mcpGetLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
@@ -577,26 +555,35 @@ Future<int> _startSession({
     mcpSocket = null;
   }
 
-  final fileChangeSub = watcher?.onFilesChanged
-      .asyncMapBuffer(
-        (events) => session.handleFileChange(events.merge()),
-      )
-      .listen((_) {});
+  // File watcher (watch mode only).
+  StreamSubscription<void>? fileChangeSub;
+  if (watch) {
+    final watcher = FileWatcher(
+      watchPaths: {
+        p.absolute(p.joinAll(config.libSourcePathParts)),
+        ...config.sharedModelsLibSourcePaths.map(p.absolute),
+        p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
+        p.absolute(
+          p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
+        ),
+      },
+    );
+    fileChangeSub = watcher.onFilesChanged
+        .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
+        .listen((_) {});
+  }
 
-  if (session.isRunning) log.info(serverRunning);
-
-  final exitCode = await Future.any([shutdownSignal, session.done]);
-
-  log.info('Server stopped (exitCode: $exitCode).');
-
-  // Clean up.
-  await fileChangeSub?.cancel();
-  await mcpSocket?.close();
-  await session.dispose();
-  await proxy?.close();
-  await File(vmServiceInfoFile).deleteIfExists();
-
-  return exitCode;
+  return WatchLoopReady(
+    WatchLoopContext(
+      session: session,
+      proxy: proxy,
+      mcpSocket: mcpSocket,
+      fileChangeSub: fileChangeSub,
+      closeAnalyzers: analyzers.close,
+      stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
+      vmServiceInfoFile: vmServiceInfoFile,
+    ),
+  );
 }
 
 /// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
@@ -648,35 +635,48 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   return proxy;
 }
 
-/// Listens for SIGINT/SIGTERM and exposes a [future] that completes when
-/// a termination signal is received.
+/// One-shot exit signal shared between the orchestrator, the
+/// presentation layer, and `_setupWatchLoop`.
 ///
-/// Call [dispose] to cancel the signal subscriptions.
+/// When [listenForSignals] is true (the default for non-TUI), SIGINT and
+/// SIGTERM complete [future] with 0. The TUI passes `false` because
+/// `runServerpodApp` already owns the signal subscriptions and forwards
+/// them via its own callback. Either way, callers can [complete] the
+/// signal directly (e.g. when the server crashes or the Quit button is
+/// pressed) so the wait-for-exit point only ever has to await [future].
+///
+/// Call [dispose] to cancel the signal subscriptions, if any.
 class _ShutdownSignal {
   final Completer<int> _completer = Completer<int>();
-  late final StreamSubscription<void> _sigintSub;
-  late final StreamSubscription<void>? _sigtermSub;
+  StreamSubscription<void>? _sigintSub;
+  StreamSubscription<void>? _sigtermSub;
 
-  _ShutdownSignal() {
-    _sigintSub = ProcessSignal.sigint.watch().listen(_complete);
+  _ShutdownSignal({bool listenForSignals = true}) {
+    if (!listenForSignals) return;
+    _sigintSub = ProcessSignal.sigint.watch().listen(_completeFromSignal);
     if (!Platform.isWindows) {
-      _sigtermSub = ProcessSignal.sigterm.watch().listen(_complete);
+      _sigtermSub = ProcessSignal.sigterm.watch().listen(_completeFromSignal);
     }
   }
 
-  void _complete(ProcessSignal _) {
-    if (!_completer.isCompleted) _completer.complete(0);
+  void _completeFromSignal(ProcessSignal _) => complete(0);
+
+  /// Completes [future] with [code] if it isn't completed yet; no-op
+  /// otherwise. Safe to call from multiple paths (signal handlers, the
+  /// Quit button, server-exit forwarders).
+  void complete([int code = 0]) {
+    if (!_completer.isCompleted) _completer.complete(code);
   }
 
-  /// Whether a termination signal has been received.
+  /// Whether shutdown has been requested.
   bool get isShutdown => _completer.isCompleted;
 
-  /// Completes with 0 when a termination signal is received.
+  /// Completes with the requested exit code.
   Future<int> get future => _completer.future;
 
   /// Cancels the signal subscriptions.
   void dispose() {
-    _sigintSub.cancel();
+    _sigintSub?.cancel();
     _sigtermSub?.cancel();
   }
 }
@@ -721,8 +721,10 @@ Future<int> _runWithTui({
   required bool? interactive,
 }) async {
   final holder = StartAppStateHolder(ServerWatchState());
-  var exitCode = 0;
   var backendStarted = false;
+
+  // Shared shutdown signal
+  final shutdown = _ShutdownSignal(listenForSignals: false);
 
   void onReady(StartAppStateHolder h) {
     if (backendStarted) return;
@@ -734,17 +736,24 @@ Future<int> _runWithTui({
       watch: watch,
       serverArgs: serverArgs,
       interactive: interactive,
-      onExitCode: (code) => exitCode = code,
+      shutdown: shutdown,
     ).catchError((Object e, StackTrace st) {
       log.error('Fatal error: $e', stackTrace: st);
-      exitCode = 1;
+      shutdown.complete(1);
     });
   }
 
-  // Block on the TUI.
-  await runServerpodApp(ServerpodWatchApp(holder: holder, onReady: onReady));
+  // Single tear-down point for the nocterm renderer.
+  unawaited(shutdown.future.then(shutdownApp));
 
-  return exitCode;
+  await runServerpodApp(
+    ServerpodWatchApp(holder: holder, onReady: onReady),
+    onShutdownSignal: () => shutdown.complete(0),
+  );
+
+  // runServerpodApp returned, so shutdownApp ran, so the listener fired,
+  // so shutdown.future is completed.
+  return shutdown.future;
 }
 
 /// Backend logic that runs after the TUI is mounted and ready.
@@ -754,12 +763,11 @@ Future<void> _runTuiBackend({
   required bool watch,
   required List<String> serverArgs,
   required bool? interactive,
-  required void Function(int) onExitCode,
+  required _ShutdownSignal shutdown,
 }) async {
-  final tuiWriter = TuiLogWriter();
-
   try {
     // Replace the CLI logger with a TUI-backed logger.
+    final tuiWriter = TuiLogWriter();
     initializeLoggerWith(ServerpodCliLogger(tuiWriter));
     tuiWriter.attach(holder);
 
@@ -776,277 +784,76 @@ Future<void> _runTuiBackend({
     });
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-
-    // Start Docker Compose services if needed.
     final docker = commandConfig.value(StartOption.docker);
-    var startedDocker = false;
-    if (docker) {
-      await log.progress('Starting Docker services', () async {
-        startedDocker = await _ensureDockerServices(serverDir);
-        return true;
-      });
-    }
 
-    final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
-    final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
-    final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+    final argsRef = ServerArgsRef(serverArgs);
 
-    // If a server is already running, exit cleanly so the IDE can attach
-    // to the existing instance via the unchanged info file. Stale files
-    // are cleaned up by _checkExistingServer.
-    final existingUri = await _checkExistingServer(vmServiceInfoFile);
-    if (existingUri != null) {
-      log.info('Existing server found.');
-      log.info('VM service proxy listening on $existingUri');
-      onExitCode(0);
-      shutdownApp(0);
-      return;
-    }
-
-    final deferToPod = await _applyMigrationsOnBoot(
-      serverDir: serverDir,
-      runMode: runModeFromServerArgs(serverArgs),
-      moduleName: config.name,
-    );
-    if (deferToPod) serverArgs = _withApplyMigrations(serverArgs);
-
-    // Start analyzer initialization on a worker isolate in the background.
-    final analyzersFuture = IsolatedAnalyzers.create(config);
-
-    // Code generation (staleness check runs concurrently with analyzers).
-    final allSources = await enumerateSourceFiles(config);
-    if (!await isGenerationUpToDate(config, allSources)) {
-      late final IsolatedAnalyzers analyzers;
-      await log.progress('Initializing analyzers', () async {
-        analyzers = await analyzersFuture;
-        return true;
-      });
-      final genResult = await analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: allSources,
-        requirements: GenerationRequirements.full,
-      );
-      if (!genResult.success) {
-        log.error('Code generation failed.');
-        await (await analyzersFuture).close();
-        onExitCode(1);
-        shutdownApp(1);
-        return;
-      }
-    }
-
-    // Compilation (FES mode only).
-    KernelCompiler? compiler;
-    NativeAssetsBuilder? nativeAssetsBuilder;
-    String? dartExecutable;
-    if (watch) {
-      final entryPoint = p.join(serverDir, 'bin', 'main.dart');
-      final initialDill = p.join(serverpodToolDir, 'server.dill');
-      final localCompiler = KernelCompiler(
-        entryPoint: entryPoint,
-        outputDill: initialDill,
-      );
-
-      final localBuilder = _createNativeAssetsBuilder(
-        serverDir: serverDir,
-        serverpodToolDir: serverpodToolDir,
-        dartExecutable: localCompiler.dartExecutable,
-      );
-      if (!await _runHooksFor(localBuilder, localCompiler)) {
-        onExitCode(1);
-        return;
-      }
-
-      await localCompiler.start();
-
-      if (!await localCompiler.compileIfNeeded(
-        config.watchPaths(includeWeb: true, includeClientPackage: true),
-      )) {
-        await localCompiler.dispose();
-        log.error('Initial compilation failed.');
-        onExitCode(1);
-        shutdownApp(1);
-        return;
-      }
-
-      compiler = localCompiler;
-      nativeAssetsBuilder = localBuilder;
-      dartExecutable = localCompiler.dartExecutable;
-    }
-
-    // Create TUI log sinks for server output.
     final stdoutSink = TuiLogSink(holder);
     final stderrSink = TuiLogSink(holder);
 
-    late final WatchSession session;
-    VmServiceProxy? proxy;
-
-    // Server process factory. Subscribes to VM service extension events
-    // on each new server process so restarts pick up the new connection.
-    Future<ServerProcess> serverProcessFactory(String? dillPath) async {
-      final serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        dartExecutable: dartExecutable,
-        enableVmService: true,
-        vmServiceInfoFile: podInfoFile,
-        stdoutSink: stdoutSink,
-        stderrSink: stderrSink,
-      );
-      await serverProcess.start(dillPath: dillPath);
-      await serverProcess.connectToVmService();
-
-      final vmService = serverProcess.vmService;
-      if (vmService != null) {
+    final result = await _setupWatchLoop(
+      config: config,
+      serverDir: serverDir,
+      serverArgs: argsRef,
+      watch: watch,
+      docker: docker,
+      shutdown: shutdown,
+      serverStdoutSink: stdoutSink,
+      serverStderrSink: stderrSink,
+      onServerStart: (server) async {
+        final vmService = server.vmService;
+        if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
           (event) => handleServerLogEvent(holder, event),
         );
-      }
-
-      proxy = await _mountOrRetargetProxy(
-        serverProcess: serverProcess,
-        existing: proxy,
-        userInfoFile: vmServiceInfoFile,
-        reload: watch ? () => session.forceReload() : null,
-      );
-
-      return serverProcess;
-    }
-
-    late final ServerProcess initialServer;
-    await log.progress('Starting server', () async {
-      final initialDill = watch
-          ? p.join(serverpodToolDir, 'server.dill')
-          : null;
-      initialServer = await serverProcessFactory(initialDill);
-      return true;
-    });
-
-    // Create watch session.
-    final runMode = runModeFromServerArgs(serverArgs);
-    session = WatchSession(
-      compiler: compiler,
-      nativeAssetsBuilder: nativeAssetsBuilder,
-      generate: (affectedPaths, requirements) async {
-        return analyzeAndGenerate(
-          analyzers: await analyzersFuture,
-          config: config,
-          affectedPaths: affectedPaths,
-          skipStalenessCheck: true,
-          requirements: requirements,
-        );
       },
-      createServer: serverProcessFactory,
-      initialServer: initialServer,
-      generatedDirPaths: config.generatedDirPaths,
-      applyMigrationsAction: () => _applyMigrationsForSession(
-        serverDir: serverDir,
-        runMode: runMode,
-        moduleName: config.name,
-        onDeferToPod: () {
-          log.warning(
-            'Cannot apply migrations from the CLI.\n'
-            'Falling back to restarting the pod with --apply-migrations.',
-          );
-          serverArgs = _withApplyMigrations(serverArgs);
-        },
-      ),
+      mcpGetLogHistory: () => holder.state.logHistory.toList(),
     );
 
-    // Start MCP socket server. Exposes the proxy URI (not the pod's) so
-    // MCP-initiated reloads flow through the same interceptor that IDE
-    // attach uses.
-    McpSocketServer? mcpSocket = McpSocketServer(project: config.name);
-    try {
-      await mcpSocket.start();
-      mcpSocket.connect(
-        onApplyMigration: session.applyMigration,
-        onCreateMigration: ({String? tag, bool force = false}) =>
-            _createMigrationForMcp(config, tag: tag, force: force),
-        onHotReload: session.forceReload,
-        getLogHistory: () => holder.state.logHistory.toList(),
-        getVmServiceUri: () => proxy?.httpUri.toString(),
-        vmServiceUriChanges: session.vmServiceUriChanges,
-      );
-      log.info('MCP server listening on ${mcpSocket.socketPath}');
-    } on SocketException catch (e) {
-      log.warning('Failed to start MCP server: $e');
-      mcpSocket = null;
+    switch (result) {
+      case WatchLoopAborted(:final exitCode):
+        shutdown.complete(exitCode);
+        return;
+      case WatchLoopReady(:final ctx):
+        holder.onQuit = () => shutdown.complete(0);
+        holder.onHotReload = () {
+          runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
+        };
+        holder.onCreateMigration = () {
+          runTrackedAction(
+            holder,
+            'Creating migration',
+            () => _runCreateMigrationForTui(config),
+          );
+        };
+        holder.onApplyMigration = () {
+          runTrackedAction(
+            holder,
+            'Applying migrations',
+            ctx.session.applyMigration,
+          );
+        };
+
+        holder.state.serverReady = ctx.session.isRunning;
+        holder.markDirty();
+
+        if (ctx.session.isRunning) log.info(serverRunning);
+
+        // All termination triggers (Quit, SIGINT/SIGTERM, server crash,
+        // unhandled errors) funnel through `shutdown`
+        final exitCode = await shutdown.future;
+        holder.state.serverReady = false;
+        holder.markDirty();
+        log.info('Server stopped (exitCode: $exitCode).');
+
+        await ctx.dispose();
     }
-
-    // Start file watcher if in watch mode.
-    StreamSubscription? fileChangeSub;
-    if (watch) {
-      final watcher = FileWatcher(
-        watchPaths: {
-          p.absolute(p.joinAll(config.libSourcePathParts)),
-          ...config.sharedModelsLibSourcePaths.map(p.absolute),
-          p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
-          p.absolute(
-            p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
-          ),
-        },
-      );
-      fileChangeSub = watcher.onFilesChanged
-          .asyncMapBuffer(
-            (events) => session.handleFileChange(events.merge()),
-          )
-          .listen((_) {});
-    }
-
-    // Wire button callbacks.
-    holder.onQuit = () async {
-      holder.state.serverReady = false;
-      holder.markDirty();
-      await fileChangeSub?.cancel();
-      await mcpSocket?.close();
-      await session.dispose();
-      await proxy?.close();
-      await File(vmServiceInfoFile).deleteIfExists();
-      if (startedDocker) {
-        await _stopDockerServices(serverDir);
-      }
-      shutdownApp(0);
-    };
-    holder.onHotReload = () {
-      runTrackedAction(holder, 'Hot reload', session.forceReload);
-    };
-    holder.onCreateMigration = () {
-      runTrackedAction(
-        holder,
-        'Creating migration',
-        () => _runCreateMigrationForTui(config),
-      );
-    };
-    holder.onApplyMigration = () {
-      runTrackedAction(holder, 'Applying migrations', session.applyMigration);
-    };
-
-    holder.state.serverReady = session.isRunning;
-    holder.markDirty();
-
-    if (session.isRunning) log.info(serverRunning);
-
-    // Wait for server exit.
-    final serverExitCode = await session.done;
-    holder.state.serverReady = false;
-    holder.markDirty();
-    onExitCode(serverExitCode);
-    log.info('Server stopped (exitCode: $serverExitCode).');
-
-    // Clean up.
-    await fileChangeSub?.cancel();
-    await mcpSocket?.close();
-    await session.dispose();
-    await proxy?.close();
-    await File(vmServiceInfoFile).deleteIfExists();
   } catch (e, st) {
-    // Show the error in the TUI. Keep it open so the user can read it.
+    // Show the error in the TUI; let the user read it. Quitting still
+    // works via the Ctrl-C signal handler routed through shutdown.
     holder.state.showSplash = false;
     log.error('$e', stackTrace: st);
-    onExitCode(1);
   }
 }
 

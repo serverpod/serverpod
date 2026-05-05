@@ -157,7 +157,7 @@ void main() {
       initialServer: initialServer,
       generatedDirPaths: {'/generated'},
       applyMigrationsAction:
-          applyMigrationsAction ?? () async => const MigrationsApplied([]),
+          applyMigrationsAction ?? () async => const MigrationsApplied(),
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
     );
@@ -669,7 +669,7 @@ void main() {
     late WatchSession inPlaceSession;
 
     setUp(() {
-      outcomeBuilder = () => const MigrationsApplied(['20251030_120000_user']);
+      outcomeBuilder = () => const MigrationsApplied();
       actionCalls = 0;
       gate = null;
 
@@ -702,7 +702,7 @@ void main() {
       'when the action returns an empty list, '
       'then it succeeds (already up to date)',
       () async {
-        outcomeBuilder = () => const MigrationsApplied([]);
+        outcomeBuilder = () => const MigrationsApplied();
 
         await inPlaceSession.applyMigration();
 
@@ -727,7 +727,7 @@ void main() {
 
         // Same session: a follow-up call must reach the action rather
         // than hit the in-flight latch.
-        outcomeBuilder = () => const MigrationsApplied([]);
+        outcomeBuilder = () => const MigrationsApplied();
         await inPlaceSession.applyMigration();
         expect(actionCalls, 2);
       },
@@ -767,7 +767,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(actionCalls, 1, reason: 'second call must wait for first');
 
-        gate!.complete(const MigrationsApplied(['v1']));
+        gate!.complete(const MigrationsApplied());
         await firstCall;
         await secondCall;
 
@@ -809,17 +809,15 @@ void main() {
     );
 
     test(
-      'when server exit completes from stop, '
-      'then done does not complete',
+      'when disposing, '
+      'then done completes with the server exit code',
       () async {
-        // dispose() calls stop(), which completes initialExitCode.
+        // dispose() stops the server and must complete `done` so callers
+        // that `await session.done` from any path (e.g. the TUI quit
+        // path) do not hang.
         await session.dispose();
 
-        var doneCompleted = false;
-        unawaited(session.done.then((_) => doneCompleted = true));
-        await Future<void>.delayed(Duration.zero);
-
-        expect(doneCompleted, isFalse);
+        await expectLater(session.done, completion(0));
       },
     );
   });
@@ -1049,7 +1047,7 @@ class Counter {
         },
         initialServer: noCompilerServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied([]),
+        applyMigrationsAction: () async => const MigrationsApplied(),
       );
     });
 
@@ -1151,7 +1149,7 @@ class Counter {
             (success: true, generatedFiles: <String>{}),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied([]),
+        applyMigrationsAction: () async => const MigrationsApplied(),
       );
     });
 
