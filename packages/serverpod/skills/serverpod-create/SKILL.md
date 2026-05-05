@@ -24,9 +24,30 @@ serverpod create --mini <project_name> --no-interactive     # Minimal project wi
 serverpod create --template module <name> --no-interactive  # Module (server + client)
 ```
 
-Project name: valid Dart package name (lowercase, underscores).
+Project name must be lowercase with underscores (valid Dart package name).
+
+After creating the project, fetch dependencies: `dart pub get` from project root (workspace).
 
 If creating a Serverpod module, refer to the [Serverpod Modules](../serverpod-modules/SKILL.md) skill for more details.
+
+## Project structure
+
+Considering a project named `my_project`, the structure will be:
+
+```directory
+my_project/
+├── my_project_server/
+│   ├── lib/                # Endpoints, models, business logic
+│   ├── src/generated/      # Generated code (do not edit)
+│   ├── config/             # development.yaml, production.yaml, passwords.yaml
+│   ├── bin/main.dart       # Entry point
+│   └── docker-compose.yaml # Local PostgreSQL and Redis (if enabled)
+├── my_project_client/      # Generated client
+│   ├── src/protocol/       # Generated protocol (do not edit)
+└── my_project_flutter/     # Flutter app (only for projects, not modules)
+```
+
+NEVER edit the generated code, as it will be overwritten by the next generation.
 
 ## Upgrading a mini server directory to full Serverpod
 
