@@ -404,20 +404,30 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     rethrow;
   }
 
-  final analyzers = await IsolatedAnalyzers.create(config);
+  final analyzersFuture = IsolatedAnalyzers.create(config);
+  Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
   // Code generation staleness check.
   final allSources = await enumerateSourceFiles(config);
   if (!await isGenerationUpToDate(config, allSources)) {
-    final genResult = await analyzeAndGenerate(
-      analyzers: analyzers,
-      config: config,
-      affectedPaths: allSources,
-      requirements: GenerationRequirements.full,
-    );
+    late final IsolatedAnalyzers analyzers;
+    await log.progress('Initializing analyzers', () async {
+      analyzers = await analyzersFuture;
+      return true;
+    });
+    late final ({bool success, Set<String> generatedFiles}) genResult;
+    await log.progress('Generating code', () async {
+      genResult = await analyzeAndGenerate(
+        analyzers: analyzers,
+        config: config,
+        affectedPaths: allSources,
+        requirements: GenerationRequirements.full,
+      );
+      return genResult.success;
+    });
     if (!genResult.success) {
       log.error('Code generation failed.');
-      await analyzers.close();
+      await closeAnalyzers();
       await stopDockerIfStarted();
       return const WatchLoopAborted(1);
     }
@@ -440,8 +450,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       serverpodToolDir: serverpodToolDir,
       dartExecutable: localCompiler.dartExecutable,
     );
-    if (!await _runHooksFor(localBuilder, localCompiler)) {
-      await analyzers.close();
+    late final bool hooksOk;
+    await log.progress('Running build hooks', () async {
+      hooksOk = await _runHooksFor(localBuilder, localCompiler);
+      return hooksOk;
+    });
+    if (!hooksOk) {
+      await closeAnalyzers();
       await stopDockerIfStarted();
       return const WatchLoopAborted(1);
     }
@@ -456,7 +471,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await analyzers.close();
+      await closeAnalyzers();
       await stopDockerIfStarted();
       return const WatchLoopAborted(1);
     }
@@ -506,7 +521,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     nativeAssetsBuilder: nativeAssetsBuilder,
     generate: (affectedPaths, requirements) async {
       return analyzeAndGenerate(
-        analyzers: analyzers,
+        analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
         skipStalenessCheck: true,
@@ -579,7 +594,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       proxy: proxy,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
-      closeAnalyzers: analyzers.close,
+      closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
     ),
