@@ -16,31 +16,33 @@ const _projectName = 'test_project';
 const _migrationVersion = '00000000000000';
 
 void main() {
-  group('Given a project with an existing multi-field index change', () {
-    late Directory testDirectory;
-    late GeneratorConfig config;
-    late MigrationGenerator generator;
+  group(
+    'Given a project with a single-field index changed to multiple fields',
+    () {
+      late Directory testDirectory;
+      late GeneratorConfig config;
+      late MigrationGenerator generator;
 
-    setUp(() {
-      testDirectory = Directory(
-        path.join(
-          Directory.current.path,
-          DateTime.now().microsecondsSinceEpoch.toString(),
-        ),
-      );
-      testDirectory.createSync(recursive: true);
+      setUp(() {
+        testDirectory = Directory(
+          path.join(
+            Directory.current.path,
+            DateTime.now().microsecondsSinceEpoch.toString(),
+          ),
+        );
+        testDirectory.createSync(recursive: true);
 
-      final modelFile = File(
-        path.join(
-          testDirectory.path,
-          'lib',
-          'src',
-          'protocol',
-          'example.yaml',
-        ),
-      );
-      modelFile.createSync(recursive: true);
-      modelFile.writeAsStringSync('''
+        final modelFile = File(
+          path.join(
+            testDirectory.path,
+            'lib',
+            'src',
+            'protocol',
+            'example.yaml',
+          ),
+        );
+        modelFile.createSync(recursive: true);
+        modelFile.writeAsStringSync('''
 class: Example
 table: example
 fields:
@@ -52,96 +54,99 @@ indexes:
     unique: true
 ''');
 
-      final sourceDefinition = DatabaseDefinitionBuilder()
-          .withModuleName(_projectName)
-          .withInstalledModules([
-            DatabaseMigrationVersion(
-              module: _projectName,
-              version: _migrationVersion,
+        final sourceDefinition = DatabaseDefinitionBuilder()
+            .withModuleName(_projectName)
+            .withInstalledModules([
+              DatabaseMigrationVersion(
+                module: _projectName,
+                version: _migrationVersion,
+              ),
+            ])
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example')
+                  .withModule(_projectName)
+                  .withColumns([
+                    ColumnDefinitionBuilder().withIdColumn('example').build(),
+                    ColumnDefinitionBuilder().withNameColumn().build(),
+                    ColumnDefinitionBuilder()
+                        .withName('value')
+                        .withDartType('String')
+                        .build(),
+                  ])
+                  .withIndexes([
+                    IndexDefinitionBuilder()
+                        .withIndexName('example_name_idx')
+                        .withIsUnique(true)
+                        .withElements([
+                          IndexElementDefinition(
+                            definition: 'name',
+                            type: IndexElementDefinitionType.column,
+                          ),
+                        ])
+                        .build(),
+                  ])
+                  .build(),
+            )
+            .build();
+
+        final sourceMigration = DatabaseMigration(
+          actions: [],
+          warnings: [],
+          migrationApiVersion: 1,
+        );
+
+        _writeMigrationFiles(
+          testDirectory: testDirectory,
+          databaseDefinition: sourceDefinition,
+          migration: sourceMigration,
+        );
+
+        config = GeneratorConfigBuilder()
+            .withName(_projectName)
+            .withServerPackageDirectoryPathParts(path.split(testDirectory.path))
+            .withModules([])
+            .build();
+
+        generator = MigrationGenerator(
+          directory: testDirectory,
+          projectName: _projectName,
+        );
+      });
+
+      tearDown(() {
+        if (testDirectory.existsSync()) {
+          testDirectory.deleteSync(recursive: true);
+        }
+      });
+
+      test(
+        'when creating migration then the index is dropped and recreated with the updated field list.',
+        () async {
+          final result = await generator.createMigration(
+            force: true,
+            config: config,
+            write: false,
+          );
+
+          expect(result, isNotNull);
+          expect(result!.migration.actions, hasLength(1));
+
+          final alterTable = result.migration.actions.single.alterTable;
+          expect(alterTable, isNotNull);
+          expect(alterTable!.deleteIndexes, contains('example_name_idx'));
+          expect(alterTable.addIndexes, hasLength(1));
+          expect(alterTable.addIndexes.single.indexName, 'example_name_idx');
+          expect(
+            alterTable.addIndexes.single.elements.map(
+              (element) => element.definition,
             ),
-          ])
-          .withTable(
-            TableDefinitionBuilder()
-                .withName('example')
-                .withModule(_projectName)
-                .withColumn(
-                  ColumnDefinitionBuilder()
-                      .withName('value')
-                      .withDartType('String')
-                      .build(),
-                )
-                .withIndexes([
-                  IndexDefinitionBuilder()
-                      .withIndexName('example_name_idx')
-                      .withIsUnique(true)
-                      .withElements([
-                        IndexElementDefinition(
-                          definition: 'name',
-                          type: IndexElementDefinitionType.column,
-                        ),
-                      ])
-                      .build(),
-                ])
-                .build(),
-          )
-          .build();
-
-      final sourceMigration = DatabaseMigration(
-        actions: [],
-        warnings: [],
-        migrationApiVersion: 1,
+            ['name', 'value'],
+          );
+        },
       );
-
-      _writeMigrationFiles(
-        testDirectory: testDirectory,
-        databaseDefinition: sourceDefinition,
-        migration: sourceMigration,
-      );
-
-      config = GeneratorConfigBuilder()
-          .withName(_projectName)
-          .withServerPackageDirectoryPathParts(path.split(testDirectory.path))
-          .withModules([])
-          .build();
-
-      generator = MigrationGenerator(
-        directory: testDirectory,
-        projectName: _projectName,
-      );
-    });
-
-    tearDown(() {
-      if (testDirectory.existsSync()) {
-        testDirectory.deleteSync(recursive: true);
-      }
-    });
-
-    test(
-      'when creating migration then the changed index is dropped and recreated.',
-      () async {
-        final result = await generator.createMigration(
-          force: true,
-          config: config,
-          write: false,
-        );
-
-        expect(result, isNotNull);
-        expect(result!.migration.actions, hasLength(1));
-
-        final alterTable = result.migration.actions.single.alterTable;
-        expect(alterTable, isNotNull);
-        expect(alterTable!.deleteIndexes, contains('example_name_idx'));
-        expect(alterTable.addIndexes, hasLength(1));
-        expect(alterTable.addIndexes.single.indexName, 'example_name_idx');
-        expect(
-          alterTable.addIndexes.single.elements.map(
-            (element) => element.definition,
-          ),
-          ['name', 'value'],
-        );
-      },
-    );
-  });
+    },
+  );
 }
 
 void _writeMigrationFiles({
