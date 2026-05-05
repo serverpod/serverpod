@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Serverpod CLI
         working-directory: projectname_server
-        run: dart pub global activate serverpod_cli $VERSION
+        run: dart install serverpod_cli $VERSION
 
       - name: Run Serverpod generator
         working-directory: projectname_server
