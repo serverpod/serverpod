@@ -5,7 +5,7 @@ description: Serverpod overview — what it is, project structure, installation,
 
 # Serverpod Overview
 
-Serverpod is an open-source backend framework for Flutter written in Dart. A Serverpod project consists of at usually three packages: a server, a generated client, and a Flutter app. The server exposes typed endpoints that the client calls via generated RPC client. Models are defined in YAML and generate Dart classes for both server and client.
+Serverpod is an open-source backend framework for Flutter written in Dart. A Serverpod project consists of usually three packages: a server, a generated client, and a Flutter app. The server exposes typed endpoints that the client calls via generated RPC client. Models are defined in YAML and generate Dart classes for both server and client.
 
 Full Serverpod projects use a configured database (PostgreSQL by default, SQLite supported) for persistence and include an ORM, caching, real-time streaming, file uploads, scheduling, logging, and a built-in web server (Relic). Each of these features have specific skills that you can use to get more details.
 
