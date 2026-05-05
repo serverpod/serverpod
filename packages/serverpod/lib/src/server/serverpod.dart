@@ -142,6 +142,9 @@ class Serverpod {
 
   DatabasePoolManager? _databasePoolManager;
 
+  /// Future for the eager database pool start kicked off in the constructor.
+  late final Future<void> _databasePoolInit;
+
   /// The last time a database operation was performed. This can be used to
   /// determine if the database is sleeping.
   DateTime? get lastDatabaseOperationTime =>
@@ -595,7 +598,7 @@ class Serverpod {
     if (Features.enableDatabase && databaseConfiguration != null) {
       final databaseDialect = databaseConfiguration.dialect;
       final databaseProvider = DatabaseProvider.forDialect(databaseDialect);
-      _databasePoolManager = databaseProvider.createPoolManager(
+      final databasePoolManager = databaseProvider.createPoolManager(
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
@@ -606,18 +609,11 @@ class Serverpod {
       // This is required because other operations in Serverpod assumes that
       // the database is connected when the Serverpod is created
       // (such as createSession(...)).
-      //
-      // The constructor is sync, so we can't await `start()` here. Attach
-      // a swallowing error handler so a failed eager start doesn't surface
-      // as an unhandled async error; the same `start()` is awaited inside
-      // `_unguardedStart` (it is idempotent), which surfaces the failure
-      // to the awaited caller.
-      unawaited(
-        _databasePoolManager?.start().catchError(
-              (Object _, StackTrace _) {},
-            ) ??
-            Future.value(),
-      );
+      _databasePoolInit = databasePoolManager.start();
+      _databasePoolManager = databasePoolManager;
+      unawaited(_databasePoolInit.catchError((_) {})); // if pool never used
+    } else {
+      _databasePoolInit = Future.value();
     }
 
     if (Features.enableDatabase) {
@@ -772,9 +768,8 @@ class Serverpod {
       CloudStoragePublicEndpoint().register(this);
     }
 
-    // It is important that we start the database pool manager before
-    // attempting to connect to the database.
-    await _databasePoolManager?.start();
+    // Ensure database pool manager has started
+    await _databasePoolInit;
 
     if (Features.enableMigrations) {
       int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;
@@ -1225,6 +1220,7 @@ class Serverpod {
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
   Future<InternalSession> createSession({bool enableLogging = true}) async {
+    await _databasePoolInit;
     var session = InternalSession(
       server: server,
       enableLogging: enableLogging,
