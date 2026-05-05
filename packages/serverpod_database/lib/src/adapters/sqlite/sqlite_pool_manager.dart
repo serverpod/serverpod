@@ -28,10 +28,8 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   SqliteDatabase? _db;
 
-  /// In-flight [start] future, used to coalesce concurrent callers onto
-  /// a single start cycle. Cleared once the cycle completes (or fails)
-  /// and again by [stop] so a restart kicks off a fresh cycle.
-  Future<void>? _starting;
+  /// Tracks the PRAGMA future kicked off by [start]
+  Future<void> _started = Future.value();
 
   /// The SQLite database instance.
   ///
@@ -59,39 +57,32 @@ class SqlitePoolManager implements DatabasePoolManager {
 
   /// Starts the database connection.
   ///
-  /// Safe to call concurrently or repeatedly: in-flight calls share the
-  /// same future, and a call after [stop] begins a fresh start cycle.
+  /// Callers can await [started] to ensure initialization is complete,
+  /// and surface any errors.
   @override
-  Future<void> start() async {
+  void start() {
     if (_db != null) return;
-    return _starting ??= _start();
+    final db = SqliteDatabase(
+      path: config.filePath,
+      // This will only be available from 0.14 onwards.
+      // options: SqliteOptions(
+      //   maxReaders:
+      //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
+      // ),
+    );
+    _db = db;
+    _started = db.execute('PRAGMA foreign_keys = ON');
   }
 
-  Future<void> _start() async {
-    try {
-      final db = SqliteDatabase(
-        path: config.filePath,
-        // This will only be available from 0.14 onwards.
-        // options: SqliteOptions(
-        //   maxReaders:
-        //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
-        // ),
-      );
-      await db.execute('PRAGMA foreign_keys = ON');
-      // Assign after the await so a failed start leaves _db null and the
-      // caller can retry.
-      _db = db;
-    } finally {
-      _starting = null;
-    }
-  }
+  @override
+  Future<void> get started => _started;
 
   /// Closes the database.
   @override
   Future<void> stop() async {
     await _db?.close();
     _db = null;
-    _starting = null;
+    _started = Future.value();
   }
 
   /// Tests the database connection.

@@ -82,7 +82,7 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   @override
-  Future<void> start() async {
+  void start() {
     // Setup database connection pool
     _pgPool ??= pg.Pool.withEndpoints(
       [
@@ -98,6 +98,12 @@ class PostgresPoolManager implements DatabasePoolManager {
       settings: _poolSettings,
     );
   }
+
+  /// Postgres [start] is synchronous - the pool is fully ready as soon
+  /// as [pg.Pool.withEndpoints] returns - so this is just a resolved
+  /// future for interface symmetry with SQLite.
+  @override
+  Future<void> get started => Future.value();
 
   @override
   Future<void> stop() async {
