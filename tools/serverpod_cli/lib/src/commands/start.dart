@@ -294,12 +294,11 @@ Future<bool> _applyMigrationsOnBoot({
   required String moduleName,
 }) async {
   try {
-    final applied = await applyPendingMigrations(
+    await applyPendingMigrations(
       serverDir: serverDir,
       runMode: runMode,
       moduleName: moduleName,
     );
-    log.info(formatAppliedMigrations(applied));
     return false;
   } on StateError {
     // No database configured for this run mode - nothing to apply.

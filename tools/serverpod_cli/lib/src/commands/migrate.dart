@@ -63,9 +63,8 @@ class MigrateCommand extends ServerpodCommand<MigrateOption> {
 
     log.info('Applying migrations for "$moduleName" (mode: $runMode)...');
 
-    late final List<String> applied;
     try {
-      applied = await applyPendingMigrations(
+      await applyPendingMigrations(
         serverDir: serverDir,
         runMode: runMode,
         moduleName: moduleName,
@@ -74,10 +73,5 @@ class MigrateCommand extends ServerpodCommand<MigrateOption> {
       log.error('Migration failed: $e', stackTrace: s);
       throw ExitException.error();
     }
-
-    log.info(
-      formatAppliedMigrations(applied),
-      type: applied.isEmpty ? TextLogType.normal : TextLogType.success,
-    );
   }
 }
