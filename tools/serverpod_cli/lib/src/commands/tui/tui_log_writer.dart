@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
 import 'package:serverpod_cli/src/commands/tui/state.dart';
+import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart';
 
 /// A [LogWriter] that routes log entries and scopes to the TUI state.
@@ -25,12 +26,13 @@ class TuiLogWriter extends LogWriter {
 
   @override
   Future<void> log(LogEntry entry) async {
+    final cleaned = _stripAnsiEntry(entry);
     final holder = _holder;
     if (holder != null) {
-      holder.state.logHistory.add(entry);
+      holder.state.logHistory.add(cleaned);
       holder.markDirty();
     } else {
-      _buffer.add(entry);
+      _buffer.add(cleaned);
     }
   }
 
@@ -40,7 +42,7 @@ class TuiLogWriter extends LogWriter {
     if (holder != null) {
       holder.state.activeOperations[scope.id] = TrackedOperation(
         id: scope.id,
-        label: scope.label,
+        label: stripAnsi(scope.label),
       );
       holder.markDirty();
     } else {
@@ -48,7 +50,7 @@ class TuiLogWriter extends LogWriter {
         LogEntry(
           level: LogLevel.info,
           time: scope.startTime,
-          message: scope.label,
+          message: stripAnsi(scope.label),
           scope: scope,
         ),
       );
@@ -79,4 +81,17 @@ class TuiLogWriter extends LogWriter {
     }
     holder.markDirty();
   }
+}
+
+LogEntry _stripAnsiEntry(LogEntry entry) {
+  final err = entry.error;
+  return LogEntry(
+    time: entry.time,
+    level: entry.level,
+    message: stripAnsi(entry.message),
+    scope: entry.scope,
+    error: err == null ? null : stripAnsi(err.toString()),
+    stackTrace: entry.stackTrace,
+    metadata: entry.metadata,
+  );
 }

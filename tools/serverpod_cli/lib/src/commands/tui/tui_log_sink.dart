@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_cli/src/util/strip_ansi.dart';
 
 /// An [IOSink] implementation that captures server stdout/stderr output
 /// and routes it to the TUI's "Raw server output" tab.
@@ -17,7 +18,7 @@ class TuiLogSink implements IOSink {
     for (var i = 0; i < text.length; i++) {
       final char = text[i];
       if (char == '\n') {
-        _holder.state.rawLines.add(_lineBuffer.toString());
+        _holder.state.rawLines.add(stripAnsi(_lineBuffer.toString()));
         _lineBuffer.clear();
         _holder.markDirty();
       } else if (char != '\r') {
@@ -41,8 +42,10 @@ class TuiLogSink implements IOSink {
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    _holder.state.rawLines.add('ERROR: $error');
-    if (stackTrace != null) _holder.state.rawLines.add('$stackTrace');
+    _holder.state.rawLines.add(stripAnsi('ERROR: $error'));
+    if (stackTrace != null) {
+      _holder.state.rawLines.add(stripAnsi('$stackTrace'));
+    }
     _holder.markDirty();
   }
 
@@ -55,7 +58,7 @@ class TuiLogSink implements IOSink {
   @override
   Future close() async {
     if (_lineBuffer.isNotEmpty) {
-      _holder.state.rawLines.add(_lineBuffer.toString());
+      _holder.state.rawLines.add(stripAnsi(_lineBuffer.toString()));
       _lineBuffer.clear();
       _holder.markDirty();
     }
