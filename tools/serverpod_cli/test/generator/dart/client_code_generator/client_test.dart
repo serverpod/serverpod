@@ -445,8 +445,37 @@ void main() {
           expect(createSessionMethod, contains('bool isDebugMode = false'));
         });
 
+        test('has an optional runMigrations parameter.', () {
+          expect(createSessionMethod, contains('bool runMigrations = true'));
+        });
+
+        test('forwards runMigrations to ClientDatabaseSession.open.', () {
+          expect(createSessionMethod, contains('runMigrations: runMigrations'));
+        });
+
         test('calls ClientDatabaseSession.open.', () {
           expect(createSessionMethod, contains('ClientDatabaseSession.open('));
+        });
+
+        test('contains docs for path, runMigrations, and isDebugMode.', () {
+          expect(
+            clientFile,
+            contains(
+              '/// Creates a new client-side database session for the given path.',
+            ),
+          );
+          expect(
+            clientFile,
+            contains(
+              '/// If [runMigrations] is true, pending migrations will be applied when',
+            ),
+          );
+          expect(
+            clientFile,
+            contains(
+              '/// If [isDebugMode] is true, the database integrity will be verified after',
+            ),
+          );
         });
       });
     },

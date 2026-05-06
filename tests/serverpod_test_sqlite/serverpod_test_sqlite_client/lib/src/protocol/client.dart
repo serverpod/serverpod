@@ -103,14 +103,29 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 
+  /// Creates a new client-side database session for the given path.
+  ///
+  /// The [path] is the file path to the SQLite database file. Since SQLite uses
+  /// WAL mode, note that `[path]-shm` and `[path]-wal` files might also exist
+  /// transiently for the database while the session is open.
+  ///
+  /// If [runMigrations] is true, pending migrations will be applied when
+  /// opening the database. Be careful when setting this to false, as it might
+  /// lead to inconsistencies between the models and the database.
+  ///
+  /// If [isDebugMode] is true, the database integrity will be verified after
+  /// the migrations are applied to provide feedback of possible issues. On a
+  /// Flutter application, this should be set to [kDebugMode].
   _i2.Future<_i5.ClientDatabaseSession> createSession(
     String path, {
+    bool runMigrations = true,
     bool isDebugMode = false,
   }) async {
     return await _i5.ClientDatabaseSession.open(
       path,
       _i4.Protocol(),
       clientMigrations: MigrationRegistry.migrations,
+      runMigrations: runMigrations,
       isDebugMode: isDebugMode,
     );
   }

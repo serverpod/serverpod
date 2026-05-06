@@ -1190,6 +1190,20 @@ class LibraryGenerator {
               if (hasClientDatabaseTables && config.type != PackageType.module)
                 Method(
                   (m) => m
+                    ..docs.add('''
+  /// Creates a new client-side database session for the given path.
+  ///
+  /// The [path] is the file path to the SQLite database file. Since SQLite uses
+  /// WAL mode, note that `[path]-shm` and `[path]-wal` files might also exist
+  /// transiently for the database while the session is open.
+  ///
+  /// If [runMigrations] is true, pending migrations will be applied when
+  /// opening the database. Be careful when setting this to false, as it might
+  /// lead to inconsistencies between the models and the database.
+  ///
+  /// If [isDebugMode] is true, the database integrity will be verified after
+  /// the migrations are applied to provide feedback of possible issues. On a
+  /// Flutter application, this should be set to [kDebugMode].''')
                     ..name = 'createSession'
                     ..modifier = MethodModifier.async
                     ..returns = TypeReference(
@@ -1210,7 +1224,14 @@ class LibraryGenerator {
                           ..type = refer('String'),
                       ),
                     )
-                    ..optionalParameters.add(
+                    ..optionalParameters.addAll([
+                      Parameter(
+                        (p) => p
+                          ..name = 'runMigrations'
+                          ..named = true
+                          ..type = refer('bool')
+                          ..defaultTo = literalTrue.code,
+                      ),
                       Parameter(
                         (p) => p
                           ..name = 'isDebugMode'
@@ -1218,7 +1239,7 @@ class LibraryGenerator {
                           ..type = refer('bool')
                           ..defaultTo = literalFalse.code,
                       ),
-                    )
+                    ])
                     ..body =
                         refer(
                               'ClientDatabaseSession',
@@ -1234,6 +1255,7 @@ class LibraryGenerator {
                                 'clientMigrations': refer(
                                   'MigrationRegistry',
                                 ).property('migrations'),
+                                'runMigrations': refer('runMigrations'),
                                 'isDebugMode': refer('isDebugMode'),
                               },
                             )
