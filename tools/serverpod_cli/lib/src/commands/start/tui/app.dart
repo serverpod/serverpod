@@ -110,7 +110,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
   void _tryDismissSplash() {
     final state = component.holder.state;
-    if (_minSplashElapsed && state.serverReady && state.showSplash) {
+    if (_minSplashElapsed && state.showSplash) {
       state.showSplash = false;
       if (mounted) setState(() {});
     }
