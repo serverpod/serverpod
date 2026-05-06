@@ -122,13 +122,22 @@ class StartCommand extends ServerpodCommand<StartOption> {
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
     if (useTui) {
+      // When no `--directory` is given, resolve the server root (including an
+      // interactive multi-project choice) *before* the TUI starts. Otherwise
+      // `findOrPrompt` runs after nocterm has switched the terminal to raw
+      // mode, which breaks the CLI `select` prompt used for that choice.
+      final config = await GeneratorConfig.load(
+        serverRootDir: commandConfig.value(StartOption.directory),
+        interactive: serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        ),
+      );
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
         serverArgs: argResults?.rest ?? [],
-        interactive: serverpodRunner.globalConfiguration.optionalValue(
-          GlobalOption.interactive,
-        ),
+        config: config,
       );
       if (exitCode != 0) throw ExitException(exitCode);
       return;
@@ -700,7 +709,7 @@ Future<int> _runWithTui({
   required Configuration<StartOption> commandConfig,
   required bool watch,
   required List<String> serverArgs,
-  required bool? interactive,
+  required GeneratorConfig config,
 }) async {
   final holder = StartAppStateHolder(ServerWatchState());
   var backendStarted = false;
@@ -724,7 +733,7 @@ Future<int> _runWithTui({
           commandConfig: commandConfig,
           watch: watch,
           serverArgs: serverArgs,
-          interactive: interactive,
+          config: config,
           shutdown: shutdown,
         ).catchError((Object e, StackTrace st) {
           // Show the error in the TUI.
@@ -758,7 +767,7 @@ Future<void> _runTuiBackend({
   required Configuration<StartOption> commandConfig,
   required bool watch,
   required List<String> serverArgs,
-  required bool? interactive,
+  required GeneratorConfig config,
   required _ShutdownSignal shutdown,
 }) async {
   try {
@@ -766,18 +775,6 @@ Future<void> _runTuiBackend({
     final tuiWriter = TuiLogWriter();
     initializeLoggerWith(ServerpodCliLogger(tuiWriter));
     tuiWriter.attach(holder);
-
-    final directory = commandConfig.value(StartOption.directory);
-
-    // Load generator config.
-    late final GeneratorConfig config;
-    await log.progress('Loading project configuration', () async {
-      config = await GeneratorConfig.load(
-        serverRootDir: directory,
-        interactive: interactive,
-      );
-      return true;
-    });
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
