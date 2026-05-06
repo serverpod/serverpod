@@ -154,6 +154,12 @@ class LogMessageWidget extends StatelessComponent {
       LogLevel.error || LogLevel.fatal => st.errorLevel,
     };
 
+    final body = entry.error == null
+        ? entry.message
+        : entry.message.isEmpty
+        ? entry.error.toString()
+        : '${entry.message}\n${entry.error}';
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -167,7 +173,7 @@ class LogMessageWidget extends StatelessComponent {
           style: const TextStyle(fontWeight: FontWeight.dim),
         ),
         const SizedBox(width: 1),
-        Expanded(child: Text(entry.message)),
+        Expanded(child: Text(body)),
       ],
     );
   }

@@ -26,6 +26,7 @@ void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
               DateTime.now(),
           message: data['message'] as String? ?? '',
           scope: LogScope.root('server'),
+          error: data['error']?.toString(),
         ),
       );
 
