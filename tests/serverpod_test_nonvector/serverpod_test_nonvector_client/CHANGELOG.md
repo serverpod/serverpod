@@ -1,8 +1,22 @@
+## 3.5.0-beta.6
+
+- feat: Makes the `serverpod create` command interactive for resources selection.
+- feat: Adds Serverpod SKILLs upon `serverpod create` and `serverpod quickstart` commands.
+- feat: Improves the reliability of the `serverpod start` command when launched by the IDE.
+- feat: Removes the need to restart the server to apply migrations when running from `serverpod start`.
+- feat: Makes an additional request to get emails on GitHub IDP if missing in the first attempt.
+- fix: Fixes missing `_Undefined` sentinel on generated code for `dynamic` fields
+- fix: Prevents concurrent hot-reload requests while on `serverpod start` from breaking the FES.
+- fix: Restores terminal settings when force quitting the TUI on `serverpod` commands.
+- refactor: Drops the `--no-fes` flag from the `serverpod start` command.
+- chore: Improves the look and feel of the TUI on `serverpod` commands.
+- chore: Improves Serverpod skills for a better agentic-development experience.
+
 ## 3.5.0-beta.5
 
 - feat(EXPERIMENTAL): Introduces a new `database` keyword on models that generates a client-side database.
 - feat: Adds support for `dynamic` fields on models, database and endpoints.
-- feat: Adds support for `jsonb` columns and `GIN` indexes, with lossless `json` <-> `jsonb` column type migration. ([@developerjamiu][https://github.com/developerjamiu])
+- feat: Adds support for `jsonb` columns and `GIN` indexes, with lossless `json` <-> `jsonb` column type migration. ([@developerjamiu](https://github.com/developerjamiu))
 - feat: Makes the Serverpod MCP server always running regardless of a running project server with `serverpod start` command.
 - feat: Adds a new `serverpod quickstart` command to the `serverpod_cli`.
 - fix: Ensures `serverpod start` works with build hook dependencies.

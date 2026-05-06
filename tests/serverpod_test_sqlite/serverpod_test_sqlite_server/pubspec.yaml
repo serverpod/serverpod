@@ -12,18 +12,18 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 3.5.0-beta.5
-  serverpod_service_client: 3.5.0-beta.5
+  serverpod: 3.5.0-beta.6
+  serverpod_service_client: 3.5.0-beta.6
 
 dev_dependencies:
-  serverpod_cli: 3.5.0-beta.5
-  serverpod_lints: 3.5.0-beta.5
-  serverpod_test: 3.5.0-beta.5
+  serverpod_cli: 3.5.0-beta.6
+  serverpod_lints: 3.5.0-beta.6
+  serverpod_test: 3.5.0-beta.6
   serverpod_test_client:
     path: ../../serverpod_test_client
   serverpod_test_server:
     path: ../../serverpod_test_server
-  serverpod_test_sqlite_client: 3.5.0-beta.5
+  serverpod_test_sqlite_client: 3.5.0-beta.6
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
