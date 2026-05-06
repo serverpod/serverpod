@@ -284,89 +284,12 @@ Future<void> _stopDockerServices(String serverDir) async {
   );
 }
 
-/// Applies pending database migrations before the pod starts.
+/// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
 ///
-/// Returns `true` when the caller should pass `--apply-migrations` to the
-/// pod because the in-process apply was skipped.
-Future<bool> _applyMigrationsOnBoot({
-  required String serverDir,
-  required String runMode,
-  required String moduleName,
-}) async {
-  try {
-    await applyPendingMigrations(
-      serverDir: serverDir,
-      runMode: runMode,
-      moduleName: moduleName,
-    );
-    return false;
-  } on StateError {
-    // No database configured for this run mode - nothing to apply.
-    return false;
-  } catch (e) {
-    if (!isMissingNativeAssetError(e)) rethrow;
-    log.warning(
-      'Cannot apply migrations from the CLI: this build is missing the '
-      'native asset for the configured database driver (typically SQLite). '
-      'Falling back to --apply-migrations on the pod.',
-    );
-    return true;
-  }
-}
-
-/// Applies migrations at boot, retrying transient socket errors while Docker
-/// services are still warming up.
-///
-/// This primarily targets first-run Postgres startup where the container may
-/// briefly reset connections during initialization.
-Future<bool> _applyMigrationsOnBootWithRetry({
-  required String serverDir,
-  required String runMode,
-  required String moduleName,
-  required bool retryOnSocketErrors,
-}) async {
-  final maxAttempts = retryOnSocketErrors ? 8 : 1;
-  const delay = Duration(seconds: 2);
-  Object? lastError;
-
-  for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await _applyMigrationsOnBoot(
-        serverDir: serverDir,
-        runMode: runMode,
-        moduleName: moduleName,
-      );
-    } catch (e) {
-      if (!_isTransientDatabaseStartupError(e) || attempt == maxAttempts) {
-        rethrow;
-      }
-      lastError = e;
-      if (attempt == 1) {
-        log.info(
-          'Database is not ready yet. Waiting for Docker services to warm up...',
-        );
-      }
-      await Future<void>.delayed(delay);
-    }
-  }
-
-  // Defensive fallback: the loop either returns or throws on the final attempt.
-  if (lastError != null) throw lastError;
-  return false;
-}
-
-/// The postgres package can wrap socket failures in an error string like:
-/// "Severity.error Socket error: SocketException: ..."
-bool _isTransientDatabaseStartupError(Object error) {
-  if (error is SocketException) return true;
-  final message = error.toString().toLowerCase();
-  return message.contains('severity.error socket error') &&
-      message.contains('socketexception');
-}
-
-/// Prepends `--apply-migrations` to [serverArgs] unless it is already
-/// present. Used by the boot path when [_applyMigrationsOnBoot] defers
-/// migration apply to the pod.
+/// Used for the **first** pod process started by `serverpod start` so pending
+/// migrations run inside the server (without requiring the insights endpoint).
+/// Also used when the CLI migration runner defers to the pod (e.g. missing
+/// native database assets).
 List<String> _withApplyMigrations(List<String> serverArgs) {
   if (serverArgs.contains('--apply-migrations')) return serverArgs;
   return ['--apply-migrations', ...serverArgs];
@@ -442,13 +365,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
   // Apply pending migrations from the CLI before booting the pod.
   try {
-    final deferToPod = await _applyMigrationsOnBootWithRetry(
-      serverDir: serverDir,
-      runMode: runModeFromServerArgs(serverArgs.value),
-      moduleName: config.name,
-      retryOnSocketErrors: startedDocker,
-    );
-    if (deferToPod) serverArgs.value = _withApplyMigrations(serverArgs.value);
+    serverArgs.value = _withApplyMigrations(serverArgs.value);
   } catch (_) {
     await stopDockerIfStarted();
     rethrow;
