@@ -1,5 +1,6 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/tui/components.dart';
+import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart';
@@ -222,6 +223,8 @@ class MainScreen extends StatelessComponent {
             if (onQuit != null) {
               onQuit?.call();
             } else {
+              // Boot path: [onQuit] is wired only after [WatchLoopReady].
+              restoreServerpodTerminal();
               shutdownApp(0);
             }
           },
