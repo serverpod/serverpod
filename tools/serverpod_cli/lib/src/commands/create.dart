@@ -261,6 +261,9 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
           final success = projectPath != null;
 
+          // Wait for the user to at least briefly see the success message.
+          await Future<void>.delayed(const Duration(seconds: 3));
+
           await _shutdownNocterm(success ? 0 : 1);
         },
         onQuit: () => _shutdownNocterm(1),
