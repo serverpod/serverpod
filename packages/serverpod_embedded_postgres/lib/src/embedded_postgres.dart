@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:pub_semver/pub_semver.dart';
 
+import 'binary/binary_store.dart' show BinaryStore;
+import 'embedded_postgres_impl.dart';
 import 'options.dart';
 
 /// A managed PostgreSQL postmaster running as a child process of this Dart
@@ -21,9 +23,8 @@ abstract class EmbeddedPostgres {
   /// Phases on cold first run: download Zonky binaries (if not cached) ->
   /// `initdb` -> spawn `postgres` -> wait for ready -> `CREATE DATABASE`.
   /// Network download is gated by [opts.onProgress], not [opts.startTimeout].
-  static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts) {
-    throw UnimplementedError('EmbeddedPostgres.start (phase 5)');
-  }
+  static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts) =>
+      EmbeddedPostgresImpl.start(opts);
 
   /// Reattach to a postmaster started with [EmbeddedPostgresOptions.detach]
   /// = true. Reads the supervisor pidfile, validates the process is still
@@ -46,9 +47,7 @@ abstract class EmbeddedPostgres {
   }
 
   /// Default per-user binary cache location for the current platform.
-  static Directory defaultBinaryCache() {
-    throw UnimplementedError('EmbeddedPostgres.defaultBinaryCache (phase 2)');
-  }
+  static Directory defaultBinaryCache() => BinaryStore.defaultCacheRoot();
 
   /// libpq-style URI. Suitable for `psql`, `pg_dump`, etc. Dart consumers
   /// using `package:postgres` should prefer [endpoint].

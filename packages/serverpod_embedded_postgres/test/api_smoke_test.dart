@@ -80,17 +80,16 @@ void main() {
     );
   });
 
-  group('Given EmbeddedPostgres has not yet been implemented', () {
-    test('when calling start then an UnimplementedError is thrown.', () {
-      expect(
-        () => EmbeddedPostgres.start(
-          EmbeddedPostgresOptions(
-            dataDir: Directory('/tmp/_unused'),
-            databaseName: 'x',
-          ),
-        ),
-        throwsA(isA<UnimplementedError>()),
-      );
-    });
+  group('Given the EmbeddedPostgres static surface', () {
+    test(
+      'when defaultBinaryCache is read then a non-empty path resolves '
+      '(platform-appropriate; full coverage in BinaryStore tests).',
+      () {
+        var dir = EmbeddedPostgres.defaultBinaryCache();
+
+        expect(dir.path, isNotEmpty);
+        expect(dir.path, contains('serverpod'));
+      },
+    );
   });
 }
