@@ -4,6 +4,7 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:pub_semver/pub_semver.dart';
 
 import 'binary/binary_store.dart' show BinaryStore;
+import 'binary/maven_url.dart' show ZonkyArtifact;
 import 'embedded_postgres_impl.dart';
 import 'options.dart';
 
@@ -41,8 +42,16 @@ abstract class EmbeddedPostgres {
   /// If [target] is omitted, downloads the artifact for the current host
   /// platform. CI hosts can pass a different target to populate caches
   /// for other platforms.
-  static Future<void> prefetch(Version version, {String? target}) {
-    throw UnimplementedError('EmbeddedPostgres.prefetch (phase 8)');
+  static Future<void> prefetch(Version version, {String? target}) async {
+    var platform =
+        target ?? ZonkyArtifact.forCurrentPlatform(version: version).platform;
+    var artifact = ZonkyArtifact(version: version, platform: platform);
+    var store = BinaryStore();
+    try {
+      await store.ensure(artifact);
+    } finally {
+      store.close();
+    }
   }
 
   /// Default per-user binary cache location for the current platform.
