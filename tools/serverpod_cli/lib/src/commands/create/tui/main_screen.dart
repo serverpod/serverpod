@@ -107,6 +107,9 @@ class MainScreen extends StatelessComponent {
     bool focused,
   ) {
     final state = holder.state;
+
+    if (state.isConfigConstrained(config)) return const SizedBox.shrink();
+
     final selectedOption = state.getSelectedOptionFor(config);
 
     return Padding(
