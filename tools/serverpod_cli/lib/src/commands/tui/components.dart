@@ -86,7 +86,7 @@ class Button extends StatelessComponent {
             Text(
               activationChar,
               style: TextStyle(
-                color: enabled ? st.activationKey : st.subtleDivider,
+                color: enabled ? st.primary : st.subtleDivider,
                 fontWeight: enabled ? FontWeight.bold : FontWeight.dim,
               ),
             ),
@@ -102,35 +102,6 @@ class Button extends StatelessComponent {
       ),
     );
   }
-}
-
-// -- Tab title builder --
-
-/// Builds a [BorderTitle] with tab labels for use in [BorderedBox].
-/// Selected tab uses reverse style, others are dimmed.
-BorderTitle buildTabTitle({
-  required List<String> labels,
-  required int selectedTab,
-  required ServerpodThemeData theme,
-}) {
-  return BorderTitle.rich(
-    textSpan: TextSpan(
-      children: [
-        for (var i = 0; i < labels.length; i++) ...[
-          if (i == selectedTab)
-            TextSpan(
-              text: ' ${labels[i]} ',
-              style: TextStyle(color: theme.activeTab, reverse: true),
-            )
-          else
-            TextSpan(
-              text: ' ${labels[i]} ',
-              style: const TextStyle(fontWeight: FontWeight.dim),
-            ),
-        ],
-      ],
-    ),
-  );
 }
 
 final _timeFormat = DateFormat('HH:mm:ss.SSS');
