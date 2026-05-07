@@ -260,8 +260,12 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
           '.s.PGSQL.$_pgDefaultPort',
         );
         // libpq form: postgres:///<db>?host=<socket-file-or-dir>&user=<u>
+        // host: '' is required to get the three-slash empty-authority URI
+        // (postgres:///db); otherwise the Uri ctor produces postgres:/db
+        // which libpq rejects.
         return Uri(
           scheme: 'postgres',
+          host: '',
           path: '/${_options.databaseName}',
           queryParameters: {
             'host': shortestPath(sockPath),
