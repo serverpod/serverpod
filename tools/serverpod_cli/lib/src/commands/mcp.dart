@@ -7,8 +7,9 @@ import 'package:dart_mcp/stdio.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/util/platform_check.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart'
+    show hasUnixSocketSupport;
 
 /// Options for the `mcp` command.
 enum McpOption<V> implements OptionDefinition<V> {

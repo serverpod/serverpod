@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Mutable holder for `serverArgs` so the migration-fallback hook can
 /// prepend `--apply-migrations` and have the next pod start observe it.

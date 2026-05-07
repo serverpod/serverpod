@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';

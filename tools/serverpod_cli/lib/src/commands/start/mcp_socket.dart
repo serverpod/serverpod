@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
-import 'package:serverpod_cli/src/util/platform_check.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'mcp_server.dart';
 
