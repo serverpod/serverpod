@@ -1,0 +1,343 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../exceptions.dart';
+import '../transport.dart';
+import 'log_buffer.dart';
+import 'process_identity.dart';
+
+/// PG's default UDS socket port - shows up as `.s.PGSQL.<port>` regardless
+/// of whether we listen over TCP. We keep this constant; the spec does not
+/// expose a UDS port option (one cluster per dataDir).
+const int _pgDefaultPort = 5432;
+
+/// Owns a running `postgres` process: spawning it, tailing its log,
+/// detecting ready, escalating shutdown signals, and persisting an
+/// identity record so a later attach can verify the process is still ours.
+///
+/// Constructed only via [start] (fresh boot) or [tryAttach] (reattach to
+/// an already-running postmaster from a `detach: true` previous run).
+class Supervisor {
+  final Process _process;
+
+  /// Captured at spawn time and persisted to the pidfile. Used by
+  /// [tryAttach] to verify a future caller is reattaching to the same
+  /// postmaster (and not a PID-recycled foreign process).
+  final ProcessIdentity identity;
+  final File _pidFile;
+  final File _logFile;
+  final LogBuffer _ring;
+  final IOSink _logSink;
+  final List<StreamSubscription<ProcessSignal>> _signalSubs;
+  final Completer<int> _exitCompleter = Completer();
+
+  bool _stopped = false;
+
+  Supervisor._({
+    required Process process,
+    required this.identity,
+    required File pidFile,
+    required File logFile,
+    required LogBuffer ring,
+    required IOSink logSink,
+    required List<StreamSubscription<ProcessSignal>> signalSubs,
+  }) : _process = process,
+       _pidFile = pidFile,
+       _logFile = logFile,
+       _ring = ring,
+       _logSink = logSink,
+       _signalSubs = signalSubs {
+    unawaited(_process.exitCode.then(_exitCompleter.complete));
+  }
+
+  /// PID of the running postmaster, or null after [stop] completes.
+  int? get pid => _stopped ? null : _process.pid;
+
+  /// True between [start] and [stop].
+  bool get isRunning => !_stopped && !_exitCompleter.isCompleted;
+
+  /// Captured tail of the postmaster's stdout + stderr (most recent first
+  /// 200 lines, per the spec).
+  List<String> get logTail => _ring.snapshot();
+
+  /// Path of the captured log file. Convenience for error messages and
+  /// for callers that want to tail it externally.
+  String get logFilePath => _logFile.path;
+
+  /// Spawns `<installDir>/bin/postgres -D <dataDir>` and waits for the
+  /// postmaster to become ready (socket accepts connections for UDS, port
+  /// accepts TCP connections for TCP).
+  ///
+  /// Throws [StartupTimeoutException] if [startTimeout] elapses without
+  /// readiness, or [CrashedException] if the postmaster exits before
+  /// becoming ready.
+  static Future<Supervisor> start({
+    required Directory installDir,
+    required Directory dataDir,
+    required Directory runDir,
+    required Transport transport,
+    required Duration startTimeout,
+    required File pidFile,
+    required File logFile,
+    required bool detach,
+  }) async {
+    var executable = p.join(installDir.path, 'bin', 'postgres');
+
+    _rotateLog(logFile);
+    var ring = LogBuffer();
+    var logSink = logFile.openWrite(mode: FileMode.append);
+    logSink.writeln(
+      '\n=== supervisor start @ ${DateTime.now().toIso8601String()} ===',
+    );
+
+    var process = await Process.start(
+      executable,
+      ['-D', dataDir.path],
+      mode: ProcessStartMode.normal,
+    );
+
+    void handleLine(String line) {
+      logSink.writeln(line);
+      ring.add(line);
+    }
+
+    process.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen(handleLine);
+    process.stderr
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen(handleLine);
+
+    var identity = ProcessIdentity.capture(
+      process: process,
+      executable: executable,
+      dataDir: dataDir,
+    );
+    ProcessIdentity.writeAtomic(pidFile, identity);
+
+    var signalSubs = <StreamSubscription<ProcessSignal>>[];
+    var supervisor = Supervisor._(
+      process: process,
+      identity: identity,
+      pidFile: pidFile,
+      logFile: logFile,
+      ring: ring,
+      logSink: logSink,
+      signalSubs: signalSubs,
+    );
+
+    if (!detach) {
+      void hookSignal(ProcessSignal sig) {
+        signalSubs.add(
+          sig.watch().listen((_) async {
+            await supervisor.stop();
+            exit(128 + (sig == ProcessSignal.sigint ? 2 : 15));
+          }),
+        );
+      }
+
+      hookSignal(ProcessSignal.sigint);
+      if (!Platform.isWindows) {
+        hookSignal(ProcessSignal.sigterm);
+      }
+    }
+
+    try {
+      await _waitForReady(
+        supervisor: supervisor,
+        runDir: runDir,
+        transport: transport,
+        timeout: startTimeout,
+      );
+    } catch (_) {
+      // Best-effort cleanup so a failed start doesn't leave a postmaster
+      // running and an inconsistent pidfile around.
+      await supervisor.stop().catchError((_) {});
+      rethrow;
+    }
+
+    return supervisor;
+  }
+
+  /// Reattaches to a postmaster recorded in [pidFile], if it is still our
+  /// postmaster. Returns null when the pidfile is absent, points at a dead
+  /// process, or points at a foreign process. The pidfile is removed in
+  /// the dead-process case.
+  ///
+  /// Used both internally by [start] (idempotency check) and by the
+  /// public `EmbeddedPostgres.attach` entry point.
+  static Future<Supervisor?> tryAttach({
+    required Directory installDir,
+    required Directory dataDir,
+    required Directory runDir,
+    required Transport transport,
+    required File pidFile,
+    required File logFile,
+  }) async {
+    var recorded = ProcessIdentity.read(pidFile);
+    if (recorded == null) return null;
+
+    var match = verifyIdentity(recorded);
+    switch (match) {
+      case IdentityMatch.notRunning:
+        if (pidFile.existsSync()) pidFile.deleteSync();
+        return null;
+      case IdentityMatch.foreign:
+        return null;
+      case IdentityMatch.matchesOurs:
+        // Phase 5 wires the public attach() to a richer "RunningSupervisor"
+        // that doesn't own the Process handle. For now: we know it's our
+        // postmaster, but we cannot SIGINT it without the Process handle.
+        // Returning null here is intentional - the caller falls through to
+        // start(), which will spawn a fresh process. Since the running
+        // postmaster holds the data dir lock, that spawn will fail loudly
+        // (PG refuses to start a second postmaster against the same data
+        // dir), surfacing the conflict to the user.
+        //
+        // The real attach flow lives in phase 7; for now, this returns
+        // null and start() will detect the dataDir-lock collision.
+        return null;
+    }
+  }
+
+  /// Smart shutdown of the postmaster:
+  ///   1. SIGINT (PG fast smart-shutdown).
+  ///   2. After [timeout]/2, SIGTERM (immediate fast-shutdown).
+  ///   3. After [timeout], SIGKILL (last resort).
+  ///
+  /// Removes the pidfile and closes the log sink. Idempotent.
+  Future<void> stop({Duration timeout = const Duration(seconds: 10)}) async {
+    if (_stopped) return;
+    _stopped = true;
+
+    for (var sub in _signalSubs) {
+      await sub.cancel();
+    }
+
+    if (!_exitCompleter.isCompleted) {
+      _process.kill(ProcessSignal.sigint);
+    }
+
+    var halfway = timeout ~/ 2;
+    var firstWait = await _waitWithDeadline(_exitCompleter.future, halfway);
+    if (firstWait == null && !_exitCompleter.isCompleted) {
+      _process.kill(ProcessSignal.sigterm);
+      var secondWait = await _waitWithDeadline(
+        _exitCompleter.future,
+        timeout - halfway,
+      );
+      if (secondWait == null && !_exitCompleter.isCompleted) {
+        _process.kill(ProcessSignal.sigkill);
+        await _exitCompleter.future.timeout(
+          const Duration(seconds: 5),
+          onTimeout: () => -1,
+        );
+      }
+    }
+
+    if (_pidFile.existsSync()) {
+      try {
+        _pidFile.deleteSync();
+      } on FileSystemException {
+        // Best-effort; concurrent supervisor on the same dataDir is the
+        // user's problem (they got the orphan-detection mismatch already).
+      }
+    }
+    await _logSink.flush();
+    await _logSink.close();
+  }
+}
+
+void _rotateLog(File logFile) {
+  if (!logFile.existsSync()) return;
+  var rotated = File('${logFile.path}.1');
+  if (rotated.existsSync()) rotated.deleteSync();
+  logFile.renameSync(rotated.path);
+}
+
+Future<T?> _waitWithDeadline<T>(Future<T> future, Duration deadline) async {
+  try {
+    return await future.timeout(deadline);
+  } on TimeoutException {
+    return null;
+  }
+}
+
+/// Polls for postmaster readiness at 50ms intervals up to [timeout]. Throws
+/// [StartupTimeoutException] / [CrashedException] from the supervisor's
+/// log tail.
+Future<void> _waitForReady({
+  required Supervisor supervisor,
+  required Directory runDir,
+  required Transport transport,
+  required Duration timeout,
+}) async {
+  var deadline = DateTime.now().add(timeout);
+
+  while (DateTime.now().isBefore(deadline)) {
+    if (supervisor._exitCompleter.isCompleted) {
+      var code = await supervisor._exitCompleter.future;
+      throw CrashedException(
+        'postgres exited with code $code before becoming ready.',
+        code,
+        supervisor.logTail,
+      );
+    }
+
+    var ready = await _probeReady(runDir: runDir, transport: transport);
+    if (ready) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+
+  throw StartupTimeoutException(
+    'postgres did not become ready within ${timeout.inSeconds}s.',
+    supervisor.logTail,
+  );
+}
+
+Future<bool> _probeReady({
+  required Directory runDir,
+  required Transport transport,
+}) async {
+  switch (transport) {
+    case UnixTransport():
+      var sockPath = p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort');
+      if (!File(sockPath).existsSync() &&
+          !FileSystemEntity.isLinkSync(sockPath)) {
+        return false;
+      }
+      try {
+        var s = await Socket.connect(
+          InternetAddress(
+            shortestPath(sockPath),
+            type: InternetAddressType.unix,
+          ),
+          0,
+          timeout: const Duration(milliseconds: 200),
+        );
+        await s.close();
+        return true;
+      } on SocketException {
+        return false;
+      }
+    case TcpTransport(:final port):
+      try {
+        var s = await Socket.connect(
+          InternetAddress.loopbackIPv4,
+          port,
+          timeout: const Duration(milliseconds: 200),
+        );
+        await s.close();
+        return true;
+      } on SocketException {
+        return false;
+      }
+  }
+}
