@@ -102,8 +102,8 @@ class ZonkyArchive {
     // Second pass: links resolve correctly now that all targets exist.
     for (var entry in symlinks) {
       var outPath = p.join(destination.path, entry.name);
-      var target = entry.nameOfLinkedFile;
-      if (target.isEmpty) {
+      var target = _symlinkTargetOf(entry);
+      if (target == null || target.isEmpty) {
         throw BinaryFetchException(
           'Symbolic link ${entry.name} has empty target string in TAR.',
         );
@@ -152,4 +152,31 @@ class ZonkyArchive {
       );
     }
   }
+}
+
+/// Reads a symlink's target across both archive 3.x (`nameOfLinkedFile`,
+/// non-nullable) and archive 4.x (`symbolicLink`, nullable). Returns null
+/// when the entry isn't a symlink or the target string is empty.
+String? _symlinkTargetOf(ArchiveFile entry) {
+  // archive 4.x exposes `symbolicLink` (nullable). archive 3.x has
+  // `nameOfLinkedFile` (non-nullable). We read via dynamic to support both
+  // without conditional imports - the call site already gates this on
+  // `entry.isSymbolicLink`, so the field is guaranteed populated in either
+  // shape.
+  final dynamic dyn = entry;
+  try {
+    // ignore: avoid_dynamic_calls
+    final v = dyn.symbolicLink;
+    if (v is String) return v;
+  } on NoSuchMethodError {
+    // archive 3.x: fall through to nameOfLinkedFile.
+  }
+  try {
+    // ignore: avoid_dynamic_calls
+    final v = dyn.nameOfLinkedFile;
+    if (v is String) return v;
+  } on NoSuchMethodError {
+    // Neither field present - unexpected, treat as empty target.
+  }
+  return null;
 }

@@ -166,12 +166,32 @@ Uint8List _buildTar(List<_TarEntry> entries) {
   for (var e in entries) {
     var f = ArchiveFile(e.name, e.content.length, e.content)..mode = e.mode;
     if (e.isSymbolicLink) {
-      f.isSymbolicLink = true;
-      f.nameOfLinkedFile = e.linkTarget!;
+      // archive 3.x exposes isSymbolicLink + nameOfLinkedFile as settable
+      // fields; archive 4.x replaced them with a `symbolicLink: String?`
+      // setter (and isSymbolicLink became computed). Set via dynamic to
+      // build correctly under whichever version melos resolves.
+      _markAsSymlink(f, e.linkTarget!);
     }
     archive.addFile(f);
   }
   return Uint8List.fromList(TarEncoder().encode(archive));
+}
+
+void _markAsSymlink(ArchiveFile f, String target) {
+  final dynamic d = f;
+  // archive 4.x path - one setter, isSymbolicLink follows.
+  try {
+    // ignore: avoid_dynamic_calls
+    d.symbolicLink = target;
+    return;
+  } on NoSuchMethodError {
+    // fall through to archive 3.x.
+  }
+  // archive 3.x path - two settable fields.
+  // ignore: avoid_dynamic_calls
+  d.isSymbolicLink = true;
+  // ignore: avoid_dynamic_calls
+  d.nameOfLinkedFile = target;
 }
 
 Uint8List _buildJar(List<(String, Uint8List)> entries) {
