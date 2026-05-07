@@ -10,6 +10,10 @@ class Button extends StatelessComponent {
     required this.activationKeys,
     required this.onActivate,
     this.enabled = true,
+    this.shift,
+    this.ctrl,
+    this.alt,
+    this.meta,
   }) : assert(activationKeys == const [], 'activationKeys can not be empty');
 
   final String name;
@@ -18,6 +22,15 @@ class Button extends StatelessComponent {
   final void Function(LogicalKey) onActivate;
   final bool enabled;
 
+  /// Modifier requirements forwarded to [KeyboardEvent.matches]. `null` means
+  /// "don't care" (matches with or without). Set explicitly to disambiguate
+  /// when two buttons share the same key (e.g. `r` with `shift: false` and
+  /// `Shift+R` with `shift: true`).
+  final bool? shift;
+  final bool? ctrl;
+  final bool? alt;
+  final bool? meta;
+
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
@@ -25,9 +38,17 @@ class Button extends StatelessComponent {
     return Focusable(
       focused: enabled,
       onKeyEvent: (event) {
-        if (activationKeys.contains(event.logicalKey)) {
-          onActivate(event.logicalKey);
-          return true;
+        for (final key in activationKeys) {
+          if (event.matches(
+            key,
+            shift: shift,
+            ctrl: ctrl,
+            alt: alt,
+            meta: meta,
+          )) {
+            onActivate(key);
+            return true;
+          }
         }
         return false;
       },

@@ -29,7 +29,9 @@ class MainScreen extends StatelessComponent {
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
+    this.onHotRestart,
     this.onCreateMigration,
+    this.onCreateRepairMigration,
     this.onApplyMigration,
     this.onQuit,
   });
@@ -42,7 +44,9 @@ class MainScreen extends StatelessComponent {
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
+  final VoidCallback? onHotRestart;
   final VoidCallback? onCreateMigration;
+  final VoidCallback? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
 
@@ -168,19 +172,41 @@ class MainScreen extends StatelessComponent {
           name: 'Hot Reload',
           activationChar: 'R',
           activationKeys: const [LogicalKey.keyR],
+          shift: false,
           onActivate: (_) {
             onHotReload?.call();
           },
           enabled: actionsEnabled && onHotReload != null,
         ),
         Button(
+          name: 'Hot Restart',
+          activationChar: '⇧R',
+          activationKeys: const [LogicalKey.keyR],
+          shift: true,
+          onActivate: (_) {
+            onHotRestart?.call();
+          },
+          enabled: actionsEnabled && onHotRestart != null,
+        ),
+        Button(
           name: 'Create Migration',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
+          shift: false,
           onActivate: (_) {
             onCreateMigration?.call();
           },
           enabled: actionsEnabled && onCreateMigration != null,
+        ),
+        Button(
+          name: 'Repair Migration',
+          activationChar: '⇧M',
+          activationKeys: const [LogicalKey.keyM],
+          shift: true,
+          onActivate: (_) {
+            onCreateRepairMigration?.call();
+          },
+          enabled: actionsEnabled && onCreateRepairMigration != null,
         ),
         Button(
           name: 'Apply Migration',

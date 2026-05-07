@@ -796,6 +796,65 @@ void main() {
     );
   });
 
+  group('Given forceRestart is called', () {
+    test(
+      'when invoked, '
+      'then it resets the compiler, produces a fresh full dill, and '
+      'spawns a new server with that dill',
+      () async {
+        await session.forceRestart();
+
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/out.dill']);
+      },
+    );
+
+    test(
+      'when the full compile fails, '
+      'then it does not stop the server or spawn a new one',
+      () async {
+        compiler.nextCompileResult = _failResult();
+
+        await session.forceRestart();
+
+        expect(server.calls, isNot(contains('stop')));
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when invoked after dispose, '
+      'then it throws a StateError',
+      () async {
+        await session.dispose();
+
+        expect(() => session.forceRestart(), throwsStateError);
+      },
+    );
+
+    test(
+      'when invoked while a forceReload is in flight, '
+      'then it runs after the reload completes',
+      () async {
+        final order = <String>[];
+        compiler.calls.clear();
+        server.calls.clear();
+        factoryCalls.clear();
+
+        // Both calls return immediately; we just verify ordering.
+        final reload = session.forceReload().then((_) => order.add('reload'));
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
+        );
+
+        await Future.wait([reload, restart]);
+
+        expect(order, ['reload', 'restart']);
+      },
+    );
+  });
+
   group('Given dispose is called', () {
     test(
       'when disposing, '
@@ -1128,6 +1187,17 @@ class Counter {
     );
 
     test(
+      'when forceRestart is called, '
+      'then it stops the server and spawns a new one with null dill',
+      () async {
+        await noCompilerSession.forceRestart();
+
+        expect(noCompilerServer.calls, contains('stop'));
+        expect(noCompilerFactoryCalls, ['createServer:null']);
+      },
+    );
+
+    test(
       'when dispose is called, '
       'then it stops the server (no compiler to dispose)',
       () async {
@@ -1160,6 +1230,14 @@ class Counter {
         await noFactorySession.forceReload();
 
         expect(noFactoryServer.calls, ['reload:null']);
+      },
+    );
+
+    test(
+      'when forceRestart is called, '
+      'then it throws a StateError',
+      () {
+        expect(() => noFactorySession.forceRestart(), throwsStateError);
       },
     );
   });

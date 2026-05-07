@@ -28,6 +28,7 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
+import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -540,7 +541,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       onApplyMigration: session.applyMigration,
       onCreateMigration: ({String? tag, bool force = false}) =>
           _createMigrationForMcp(config, tag: tag, force: force),
+      onCreateRepairMigration:
+          ({
+            String? tag,
+            bool force = false,
+            String? targetMigrationVersion,
+          }) => _createRepairMigrationForMcp(
+            config,
+            tag: tag,
+            force: force,
+            targetMigrationVersion: targetMigrationVersion,
+          ),
       onHotReload: session.forceReload,
+      onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       vmServiceUriChanges: session.vmServiceUriChanges,
@@ -817,11 +830,21 @@ Future<void> _runTuiBackend({
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
+        holder.onHotRestart = () {
+          runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+        };
         holder.onCreateMigration = () {
           runTrackedAction(
             holder,
             'Creating migration',
             () => _runCreateMigrationForTui(config),
+          );
+        };
+        holder.onCreateRepairMigration = () {
+          runTrackedAction(
+            holder,
+            'Creating repair migration',
+            () => _runCreateRepairMigrationForTui(config),
           );
         };
         holder.onApplyMigration = () {
@@ -935,6 +958,73 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
     forceHint: 'Call again with `force: true` to create it anyway.',
   );
   final followUp = outcome is CreateMigrationCreated
+      ? ' Call `apply_migrations` to run it against the database.'
+      : '';
+  return CreateMigrationMcpResult(
+    message: result.message + followUp,
+    isError: result.isError,
+  );
+}
+
+/// Maps a [RepairMigrationOutcome] to a `(message, isError)` pair shared by
+/// the TUI and MCP wrappers. [forceHint] is the surface-specific instruction
+/// for retrying past warnings or empty diffs.
+({String message, bool isError}) _describeCreateRepairMigration(
+  RepairMigrationOutcome outcome, {
+  required String forceHint,
+}) {
+  return switch (outcome) {
+    RepairMigrationCreated(:final versionName, :final filePath) => (
+      message: 'Repair migration "$versionName" created at $filePath.',
+      isError: false,
+    ),
+    RepairMigrationNotCreated() => (
+      message:
+          'No repair migration created. Either no schema drift was '
+          'detected, or warnings were present. $forceHint',
+      isError: true,
+    ),
+    RepairMigrationFailed(:final message) => (
+      message: message,
+      isError: true,
+    ),
+  };
+}
+
+/// Runs `create-repair-migration` for the TUI's Repair Migration button.
+///
+/// Logs the outcome; throws on failure so [runTrackedAction] marks the
+/// operation red.
+Future<void> _runCreateRepairMigrationForTui(GeneratorConfig config) async {
+  final outcome = await createRepairMigrationAction(config: config);
+  final result = _describeCreateRepairMigration(
+    outcome,
+    forceHint:
+        'Run `serverpod create-repair-migration --force` to create it anyway.',
+  );
+  if (result.isError) throw Exception(result.message);
+  log.info(result.message);
+}
+
+/// Runs `create-repair-migration` for the MCP `create_repair_migration` tool.
+/// Returns a structured result so the MCP server can flag errors.
+Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
+  GeneratorConfig config, {
+  String? tag,
+  bool force = false,
+  String? targetMigrationVersion,
+}) async {
+  final outcome = await createRepairMigrationAction(
+    config: config,
+    tag: tag,
+    force: force,
+    targetMigrationVersion: targetMigrationVersion,
+  );
+  final result = _describeCreateRepairMigration(
+    outcome,
+    forceHint: 'Call again with `force: true` to create it anyway.',
+  );
+  final followUp = outcome is RepairMigrationCreated
       ? ' Call `apply_migrations` to run it against the database.'
       : '';
   return CreateMigrationMcpResult(

@@ -91,7 +91,9 @@ void main() {
           // Forwarded tools are not registered until connect.
           expect(names, isNot(contains('apply_migrations')));
           expect(names, isNot(contains('create_migration')));
+          expect(names, isNot(contains('create_repair_migration')));
           expect(names, isNot(contains('hot_reload')));
+          expect(names, isNot(contains('hot_restart')));
           expect(names, isNot(contains('tail_logs')));
         },
       );
@@ -196,7 +198,9 @@ void main() {
                 'stop',
                 'apply_migrations',
                 'create_migration',
+                'create_repair_migration',
                 'hot_reload',
+                'hot_restart',
                 'tail_logs',
               }),
             );
