@@ -12,6 +12,9 @@ import 'cluster/cluster_store.dart';
 import 'embedded_postgres.dart';
 import 'exceptions.dart';
 import 'options.dart';
+import 'state_file.dart';
+import 'supervisor/attached_supervisor.dart';
+import 'supervisor/supervised_process.dart';
 import 'supervisor/supervisor.dart';
 import 'transport.dart';
 
@@ -31,14 +34,14 @@ const int _pgDefaultPort = 5432;
 ///      (idempotent on subsequent starts).
 class EmbeddedPostgresImpl extends EmbeddedPostgres {
   final EmbeddedPostgresOptions _options;
-  final Supervisor _supervisor;
+  final SupervisedProcess _supervisor;
   final Directory _runDir;
   final Transport _resolvedTransport;
   final String? _resolvedPassword;
 
   EmbeddedPostgresImpl._({
     required EmbeddedPostgresOptions options,
-    required Supervisor supervisor,
+    required SupervisedProcess supervisor,
     required Directory runDir,
     required Transport resolvedTransport,
     String? resolvedPassword,
@@ -47,6 +50,65 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
        _runDir = runDir,
        _resolvedTransport = resolvedTransport,
        _resolvedPassword = resolvedPassword;
+
+  /// Backs [EmbeddedPostgres.attach]. Public only so the abstract class
+  /// can delegate.
+  static Future<EmbeddedPostgres> attach(Directory dataDir) async {
+    var dataRoot = dataDir.parent;
+    var runDir = Directory(p.join(dataRoot.path, 'run'));
+    var pidFile = File(p.join(dataRoot.path, 'postgres.pid'));
+    var logFile = File(p.join(dataRoot.path, 'postgres.log'));
+    var pwFile = File(p.join(dataRoot.path, 'postgres.password'));
+    var stateFile = File(
+      p.join(dataRoot.path, 'embedded_postgres_state.json'),
+    );
+
+    var attached = AttachedSupervisor.tryAttach(
+      pidFile: pidFile,
+      logFile: logFile,
+    );
+    if (attached == null) {
+      throw const CrashedException(
+        'No live postmaster found at the recorded pidfile. Either the '
+        'previous start used detach: false (so the postmaster died with '
+        'its parent), or the OS recycled the PID to a foreign process. '
+        'Call EmbeddedPostgres.start to spawn a fresh postmaster.',
+        -1,
+        [],
+      );
+    }
+
+    var tcpPassword = pwFile.existsSync() ? pwFile.readAsStringSync() : null;
+    var state = EmbeddedPostgresState.read(stateFile, tcpPassword: tcpPassword);
+    if (state == null) {
+      throw const CrashedException(
+        'embedded_postgres_state.json missing or malformed. attach() '
+        'cannot reconstruct the public-API surface without it.',
+        -1,
+        [],
+      );
+    }
+
+    var resolvedPassword = switch (state.transport) {
+      UnixTransport() => null,
+      TcpTransport(:final password) => password,
+    };
+
+    return EmbeddedPostgresImpl._(
+      options: EmbeddedPostgresOptions(
+        dataDir: dataDir,
+        databaseName: state.databaseName,
+        username: state.username,
+        transport: state.transport,
+        version: state.version,
+        detach: true,
+      ),
+      supervisor: attached,
+      runDir: runDir,
+      resolvedTransport: state.transport,
+      resolvedPassword: resolvedPassword,
+    );
+  }
 
   /// Backs [EmbeddedPostgres.start]. Public only so the abstract class can
   /// delegate; not part of the package's surface API.
@@ -132,6 +194,16 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
         rethrow;
       }
     }
+
+    EmbeddedPostgresState.writeAtomic(
+      File(p.join(dataRoot.path, 'embedded_postgres_state.json')),
+      EmbeddedPostgresState(
+        version: options.version,
+        username: options.username,
+        databaseName: options.databaseName,
+        transport: resolvedTransport,
+      ),
+    );
 
     return EmbeddedPostgresImpl._(
       options: options,

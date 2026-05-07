@@ -32,9 +32,8 @@ abstract class EmbeddedPostgres {
   ///
   /// Throws [CrashedException] if the pidfile points at a dead process or
   /// at a foreign one.
-  static Future<EmbeddedPostgres> attach(Directory dataDir) {
-    throw UnimplementedError('EmbeddedPostgres.attach (phase 7)');
-  }
+  static Future<EmbeddedPostgres> attach(Directory dataDir) =>
+      EmbeddedPostgresImpl.attach(dataDir);
 
   /// Pre-populate the per-user binary cache for [version] without booting
   /// a postmaster. Useful for CI warm-up and offline prep.

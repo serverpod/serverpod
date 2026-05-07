@@ -9,6 +9,7 @@ import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
 import 'process_identity.dart';
+import 'supervised_process.dart';
 
 /// PG's default UDS socket port - shows up as `.s.PGSQL.<port>` regardless
 /// of whether we listen over TCP. We keep this constant; the spec does not
@@ -21,7 +22,7 @@ const int _pgDefaultPort = 5432;
 ///
 /// Constructed only via [start] (fresh boot) or [tryAttach] (reattach to
 /// an already-running postmaster from a `detach: true` previous run).
-class Supervisor {
+class Supervisor implements SupervisedProcess {
   final Process _process;
 
   /// Captured at spawn time and persisted to the pidfile. Used by
@@ -55,13 +56,16 @@ class Supervisor {
   }
 
   /// PID of the running postmaster, or null after [stop] completes.
+  @override
   int? get pid => _stopped ? null : _process.pid;
 
   /// True between [start] and [stop].
+  @override
   bool get isRunning => !_stopped && !_exitCompleter.isCompleted;
 
   /// Captured tail of the postmaster's stdout + stderr (most recent first
   /// 200 lines, per the spec).
+  @override
   List<String> get logTail => _ring.snapshot();
 
   /// Path of the captured log file. Convenience for error messages and
@@ -212,6 +216,7 @@ class Supervisor {
   ///   3. After [timeout], SIGKILL (last resort).
   ///
   /// Removes the pidfile and closes the log sink. Idempotent.
+  @override
   Future<void> stop({Duration timeout = const Duration(seconds: 10)}) async {
     if (_stopped) return;
     _stopped = true;
