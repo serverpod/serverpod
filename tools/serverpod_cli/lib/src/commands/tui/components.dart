@@ -262,11 +262,13 @@ class LogViewerWidget extends StatelessComponent {
     super.key,
     required this.state,
     required this.scrollController,
+    this.keyboardScrollable = false,
     this.header,
   });
 
   final ServerpodState state;
   final ScrollController scrollController;
+  final bool keyboardScrollable;
   final Component? header;
 
   @override
@@ -288,7 +290,7 @@ class LogViewerWidget extends StatelessComponent {
                   child: ListView.builder(
                     controller: scrollController,
                     reverse: true,
-                    keyboardScrollable: false,
+                    keyboardScrollable: keyboardScrollable,
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[items.length - 1 - index];
