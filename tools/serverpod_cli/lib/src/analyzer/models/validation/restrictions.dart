@@ -248,7 +248,8 @@ class Restrictions {
     if (!config.isFeatureEnabled(ServerpodFeature.database)) {
       return [
         SourceSpanSeverityException(
-          'The "table" property cannot be used when the database feature is disabled.',
+          'The "table" property cannot be used when the database feature is disabled. '
+          'See https://docs.serverpod.dev/upgrading/upgrade-from-mini to enable the database.',
           span,
           severity: SourceSpanSeverity.warning,
         ),
