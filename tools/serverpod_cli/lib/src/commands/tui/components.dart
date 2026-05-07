@@ -26,13 +26,14 @@ class BorderedBox extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final serverpodTheme = ServerpodTheme.of(context);
     final theme = TuiTheme.of(context);
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor ?? theme.background,
         border: BoxBorder.all(
           style: BoxBorderStyle.rounded,
-          color: color ?? theme.outline,
+          color: color ?? serverpodTheme.subtleDivider,
         ),
         title: title,
       ),
