@@ -59,29 +59,50 @@ class ClusterStore {
   /// Uses `--no-locale --encoding=UTF8` (byte-stable collation across
   /// machines, no Zonky-locale availability surprises) and seeds the
   /// auth methods so we never need to rewrite `pg_hba.conf`.
-  Future<void> ensureInitialized({required String username}) async {
+  ///
+  /// [password] is required for TCP transport (scram-sha-256 over the
+  /// host loopback): without a stored password the role can't be
+  /// authenticated via scram. Passed via `initdb --pwfile`. For UDS
+  /// (trust auth) [password] should be null.
+  Future<void> ensureInitialized({
+    required String username,
+    String? password,
+  }) async {
     if (isInitialized) return;
 
     dataDir.parent.createSync(recursive: true);
 
-    var initdb = p.join(installDir.path, 'bin', 'initdb');
-    var args = [
-      '--pgdata=${dataDir.path}',
-      '--username=$username',
-      '--encoding=UTF8',
-      '--no-locale',
-      '--auth-local=trust',
-      '--auth-host=scram-sha-256',
-      '--no-sync',
-    ];
+    File? pwFile;
+    if (password != null) {
+      pwFile = File(p.join(dataDir.parent.path, '.initdb-pwfile.tmp'));
+      pwFile.writeAsStringSync(password);
+    }
 
-    var result = await Process.run(initdb, args);
-    if (result.exitCode != 0) {
-      throw InitdbException(
-        'initdb exit ${result.exitCode}\n'
-        '--- stdout ---\n${result.stdout}\n'
-        '--- stderr ---\n${result.stderr}',
-      );
+    try {
+      var initdb = p.join(installDir.path, 'bin', 'initdb');
+      var args = [
+        '--pgdata=${dataDir.path}',
+        '--username=$username',
+        '--encoding=UTF8',
+        '--no-locale',
+        '--auth-local=trust',
+        '--auth-host=scram-sha-256',
+        '--no-sync',
+        if (pwFile != null) '--pwfile=${pwFile.path}',
+      ];
+
+      var result = await Process.run(initdb, args);
+      if (result.exitCode != 0) {
+        throw InitdbException(
+          'initdb exit ${result.exitCode}\n'
+          '--- stdout ---\n${result.stdout}\n'
+          '--- stderr ---\n${result.stderr}',
+        );
+      }
+    } finally {
+      if (pwFile != null && pwFile.existsSync()) {
+        pwFile.deleteSync();
+      }
     }
   }
 

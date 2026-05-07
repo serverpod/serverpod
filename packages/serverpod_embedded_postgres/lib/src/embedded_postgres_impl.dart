@@ -10,6 +10,7 @@ import 'binary/binary_store.dart';
 import 'binary/maven_url.dart';
 import 'cluster/cluster_store.dart';
 import 'embedded_postgres.dart';
+import 'exceptions.dart';
 import 'options.dart';
 import 'supervisor/supervisor.dart';
 import 'transport.dart';
@@ -32,16 +33,19 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   final EmbeddedPostgresOptions _options;
   final Supervisor _supervisor;
   final Directory _runDir;
+  final Transport _resolvedTransport;
   final String? _resolvedPassword;
 
   EmbeddedPostgresImpl._({
     required EmbeddedPostgresOptions options,
     required Supervisor supervisor,
     required Directory runDir,
+    required Transport resolvedTransport,
     String? resolvedPassword,
   }) : _options = options,
        _supervisor = supervisor,
        _runDir = runDir,
+       _resolvedTransport = resolvedTransport,
        _resolvedPassword = resolvedPassword;
 
   /// Backs [EmbeddedPostgres.start]. Public only so the abstract class can
@@ -57,6 +61,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var runDir = Directory(p.join(dataRoot.path, 'run'));
     var pidFile = File(p.join(dataRoot.path, 'postgres.pid'));
     var logFile = File(p.join(dataRoot.path, 'postgres.log'));
+    var pwFile = File(p.join(dataRoot.path, 'postgres.password'));
 
     runDir.createSync(recursive: true);
     if (Platform.isLinux || Platform.isMacOS) {
@@ -82,40 +87,42 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
     var hadCluster = cluster.isInitialized;
 
+    var (resolvedTransport, resolvedPassword) = await _resolveTransport(
+      options.transport,
+      pwFile: pwFile,
+      hadCluster: hadCluster,
+    );
+
     if (hadCluster) {
       cluster.requireMajorMatch(options.version.major);
     } else {
-      await cluster.ensureInitialized(username: options.username);
+      await cluster.ensureInitialized(
+        username: options.username,
+        password: resolvedPassword,
+      );
     }
-    cluster.reconcilePostgresConf(transport: options.transport);
+    cluster.reconcilePostgresConf(transport: resolvedTransport);
 
-    var transport = options.transport;
-    var resolvedPassword = switch (transport) {
-      UnixTransport() => null,
-      TcpTransport(:final password) => password ?? _generatePassword(),
-    };
-
-    var supervisor = await Supervisor.start(
+    var supervisor = await _startSupervisorWithPortRetry(
       installDir: installDir,
       dataDir: pgDataDir,
       runDir: runDir,
-      transport: transport,
+      transport: resolvedTransport,
       startTimeout: options.startTimeout,
       pidFile: pidFile,
       logFile: logFile,
       detach: options.detach,
+      onResolveTransport: (newTransport) {
+        resolvedTransport = newTransport;
+        cluster.reconcilePostgresConf(transport: newTransport);
+      },
     );
 
-    // Database creation is idempotent: we check existence before issuing
-    // CREATE DATABASE. The check itself only runs on first start (when
-    // the cluster was uninitialized); subsequent starts skip the round
-    // trip, since the database is preserved with the cluster.
     if (!hadCluster) {
       try {
         await _ensureDatabase(
-          supervisor: supervisor,
           runDir: runDir,
-          transport: transport,
+          transport: resolvedTransport,
           username: options.username,
           password: resolvedPassword,
           databaseName: options.databaseName,
@@ -130,6 +137,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       options: options,
       supervisor: supervisor,
       runDir: runDir,
+      resolvedTransport: resolvedTransport,
       resolvedPassword: resolvedPassword,
     );
   }
@@ -145,8 +153,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
   @override
   pg.Endpoint get endpoint {
-    var transport = _options.transport;
-    switch (transport) {
+    switch (_resolvedTransport) {
       case UnixTransport():
         var sockPath = p.join(
           _runDir.absolute.path,
@@ -161,7 +168,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       case TcpTransport(:final port):
         return pg.Endpoint(
           host: '127.0.0.1',
-          port: port == 0 ? _pgDefaultPort : port,
+          port: port,
           database: _options.databaseName,
           username: _options.username,
           password: _resolvedPassword,
@@ -174,8 +181,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
   @override
   Uri get connectionUri {
-    var transport = _options.transport;
-    switch (transport) {
+    switch (_resolvedTransport) {
       case UnixTransport():
         var sockPath = p.join(
           _runDir.absolute.path,
@@ -196,7 +202,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
           scheme: 'postgres',
           userInfo: pw == null ? _options.username : '${_options.username}:$pw',
           host: '127.0.0.1',
-          port: port == 0 ? _pgDefaultPort : port,
+          port: port,
           path: '/${_options.databaseName}',
         );
     }
@@ -226,11 +232,111 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   }
 }
 
+/// Resolves the user-supplied [transport] into a concrete one ready to
+/// pass to ClusterStore + Supervisor:
+///
+///   - For [TcpTransport] with `port == 0`, allocates an ephemeral port
+///     by binding `127.0.0.1:0` and reading the kernel-assigned port.
+///   - For TCP overall, persists / reads the password sidecar so warm
+///     restarts use the same credential the cluster was init'd with.
+///   - For [UnixTransport], no resolution is needed (returns identity).
+Future<(Transport, String?)> _resolveTransport(
+  Transport requested, {
+  required File pwFile,
+  required bool hadCluster,
+}) async {
+  switch (requested) {
+    case UnixTransport():
+      return (requested, null);
+    case TcpTransport(:final port, :final password):
+      String resolvedPw;
+      if (hadCluster && pwFile.existsSync()) {
+        // Warm restart: the cluster's stored hash matches whatever was
+        // initdb'd. Trust the persisted password unless the caller
+        // explicitly provides one (in which case we assume they know
+        // they aligned both sides).
+        resolvedPw = password ?? pwFile.readAsStringSync();
+      } else {
+        resolvedPw = password ?? _generatePassword();
+        pwFile.parent.createSync(recursive: true);
+        pwFile.writeAsStringSync(resolvedPw);
+      }
+
+      var resolvedPort = port == 0 ? await _allocateEphemeralPort() : port;
+      return (
+        TcpTransport(port: resolvedPort, password: resolvedPw),
+        resolvedPw,
+      );
+  }
+}
+
+Future<int> _allocateEphemeralPort() async {
+  // Standard pre-bind dance: bind :0, read kernel-assigned port, close,
+  // hand to PG. There's a small race where another process can grab the
+  // port between close and PG binding; the retry loop in
+  // [_startSupervisorWithPortRetry] handles that.
+  var server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  try {
+    return server.port;
+  } finally {
+    await server.close();
+  }
+}
+
+/// Wraps [Supervisor.start] with a port-race retry. If [transport] is a
+/// TCP transport with an ephemerally-allocated port and PG fails to bind
+/// with EADDRINUSE (we read this from the captured log tail of the
+/// crashed postmaster), we re-allocate and retry up to 3 times.
+///
+/// [onResolveTransport] is invoked when we re-allocate a port so the
+/// caller can re-reconcile postgresql.conf with the new value.
+Future<Supervisor> _startSupervisorWithPortRetry({
+  required Directory installDir,
+  required Directory dataDir,
+  required Directory runDir,
+  required Transport transport,
+  required Duration startTimeout,
+  required File pidFile,
+  required File logFile,
+  required bool detach,
+  required void Function(Transport newTransport) onResolveTransport,
+}) async {
+  var current = transport;
+  for (var attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await Supervisor.start(
+        installDir: installDir,
+        dataDir: dataDir,
+        runDir: runDir,
+        transport: current,
+        startTimeout: startTimeout,
+        pidFile: pidFile,
+        logFile: logFile,
+        detach: detach,
+      );
+    } on CrashedException catch (e) {
+      var t = current;
+      if (t is! TcpTransport) rethrow;
+      var portRace = e.logTail.any(
+        (String line) =>
+            line.contains('Address already in use') ||
+            line.contains('could not bind'),
+      );
+      if (!portRace || attempt == 2) rethrow;
+
+      var newPort = await _allocateEphemeralPort();
+      current = TcpTransport(port: newPort, password: t.password);
+      onResolveTransport(current);
+    }
+  }
+  // Unreachable: the loop either returns or rethrows.
+  throw StateError('unreachable');
+}
+
 /// Connects as superuser via the local socket / TCP and `CREATE DATABASE`s
 /// [databaseName] if absent. Skipped on subsequent starts because we only
 /// run this when the cluster was just initialized.
 Future<void> _ensureDatabase({
-  required Supervisor supervisor,
   required Directory runDir,
   required Transport transport,
   required String username,
@@ -248,7 +354,7 @@ Future<void> _ensureDatabase({
     ),
     TcpTransport(:final port) => pg.Endpoint(
       host: '127.0.0.1',
-      port: port == 0 ? _pgDefaultPort : port,
+      port: port,
       database: 'postgres',
       username: username,
       password: password,
