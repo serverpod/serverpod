@@ -34,6 +34,29 @@ abstract class GoogleIdpBaseEndpoint extends IdpBaseEndpoint {
     );
   }
 
+  /// {@template google_idp_base_endpoint.login_with_code}
+  /// Validates a Google authorization code from the web OAuth2 PKCE flow and
+  /// either logs in the associated user or creates a new account.
+  ///
+  /// This is the web counterpart of [login], which accepts an ID token directly
+  /// (used on native platforms via the `google_sign_in` package).
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  /// {@endtemplate}
+  Future<AuthSuccess> loginWithCode(
+    final Session session, {
+    required final String code,
+    required final String codeVerifier,
+    required final String redirectUri,
+  }) async {
+    return googleIdp.loginWithCode(
+      session,
+      code: code,
+      codeVerifier: codeVerifier,
+      redirectUri: redirectUri,
+    );
+  }
+
   @override
   Future<bool> hasAccount(final Session session) async =>
       await googleIdp.hasAccount(session);
