@@ -3,18 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
 import 'process_identity.dart';
 import 'supervised_process.dart';
-
-/// PG's default UDS socket port - shows up as `.s.PGSQL.<port>` regardless
-/// of whether we listen over TCP. We keep this constant; the spec does not
-/// expose a UDS port option (one cluster per dataDir).
-const int _pgDefaultPort = 5432;
 
 /// Owns a running `postgres` process: spawning it, tailing its log,
 /// detecting ready, escalating shutdown signals, and persisting an
@@ -153,12 +147,7 @@ class Supervisor implements SupervisedProcess {
     }
 
     try {
-      await _waitForReady(
-        supervisor: supervisor,
-        runDir: runDir,
-        transport: transport,
-        timeout: startTimeout,
-      );
+      await _waitForReady(supervisor: supervisor, timeout: startTimeout);
     } catch (_) {
       // Best-effort cleanup so a failed start doesn't leave a postmaster
       // running and an inconsistent pidfile around.
@@ -279,8 +268,6 @@ Future<T?> _waitWithDeadline<T>(Future<T> future, Duration deadline) async {
 /// log tail.
 Future<void> _waitForReady({
   required Supervisor supervisor,
-  required Directory runDir,
-  required Transport transport,
   required Duration timeout,
 }) async {
   var deadline = DateTime.now().add(timeout);
@@ -295,8 +282,7 @@ Future<void> _waitForReady({
       );
     }
 
-    var ready = await _probeReady(runDir: runDir, transport: transport);
-    if (ready) return;
+    if (_isReady(supervisor)) return;
 
     await Future<void>.delayed(const Duration(milliseconds: 50));
   }
@@ -307,42 +293,26 @@ Future<void> _waitForReady({
   );
 }
 
-Future<bool> _probeReady({
-  required Directory runDir,
-  required Transport transport,
-}) async {
-  switch (transport) {
-    case UnixTransport():
-      var sockPath = p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort');
-      if (!File(sockPath).existsSync() &&
-          !FileSystemEntity.isLinkSync(sockPath)) {
-        return false;
-      }
-      try {
-        var s = await Socket.connect(
-          InternetAddress(
-            shortestPath(sockPath),
-            type: InternetAddressType.unix,
-          ),
-          0,
-          timeout: const Duration(milliseconds: 200),
-        );
-        await s.close();
-        return true;
-      } on SocketException {
-        return false;
-      }
-    case TcpTransport(:final port):
-      try {
-        var s = await Socket.connect(
-          InternetAddress.loopbackIPv4,
-          port,
-          timeout: const Duration(milliseconds: 200),
-        );
-        await s.close();
-        return true;
-      } on SocketException {
-        return false;
-      }
+/// Postmaster readiness: scan the captured log tail for PG's own
+/// declaration that it's ready to accept connections.
+///
+/// We do NOT use "can I open a TCP/UDS socket" - PG opens its listen
+/// socket EARLY in startup, well before it's actually ready to serve
+/// queries. Connecting in that window returns SQLSTATE 57P03
+/// ("the database system is starting up"), which the caller's first
+/// query (or our own _ensureDatabase / CREATE DATABASE) hits as a
+/// non-retryable error.
+///
+/// PG emits the trigger line at the end of startup, after WAL replay
+/// and before the postmaster starts accepting client backends. The
+/// exact phrase has been stable across PG 9.x through current; we
+/// substring-match to tolerate locale and severity-prefix variations
+/// (e.g. `LOG:  database system is ready to accept connections`).
+bool _isReady(Supervisor supervisor) {
+  for (var line in supervisor.logTail) {
+    if (line.contains('database system is ready to accept connections')) {
+      return true;
+    }
   }
+  return false;
 }
