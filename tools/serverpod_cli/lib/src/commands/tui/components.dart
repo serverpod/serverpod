@@ -86,7 +86,7 @@ class Button extends StatelessComponent {
             Text(
               activationChar,
               style: TextStyle(
-                color: enabled ? st.primary : st.subtleDivider,
+                color: enabled ? st.activationKey : st.subtleDivider,
                 fontWeight: enabled ? FontWeight.bold : FontWeight.dim,
               ),
             ),
