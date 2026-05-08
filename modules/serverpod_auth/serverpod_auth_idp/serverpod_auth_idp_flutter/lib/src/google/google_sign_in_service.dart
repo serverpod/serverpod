@@ -39,6 +39,9 @@ class GoogleSignInService {
   /// The parameters [nonce] and [hostedDomain] are optional and will be passed
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
+  ///
+  /// On web, this method must not be called. Use [GoogleWebSignInService] and
+  /// [initializeGoogleWebSignIn] instead.
   Future<GoogleSignIn> ensureInitialized({
     required FlutterAuthSessionManager auth,
     String? clientId,
@@ -46,6 +49,11 @@ class GoogleSignInService {
     String? nonce,
     String? hostedDomain,
   }) async {
+    assert(
+      !kIsWeb,
+      'GoogleSignInService must not be used on web. '
+      'Use GoogleWebSignInService.instance / initializeGoogleWebSignIn() instead.',
+    );
     if (_initializedClients.contains(identityHashCode(auth))) {
       return googleSignIn;
     }
@@ -125,6 +133,8 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// The parameters [nonce] and [hostedDomain] are optional and will be passed
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
+  ///
+  /// On web, this method is a no-op. Use [initializeGoogleWebSignIn] instead.
   Future<void> initializeGoogleSignIn({
     String? clientId,
     String? serverClientId,
@@ -145,15 +155,18 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// entirely, meaning the user will need to go through the full authorization
   /// flow again on the next sign-in, including the account picker and consent
   /// screens.
+  ///
+  /// On web, only signs out from the current device without revoking Google
+  /// access (native disconnect is not available in the web flow).
   Future<void> disconnectGoogleAccount() async {
+    if (kIsWeb) {
+      await signOutDevice();
+      return;
+    }
     final signIn = await GoogleSignInService.instance.ensureInitialized(
       auth: this,
     );
     await signIn.disconnect();
-
-    // NOTE: This delay prevents the Google Sign-In web button to render before
-    // the disconnect process is complete. Without this, the Sign-In screen will
-    // render the button on web still showing the user as signed in.
     await Future.delayed(const Duration(milliseconds: 300));
     await signOutDevice();
   }
