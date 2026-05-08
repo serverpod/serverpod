@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Runs the serverpod_test_module_server integration tests against an
+# embedded PostgreSQL postmaster (no Docker required).
+#
+# This is a Docker-free alternative to `module_integration_tests` in the
+# GH Actions matrix. The module server's test config (port 9090, db
+# 'serverpod_test_module_test', user 'postgres', password
+# 'DB_TEST_PASSWORD', redis disabled) is matched here. Other
+# integration test suites still need Docker - see PLATFORMS.md in
+# packages/serverpod_embedded_postgres for what's covered.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_module_integration_embedded"
+    exit 1
+fi
+
+set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
+REPO_ROOT="$(pwd)"
+MODULE_DIR="$REPO_ROOT/tests/serverpod_test_module/serverpod_test_module_server"
+
+# Match the module's config/test.yaml + config/passwords.yaml verbatim:
+PORT=9090
+DB_NAME='serverpod_test_module_test'
+DB_PASSWORD='DB_TEST_PASSWORD'
+
+CLI="$REPO_ROOT/tools/serverpod_cli/bin/serverpod_cli.dart"
+
+echo "==== Booting embedded PG (port=$PORT db=$DB_NAME) ===="
+cd "$MODULE_DIR"
+dart run "$CLI" embedded-pg start \
+    --tcp \
+    --port="$PORT" \
+    --db-name="$DB_NAME" \
+    --password="$DB_PASSWORD"
+
+cleanup() {
+    echo ""
+    echo "==== Stopping embedded PG ===="
+    cd "$MODULE_DIR"
+    dart run "$CLI" embedded-pg stop || true
+}
+trap cleanup EXIT
+
+echo ""
+echo "==== Running module integration tests ===="
+cd "$MODULE_DIR"
+dart test \
+    -t integration \
+    -x concurrency_one \
+    --reporter=failures-only \
+    "$@" || [ $? -eq 79 ]
