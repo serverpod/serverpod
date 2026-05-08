@@ -141,7 +141,8 @@ extension IndexComparisons on IndexDefinition {
         other.type == type &&
         other.vectorDistanceFunction == vectorDistanceFunction &&
         other.vectorColumnType == vectorColumnType &&
-        _parametersMapEquals(other.parameters);
+        _parametersMapEquals(other.parameters) &&
+        _elementsEqual(other.elements);
   }
 
   bool _parametersMapEquals(Map<String, String>? other) {
@@ -154,6 +155,20 @@ extension IndexComparisons on IndexDefinition {
       if (parameters[key] != other[key]) return false;
     }
     return true;
+  }
+
+  bool _elementsEqual(List<IndexElementDefinition> other) {
+    if (elements.length != other.length) return false;
+    for (var i = 0; i < elements.length; i += 1) {
+      if (!elements[i].like(other[i])) return false;
+    }
+    return true;
+  }
+}
+
+extension IndexElementDefinitionComparison on IndexElementDefinition {
+  bool like(IndexElementDefinition other) {
+    return type == other.type && definition == other.definition;
   }
 }
 

@@ -291,4 +291,153 @@ void main() {
       },
     );
   });
+
+  group('Given index elements', () {
+    test(
+      'when comparing indexes with the same single column element '
+      'then no mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('message_id_idx')
+            .withIsUnique(true)
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = index1.copyWith();
+
+        expect(index1.like(index2), isTrue);
+      },
+    );
+
+    test(
+      'when comparing indexes that differ only by an added column element '
+      'then a mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('message_id_idx')
+            .withIsUnique(true)
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = IndexDefinitionBuilder()
+            .withIndexName('message_id_idx')
+            .withIsUnique(true)
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+              IndexElementDefinition(
+                definition: 'subscriber',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        expect(index1.like(index2), isFalse);
+      },
+    );
+
+    test(
+      'when comparing indexes that differ only by the column name of an element '
+      'then a mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('message_id_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = IndexDefinitionBuilder()
+            .withIndexName('message_id_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'subscriber',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        expect(index1.like(index2), isFalse);
+      },
+    );
+
+    test(
+      'when comparing indexes that differ only by the order of column elements '
+      'then a mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('composite_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+              IndexElementDefinition(
+                definition: 'subscriber',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = IndexDefinitionBuilder()
+            .withIndexName('composite_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'subscriber',
+                type: IndexElementDefinitionType.column,
+              ),
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        expect(index1.like(index2), isFalse);
+      },
+    );
+
+    test(
+      'when comparing indexes that differ only by the type of an element '
+      'then a mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('expr_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = IndexDefinitionBuilder()
+            .withIndexName('expr_idx')
+            .withElements([
+              IndexElementDefinition(
+                definition: 'messageId',
+                type: IndexElementDefinitionType.expression,
+              ),
+            ])
+            .build();
+
+        expect(index1.like(index2), isFalse);
+      },
+    );
+  });
 }
