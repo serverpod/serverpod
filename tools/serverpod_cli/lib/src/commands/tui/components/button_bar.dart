@@ -1,5 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button.dart';
+import 'package:serverpod_cli/src/commands/tui/components/wrap.dart';
 
 /// A horizontal bar of [Button] widgets with consistent spacing.
 ///
@@ -15,16 +16,8 @@ class ButtonBar extends StatelessComponent {
   Component build(BuildContext context) {
     return Container(
       color: Color.defaultColor,
-      child: Row(
-        children: [
-          const SizedBox(width: 1),
-          for (var index = 0; index < buttons.length; index++) ...[
-            if (index > 0) const SizedBox(width: 2),
-            buttons[index],
-          ],
-          const SizedBox(width: 1),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Wrap(spacing: 2, children: buttons),
     );
   }
 }
