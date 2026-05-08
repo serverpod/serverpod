@@ -16,6 +16,8 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
     as _i4;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i5;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -130,6 +132,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final futureCalls = _FutureCalls();
+
   late final _TestToolsEndpoint testTools;
 }
 
@@ -145,6 +149,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
   }
+}
+
+class _FutureCalls {
+  late final insertSimpleDataCall = _InsertSimpleDataCallFutureCall();
 }
 
 class _TestToolsEndpoint {
@@ -308,5 +316,24 @@ class _TestToolsEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _InsertSimpleDataCallFutureCall {
+  Future<void> persistIncrementedSimpleData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i4.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i5.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
+          .invoke(
+            _localUniqueSession,
+            data,
+          );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }
