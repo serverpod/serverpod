@@ -10,8 +10,7 @@ import '../utils/story.dart';
 final googleStories = [
   Story(
     name: 'Google/Button Styles',
-    description:
-        'Google Sign-In native (first) and web (second) button styles.',
+    description: 'Google Sign-In native button styles.',
     builder: (context) {
       final fillStyle = context.knobs.options<GSIButtonTheme>(
         label: 'Fill style',
@@ -55,26 +54,12 @@ final googleStories = [
             shape: shape,
             logoAlignment: logoAlignment,
           ),
-          GoogleSignInWebButton(
-            theme: fillStyle,
-            size: size,
-            text: text,
-            shape: shape,
-            logoAlignment: logoAlignment,
-          ),
         ],
         'Elevated': [
           GoogleSignInNativeButton.elevated(
             onPressed: _nullCallback,
             isLoading: false,
             isDisabled: false,
-            theme: fillStyle,
-            size: size,
-            text: text,
-            shape: shape,
-            logoAlignment: logoAlignment,
-          ),
-          GoogleSignInWebButton.elevated(
             theme: fillStyle,
             size: size,
             text: text,
@@ -93,25 +78,12 @@ final googleStories = [
             shape: shape,
             logoAlignment: logoAlignment,
           ),
-          GoogleSignInWebButton.filled(
-            theme: fillStyle,
-            size: size,
-            text: text,
-            shape: shape,
-            logoAlignment: logoAlignment,
-          ),
         ],
         'Outlined': [
           GoogleSignInNativeButton.outlined(
             onPressed: _nullCallback,
             isLoading: false,
             isDisabled: false,
-            size: size,
-            text: text,
-            shape: shape,
-            logoAlignment: logoAlignment,
-          ),
-          GoogleSignInWebButton.outlined(
             size: size,
             text: text,
             shape: shape,
@@ -124,7 +96,6 @@ final googleStories = [
             isLoading: false,
             isDisabled: false,
           ),
-          GoogleSignInWebButton.icon(),
         ],
       });
     },
