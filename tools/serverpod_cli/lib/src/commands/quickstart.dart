@@ -1,6 +1,7 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -121,7 +122,11 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       template,
       force,
       interactive: interactive,
-      context: TemplateContext(sqlite: true, web: true, skills: true),
+      context: TemplateContext(
+        sqlite: true,
+        web: true,
+        ides: [TemplateIde.claude, TemplateIde.cursor],
+      ),
     );
 
     if (projectPath == null) {

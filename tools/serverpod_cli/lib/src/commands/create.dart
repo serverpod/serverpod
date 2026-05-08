@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 import 'package:serverpod_cli/src/commands/tui/terminal_backend.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -142,7 +143,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       redis: true,
       postgres: true,
       web: true,
-      skills: true,
+      ides: [TemplateIde.claude, TemplateIde.cursor],
     );
 
     final useTui = (interactive ?? true) && !ci.isCI;

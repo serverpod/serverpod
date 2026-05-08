@@ -79,7 +79,6 @@ void main() {
         redis: true,
         web: true,
         sqlite: true,
-        skills: true,
       );
       expect(
         context.toJson(),
@@ -91,7 +90,6 @@ void main() {
           'web': true,
           'docker': true,
           'database': true,
-          'skills': true,
         },
       );
     },

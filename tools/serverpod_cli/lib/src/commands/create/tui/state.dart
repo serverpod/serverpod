@@ -12,8 +12,8 @@ class CreateConfigState extends ServerpodState {
 
   late final List<ServerpodCreateConfig> configValues = [];
 
-  /// Tracked state for selected [ConfigOption] per [ServerpodCreateConfig].
-  late final Map<ServerpodCreateConfig, ConfigOption> _stateValues = {};
+  /// Tracked state for selected [ConfigOption]s per [ServerpodCreateConfig].
+  late final Map<ServerpodCreateConfig, Set<ConfigOption>> _stateValues = {};
 
   /// Tracked state for focused [ConfigOption] per [ServerpodCreateConfig].
   late final Map<ServerpodCreateConfig, ServerpodCreateConfigState>
@@ -53,7 +53,7 @@ class CreateConfigState extends ServerpodState {
         continue;
       }
       configValues.add(config);
-      _stateValues[config] ??= config.defaultOption;
+      _stateValues[config] ??= config.defaultOptions;
       _optionStateValues[config] ??= ServerpodCreateConfigState(config);
     }
 
@@ -62,7 +62,7 @@ class CreateConfigState extends ServerpodState {
     const templateConfig = ServerpodCreateConfig.template;
 
     // Restore state for template config
-    _stateValues[templateConfig] = template.toConfigOption;
+    _stateValues[templateConfig] = {template.toConfigOption};
     final configState = ServerpodCreateConfigState(templateConfig);
     configState._focusedOptionIndex = templateConfig.options.indexOf(
       template.toConfigOption,
@@ -105,13 +105,32 @@ class CreateConfigState extends ServerpodState {
     configState._updateFocusedOption(delta);
     final focusedOptionIndex = configState.focusedOptionIndex;
     final newSelection = config.options[focusedOptionIndex];
-    _stateValues[config] = newSelection;
+
+    if (config.multiSelect) {
+      final selections = _stateValues[config];
+      if (selections?.contains(newSelection) == true) {
+        _stateValues[config] = selections!.difference({newSelection});
+      } else {
+        _stateValues[config] = {...?selections, newSelection};
+      }
+    } else {
+      _stateValues[config] = {newSelection};
+    }
     _evaluateRequirements();
     _updateState();
   }
 
   void updateSelectedOption(ServerpodCreateConfig config, ConfigOption option) {
-    _stateValues[config] = option;
+    if (config.multiSelect) {
+      final selections = _stateValues[config];
+      if (selections?.contains(option) == true) {
+        _stateValues[config] = selections!.difference({option});
+      } else {
+        _stateValues[config] = {...?selections, option};
+      }
+    } else {
+      _stateValues[config] = {option};
+    }
     _focusedConfigIndex = configValues.indexOf(config);
     final configState = _optionStateValues[config];
     configState?._focusedOptionIndex = config.options.indexOf(option);
@@ -135,7 +154,7 @@ class CreateConfigState extends ServerpodState {
       for (final req in config.requirements) {
         final selectedOption = getSelectedOptionFor(req.requiredConfig);
         if (selectedOption != req.requiredConfigOption) {
-          _stateValues[config] = req.disabledOption;
+          _stateValues[config] = {req.disabledOption};
           final configState = _optionStateValues[config];
           // Update the focused option index to keep UI interaction in sync
           configState?._focusedOptionIndex = config.options.indexOf(
@@ -155,10 +174,20 @@ class CreateConfigState extends ServerpodState {
   }
 
   /// Returns the selected [ConfigOption] for [config].
+  /// For multi-select configs, use [getSelectedOptionsFor] instead.
   T? getSelectedOptionFor<T extends ConfigOption>(
     ServerpodCreateConfig<T> config,
   ) {
-    return _stateValues[config] as T?;
+    final value = _stateValues[config];
+    return value?.first as T?;
+  }
+
+  /// Returns all selected [ConfigOption]s for [config].
+  /// Only applicable for multi-select configs.
+  Set<T>? getSelectedOptionsFor<T extends ConfigOption>(
+    ServerpodCreateConfig<T> config,
+  ) {
+    return _stateValues[config]?.cast<T>();
   }
 
   /// Returns true if [option] is the selected option for [config].
@@ -166,11 +195,14 @@ class CreateConfigState extends ServerpodState {
     ServerpodCreateConfig<T> config,
     T option,
   ) {
-    return _stateValues[config] == option;
+    final value = _stateValues[config];
+    return value?.contains(option) == true;
   }
 
   /// Converts this state to [TemplateContext].
   TemplateContext toTemplateContext() {
+    final selectedIdes = getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
+
     return TemplateContext(
       auth: getStatus(ServerpodCreateConfig.auth, BoolConfigOption.enabled),
       redis: getStatus(
@@ -186,7 +218,7 @@ class CreateConfigState extends ServerpodState {
         DatabaseConfigOption.sqlite,
       ),
       web: getStatus(ServerpodCreateConfig.web, BoolConfigOption.enabled),
-      skills: getStatus(ServerpodCreateConfig.skills, BoolConfigOption.enabled),
+      ides: selectedIdes.toTemplateIdes,
     );
   }
 }
@@ -199,7 +231,7 @@ class ServerpodCreateConfigState<T extends ServerpodCreateConfig> {
   final T config;
   final int _maxIndex;
 
-  int _focusedOptionIndex = 0;
+  late int _focusedOptionIndex = config.multiSelect ? -1 : 0;
   int get focusedOptionIndex => _focusedOptionIndex;
 
   void _updateFocusedOption(int delta) {

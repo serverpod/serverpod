@@ -12,6 +12,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
@@ -57,6 +58,18 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
   bool get isServer => this == ServerpodTemplateType.server;
   bool get isModule => this == ServerpodTemplateType.module;
   bool get isMini => this == ServerpodTemplateType.mini;
+}
+
+extension TemplateIdeExtension on List<TemplateIde> {
+  List<Ide> get toSkillIdes {
+    return map((templateIde) {
+      return switch (templateIde) {
+        TemplateIde.claude => Ide.claude,
+        TemplateIde.openCode => Ide.opencode,
+        _ => Ide.generic,
+      };
+    }).toList();
+  }
 }
 
 /// Holds error messages to be flushed at a later time.
@@ -283,12 +296,12 @@ Future<String?> performCreate(
     );
   }
 
-  await log.progress('Configuring Serverpod MCP server', () async {
-    await _configureMcpServer(serverpodDirs.projectDir.path);
-    return true;
-  });
+  if (context.ides.isNotEmpty) {
+    await log.progress('Configuring Serverpod MCP server', () async {
+      await _configureMcpServer(serverpodDirs.projectDir.path, context.ides);
+      return true;
+    });
 
-  if (context.skills) {
     await log.progress('Installing agent skills', () async {
       try {
         final workspace = await const WorkspaceResolver().resolve(
@@ -309,7 +322,7 @@ Future<String?> performCreate(
         final toErrorLog = IOSink(stderrController);
 
         final success = await getSkills(
-          ides: [Ide.claude, Ide.generic],
+          ides: context.ides.toSkillIdes,
           workspace: workspace,
           stdout: toDebugLog,
           stderr: toErrorLog,
@@ -388,54 +401,19 @@ Future<void> _moveDirectoryContents(
   }
 }
 
-Future<void> _configureMcpServer(String projectDirPath) async {
-  const antigravityPath = '.gemini/antigravity/mcp_config.json';
-  const cursorPath = '.cursor/mcp.json';
-  const claudePath = '.mcp.json';
-  const vscodePath = '.vscode/mcp.json';
-  const codexPath = '.codex/config.toml';
-
-  const genericConfig = '''{
-  "mcpServers": {
-    "serverpod": {
-      "command": "serverpod",
-      "args": ["mcp"]
-    },
-    "dart": {
-      "command": "dart",
-      "args": ["mcp-server"]
-    }
-  }
-}
-''';
-
-  const codexConfig = '''[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''';
-
-  await Future.forEach(
-    [cursorPath, claudePath],
-    (path) async {
-      await _createFileAndWrite(p.join(projectDirPath, path), genericConfig);
+Future<void> _configureMcpServer(
+  String projectDirPath,
+  List<TemplateIde> ides,
+) {
+  return Future.forEach(
+    ides,
+    (ide) async {
+      await _createFileAndWrite(
+        p.join(projectDirPath, ide.filePath),
+        ide.config,
+      );
     },
   );
-
-  await _createFileAndWrite(
-    p.join(projectDirPath, antigravityPath),
-    genericConfig.replaceAll(r'"dart":', r'"dart-mcp-server":'),
-  );
-
-  await _createFileAndWrite(
-    p.join(projectDirPath, vscodePath),
-    genericConfig.replaceAll(r'"mcpServers":', r'"servers":'),
-  );
-
-  await _createFileAndWrite(p.join(projectDirPath, codexPath), codexConfig);
 }
 
 Future<void> _createFileAndWrite(String path, String content) async {

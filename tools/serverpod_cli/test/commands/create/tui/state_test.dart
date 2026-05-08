@@ -19,9 +19,10 @@ void main() {
         expect(
           state.configValues,
           containsAll([
+            ServerpodCreateConfig.template,
             ServerpodCreateConfig.database,
             ServerpodCreateConfig.redis,
-            ServerpodCreateConfig.skills,
+            ServerpodCreateConfig.ide,
           ]),
         );
         expect(
@@ -43,7 +44,6 @@ void main() {
           expect(context.postgres, isTrue);
           expect(context.sqlite, isFalse);
           expect(context.web, isFalse);
-          expect(context.skills, isTrue);
         },
       );
 
@@ -90,8 +90,8 @@ void main() {
           0,
         );
         expect(
-          state.getStateFor(ServerpodCreateConfig.skills)?.focusedOptionIndex,
-          0,
+          state.getStateFor(ServerpodCreateConfig.ide)?.focusedOptionIndex,
+          -1,
         );
       });
 
@@ -117,7 +117,7 @@ void main() {
               ServerpodCreateConfig.redis,
               ServerpodCreateConfig.web,
               ServerpodCreateConfig.auth,
-              ServerpodCreateConfig.skills,
+              ServerpodCreateConfig.ide,
             ]),
           );
         },
@@ -135,23 +135,7 @@ void main() {
               ServerpodCreateConfig.template,
               ServerpodCreateConfig.database,
               ServerpodCreateConfig.redis,
-              ServerpodCreateConfig.skills,
-            ]),
-          );
-        },
-      );
-
-      test(
-        'when the template option is changed to mini, '
-        'then the config values are correct',
-        () {
-          state.selectConfigOption(2);
-
-          expect(
-            state.configValues,
-            containsAllInOrder([
-              ServerpodCreateConfig.template,
-              ServerpodCreateConfig.skills,
+              ServerpodCreateConfig.ide,
             ]),
           );
         },
@@ -166,7 +150,6 @@ void main() {
           expect(context.postgres, isTrue);
           expect(context.sqlite, isFalse);
           expect(context.web, isTrue);
-          expect(context.skills, true);
         },
       );
 

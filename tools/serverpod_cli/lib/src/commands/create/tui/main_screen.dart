@@ -33,6 +33,7 @@ class MainScreen extends StatelessComponent {
     final creatingProject = state.creatingProject;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: BorderedBox(
@@ -107,6 +108,11 @@ class MainScreen extends StatelessComponent {
     bool focused,
   ) {
     final state = holder.state;
+
+    if (config.multiSelect) {
+      return _buildMultiSelectConfiguration(theme, config, focused);
+    }
+
     final selectedOption = state.getSelectedOptionFor(config);
 
     return Padding(
@@ -147,6 +153,52 @@ class MainScreen extends StatelessComponent {
     );
   }
 
+  Component _buildMultiSelectConfiguration(
+    ServerpodThemeData theme,
+    ServerpodCreateConfig config,
+    bool focused,
+  ) {
+    final state = holder.state;
+    final selectedOptions = state.getSelectedOptionsFor(config) ?? {};
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 1),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 1),
+        color: focused ? theme.highlight : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              config.label,
+              style: const TextStyle(
+                color: Color.defaultColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Wrap(
+              direction: Axis.horizontal,
+              spacing: 2,
+              children: [
+                for (final option in config.options.indexed)
+                  _buildMultiSelectOption(
+                    theme,
+                    option.$2,
+                    selected: selectedOptions.contains(option.$2),
+                    style: const TextStyle(color: Color.defaultColor),
+                    onTap: () {
+                      state.updateSelectedOption(config, option.$2);
+                      holder.markDirty();
+                    },
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Component _buildConfigurationOption(
     ServerpodThemeData theme,
     ConfigOption option, {
@@ -157,6 +209,23 @@ class MainScreen extends StatelessComponent {
     return GestureDetector(
       onTap: onTap,
       child: RadioButton(
+        label: option.label,
+        value: selected,
+        style: style,
+      ),
+    );
+  }
+
+  Component _buildMultiSelectOption(
+    ServerpodThemeData theme,
+    ConfigOption option, {
+    required bool selected,
+    required TextStyle style,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Checkbox(
         label: option.label,
         value: selected,
         style: style,

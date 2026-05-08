@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 
 /// Configuration for [ServerpodCreateApp].
 /// The enum values are mapped to the configurable features
@@ -7,31 +8,31 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
   template<TemplateTypeOption>(
     label: 'Project Type',
     options: TemplateTypeOption.values,
-    defaultOption: TemplateTypeOption.server,
+    defaultOptions: {TemplateTypeOption.server},
     templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
   ),
   database<DatabaseConfigOption>(
     label: 'Database',
     options: DatabaseConfigOption.values,
-    defaultOption: DatabaseConfigOption.postgres,
+    defaultOptions: {DatabaseConfigOption.postgres},
     templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
   ),
   redis<BoolConfigOption>(
     label: 'Redis (inter-server pubsub & caching)',
     options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
+    defaultOptions: {BoolConfigOption.enabled},
     templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
   ),
   web<BoolConfigOption>(
     label: 'Webserver',
     options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
+    defaultOptions: {BoolConfigOption.enabled},
     templates: [ServerpodTemplateType.server],
   ),
   auth<BoolConfigOption>(
     label: 'Authentication (requires Postgres)',
     options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
+    defaultOptions: {BoolConfigOption.enabled},
     templates: [ServerpodTemplateType.server],
     requirements: [
       ConfigRequirement(
@@ -41,20 +42,21 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
       ),
     ],
   ),
-  skills<BoolConfigOption>(
-    label: 'Agent Skills',
-    options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
+  ide<IdeOption>(
+    label: 'IDEs (click to select)',
+    options: IdeOption.values,
     templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
+    multiSelect: true,
   )
   ;
 
   const ServerpodCreateConfig({
     required this.label,
     required this.options,
-    required this.defaultOption,
     required this.templates,
+    this.defaultOptions = const {},
     this.requirements = const [],
+    this.multiSelect = false,
   });
 
   /// UI visible label for this config.
@@ -63,8 +65,8 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
   /// Supported config options.
   final List<T> options;
 
-  /// The default config option.
-  final T defaultOption;
+  /// The default config options.
+  final Set<T> defaultOptions;
 
   /// Requirements for other related configs that must be satisfied
   /// for this config to be enabled.
@@ -72,6 +74,9 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
 
   /// Supported template types for this config.
   final List<ServerpodTemplateType> templates;
+
+  /// Whether this config supports multi-select options.
+  final bool multiSelect;
 }
 
 /// A [ServerpodCreateConfig] option.
@@ -116,6 +121,22 @@ enum TemplateTypeOption implements ConfigOption {
   final String label;
 }
 
+/// [ConfigOption] for supported IDEs.
+enum IdeOption implements ConfigOption {
+  antigravity('Antigravity'),
+  codex('Codex'),
+  claude('Claude'),
+  cursor('Cursor'),
+  openCode('OpenCode'),
+  vsCode('VSCode')
+  ;
+
+  const IdeOption(this.label);
+
+  @override
+  final String label;
+}
+
 /// Represents a requirement for [ServerpodCreateConfig].
 class ConfigRequirement<T extends ConfigOption> {
   const ConfigRequirement({
@@ -150,4 +171,19 @@ extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
       'Mini template is not supported in the config.',
     ),
   };
+}
+
+extension IdeOptionsExtension on Set<IdeOption> {
+  List<TemplateIde> get toTemplateIdes {
+    return map((option) {
+      return switch (option) {
+        IdeOption.antigravity => TemplateIde.antigravity,
+        IdeOption.codex => TemplateIde.codex,
+        IdeOption.claude => TemplateIde.claude,
+        IdeOption.cursor => TemplateIde.cursor,
+        IdeOption.openCode => TemplateIde.openCode,
+        IdeOption.vsCode => TemplateIde.vscode,
+      };
+    }).toList();
+  }
 }
