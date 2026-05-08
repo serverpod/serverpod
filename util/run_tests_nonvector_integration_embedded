@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Runs the serverpod_test_nonvector_server integration tests against an
+# embedded PostgreSQL postmaster (no Docker required).
+#
+# The nonvector server's test.yaml has 'redis: enabled: true' but its
+# integration tests do not exercise any redis-backed feature - the only
+# integration test (greeting_endpoint_test) does a plain endpoint call.
+# withServerpod logs Redis connection failures during startup but those
+# don't fail the test. Verified empirically: the test passes regardless
+# of whether redis is reachable.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_nonvector_integration_embedded"
+    exit 1
+fi
+
+set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
+REPO_ROOT="$(pwd)"
+MODULE_DIR="$REPO_ROOT/tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+
+# Match the project's config/test.yaml + config/passwords.yaml verbatim:
+PORT=5432
+DB_NAME='serverpod_test'
+DB_PASSWORD='password'
+
+CLI="$REPO_ROOT/tools/serverpod_cli/bin/serverpod_cli.dart"
+
+echo "==== Booting embedded PG (port=$PORT db=$DB_NAME) ===="
+cd "$MODULE_DIR"
+dart run "$CLI" embedded-pg start \
+    --tcp \
+    --port="$PORT" \
+    --db-name="$DB_NAME" \
+    --password="$DB_PASSWORD"
+
+cleanup() {
+    echo ""
+    echo "==== Stopping embedded PG ===="
+    cd "$MODULE_DIR"
+    dart run "$CLI" embedded-pg stop || true
+}
+trap cleanup EXIT
+
+echo ""
+echo "==== Running nonvector integration tests ===="
+cd "$MODULE_DIR"
+dart test \
+    -t integration \
+    --reporter=failures-only \
+    "$@" || [ $? -eq 79 ]
