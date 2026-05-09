@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier_config.dart';
 import '../../../utils/get_passwords_extension.dart';
 import 'google_idp.dart';
 import 'google_idp_utils.dart';
@@ -73,12 +74,16 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// account has been created and linked.
   final AfterGoogleAccountCreatedFunction? onAfterGoogleAccountCreated;
 
+  /// Tolerance for clock skew when validating Google ID token timestamps.
+  final Duration clockSkewTolerance;
+
   /// Creates a new instance of [GoogleIdpConfig].
   const GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,
     this.onAfterGoogleAccountCreated,
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
   });
 
   /// Default validation function for extracted Google account details.
@@ -116,6 +121,7 @@ class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
     super.googleAccountDetailsValidation,
     super.getExtraGoogleInfoCallback,
     super.onAfterGoogleAccountCreated,
+    super.clockSkewTolerance,
   }) : super(
          clientSecret: GoogleClientSecret.fromJsonString(
            Serverpod.instance.getPasswordOrThrow('googleClientSecret'),

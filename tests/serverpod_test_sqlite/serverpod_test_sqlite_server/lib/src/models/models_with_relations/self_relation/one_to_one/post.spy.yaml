@@ -1,5 +1,6 @@
 class: Post
 table: post
+database: all
 fields:
   content: String
   previous: Post?, relation(name=next_previous_post)

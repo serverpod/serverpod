@@ -1,5 +1,6 @@
 class: Person
 table: person
+database: all
 fields:
   name: String
   organization: Organization?, relation(name=org_person, optional)

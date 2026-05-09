@@ -27,7 +27,8 @@ enum RunOption<V> implements OptionDefinition<V> {
       defaultsTo: false,
       helpText: 'List all available scripts.',
     ),
-  );
+  ),
+  ;
 
   const RunOption(this.option);
 

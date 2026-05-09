@@ -1,59 +1,80 @@
 ---
 name: serverpod-overview
-description: Serverpod overview — what it is, project structure, installation, creating and running a project. Use when the user asks about Serverpod in general, project setup, installation, serverpod create, or running a Serverpod server.
+description: Serverpod overview — what it is, project structure, installation, how to work with. Always use at least once when working with packages that use Serverpod.
 ---
 
 # Serverpod Overview
 
-Serverpod is an open-source backend framework for Flutter written in Dart. A Serverpod project consists of three packages: a server, a generated client, and a Flutter app. The server exposes typed endpoints that the client calls via RPC. Models are defined in YAML and generate Dart classes for both server and client. The server uses PostgreSQL for persistence and includes an ORM, caching, real-time streaming, file uploads, scheduling, logging, and a built-in web server (Relic).
+Serverpod is an open-source backend framework for Flutter written in Dart. A Serverpod project consists of usually three packages: a server, a generated client, and a Flutter app. The server exposes typed endpoints that the client calls via generated RPC client. Models are defined in YAML and generate Dart classes for both server and client.
+
+Full Serverpod projects use a configured database (PostgreSQL by default, SQLite supported) for persistence and include an ORM, caching, real-time streaming, file uploads, scheduling, logging, and a built-in web server (Relic). Each of these features have specific skills that you can use to get more details.
 
 ## Prerequisites
 
 - **Flutter** installed (`flutter doctor`)
-- **Docker** (for local PostgreSQL via project's `docker-compose.yaml`)
+- **Docker** (for local PostgreSQL and Redis via project's `docker-compose.yaml`)
 
 ## Installation
 
 ```bash
-dart pub global activate serverpod_cli
-serverpod  # verify
+dart install serverpod_cli
+
+# Verify installation
+serverpod --version
 ```
 
 ## Creating a project
 
-```bash
-serverpod create my_project
-```
+See the [Serverpod Create](../serverpod-create/SKILL.md) skill for how to create a project.
 
-Project name must be lowercase with underscores (valid Dart package name). Creates:
-
-- `my_project_server/` — server code
-- `my_project_client/` — generated client (do not edit)
-- `my_project_flutter/` — Flutter app
-
-Then fetch dependencies: `dart pub get` from project root.
-
-## Project structure
-
-```directory
-my_project/
-├── my_project_server/
-│   ├── lib/                # Endpoints, models, business logic
-│   ├── config/             # development.yaml, production.yaml, passwords.yaml
-│   ├── bin/main.dart       # Entry point
-│   └── docker-compose.yaml # Local PostgreSQL
-├── my_project_client/      # Generated client (do not edit)
-└── my_project_flutter/     # Flutter app
-```
-
-Run `serverpod generate` after adding or changing endpoints or models.
+For early stages of the development, it is recommended to add the generated code and migrations to the `.gitignore` file. Once the project is more stable, it is recommended to commit the generated code and migrations to the repository.
 
 ## Running the project
 
-1. **Start the database:** From the server directory: `docker compose up` (detached: `-d`; stop: `docker compose down`).
-2. **Start the server:** `cd my_project_server && dart run bin/main.dart --apply-migrations`. Subsequent runs (no schema changes): `dart run bin/main.dart`. API: `http://localhost:8080`, web server: `http://localhost:8082`.
-3. **Run the Flutter app:** `cd my_project_flutter && flutter run -d chrome`. For Android emulator, the app uses `10.0.2.2`; for a device on the network, set `publicHost` in `config/development.yaml` to the machine's IP.
+Running the project is as simple as calling `serverpod start` from the server package directory. The `serverpod start` command will:
+
+1. Start Docker Compose if needed.
+2. Generate the code for pending changes.
+3. Apply pending migrations.
+4. Start the server.
+5. Watch for changes to continuously:
+  - Generate the code after changes to models, endpoints and future calls.
+  - Apply created migrations.
+  - Hot reload the server.
+  - Listen to the MCP server for commands.
+
+When the project is running, the server will be available at `http://localhost:8080` and the web server will be available at `http://localhost:8082`.
+
+The running instance will be accessible via the `serverpod mcp` to read runtime logs, create migrations, apply migrations, hot reload the server and more. Always prefer using the `serverpod mcp` over the CLI when possible.
+
+After starting the server, the Flutter app can be run by navigating to the `my_project_flutter` directory and calling `flutter run -d chrome`. For Android emulator, the app uses `10.0.2.2`; for a device on the network, set `publicHost` in `config/development.yaml` to the machine's IP.
+
+## Running the project in production
+
+To run the project in production, the server can be started by calling `dart run bin/main.dart --mode production --apply-migrations` (the `--apply-migrations` flag is only needed if there are new migrations to apply).
+
+## Working on the project with no running instance
+
+If the project is not running, the code can be generated by calling `serverpod generate`.
+
+```bash
+# Use the `--watch` flag to generate continuously
+# Use the `--directory` flag to generate the code for a specific server package
+serverpod generate [--watch] [--directory <directory>]
+```
+
+NEVER edit the generated code, as it will be overwritten by the next generation.
+
+After generating the code, migrations can be created by calling `serverpod create-migration`.
+
+```bash
+# Use `--force` to create migrations with destructive changes
+# Use the `--tag` flag to name the migration
+serverpod create-migration [--force] [--tag <tag>]
+```
+
+See the [Serverpod Migrations](../serverpod-migrations/SKILL.md) skill for more details.
 
 ## Serverpod Mini
 
-Lightweight setup without PostgreSQL: `serverpod create myminipod --mini`. Includes remote method calls, models, streaming, logging, and caching — no database ORM, scheduling, Insights, file uploads, health checks, or Relic web server. Start with `dart run bin/main.dart` (no Docker). Upgrade to full Serverpod later with `serverpod create .` from the server directory.
+Lightweight setup without database: `serverpod create myminipod --mini`. Includes remote method calls, models, streaming, logging, and caching — no database ORM, scheduling, Insights, file uploads, health checks, or Relic web server. Upgrade to full Serverpod later with `serverpod create .` from the server directory using the default/server template.

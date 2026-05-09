@@ -51,7 +51,7 @@ export 'profile/models/user_profile_model.dart';
 export 'session/models/server_side_session.dart';
 export 'session/models/server_side_session_info.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

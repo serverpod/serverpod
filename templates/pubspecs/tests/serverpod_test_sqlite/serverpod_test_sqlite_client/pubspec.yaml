@@ -14,6 +14,10 @@ dependencies:
   serverpod_client: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
 
+dev_dependencies:
+  serverpod_database: SERVERPOD_VERSION
+  test: ^1.25.5
+
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
@@ -23,3 +27,5 @@ dependency_overrides:
     path: ../../../packages/serverpod_serialization
   serverpod_service_client:
     path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

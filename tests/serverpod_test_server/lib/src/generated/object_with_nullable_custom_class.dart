@@ -115,7 +115,9 @@ abstract class ObjectWithNullableCustomClass
             ? (nullableCustomClassWithoutProtocolSerialization
                       as _i1.ProtocolSerialization)
                   .toJsonForProtocol()
-            : nullableCustomClassWithoutProtocolSerialization?.toJson(),
+            :
+              // ignore: dead_code
+              nullableCustomClassWithoutProtocolSerialization?.toJson(),
       if (nullableCustomClassWithProtocolSerialization != null)
         'nullableCustomClassWithProtocolSerialization':
             // ignore: unnecessary_type_check
@@ -124,7 +126,9 @@ abstract class ObjectWithNullableCustomClass
             ? (nullableCustomClassWithProtocolSerialization
                       as _i1.ProtocolSerialization)
                   .toJsonForProtocol()
-            : nullableCustomClassWithProtocolSerialization?.toJson(),
+            :
+              // ignore: dead_code
+              nullableCustomClassWithProtocolSerialization?.toJson(),
       if (nullableCustomClassWithProtocolSerializationMethod != null)
         'nullableCustomClassWithProtocolSerializationMethod':
             // ignore: unnecessary_type_check
@@ -133,13 +137,17 @@ abstract class ObjectWithNullableCustomClass
             ? (nullableCustomClassWithProtocolSerializationMethod
                       as _i1.ProtocolSerialization)
                   .toJsonForProtocol()
-            : nullableCustomClassWithProtocolSerializationMethod?.toJson(),
+            :
+              // ignore: dead_code
+              nullableCustomClassWithProtocolSerializationMethod?.toJson(),
       'nonNullableCustomClass':
           // ignore: unnecessary_type_check
           nonNullableCustomClass is _i1.ProtocolSerialization
           ? (nonNullableCustomClass as _i1.ProtocolSerialization)
                 .toJsonForProtocol()
-          : nonNullableCustomClass.toJson(),
+          :
+            // ignore: dead_code
+            nonNullableCustomClass.toJson(),
     };
   }
 

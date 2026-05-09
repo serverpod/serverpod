@@ -187,6 +187,13 @@ class TestToolsEndpoint extends Endpoint {
     ]);
   }
 
+  Future<dynamic> echoDynamic(
+    Session session,
+    dynamic anything,
+  ) async {
+    return anything;
+  }
+
   Future<SimpleData> echoSimpleData(
     Session session,
     SimpleData simpleData,
@@ -199,6 +206,13 @@ class TestToolsEndpoint extends Endpoint {
     List<SimpleData> simpleDatas,
   ) async {
     return simpleDatas;
+  }
+
+  Future<ObjectWithDynamic> echoObjectWithDynamic(
+    Session session,
+    ObjectWithDynamic objectWithDynamic,
+  ) async {
+    return objectWithDynamic;
   }
 
   Future<Types> echoTypes(

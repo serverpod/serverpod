@@ -19,7 +19,7 @@ values:
   - bigint
   ### Dart type: [UuidValue]
   - uuid
-  ### Esp. for serializable objects.
+  ### Esp. for serializable objects as [json].
   - json
   ### Used for unknown types, that have never been
   ### used by Serverpod.
@@ -32,3 +32,5 @@ values:
   - sparsevec
   ### Dart type: [Bit]
   - bit
+  ### Esp. for serializable objects as [jsonb].
+  - jsonb

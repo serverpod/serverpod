@@ -1,41 +1,44 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_cli/src/commands/tui/app.dart';
+import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
 
 import 'main_screen.dart';
-import 'serverpod_theme.dart';
+
 import 'state.dart';
 
-/// Provides access to the shared [ServerWatchState] and a way to trigger
-/// rebuilds on the currently mounted [ServerpodWatchAppState].
-///
-/// The backend mutates [state] directly, then calls [markDirty] to schedule
-/// a rebuild. This avoids proxying every mutation method and survives
-/// `NoctermApp` rebuilds that recreate the widget state.
-class AppStateHolder {
-  AppStateHolder(this.state);
+/// State holder for [ServerpodWatchApp].
+class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
+  StartAppStateHolder(this._state);
 
-  final ServerWatchState state;
+  final ServerWatchState _state;
+
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
   VoidCallback? _onCreateMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
 
-  void _attach(ServerpodWatchAppState s) {
-    _widgetState = s;
-    s.onHotReload = _onHotReload;
-    s.onCreateMigration = _onCreateMigration;
-    s.onApplyMigration = _onApplyMigration;
-    s.onQuit = _onQuit;
+  @override
+  ServerWatchState get state => _state;
+
+  @override
+  ServerpodAppState? get widgetState => _widgetState;
+
+  @override
+  void attach(ServerpodWatchAppState widgetState) {
+    _widgetState = widgetState;
+    widgetState.onHotReload = _onHotReload;
+    widgetState.onCreateMigration = _onCreateMigration;
+    widgetState.onApplyMigration = _onApplyMigration;
+    widgetState.onQuit = _onQuit;
   }
 
-  void _detach(ServerpodWatchAppState s) {
-    if (_widgetState == s) _widgetState = null;
+  @override
+  void detach(ServerpodWatchAppState widgetState) {
+    if (_widgetState == widgetState) _widgetState = null;
   }
-
-  /// Trigger a rebuild on the currently mounted state.
-  void markDirty() => _widgetState?._rebuild();
 
   set onHotReload(VoidCallback? cb) {
     _onHotReload = cb;
@@ -59,23 +62,23 @@ class AppStateHolder {
 }
 
 /// Root TUI component for `serverpod start`.
-class ServerpodWatchApp extends StatefulComponent {
+class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
   const ServerpodWatchApp({
     super.key,
-    required this.holder,
+    required super.holder,
     required this.onReady,
   });
 
-  final AppStateHolder holder;
-  final void Function(AppStateHolder holder) onReady;
+  final void Function(StartAppStateHolder holder) onReady;
 
   @override
-  State<ServerpodWatchApp> createState() => ServerpodWatchAppState();
+  ServerpodAppState createState() => ServerpodWatchAppState();
 }
 
-class ServerpodWatchAppState extends State<ServerpodWatchApp> {
+class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
+  final helpScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
@@ -88,7 +91,7 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   @override
   void initState() {
     super.initState();
-    component.holder._attach(this);
+    component.holder.attach(this);
     // Keep splash visible for at least 5 seconds.
     Timer(const Duration(seconds: 5), () {
       _minSplashElapsed = true;
@@ -101,16 +104,21 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
 
   @override
   void dispose() {
-    component.holder._detach(this);
+    component.holder.detach(this);
     super.dispose();
   }
 
   void _tryDismissSplash() {
     final state = component.holder.state;
-    if (_minSplashElapsed && state.serverReady && state.showSplash) {
+    if (_minSplashElapsed && state.showSplash) {
       state.showSplash = false;
       if (mounted) setState(() {});
     }
+  }
+
+  @override
+  void rebuild() {
+    _rebuild();
   }
 
   void _rebuild() {
@@ -120,32 +128,30 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   }
 
   @override
-  Component build(BuildContext context) {
+  Component buildApp(BuildContext context) {
     final state = component.holder.state;
 
-    return ServerpodTheme(
-      data: ServerpodThemeData.dark,
-      child: Focusable(
-        focused: true,
-        onKeyEvent: _handleKeyEvent,
-        child: MainScreen(
-          state: state,
-          showSplash: state.showSplash,
-          logScrollController: logScrollController,
-          rawScrollController: rawScrollController,
-          onToggleHelp: () {
-            state.showHelp = !state.showHelp;
-            _rebuild();
-          },
-          onTabChanged: (index) {
-            state.selectedTab = index;
-            _rebuild();
-          },
-          onHotReload: onHotReload,
-          onCreateMigration: onCreateMigration,
-          onApplyMigration: onApplyMigration,
-          onQuit: onQuit,
-        ),
+    return Focusable(
+      focused: true,
+      onKeyEvent: _handleKeyEvent,
+      child: MainScreen(
+        state: state,
+        showSplash: state.showSplash,
+        logScrollController: logScrollController,
+        rawScrollController: rawScrollController,
+        helpScrollController: helpScrollController,
+        onToggleHelp: () {
+          state.showHelp = !state.showHelp;
+          _rebuild();
+        },
+        onTabChanged: (index) {
+          state.selectedTab = index;
+          _rebuild();
+        },
+        onHotReload: onHotReload,
+        onCreateMigration: onCreateMigration,
+        onApplyMigration: onApplyMigration,
+        onQuit: onQuit,
       ),
     );
   }
@@ -153,23 +159,28 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
   bool _handleKeyEvent(KeyboardEvent event) {
     final state = component.holder.state;
 
-    // Dismiss help overlay.
-    if (state.showHelp && event.logicalKey == LogicalKey.escape) {
-      state.showHelp = false;
-      _rebuild();
-      return true;
-    }
-    // When help is open, absorb all keys except H (toggle) and Q (quit).
-    if (state.showHelp) return true;
-
-    if (event.logicalKey == LogicalKey.keyX) {
-      state.expandOperations = !state.expandOperations;
-      _rebuild();
+    if (state.showHelp) {
+      if (event.logicalKey == LogicalKey.escape) {
+        state.showHelp = false;
+        _rebuild();
+        return true;
+      }
+      // Route navigation keys to the help overlay's controller; absorb the
+      // rest so they don't fall through to tab/scroll handling underneath.
+      _handleScrollKey(helpScrollController, event);
       return true;
     }
 
-    if (event.logicalKey == LogicalKey.tab) {
-      state.selectedTab = (state.selectedTab + 1) % 2;
+    // Tab cycling: Tab and Right cycle forward, Left cycles back.
+    const tabCount = 2;
+    if (event.logicalKey == LogicalKey.tab ||
+        event.logicalKey == LogicalKey.arrowRight) {
+      state.selectedTab = (state.selectedTab + 1) % tabCount;
+      _rebuild();
+      return true;
+    }
+    if (event.logicalKey == LogicalKey.arrowLeft) {
+      state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
       _rebuild();
       return true;
     }
@@ -183,45 +194,65 @@ class ServerpodWatchAppState extends State<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    // Scrolling.
+
     final c = state.selectedTab == 0
         ? logScrollController
         : rawScrollController;
-    final quarter = c.viewportDimension / 4;
-    final half = c.viewportDimension / 2;
+    return _handleScrollKey(c, event);
+  }
+
+  /// Handles scroll keyboard [event] for [controller].
+  ///
+  /// When the controller is in reverse mode ([controller.isReversed]),
+  /// up/down semantics are inverted.
+  bool _handleScrollKey(ScrollController controller, KeyboardEvent event) {
+    final reverse = controller.isReversed;
+    final quarter = controller.viewportDimension / 4;
+    final half = controller.viewportDimension / 2;
+
+    void up([double amount = 1.0]) =>
+        reverse ? controller.scrollDown(amount) : controller.scrollUp(amount);
+    void down([double amount = 1.0]) =>
+        reverse ? controller.scrollUp(amount) : controller.scrollDown(amount);
+    void pageUp() => reverse ? controller.pageDown() : controller.pageUp();
+    void pageDown() => reverse ? controller.pageUp() : controller.pageDown();
+    void toStart() =>
+        reverse ? controller.scrollToEnd() : controller.scrollToStart();
+    void toEnd() =>
+        reverse ? controller.scrollToStart() : controller.scrollToEnd();
 
     switch (event.logicalKey) {
       // Quarter screen (Shift+arrows) - before plain arrows.
       case LogicalKey.arrowUp when event.isShiftPressed:
-        c.scrollUp(quarter);
+        up(quarter);
       case LogicalKey.arrowDown when event.isShiftPressed:
-        c.scrollDown(quarter);
+        down(quarter);
 
       // Single line
       case LogicalKey.arrowUp || LogicalKey.keyK:
-        c.scrollUp();
+        up();
       case LogicalKey.arrowDown || LogicalKey.keyJ || LogicalKey.enter:
-        c.scrollDown();
+        down();
 
       // Half screen
       case LogicalKey.keyU:
-        c.scrollUp(half);
+        up(half);
       case LogicalKey.keyD:
-        c.scrollDown(half);
+        down(half);
 
       // Full screen
       case LogicalKey.pageUp || LogicalKey.backspace || LogicalKey.keyB:
-        c.pageUp();
+        pageUp();
       case LogicalKey.pageDown || LogicalKey.space || LogicalKey.keyF:
-        c.pageDown();
+        pageDown();
 
       // Start / end - G with shift = end, g without = start.
       case LogicalKey.keyG when event.isShiftPressed:
-        c.scrollToEnd();
+        toEnd();
       case LogicalKey.home || LogicalKey.keyG:
-        c.scrollToStart();
+        toStart();
       case LogicalKey.end:
-        c.scrollToEnd();
+        toEnd();
 
       default:
         return false;

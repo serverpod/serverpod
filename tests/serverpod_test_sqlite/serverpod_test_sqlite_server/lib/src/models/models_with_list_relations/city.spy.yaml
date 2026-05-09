@@ -1,5 +1,6 @@
 class: City
 table: city
+database: all
 fields:
   name: String
   citizens: List<Person>?, relation

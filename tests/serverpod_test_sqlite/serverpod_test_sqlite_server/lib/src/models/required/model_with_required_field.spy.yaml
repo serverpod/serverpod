@@ -1,6 +1,7 @@
 class: ModelWithRequiredField
 table: model_with_required_field
+database: all
 fields:
-    name: String
-    email: String?, required
-    phone: String?
+  name: String
+  email: String?, required
+  phone: String?

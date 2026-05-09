@@ -5,7 +5,9 @@ description: Define Serverpod data models in YAML (.spy.yaml), serialization, da
 
 # Serverpod Models
 
-Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables. Run `serverpod generate` after changes.
+Models are defined in `.spy.yaml` files anywhere under server `lib/`. They generate Dart classes for server and client, and optionally database tables.
+
+After each change to models, ensure that the code is generated (automatically when a `serverpod start` is running or manually with `serverpod generate`). If models with `table` have changed, the database schema must be updated following the [migration workflow](../serverpod-migrations/SKILL.md).
 
 ## Basic class
 
@@ -30,7 +32,7 @@ fields:
 
 ## Database table
 
-Add `table` for PostgreSQL table + ORM:
+Add `table` for a database table + ORM:
 
 ```yaml
 class: Company
@@ -39,8 +41,6 @@ fields:
   name: String
   foundedDate: DateTime?
 ```
-
-Run `serverpod create-migration` after schema changes, start server with `--apply-migrations`.
 
 ## Scope
 
@@ -127,11 +127,23 @@ indexes:
 
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
 
-## Workflow
+## Client-side database
 
-1. Add/edit `.spy.yaml` under server `lib/`
-2. `serverpod generate`
-3. If table/index changed: `serverpod create-migration`, start server with `--apply-migrations`
+Models with the `table` keyword can also generate a client-side database with the `database` keyword:
+
+```yaml
+class: Company
+table: company
+database: client
+```
+
+| Value | Description |
+| ------- | ----------- |
+| `server` | Generates tables only on the server, and a non-table model on the client package (default). |
+| `client` | Generates tables only on the client, and a non-table model on the server package. |
+| `all` | Generates table models on both server and client. |
+
+For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database#client-side-database) skill.
 
 ## Backward compatibility
 

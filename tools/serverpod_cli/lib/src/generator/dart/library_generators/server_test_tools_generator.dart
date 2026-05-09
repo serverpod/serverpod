@@ -961,6 +961,11 @@ extension on Expression {
       ]);
     }
 
+    if (returnType.isFutureType &&
+        returnType.generics.single.className == 'dynamic') {
+      return this;
+    }
+
     return asA(returnType.reference(true, config: config));
   }
 }

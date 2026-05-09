@@ -48,6 +48,112 @@ void main() {
       expect(migration.warnings, hasLength(0));
     });
   });
+
+  group(
+    'Given table with json column as source and jsonb column as target',
+    () {
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then the alter action has a column type change to jsonb.', () {
+        var modifyColumns = migration.actions.first.alterTable!.modifyColumns;
+        expect(modifyColumns, hasLength(1));
+        expect(modifyColumns.first.newType, ColumnType.jsonb);
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given table with jsonb column as source and json column as target',
+    () {
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.jsonb);
+      var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then the alter action has a column type change to json.', () {
+        var modifyColumns = migration.actions.first.alterTable!.modifyColumns;
+        expect(modifyColumns, hasLength(1));
+        expect(modifyColumns.first.newType, ColumnType.json);
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given table with non-nullable json column as source and nullable jsonb column as target',
+    () {
+      var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.json);
+      var sourceTable = sourceDefinition.tables.first;
+      var sourceColumn = sourceTable.columns.firstWhere(
+        (c) => c.name == 'test_column',
+      );
+      var targetDefinition = sourceDefinition.copyWith(
+        tables: [
+          sourceTable.copyWith(
+            columns: sourceTable.columns
+                .map(
+                  (c) => c == sourceColumn
+                      ? c.copyWith(
+                          columnType: ColumnType.jsonb,
+                          isNullable: true,
+                        )
+                      : c,
+                )
+                .toList(),
+          ),
+        ],
+      );
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test('then one alter table action is created.', () {
+        expect(migration.actions, hasLength(1));
+        expect(
+          migration.actions.first.type,
+          DatabaseMigrationActionType.alterTable,
+        );
+      });
+
+      test('then no warnings are created.', () {
+        expect(migration.warnings, isEmpty);
+      });
+    },
+  );
 }
 
 DatabaseDefinition _singleColumnDatabaseDefinition(ColumnType columnType) {

@@ -29,7 +29,8 @@ enum GeneratePubspecsOption<V> implements OptionDefinition<V> {
       defaultsTo: 'development',
       allowedValues: ['development', 'production'],
     ),
-  );
+  ),
+  ;
 
   const GeneratePubspecsOption(this.option);
 

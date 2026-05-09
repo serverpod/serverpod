@@ -21,7 +21,8 @@ enum TestEnum implements _i1.SerializableModel {
   ///
   /// Second Value Extra Text
   two,
-  three;
+  three
+  ;
 
   static TestEnum fromJson(int index) {
     switch (index) {

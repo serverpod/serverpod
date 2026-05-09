@@ -1,5 +1,6 @@
 class: Address
 table: address
+database: all
 fields:
   street: String
   inhabitantId: int?

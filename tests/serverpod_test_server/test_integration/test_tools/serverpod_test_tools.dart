@@ -54,17 +54,19 @@ import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_fie
     as _i28;
 import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i29;
-import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
     as _i30;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i31;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i32;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _i32;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i33;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
-    as _i33;
-import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i34;
-import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
     as _i35;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+    as _i36;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -14063,6 +14065,35 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Future<dynamic> echoDynamic(
+    _i1.TestSessionBuilder sessionBuilder,
+    dynamic anything,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'testTools',
+            method: 'echoDynamic',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoDynamic',
+          parameters: _i1.testObjectToJson({'anything': anything}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<_i10.SimpleData> echoSimpleData(
     _i1.TestSessionBuilder sessionBuilder,
     _i10.SimpleData simpleData,
@@ -14118,6 +14149,39 @@ class _TestToolsEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<List<_i10.SimpleData>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i30.ObjectWithDynamic> echoObjectWithDynamic(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i30.ObjectWithDynamic objectWithDynamic,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'testTools',
+            method: 'echoObjectWithDynamic',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'echoObjectWithDynamic',
+          parameters: _i1.testObjectToJson({
+            'objectWithDynamic': objectWithDynamic,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i30.ObjectWithDynamic>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15546,7 +15610,7 @@ class _MyFeatureEndpoint {
     });
   }
 
-  _i3.Future<_i30.MyFeatureModel> myFeatureModel(
+  _i3.Future<_i31.MyFeatureModel> myFeatureModel(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -15568,7 +15632,7 @@ class _MyFeatureEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i30.MyFeatureModel>);
+                as _i3.Future<_i31.MyFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -15582,11 +15646,11 @@ class _TestGeneratedCallFutureCall {
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i31.TestGeneratedCallHelloModel(name: name);
+    var object = _i32.TestGeneratedCallHelloModel(name: name);
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i32.TestGeneratedCallHelloFutureCall().invoke(
+      await _i33.TestGeneratedCallHelloFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15600,14 +15664,14 @@ class _TestGeneratedCallFutureCall {
     String name, {
     int code = 0,
   }) async {
-    var object = _i33.TestGeneratedCallByeModel(
+    var object = _i34.TestGeneratedCallByeModel(
       name: name,
       code: code,
     );
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i32.TestGeneratedCallByeFutureCall().invoke(
+      await _i33.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15623,7 +15687,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i32.TestGeneratedCallLogDataFutureCall().invoke(
+      await _i33.TestGeneratedCallLogDataFutureCall().invoke(
         _localUniqueSession,
         data,
       );
@@ -15636,7 +15700,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i32.TestGeneratedCallDoTaskFutureCall().invoke(
+      await _i33.TestGeneratedCallDoTaskFutureCall().invoke(
         _localUniqueSession,
         null,
       );
@@ -15648,16 +15712,16 @@ class _TestGeneratedCallFutureCall {
   Future<void> executeWithTrigger(
     _i1.TestSessionBuilder sessionBuilder,
     String entityId, {
-    required _i34.MyTriggerType triggerType,
+    required _i35.MyTriggerType triggerType,
   }) async {
-    var object = _i35.TestGeneratedCallExecuteWithTriggerModel(
+    var object = _i36.TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId,
       triggerType: triggerType,
     );
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i32.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+      await _i33.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
         _localUniqueSession,
         object,
       );

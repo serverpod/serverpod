@@ -38,7 +38,7 @@ serverpod:
       posix: echo "Hello from script"
     fail: exit 42
     succeed: exit 0
-    start: dart bin/main.dart
+    start: dart run bin/main.dart
     test: dart test
     trap:
       posix: trap "echo SIGINT; exit 0" INT; echo "Trap Running"; while :; do sleep 0.1; done

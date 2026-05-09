@@ -74,6 +74,19 @@ class ColumnSerializable<T> extends Column<T> {
   });
 }
 
+/// A [Column] holding a [SerializableModel]. The entity will be stored in the
+/// database as a binary-encoded object that retains the JSON structure.
+/// Stored as JSONB on Postgres (with indexing support) and BLOB on SQLite.
+class ColumnStructured<T> extends Column<T> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnStructured(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+}
+
 abstract class _ValueOperatorColumn<T> extends Column<T> {
   _ValueOperatorColumn(
     super.columnName,

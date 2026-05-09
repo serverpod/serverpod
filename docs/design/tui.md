@@ -2,6 +2,16 @@
 
 This document describes the nocterm-based terminal UI for the `serverpod start` command, replacing plain text logging with an interactive dashboard.
 
+> **Note:** This document is the original design proposal. The implementation
+> has since landed and the logging architecture has been generalised - see
+> [`logging.md`](logging.md) for the current `LogWriter`/`LogScope` types
+> and the live VM-service event protocol (`scope_start` / `scope_end` / `log`).
+> References below to `TuiLogger`, `IsolatedLogger`, `TextStdOutLogWriter`,
+> `JsonStdOutLogWriter`, and the `session_start` / `session_log` / `session_query`
+> / `session_end` event names are historical; treat the layout, key bindings,
+> and component breakdown as authoritative and the wire protocol details as
+> superseded.
+
 ## Current State
 
 `serverpod start --watch` outputs plain text log messages to stdout via the `cli_tools` `Logger` singleton. Server process stdout/stderr is forwarded directly to the terminal. There is no interactivity - the only control is Ctrl+C to quit.
@@ -13,13 +23,12 @@ The server logs to stdout via `TextStdOutLogWriter` or `JsonStdOutLogWriter` (co
 The TUI replaces the scrolling text output with an interactive terminal dashboard using [nocterm](https://github.com/knopp/nocterm), a Flutter-like TUI framework for Dart. Components are built directly in `serverpod_cli`, following patterns from [nocterm_components](https://github.com/serverpod/nocterm_components) as a reference.
 
 ```shell
-serverpod start --watch                 # TUI (if TTY available and VM service enabled)
-serverpod start                         # TUI (same conditions)
-serverpod start --watch --no-tui        # Plain text mode (forced)
-serverpod start --watch --no-fes        # Plain text mode (no VM service, TUI not possible)
+serverpod start                         # TUI (if TTY available)
+serverpod start --no-watch              # TUI without the Frontend Server (dart run pod)
+serverpod start --no-tui                # Plain text mode (forced)
 ```
 
-The TUI requires both an interactive terminal (`stdout.hasTerminal`) and the VM service to be enabled (i.e., not `--no-fes`). Without the VM service, the structured logging channel from the server is unavailable, so the TUI falls back to headless mode.
+The TUI activates whenever `--tui` is true (default) and `stdout.hasTerminal` is true. It works in both `--watch` (FES) and `--no-watch` (`dart run`) modes; the VM service is enabled in both, so the structured logging channel from the server is available either way.
 
 ### TUI layout
 
@@ -79,7 +88,7 @@ The `log` singleton from `cli_tools` is used throughout the CLI: `WatchSession`,
 
 #### 2. `LogWriter` interface (server side)
 
-The server's structured logging system. `SessionLogManager` writes session logs (endpoint calls, queries, streaming messages) through `LogWriter` implementations: `TextStdOutLogWriter` (human-readable to stdout), `JsonStdOutLogWriter` (JSON to stdout), `DatabaseLogWriter` (persisted to database), composed via `MultipleLogWriter` and `CachedLogWriter`.
+The server's structured logging system. `SessionLogManager` writes session logs (endpoint calls, queries, streaming messages) through `LogWriter` implementations: `TextStdOutLogWriter` (human-readable to stdout), `JsonStdOutLogWriter` (JSON to stdout), `DatabaseSessionLogWriter` (persisted to database), composed via `MultipleLogWriter` and `CachedLogWriter`.
 
 Lifecycle messages (`_writeLifecycleMessage()`) are a separate path - direct `stdout.writeln()` calls in `serverpod.dart` for startup/shutdown status ("SERVERPOD version: ...", "All servers started", "Serverpod start complete", etc.). Error reporting (`_reportException()`) writes directly to `stderr.writeln()`.
 
@@ -235,19 +244,15 @@ Future<int> _runWatchModeWithTui({...}) async {
 
 ### Headless mode
 
-The TUI is used when all three conditions are met: `--tui` flag is true (default), `stdout.hasTerminal` is true, and the VM service is enabled (not `--no-fes`). Otherwise, falls back to the existing `IsolatedLogger` + direct stdout forwarding.
+The TUI is used when both conditions are met: the `--tui` flag is true (default) and `stdout.hasTerminal` is true. Otherwise, the CLI falls back to the existing `IsolatedLogger` + direct stdout forwarding.
 
 ```dart
-final tui = commandConfig.value(StartOption.tui) &&
-    stdout.hasTerminal &&
-    !noFes;
+final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
 
-if (tui) {
-  exitCode = await _runWithTui(...);  // new TUI path (both watch and one-shot)
-} else if (watch) {
-  exitCode = await _runWatchMode(...);  // existing watch path
+if (useTui) {
+  exitCode = await _runWithTui(...);
 } else {
-  // existing one-shot path
+  exitCode = await _runWatchMode(...);
 }
 ```
 
@@ -301,12 +306,11 @@ The raw output tab is still accessible for debugging scenarios where unstructure
 
 ### Why `--tui` / `--no-tui` with auto-detection
 
-`--tui` defaults to `true` (negatable as `--no-tui`). TUI activates when all conditions are met:
+`--tui` defaults to `true` (negatable as `--no-tui`). TUI activates when both conditions are met:
 - Interactive terminal (`stdout.hasTerminal`) - not piped, not CI
-- VM service enabled (not `--no-fes`) - structured logging channel available
 - `--tui` flag not explicitly disabled
 
-This means `--no-fes` implicitly disables TUI, which is correct: without the VM service, the TUI can't receive structured server logs and sessions. `--no-tui` provides an explicit opt-out for other cases.
+The TUI works in both `--watch` (FES) and `--no-watch` (`dart run`) modes; the VM service is enabled in either, so the structured logging channel is always available. `--no-tui` is the explicit opt-out for environments where a curses-style UI is undesirable.
 
 ## Open Questions
 

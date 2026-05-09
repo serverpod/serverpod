@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod/src/server/log_manager/log_manager.dart';
-import 'package:serverpod/src/server/log_manager/log_settings.dart';
-import 'package:serverpod/src/server/log_manager/log_writers.dart';
-import 'package:serverpod/src/server/log_manager/vm_service_log_writer.dart';
+import 'package:serverpod/src/server/log_manager/session_log_manager.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod_shared/log.dart' as shared show log, LogConvenience;
 
 import '../cache/caches.dart';
 
@@ -159,60 +156,18 @@ abstract class Session implements DatabaseSession {
     }
 
     if (enableLogging) {
-      var logWriter = _createLogWriter(
-        this,
-        server.serverpod.logSettingsManager,
-      );
       _logManager = SessionLogManager(
-        logWriter,
         session: this,
         settingsForSession: (Session session) => server
             .serverpod
             .logSettingsManager
             .getLogSettingsForSession(session),
-        disableLoggingSlowSessions: _isLongLived(this),
+        disableSlowSessionLogging: _isLongLived(this),
         serverId: server.serverId,
       );
     } else {
       _logManager = null;
     }
-  }
-
-  LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
-    var logSettings = settings.getLogSettingsForSession(session);
-
-    var logWriters = <LogWriter>[];
-
-    var sessionLogs = session.serverpod.config.sessionLogs;
-    if (sessionLogs.persistentEnabled) {
-      if (_db?.dialect != DatabaseDialect.sqlite) {
-        logWriters.add(
-          DatabaseLogWriter(
-            logWriterSession: session.serverpod.internalSession,
-          ),
-        );
-      }
-    }
-
-    if (sessionLogs.consoleEnabled) {
-      var logFormat = sessionLogs.consoleLogFormat;
-      var consoleLogger = switch (logFormat) {
-        ConsoleLogFormat.json => JsonStdOutLogWriter(session),
-        ConsoleLogFormat.text => TextStdOutLogWriter(session),
-      };
-      logWriters.add(consoleLogger);
-    }
-
-    logWriters.add(VmServiceLogWriter(session));
-
-    if ((_isLongLived(session)) &&
-        logSettings.logStreamingSessionsContinuously) {
-      return MultipleLogWriter(logWriters);
-    }
-
-    return MultipleLogWriter(
-      logWriters.map((writer) => CachedLogWriter(writer)).toList(),
-    );
   }
 
   /// Returns the duration this session has been open.
@@ -224,13 +179,12 @@ abstract class Session implements DatabaseSession {
   /// database. After a session has been closed, you should not call any
   /// more methods on it. Optionally pass in an [error]/exception and
   /// [stackTrace] if the session ended with an error and it should be written
-  /// to the logs. Returns the session id, if the session has been logged to the
-  /// database.
-  Future<int?> close({
+  /// to the logs.
+  Future<void> close({
     dynamic error,
     StackTrace? stackTrace,
   }) async {
-    if (_closed) return null;
+    if (_closed) return;
     _closed = true;
 
     var willCloseListeners = _willCloseListeners.toList();
@@ -249,17 +203,19 @@ abstract class Session implements DatabaseSession {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager?.finalizeLog(
+      await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
         stackTrace: stackTrace,
         authenticatedUserId: _authenticated?.userIdentifier,
       );
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to close session: $e');
-      stderr.writeln('$stackTrace');
+      shared.log.error(
+        'Failed to close session',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
-    return null;
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
@@ -397,9 +353,6 @@ class StreamingSession extends Session {
 
   /// The underlying web socket that handles communication with the server.
   final RelicWebSocket webSocket;
-
-  /// Set if there is an open session log.
-  int? sessionLogId;
 
   String _endpoint;
 

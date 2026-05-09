@@ -10,8 +10,6 @@ import 'package:test/test.dart';
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
 
-var pathToServerpodRoot = Directory('../..').absolute.path;
-
 /// Creates a [GeneratorConfig] for a test project at [projectDir].
 GeneratorConfig _buildTestConfig(Directory projectDir) {
   return GeneratorConfigBuilder()
@@ -35,10 +33,7 @@ Future<(Directory, Directory)> _buildProject() async {
   final generatedDir = Directory(
     p.join(projectDir.path, 'lib', 'src', 'generated'),
   );
-  await createTestEnvironment(
-    projectDir,
-    pathToServerpodRoot,
-  );
+  await createTestEnvironment(projectDir);
 
   return (projectDir, generatedDir);
 }

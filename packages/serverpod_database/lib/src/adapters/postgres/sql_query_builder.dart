@@ -106,7 +106,7 @@ class SelectQueryBuilder {
     if (groupBy != null) query += ' GROUP BY $groupBy';
     if (_having != null) query += ' HAVING $_having';
     if (orderBy != null) query += ' ORDER BY $orderBy';
-    var lockClause = _buildLockClause();
+    var lockClause = _buildLockClause(restrictLockToBaseTable: join != null);
     if (lockClause != null) query += ' $lockClause';
     if (limit != null) query += ' LIMIT $limit';
     if (offset != null) query += ' OFFSET $_offset';
@@ -303,7 +303,7 @@ class SelectQueryBuilder {
     return this;
   }
 
-  String? _buildLockClause() {
+  String? _buildLockClause({required bool restrictLockToBaseTable}) {
     if (_lockMode == null) return null;
 
     var clause = switch (_lockMode!) {
@@ -312,6 +312,10 @@ class SelectQueryBuilder {
       LockMode.forShare => 'FOR SHARE',
       LockMode.forKeyShare => 'FOR KEY SHARE',
     };
+
+    if (restrictLockToBaseTable) {
+      clause += ' OF "${_table.tableName}"';
+    }
 
     if (_lockBehavior != null && _lockBehavior != LockBehavior.wait) {
       clause += switch (_lockBehavior!) {

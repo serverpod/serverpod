@@ -533,4 +533,52 @@ void main() {
       skip: copyWithMethod == null,
     );
   });
+
+  group(
+    'Given a class with only dynamic fields when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withSimpleField('payload', 'dynamic', nullable: false)
+            .build(),
+      ];
+
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      test('then an empty class named _Undefined is generated.', () {
+        expect(
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '_Undefined',
+          ),
+          isNotNull,
+          reason: 'copyWith uses _Undefined for non-null dynamic fields',
+        );
+      });
+
+      test('then impl copyWith uses Object? payload = _Undefined.', () {
+        var impl = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: '_${testClassName}Impl',
+        );
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          impl!,
+          name: 'copyWith',
+        );
+        expect(
+          copyWithMethod?.parameters?.toSource(),
+          '({Object? payload = _Undefined})',
+        );
+      });
+    },
+  );
 }

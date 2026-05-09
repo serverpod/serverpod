@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
@@ -208,6 +209,149 @@ void main() {
         var sql = index.toSql(tableName: tableDefinition.name);
 
         expect(sql, '');
+      },
+    );
+  });
+
+  test(
+    'Given a database definition with a jsonb serializable column, '
+    'when generating SQL for SQLite, '
+    'then the column uses BLOB storage.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withTable(
+            TableDefinitionBuilder().withName('jsonb_model').withColumns([
+              ColumnDefinitionBuilder()
+                  .withName('id')
+                  .withIdColumn('jsonb_model')
+                  .build(),
+              ColumnDefinitionBuilder()
+                  .withName('tags')
+                  .withColumnType(ColumnType.jsonb)
+                  .withDartType('List<String>')
+                  .build(),
+            ]).build(),
+          )
+          .build();
+
+      var sqlite = databaseDefinition.toSqliteSql(
+        installedModules: _sqliteModules(databaseDefinition),
+      );
+
+      expect(sqlite, contains('"tags" BLOB NOT NULL'));
+    },
+  );
+
+  group('Given a migration changing a column from json to jsonb', () {
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.json)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var sourceTable = sourceDefinition.tables.first;
+    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    var targetDefinition = sourceDefinition.copyWith(
+      tables: [
+        sourceTable.copyWith(
+          columns: sourceTable.columns
+              .map(
+                (c) => c == sourceColumn
+                    ? c.copyWith(columnType: ColumnType.jsonb)
+                    : c,
+              )
+              .toList(),
+        ),
+      ],
+    );
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test(
+      'when generating SQL for SQLite, '
+      'then the rebuild uses jsonb() to cast the column.',
+      () {
+        var sql = migration.toSqliteSql(
+          databaseDefinition: targetDefinition,
+          installedModules: _sqliteModules(targetDefinition),
+          removedModules: [],
+        );
+
+        expect(
+          sql,
+          contains(
+            'INSERT INTO "new_my_table" ("id", "name", "data") '
+            'SELECT "id", "name", jsonb("data") FROM "my_table";',
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a migration changing a column from jsonb to json', () {
+    var sourceDefinition = DatabaseDefinitionBuilder()
+        .withTable(
+          TableDefinitionBuilder()
+              .withName('my_table')
+              .withColumn(
+                ColumnDefinitionBuilder()
+                    .withName('data')
+                    .withColumnType(ColumnType.jsonb)
+                    .withDartType('List<String>')
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+    var sourceTable = sourceDefinition.tables.first;
+    var sourceColumn = sourceTable.columns.firstWhere((c) => c.name == 'data');
+    var targetDefinition = sourceDefinition.copyWith(
+      tables: [
+        sourceTable.copyWith(
+          columns: sourceTable.columns
+              .map(
+                (c) => c == sourceColumn
+                    ? c.copyWith(columnType: ColumnType.json)
+                    : c,
+              )
+              .toList(),
+        ),
+      ],
+    );
+
+    var migration = generateDatabaseMigration(
+      databaseSource: sourceDefinition,
+      databaseTarget: targetDefinition,
+    );
+
+    test(
+      'when generating SQL for SQLite, '
+      'then the rebuild uses json() to cast the column.',
+      () {
+        var sql = migration.toSqliteSql(
+          databaseDefinition: targetDefinition,
+          installedModules: _sqliteModules(targetDefinition),
+          removedModules: [],
+        );
+
+        expect(
+          sql,
+          contains(
+            'INSERT INTO "new_my_table" ("id", "name", "data") '
+            'SELECT "id", "name", json("data") FROM "my_table";',
+          ),
+        );
       },
     );
   });

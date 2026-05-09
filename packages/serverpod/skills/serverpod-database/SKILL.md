@@ -1,11 +1,11 @@
 ---
 name: serverpod-database
-description: Serverpod ORM with PostgreSQL — CRUD, filters, sorting, pagination, relations, migrations, transactions, raw SQL. Use when querying the database, writing migrations, or working with relations. Also include serverpod-models skill if you need to change models.
+description: Serverpod ORM with PostgreSQL or SQLite — CRUD, filters, sorting, pagination, relations, transactions, raw SQL, client-side database. Use when querying the database or working with relations.
 ---
 
 # Serverpod Database
 
-PostgreSQL via ORM. Models with `table` in `.spy.yaml` get generated ORM code.
+Serverpod generates ORM code for models with `table` in `.spy.yaml`. PostgreSQL is the default production database; SQLite is also supported for projects/tests that configure the database on `config/<runMode>.yaml` with `database.filePath: <path>`.
 
 ## CRUD
 
@@ -35,16 +35,18 @@ var activeCompanies = await Company.db.find(session,
 - Combine: `&` (and), `|` (or), `~` (not); use parentheses for precedence
 - Related (one-to-one): `t.address.street.like('%road%')`
 - Related (one-to-many): `t.orders.count() > 3`, `t.orders.count((o) => o.itemType.equals('book')) > 3`, `t.orders.none()`, `t.orders.any()`, `t.orders.any((o) => ...)`, `t.orders.every((o) => ...)`
-- Vector: distance operators (`distanceCosine`, `distanceL2`) for similarity search
+- Vector: distance operators (`distanceCosine`, `distanceL2`) for similarity search (PostgreSQL only).
 
 ## Sorting and pagination
 
-- Sort: `orderBy: (t) => t.column` (ascending default); `orderDescending: true` for descending
+- Sort: `orderBy: (t) => t.column` (ascending default); `orderBy: (t) => t.column.desc()` for descending
 - Multiple: `orderByList: (t) => [t.name.desc(), t.id.asc()]`
 - Sort on relation: `orderBy: (t) => t.ceo.name`; on count: `orderBy: (t) => t.employees.count()`
 - Pagination: `limit` + `offset` for offset-based; cursor-based: `where: (t) => t.id > lastId` with `orderBy: (t) => t.id` and `limit`
 
 ## Relations (include, attach, detach)
+
+Fetch related objects with `include`:
 
 ```dart
 var employee = await Employee.db.findById(session, id,
@@ -61,18 +63,26 @@ var company = await Company.db.findById(session, id,
   ));
 ```
 
-Attach/detach: `Company.db.attachRow.employees(session, company, employee)`, `Company.db.attach.employees(session, company, [e1, e2])`, `Company.db.detachRow.employees(session, employee)`. Objects must have `id` set.
+Models with object relations also have dedicated methods for attach/detach:
+
+```dart
+await Company.db.attachRow.employees(session, company, employee);
+await Company.db.attach.employees(session, company, [e1, e2]);
+await Company.db.detachRow.employees(session, employee);
+```
+
+Objects being attached/detached must have `id` set (typically fetched previously from the database).
 
 ## Transactions
 
 ```dart
-await session.transaction((tx) async {
-  await Company.db.insertRow(tx, company);
-  await OtherModel.db.updateRow(tx, other);
+await session.db.transaction((tx) async {
+  await Company.db.insertRow(session, company, transaction: tx);
+  await OtherModel.db.updateRow(session, other, transaction: tx);
 });
 ```
 
-Use `tx` (not the outer `session`) for all DB calls inside.
+Use `tx` for all DB calls inside the transaction.
 
 ## Row locking
 
@@ -82,16 +92,56 @@ Requires a transaction. Pass `lockMode` and `transaction` to `find`/`findFirstRo
 - `LockBehavior.wait` (default), `noWait` (throw), `skipLocked` (skip, good for job queues)
 - Lock without reading: `Company.db.lockRows(session, where: ..., lockMode: ..., transaction: tx)`
 
+On SQLite, trying to lock rows will be a no-op, since it only supports one write transaction at a time.
+
 ## Runtime parameters
 
 Set Postgres params globally: `runtimeParametersBuilder: (params) => [params.searchPaths(['my_schema', 'public'])]` at Serverpod init. Per-transaction: `await tx.setRuntimeParameters(...)`. Use for search path, vector index options, or custom `MapRuntimeParameters`. Cannot set at session level due to connection pooling.
 
-## Migrations
-
-After changing models with `table`/indexes: `serverpod create-migration`, then `dart run bin/main.dart --apply-migrations`. Options: `--force` (override safeguards), `--tag "v1"` (name tag). For scripted apply: `--role maintenance --apply-migrations` (exits with 0 on success). Opt out per table: `managedMigration: false`.
-
-**Repair migrations:** If DB was changed outside migrations: `serverpod create-repair-migration` (options: `--mode production`, `--version <name>`, `--force`, `--tag`). Apply: `--apply-repair-migration`. Runs before normal migrations.
-
 ## Raw SQL
 
-Use raw SQL via the session/database API for queries beyond ORM. Prefer ORM for standard CRUD.
+For running raw SQL queries, use one of the following methods:
+
+```dart
+late DatabaseResult result;
+result = await session.db.unsafeQuery(query, parameters: parameters);
+result = await session.db.unsafeSimpleQuery(query);
+
+late int rowsAffected;
+rowsAffected = await session.db.unsafeExecute(query, parameters: parameters);
+rowsAffected = await session.db.unsafeSimpleExecute(query);
+```
+
+Prefer ORM for standard CRUD, and parameterize user input instead of string-concatenating SQL.
+
+## Client-side database
+
+When at least one model has `database: client` or `database: all`, the generated `Client` class will have a `createSession` method that returns a `ClientDatabaseSession` for the SQLite database file. On Flutter, open the database doing:
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:my_project_client/my_project_client.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Set the client URL to the server URL
+  final client = Client(clientUrl);
+
+  // Resolve the database path
+  final path = await resolveDatabasePath('app.db');
+
+  // Store the session in your state manager to later use on database operations.
+  final session = await client.createSession(path, isDebugMode: kDebugMode);
+}
+
+Future<String> resolveDatabasePath(String fileName) async {
+  if (kIsWeb) return fileName;
+  final dir = await getApplicationSupportDirectory();
+  return p.join(dir.path, fileName);
+}
+```
+
+Note that the `serverpod_database` package will have to be added as dependency on the client package.

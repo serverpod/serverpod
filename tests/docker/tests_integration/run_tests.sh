@@ -20,10 +20,10 @@ echo ""
 echo "### Resetting database"
 env PGPASSWORD="password" psql -h postgres -U postgres -d serverpod_test -f /app/tests/docker/tests_integration/reset_db.pgsql
 
-# We apply migrations to database 
+# We apply migrations to database
 echo "### Apply migrations"
 pwd
-dart bin/main.dart -m production -r maintenance --apply-migrations
+dart run bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"

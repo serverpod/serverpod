@@ -1,7 +1,7 @@
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod_database.dart' hide Protocol;
-import '../util/stderr_util.dart';
 
 /// The current schema version of the database definition.
 const currentSchemaVersion = 2;
@@ -69,7 +69,7 @@ abstract class DatabaseAnalyzer {
       ];
     } catch (e) {
       // Ignore if the table does not exist.
-      writeError('Failed to get installed migrations: $e');
+      log.error('Failed to get installed migrations', error: e);
       return [];
     }
   }

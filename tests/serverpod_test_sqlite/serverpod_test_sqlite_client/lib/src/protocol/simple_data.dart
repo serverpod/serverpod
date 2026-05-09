@@ -10,10 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 /// Just some simple data.
-abstract class SimpleData implements _i1.SerializableModel {
+abstract class SimpleData implements _i1.TableRow<int?> {
   SimpleData._({
     this.id,
     required this.num,
@@ -31,9 +32,11 @@ abstract class SimpleData implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
+  static final t = SimpleDataTable();
+
+  static const db = SimpleDataRepository._();
+
+  @override
   int? id;
 
   /// The only field of [SimpleData]
@@ -41,9 +44,12 @@ abstract class SimpleData implements _i1.SerializableModel {
   /// Second Value Extra Text
   int num;
 
+  @override
+  _i1.Table<int?> get table => t;
+
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   SimpleData copyWith({
     int? id,
     int? num,
@@ -57,9 +63,35 @@ abstract class SimpleData implements _i1.SerializableModel {
     };
   }
 
+  static SimpleDataInclude include() {
+    return SimpleDataInclude._();
+  }
+
+  static SimpleDataIncludeList includeList({
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    SimpleDataInclude? include,
+  }) {
+    return SimpleDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(SimpleData.t),
+      include: include,
+    );
+  }
+
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -76,7 +108,7 @@ class _SimpleDataImpl extends SimpleData {
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   SimpleData copyWith({
     Object? id = _Undefined,
@@ -85,6 +117,385 @@ class _SimpleDataImpl extends SimpleData {
     return SimpleData(
       id: id is int? ? id : this.id,
       num: num ?? this.num,
+    );
+  }
+}
+
+class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
+  SimpleDataUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
+    table.num,
+    value,
+  );
+}
+
+class SimpleDataTable extends _i1.Table<int?> {
+  SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
+    updateTable = SimpleDataUpdateTable(this);
+    num = _i1.ColumnInt(
+      'num',
+      this,
+    );
+  }
+
+  late final SimpleDataUpdateTable updateTable;
+
+  /// The only field of [SimpleData]
+  ///
+  /// Second Value Extra Text
+  late final _i1.ColumnInt num;
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    num,
+  ];
+}
+
+class SimpleDataInclude extends _i1.IncludeObject {
+  SimpleDataInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table<int?> get table => SimpleData.t;
+}
+
+class SimpleDataIncludeList extends _i1.IncludeList {
+  SimpleDataIncludeList._({
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(SimpleData.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => SimpleData.t;
+}
+
+class SimpleDataRepository {
+  const SimpleDataRepository._();
+
+  /// Returns a list of [SimpleData]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<SimpleData>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [SimpleData] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<SimpleData?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [SimpleData] by its [id] or null if no such row exists.
+  Future<SimpleData?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<SimpleData>(
+      id,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [SimpleData]s in the list and returns the inserted rows.
+  ///
+  /// The returned [SimpleData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<SimpleData>> insert(
+    _i1.DatabaseSession session,
+    List<SimpleData> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<SimpleData>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [SimpleData] and returns the inserted row.
+  ///
+  /// The returned [SimpleData] will have its `id` field set.
+  Future<SimpleData> insertRow(
+    _i1.DatabaseSession session,
+    SimpleData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<SimpleData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SimpleData]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<SimpleData>> update(
+    _i1.DatabaseSession session,
+    List<SimpleData> rows, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<SimpleData>(
+      rows,
+      columns: columns?.call(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [SimpleData]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<SimpleData> updateRow(
+    _i1.DatabaseSession session,
+    SimpleData row, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<SimpleData>(
+      row,
+      columns: columns?.call(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [SimpleData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<SimpleData?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<SimpleData>(
+      id,
+      columnValues: columnValues(SimpleData.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SimpleData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<SimpleData>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<SimpleData>(
+      columnValues: columnValues(SimpleData.t.updateTable),
+      where: where(SimpleData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [SimpleData]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<SimpleData>> delete(
+    _i1.DatabaseSession session,
+    List<SimpleData> rows, {
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<SimpleData>(
+      rows,
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [SimpleData].
+  Future<SimpleData> deleteRow(
+    _i1.DatabaseSession session,
+    SimpleData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<SimpleData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<SimpleData>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<SimpleData>(
+      where: where(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<SimpleData>(
+      where: where?.call(SimpleData.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [SimpleData] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<SimpleData>(
+      where: where(SimpleData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
     );
   }
 }

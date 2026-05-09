@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart' hide LogLevel;
 
 import 'future_call_diagnostics_service.dart';
 import 'future_call_scanner.dart';
@@ -137,11 +137,13 @@ class FutureCallManager {
   Future<void> runScheduledFutureCalls() async {
     await _checkBrokenFutureCalls();
     if (_futureCalls.isEmpty) {
-      stdout.writeln('No future calls registered. Skipping processing.');
+      log.info(
+        'No future calls registered. Skipping processing.',
+      );
       return;
     }
 
-    stdout.writeln('Processing future calls.');
+    log.info('Processing future calls.');
 
     await _scanner.scanFutureCallEntries();
 
@@ -485,7 +487,9 @@ class FutureCallManager {
         }
       }
     }
-    _logSession.log(buffer.toString(), level: LogLevel.warning);
+    if (buffer.isNotEmpty) {
+      _logSession.log(buffer.toString(), level: LogLevel.warning);
+    }
 
     final allCalls = unregisteredCalls + brokenCalls;
 

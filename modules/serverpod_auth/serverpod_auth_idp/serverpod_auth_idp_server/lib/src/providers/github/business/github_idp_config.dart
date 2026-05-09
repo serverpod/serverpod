@@ -63,9 +63,8 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// Callback that can be used with the access token to extract additional
   /// information from GitHub.
   ///
-  /// This callback is invoked during [GitHubIdpUtils.fetchAccountDetails],
-  /// before the system determines if the user is new or returning. It runs on
-  /// EVERY authentication attempt.
+  /// This callback is invoked after the GitHub account has been created.
+  /// It runs on EVERY authentication attempt.
   ///
   /// **CRITICAL - Do NOT create these models in the callback:**
   /// - [GitHubAccount] - Breaks new account detection

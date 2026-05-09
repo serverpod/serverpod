@@ -1,6 +1,6 @@
 ---
 name: serverpod-auth-module
-description: Add Serverpod authentication — serverpod_auth_idp packages, initializeAuthServices, identity providers (Email, Google, Apple, etc.), Flutter sign-in UI, migrations. Use when adding authentication or a new social sign-in to a Serverpod project.
+description: Serverpod Authentication — serverpod_auth_core/serverpod_auth_idp packages, initializeAuthServices, identity providers (Email, Google, Apple, etc.), Flutter sign-in UI. Use when adding or customizing authentication or a new social sign-in to a Serverpod project.
 ---
 
 # Serverpod Authentication Module
@@ -15,27 +15,27 @@ For new projects, the auth module is installed by default with the email identit
 
 ```yaml
 dependencies:
-  serverpod: 3.3.1
-  serverpod_auth_idp_server: 3.3.1
+  serverpod: <serverpod-version>
+  serverpod_auth_idp_server: <serverpod-version>
 ```
 
 **Client** `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  serverpod_client: 3.3.1
-  serverpod_auth_idp_client: 3.3.1
+  serverpod_client: <serverpod-version>
+  serverpod_auth_idp_client: <serverpod-version>
 ```
 
 **Flutter** `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  serverpod_flutter: 3.3.1
-  serverpod_auth_idp_flutter: 3.3.1
+  serverpod_flutter: <serverpod-version>
+  serverpod_auth_idp_flutter: <serverpod-version>
   # Optional per provider:
-  # serverpod_auth_idp_flutter_facebook: 3.3.1
-  # serverpod_auth_idp_flutter_firebase: 3.3.1
+  # serverpod_auth_idp_flutter_facebook: <serverpod-version>
+  # serverpod_auth_idp_flutter_firebase: <serverpod-version>
 ```
 
 Run `dart pub get` in each package, then `serverpod generate` from server directory or root.
@@ -138,24 +138,7 @@ pod.configureAppleIdpRoutes(
 );
 ```
 
-## 4. Migrations
-
-```bash
-# Create models, database bindings, and generate code
-serverpod generate
-```
-
-```bash
-# Create migration
-serverpod create-migration
-```
-
-```bash
-# Apply migration and start server locally (done by user)
-serverpod run start
-```
-
-## 5. Flutter client setup
+## 4. Flutter client setup
 
 ```dart
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -165,22 +148,12 @@ client = Client(serverUrl)
   ..connectivityMonitor = FlutterConnectivityMonitor()
   ..authSessionManager = FlutterAuthSessionManager();
 
-client.auth.initialize();
+await client.auth.initialize();
 ```
 
-## 6. Sign-in UI
+## 5. Sign-in UI
 
-```dart
-SignInScreen(
-  child: YourHomeScreen(
-    onSignOut: () async {
-      await client.auth.signOutDevice();
-    },
-  ),
-)
-```
-
-Example `sign_in_screen.dart`:
+Minimal `sign_in_screen.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -222,10 +195,17 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return _isSignedIn
         ? widget.child
-        : Center(
-            child: SignInWidget(
-              client: client,
-              onAuthenticated: () {},
+        : SignInLocalizationProvider(
+            child: Center(
+              child: SignInWidget(
+                client: client,
+                onAuthenticated: () {},
+                onError: (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Authentication failed: $error')),
+                  );
+                },
+              ),
             ),
           );
   }
@@ -234,7 +214,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
 ## Generator nickname (optional)
 
-In `config/generator.yaml`: `modules: { serverpod_auth_idp: { nickname: auth } }`. Then reference types as `module:auth:AuthUser` in `.spy.yaml`.
+Use the nickname configured in `config/generator.yaml` for the module that owns the type. In Serverpod 3 auth setups, `AuthUser` comes from `serverpod_auth_core`, which is commonly nicknamed `auth`:
+
+```yaml
+modules:
+  serverpod_auth_core:
+    nickname: auth
+```
+
+Then reference types as `module:auth:AuthUser` in `.spy.yaml`. If the project also configures `serverpod_auth_idp` or `serverpod_auth_bridge`, use the nickname in that project's actual `generator.yaml`.
 
 ## Legacy auth
 

@@ -1,11 +1,15 @@
+import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
+import 'package:serverpod_shared/log.dart' hide log;
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
 import 'app.dart';
-import 'state.dart';
+
+int _actionCounter = 0;
 
 /// Dispatches a structured server log event to the TUI state.
-void handleServerLogEvent(AppStateHolder holder, Event event) {
+void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
   if (event.extensionKind != 'ext.serverpod.log') return;
   final data = event.extensionData?.data;
   if (data == null) return;
@@ -15,44 +19,28 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
   switch (type) {
     case 'log':
       state.logHistory.add(
-        TuiLogEntry(
-          level: parseTuiLogLevel(data['level'] as String? ?? 'info'),
-          timestamp:
+        LogEntry(
+          level: parseLogLevel(data['level'] as String? ?? 'info'),
+          time:
               DateTime.tryParse(data['timestamp'] as String? ?? '') ??
               DateTime.now(),
           message: data['message'] as String? ?? '',
+          scope: LogScope.root('server'),
+          error: data['error']?.toString(),
         ),
       );
 
-    case 'session_start':
+    case 'scope_start':
       final id = data['id'] as String? ?? '';
       final label = data['label'] as String? ?? '';
-      // Don't track internal sessions as operations.
+      // Don't track internal scopes as operations.
       if (label == 'INTERNAL') break;
       state.activeOperations[id] = TrackedOperation(
         id: id,
         label: label,
       );
 
-    case 'session_log':
-      state.activeOperations[data['sessionId'] as String? ?? '']?.entries.add(
-        OperationSubEntry(
-          timestamp: DateTime.now(),
-          message: data['message'] as String? ?? '',
-          level: parseTuiLogLevel(data['level'] as String? ?? 'info'),
-        ),
-      );
-
-    case 'session_query':
-      state.activeOperations[data['sessionId'] as String? ?? '']?.entries.add(
-        OperationSubEntry(
-          timestamp: DateTime.now(),
-          message: data['query'] as String? ?? '',
-          duration: (data['duration'] as num?)?.toDouble(),
-        ),
-      );
-
-    case 'session_end':
+    case 'scope_end':
       final id = data['id'] as String? ?? '';
       final op = state.activeOperations.remove(id);
       if (op != null) {
@@ -65,7 +53,6 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
             duration: serverDuration != null
                 ? Duration(microseconds: (serverDuration * 1000000).round())
                 : op.stopwatch.elapsed,
-            entries: op.entries,
           ),
         );
       }
@@ -78,7 +65,7 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
 /// Guards against concurrent actions - if [state.actionBusy] is true or
 /// [state.serverReady] is false, the action is silently ignored.
 void runTrackedAction(
-  AppStateHolder holder,
+  StartAppStateHolder holder,
   String label,
   Future<void> Function() action,
 ) {
@@ -86,7 +73,8 @@ void runTrackedAction(
   if (state.actionBusy || !state.serverReady) return;
 
   state.actionBusy = true;
-  final id = '${label.hashCode}_${DateTime.now().millisecondsSinceEpoch}';
+  final id =
+      '${label.hashCode}_${DateTime.now().millisecondsSinceEpoch}_${++_actionCounter}';
   state.activeOperations[id] = TrackedOperation(id: id, label: label);
   holder.markDirty();
 
@@ -101,7 +89,7 @@ void runTrackedAction(
 }
 
 void _completeTrackedAction(
-  AppStateHolder holder,
+  StartAppStateHolder holder,
   String id, {
   required bool success,
 }) {
@@ -115,20 +103,19 @@ void _completeTrackedAction(
         label: op.label,
         success: success,
         duration: op.stopwatch.elapsed,
-        entries: op.entries,
       ),
     );
   }
   holder.markDirty();
 }
 
-TuiLogLevel parseTuiLogLevel(String level) {
+LogLevel parseLogLevel(String level) {
   return switch (level) {
-    'debug' => TuiLogLevel.debug,
-    'info' => TuiLogLevel.info,
-    'warning' || 'warn' => TuiLogLevel.warning,
-    'error' => TuiLogLevel.error,
-    'fatal' => TuiLogLevel.fatal,
-    _ => TuiLogLevel.info,
+    'debug' => LogLevel.debug,
+    'info' => LogLevel.info,
+    'warning' || 'warn' => LogLevel.warning,
+    'error' => LogLevel.error,
+    'fatal' => LogLevel.fatal,
+    _ => LogLevel.info,
   };
 }

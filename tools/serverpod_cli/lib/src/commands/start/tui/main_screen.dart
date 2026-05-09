@@ -1,9 +1,12 @@
-import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_cli/src/commands/tui/components.dart';
+import 'package:serverpod_cli/src/commands/tui/run_app.dart';
+import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
+import 'package:serverpod_shared/log.dart';
 
-import 'components.dart';
-import 'help_overlay.dart';
+import '../../tui/help_overlay.dart';
 import 'loading_screen.dart';
-import 'serverpod_theme.dart';
 import 'state.dart';
 
 /// Main screen shown after startup completes.
@@ -19,6 +22,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.logScrollController,
     required this.rawScrollController,
+    required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
     this.onCreateMigration,
@@ -31,6 +35,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController logScrollController;
   final ScrollController rawScrollController;
+  final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
@@ -76,13 +81,13 @@ class MainScreen extends StatelessComponent {
           ],
         ),
         LoadingScreen(visible: showSplash),
-        if (state.showHelp) const HelpOverlay(),
+        if (state.showHelp) HelpOverlay(controller: helpScrollController),
       ],
     );
   }
 
   Component _buildTabBar(ServerpodThemeData st) {
-    const labels = ['Log Messages', 'Raw Output'];
+    const labels = ['Log Messages', 'Raw server output'];
     return Row(
       children: [
         for (var i = 0; i < labels.length; i++)
@@ -125,17 +130,20 @@ class MainScreen extends StatelessComponent {
           keyboardScrollable: false,
           itemCount: items.length,
           itemBuilder: (context, index) {
-            return switch (items[items.length - 1 - index]) {
-              TuiLogEntry entry => LogMessageWidget(
+            final item = items[items.length - 1 - index];
+            if (item is LogEntry) {
+              return LogMessageWidget(
                 key: ValueKey(index),
-                entry: entry,
-              ),
-              CompletedOperation op => CompletedOperationWidget(
+                entry: item,
+              );
+            }
+            if (item is CompletedOperation) {
+              return CompletedOperationWidget(
                 key: ValueKey(index),
-                operation: op,
-                expanded: state.expandOperations,
-              ),
-            };
+                operation: item,
+              );
+            }
+            return const SizedBox.shrink();
           },
         ),
       ),
@@ -169,50 +177,56 @@ class MainScreen extends StatelessComponent {
   Component _buildButtonBar() {
     final actionsEnabled = state.serverReady && !state.actionBusy;
 
-    return Row(
-      children: [
-        const SizedBox(width: 1),
+    return ButtonBar(
+      buttons: [
         Button(
           name: 'Hot Reload',
           activationChar: 'R',
-          activationKey: LogicalKey.keyR,
-          onActivate: onHotReload ?? () {},
+          activationKeys: const [LogicalKey.keyR],
+          onActivate: (_) {
+            onHotReload?.call();
+          },
           enabled: actionsEnabled && onHotReload != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Create Migration',
           activationChar: 'M',
-          activationKey: LogicalKey.keyM,
-          onActivate: onCreateMigration ?? () {},
+          activationKeys: const [LogicalKey.keyM],
+          onActivate: (_) {
+            onCreateMigration?.call();
+          },
           enabled: actionsEnabled && onCreateMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Apply Migration',
           activationChar: 'A',
-          activationKey: LogicalKey.keyA,
-          onActivate: onApplyMigration ?? () {},
+          activationKeys: const [LogicalKey.keyA],
+          onActivate: (_) {
+            onApplyMigration?.call();
+          },
           enabled: actionsEnabled && onApplyMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Help',
           activationChar: 'H',
-          activationKey: LogicalKey.keyH,
-          onActivate: onToggleHelp ?? () {},
+          activationKeys: const [LogicalKey.keyH],
+          onActivate: (_) {
+            onToggleHelp?.call();
+          },
           enabled: onToggleHelp != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Quit',
           activationChar: 'Q',
-          activationKey: LogicalKey.keyQ,
-          onActivate:
-              onQuit ??
-              () {
-                shutdownApp(0);
-              },
+          activationKeys: const [LogicalKey.keyQ],
+          onActivate: (_) {
+            if (onQuit != null) {
+              onQuit?.call();
+            } else {
+              // Boot path: [onQuit] is wired only after [WatchLoopReady].
+              shutdownServerpodApp(0);
+            }
+          },
         ),
       ],
     );

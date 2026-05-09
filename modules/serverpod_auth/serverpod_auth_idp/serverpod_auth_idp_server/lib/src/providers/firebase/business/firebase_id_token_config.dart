@@ -10,8 +10,14 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
   /// The Firebase project ID used for issuer and audience validation.
   final String projectId;
 
+  @override
+  final Duration clockSkewTolerance;
+
   /// Creates a new Firebase ID token configuration.
-  const FirebaseIdTokenConfig({required this.projectId});
+  const FirebaseIdTokenConfig({
+    required this.projectId,
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
+  });
 
   @override
   String get certsUrl =>
@@ -80,7 +86,7 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
       authTime * 1000,
       isUtc: true,
     );
-    if (authDateTime.isAfter(now)) {
+    if (authDateTime.isAfter(now.add(clockSkewTolerance))) {
       throw FirebaseIdTokenValidationServerException('Invalid auth_time');
     }
   }
@@ -98,4 +104,7 @@ class FirebaseIdTokenValidationServerException implements Exception {
 
   /// Creates a new instance.
   FirebaseIdTokenValidationServerException(this.message);
+
+  @override
+  String toString() => '$runtimeType: $message';
 }

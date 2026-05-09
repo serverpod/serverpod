@@ -342,4 +342,72 @@ void main() async {
       },
     );
   });
+
+  group(
+    'Given declared ObjectWithJsonb class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_jsonb',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the explicitly declared gin index exists with default jsonb operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_gin',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.jsonbOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(index.elements.first.definition, 'jsonbIndexedGin');
+        },
+      );
+
+      test(
+        'then the explicitly declared gin index with operator class exists with correct operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.jsonbPathOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(
+            index.elements.first.definition,
+            'jsonbIndexedGinJsonbPath',
+          );
+        },
+      );
+
+      test(
+        'then the implicit gin index exists with default type and operator class.',
+        () {
+          final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_implicit_gin',
+          );
+
+          expect(index.type, 'gin');
+          expect(index.ginOperatorClass, GinOperatorClass.jsonbOps);
+          expect(index.elements.length, 1);
+          expect(index.elements.first.type, IndexElementDefinitionType.column);
+          expect(
+            index.elements.first.definition,
+            'jsonbIndexedImplicitGin',
+          );
+        },
+      );
+    },
+  );
 }

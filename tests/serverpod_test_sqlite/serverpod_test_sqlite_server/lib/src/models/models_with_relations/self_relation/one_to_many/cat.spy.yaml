@@ -1,5 +1,6 @@
 class: Cat
 table: cat
+database: all
 fields:
   name: String
   mother: Cat?, relation(name=cat_kittens, optional, onDelete=SetNull)

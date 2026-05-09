@@ -22,6 +22,7 @@ void main() {
       'Uri',
       'BigInt',
       'ByteData',
+      'dynamic',
     ];
 
     var vectorTypes = [
@@ -93,7 +94,7 @@ void main() {
           );
         }
 
-        if (builtInTypes.contains(datatype)) {
+        if (builtInTypes.contains(datatype) && datatype != 'dynamic') {
           test(
             'then the built-in type is NOT tagged as ColumnSerializable',
             () {
@@ -122,6 +123,40 @@ void main() {
       });
     }
 
+    test(
+      'Given a class with type dynamic '
+      'when validating, '
+      'then it is serialized as JSON.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            name: dynamic
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        var definitions = analyzer.validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        var fieldType = definition.fields.first.type;
+
+        expect(fieldType.isColumnSerializable, isTrue);
+        expect(fieldType.databaseType, 'json');
+        expect(fieldType.valueType, ValueType.dynamicType);
+      },
+    );
+
     group('Given a class with a field containing another model', () {
       var containedClassName = 'User';
       var testClassName = 'Example';
@@ -137,7 +172,7 @@ fields:
           '''
 class: $testClassName
 fields:
-  user: User 
+  user: User
           ''',
         ).build(),
       ];
@@ -217,7 +252,7 @@ fields:
             '''
 class: $testClassName
 fields:
-  user: User 
+  user: User
           ''',
           ).build(),
         ];
@@ -724,7 +759,7 @@ fields:
             '''
           class: Example
           fields:
-            customField: Map<  String  , CustomClass  ? > ?   
+            customField: Map<  String  , CustomClass  ? > ?
           ''',
           ).build(),
           ModelSourceBuilder().withFileName('custom_class').withYaml(
@@ -1213,43 +1248,105 @@ fields:
         );
       },
     );
-  });
 
-  test(
-    'Given a class with the unsupported type dynamic then an errors is reported.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+    test(
+      'Given a class with a field with a dynamic? type '
+      'when validating, '
+      'then an error is reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields:
-            name: dynamic
+            name: dynamic?
           ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      );
-      analyzer.validateAll();
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        analyzer.validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error, but none was generated.',
-      );
+        expect(collector.errors, isNotEmpty);
+        expect(
+          collector.errors.first.message,
+          'The type "dynamic?" contains a redundant "?" mark. Remove the "?" '
+          'mark to use the type "dynamic" instead, since it is already nullable.',
+        );
+      },
+    );
 
-      var error = collector.errors.first;
+    test(
+      'Given a List with dynamic? as the element type '
+      'when validating, '
+      'then an error is reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            name: List<dynamic?>
+          ''',
+          ).build(),
+        ];
 
-      expect(
-        error.message,
-        'The datatype "dynamic" is not supported in models.',
-      );
-    },
-  );
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        analyzer.validateAll();
+
+        expect(collector.errors, isNotEmpty);
+        expect(
+          collector.errors.first.message,
+          'The type "List<dynamic?>" contains a redundant "?" mark. Remove the '
+          '"?" mark to use the type "dynamic" instead, since it is already nullable.',
+        );
+      },
+    );
+
+    test(
+      'Given a field typed "Mydynamic?", '
+      'when validating, '
+      'then the warning about redundant "dynamic?" is not reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          fields:
+            ref: Mydynamic?
+          ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('my_dynamic').withYaml(
+            '''
+          class: Mydynamic
+          fields:
+            name: String
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        analyzer.validateAll();
+
+        expect(collector.errors, isEmpty);
+      },
+    );
+  });
 
   group('Given a class with a type starting with package: ', () {
     test(
@@ -1663,7 +1760,7 @@ fields:
         '''
             class: Example
             fields:
-              name: int 
+              name: int
             ''',
       ).build(),
     ];

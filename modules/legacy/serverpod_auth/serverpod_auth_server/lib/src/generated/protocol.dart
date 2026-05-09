@@ -41,7 +41,7 @@ export 'user_info.dart';
 export 'user_info_public.dart';
 export 'user_settings_config.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

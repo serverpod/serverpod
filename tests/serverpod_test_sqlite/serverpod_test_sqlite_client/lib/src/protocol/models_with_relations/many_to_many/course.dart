@@ -8,13 +8,15 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _i4;
 
-abstract class Course implements _i1.SerializableModel {
+abstract class Course implements _i1.TableRow<int?> {
   Course._({
     this.id,
     required this.name,
@@ -39,18 +41,23 @@ abstract class Course implements _i1.SerializableModel {
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
+  static final t = CourseTable();
+
+  static const db = CourseRepository._();
+
+  @override
   int? id;
 
   String name;
 
   List<_i2.Enrollment>? enrollments;
 
+  @override
+  _i1.Table<int?> get table => t;
+
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   Course copyWith({
     int? id,
     String? name,
@@ -67,9 +74,35 @@ abstract class Course implements _i1.SerializableModel {
     };
   }
 
+  static CourseInclude include({_i2.EnrollmentIncludeList? enrollments}) {
+    return CourseInclude._(enrollments: enrollments);
+  }
+
+  static CourseIncludeList includeList({
+    _i1.WhereExpressionBuilder<CourseTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    CourseInclude? include,
+  }) {
+    return CourseIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(Course.t),
+      include: include,
+    );
+  }
+
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i4.SerializationManager.encode(this);
   }
 }
 
@@ -88,7 +121,7 @@ class _CourseImpl extends Course {
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i4.useResult
   @override
   Course copyWith({
     Object? id = _Undefined,
@@ -101,6 +134,554 @@ class _CourseImpl extends Course {
       enrollments: enrollments is List<_i2.Enrollment>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+    );
+  }
+}
+
+class CourseUpdateTable extends _i1.UpdateTable<CourseTable> {
+  CourseUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+    table.name,
+    value,
+  );
+}
+
+class CourseTable extends _i1.Table<int?> {
+  CourseTable({super.tableRelation}) : super(tableName: 'course') {
+    updateTable = CourseUpdateTable(this);
+    name = _i1.ColumnString(
+      'name',
+      this,
+    );
+  }
+
+  late final CourseUpdateTable updateTable;
+
+  late final _i1.ColumnString name;
+
+  _i2.EnrollmentTable? ___enrollments;
+
+  _i1.ManyRelation<_i2.EnrollmentTable>? _enrollments;
+
+  _i2.EnrollmentTable get __enrollments {
+    if (___enrollments != null) return ___enrollments!;
+    ___enrollments = _i1.createRelationTable(
+      relationFieldName: '__enrollments',
+      field: Course.t.id,
+      foreignField: _i2.Enrollment.t.courseId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+    );
+    return ___enrollments!;
+  }
+
+  _i1.ManyRelation<_i2.EnrollmentTable> get enrollments {
+    if (_enrollments != null) return _enrollments!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'enrollments',
+      field: Course.t.id,
+      foreignField: _i2.Enrollment.t.courseId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+    );
+    _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
+      tableWithRelations: relationTable,
+      table: _i2.EnrollmentTable(
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
+    );
+    return _enrollments!;
+  }
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    name,
+  ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'enrollments') {
+      return __enrollments;
+    }
+    return null;
+  }
+}
+
+class CourseInclude extends _i1.IncludeObject {
+  CourseInclude._({_i2.EnrollmentIncludeList? enrollments}) {
+    _enrollments = enrollments;
+  }
+
+  _i2.EnrollmentIncludeList? _enrollments;
+
+  @override
+  Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
+
+  @override
+  _i1.Table<int?> get table => Course.t;
+}
+
+class CourseIncludeList extends _i1.IncludeList {
+  CourseIncludeList._({
+    _i1.WhereExpressionBuilder<CourseTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Course.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => Course.t;
+}
+
+class CourseRepository {
+  const CourseRepository._();
+
+  final attach = const CourseAttachRepository._();
+
+  final attachRow = const CourseAttachRowRepository._();
+
+  final detach = const CourseDetachRepository._();
+
+  final detachRow = const CourseDetachRowRepository._();
+
+  /// Returns a list of [Course]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<Course>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<CourseTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    _i1.Transaction? transaction,
+    CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<Course>(
+      where: where?.call(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Course] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<Course?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<CourseTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    _i1.Transaction? transaction,
+    CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<Course>(
+      where: where?.call(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Course] by its [id] or null if no such row exists.
+  Future<Course?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<Course>(
+      id,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [Course]s in the list and returns the inserted rows.
+  ///
+  /// The returned [Course]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<Course>> insert(
+    _i1.DatabaseSession session,
+    List<Course> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<Course>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [Course] and returns the inserted row.
+  ///
+  /// The returned [Course] will have its `id` field set.
+  Future<Course> insertRow(
+    _i1.DatabaseSession session,
+    Course row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<Course>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Course]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<Course>> update(
+    _i1.DatabaseSession session,
+    List<Course> rows, {
+    _i1.ColumnSelections<CourseTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<Course>(
+      rows,
+      columns: columns?.call(Course.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Course]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<Course> updateRow(
+    _i1.DatabaseSession session,
+    Course row, {
+    _i1.ColumnSelections<CourseTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<Course>(
+      row,
+      columns: columns?.call(Course.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Course] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Course?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Course>(
+      id,
+      columnValues: columnValues(Course.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Course>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CourseTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Course>(
+      columnValues: columnValues(Course.t.updateTable),
+      where: where(Course.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [Course]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<Course>> delete(
+    _i1.DatabaseSession session,
+    List<Course> rows, {
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<Course>(
+      rows,
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [Course].
+  Future<Course> deleteRow(
+    _i1.DatabaseSession session,
+    Course row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<Course>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<Course>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CourseTable> where,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<Course>(
+      where: where(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<CourseTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<Course>(
+      where: where?.call(Course.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Course] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<CourseTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Course>(
+      where: where(Course.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}
+
+class CourseAttachRepository {
+  const CourseAttachRepository._();
+
+  /// Creates a relation between this [Course] and the given [Enrollment]s
+  /// by setting each [Enrollment]'s foreign key `courseId` to refer to this [Course].
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    Course course,
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollment.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+    if (course.id == null) {
+      throw ArgumentError.notNull('course.id');
+    }
+
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(courseId: course.id))
+        .toList();
+    await session.db.update<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
+    );
+  }
+}
+
+class CourseAttachRowRepository {
+  const CourseAttachRowRepository._();
+
+  /// Creates a relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to refer to this [Course].
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    Course course,
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollment.id == null) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+    if (course.id == null) {
+      throw ArgumentError.notNull('course.id');
+    }
+
+    var $enrollment = enrollment.copyWith(courseId: course.id);
+    await session.db.updateRow<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
+    );
+  }
+}
+
+class CourseDetachRepository {
+  const CourseDetachRepository._();
+
+  /// Detaches the relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    List<_i2.Enrollment> enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollment.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(courseId: null))
+        .toList();
+    await session.db.update<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
+    );
+  }
+}
+
+class CourseDetachRowRepository {
+  const CourseDetachRowRepository._();
+
+  /// Detaches the relation between this [Course] and the given [Enrollment]
+  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    _i2.Enrollment enrollment, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollment.id == null) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+
+    var $enrollment = enrollment.copyWith(courseId: null);
+    await session.db.updateRow<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.courseId],
+      transaction: transaction,
     );
   }
 }

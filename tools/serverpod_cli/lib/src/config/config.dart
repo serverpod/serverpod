@@ -83,6 +83,7 @@ class GeneratorConfig implements ModelLoadConfig {
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
+    this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
@@ -266,6 +267,10 @@ class GeneratorConfig implements ModelLoadConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Whether serializable fields default to `jsonb` instead of `json` when
+  /// stored in the database.
+  final bool serializeAsJsonbByDefault;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -469,6 +474,11 @@ class GeneratorConfig implements ModelLoadConfig {
 
     var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
 
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
+      file,
+      generatorConfig,
+    );
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -479,12 +489,21 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+  }
+
+  static bool _loadSerializeAsJsonbByDefault(
+    File file,
+    Map config,
+  ) {
+    if (!file.existsSync()) return false;
+    return config['serialize_as_jsonb_by_default'] ?? false;
   }
 
   static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(

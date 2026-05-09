@@ -12,13 +12,12 @@ import 'package:test/test.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-var pathToServerpodRoot = Directory('../..').absolute.path;
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
   var config = GeneratorConfigBuilder().build();
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
+    await createTestEnvironment(testProjectDirectory);
   });
 
   tearDownAll(() {

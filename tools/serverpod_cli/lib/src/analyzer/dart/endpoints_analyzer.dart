@@ -298,11 +298,14 @@ class EndpointsAnalyzer {
   /// Resolves a single file to a [ResolvedLibraryResult].
   Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
     for (var context in collection.contexts) {
-      var result = await context.currentSession.getResolvedLibrary(filePath);
+      var result = await context.currentSession.getResolvedLibrary(
+        p.normalize(filePath),
+      );
       if (result is ResolvedLibraryResult) {
         return result;
       }
     }
+
     return null;
   }
 
@@ -436,6 +439,7 @@ class EndpointsAnalyzer {
         errors = EndpointMethodAnalyzer.validate(
           method,
           classElement,
+          library,
           config.extraClasses,
           models,
         );

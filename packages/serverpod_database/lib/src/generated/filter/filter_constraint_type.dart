@@ -26,7 +26,8 @@ enum FilterConstraintType implements _i1.SerializableModel {
   between,
   inThePast,
   isNull,
-  isNotNull;
+  isNotNull
+  ;
 
   static FilterConstraintType fromJson(int index) {
     switch (index) {

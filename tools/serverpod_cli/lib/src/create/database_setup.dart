@@ -30,7 +30,7 @@ class DatabaseSetup {
       projectName: name,
     );
 
-    MigrationVersionArtifacts? migration;
+    MigrationVersionDefinition? migration;
     try {
       migration = await generator.createMigration(
         force: false,

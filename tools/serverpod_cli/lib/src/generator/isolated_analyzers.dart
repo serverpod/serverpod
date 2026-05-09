@@ -6,8 +6,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart'
     show GenerationRequirements;
 import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_cli/src/util/isolated_object.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/log_io.dart' show IsolatedObject;
 
 import '../commands/generate.dart';
 
@@ -44,8 +44,7 @@ final class IsolateProgressEnd extends IsolateLogEvent {
 /// [IsolatedObject].
 ///
 /// All heavy analysis and code generation work happens off the main isolate,
-/// keeping the event loop (and TUI) responsive. Follows the same pattern as
-/// [IsolatedLogger].
+/// keeping the event loop (and TUI) responsive.
 final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
     implements Analyzers {
   final ReceivePort _logPort;

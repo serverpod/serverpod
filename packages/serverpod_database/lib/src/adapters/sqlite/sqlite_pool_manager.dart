@@ -19,13 +19,17 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Database configuration.
   final SqliteDatabaseConfig config;
 
-  late SerializationManagerServer _serializationManager;
+  late DatabaseSerializationManager _serializationManager;
 
   /// Access to the serialization manager.
   @override
-  SerializationManagerServer get serializationManager => _serializationManager;
+  DatabaseSerializationManager get serializationManager =>
+      _serializationManager;
 
   SqliteDatabase? _db;
+
+  /// Tracks the PRAGMA future kicked off by [start]
+  Future<void> _started = Future.value();
 
   /// The SQLite database instance.
   ///
@@ -45,30 +49,40 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Creates a new [SqlitePoolManager]. Typically, this is done automatically
   /// when starting the [Server] with SQLite configuration.
   SqlitePoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     this.config,
   ) {
     _serializationManager = serializationManager;
   }
 
   /// Starts the database connection.
+  ///
+  /// Callers can await [started] to ensure initialization is complete,
+  /// and surface any errors.
   @override
   void start() {
-    _db ??= SqliteDatabase(
+    if (_db != null) return;
+    final db = SqliteDatabase(
       path: config.filePath,
       // This will only be available from 0.14 onwards.
       // options: SqliteOptions(
       //   maxReaders:
       //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
       // ),
-    )..execute('PRAGMA foreign_keys = ON');
+    );
+    _db = db;
+    _started = db.execute('PRAGMA foreign_keys = ON');
   }
+
+  @override
+  Future<void> get started => _started;
 
   /// Closes the database.
   @override
   Future<void> stop() async {
     await _db?.close();
     _db = null;
+    _started = Future.value();
   }
 
   /// Tests the database connection.

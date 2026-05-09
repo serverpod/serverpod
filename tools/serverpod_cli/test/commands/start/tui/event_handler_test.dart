@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
@@ -17,11 +19,11 @@ Event _logEvent(Map<String, Object?> data) {
 
 void main() {
   late ServerWatchState state;
-  late AppStateHolder holder;
+  late StartAppStateHolder holder;
 
   setUp(() {
     state = ServerWatchState();
-    holder = AppStateHolder(state);
+    holder = StartAppStateHolder(state);
   });
 
   group('Given a log event', () {
@@ -39,9 +41,9 @@ void main() {
 
     test('when dispatched then adds to logHistory', () {
       expect(state.logHistory, hasLength(1));
-      final entry = state.logHistory.first as TuiLogEntry;
+      final entry = state.logHistory.first as LogEntry;
       expect(entry.message, 'Server started');
-      expect(entry.level, TuiLogLevel.info);
+      expect(entry.level, LogLevel.info);
     });
   });
 
@@ -58,18 +60,48 @@ void main() {
     });
 
     test('when dispatched then parses level correctly', () {
-      final entry = state.logHistory.first as TuiLogEntry;
-      expect(entry.level, TuiLogLevel.warning);
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.level, LogLevel.warning);
     });
   });
 
-  group('Given a session_start event', () {
+  group('Given an error log event with error details and stackTrace', () {
+    test(
+      'when dispatched then stores the error text but not the stack trace',
+      () {
+        handleServerLogEvent(
+          holder,
+          _logEvent({
+            'type': 'log',
+            'level': 'error',
+            'message': 'Failed to apply database migrations.',
+            'error':
+                'Exception: DB has migration version 20260428173453748 '
+                'registered but it is not found in the project files.',
+            'stackTrace': '#0      fake (file:///fake.dart:1:1)',
+          }),
+        );
+
+        final entry = state.logHistory.first as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.message, 'Failed to apply database migrations.');
+        expect(
+          entry.error,
+          'Exception: DB has migration version 20260428173453748 '
+          'registered but it is not found in the project files.',
+        );
+        expect(entry.stackTrace, isNull);
+      },
+    );
+  });
+
+  group('Given a scope_start event', () {
     setUp(() {
       handleServerLogEvent(
         holder,
         _logEvent({
-          'type': 'session_start',
-          'id': 'sess_1',
+          'type': 'scope_start',
+          'id': 'scope_1',
           'label': 'POST /api/user',
           'timestamp': '2026-04-10T12:00:00.000Z',
         }),
@@ -77,18 +109,18 @@ void main() {
     });
 
     test('when dispatched then creates tracked operation', () {
-      expect(state.activeOperations, contains('sess_1'));
-      expect(state.activeOperations['sess_1']!.label, 'POST /api/user');
+      expect(state.activeOperations, contains('scope_1'));
+      expect(state.activeOperations['scope_1']!.label, 'POST /api/user');
     });
   });
 
-  group('Given an INTERNAL session_start event', () {
+  group('Given an INTERNAL scope_start event', () {
     setUp(() {
       handleServerLogEvent(
         holder,
         _logEvent({
-          'type': 'session_start',
-          'id': 'sess_2',
+          'type': 'scope_start',
+          'id': 'scope_2',
           'label': 'INTERNAL',
         }),
       );
@@ -99,58 +131,24 @@ void main() {
     });
   });
 
-  group('Given a session with sub-entries', () {
+  group('Given a scope that is opened and closed', () {
     setUp(() {
       handleServerLogEvent(
         holder,
         _logEvent({
-          'type': 'session_start',
-          'id': 'sess_3',
+          'type': 'scope_start',
+          'id': 'scope_3',
           'label': 'GET /api/data',
         }),
       );
     });
 
-    test('when session_log arrives then adds sub-entry', () {
+    test('when scope_end arrives then completes as tracked operation', () {
       handleServerLogEvent(
         holder,
         _logEvent({
-          'type': 'session_log',
-          'sessionId': 'sess_3',
-          'level': 'info',
-          'message': 'Fetching records',
-        }),
-      );
-
-      final op = state.activeOperations['sess_3']!;
-      expect(op.entries, hasLength(1));
-      expect(op.entries.first.message, 'Fetching records');
-      expect(op.entries.first.level, TuiLogLevel.info);
-    });
-
-    test('when session_query arrives then adds query sub-entry', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'session_query',
-          'sessionId': 'sess_3',
-          'query': 'SELECT * FROM users',
-          'duration': 0.042,
-        }),
-      );
-
-      final op = state.activeOperations['sess_3']!;
-      expect(op.entries, hasLength(1));
-      expect(op.entries.first.message, 'SELECT * FROM users');
-      expect(op.entries.first.duration, 0.042);
-    });
-
-    test('when session_end arrives then completes as tracked operation', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'session_end',
-          'id': 'sess_3',
+          'type': 'scope_end',
+          'id': 'scope_3',
           'success': true,
           'duration': 0.1,
         }),
@@ -164,12 +162,12 @@ void main() {
       expect(op.duration.inMilliseconds, 100);
     });
 
-    test('when session_end with failure then marks as failed', () {
+    test('when scope_end with failure then marks as failed', () {
       handleServerLogEvent(
         holder,
         _logEvent({
-          'type': 'session_end',
-          'id': 'sess_3',
+          'type': 'scope_end',
+          'id': 'scope_3',
           'success': false,
         }),
       );
@@ -194,50 +192,33 @@ void main() {
     });
   });
 
-  group('Given session_log for unknown session', () {
-    test('when dispatched then silently ignores', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'session_log',
-          'sessionId': 'nonexistent',
-          'level': 'info',
-          'message': 'orphan',
-        }),
-      );
-
-      expect(state.activeOperations, isEmpty);
-      expect(state.logHistory, isEmpty);
-    });
-  });
-
-  group('Given parseTuiLogLevel', () {
+  group('Given parseLogLevel', () {
     test('when "debug" then returns debug', () {
-      expect(parseTuiLogLevel('debug'), TuiLogLevel.debug);
+      expect(parseLogLevel('debug'), LogLevel.debug);
     });
 
     test('when "info" then returns info', () {
-      expect(parseTuiLogLevel('info'), TuiLogLevel.info);
+      expect(parseLogLevel('info'), LogLevel.info);
     });
 
     test('when "warning" then returns warning', () {
-      expect(parseTuiLogLevel('warning'), TuiLogLevel.warning);
+      expect(parseLogLevel('warning'), LogLevel.warning);
     });
 
     test('when "warn" then returns warning', () {
-      expect(parseTuiLogLevel('warn'), TuiLogLevel.warning);
+      expect(parseLogLevel('warn'), LogLevel.warning);
     });
 
     test('when "error" then returns error', () {
-      expect(parseTuiLogLevel('error'), TuiLogLevel.error);
+      expect(parseLogLevel('error'), LogLevel.error);
     });
 
     test('when "fatal" then returns fatal', () {
-      expect(parseTuiLogLevel('fatal'), TuiLogLevel.fatal);
+      expect(parseLogLevel('fatal'), LogLevel.fatal);
     });
 
     test('when unknown then defaults to info', () {
-      expect(parseTuiLogLevel('unknown'), TuiLogLevel.info);
+      expect(parseLogLevel('unknown'), LogLevel.info);
     });
   });
 

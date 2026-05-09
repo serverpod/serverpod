@@ -1,5 +1,6 @@
 class: Team
 table: team
+database: all
 fields:
   name: String
   arenaId: int?

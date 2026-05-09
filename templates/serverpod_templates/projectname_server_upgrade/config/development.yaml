@@ -20,23 +20,33 @@ insightsServer:
   publicPort: 8081
   publicScheme: http
 
+# {{#web}}
 # Configuration for the web server.
 webServer:
   port: 8082
   publicHost: localhost
   publicPort: 8082
   publicScheme: http
+# {{/web}}
 
+# {{#database}}
 # This is the database setup for your server.
 database:
+  # {{#postgres}}
   host: localhost
   port: 8090
   name: projectname
   user: postgres
   #requireSsl: true # defaults to false
   #isUnixSocket: true # defaults to false
+  # {{/postgres}}
+  # {{#sqlite}}
+  filePath: projectname_dev.db
+  # {{/sqlite}}
   #maxConnectionCount: 10 # Defaults to 10, a negative or null value removes the limit
+# {{/database}}
 
+# {{#redis}}
 # This is the setup for Redis.
 redis:
   enabled: false
@@ -44,11 +54,14 @@ redis:
   port: 8091
   #user: # defaults to empty
   #requireSsl: true # defaults to false
+# {{/redis}}
 
 maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 
 sessionLogs:
+  # {{#postgres}}
   persistentEnabled: true
+  # {{/postgres}}
   consoleEnabled: true
   consoleLogFormat: text # Defaults to "json", options are "text" or "json"
 

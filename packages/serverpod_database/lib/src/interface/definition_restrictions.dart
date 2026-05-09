@@ -57,7 +57,7 @@ extension TableDefinitionRestrictionsEx on List<TableDefinition> {
     logWarnings?.call(
       'The following indexes will be skipped due to unsupported types by the '
       'database dialect "${dialect.name}":\n'
-      '${unsupportedIndexes.map((i) => '  - ${i.indexName} (${i.type})').join('\n')}',
+      '${unsupportedIndexes.map((i) => '  • ${i.indexName} (${i.type})').join('\n')}\n',
     );
 
     return [
