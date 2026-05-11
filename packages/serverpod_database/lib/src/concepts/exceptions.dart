@@ -70,7 +70,8 @@ abstract base class DatabaseUpsertRowException implements DatabaseException {
   String toString() => 'DatabaseUpsertRowException: $message';
 }
 
-/// Exception thrown when SQLite foreign key constraints are violated.
+/// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
+/// reports one or more rows that violate foreign key constraints.
 final class SqliteForeignKeyViolationException implements DatabaseException {
   /// Creates a new [SqliteForeignKeyViolationException].
   ///
