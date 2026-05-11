@@ -225,7 +225,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     if (rows.isEmpty) return [];
@@ -243,7 +243,7 @@ class PostgresDatabaseConnection
               [row],
               conflictColumns: conflictColumns,
               updateColumns: updateColumns,
-              conflictWhere: conflictWhere,
+              updateWhere: updateWhere,
               transaction: tx,
             ),
         ],
@@ -258,7 +258,7 @@ class PostgresDatabaseConnection
       rows: rows,
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -271,12 +271,12 @@ class PostgresDatabaseConnection
   }
 
   @override
-  Future<T> upsertRow<T extends TableRow>(
+  Future<T?> upsertRow<T extends TableRow>(
     DatabaseSession session,
     T row, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     var result = await upsert<T>(
@@ -284,11 +284,15 @@ class PostgresDatabaseConnection
       [row],
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
       transaction: transaction,
     );
 
-    if (result.length != 1) {
+    if (result.isEmpty) {
+      return null;
+    }
+
+    if (result.length > 1) {
       throw _PgDatabaseUpsertRowException(
         'Failed to upsert row, updated number of rows is ${result.length} != 1',
       );
