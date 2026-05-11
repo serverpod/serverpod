@@ -307,7 +307,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     if (rows.isEmpty) return [];
@@ -322,7 +322,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               [row],
               conflictColumns: conflictColumns,
               updateColumns: updateColumns,
-              conflictWhere: conflictWhere,
+              updateWhere: updateWhere,
               transaction: tx,
             ),
         ],
@@ -335,7 +335,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       rows: rows,
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
     ).build();
 
     var results = await _mappedResultsQuery(
@@ -349,12 +349,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 
   @override
-  Future<T> upsertRow<T extends TableRow>(
+  Future<T?> upsertRow<T extends TableRow>(
     DatabaseSession session,
     T row, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     var result = await upsert<T>(
@@ -362,11 +362,15 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       [row],
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
       transaction: transaction,
     );
 
-    if (result.length != 1) {
+    if (result.isEmpty) {
+      return null;
+    }
+
+    if (result.length > 1) {
       throw _SqliteDatabaseUpsertRowException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
