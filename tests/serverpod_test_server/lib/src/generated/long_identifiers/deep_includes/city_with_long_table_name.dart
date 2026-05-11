@@ -500,7 +500,7 @@ class CityWithLongTableNameRepository {
   /// Inserts a single [CityWithLongTableName] and returns the inserted row.
   ///
   /// The returned [CityWithLongTableName] will have its `id` field set.
-  Future<CityWithLongTableName> insertRow(
+  Future<CityWithLongTableName?> insertRow(
     _i1.DatabaseSession session,
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
@@ -525,14 +525,14 @@ class CityWithLongTableNameRepository {
     List<CityWithLongTableName> rows, {
     required _i1.ColumnSelections<CityWithLongTableNameTable> conflictColumns,
     _i1.ColumnSelections<CityWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<CityWithLongTableName>(
       rows,
       conflictColumns: conflictColumns(CityWithLongTableName.t),
       updateColumns: updateColumns?.call(CityWithLongTableName.t),
-      conflictWhere: conflictWhere?.call(CityWithLongTableName.t),
+      updateWhere: updateWhere?.call(CityWithLongTableName.t),
       transaction: transaction,
     );
   }
@@ -543,19 +543,19 @@ class CityWithLongTableNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [CityWithLongTableName] will have its `id` field set.
-  Future<CityWithLongTableName> upsertRow(
+  Future<CityWithLongTableName?> upsertRow(
     _i1.DatabaseSession session,
     CityWithLongTableName row, {
     required _i1.ColumnSelections<CityWithLongTableNameTable> conflictColumns,
     _i1.ColumnSelections<CityWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CityWithLongTableNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CityWithLongTableName>(
       row,
       conflictColumns: conflictColumns(CityWithLongTableName.t),
       updateColumns: updateColumns?.call(CityWithLongTableName.t),
-      conflictWhere: conflictWhere?.call(CityWithLongTableName.t),
+      updateWhere: updateWhere?.call(CityWithLongTableName.t),
       transaction: transaction,
     );
   }

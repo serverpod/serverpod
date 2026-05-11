@@ -348,7 +348,7 @@ class IntDefaultModelRepository {
   /// Inserts a single [IntDefaultModel] and returns the inserted row.
   ///
   /// The returned [IntDefaultModel] will have its `id` field set.
-  Future<IntDefaultModel> insertRow(
+  Future<IntDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     IntDefaultModel row, {
     _i1.Transaction? transaction,
@@ -373,14 +373,14 @@ class IntDefaultModelRepository {
     List<IntDefaultModel> rows, {
     required _i1.ColumnSelections<IntDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<IntDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<IntDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<IntDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<IntDefaultModel>(
       rows,
       conflictColumns: conflictColumns(IntDefaultModel.t),
       updateColumns: updateColumns?.call(IntDefaultModel.t),
-      conflictWhere: conflictWhere?.call(IntDefaultModel.t),
+      updateWhere: updateWhere?.call(IntDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -391,19 +391,19 @@ class IntDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [IntDefaultModel] will have its `id` field set.
-  Future<IntDefaultModel> upsertRow(
+  Future<IntDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     IntDefaultModel row, {
     required _i1.ColumnSelections<IntDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<IntDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<IntDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<IntDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<IntDefaultModel>(
       row,
       conflictColumns: conflictColumns(IntDefaultModel.t),
       updateColumns: updateColumns?.call(IntDefaultModel.t),
-      conflictWhere: conflictWhere?.call(IntDefaultModel.t),
+      updateWhere: updateWhere?.call(IntDefaultModel.t),
       transaction: transaction,
     );
   }

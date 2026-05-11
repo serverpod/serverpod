@@ -336,7 +336,7 @@ class MaxFieldNameRepository {
   /// Inserts a single [MaxFieldName] and returns the inserted row.
   ///
   /// The returned [MaxFieldName] will have its `id` field set.
-  Future<MaxFieldName> insertRow(
+  Future<MaxFieldName?> insertRow(
     _i1.DatabaseSession session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
@@ -361,14 +361,14 @@ class MaxFieldNameRepository {
     List<MaxFieldName> rows, {
     required _i1.ColumnSelections<MaxFieldNameTable> conflictColumns,
     _i1.ColumnSelections<MaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<MaxFieldName>(
       rows,
       conflictColumns: conflictColumns(MaxFieldName.t),
       updateColumns: updateColumns?.call(MaxFieldName.t),
-      conflictWhere: conflictWhere?.call(MaxFieldName.t),
+      updateWhere: updateWhere?.call(MaxFieldName.t),
       transaction: transaction,
     );
   }
@@ -379,19 +379,19 @@ class MaxFieldNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [MaxFieldName] will have its `id` field set.
-  Future<MaxFieldName> upsertRow(
+  Future<MaxFieldName?> upsertRow(
     _i1.DatabaseSession session,
     MaxFieldName row, {
     required _i1.ColumnSelections<MaxFieldNameTable> conflictColumns,
     _i1.ColumnSelections<MaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MaxFieldName>(
       row,
       conflictColumns: conflictColumns(MaxFieldName.t),
       updateColumns: updateColumns?.call(MaxFieldName.t),
-      conflictWhere: conflictWhere?.call(MaxFieldName.t),
+      updateWhere: updateWhere?.call(MaxFieldName.t),
       transaction: transaction,
     );
   }

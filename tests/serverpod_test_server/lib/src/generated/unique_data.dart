@@ -346,7 +346,7 @@ class UniqueDataRepository {
   /// Inserts a single [UniqueData] and returns the inserted row.
   ///
   /// The returned [UniqueData] will have its `id` field set.
-  Future<UniqueData> insertRow(
+  Future<UniqueData?> insertRow(
     _i1.DatabaseSession session,
     UniqueData row, {
     _i1.Transaction? transaction,
@@ -371,14 +371,14 @@ class UniqueDataRepository {
     List<UniqueData> rows, {
     required _i1.ColumnSelections<UniqueDataTable> conflictColumns,
     _i1.ColumnSelections<UniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UniqueDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UniqueData>(
       rows,
       conflictColumns: conflictColumns(UniqueData.t),
       updateColumns: updateColumns?.call(UniqueData.t),
-      conflictWhere: conflictWhere?.call(UniqueData.t),
+      updateWhere: updateWhere?.call(UniqueData.t),
       transaction: transaction,
     );
   }
@@ -389,19 +389,19 @@ class UniqueDataRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UniqueData] will have its `id` field set.
-  Future<UniqueData> upsertRow(
+  Future<UniqueData?> upsertRow(
     _i1.DatabaseSession session,
     UniqueData row, {
     required _i1.ColumnSelections<UniqueDataTable> conflictColumns,
     _i1.ColumnSelections<UniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UniqueDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UniqueData>(
       row,
       conflictColumns: conflictColumns(UniqueData.t),
       updateColumns: updateColumns?.call(UniqueData.t),
-      conflictWhere: conflictWhere?.call(UniqueData.t),
+      updateWhere: updateWhere?.call(UniqueData.t),
       transaction: transaction,
     );
   }

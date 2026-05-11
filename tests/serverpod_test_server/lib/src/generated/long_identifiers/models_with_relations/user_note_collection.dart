@@ -427,7 +427,7 @@ class UserNoteCollectionRepository {
   /// Inserts a single [UserNoteCollection] and returns the inserted row.
   ///
   /// The returned [UserNoteCollection] will have its `id` field set.
-  Future<UserNoteCollection> insertRow(
+  Future<UserNoteCollection?> insertRow(
     _i1.DatabaseSession session,
     UserNoteCollection row, {
     _i1.Transaction? transaction,
@@ -452,14 +452,14 @@ class UserNoteCollectionRepository {
     List<UserNoteCollection> rows, {
     required _i1.ColumnSelections<UserNoteCollectionTable> conflictColumns,
     _i1.ColumnSelections<UserNoteCollectionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UserNoteCollection>(
       rows,
       conflictColumns: conflictColumns(UserNoteCollection.t),
       updateColumns: updateColumns?.call(UserNoteCollection.t),
-      conflictWhere: conflictWhere?.call(UserNoteCollection.t),
+      updateWhere: updateWhere?.call(UserNoteCollection.t),
       transaction: transaction,
     );
   }
@@ -470,19 +470,19 @@ class UserNoteCollectionRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UserNoteCollection] will have its `id` field set.
-  Future<UserNoteCollection> upsertRow(
+  Future<UserNoteCollection?> upsertRow(
     _i1.DatabaseSession session,
     UserNoteCollection row, {
     required _i1.ColumnSelections<UserNoteCollectionTable> conflictColumns,
     _i1.ColumnSelections<UserNoteCollectionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserNoteCollection>(
       row,
       conflictColumns: conflictColumns(UserNoteCollection.t),
       updateColumns: updateColumns?.call(UserNoteCollection.t),
-      conflictWhere: conflictWhere?.call(UserNoteCollection.t),
+      updateWhere: updateWhere?.call(UserNoteCollection.t),
       transaction: transaction,
     );
   }

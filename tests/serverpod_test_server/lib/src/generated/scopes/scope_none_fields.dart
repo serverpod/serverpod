@@ -360,7 +360,7 @@ class ScopeNoneFieldsRepository {
   /// Inserts a single [ScopeNoneFields] and returns the inserted row.
   ///
   /// The returned [ScopeNoneFields] will have its `id` field set.
-  Future<ScopeNoneFields> insertRow(
+  Future<ScopeNoneFields?> insertRow(
     _i1.DatabaseSession session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
@@ -385,14 +385,14 @@ class ScopeNoneFieldsRepository {
     List<ScopeNoneFields> rows, {
     required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
     _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ScopeNoneFields>(
       rows,
       conflictColumns: conflictColumns(ScopeNoneFields.t),
       updateColumns: updateColumns?.call(ScopeNoneFields.t),
-      conflictWhere: conflictWhere?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
       transaction: transaction,
     );
   }
@@ -403,19 +403,19 @@ class ScopeNoneFieldsRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ScopeNoneFields] will have its `id` field set.
-  Future<ScopeNoneFields> upsertRow(
+  Future<ScopeNoneFields?> upsertRow(
     _i1.DatabaseSession session,
     ScopeNoneFields row, {
     required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
     _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ScopeNoneFields>(
       row,
       conflictColumns: conflictColumns(ScopeNoneFields.t),
       updateColumns: updateColumns?.call(ScopeNoneFields.t),
-      conflictWhere: conflictWhere?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
       transaction: transaction,
     );
   }

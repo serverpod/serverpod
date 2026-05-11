@@ -390,7 +390,7 @@ class RelationEmptyModelRepository {
   /// Inserts a single [RelationEmptyModel] and returns the inserted row.
   ///
   /// The returned [RelationEmptyModel] will have its `id` field set.
-  Future<RelationEmptyModel> insertRow(
+  Future<RelationEmptyModel?> insertRow(
     _i1.DatabaseSession session,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
@@ -415,14 +415,14 @@ class RelationEmptyModelRepository {
     List<RelationEmptyModel> rows, {
     required _i1.ColumnSelections<RelationEmptyModelTable> conflictColumns,
     _i1.ColumnSelections<RelationEmptyModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<RelationEmptyModel>(
       rows,
       conflictColumns: conflictColumns(RelationEmptyModel.t),
       updateColumns: updateColumns?.call(RelationEmptyModel.t),
-      conflictWhere: conflictWhere?.call(RelationEmptyModel.t),
+      updateWhere: updateWhere?.call(RelationEmptyModel.t),
       transaction: transaction,
     );
   }
@@ -433,19 +433,19 @@ class RelationEmptyModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [RelationEmptyModel] will have its `id` field set.
-  Future<RelationEmptyModel> upsertRow(
+  Future<RelationEmptyModel?> upsertRow(
     _i1.DatabaseSession session,
     RelationEmptyModel row, {
     required _i1.ColumnSelections<RelationEmptyModelTable> conflictColumns,
     _i1.ColumnSelections<RelationEmptyModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RelationEmptyModel>(
       row,
       conflictColumns: conflictColumns(RelationEmptyModel.t),
       updateColumns: updateColumns?.call(RelationEmptyModel.t),
-      conflictWhere: conflictWhere?.call(RelationEmptyModel.t),
+      updateWhere: updateWhere?.call(RelationEmptyModel.t),
       transaction: transaction,
     );
   }

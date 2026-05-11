@@ -409,7 +409,7 @@ class StudentUuidRepository {
   /// Inserts a single [StudentUuid] and returns the inserted row.
   ///
   /// The returned [StudentUuid] will have its `id` field set.
-  Future<StudentUuid> insertRow(
+  Future<StudentUuid?> insertRow(
     _i1.DatabaseSession session,
     StudentUuid row, {
     _i1.Transaction? transaction,
@@ -434,14 +434,14 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     required _i1.ColumnSelections<StudentUuidTable> conflictColumns,
     _i1.ColumnSelections<StudentUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StudentUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StudentUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<StudentUuid>(
       rows,
       conflictColumns: conflictColumns(StudentUuid.t),
       updateColumns: updateColumns?.call(StudentUuid.t),
-      conflictWhere: conflictWhere?.call(StudentUuid.t),
+      updateWhere: updateWhere?.call(StudentUuid.t),
       transaction: transaction,
     );
   }
@@ -452,19 +452,19 @@ class StudentUuidRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [StudentUuid] will have its `id` field set.
-  Future<StudentUuid> upsertRow(
+  Future<StudentUuid?> upsertRow(
     _i1.DatabaseSession session,
     StudentUuid row, {
     required _i1.ColumnSelections<StudentUuidTable> conflictColumns,
     _i1.ColumnSelections<StudentUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StudentUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StudentUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<StudentUuid>(
       row,
       conflictColumns: conflictColumns(StudentUuid.t),
       updateColumns: updateColumns?.call(StudentUuid.t),
-      conflictWhere: conflictWhere?.call(StudentUuid.t),
+      updateWhere: updateWhere?.call(StudentUuid.t),
       transaction: transaction,
     );
   }

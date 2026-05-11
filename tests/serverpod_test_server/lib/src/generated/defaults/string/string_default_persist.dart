@@ -637,7 +637,7 @@ class StringDefaultPersistRepository {
   /// Inserts a single [StringDefaultPersist] and returns the inserted row.
   ///
   /// The returned [StringDefaultPersist] will have its `id` field set.
-  Future<StringDefaultPersist> insertRow(
+  Future<StringDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     StringDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -662,14 +662,14 @@ class StringDefaultPersistRepository {
     List<StringDefaultPersist> rows, {
     required _i1.ColumnSelections<StringDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<StringDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StringDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<StringDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(StringDefaultPersist.t),
       updateColumns: updateColumns?.call(StringDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(StringDefaultPersist.t),
+      updateWhere: updateWhere?.call(StringDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -680,19 +680,19 @@ class StringDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [StringDefaultPersist] will have its `id` field set.
-  Future<StringDefaultPersist> upsertRow(
+  Future<StringDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     StringDefaultPersist row, {
     required _i1.ColumnSelections<StringDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<StringDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StringDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<StringDefaultPersist>(
       row,
       conflictColumns: conflictColumns(StringDefaultPersist.t),
       updateColumns: updateColumns?.call(StringDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(StringDefaultPersist.t),
+      updateWhere: updateWhere?.call(StringDefaultPersist.t),
       transaction: transaction,
     );
   }

@@ -428,7 +428,7 @@ class ObjectWithSparseVectorRepository {
   /// Inserts a single [ObjectWithSparseVector] and returns the inserted row.
   ///
   /// The returned [ObjectWithSparseVector] will have its `id` field set.
-  Future<ObjectWithSparseVector> insertRow(
+  Future<ObjectWithSparseVector?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     _i1.Transaction? transaction,
@@ -453,14 +453,14 @@ class ObjectWithSparseVectorRepository {
     List<ObjectWithSparseVector> rows, {
     required _i1.ColumnSelections<ObjectWithSparseVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithSparseVector>(
       rows,
       conflictColumns: conflictColumns(ObjectWithSparseVector.t),
       updateColumns: updateColumns?.call(ObjectWithSparseVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSparseVector.t),
+      updateWhere: updateWhere?.call(ObjectWithSparseVector.t),
       transaction: transaction,
     );
   }
@@ -471,19 +471,19 @@ class ObjectWithSparseVectorRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithSparseVector] will have its `id` field set.
-  Future<ObjectWithSparseVector> upsertRow(
+  Future<ObjectWithSparseVector?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     required _i1.ColumnSelections<ObjectWithSparseVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithSparseVector>(
       row,
       conflictColumns: conflictColumns(ObjectWithSparseVector.t),
       updateColumns: updateColumns?.call(ObjectWithSparseVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSparseVector.t),
+      updateWhere: updateWhere?.call(ObjectWithSparseVector.t),
       transaction: transaction,
     );
   }

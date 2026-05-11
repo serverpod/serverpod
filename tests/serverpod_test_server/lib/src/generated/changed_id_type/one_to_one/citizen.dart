@@ -531,7 +531,7 @@ class CitizenIntRepository {
   /// Inserts a single [CitizenInt] and returns the inserted row.
   ///
   /// The returned [CitizenInt] will have its `id` field set.
-  Future<CitizenInt> insertRow(
+  Future<CitizenInt?> insertRow(
     _i1.DatabaseSession session,
     CitizenInt row, {
     _i1.Transaction? transaction,
@@ -556,14 +556,14 @@ class CitizenIntRepository {
     List<CitizenInt> rows, {
     required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
     _i1.ColumnSelections<CitizenIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CitizenIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<CitizenInt>(
       rows,
       conflictColumns: conflictColumns(CitizenInt.t),
       updateColumns: updateColumns?.call(CitizenInt.t),
-      conflictWhere: conflictWhere?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
       transaction: transaction,
     );
   }
@@ -574,19 +574,19 @@ class CitizenIntRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [CitizenInt] will have its `id` field set.
-  Future<CitizenInt> upsertRow(
+  Future<CitizenInt?> upsertRow(
     _i1.DatabaseSession session,
     CitizenInt row, {
     required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
     _i1.ColumnSelections<CitizenIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CitizenIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CitizenInt>(
       row,
       conflictColumns: conflictColumns(CitizenInt.t),
       updateColumns: updateColumns?.call(CitizenInt.t),
-      conflictWhere: conflictWhere?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
       transaction: transaction,
     );
   }

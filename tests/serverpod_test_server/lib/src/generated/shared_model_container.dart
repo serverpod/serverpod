@@ -1078,7 +1078,7 @@ class SharedModelContainerRepository {
   /// Inserts a single [SharedModelContainer] and returns the inserted row.
   ///
   /// The returned [SharedModelContainer] will have its `id` field set.
-  Future<SharedModelContainer> insertRow(
+  Future<SharedModelContainer?> insertRow(
     _i1.DatabaseSession session,
     SharedModelContainer row, {
     _i1.Transaction? transaction,
@@ -1103,14 +1103,14 @@ class SharedModelContainerRepository {
     List<SharedModelContainer> rows, {
     required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
     _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<SharedModelContainer>(
       rows,
       conflictColumns: conflictColumns(SharedModelContainer.t),
       updateColumns: updateColumns?.call(SharedModelContainer.t),
-      conflictWhere: conflictWhere?.call(SharedModelContainer.t),
+      updateWhere: updateWhere?.call(SharedModelContainer.t),
       transaction: transaction,
     );
   }
@@ -1121,19 +1121,19 @@ class SharedModelContainerRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [SharedModelContainer] will have its `id` field set.
-  Future<SharedModelContainer> upsertRow(
+  Future<SharedModelContainer?> upsertRow(
     _i1.DatabaseSession session,
     SharedModelContainer row, {
     required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
     _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SharedModelContainer>(
       row,
       conflictColumns: conflictColumns(SharedModelContainer.t),
       updateColumns: updateColumns?.call(SharedModelContainer.t),
-      conflictWhere: conflictWhere?.call(SharedModelContainer.t),
+      updateWhere: updateWhere?.call(SharedModelContainer.t),
       transaction: transaction,
     );
   }

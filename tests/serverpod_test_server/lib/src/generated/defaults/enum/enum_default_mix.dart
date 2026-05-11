@@ -418,7 +418,7 @@ class EnumDefaultMixRepository {
   /// Inserts a single [EnumDefaultMix] and returns the inserted row.
   ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
-  Future<EnumDefaultMix> insertRow(
+  Future<EnumDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
@@ -443,14 +443,14 @@ class EnumDefaultMixRepository {
     List<EnumDefaultMix> rows, {
     required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefaultMix>(
       rows,
       conflictColumns: conflictColumns(EnumDefaultMix.t),
       updateColumns: updateColumns?.call(EnumDefaultMix.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultMix.t),
+      updateWhere: updateWhere?.call(EnumDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -461,19 +461,19 @@ class EnumDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
-  Future<EnumDefaultMix> upsertRow(
+  Future<EnumDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefaultMix row, {
     required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultMix>(
       row,
       conflictColumns: conflictColumns(EnumDefaultMix.t),
       updateColumns: updateColumns?.call(EnumDefaultMix.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultMix.t),
+      updateWhere: updateWhere?.call(EnumDefaultMix.t),
       transaction: transaction,
     );
   }

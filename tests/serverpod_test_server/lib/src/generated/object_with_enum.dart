@@ -452,7 +452,7 @@ class ObjectWithEnumRepository {
   /// Inserts a single [ObjectWithEnum] and returns the inserted row.
   ///
   /// The returned [ObjectWithEnum] will have its `id` field set.
-  Future<ObjectWithEnum> insertRow(
+  Future<ObjectWithEnum?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithEnum row, {
     _i1.Transaction? transaction,
@@ -477,14 +477,14 @@ class ObjectWithEnumRepository {
     List<ObjectWithEnum> rows, {
     required _i1.ColumnSelections<ObjectWithEnumTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithEnumTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithEnum>(
       rows,
       conflictColumns: conflictColumns(ObjectWithEnum.t),
       updateColumns: updateColumns?.call(ObjectWithEnum.t),
-      conflictWhere: conflictWhere?.call(ObjectWithEnum.t),
+      updateWhere: updateWhere?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }
@@ -495,19 +495,19 @@ class ObjectWithEnumRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithEnum] will have its `id` field set.
-  Future<ObjectWithEnum> upsertRow(
+  Future<ObjectWithEnum?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithEnum row, {
     required _i1.ColumnSelections<ObjectWithEnumTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithEnumTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithEnum>(
       row,
       conflictColumns: conflictColumns(ObjectWithEnum.t),
       updateColumns: updateColumns?.call(ObjectWithEnum.t),
-      conflictWhere: conflictWhere?.call(ObjectWithEnum.t),
+      updateWhere: updateWhere?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }

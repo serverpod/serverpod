@@ -354,7 +354,7 @@ class ObjectFieldPersistRepository {
   /// Inserts a single [ObjectFieldPersist] and returns the inserted row.
   ///
   /// The returned [ObjectFieldPersist] will have its `id` field set.
-  Future<ObjectFieldPersist> insertRow(
+  Future<ObjectFieldPersist?> insertRow(
     _i1.DatabaseSession session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
@@ -379,14 +379,14 @@ class ObjectFieldPersistRepository {
     List<ObjectFieldPersist> rows, {
     required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
     _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectFieldPersist>(
       rows,
       conflictColumns: conflictColumns(ObjectFieldPersist.t),
       updateColumns: updateColumns?.call(ObjectFieldPersist.t),
-      conflictWhere: conflictWhere?.call(ObjectFieldPersist.t),
+      updateWhere: updateWhere?.call(ObjectFieldPersist.t),
       transaction: transaction,
     );
   }
@@ -397,19 +397,19 @@ class ObjectFieldPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectFieldPersist] will have its `id` field set.
-  Future<ObjectFieldPersist> upsertRow(
+  Future<ObjectFieldPersist?> upsertRow(
     _i1.DatabaseSession session,
     ObjectFieldPersist row, {
     required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
     _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectFieldPersist>(
       row,
       conflictColumns: conflictColumns(ObjectFieldPersist.t),
       updateColumns: updateColumns?.call(ObjectFieldPersist.t),
-      conflictWhere: conflictWhere?.call(ObjectFieldPersist.t),
+      updateWhere: updateWhere?.call(ObjectFieldPersist.t),
       transaction: transaction,
     );
   }

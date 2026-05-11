@@ -374,7 +374,7 @@ class DateTimeDefaultPersistRepository {
   /// Inserts a single [DateTimeDefaultPersist] and returns the inserted row.
   ///
   /// The returned [DateTimeDefaultPersist] will have its `id` field set.
-  Future<DateTimeDefaultPersist> insertRow(
+  Future<DateTimeDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -399,14 +399,14 @@ class DateTimeDefaultPersistRepository {
     List<DateTimeDefaultPersist> rows, {
     required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DateTimeDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(DateTimeDefaultPersist.t),
       updateColumns: updateColumns?.call(DateTimeDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultPersist.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -417,19 +417,19 @@ class DateTimeDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DateTimeDefaultPersist] will have its `id` field set.
-  Future<DateTimeDefaultPersist> upsertRow(
+  Future<DateTimeDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultPersist row, {
     required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultPersist>(
       row,
       conflictColumns: conflictColumns(DateTimeDefaultPersist.t),
       updateColumns: updateColumns?.call(DateTimeDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultPersist.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
     );
   }

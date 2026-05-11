@@ -399,7 +399,7 @@ class PlayerRepository {
   /// Inserts a single [Player] and returns the inserted row.
   ///
   /// The returned [Player] will have its `id` field set.
-  Future<Player> insertRow(
+  Future<Player?> insertRow(
     _i1.DatabaseSession session,
     Player row, {
     _i1.Transaction? transaction,
@@ -424,14 +424,14 @@ class PlayerRepository {
     List<Player> rows, {
     required _i1.ColumnSelections<PlayerTable> conflictColumns,
     _i1.ColumnSelections<PlayerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PlayerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Player>(
       rows,
       conflictColumns: conflictColumns(Player.t),
       updateColumns: updateColumns?.call(Player.t),
-      conflictWhere: conflictWhere?.call(Player.t),
+      updateWhere: updateWhere?.call(Player.t),
       transaction: transaction,
     );
   }
@@ -442,19 +442,19 @@ class PlayerRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Player] will have its `id` field set.
-  Future<Player> upsertRow(
+  Future<Player?> upsertRow(
     _i1.DatabaseSession session,
     Player row, {
     required _i1.ColumnSelections<PlayerTable> conflictColumns,
     _i1.ColumnSelections<PlayerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PlayerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Player>(
       row,
       conflictColumns: conflictColumns(Player.t),
       updateColumns: updateColumns?.call(Player.t),
-      conflictWhere: conflictWhere?.call(Player.t),
+      updateWhere: updateWhere?.call(Player.t),
       transaction: transaction,
     );
   }

@@ -369,7 +369,7 @@ class BigIntDefaultModelRepository {
   /// Inserts a single [BigIntDefaultModel] and returns the inserted row.
   ///
   /// The returned [BigIntDefaultModel] will have its `id` field set.
-  Future<BigIntDefaultModel> insertRow(
+  Future<BigIntDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     BigIntDefaultModel row, {
     _i1.Transaction? transaction,
@@ -394,14 +394,14 @@ class BigIntDefaultModelRepository {
     List<BigIntDefaultModel> rows, {
     required _i1.ColumnSelections<BigIntDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BigIntDefaultModel>(
       rows,
       conflictColumns: conflictColumns(BigIntDefaultModel.t),
       updateColumns: updateColumns?.call(BigIntDefaultModel.t),
-      conflictWhere: conflictWhere?.call(BigIntDefaultModel.t),
+      updateWhere: updateWhere?.call(BigIntDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -412,19 +412,19 @@ class BigIntDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BigIntDefaultModel] will have its `id` field set.
-  Future<BigIntDefaultModel> upsertRow(
+  Future<BigIntDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     BigIntDefaultModel row, {
     required _i1.ColumnSelections<BigIntDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BigIntDefaultModel>(
       row,
       conflictColumns: conflictColumns(BigIntDefaultModel.t),
       updateColumns: updateColumns?.call(BigIntDefaultModel.t),
-      conflictWhere: conflictWhere?.call(BigIntDefaultModel.t),
+      updateWhere: updateWhere?.call(BigIntDefaultModel.t),
       transaction: transaction,
     );
   }

@@ -288,7 +288,7 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// Inserts a single [ServerOnlyChangedIdFieldClass] and returns the inserted row.
   ///
   /// The returned [ServerOnlyChangedIdFieldClass] will have its `id` field set.
-  Future<ServerOnlyChangedIdFieldClass> insertRow(
+  Future<ServerOnlyChangedIdFieldClass?> insertRow(
     _i1.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
     _i1.Transaction? transaction,
@@ -314,15 +314,14 @@ class ServerOnlyChangedIdFieldClassRepository {
     required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
     conflictColumns,
     _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ServerOnlyChangedIdFieldClass>(
       rows,
       conflictColumns: conflictColumns(ServerOnlyChangedIdFieldClass.t),
       updateColumns: updateColumns?.call(ServerOnlyChangedIdFieldClass.t),
-      conflictWhere: conflictWhere?.call(ServerOnlyChangedIdFieldClass.t),
+      updateWhere: updateWhere?.call(ServerOnlyChangedIdFieldClass.t),
       transaction: transaction,
     );
   }
@@ -333,21 +332,20 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ServerOnlyChangedIdFieldClass] will have its `id` field set.
-  Future<ServerOnlyChangedIdFieldClass> upsertRow(
+  Future<ServerOnlyChangedIdFieldClass?> upsertRow(
     _i1.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
     required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
     conflictColumns,
     _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerOnlyChangedIdFieldClass>(
       row,
       conflictColumns: conflictColumns(ServerOnlyChangedIdFieldClass.t),
       updateColumns: updateColumns?.call(ServerOnlyChangedIdFieldClass.t),
-      conflictWhere: conflictWhere?.call(ServerOnlyChangedIdFieldClass.t),
+      updateWhere: updateWhere?.call(ServerOnlyChangedIdFieldClass.t),
       transaction: transaction,
     );
   }

@@ -361,7 +361,7 @@ class UriDefaultModelRepository {
   /// Inserts a single [UriDefaultModel] and returns the inserted row.
   ///
   /// The returned [UriDefaultModel] will have its `id` field set.
-  Future<UriDefaultModel> insertRow(
+  Future<UriDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     UriDefaultModel row, {
     _i1.Transaction? transaction,
@@ -386,14 +386,14 @@ class UriDefaultModelRepository {
     List<UriDefaultModel> rows, {
     required _i1.ColumnSelections<UriDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UriDefaultModel>(
       rows,
       conflictColumns: conflictColumns(UriDefaultModel.t),
       updateColumns: updateColumns?.call(UriDefaultModel.t),
-      conflictWhere: conflictWhere?.call(UriDefaultModel.t),
+      updateWhere: updateWhere?.call(UriDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -404,19 +404,19 @@ class UriDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UriDefaultModel] will have its `id` field set.
-  Future<UriDefaultModel> upsertRow(
+  Future<UriDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     UriDefaultModel row, {
     required _i1.ColumnSelections<UriDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UriDefaultModel>(
       row,
       conflictColumns: conflictColumns(UriDefaultModel.t),
       updateColumns: updateColumns?.call(UriDefaultModel.t),
-      conflictWhere: conflictWhere?.call(UriDefaultModel.t),
+      updateWhere: updateWhere?.call(UriDefaultModel.t),
       transaction: transaction,
     );
   }

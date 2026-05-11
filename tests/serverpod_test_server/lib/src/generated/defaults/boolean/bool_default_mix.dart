@@ -399,7 +399,7 @@ class BoolDefaultMixRepository {
   /// Inserts a single [BoolDefaultMix] and returns the inserted row.
   ///
   /// The returned [BoolDefaultMix] will have its `id` field set.
-  Future<BoolDefaultMix> insertRow(
+  Future<BoolDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     BoolDefaultMix row, {
     _i1.Transaction? transaction,
@@ -424,14 +424,14 @@ class BoolDefaultMixRepository {
     List<BoolDefaultMix> rows, {
     required _i1.ColumnSelections<BoolDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BoolDefaultMix>(
       rows,
       conflictColumns: conflictColumns(BoolDefaultMix.t),
       updateColumns: updateColumns?.call(BoolDefaultMix.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultMix.t),
+      updateWhere: updateWhere?.call(BoolDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -442,19 +442,19 @@ class BoolDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BoolDefaultMix] will have its `id` field set.
-  Future<BoolDefaultMix> upsertRow(
+  Future<BoolDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     BoolDefaultMix row, {
     required _i1.ColumnSelections<BoolDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BoolDefaultMix>(
       row,
       conflictColumns: conflictColumns(BoolDefaultMix.t),
       updateColumns: updateColumns?.call(BoolDefaultMix.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultMix.t),
+      updateWhere: updateWhere?.call(BoolDefaultMix.t),
       transaction: transaction,
     );
   }

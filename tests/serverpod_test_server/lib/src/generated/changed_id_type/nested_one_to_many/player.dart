@@ -402,7 +402,7 @@ class PlayerUuidRepository {
   /// Inserts a single [PlayerUuid] and returns the inserted row.
   ///
   /// The returned [PlayerUuid] will have its `id` field set.
-  Future<PlayerUuid> insertRow(
+  Future<PlayerUuid?> insertRow(
     _i1.DatabaseSession session,
     PlayerUuid row, {
     _i1.Transaction? transaction,
@@ -427,14 +427,14 @@ class PlayerUuidRepository {
     List<PlayerUuid> rows, {
     required _i1.ColumnSelections<PlayerUuidTable> conflictColumns,
     _i1.ColumnSelections<PlayerUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<PlayerUuid>(
       rows,
       conflictColumns: conflictColumns(PlayerUuid.t),
       updateColumns: updateColumns?.call(PlayerUuid.t),
-      conflictWhere: conflictWhere?.call(PlayerUuid.t),
+      updateWhere: updateWhere?.call(PlayerUuid.t),
       transaction: transaction,
     );
   }
@@ -445,19 +445,19 @@ class PlayerUuidRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [PlayerUuid] will have its `id` field set.
-  Future<PlayerUuid> upsertRow(
+  Future<PlayerUuid?> upsertRow(
     _i1.DatabaseSession session,
     PlayerUuid row, {
     required _i1.ColumnSelections<PlayerUuidTable> conflictColumns,
     _i1.ColumnSelections<PlayerUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<PlayerUuid>(
       row,
       conflictColumns: conflictColumns(PlayerUuid.t),
       updateColumns: updateColumns?.call(PlayerUuid.t),
-      conflictWhere: conflictWhere?.call(PlayerUuid.t),
+      updateWhere: updateWhere?.call(PlayerUuid.t),
       transaction: transaction,
     );
   }

@@ -481,7 +481,7 @@ class OrderUuidRepository {
   /// Inserts a single [OrderUuid] and returns the inserted row.
   ///
   /// The returned [OrderUuid] will have its `id` field set.
-  Future<OrderUuid> insertRow(
+  Future<OrderUuid?> insertRow(
     _i1.DatabaseSession session,
     OrderUuid row, {
     _i1.Transaction? transaction,
@@ -506,14 +506,14 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
     _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<OrderUuid>(
       rows,
       conflictColumns: conflictColumns(OrderUuid.t),
       updateColumns: updateColumns?.call(OrderUuid.t),
-      conflictWhere: conflictWhere?.call(OrderUuid.t),
+      updateWhere: updateWhere?.call(OrderUuid.t),
       transaction: transaction,
     );
   }
@@ -524,19 +524,19 @@ class OrderUuidRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [OrderUuid] will have its `id` field set.
-  Future<OrderUuid> upsertRow(
+  Future<OrderUuid?> upsertRow(
     _i1.DatabaseSession session,
     OrderUuid row, {
     required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
     _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<OrderUuid>(
       row,
       conflictColumns: conflictColumns(OrderUuid.t),
       updateColumns: updateColumns?.call(OrderUuid.t),
-      conflictWhere: conflictWhere?.call(OrderUuid.t),
+      updateWhere: updateWhere?.call(OrderUuid.t),
       transaction: transaction,
     );
   }

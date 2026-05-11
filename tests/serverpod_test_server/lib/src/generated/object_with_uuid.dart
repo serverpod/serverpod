@@ -356,7 +356,7 @@ class ObjectWithUuidRepository {
   /// Inserts a single [ObjectWithUuid] and returns the inserted row.
   ///
   /// The returned [ObjectWithUuid] will have its `id` field set.
-  Future<ObjectWithUuid> insertRow(
+  Future<ObjectWithUuid?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
@@ -381,14 +381,14 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     required _i1.ColumnSelections<ObjectWithUuidTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithUuid>(
       rows,
       conflictColumns: conflictColumns(ObjectWithUuid.t),
       updateColumns: updateColumns?.call(ObjectWithUuid.t),
-      conflictWhere: conflictWhere?.call(ObjectWithUuid.t),
+      updateWhere: updateWhere?.call(ObjectWithUuid.t),
       transaction: transaction,
     );
   }
@@ -399,19 +399,19 @@ class ObjectWithUuidRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithUuid] will have its `id` field set.
-  Future<ObjectWithUuid> upsertRow(
+  Future<ObjectWithUuid?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithUuid row, {
     required _i1.ColumnSelections<ObjectWithUuidTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithUuid>(
       row,
       conflictColumns: conflictColumns(ObjectWithUuid.t),
       updateColumns: updateColumns?.call(ObjectWithUuid.t),
-      conflictWhere: conflictWhere?.call(ObjectWithUuid.t),
+      updateWhere: updateWhere?.call(ObjectWithUuid.t),
       transaction: transaction,
     );
   }

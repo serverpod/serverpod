@@ -355,7 +355,7 @@ class StringDefaultModelRepository {
   /// Inserts a single [StringDefaultModel] and returns the inserted row.
   ///
   /// The returned [StringDefaultModel] will have its `id` field set.
-  Future<StringDefaultModel> insertRow(
+  Future<StringDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     StringDefaultModel row, {
     _i1.Transaction? transaction,
@@ -380,14 +380,14 @@ class StringDefaultModelRepository {
     List<StringDefaultModel> rows, {
     required _i1.ColumnSelections<StringDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<StringDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<StringDefaultModel>(
       rows,
       conflictColumns: conflictColumns(StringDefaultModel.t),
       updateColumns: updateColumns?.call(StringDefaultModel.t),
-      conflictWhere: conflictWhere?.call(StringDefaultModel.t),
+      updateWhere: updateWhere?.call(StringDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -398,19 +398,19 @@ class StringDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [StringDefaultModel] will have its `id` field set.
-  Future<StringDefaultModel> upsertRow(
+  Future<StringDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     StringDefaultModel row, {
     required _i1.ColumnSelections<StringDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<StringDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<StringDefaultModel>(
       row,
       conflictColumns: conflictColumns(StringDefaultModel.t),
       updateColumns: updateColumns?.call(StringDefaultModel.t),
-      conflictWhere: conflictWhere?.call(StringDefaultModel.t),
+      updateWhere: updateWhere?.call(StringDefaultModel.t),
       transaction: transaction,
     );
   }

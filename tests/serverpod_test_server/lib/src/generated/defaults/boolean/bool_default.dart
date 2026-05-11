@@ -392,7 +392,7 @@ class BoolDefaultRepository {
   /// Inserts a single [BoolDefault] and returns the inserted row.
   ///
   /// The returned [BoolDefault] will have its `id` field set.
-  Future<BoolDefault> insertRow(
+  Future<BoolDefault?> insertRow(
     _i1.DatabaseSession session,
     BoolDefault row, {
     _i1.Transaction? transaction,
@@ -417,14 +417,14 @@ class BoolDefaultRepository {
     List<BoolDefault> rows, {
     required _i1.ColumnSelections<BoolDefaultTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BoolDefault>(
       rows,
       conflictColumns: conflictColumns(BoolDefault.t),
       updateColumns: updateColumns?.call(BoolDefault.t),
-      conflictWhere: conflictWhere?.call(BoolDefault.t),
+      updateWhere: updateWhere?.call(BoolDefault.t),
       transaction: transaction,
     );
   }
@@ -435,19 +435,19 @@ class BoolDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BoolDefault] will have its `id` field set.
-  Future<BoolDefault> upsertRow(
+  Future<BoolDefault?> upsertRow(
     _i1.DatabaseSession session,
     BoolDefault row, {
     required _i1.ColumnSelections<BoolDefaultTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BoolDefault>(
       row,
       conflictColumns: conflictColumns(BoolDefault.t),
       updateColumns: updateColumns?.call(BoolDefault.t),
-      conflictWhere: conflictWhere?.call(BoolDefault.t),
+      updateWhere: updateWhere?.call(BoolDefault.t),
       transaction: transaction,
     );
   }

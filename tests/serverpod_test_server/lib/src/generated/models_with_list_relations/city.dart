@@ -483,7 +483,7 @@ class CityRepository {
   /// Inserts a single [City] and returns the inserted row.
   ///
   /// The returned [City] will have its `id` field set.
-  Future<City> insertRow(
+  Future<City?> insertRow(
     _i1.DatabaseSession session,
     City row, {
     _i1.Transaction? transaction,
@@ -508,14 +508,14 @@ class CityRepository {
     List<City> rows, {
     required _i1.ColumnSelections<CityTable> conflictColumns,
     _i1.ColumnSelections<CityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CityTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CityTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<City>(
       rows,
       conflictColumns: conflictColumns(City.t),
       updateColumns: updateColumns?.call(City.t),
-      conflictWhere: conflictWhere?.call(City.t),
+      updateWhere: updateWhere?.call(City.t),
       transaction: transaction,
     );
   }
@@ -526,19 +526,19 @@ class CityRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [City] will have its `id` field set.
-  Future<City> upsertRow(
+  Future<City?> upsertRow(
     _i1.DatabaseSession session,
     City row, {
     required _i1.ColumnSelections<CityTable> conflictColumns,
     _i1.ColumnSelections<CityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CityTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CityTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<City>(
       row,
       conflictColumns: conflictColumns(City.t),
       updateColumns: updateColumns?.call(City.t),
-      conflictWhere: conflictWhere?.call(City.t),
+      updateWhere: updateWhere?.call(City.t),
       transaction: transaction,
     );
   }

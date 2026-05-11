@@ -485,7 +485,7 @@ class ObjectWithEnumEnhancedRepository {
   /// Inserts a single [ObjectWithEnumEnhanced] and returns the inserted row.
   ///
   /// The returned [ObjectWithEnumEnhanced] will have its `id` field set.
-  Future<ObjectWithEnumEnhanced> insertRow(
+  Future<ObjectWithEnumEnhanced?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
     _i1.Transaction? transaction,
@@ -510,14 +510,14 @@ class ObjectWithEnumEnhancedRepository {
     List<ObjectWithEnumEnhanced> rows, {
     required _i1.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithEnumEnhanced>(
       rows,
       conflictColumns: conflictColumns(ObjectWithEnumEnhanced.t),
       updateColumns: updateColumns?.call(ObjectWithEnumEnhanced.t),
-      conflictWhere: conflictWhere?.call(ObjectWithEnumEnhanced.t),
+      updateWhere: updateWhere?.call(ObjectWithEnumEnhanced.t),
       transaction: transaction,
     );
   }
@@ -528,19 +528,19 @@ class ObjectWithEnumEnhancedRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithEnumEnhanced] will have its `id` field set.
-  Future<ObjectWithEnumEnhanced> upsertRow(
+  Future<ObjectWithEnumEnhanced?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
     required _i1.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithEnumEnhanced>(
       row,
       conflictColumns: conflictColumns(ObjectWithEnumEnhanced.t),
       updateColumns: updateColumns?.call(ObjectWithEnumEnhanced.t),
-      conflictWhere: conflictWhere?.call(ObjectWithEnumEnhanced.t),
+      updateWhere: updateWhere?.call(ObjectWithEnumEnhanced.t),
       transaction: transaction,
     );
   }

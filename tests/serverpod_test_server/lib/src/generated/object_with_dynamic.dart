@@ -506,7 +506,7 @@ class ObjectWithDynamicRepository {
   /// Inserts a single [ObjectWithDynamic] and returns the inserted row.
   ///
   /// The returned [ObjectWithDynamic] will have its `id` field set.
-  Future<ObjectWithDynamic> insertRow(
+  Future<ObjectWithDynamic?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithDynamic row, {
     _i1.Transaction? transaction,
@@ -531,14 +531,14 @@ class ObjectWithDynamicRepository {
     List<ObjectWithDynamic> rows, {
     required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithDynamic>(
       rows,
       conflictColumns: conflictColumns(ObjectWithDynamic.t),
       updateColumns: updateColumns?.call(ObjectWithDynamic.t),
-      conflictWhere: conflictWhere?.call(ObjectWithDynamic.t),
+      updateWhere: updateWhere?.call(ObjectWithDynamic.t),
       transaction: transaction,
     );
   }
@@ -549,19 +549,19 @@ class ObjectWithDynamicRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithDynamic] will have its `id` field set.
-  Future<ObjectWithDynamic> upsertRow(
+  Future<ObjectWithDynamic?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithDynamic row, {
     required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithDynamic>(
       row,
       conflictColumns: conflictColumns(ObjectWithDynamic.t),
       updateColumns: updateColumns?.call(ObjectWithDynamic.t),
-      conflictWhere: conflictWhere?.call(ObjectWithDynamic.t),
+      updateWhere: updateWhere?.call(ObjectWithDynamic.t),
       transaction: transaction,
     );
   }

@@ -408,7 +408,7 @@ class CourseRepository {
   /// Inserts a single [Course] and returns the inserted row.
   ///
   /// The returned [Course] will have its `id` field set.
-  Future<Course> insertRow(
+  Future<Course?> insertRow(
     _i1.DatabaseSession session,
     Course row, {
     _i1.Transaction? transaction,
@@ -433,14 +433,14 @@ class CourseRepository {
     List<Course> rows, {
     required _i1.ColumnSelections<CourseTable> conflictColumns,
     _i1.ColumnSelections<CourseTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CourseTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Course>(
       rows,
       conflictColumns: conflictColumns(Course.t),
       updateColumns: updateColumns?.call(Course.t),
-      conflictWhere: conflictWhere?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
       transaction: transaction,
     );
   }
@@ -451,19 +451,19 @@ class CourseRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Course] will have its `id` field set.
-  Future<Course> upsertRow(
+  Future<Course?> upsertRow(
     _i1.DatabaseSession session,
     Course row, {
     required _i1.ColumnSelections<CourseTable> conflictColumns,
     _i1.ColumnSelections<CourseTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CourseTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Course>(
       row,
       conflictColumns: conflictColumns(Course.t),
       updateColumns: updateColumns?.call(Course.t),
-      conflictWhere: conflictWhere?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
       transaction: transaction,
     );
   }

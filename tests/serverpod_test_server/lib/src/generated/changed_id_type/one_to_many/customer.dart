@@ -407,7 +407,7 @@ class CustomerIntRepository {
   /// Inserts a single [CustomerInt] and returns the inserted row.
   ///
   /// The returned [CustomerInt] will have its `id` field set.
-  Future<CustomerInt> insertRow(
+  Future<CustomerInt?> insertRow(
     _i1.DatabaseSession session,
     CustomerInt row, {
     _i1.Transaction? transaction,
@@ -432,14 +432,14 @@ class CustomerIntRepository {
     List<CustomerInt> rows, {
     required _i1.ColumnSelections<CustomerIntTable> conflictColumns,
     _i1.ColumnSelections<CustomerIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CustomerIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<CustomerInt>(
       rows,
       conflictColumns: conflictColumns(CustomerInt.t),
       updateColumns: updateColumns?.call(CustomerInt.t),
-      conflictWhere: conflictWhere?.call(CustomerInt.t),
+      updateWhere: updateWhere?.call(CustomerInt.t),
       transaction: transaction,
     );
   }
@@ -450,19 +450,19 @@ class CustomerIntRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [CustomerInt] will have its `id` field set.
-  Future<CustomerInt> upsertRow(
+  Future<CustomerInt?> upsertRow(
     _i1.DatabaseSession session,
     CustomerInt row, {
     required _i1.ColumnSelections<CustomerIntTable> conflictColumns,
     _i1.ColumnSelections<CustomerIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CustomerIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CustomerInt>(
       row,
       conflictColumns: conflictColumns(CustomerInt.t),
       updateColumns: updateColumns?.call(CustomerInt.t),
-      conflictWhere: conflictWhere?.call(CustomerInt.t),
+      updateWhere: updateWhere?.call(CustomerInt.t),
       transaction: transaction,
     );
   }

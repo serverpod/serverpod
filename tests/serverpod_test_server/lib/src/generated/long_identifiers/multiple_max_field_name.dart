@@ -450,7 +450,7 @@ class MultipleMaxFieldNameRepository {
   /// Inserts a single [MultipleMaxFieldName] and returns the inserted row.
   ///
   /// The returned [MultipleMaxFieldName] will have its `id` field set.
-  Future<MultipleMaxFieldName> insertRow(
+  Future<MultipleMaxFieldName?> insertRow(
     _i1.DatabaseSession session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
@@ -475,14 +475,14 @@ class MultipleMaxFieldNameRepository {
     List<MultipleMaxFieldName> rows, {
     required _i1.ColumnSelections<MultipleMaxFieldNameTable> conflictColumns,
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<MultipleMaxFieldName>(
       rows,
       conflictColumns: conflictColumns(MultipleMaxFieldName.t),
       updateColumns: updateColumns?.call(MultipleMaxFieldName.t),
-      conflictWhere: conflictWhere?.call(MultipleMaxFieldName.t),
+      updateWhere: updateWhere?.call(MultipleMaxFieldName.t),
       transaction: transaction,
     );
   }
@@ -493,19 +493,19 @@ class MultipleMaxFieldNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [MultipleMaxFieldName] will have its `id` field set.
-  Future<MultipleMaxFieldName> upsertRow(
+  Future<MultipleMaxFieldName?> upsertRow(
     _i1.DatabaseSession session,
     MultipleMaxFieldName row, {
     required _i1.ColumnSelections<MultipleMaxFieldNameTable> conflictColumns,
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MultipleMaxFieldName>(
       row,
       conflictColumns: conflictColumns(MultipleMaxFieldName.t),
       updateColumns: updateColumns?.call(MultipleMaxFieldName.t),
-      conflictWhere: conflictWhere?.call(MultipleMaxFieldName.t),
+      updateWhere: updateWhere?.call(MultipleMaxFieldName.t),
       transaction: transaction,
     );
   }

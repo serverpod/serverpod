@@ -356,7 +356,7 @@ class UriDefaultRepository {
   /// Inserts a single [UriDefault] and returns the inserted row.
   ///
   /// The returned [UriDefault] will have its `id` field set.
-  Future<UriDefault> insertRow(
+  Future<UriDefault?> insertRow(
     _i1.DatabaseSession session,
     UriDefault row, {
     _i1.Transaction? transaction,
@@ -381,14 +381,14 @@ class UriDefaultRepository {
     List<UriDefault> rows, {
     required _i1.ColumnSelections<UriDefaultTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UriDefault>(
       rows,
       conflictColumns: conflictColumns(UriDefault.t),
       updateColumns: updateColumns?.call(UriDefault.t),
-      conflictWhere: conflictWhere?.call(UriDefault.t),
+      updateWhere: updateWhere?.call(UriDefault.t),
       transaction: transaction,
     );
   }
@@ -399,19 +399,19 @@ class UriDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UriDefault] will have its `id` field set.
-  Future<UriDefault> upsertRow(
+  Future<UriDefault?> upsertRow(
     _i1.DatabaseSession session,
     UriDefault row, {
     required _i1.ColumnSelections<UriDefaultTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UriDefault>(
       row,
       conflictColumns: conflictColumns(UriDefault.t),
       updateColumns: updateColumns?.call(UriDefault.t),
-      conflictWhere: conflictWhere?.call(UriDefault.t),
+      updateWhere: updateWhere?.call(UriDefault.t),
       transaction: transaction,
     );
   }

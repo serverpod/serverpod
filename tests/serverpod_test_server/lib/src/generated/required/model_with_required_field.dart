@@ -374,7 +374,7 @@ class ModelWithRequiredFieldRepository {
   /// Inserts a single [ModelWithRequiredField] and returns the inserted row.
   ///
   /// The returned [ModelWithRequiredField] will have its `id` field set.
-  Future<ModelWithRequiredField> insertRow(
+  Future<ModelWithRequiredField?> insertRow(
     _i1.DatabaseSession session,
     ModelWithRequiredField row, {
     _i1.Transaction? transaction,
@@ -399,14 +399,14 @@ class ModelWithRequiredFieldRepository {
     List<ModelWithRequiredField> rows, {
     required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
     _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ModelWithRequiredField>(
       rows,
       conflictColumns: conflictColumns(ModelWithRequiredField.t),
       updateColumns: updateColumns?.call(ModelWithRequiredField.t),
-      conflictWhere: conflictWhere?.call(ModelWithRequiredField.t),
+      updateWhere: updateWhere?.call(ModelWithRequiredField.t),
       transaction: transaction,
     );
   }
@@ -417,19 +417,19 @@ class ModelWithRequiredFieldRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ModelWithRequiredField] will have its `id` field set.
-  Future<ModelWithRequiredField> upsertRow(
+  Future<ModelWithRequiredField?> upsertRow(
     _i1.DatabaseSession session,
     ModelWithRequiredField row, {
     required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
     _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ModelWithRequiredField>(
       row,
       conflictColumns: conflictColumns(ModelWithRequiredField.t),
       updateColumns: updateColumns?.call(ModelWithRequiredField.t),
-      conflictWhere: conflictWhere?.call(ModelWithRequiredField.t),
+      updateWhere: updateWhere?.call(ModelWithRequiredField.t),
       transaction: transaction,
     );
   }

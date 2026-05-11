@@ -479,7 +479,7 @@ class OrganizationRepository {
   /// Inserts a single [Organization] and returns the inserted row.
   ///
   /// The returned [Organization] will have its `id` field set.
-  Future<Organization> insertRow(
+  Future<Organization?> insertRow(
     _i1.DatabaseSession session,
     Organization row, {
     _i1.Transaction? transaction,
@@ -504,14 +504,14 @@ class OrganizationRepository {
     List<Organization> rows, {
     required _i1.ColumnSelections<OrganizationTable> conflictColumns,
     _i1.ColumnSelections<OrganizationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Organization>(
       rows,
       conflictColumns: conflictColumns(Organization.t),
       updateColumns: updateColumns?.call(Organization.t),
-      conflictWhere: conflictWhere?.call(Organization.t),
+      updateWhere: updateWhere?.call(Organization.t),
       transaction: transaction,
     );
   }
@@ -522,19 +522,19 @@ class OrganizationRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Organization] will have its `id` field set.
-  Future<Organization> upsertRow(
+  Future<Organization?> upsertRow(
     _i1.DatabaseSession session,
     Organization row, {
     required _i1.ColumnSelections<OrganizationTable> conflictColumns,
     _i1.ColumnSelections<OrganizationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Organization>(
       row,
       conflictColumns: conflictColumns(Organization.t),
       updateColumns: updateColumns?.call(Organization.t),
-      conflictWhere: conflictWhere?.call(Organization.t),
+      updateWhere: updateWhere?.call(Organization.t),
       transaction: transaction,
     );
   }

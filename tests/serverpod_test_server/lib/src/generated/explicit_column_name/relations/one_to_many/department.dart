@@ -406,7 +406,7 @@ class DepartmentRepository {
   /// Inserts a single [Department] and returns the inserted row.
   ///
   /// The returned [Department] will have its `id` field set.
-  Future<Department> insertRow(
+  Future<Department?> insertRow(
     _i1.DatabaseSession session,
     Department row, {
     _i1.Transaction? transaction,
@@ -431,14 +431,14 @@ class DepartmentRepository {
     List<Department> rows, {
     required _i1.ColumnSelections<DepartmentTable> conflictColumns,
     _i1.ColumnSelections<DepartmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DepartmentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DepartmentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Department>(
       rows,
       conflictColumns: conflictColumns(Department.t),
       updateColumns: updateColumns?.call(Department.t),
-      conflictWhere: conflictWhere?.call(Department.t),
+      updateWhere: updateWhere?.call(Department.t),
       transaction: transaction,
     );
   }
@@ -449,19 +449,19 @@ class DepartmentRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Department] will have its `id` field set.
-  Future<Department> upsertRow(
+  Future<Department?> upsertRow(
     _i1.DatabaseSession session,
     Department row, {
     required _i1.ColumnSelections<DepartmentTable> conflictColumns,
     _i1.ColumnSelections<DepartmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DepartmentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DepartmentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Department>(
       row,
       conflictColumns: conflictColumns(Department.t),
       updateColumns: updateColumns?.call(Department.t),
-      conflictWhere: conflictWhere?.call(Department.t),
+      updateWhere: updateWhere?.call(Department.t),
       transaction: transaction,
     );
   }

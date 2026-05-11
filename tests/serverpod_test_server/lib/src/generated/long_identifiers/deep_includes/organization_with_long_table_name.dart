@@ -489,7 +489,7 @@ class OrganizationWithLongTableNameRepository {
   /// Inserts a single [OrganizationWithLongTableName] and returns the inserted row.
   ///
   /// The returned [OrganizationWithLongTableName] will have its `id` field set.
-  Future<OrganizationWithLongTableName> insertRow(
+  Future<OrganizationWithLongTableName?> insertRow(
     _i1.DatabaseSession session,
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
@@ -515,15 +515,14 @@ class OrganizationWithLongTableNameRepository {
     required _i1.ColumnSelections<OrganizationWithLongTableNameTable>
     conflictColumns,
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<OrganizationWithLongTableName>(
       rows,
       conflictColumns: conflictColumns(OrganizationWithLongTableName.t),
       updateColumns: updateColumns?.call(OrganizationWithLongTableName.t),
-      conflictWhere: conflictWhere?.call(OrganizationWithLongTableName.t),
+      updateWhere: updateWhere?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
     );
   }
@@ -534,21 +533,20 @@ class OrganizationWithLongTableNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [OrganizationWithLongTableName] will have its `id` field set.
-  Future<OrganizationWithLongTableName> upsertRow(
+  Future<OrganizationWithLongTableName?> upsertRow(
     _i1.DatabaseSession session,
     OrganizationWithLongTableName row, {
     required _i1.ColumnSelections<OrganizationWithLongTableNameTable>
     conflictColumns,
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<OrganizationWithLongTableName>(
       row,
       conflictColumns: conflictColumns(OrganizationWithLongTableName.t),
       updateColumns: updateColumns?.call(OrganizationWithLongTableName.t),
-      conflictWhere: conflictWhere?.call(OrganizationWithLongTableName.t),
+      updateWhere: updateWhere?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
     );
   }

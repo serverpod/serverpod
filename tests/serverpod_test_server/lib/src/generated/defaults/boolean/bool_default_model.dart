@@ -392,7 +392,7 @@ class BoolDefaultModelRepository {
   /// Inserts a single [BoolDefaultModel] and returns the inserted row.
   ///
   /// The returned [BoolDefaultModel] will have its `id` field set.
-  Future<BoolDefaultModel> insertRow(
+  Future<BoolDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     BoolDefaultModel row, {
     _i1.Transaction? transaction,
@@ -417,14 +417,14 @@ class BoolDefaultModelRepository {
     List<BoolDefaultModel> rows, {
     required _i1.ColumnSelections<BoolDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BoolDefaultModel>(
       rows,
       conflictColumns: conflictColumns(BoolDefaultModel.t),
       updateColumns: updateColumns?.call(BoolDefaultModel.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultModel.t),
+      updateWhere: updateWhere?.call(BoolDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -435,19 +435,19 @@ class BoolDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BoolDefaultModel] will have its `id` field set.
-  Future<BoolDefaultModel> upsertRow(
+  Future<BoolDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     BoolDefaultModel row, {
     required _i1.ColumnSelections<BoolDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BoolDefaultModel>(
       row,
       conflictColumns: conflictColumns(BoolDefaultModel.t),
       updateColumns: updateColumns?.call(BoolDefaultModel.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultModel.t),
+      updateWhere: updateWhere?.call(BoolDefaultModel.t),
       transaction: transaction,
     );
   }

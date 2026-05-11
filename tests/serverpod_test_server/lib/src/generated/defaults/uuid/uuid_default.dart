@@ -470,7 +470,7 @@ class UuidDefaultRepository {
   /// Inserts a single [UuidDefault] and returns the inserted row.
   ///
   /// The returned [UuidDefault] will have its `id` field set.
-  Future<UuidDefault> insertRow(
+  Future<UuidDefault?> insertRow(
     _i1.DatabaseSession session,
     UuidDefault row, {
     _i1.Transaction? transaction,
@@ -495,14 +495,14 @@ class UuidDefaultRepository {
     List<UuidDefault> rows, {
     required _i1.ColumnSelections<UuidDefaultTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UuidDefault>(
       rows,
       conflictColumns: conflictColumns(UuidDefault.t),
       updateColumns: updateColumns?.call(UuidDefault.t),
-      conflictWhere: conflictWhere?.call(UuidDefault.t),
+      updateWhere: updateWhere?.call(UuidDefault.t),
       transaction: transaction,
     );
   }
@@ -513,19 +513,19 @@ class UuidDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UuidDefault] will have its `id` field set.
-  Future<UuidDefault> upsertRow(
+  Future<UuidDefault?> upsertRow(
     _i1.DatabaseSession session,
     UuidDefault row, {
     required _i1.ColumnSelections<UuidDefaultTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UuidDefault>(
       row,
       conflictColumns: conflictColumns(UuidDefault.t),
       updateColumns: updateColumns?.call(UuidDefault.t),
-      conflictWhere: conflictWhere?.call(UuidDefault.t),
+      updateWhere: updateWhere?.call(UuidDefault.t),
       transaction: transaction,
     );
   }

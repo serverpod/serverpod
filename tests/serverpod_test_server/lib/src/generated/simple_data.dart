@@ -329,7 +329,7 @@ class SimpleDataRepository {
   /// Inserts a single [SimpleData] and returns the inserted row.
   ///
   /// The returned [SimpleData] will have its `id` field set.
-  Future<SimpleData> insertRow(
+  Future<SimpleData?> insertRow(
     _i1.DatabaseSession session,
     SimpleData row, {
     _i1.Transaction? transaction,
@@ -354,14 +354,14 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
     _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<SimpleData>(
       rows,
       conflictColumns: conflictColumns(SimpleData.t),
       updateColumns: updateColumns?.call(SimpleData.t),
-      conflictWhere: conflictWhere?.call(SimpleData.t),
+      updateWhere: updateWhere?.call(SimpleData.t),
       transaction: transaction,
     );
   }
@@ -372,19 +372,19 @@ class SimpleDataRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [SimpleData] will have its `id` field set.
-  Future<SimpleData> upsertRow(
+  Future<SimpleData?> upsertRow(
     _i1.DatabaseSession session,
     SimpleData row, {
     required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
     _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SimpleData>(
       row,
       conflictColumns: conflictColumns(SimpleData.t),
       updateColumns: updateColumns?.call(SimpleData.t),
-      conflictWhere: conflictWhere?.call(SimpleData.t),
+      updateWhere: updateWhere?.call(SimpleData.t),
       transaction: transaction,
     );
   }

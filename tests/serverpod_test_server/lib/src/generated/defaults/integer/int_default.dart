@@ -351,7 +351,7 @@ class IntDefaultRepository {
   /// Inserts a single [IntDefault] and returns the inserted row.
   ///
   /// The returned [IntDefault] will have its `id` field set.
-  Future<IntDefault> insertRow(
+  Future<IntDefault?> insertRow(
     _i1.DatabaseSession session,
     IntDefault row, {
     _i1.Transaction? transaction,
@@ -376,14 +376,14 @@ class IntDefaultRepository {
     List<IntDefault> rows, {
     required _i1.ColumnSelections<IntDefaultTable> conflictColumns,
     _i1.ColumnSelections<IntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<IntDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<IntDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<IntDefault>(
       rows,
       conflictColumns: conflictColumns(IntDefault.t),
       updateColumns: updateColumns?.call(IntDefault.t),
-      conflictWhere: conflictWhere?.call(IntDefault.t),
+      updateWhere: updateWhere?.call(IntDefault.t),
       transaction: transaction,
     );
   }
@@ -394,19 +394,19 @@ class IntDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [IntDefault] will have its `id` field set.
-  Future<IntDefault> upsertRow(
+  Future<IntDefault?> upsertRow(
     _i1.DatabaseSession session,
     IntDefault row, {
     required _i1.ColumnSelections<IntDefaultTable> conflictColumns,
     _i1.ColumnSelections<IntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<IntDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<IntDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<IntDefault>(
       row,
       conflictColumns: conflictColumns(IntDefault.t),
       updateColumns: updateColumns?.call(IntDefault.t),
-      conflictWhere: conflictWhere?.call(IntDefault.t),
+      updateWhere: updateWhere?.call(IntDefault.t),
       transaction: transaction,
     );
   }

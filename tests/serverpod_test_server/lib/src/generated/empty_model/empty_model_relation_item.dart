@@ -384,7 +384,7 @@ class EmptyModelRelationItemRepository {
   /// Inserts a single [EmptyModelRelationItem] and returns the inserted row.
   ///
   /// The returned [EmptyModelRelationItem] will have its `id` field set.
-  Future<EmptyModelRelationItem> insertRow(
+  Future<EmptyModelRelationItem?> insertRow(
     _i1.DatabaseSession session,
     EmptyModelRelationItem row, {
     _i1.Transaction? transaction,
@@ -409,14 +409,14 @@ class EmptyModelRelationItemRepository {
     List<EmptyModelRelationItem> rows, {
     required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
     _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EmptyModelRelationItem>(
       rows,
       conflictColumns: conflictColumns(EmptyModelRelationItem.t),
       updateColumns: updateColumns?.call(EmptyModelRelationItem.t),
-      conflictWhere: conflictWhere?.call(EmptyModelRelationItem.t),
+      updateWhere: updateWhere?.call(EmptyModelRelationItem.t),
       transaction: transaction,
     );
   }
@@ -427,19 +427,19 @@ class EmptyModelRelationItemRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EmptyModelRelationItem] will have its `id` field set.
-  Future<EmptyModelRelationItem> upsertRow(
+  Future<EmptyModelRelationItem?> upsertRow(
     _i1.DatabaseSession session,
     EmptyModelRelationItem row, {
     required _i1.ColumnSelections<EmptyModelRelationItemTable> conflictColumns,
     _i1.ColumnSelections<EmptyModelRelationItemTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmptyModelRelationItem>(
       row,
       conflictColumns: conflictColumns(EmptyModelRelationItem.t),
       updateColumns: updateColumns?.call(EmptyModelRelationItem.t),
-      conflictWhere: conflictWhere?.call(EmptyModelRelationItem.t),
+      updateWhere: updateWhere?.call(EmptyModelRelationItem.t),
       transaction: transaction,
     );
   }

@@ -441,7 +441,7 @@ class EnumDefaultRepository {
   /// Inserts a single [EnumDefault] and returns the inserted row.
   ///
   /// The returned [EnumDefault] will have its `id` field set.
-  Future<EnumDefault> insertRow(
+  Future<EnumDefault?> insertRow(
     _i1.DatabaseSession session,
     EnumDefault row, {
     _i1.Transaction? transaction,
@@ -466,14 +466,14 @@ class EnumDefaultRepository {
     List<EnumDefault> rows, {
     required _i1.ColumnSelections<EnumDefaultTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefault>(
       rows,
       conflictColumns: conflictColumns(EnumDefault.t),
       updateColumns: updateColumns?.call(EnumDefault.t),
-      conflictWhere: conflictWhere?.call(EnumDefault.t),
+      updateWhere: updateWhere?.call(EnumDefault.t),
       transaction: transaction,
     );
   }
@@ -484,19 +484,19 @@ class EnumDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EnumDefault] will have its `id` field set.
-  Future<EnumDefault> upsertRow(
+  Future<EnumDefault?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefault row, {
     required _i1.ColumnSelections<EnumDefaultTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefault>(
       row,
       conflictColumns: conflictColumns(EnumDefault.t),
       updateColumns: updateColumns?.call(EnumDefault.t),
-      conflictWhere: conflictWhere?.call(EnumDefault.t),
+      updateWhere: updateWhere?.call(EnumDefault.t),
       transaction: transaction,
     );
   }

@@ -346,7 +346,7 @@ class ServiceRepository {
   /// Inserts a single [Service] and returns the inserted row.
   ///
   /// The returned [Service] will have its `id` field set.
-  Future<Service> insertRow(
+  Future<Service?> insertRow(
     _i1.DatabaseSession session,
     Service row, {
     _i1.Transaction? transaction,
@@ -371,14 +371,14 @@ class ServiceRepository {
     List<Service> rows, {
     required _i1.ColumnSelections<ServiceTable> conflictColumns,
     _i1.ColumnSelections<ServiceTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServiceTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ServiceTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Service>(
       rows,
       conflictColumns: conflictColumns(Service.t),
       updateColumns: updateColumns?.call(Service.t),
-      conflictWhere: conflictWhere?.call(Service.t),
+      updateWhere: updateWhere?.call(Service.t),
       transaction: transaction,
     );
   }
@@ -389,19 +389,19 @@ class ServiceRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Service] will have its `id` field set.
-  Future<Service> upsertRow(
+  Future<Service?> upsertRow(
     _i1.DatabaseSession session,
     Service row, {
     required _i1.ColumnSelections<ServiceTable> conflictColumns,
     _i1.ColumnSelections<ServiceTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServiceTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ServiceTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Service>(
       row,
       conflictColumns: conflictColumns(Service.t),
       updateColumns: updateColumns?.call(Service.t),
-      conflictWhere: conflictWhere?.call(Service.t),
+      updateWhere: updateWhere?.call(Service.t),
       transaction: transaction,
     );
   }

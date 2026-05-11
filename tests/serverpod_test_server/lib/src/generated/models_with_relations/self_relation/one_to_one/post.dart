@@ -447,7 +447,7 @@ class PostRepository {
   /// Inserts a single [Post] and returns the inserted row.
   ///
   /// The returned [Post] will have its `id` field set.
-  Future<Post> insertRow(
+  Future<Post?> insertRow(
     _i1.DatabaseSession session,
     Post row, {
     _i1.Transaction? transaction,
@@ -472,14 +472,14 @@ class PostRepository {
     List<Post> rows, {
     required _i1.ColumnSelections<PostTable> conflictColumns,
     _i1.ColumnSelections<PostTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PostTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Post>(
       rows,
       conflictColumns: conflictColumns(Post.t),
       updateColumns: updateColumns?.call(Post.t),
-      conflictWhere: conflictWhere?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
       transaction: transaction,
     );
   }
@@ -490,19 +490,19 @@ class PostRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Post] will have its `id` field set.
-  Future<Post> upsertRow(
+  Future<Post?> upsertRow(
     _i1.DatabaseSession session,
     Post row, {
     required _i1.ColumnSelections<PostTable> conflictColumns,
     _i1.ColumnSelections<PostTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PostTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Post>(
       row,
       conflictColumns: conflictColumns(Post.t),
       updateColumns: updateColumns?.call(Post.t),
-      conflictWhere: conflictWhere?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
       transaction: transaction,
     );
   }

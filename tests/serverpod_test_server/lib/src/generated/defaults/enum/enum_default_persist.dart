@@ -376,7 +376,7 @@ class EnumDefaultPersistRepository {
   /// Inserts a single [EnumDefaultPersist] and returns the inserted row.
   ///
   /// The returned [EnumDefaultPersist] will have its `id` field set.
-  Future<EnumDefaultPersist> insertRow(
+  Future<EnumDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     EnumDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -401,14 +401,14 @@ class EnumDefaultPersistRepository {
     List<EnumDefaultPersist> rows, {
     required _i1.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(EnumDefaultPersist.t),
       updateColumns: updateColumns?.call(EnumDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultPersist.t),
+      updateWhere: updateWhere?.call(EnumDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -419,19 +419,19 @@ class EnumDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EnumDefaultPersist] will have its `id` field set.
-  Future<EnumDefaultPersist> upsertRow(
+  Future<EnumDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefaultPersist row, {
     required _i1.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultPersist>(
       row,
       conflictColumns: conflictColumns(EnumDefaultPersist.t),
       updateColumns: updateColumns?.call(EnumDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultPersist.t),
+      updateWhere: updateWhere?.call(EnumDefaultPersist.t),
       transaction: transaction,
     );
   }

@@ -405,7 +405,7 @@ class DateTimeDefaultModelRepository {
   /// Inserts a single [DateTimeDefaultModel] and returns the inserted row.
   ///
   /// The returned [DateTimeDefaultModel] will have its `id` field set.
-  Future<DateTimeDefaultModel> insertRow(
+  Future<DateTimeDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
@@ -430,14 +430,14 @@ class DateTimeDefaultModelRepository {
     List<DateTimeDefaultModel> rows, {
     required _i1.ColumnSelections<DateTimeDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DateTimeDefaultModel>(
       rows,
       conflictColumns: conflictColumns(DateTimeDefaultModel.t),
       updateColumns: updateColumns?.call(DateTimeDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultModel.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -448,19 +448,19 @@ class DateTimeDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DateTimeDefaultModel] will have its `id` field set.
-  Future<DateTimeDefaultModel> upsertRow(
+  Future<DateTimeDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultModel row, {
     required _i1.ColumnSelections<DateTimeDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultModel>(
       row,
       conflictColumns: conflictColumns(DateTimeDefaultModel.t),
       updateColumns: updateColumns?.call(DateTimeDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultModel.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultModel.t),
       transaction: transaction,
     );
   }

@@ -479,7 +479,7 @@ class MemberRepository {
   /// Inserts a single [Member] and returns the inserted row.
   ///
   /// The returned [Member] will have its `id` field set.
-  Future<Member> insertRow(
+  Future<Member?> insertRow(
     _i1.DatabaseSession session,
     Member row, {
     _i1.Transaction? transaction,
@@ -504,14 +504,14 @@ class MemberRepository {
     List<Member> rows, {
     required _i1.ColumnSelections<MemberTable> conflictColumns,
     _i1.ColumnSelections<MemberTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MemberTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MemberTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Member>(
       rows,
       conflictColumns: conflictColumns(Member.t),
       updateColumns: updateColumns?.call(Member.t),
-      conflictWhere: conflictWhere?.call(Member.t),
+      updateWhere: updateWhere?.call(Member.t),
       transaction: transaction,
     );
   }
@@ -522,19 +522,19 @@ class MemberRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Member] will have its `id` field set.
-  Future<Member> upsertRow(
+  Future<Member?> upsertRow(
     _i1.DatabaseSession session,
     Member row, {
     required _i1.ColumnSelections<MemberTable> conflictColumns,
     _i1.ColumnSelections<MemberTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MemberTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<MemberTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Member>(
       row,
       conflictColumns: conflictColumns(Member.t),
       updateColumns: updateColumns?.call(Member.t),
-      conflictWhere: conflictWhere?.call(Member.t),
+      updateWhere: updateWhere?.call(Member.t),
       transaction: transaction,
     );
   }

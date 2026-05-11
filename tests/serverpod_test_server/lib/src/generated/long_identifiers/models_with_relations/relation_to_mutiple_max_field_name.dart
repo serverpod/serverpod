@@ -431,7 +431,7 @@ class RelationToMultipleMaxFieldNameRepository {
   /// Inserts a single [RelationToMultipleMaxFieldName] and returns the inserted row.
   ///
   /// The returned [RelationToMultipleMaxFieldName] will have its `id` field set.
-  Future<RelationToMultipleMaxFieldName> insertRow(
+  Future<RelationToMultipleMaxFieldName?> insertRow(
     _i1.DatabaseSession session,
     RelationToMultipleMaxFieldName row, {
     _i1.Transaction? transaction,
@@ -458,14 +458,14 @@ class RelationToMultipleMaxFieldNameRepository {
     conflictColumns,
     _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>? updateColumns,
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>?
-    conflictWhere,
+    updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<RelationToMultipleMaxFieldName>(
       rows,
       conflictColumns: conflictColumns(RelationToMultipleMaxFieldName.t),
       updateColumns: updateColumns?.call(RelationToMultipleMaxFieldName.t),
-      conflictWhere: conflictWhere?.call(RelationToMultipleMaxFieldName.t),
+      updateWhere: updateWhere?.call(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
     );
   }
@@ -476,21 +476,21 @@ class RelationToMultipleMaxFieldNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [RelationToMultipleMaxFieldName] will have its `id` field set.
-  Future<RelationToMultipleMaxFieldName> upsertRow(
+  Future<RelationToMultipleMaxFieldName?> upsertRow(
     _i1.DatabaseSession session,
     RelationToMultipleMaxFieldName row, {
     required _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>
     conflictColumns,
     _i1.ColumnSelections<RelationToMultipleMaxFieldNameTable>? updateColumns,
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>?
-    conflictWhere,
+    updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RelationToMultipleMaxFieldName>(
       row,
       conflictColumns: conflictColumns(RelationToMultipleMaxFieldName.t),
       updateColumns: updateColumns?.call(RelationToMultipleMaxFieldName.t),
-      conflictWhere: conflictWhere?.call(RelationToMultipleMaxFieldName.t),
+      updateWhere: updateWhere?.call(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
     );
   }

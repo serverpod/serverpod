@@ -328,7 +328,7 @@ class ObjectWithByteDataRepository {
   /// Inserts a single [ObjectWithByteData] and returns the inserted row.
   ///
   /// The returned [ObjectWithByteData] will have its `id` field set.
-  Future<ObjectWithByteData> insertRow(
+  Future<ObjectWithByteData?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
@@ -353,14 +353,14 @@ class ObjectWithByteDataRepository {
     List<ObjectWithByteData> rows, {
     required _i1.ColumnSelections<ObjectWithByteDataTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithByteDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithByteData>(
       rows,
       conflictColumns: conflictColumns(ObjectWithByteData.t),
       updateColumns: updateColumns?.call(ObjectWithByteData.t),
-      conflictWhere: conflictWhere?.call(ObjectWithByteData.t),
+      updateWhere: updateWhere?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }
@@ -371,19 +371,19 @@ class ObjectWithByteDataRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithByteData] will have its `id` field set.
-  Future<ObjectWithByteData> upsertRow(
+  Future<ObjectWithByteData?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithByteData row, {
     required _i1.ColumnSelections<ObjectWithByteDataTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithByteDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithByteData>(
       row,
       conflictColumns: conflictColumns(ObjectWithByteData.t),
       updateColumns: updateColumns?.call(ObjectWithByteData.t),
-      conflictWhere: conflictWhere?.call(ObjectWithByteData.t),
+      updateWhere: updateWhere?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }

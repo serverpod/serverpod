@@ -448,7 +448,7 @@ class EnrollmentRepository {
   /// Inserts a single [Enrollment] and returns the inserted row.
   ///
   /// The returned [Enrollment] will have its `id` field set.
-  Future<Enrollment> insertRow(
+  Future<Enrollment?> insertRow(
     _i1.DatabaseSession session,
     Enrollment row, {
     _i1.Transaction? transaction,
@@ -473,14 +473,14 @@ class EnrollmentRepository {
     List<Enrollment> rows, {
     required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
     _i1.ColumnSelections<EnrollmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnrollmentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Enrollment>(
       rows,
       conflictColumns: conflictColumns(Enrollment.t),
       updateColumns: updateColumns?.call(Enrollment.t),
-      conflictWhere: conflictWhere?.call(Enrollment.t),
+      updateWhere: updateWhere?.call(Enrollment.t),
       transaction: transaction,
     );
   }
@@ -491,19 +491,19 @@ class EnrollmentRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Enrollment] will have its `id` field set.
-  Future<Enrollment> upsertRow(
+  Future<Enrollment?> upsertRow(
     _i1.DatabaseSession session,
     Enrollment row, {
     required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
     _i1.ColumnSelections<EnrollmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnrollmentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Enrollment>(
       row,
       conflictColumns: conflictColumns(Enrollment.t),
       updateColumns: updateColumns?.call(Enrollment.t),
-      conflictWhere: conflictWhere?.call(Enrollment.t),
+      updateWhere: updateWhere?.call(Enrollment.t),
       transaction: transaction,
     );
   }

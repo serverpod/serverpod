@@ -372,7 +372,7 @@ class ChapterRepository {
   /// Inserts a single [Chapter] and returns the inserted row.
   ///
   /// The returned [Chapter] will have its `id` field set.
-  Future<Chapter> insertRow(
+  Future<Chapter?> insertRow(
     _i1.DatabaseSession session,
     Chapter row, {
     _i1.Transaction? transaction,
@@ -397,14 +397,14 @@ class ChapterRepository {
     List<Chapter> rows, {
     required _i1.ColumnSelections<ChapterTable> conflictColumns,
     _i1.ColumnSelections<ChapterTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChapterTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Chapter>(
       rows,
       conflictColumns: conflictColumns(Chapter.t),
       updateColumns: updateColumns?.call(Chapter.t),
-      conflictWhere: conflictWhere?.call(Chapter.t),
+      updateWhere: updateWhere?.call(Chapter.t),
       transaction: transaction,
     );
   }
@@ -415,19 +415,19 @@ class ChapterRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Chapter] will have its `id` field set.
-  Future<Chapter> upsertRow(
+  Future<Chapter?> upsertRow(
     _i1.DatabaseSession session,
     Chapter row, {
     required _i1.ColumnSelections<ChapterTable> conflictColumns,
     _i1.ColumnSelections<ChapterTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChapterTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChapterTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Chapter>(
       row,
       conflictColumns: conflictColumns(Chapter.t),
       updateColumns: updateColumns?.call(Chapter.t),
-      conflictWhere: conflictWhere?.call(Chapter.t),
+      updateWhere: updateWhere?.call(Chapter.t),
       transaction: transaction,
     );
   }

@@ -452,7 +452,7 @@ class BlockingRepository {
   /// Inserts a single [Blocking] and returns the inserted row.
   ///
   /// The returned [Blocking] will have its `id` field set.
-  Future<Blocking> insertRow(
+  Future<Blocking?> insertRow(
     _i1.DatabaseSession session,
     Blocking row, {
     _i1.Transaction? transaction,
@@ -477,14 +477,14 @@ class BlockingRepository {
     List<Blocking> rows, {
     required _i1.ColumnSelections<BlockingTable> conflictColumns,
     _i1.ColumnSelections<BlockingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BlockingTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BlockingTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Blocking>(
       rows,
       conflictColumns: conflictColumns(Blocking.t),
       updateColumns: updateColumns?.call(Blocking.t),
-      conflictWhere: conflictWhere?.call(Blocking.t),
+      updateWhere: updateWhere?.call(Blocking.t),
       transaction: transaction,
     );
   }
@@ -495,19 +495,19 @@ class BlockingRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Blocking] will have its `id` field set.
-  Future<Blocking> upsertRow(
+  Future<Blocking?> upsertRow(
     _i1.DatabaseSession session,
     Blocking row, {
     required _i1.ColumnSelections<BlockingTable> conflictColumns,
     _i1.ColumnSelections<BlockingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BlockingTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BlockingTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Blocking>(
       row,
       conflictColumns: conflictColumns(Blocking.t),
       updateColumns: updateColumns?.call(Blocking.t),
-      conflictWhere: conflictWhere?.call(Blocking.t),
+      updateWhere: updateWhere?.call(Blocking.t),
       transaction: transaction,
     );
   }

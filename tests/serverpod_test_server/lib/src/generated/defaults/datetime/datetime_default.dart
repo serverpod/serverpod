@@ -398,7 +398,7 @@ class DateTimeDefaultRepository {
   /// Inserts a single [DateTimeDefault] and returns the inserted row.
   ///
   /// The returned [DateTimeDefault] will have its `id` field set.
-  Future<DateTimeDefault> insertRow(
+  Future<DateTimeDefault?> insertRow(
     _i1.DatabaseSession session,
     DateTimeDefault row, {
     _i1.Transaction? transaction,
@@ -423,14 +423,14 @@ class DateTimeDefaultRepository {
     List<DateTimeDefault> rows, {
     required _i1.ColumnSelections<DateTimeDefaultTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DateTimeDefault>(
       rows,
       conflictColumns: conflictColumns(DateTimeDefault.t),
       updateColumns: updateColumns?.call(DateTimeDefault.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefault.t),
+      updateWhere: updateWhere?.call(DateTimeDefault.t),
       transaction: transaction,
     );
   }
@@ -441,19 +441,19 @@ class DateTimeDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DateTimeDefault] will have its `id` field set.
-  Future<DateTimeDefault> upsertRow(
+  Future<DateTimeDefault?> upsertRow(
     _i1.DatabaseSession session,
     DateTimeDefault row, {
     required _i1.ColumnSelections<DateTimeDefaultTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefault>(
       row,
       conflictColumns: conflictColumns(DateTimeDefault.t),
       updateColumns: updateColumns?.call(DateTimeDefault.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefault.t),
+      updateWhere: updateWhere?.call(DateTimeDefault.t),
       transaction: transaction,
     );
   }

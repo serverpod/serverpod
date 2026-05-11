@@ -326,7 +326,7 @@ class ObjectWithSelfParentRepository {
   /// Inserts a single [ObjectWithSelfParent] and returns the inserted row.
   ///
   /// The returned [ObjectWithSelfParent] will have its `id` field set.
-  Future<ObjectWithSelfParent> insertRow(
+  Future<ObjectWithSelfParent?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
@@ -351,14 +351,14 @@ class ObjectWithSelfParentRepository {
     List<ObjectWithSelfParent> rows, {
     required _i1.ColumnSelections<ObjectWithSelfParentTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSelfParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithSelfParent>(
       rows,
       conflictColumns: conflictColumns(ObjectWithSelfParent.t),
       updateColumns: updateColumns?.call(ObjectWithSelfParent.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSelfParent.t),
+      updateWhere: updateWhere?.call(ObjectWithSelfParent.t),
       transaction: transaction,
     );
   }
@@ -369,19 +369,19 @@ class ObjectWithSelfParentRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithSelfParent] will have its `id` field set.
-  Future<ObjectWithSelfParent> upsertRow(
+  Future<ObjectWithSelfParent?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithSelfParent row, {
     required _i1.ColumnSelections<ObjectWithSelfParentTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSelfParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithSelfParent>(
       row,
       conflictColumns: conflictColumns(ObjectWithSelfParent.t),
       updateColumns: updateColumns?.call(ObjectWithSelfParent.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSelfParent.t),
+      updateWhere: updateWhere?.call(ObjectWithSelfParent.t),
       transaction: transaction,
     );
   }

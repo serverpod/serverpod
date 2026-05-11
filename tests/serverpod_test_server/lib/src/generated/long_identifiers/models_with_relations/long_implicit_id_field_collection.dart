@@ -460,7 +460,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// Inserts a single [LongImplicitIdFieldCollection] and returns the inserted row.
   ///
   /// The returned [LongImplicitIdFieldCollection] will have its `id` field set.
-  Future<LongImplicitIdFieldCollection> insertRow(
+  Future<LongImplicitIdFieldCollection?> insertRow(
     _i1.DatabaseSession session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
@@ -486,15 +486,14 @@ class LongImplicitIdFieldCollectionRepository {
     required _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>
     conflictColumns,
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<LongImplicitIdFieldCollection>(
       rows,
       conflictColumns: conflictColumns(LongImplicitIdFieldCollection.t),
       updateColumns: updateColumns?.call(LongImplicitIdFieldCollection.t),
-      conflictWhere: conflictWhere?.call(LongImplicitIdFieldCollection.t),
+      updateWhere: updateWhere?.call(LongImplicitIdFieldCollection.t),
       transaction: transaction,
     );
   }
@@ -505,21 +504,20 @@ class LongImplicitIdFieldCollectionRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [LongImplicitIdFieldCollection] will have its `id` field set.
-  Future<LongImplicitIdFieldCollection> upsertRow(
+  Future<LongImplicitIdFieldCollection?> upsertRow(
     _i1.DatabaseSession session,
     LongImplicitIdFieldCollection row, {
     required _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>
     conflictColumns,
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>?
-    conflictWhere,
+    _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<LongImplicitIdFieldCollection>(
       row,
       conflictColumns: conflictColumns(LongImplicitIdFieldCollection.t),
       updateColumns: updateColumns?.call(LongImplicitIdFieldCollection.t),
-      conflictWhere: conflictWhere?.call(LongImplicitIdFieldCollection.t),
+      updateWhere: updateWhere?.call(LongImplicitIdFieldCollection.t),
       transaction: transaction,
     );
   }

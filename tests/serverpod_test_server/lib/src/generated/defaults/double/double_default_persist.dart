@@ -333,7 +333,7 @@ class DoubleDefaultPersistRepository {
   /// Inserts a single [DoubleDefaultPersist] and returns the inserted row.
   ///
   /// The returned [DoubleDefaultPersist] will have its `id` field set.
-  Future<DoubleDefaultPersist> insertRow(
+  Future<DoubleDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     DoubleDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -358,14 +358,14 @@ class DoubleDefaultPersistRepository {
     List<DoubleDefaultPersist> rows, {
     required _i1.ColumnSelections<DoubleDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DoubleDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(DoubleDefaultPersist.t),
       updateColumns: updateColumns?.call(DoubleDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultPersist.t),
+      updateWhere: updateWhere?.call(DoubleDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -376,19 +376,19 @@ class DoubleDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DoubleDefaultPersist] will have its `id` field set.
-  Future<DoubleDefaultPersist> upsertRow(
+  Future<DoubleDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     DoubleDefaultPersist row, {
     required _i1.ColumnSelections<DoubleDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DoubleDefaultPersist>(
       row,
       conflictColumns: conflictColumns(DoubleDefaultPersist.t),
       updateColumns: updateColumns?.call(DoubleDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultPersist.t),
+      updateWhere: updateWhere?.call(DoubleDefaultPersist.t),
       transaction: transaction,
     );
   }

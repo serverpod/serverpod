@@ -388,7 +388,7 @@ class UserNoteWithALongNameRepository {
   /// Inserts a single [UserNoteWithALongName] and returns the inserted row.
   ///
   /// The returned [UserNoteWithALongName] will have its `id` field set.
-  Future<UserNoteWithALongName> insertRow(
+  Future<UserNoteWithALongName?> insertRow(
     _i1.DatabaseSession session,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
@@ -413,14 +413,14 @@ class UserNoteWithALongNameRepository {
     List<UserNoteWithALongName> rows, {
     required _i1.ColumnSelections<UserNoteWithALongNameTable> conflictColumns,
     _i1.ColumnSelections<UserNoteWithALongNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UserNoteWithALongName>(
       rows,
       conflictColumns: conflictColumns(UserNoteWithALongName.t),
       updateColumns: updateColumns?.call(UserNoteWithALongName.t),
-      conflictWhere: conflictWhere?.call(UserNoteWithALongName.t),
+      updateWhere: updateWhere?.call(UserNoteWithALongName.t),
       transaction: transaction,
     );
   }
@@ -431,19 +431,19 @@ class UserNoteWithALongNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UserNoteWithALongName] will have its `id` field set.
-  Future<UserNoteWithALongName> upsertRow(
+  Future<UserNoteWithALongName?> upsertRow(
     _i1.DatabaseSession session,
     UserNoteWithALongName row, {
     required _i1.ColumnSelections<UserNoteWithALongNameTable> conflictColumns,
     _i1.ColumnSelections<UserNoteWithALongNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserNoteWithALongName>(
       row,
       conflictColumns: conflictColumns(UserNoteWithALongName.t),
       updateColumns: updateColumns?.call(UserNoteWithALongName.t),
-      conflictWhere: conflictWhere?.call(UserNoteWithALongName.t),
+      updateWhere: updateWhere?.call(UserNoteWithALongName.t),
       transaction: transaction,
     );
   }

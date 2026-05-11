@@ -412,7 +412,7 @@ class ChildWithInheritedIdRepository {
   /// Inserts a single [ChildWithInheritedId] and returns the inserted row.
   ///
   /// The returned [ChildWithInheritedId] will have its `id` field set.
-  Future<ChildWithInheritedId> insertRow(
+  Future<ChildWithInheritedId?> insertRow(
     _i2.DatabaseSession session,
     ChildWithInheritedId row, {
     _i2.Transaction? transaction,
@@ -437,14 +437,14 @@ class ChildWithInheritedIdRepository {
     List<ChildWithInheritedId> rows, {
     required _i2.ColumnSelections<ChildWithInheritedIdTable> conflictColumns,
     _i2.ColumnSelections<ChildWithInheritedIdTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? conflictWhere,
+    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? updateWhere,
     _i2.Transaction? transaction,
   }) async {
     return session.db.upsert<ChildWithInheritedId>(
       rows,
       conflictColumns: conflictColumns(ChildWithInheritedId.t),
       updateColumns: updateColumns?.call(ChildWithInheritedId.t),
-      conflictWhere: conflictWhere?.call(ChildWithInheritedId.t),
+      updateWhere: updateWhere?.call(ChildWithInheritedId.t),
       transaction: transaction,
     );
   }
@@ -455,19 +455,19 @@ class ChildWithInheritedIdRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ChildWithInheritedId] will have its `id` field set.
-  Future<ChildWithInheritedId> upsertRow(
+  Future<ChildWithInheritedId?> upsertRow(
     _i2.DatabaseSession session,
     ChildWithInheritedId row, {
     required _i2.ColumnSelections<ChildWithInheritedIdTable> conflictColumns,
     _i2.ColumnSelections<ChildWithInheritedIdTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? conflictWhere,
+    _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? updateWhere,
     _i2.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChildWithInheritedId>(
       row,
       conflictColumns: conflictColumns(ChildWithInheritedId.t),
       updateColumns: updateColumns?.call(ChildWithInheritedId.t),
-      conflictWhere: conflictWhere?.call(ChildWithInheritedId.t),
+      updateWhere: updateWhere?.call(ChildWithInheritedId.t),
       transaction: transaction,
     );
   }

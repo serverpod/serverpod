@@ -346,7 +346,7 @@ class ParentUserRepository {
   /// Inserts a single [ParentUser] and returns the inserted row.
   ///
   /// The returned [ParentUser] will have its `id` field set.
-  Future<ParentUser> insertRow(
+  Future<ParentUser?> insertRow(
     _i1.DatabaseSession session,
     ParentUser row, {
     _i1.Transaction? transaction,
@@ -371,14 +371,14 @@ class ParentUserRepository {
     List<ParentUser> rows, {
     required _i1.ColumnSelections<ParentUserTable> conflictColumns,
     _i1.ColumnSelections<ParentUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentUserTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ParentUserTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ParentUser>(
       rows,
       conflictColumns: conflictColumns(ParentUser.t),
       updateColumns: updateColumns?.call(ParentUser.t),
-      conflictWhere: conflictWhere?.call(ParentUser.t),
+      updateWhere: updateWhere?.call(ParentUser.t),
       transaction: transaction,
     );
   }
@@ -389,19 +389,19 @@ class ParentUserRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ParentUser] will have its `id` field set.
-  Future<ParentUser> upsertRow(
+  Future<ParentUser?> upsertRow(
     _i1.DatabaseSession session,
     ParentUser row, {
     required _i1.ColumnSelections<ParentUserTable> conflictColumns,
     _i1.ColumnSelections<ParentUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentUserTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ParentUserTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ParentUser>(
       row,
       conflictColumns: conflictColumns(ParentUser.t),
       updateColumns: updateColumns?.call(ParentUser.t),
-      conflictWhere: conflictWhere?.call(ParentUser.t),
+      updateWhere: updateWhere?.call(ParentUser.t),
       transaction: transaction,
     );
   }

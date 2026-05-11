@@ -383,7 +383,7 @@ class DurationDefaultModelRepository {
   /// Inserts a single [DurationDefaultModel] and returns the inserted row.
   ///
   /// The returned [DurationDefaultModel] will have its `id` field set.
-  Future<DurationDefaultModel> insertRow(
+  Future<DurationDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     DurationDefaultModel row, {
     _i1.Transaction? transaction,
@@ -408,14 +408,14 @@ class DurationDefaultModelRepository {
     List<DurationDefaultModel> rows, {
     required _i1.ColumnSelections<DurationDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DurationDefaultModel>(
       rows,
       conflictColumns: conflictColumns(DurationDefaultModel.t),
       updateColumns: updateColumns?.call(DurationDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultModel.t),
+      updateWhere: updateWhere?.call(DurationDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -426,19 +426,19 @@ class DurationDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DurationDefaultModel] will have its `id` field set.
-  Future<DurationDefaultModel> upsertRow(
+  Future<DurationDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     DurationDefaultModel row, {
     required _i1.ColumnSelections<DurationDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefaultModel>(
       row,
       conflictColumns: conflictColumns(DurationDefaultModel.t),
       updateColumns: updateColumns?.call(DurationDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultModel.t),
+      updateWhere: updateWhere?.call(DurationDefaultModel.t),
       transaction: transaction,
     );
   }

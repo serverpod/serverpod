@@ -402,7 +402,7 @@ class ObjectUserRepository {
   /// Inserts a single [ObjectUser] and returns the inserted row.
   ///
   /// The returned [ObjectUser] will have its `id` field set.
-  Future<ObjectUser> insertRow(
+  Future<ObjectUser?> insertRow(
     _i1.DatabaseSession session,
     ObjectUser row, {
     _i1.Transaction? transaction,
@@ -427,14 +427,14 @@ class ObjectUserRepository {
     List<ObjectUser> rows, {
     required _i1.ColumnSelections<ObjectUserTable> conflictColumns,
     _i1.ColumnSelections<ObjectUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectUserTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectUserTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectUser>(
       rows,
       conflictColumns: conflictColumns(ObjectUser.t),
       updateColumns: updateColumns?.call(ObjectUser.t),
-      conflictWhere: conflictWhere?.call(ObjectUser.t),
+      updateWhere: updateWhere?.call(ObjectUser.t),
       transaction: transaction,
     );
   }
@@ -445,19 +445,19 @@ class ObjectUserRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectUser] will have its `id` field set.
-  Future<ObjectUser> upsertRow(
+  Future<ObjectUser?> upsertRow(
     _i1.DatabaseSession session,
     ObjectUser row, {
     required _i1.ColumnSelections<ObjectUserTable> conflictColumns,
     _i1.ColumnSelections<ObjectUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectUserTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectUserTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectUser>(
       row,
       conflictColumns: conflictColumns(ObjectUser.t),
       updateColumns: updateColumns?.call(ObjectUser.t),
-      conflictWhere: conflictWhere?.call(ObjectUser.t),
+      updateWhere: updateWhere?.call(ObjectUser.t),
       transaction: transaction,
     );
   }

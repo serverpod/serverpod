@@ -404,7 +404,7 @@ class RelatedUniqueDataRepository {
   /// Inserts a single [RelatedUniqueData] and returns the inserted row.
   ///
   /// The returned [RelatedUniqueData] will have its `id` field set.
-  Future<RelatedUniqueData> insertRow(
+  Future<RelatedUniqueData?> insertRow(
     _i1.DatabaseSession session,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
@@ -429,14 +429,14 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
     _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<RelatedUniqueData>(
       rows,
       conflictColumns: conflictColumns(RelatedUniqueData.t),
       updateColumns: updateColumns?.call(RelatedUniqueData.t),
-      conflictWhere: conflictWhere?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
@@ -447,19 +447,19 @@ class RelatedUniqueDataRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [RelatedUniqueData] will have its `id` field set.
-  Future<RelatedUniqueData> upsertRow(
+  Future<RelatedUniqueData?> upsertRow(
     _i1.DatabaseSession session,
     RelatedUniqueData row, {
     required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
     _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RelatedUniqueData>(
       row,
       conflictColumns: conflictColumns(RelatedUniqueData.t),
       updateColumns: updateColumns?.call(RelatedUniqueData.t),
-      conflictWhere: conflictWhere?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }

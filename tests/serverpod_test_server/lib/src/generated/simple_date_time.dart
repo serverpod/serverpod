@@ -329,7 +329,7 @@ class SimpleDateTimeRepository {
   /// Inserts a single [SimpleDateTime] and returns the inserted row.
   ///
   /// The returned [SimpleDateTime] will have its `id` field set.
-  Future<SimpleDateTime> insertRow(
+  Future<SimpleDateTime?> insertRow(
     _i1.DatabaseSession session,
     SimpleDateTime row, {
     _i1.Transaction? transaction,
@@ -354,14 +354,14 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     required _i1.ColumnSelections<SimpleDateTimeTable> conflictColumns,
     _i1.ColumnSelections<SimpleDateTimeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<SimpleDateTime>(
       rows,
       conflictColumns: conflictColumns(SimpleDateTime.t),
       updateColumns: updateColumns?.call(SimpleDateTime.t),
-      conflictWhere: conflictWhere?.call(SimpleDateTime.t),
+      updateWhere: updateWhere?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }
@@ -372,19 +372,19 @@ class SimpleDateTimeRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [SimpleDateTime] will have its `id` field set.
-  Future<SimpleDateTime> upsertRow(
+  Future<SimpleDateTime?> upsertRow(
     _i1.DatabaseSession session,
     SimpleDateTime row, {
     required _i1.ColumnSelections<SimpleDateTimeTable> conflictColumns,
     _i1.ColumnSelections<SimpleDateTimeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SimpleDateTime>(
       row,
       conflictColumns: conflictColumns(SimpleDateTime.t),
       updateColumns: updateColumns?.call(SimpleDateTime.t),
-      conflictWhere: conflictWhere?.call(SimpleDateTime.t),
+      updateWhere: updateWhere?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }

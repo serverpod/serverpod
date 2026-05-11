@@ -366,7 +366,7 @@ class BigIntDefaultRepository {
   /// Inserts a single [BigIntDefault] and returns the inserted row.
   ///
   /// The returned [BigIntDefault] will have its `id` field set.
-  Future<BigIntDefault> insertRow(
+  Future<BigIntDefault?> insertRow(
     _i1.DatabaseSession session,
     BigIntDefault row, {
     _i1.Transaction? transaction,
@@ -391,14 +391,14 @@ class BigIntDefaultRepository {
     List<BigIntDefault> rows, {
     required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BigIntDefault>(
       rows,
       conflictColumns: conflictColumns(BigIntDefault.t),
       updateColumns: updateColumns?.call(BigIntDefault.t),
-      conflictWhere: conflictWhere?.call(BigIntDefault.t),
+      updateWhere: updateWhere?.call(BigIntDefault.t),
       transaction: transaction,
     );
   }
@@ -409,19 +409,19 @@ class BigIntDefaultRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BigIntDefault] will have its `id` field set.
-  Future<BigIntDefault> upsertRow(
+  Future<BigIntDefault?> upsertRow(
     _i1.DatabaseSession session,
     BigIntDefault row, {
     required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BigIntDefault>(
       row,
       conflictColumns: conflictColumns(BigIntDefault.t),
       updateColumns: updateColumns?.call(BigIntDefault.t),
-      conflictWhere: conflictWhere?.call(BigIntDefault.t),
+      updateWhere: updateWhere?.call(BigIntDefault.t),
       transaction: transaction,
     );
   }

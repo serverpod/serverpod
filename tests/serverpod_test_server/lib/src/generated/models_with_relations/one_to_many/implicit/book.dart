@@ -407,7 +407,7 @@ class BookRepository {
   /// Inserts a single [Book] and returns the inserted row.
   ///
   /// The returned [Book] will have its `id` field set.
-  Future<Book> insertRow(
+  Future<Book?> insertRow(
     _i1.DatabaseSession session,
     Book row, {
     _i1.Transaction? transaction,
@@ -432,14 +432,14 @@ class BookRepository {
     List<Book> rows, {
     required _i1.ColumnSelections<BookTable> conflictColumns,
     _i1.ColumnSelections<BookTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Book>(
       rows,
       conflictColumns: conflictColumns(Book.t),
       updateColumns: updateColumns?.call(Book.t),
-      conflictWhere: conflictWhere?.call(Book.t),
+      updateWhere: updateWhere?.call(Book.t),
       transaction: transaction,
     );
   }
@@ -450,19 +450,19 @@ class BookRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Book] will have its `id` field set.
-  Future<Book> upsertRow(
+  Future<Book?> upsertRow(
     _i1.DatabaseSession session,
     Book row, {
     required _i1.ColumnSelections<BookTable> conflictColumns,
     _i1.ColumnSelections<BookTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BookTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Book>(
       row,
       conflictColumns: conflictColumns(Book.t),
       updateColumns: updateColumns?.call(Book.t),
-      conflictWhere: conflictWhere?.call(Book.t),
+      updateWhere: updateWhere?.call(Book.t),
       transaction: transaction,
     );
   }

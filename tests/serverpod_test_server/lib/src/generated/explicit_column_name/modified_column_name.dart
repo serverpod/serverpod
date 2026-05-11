@@ -351,7 +351,7 @@ class ModifiedColumnNameRepository {
   /// Inserts a single [ModifiedColumnName] and returns the inserted row.
   ///
   /// The returned [ModifiedColumnName] will have its `id` field set.
-  Future<ModifiedColumnName> insertRow(
+  Future<ModifiedColumnName?> insertRow(
     _i1.DatabaseSession session,
     ModifiedColumnName row, {
     _i1.Transaction? transaction,
@@ -376,14 +376,14 @@ class ModifiedColumnNameRepository {
     List<ModifiedColumnName> rows, {
     required _i1.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
     _i1.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ModifiedColumnName>(
       rows,
       conflictColumns: conflictColumns(ModifiedColumnName.t),
       updateColumns: updateColumns?.call(ModifiedColumnName.t),
-      conflictWhere: conflictWhere?.call(ModifiedColumnName.t),
+      updateWhere: updateWhere?.call(ModifiedColumnName.t),
       transaction: transaction,
     );
   }
@@ -394,19 +394,19 @@ class ModifiedColumnNameRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ModifiedColumnName] will have its `id` field set.
-  Future<ModifiedColumnName> upsertRow(
+  Future<ModifiedColumnName?> upsertRow(
     _i1.DatabaseSession session,
     ModifiedColumnName row, {
     required _i1.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
     _i1.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ModifiedColumnName>(
       row,
       conflictColumns: conflictColumns(ModifiedColumnName.t),
       updateColumns: updateColumns?.call(ModifiedColumnName.t),
-      conflictWhere: conflictWhere?.call(ModifiedColumnName.t),
+      updateWhere: updateWhere?.call(ModifiedColumnName.t),
       transaction: transaction,
     );
   }

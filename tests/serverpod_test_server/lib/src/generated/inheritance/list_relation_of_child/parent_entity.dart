@@ -381,7 +381,7 @@ class ParentEntityRepository {
   /// Inserts a single [ParentEntity] and returns the inserted row.
   ///
   /// The returned [ParentEntity] will have its `id` field set.
-  Future<ParentEntity> insertRow(
+  Future<ParentEntity?> insertRow(
     _i1.DatabaseSession session,
     ParentEntity row, {
     _i1.Transaction? transaction,
@@ -406,14 +406,14 @@ class ParentEntityRepository {
     List<ParentEntity> rows, {
     required _i1.ColumnSelections<ParentEntityTable> conflictColumns,
     _i1.ColumnSelections<ParentEntityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentEntityTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ParentEntity>(
       rows,
       conflictColumns: conflictColumns(ParentEntity.t),
       updateColumns: updateColumns?.call(ParentEntity.t),
-      conflictWhere: conflictWhere?.call(ParentEntity.t),
+      updateWhere: updateWhere?.call(ParentEntity.t),
       transaction: transaction,
     );
   }
@@ -424,19 +424,19 @@ class ParentEntityRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ParentEntity] will have its `id` field set.
-  Future<ParentEntity> upsertRow(
+  Future<ParentEntity?> upsertRow(
     _i1.DatabaseSession session,
     ParentEntity row, {
     required _i1.ColumnSelections<ParentEntityTable> conflictColumns,
     _i1.ColumnSelections<ParentEntityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentEntityTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ParentEntity>(
       row,
       conflictColumns: conflictColumns(ParentEntity.t),
       updateColumns: updateColumns?.call(ParentEntity.t),
-      conflictWhere: conflictWhere?.call(ParentEntity.t),
+      updateWhere: updateWhere?.call(ParentEntity.t),
       transaction: transaction,
     );
   }

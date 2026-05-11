@@ -386,7 +386,7 @@ class ObjectWithJsonbClassLevelRepository {
   /// Inserts a single [ObjectWithJsonbClassLevel] and returns the inserted row.
   ///
   /// The returned [ObjectWithJsonbClassLevel] will have its `id` field set.
-  Future<ObjectWithJsonbClassLevel> insertRow(
+  Future<ObjectWithJsonbClassLevel?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithJsonbClassLevel row, {
     _i1.Transaction? transaction,
@@ -412,14 +412,14 @@ class ObjectWithJsonbClassLevelRepository {
     required _i1.ColumnSelections<ObjectWithJsonbClassLevelTable>
     conflictColumns,
     _i1.ColumnSelections<ObjectWithJsonbClassLevelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithJsonbClassLevel>(
       rows,
       conflictColumns: conflictColumns(ObjectWithJsonbClassLevel.t),
       updateColumns: updateColumns?.call(ObjectWithJsonbClassLevel.t),
-      conflictWhere: conflictWhere?.call(ObjectWithJsonbClassLevel.t),
+      updateWhere: updateWhere?.call(ObjectWithJsonbClassLevel.t),
       transaction: transaction,
     );
   }
@@ -430,20 +430,20 @@ class ObjectWithJsonbClassLevelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithJsonbClassLevel] will have its `id` field set.
-  Future<ObjectWithJsonbClassLevel> upsertRow(
+  Future<ObjectWithJsonbClassLevel?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithJsonbClassLevel row, {
     required _i1.ColumnSelections<ObjectWithJsonbClassLevelTable>
     conflictColumns,
     _i1.ColumnSelections<ObjectWithJsonbClassLevelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithJsonbClassLevel>(
       row,
       conflictColumns: conflictColumns(ObjectWithJsonbClassLevel.t),
       updateColumns: updateColumns?.call(ObjectWithJsonbClassLevel.t),
-      conflictWhere: conflictWhere?.call(ObjectWithJsonbClassLevel.t),
+      updateWhere: updateWhere?.call(ObjectWithJsonbClassLevel.t),
       transaction: transaction,
     );
   }

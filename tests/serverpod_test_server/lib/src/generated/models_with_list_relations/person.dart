@@ -463,7 +463,7 @@ class PersonRepository {
   /// Inserts a single [Person] and returns the inserted row.
   ///
   /// The returned [Person] will have its `id` field set.
-  Future<Person> insertRow(
+  Future<Person?> insertRow(
     _i1.DatabaseSession session,
     Person row, {
     _i1.Transaction? transaction,
@@ -488,14 +488,14 @@ class PersonRepository {
     List<Person> rows, {
     required _i1.ColumnSelections<PersonTable> conflictColumns,
     _i1.ColumnSelections<PersonTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PersonTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PersonTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Person>(
       rows,
       conflictColumns: conflictColumns(Person.t),
       updateColumns: updateColumns?.call(Person.t),
-      conflictWhere: conflictWhere?.call(Person.t),
+      updateWhere: updateWhere?.call(Person.t),
       transaction: transaction,
     );
   }
@@ -506,19 +506,19 @@ class PersonRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Person] will have its `id` field set.
-  Future<Person> upsertRow(
+  Future<Person?> upsertRow(
     _i1.DatabaseSession session,
     Person row, {
     required _i1.ColumnSelections<PersonTable> conflictColumns,
     _i1.ColumnSelections<PersonTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PersonTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<PersonTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Person>(
       row,
       conflictColumns: conflictColumns(Person.t),
       updateColumns: updateColumns?.call(Person.t),
-      conflictWhere: conflictWhere?.call(Person.t),
+      updateWhere: updateWhere?.call(Person.t),
       transaction: transaction,
     );
   }

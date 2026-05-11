@@ -356,7 +356,7 @@ class ImmutableObjectWithTableRepository {
   /// Inserts a single [ImmutableObjectWithTable] and returns the inserted row.
   ///
   /// The returned [ImmutableObjectWithTable] will have its `id` field set.
-  Future<ImmutableObjectWithTable> insertRow(
+  Future<ImmutableObjectWithTable?> insertRow(
     _i1.DatabaseSession session,
     ImmutableObjectWithTable row, {
     _i1.Transaction? transaction,
@@ -382,14 +382,14 @@ class ImmutableObjectWithTableRepository {
     required _i1.ColumnSelections<ImmutableObjectWithTableTable>
     conflictColumns,
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ImmutableObjectWithTable>(
       rows,
       conflictColumns: conflictColumns(ImmutableObjectWithTable.t),
       updateColumns: updateColumns?.call(ImmutableObjectWithTable.t),
-      conflictWhere: conflictWhere?.call(ImmutableObjectWithTable.t),
+      updateWhere: updateWhere?.call(ImmutableObjectWithTable.t),
       transaction: transaction,
     );
   }
@@ -400,20 +400,20 @@ class ImmutableObjectWithTableRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ImmutableObjectWithTable] will have its `id` field set.
-  Future<ImmutableObjectWithTable> upsertRow(
+  Future<ImmutableObjectWithTable?> upsertRow(
     _i1.DatabaseSession session,
     ImmutableObjectWithTable row, {
     required _i1.ColumnSelections<ImmutableObjectWithTableTable>
     conflictColumns,
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ImmutableObjectWithTable>(
       row,
       conflictColumns: conflictColumns(ImmutableObjectWithTable.t),
       updateColumns: updateColumns?.call(ImmutableObjectWithTable.t),
-      conflictWhere: conflictWhere?.call(ImmutableObjectWithTable.t),
+      updateWhere: updateWhere?.call(ImmutableObjectWithTable.t),
       transaction: transaction,
     );
   }

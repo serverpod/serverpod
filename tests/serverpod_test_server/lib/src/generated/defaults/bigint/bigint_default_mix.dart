@@ -409,7 +409,7 @@ class BigIntDefaultMixRepository {
   /// Inserts a single [BigIntDefaultMix] and returns the inserted row.
   ///
   /// The returned [BigIntDefaultMix] will have its `id` field set.
-  Future<BigIntDefaultMix> insertRow(
+  Future<BigIntDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     BigIntDefaultMix row, {
     _i1.Transaction? transaction,
@@ -434,14 +434,14 @@ class BigIntDefaultMixRepository {
     List<BigIntDefaultMix> rows, {
     required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BigIntDefaultMix>(
       rows,
       conflictColumns: conflictColumns(BigIntDefaultMix.t),
       updateColumns: updateColumns?.call(BigIntDefaultMix.t),
-      conflictWhere: conflictWhere?.call(BigIntDefaultMix.t),
+      updateWhere: updateWhere?.call(BigIntDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -452,19 +452,19 @@ class BigIntDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BigIntDefaultMix] will have its `id` field set.
-  Future<BigIntDefaultMix> upsertRow(
+  Future<BigIntDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     BigIntDefaultMix row, {
     required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BigIntDefaultMix>(
       row,
       conflictColumns: conflictColumns(BigIntDefaultMix.t),
       updateColumns: updateColumns?.call(BigIntDefaultMix.t),
-      conflictWhere: conflictWhere?.call(BigIntDefaultMix.t),
+      updateWhere: updateWhere?.call(BigIntDefaultMix.t),
       transaction: transaction,
     );
   }

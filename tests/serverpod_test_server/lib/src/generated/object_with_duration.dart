@@ -327,7 +327,7 @@ class ObjectWithDurationRepository {
   /// Inserts a single [ObjectWithDuration] and returns the inserted row.
   ///
   /// The returned [ObjectWithDuration] will have its `id` field set.
-  Future<ObjectWithDuration> insertRow(
+  Future<ObjectWithDuration?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
@@ -352,14 +352,14 @@ class ObjectWithDurationRepository {
     List<ObjectWithDuration> rows, {
     required _i1.ColumnSelections<ObjectWithDurationTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithDurationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithDuration>(
       rows,
       conflictColumns: conflictColumns(ObjectWithDuration.t),
       updateColumns: updateColumns?.call(ObjectWithDuration.t),
-      conflictWhere: conflictWhere?.call(ObjectWithDuration.t),
+      updateWhere: updateWhere?.call(ObjectWithDuration.t),
       transaction: transaction,
     );
   }
@@ -370,19 +370,19 @@ class ObjectWithDurationRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithDuration] will have its `id` field set.
-  Future<ObjectWithDuration> upsertRow(
+  Future<ObjectWithDuration?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithDuration row, {
     required _i1.ColumnSelections<ObjectWithDurationTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithDurationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithDuration>(
       row,
       conflictColumns: conflictColumns(ObjectWithDuration.t),
       updateColumns: updateColumns?.call(ObjectWithDuration.t),
-      conflictWhere: conflictWhere?.call(ObjectWithDuration.t),
+      updateWhere: updateWhere?.call(ObjectWithDuration.t),
       transaction: transaction,
     );
   }

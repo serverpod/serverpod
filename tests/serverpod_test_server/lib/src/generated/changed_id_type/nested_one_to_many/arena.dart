@@ -378,7 +378,7 @@ class ArenaUuidRepository {
   /// Inserts a single [ArenaUuid] and returns the inserted row.
   ///
   /// The returned [ArenaUuid] will have its `id` field set.
-  Future<ArenaUuid> insertRow(
+  Future<ArenaUuid?> insertRow(
     _i1.DatabaseSession session,
     ArenaUuid row, {
     _i1.Transaction? transaction,
@@ -403,14 +403,14 @@ class ArenaUuidRepository {
     List<ArenaUuid> rows, {
     required _i1.ColumnSelections<ArenaUuidTable> conflictColumns,
     _i1.ColumnSelections<ArenaUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ArenaUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ArenaUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ArenaUuid>(
       rows,
       conflictColumns: conflictColumns(ArenaUuid.t),
       updateColumns: updateColumns?.call(ArenaUuid.t),
-      conflictWhere: conflictWhere?.call(ArenaUuid.t),
+      updateWhere: updateWhere?.call(ArenaUuid.t),
       transaction: transaction,
     );
   }
@@ -421,19 +421,19 @@ class ArenaUuidRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ArenaUuid] will have its `id` field set.
-  Future<ArenaUuid> upsertRow(
+  Future<ArenaUuid?> upsertRow(
     _i1.DatabaseSession session,
     ArenaUuid row, {
     required _i1.ColumnSelections<ArenaUuidTable> conflictColumns,
     _i1.ColumnSelections<ArenaUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ArenaUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ArenaUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ArenaUuid>(
       row,
       conflictColumns: conflictColumns(ArenaUuid.t),
       updateColumns: updateColumns?.call(ArenaUuid.t),
-      conflictWhere: conflictWhere?.call(ArenaUuid.t),
+      updateWhere: updateWhere?.call(ArenaUuid.t),
       transaction: transaction,
     );
   }

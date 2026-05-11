@@ -383,7 +383,7 @@ class UserNoteRepository {
   /// Inserts a single [UserNote] and returns the inserted row.
   ///
   /// The returned [UserNote] will have its `id` field set.
-  Future<UserNote> insertRow(
+  Future<UserNote?> insertRow(
     _i1.DatabaseSession session,
     UserNote row, {
     _i1.Transaction? transaction,
@@ -408,14 +408,14 @@ class UserNoteRepository {
     List<UserNote> rows, {
     required _i1.ColumnSelections<UserNoteTable> conflictColumns,
     _i1.ColumnSelections<UserNoteTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UserNote>(
       rows,
       conflictColumns: conflictColumns(UserNote.t),
       updateColumns: updateColumns?.call(UserNote.t),
-      conflictWhere: conflictWhere?.call(UserNote.t),
+      updateWhere: updateWhere?.call(UserNote.t),
       transaction: transaction,
     );
   }
@@ -426,19 +426,19 @@ class UserNoteRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UserNote] will have its `id` field set.
-  Future<UserNote> upsertRow(
+  Future<UserNote?> upsertRow(
     _i1.DatabaseSession session,
     UserNote row, {
     required _i1.ColumnSelections<UserNoteTable> conflictColumns,
     _i1.ColumnSelections<UserNoteTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserNoteTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserNote>(
       row,
       conflictColumns: conflictColumns(UserNote.t),
       updateColumns: updateColumns?.call(UserNote.t),
-      conflictWhere: conflictWhere?.call(UserNote.t),
+      updateWhere: updateWhere?.call(UserNote.t),
       transaction: transaction,
     );
   }

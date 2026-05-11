@@ -404,7 +404,7 @@ class AddressRepository {
   /// Inserts a single [Address] and returns the inserted row.
   ///
   /// The returned [Address] will have its `id` field set.
-  Future<Address> insertRow(
+  Future<Address?> insertRow(
     _i1.DatabaseSession session,
     Address row, {
     _i1.Transaction? transaction,
@@ -429,14 +429,14 @@ class AddressRepository {
     List<Address> rows, {
     required _i1.ColumnSelections<AddressTable> conflictColumns,
     _i1.ColumnSelections<AddressTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<AddressTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Address>(
       rows,
       conflictColumns: conflictColumns(Address.t),
       updateColumns: updateColumns?.call(Address.t),
-      conflictWhere: conflictWhere?.call(Address.t),
+      updateWhere: updateWhere?.call(Address.t),
       transaction: transaction,
     );
   }
@@ -447,19 +447,19 @@ class AddressRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Address] will have its `id` field set.
-  Future<Address> upsertRow(
+  Future<Address?> upsertRow(
     _i1.DatabaseSession session,
     Address row, {
     required _i1.ColumnSelections<AddressTable> conflictColumns,
     _i1.ColumnSelections<AddressTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AddressTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<AddressTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Address>(
       row,
       conflictColumns: conflictColumns(Address.t),
       updateColumns: updateColumns?.call(Address.t),
-      conflictWhere: conflictWhere?.call(Address.t),
+      updateWhere: updateWhere?.call(Address.t),
       transaction: transaction,
     );
   }

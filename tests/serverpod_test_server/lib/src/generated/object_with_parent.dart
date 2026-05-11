@@ -324,7 +324,7 @@ class ObjectWithParentRepository {
   /// Inserts a single [ObjectWithParent] and returns the inserted row.
   ///
   /// The returned [ObjectWithParent] will have its `id` field set.
-  Future<ObjectWithParent> insertRow(
+  Future<ObjectWithParent?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithParent row, {
     _i1.Transaction? transaction,
@@ -349,14 +349,14 @@ class ObjectWithParentRepository {
     List<ObjectWithParent> rows, {
     required _i1.ColumnSelections<ObjectWithParentTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithParentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithParent>(
       rows,
       conflictColumns: conflictColumns(ObjectWithParent.t),
       updateColumns: updateColumns?.call(ObjectWithParent.t),
-      conflictWhere: conflictWhere?.call(ObjectWithParent.t),
+      updateWhere: updateWhere?.call(ObjectWithParent.t),
       transaction: transaction,
     );
   }
@@ -367,19 +367,19 @@ class ObjectWithParentRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithParent] will have its `id` field set.
-  Future<ObjectWithParent> upsertRow(
+  Future<ObjectWithParent?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithParent row, {
     required _i1.ColumnSelections<ObjectWithParentTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithParentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithParent>(
       row,
       conflictColumns: conflictColumns(ObjectWithParent.t),
       updateColumns: updateColumns?.call(ObjectWithParent.t),
-      conflictWhere: conflictWhere?.call(ObjectWithParent.t),
+      updateWhere: updateWhere?.call(ObjectWithParent.t),
       transaction: transaction,
     );
   }

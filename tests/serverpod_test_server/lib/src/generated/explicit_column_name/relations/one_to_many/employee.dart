@@ -347,7 +347,7 @@ class EmployeeRepository {
   /// Inserts a single [Employee] and returns the inserted row.
   ///
   /// The returned [Employee] will have its `id` field set.
-  Future<Employee> insertRow(
+  Future<Employee?> insertRow(
     _i1.DatabaseSession session,
     Employee row, {
     _i1.Transaction? transaction,
@@ -372,14 +372,14 @@ class EmployeeRepository {
     List<Employee> rows, {
     required _i1.ColumnSelections<EmployeeTable> conflictColumns,
     _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Employee>(
       rows,
       conflictColumns: conflictColumns(Employee.t),
       updateColumns: updateColumns?.call(Employee.t),
-      conflictWhere: conflictWhere?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
       transaction: transaction,
     );
   }
@@ -390,19 +390,19 @@ class EmployeeRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Employee] will have its `id` field set.
-  Future<Employee> upsertRow(
+  Future<Employee?> upsertRow(
     _i1.DatabaseSession session,
     Employee row, {
     required _i1.ColumnSelections<EmployeeTable> conflictColumns,
     _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Employee>(
       row,
       conflictColumns: conflictColumns(Employee.t),
       updateColumns: updateColumns?.call(Employee.t),
-      conflictWhere: conflictWhere?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
       transaction: transaction,
     );
   }

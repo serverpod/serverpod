@@ -414,7 +414,7 @@ class DateTimeDefaultMixRepository {
   /// Inserts a single [DateTimeDefaultMix] and returns the inserted row.
   ///
   /// The returned [DateTimeDefaultMix] will have its `id` field set.
-  Future<DateTimeDefaultMix> insertRow(
+  Future<DateTimeDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultMix row, {
     _i1.Transaction? transaction,
@@ -439,14 +439,14 @@ class DateTimeDefaultMixRepository {
     List<DateTimeDefaultMix> rows, {
     required _i1.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DateTimeDefaultMix>(
       rows,
       conflictColumns: conflictColumns(DateTimeDefaultMix.t),
       updateColumns: updateColumns?.call(DateTimeDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultMix.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -457,19 +457,19 @@ class DateTimeDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DateTimeDefaultMix] will have its `id` field set.
-  Future<DateTimeDefaultMix> upsertRow(
+  Future<DateTimeDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultMix row, {
     required _i1.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultMix>(
       row,
       conflictColumns: conflictColumns(DateTimeDefaultMix.t),
       updateColumns: updateColumns?.call(DateTimeDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultMix.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultMix.t),
       transaction: transaction,
     );
   }

@@ -490,7 +490,7 @@ class ObjectWithHalfVectorRepository {
   /// Inserts a single [ObjectWithHalfVector] and returns the inserted row.
   ///
   /// The returned [ObjectWithHalfVector] will have its `id` field set.
-  Future<ObjectWithHalfVector> insertRow(
+  Future<ObjectWithHalfVector?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithHalfVector row, {
     _i1.Transaction? transaction,
@@ -515,14 +515,14 @@ class ObjectWithHalfVectorRepository {
     List<ObjectWithHalfVector> rows, {
     required _i1.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithHalfVector>(
       rows,
       conflictColumns: conflictColumns(ObjectWithHalfVector.t),
       updateColumns: updateColumns?.call(ObjectWithHalfVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithHalfVector.t),
+      updateWhere: updateWhere?.call(ObjectWithHalfVector.t),
       transaction: transaction,
     );
   }
@@ -533,19 +533,19 @@ class ObjectWithHalfVectorRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithHalfVector] will have its `id` field set.
-  Future<ObjectWithHalfVector> upsertRow(
+  Future<ObjectWithHalfVector?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithHalfVector row, {
     required _i1.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithHalfVector>(
       row,
       conflictColumns: conflictColumns(ObjectWithHalfVector.t),
       updateColumns: updateColumns?.call(ObjectWithHalfVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithHalfVector.t),
+      updateWhere: updateWhere?.call(ObjectWithHalfVector.t),
       transaction: transaction,
     );
   }

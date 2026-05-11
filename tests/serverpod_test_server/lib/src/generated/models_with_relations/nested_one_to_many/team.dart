@@ -478,7 +478,7 @@ class TeamRepository {
   /// Inserts a single [Team] and returns the inserted row.
   ///
   /// The returned [Team] will have its `id` field set.
-  Future<Team> insertRow(
+  Future<Team?> insertRow(
     _i1.DatabaseSession session,
     Team row, {
     _i1.Transaction? transaction,
@@ -503,14 +503,14 @@ class TeamRepository {
     List<Team> rows, {
     required _i1.ColumnSelections<TeamTable> conflictColumns,
     _i1.ColumnSelections<TeamTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TeamTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<TeamTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Team>(
       rows,
       conflictColumns: conflictColumns(Team.t),
       updateColumns: updateColumns?.call(Team.t),
-      conflictWhere: conflictWhere?.call(Team.t),
+      updateWhere: updateWhere?.call(Team.t),
       transaction: transaction,
     );
   }
@@ -521,19 +521,19 @@ class TeamRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Team] will have its `id` field set.
-  Future<Team> upsertRow(
+  Future<Team?> upsertRow(
     _i1.DatabaseSession session,
     Team row, {
     required _i1.ColumnSelections<TeamTable> conflictColumns,
     _i1.ColumnSelections<TeamTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TeamTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<TeamTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Team>(
       row,
       conflictColumns: conflictColumns(Team.t),
       updateColumns: updateColumns?.call(Team.t),
-      conflictWhere: conflictWhere?.call(Team.t),
+      updateWhere: updateWhere?.call(Team.t),
       transaction: transaction,
     );
   }

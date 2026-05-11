@@ -407,7 +407,7 @@ class UuidDefaultPersistRepository {
   /// Inserts a single [UuidDefaultPersist] and returns the inserted row.
   ///
   /// The returned [UuidDefaultPersist] will have its `id` field set.
-  Future<UuidDefaultPersist> insertRow(
+  Future<UuidDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     UuidDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -432,14 +432,14 @@ class UuidDefaultPersistRepository {
     List<UuidDefaultPersist> rows, {
     required _i1.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UuidDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(UuidDefaultPersist.t),
       updateColumns: updateColumns?.call(UuidDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(UuidDefaultPersist.t),
+      updateWhere: updateWhere?.call(UuidDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -450,19 +450,19 @@ class UuidDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UuidDefaultPersist] will have its `id` field set.
-  Future<UuidDefaultPersist> upsertRow(
+  Future<UuidDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     UuidDefaultPersist row, {
     required _i1.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UuidDefaultPersist>(
       row,
       conflictColumns: conflictColumns(UuidDefaultPersist.t),
       updateColumns: updateColumns?.call(UuidDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(UuidDefaultPersist.t),
+      updateWhere: updateWhere?.call(UuidDefaultPersist.t),
       transaction: transaction,
     );
   }

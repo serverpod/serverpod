@@ -362,7 +362,7 @@ class UniqueDataWithNonPersistRepository {
   /// Inserts a single [UniqueDataWithNonPersist] and returns the inserted row.
   ///
   /// The returned [UniqueDataWithNonPersist] will have its `id` field set.
-  Future<UniqueDataWithNonPersist> insertRow(
+  Future<UniqueDataWithNonPersist?> insertRow(
     _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
     _i1.Transaction? transaction,
@@ -388,14 +388,14 @@ class UniqueDataWithNonPersistRepository {
     required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
     _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UniqueDataWithNonPersist>(
       rows,
       conflictColumns: conflictColumns(UniqueDataWithNonPersist.t),
       updateColumns: updateColumns?.call(UniqueDataWithNonPersist.t),
-      conflictWhere: conflictWhere?.call(UniqueDataWithNonPersist.t),
+      updateWhere: updateWhere?.call(UniqueDataWithNonPersist.t),
       transaction: transaction,
     );
   }
@@ -406,20 +406,20 @@ class UniqueDataWithNonPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UniqueDataWithNonPersist] will have its `id` field set.
-  Future<UniqueDataWithNonPersist> upsertRow(
+  Future<UniqueDataWithNonPersist?> upsertRow(
     _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
     required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
     _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UniqueDataWithNonPersist>(
       row,
       conflictColumns: conflictColumns(UniqueDataWithNonPersist.t),
       updateColumns: updateColumns?.call(UniqueDataWithNonPersist.t),
-      conflictWhere: conflictWhere?.call(UniqueDataWithNonPersist.t),
+      updateWhere: updateWhere?.call(UniqueDataWithNonPersist.t),
       transaction: transaction,
     );
   }

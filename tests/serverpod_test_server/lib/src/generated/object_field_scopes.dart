@@ -359,7 +359,7 @@ class ObjectFieldScopesRepository {
   /// Inserts a single [ObjectFieldScopes] and returns the inserted row.
   ///
   /// The returned [ObjectFieldScopes] will have its `id` field set.
-  Future<ObjectFieldScopes> insertRow(
+  Future<ObjectFieldScopes?> insertRow(
     _i1.DatabaseSession session,
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
@@ -384,14 +384,14 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
     _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectFieldScopes>(
       rows,
       conflictColumns: conflictColumns(ObjectFieldScopes.t),
       updateColumns: updateColumns?.call(ObjectFieldScopes.t),
-      conflictWhere: conflictWhere?.call(ObjectFieldScopes.t),
+      updateWhere: updateWhere?.call(ObjectFieldScopes.t),
       transaction: transaction,
     );
   }
@@ -402,19 +402,19 @@ class ObjectFieldScopesRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectFieldScopes] will have its `id` field set.
-  Future<ObjectFieldScopes> upsertRow(
+  Future<ObjectFieldScopes?> upsertRow(
     _i1.DatabaseSession session,
     ObjectFieldScopes row, {
     required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
     _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectFieldScopes>(
       row,
       conflictColumns: conflictColumns(ObjectFieldScopes.t),
       updateColumns: updateColumns?.call(ObjectFieldScopes.t),
-      conflictWhere: conflictWhere?.call(ObjectFieldScopes.t),
+      updateWhere: updateWhere?.call(ObjectFieldScopes.t),
       transaction: transaction,
     );
   }

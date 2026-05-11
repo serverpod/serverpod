@@ -370,7 +370,7 @@ class BoolDefaultPersistRepository {
   /// Inserts a single [BoolDefaultPersist] and returns the inserted row.
   ///
   /// The returned [BoolDefaultPersist] will have its `id` field set.
-  Future<BoolDefaultPersist> insertRow(
+  Future<BoolDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -395,14 +395,14 @@ class BoolDefaultPersistRepository {
     List<BoolDefaultPersist> rows, {
     required _i1.ColumnSelections<BoolDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<BoolDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(BoolDefaultPersist.t),
       updateColumns: updateColumns?.call(BoolDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultPersist.t),
+      updateWhere: updateWhere?.call(BoolDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -413,19 +413,19 @@ class BoolDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [BoolDefaultPersist] will have its `id` field set.
-  Future<BoolDefaultPersist> upsertRow(
+  Future<BoolDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     BoolDefaultPersist row, {
     required _i1.ColumnSelections<BoolDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<BoolDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BoolDefaultPersist>(
       row,
       conflictColumns: conflictColumns(BoolDefaultPersist.t),
       updateColumns: updateColumns?.call(BoolDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(BoolDefaultPersist.t),
+      updateWhere: updateWhere?.call(BoolDefaultPersist.t),
       transaction: transaction,
     );
   }

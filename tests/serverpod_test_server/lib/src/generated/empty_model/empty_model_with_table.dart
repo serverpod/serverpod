@@ -282,7 +282,7 @@ class EmptyModelWithTableRepository {
   /// Inserts a single [EmptyModelWithTable] and returns the inserted row.
   ///
   /// The returned [EmptyModelWithTable] will have its `id` field set.
-  Future<EmptyModelWithTable> insertRow(
+  Future<EmptyModelWithTable?> insertRow(
     _i1.DatabaseSession session,
     EmptyModelWithTable row, {
     _i1.Transaction? transaction,
@@ -307,14 +307,14 @@ class EmptyModelWithTableRepository {
     List<EmptyModelWithTable> rows, {
     required _i1.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
     _i1.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EmptyModelWithTable>(
       rows,
       conflictColumns: conflictColumns(EmptyModelWithTable.t),
       updateColumns: updateColumns?.call(EmptyModelWithTable.t),
-      conflictWhere: conflictWhere?.call(EmptyModelWithTable.t),
+      updateWhere: updateWhere?.call(EmptyModelWithTable.t),
       transaction: transaction,
     );
   }
@@ -325,19 +325,19 @@ class EmptyModelWithTableRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EmptyModelWithTable] will have its `id` field set.
-  Future<EmptyModelWithTable> upsertRow(
+  Future<EmptyModelWithTable?> upsertRow(
     _i1.DatabaseSession session,
     EmptyModelWithTable row, {
     required _i1.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
     _i1.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmptyModelWithTable>(
       row,
       conflictColumns: conflictColumns(EmptyModelWithTable.t),
       updateColumns: updateColumns?.call(EmptyModelWithTable.t),
-      conflictWhere: conflictWhere?.call(EmptyModelWithTable.t),
+      updateWhere: updateWhere?.call(EmptyModelWithTable.t),
       transaction: transaction,
     );
   }

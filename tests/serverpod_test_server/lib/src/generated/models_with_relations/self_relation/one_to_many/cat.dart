@@ -478,7 +478,7 @@ class CatRepository {
   /// Inserts a single [Cat] and returns the inserted row.
   ///
   /// The returned [Cat] will have its `id` field set.
-  Future<Cat> insertRow(
+  Future<Cat?> insertRow(
     _i1.DatabaseSession session,
     Cat row, {
     _i1.Transaction? transaction,
@@ -503,14 +503,14 @@ class CatRepository {
     List<Cat> rows, {
     required _i1.ColumnSelections<CatTable> conflictColumns,
     _i1.ColumnSelections<CatTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CatTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CatTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Cat>(
       rows,
       conflictColumns: conflictColumns(Cat.t),
       updateColumns: updateColumns?.call(Cat.t),
-      conflictWhere: conflictWhere?.call(Cat.t),
+      updateWhere: updateWhere?.call(Cat.t),
       transaction: transaction,
     );
   }
@@ -521,19 +521,19 @@ class CatRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Cat] will have its `id` field set.
-  Future<Cat> upsertRow(
+  Future<Cat?> upsertRow(
     _i1.DatabaseSession session,
     Cat row, {
     required _i1.ColumnSelections<CatTable> conflictColumns,
     _i1.ColumnSelections<CatTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CatTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CatTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Cat>(
       row,
       conflictColumns: conflictColumns(Cat.t),
       updateColumns: updateColumns?.call(Cat.t),
-      conflictWhere: conflictWhere?.call(Cat.t),
+      updateWhere: updateWhere?.call(Cat.t),
       transaction: transaction,
     );
   }

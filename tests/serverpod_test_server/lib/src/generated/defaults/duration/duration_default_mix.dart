@@ -432,7 +432,7 @@ class DurationDefaultMixRepository {
   /// Inserts a single [DurationDefaultMix] and returns the inserted row.
   ///
   /// The returned [DurationDefaultMix] will have its `id` field set.
-  Future<DurationDefaultMix> insertRow(
+  Future<DurationDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     DurationDefaultMix row, {
     _i1.Transaction? transaction,
@@ -457,14 +457,14 @@ class DurationDefaultMixRepository {
     List<DurationDefaultMix> rows, {
     required _i1.ColumnSelections<DurationDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DurationDefaultMix>(
       rows,
       conflictColumns: conflictColumns(DurationDefaultMix.t),
       updateColumns: updateColumns?.call(DurationDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultMix.t),
+      updateWhere: updateWhere?.call(DurationDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -475,19 +475,19 @@ class DurationDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DurationDefaultMix] will have its `id` field set.
-  Future<DurationDefaultMix> upsertRow(
+  Future<DurationDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     DurationDefaultMix row, {
     required _i1.ColumnSelections<DurationDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefaultMix>(
       row,
       conflictColumns: conflictColumns(DurationDefaultMix.t),
       updateColumns: updateColumns?.call(DurationDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultMix.t),
+      updateWhere: updateWhere?.call(DurationDefaultMix.t),
       transaction: transaction,
     );
   }

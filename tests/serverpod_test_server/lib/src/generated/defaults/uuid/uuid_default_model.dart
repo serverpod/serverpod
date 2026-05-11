@@ -475,7 +475,7 @@ class UuidDefaultModelRepository {
   /// Inserts a single [UuidDefaultModel] and returns the inserted row.
   ///
   /// The returned [UuidDefaultModel] will have its `id` field set.
-  Future<UuidDefaultModel> insertRow(
+  Future<UuidDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     UuidDefaultModel row, {
     _i1.Transaction? transaction,
@@ -500,14 +500,14 @@ class UuidDefaultModelRepository {
     List<UuidDefaultModel> rows, {
     required _i1.ColumnSelections<UuidDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UuidDefaultModel>(
       rows,
       conflictColumns: conflictColumns(UuidDefaultModel.t),
       updateColumns: updateColumns?.call(UuidDefaultModel.t),
-      conflictWhere: conflictWhere?.call(UuidDefaultModel.t),
+      updateWhere: updateWhere?.call(UuidDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -518,19 +518,19 @@ class UuidDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [UuidDefaultModel] will have its `id` field set.
-  Future<UuidDefaultModel> upsertRow(
+  Future<UuidDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     UuidDefaultModel row, {
     required _i1.ColumnSelections<UuidDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<UuidDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UuidDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UuidDefaultModel>(
       row,
       conflictColumns: conflictColumns(UuidDefaultModel.t),
       updateColumns: updateColumns?.call(UuidDefaultModel.t),
-      conflictWhere: conflictWhere?.call(UuidDefaultModel.t),
+      updateWhere: updateWhere?.call(UuidDefaultModel.t),
       transaction: transaction,
     );
   }

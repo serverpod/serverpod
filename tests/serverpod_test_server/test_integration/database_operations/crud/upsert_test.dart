@@ -42,11 +42,11 @@ void main() async {
     test(
       'when upserting a single row with upsertRow then the row is inserted.',
       () async {
-        var result = await UniqueData.db.upsertRow(
+        var result = (await UniqueData.db.upsertRow(
           session,
           UniqueData(number: 1, email: 'single@serverpod.dev'),
           conflictColumns: (t) => [t.email],
-        );
+        ))!;
 
         expect(result.id, isNotNull);
         expect(result.email, 'single@serverpod.dev');
@@ -62,20 +62,20 @@ void main() async {
     late UniqueData existingRow;
 
     setUp(() async {
-      existingRow = await UniqueData.db.insertRow(
+      existingRow = (await UniqueData.db.insertRow(
         session,
         UniqueData(number: 1, email: 'existing@serverpod.dev'),
-      );
+      ))!;
     });
 
     test(
       'when upserting a row with the same unique value then the existing row is updated.',
       () async {
-        var result = await UniqueData.db.upsertRow(
+        var result = (await UniqueData.db.upsertRow(
           session,
           UniqueData(number: 42, email: 'existing@serverpod.dev'),
           conflictColumns: (t) => [t.email],
-        );
+        ))!;
 
         expect(result.id, existingRow.id);
         expect(result.email, 'existing@serverpod.dev');
@@ -90,11 +90,11 @@ void main() async {
     test(
       'when upserting a row with a new unique value then a new row is inserted.',
       () async {
-        var result = await UniqueData.db.upsertRow(
+        var result = (await UniqueData.db.upsertRow(
           session,
           UniqueData(number: 2, email: 'new@serverpod.dev'),
           conflictColumns: (t) => [t.email],
-        );
+        ))!;
 
         expect(result.id, isNotNull);
         expect(result.id, isNot(existingRow.id));
@@ -141,12 +141,12 @@ void main() async {
       'when upserting within a transaction then the upsert is atomic.',
       () async {
         await session.db.transaction((transaction) async {
-          var result = await UniqueData.db.upsertRow(
+          var result = (await UniqueData.db.upsertRow(
             session,
             UniqueData(number: 77, email: 'existing@serverpod.dev'),
             conflictColumns: (t) => [t.email],
             transaction: transaction,
-          );
+          ))!;
 
           expect(result.id, existingRow.id);
           expect(result.number, 77);
@@ -230,4 +230,151 @@ void main() async {
       );
     },
   );
+
+  group('Given UpsertTestModel with multiple unique indexes', () {
+    tearDown(() async {
+      await UpsertTestModel.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test(
+      'when upserting with multiple conflictColumns then uses composite unique index.',
+      () async {
+        var inserted = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'A', category: 'cat1', value: 1),
+          conflictColumns: (t) => [t.category, t.value],
+        ))!;
+        expect(inserted.code, 'A');
+        expect(inserted.category, 'cat1');
+        expect(inserted.value, 1);
+
+        var updated = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'B', category: 'cat1', value: 1),
+          conflictColumns: (t) => [t.category, t.value],
+        ))!;
+        expect(updated.id, inserted.id);
+        expect(updated.code, 'B');
+      },
+    );
+
+    test(
+      'when upserting with code as conflictColumn then uses single unique index.',
+      () async {
+        var row1 = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'X', category: 'c1', value: 1),
+          conflictColumns: (t) => [t.code],
+        ))!;
+        var row2 = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'X', category: 'c2', value: 2),
+          conflictColumns: (t) => [t.code],
+        ))!;
+        expect(row2.id, row1.id);
+        expect(row2.category, 'c2');
+      },
+    );
+
+    test(
+      'when upserting with conflictColumn on non-unique column then throws exception.',
+      () async {
+        await expectLater(
+          UpsertTestModel.db.upsertRow(
+            session,
+            UpsertTestModel(code: 'A', category: 'c1', value: 1),
+            conflictColumns: (t) => [t.code, t.category],
+          ),
+          throwsA(isA<DatabaseQueryException>()),
+        );
+      },
+    );
+
+    test(
+      'when upserting with empty conflictColumns then throws ArgumentError.',
+      () async {
+        await expectLater(
+          UpsertTestModel.db.upsert(
+            session,
+            [UpsertTestModel(code: 'A', category: 'c1', value: 1)],
+            conflictColumns: (t) => [],
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'when upserting with id as conflictColumn then throws ArgumentError.',
+      () async {
+        await expectLater(
+          UpsertTestModel.db.upsert(
+            session,
+            [UpsertTestModel(code: 'A', category: 'c1', value: 1)],
+            conflictColumns: (t) => [t.id],
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'when upserting with column from different table then throws ArgumentError.',
+      () async {
+        await expectLater(
+          UpsertTestModel.db.upsert(
+            session,
+            [UpsertTestModel(code: 'A', category: 'c1', value: 1)],
+            conflictColumns: (t) => [UniqueData.t.email],
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'when upserting with updateColumns then excluded columns are not modified.',
+      () async {
+        var inserted = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'A', category: 'c1', value: 1),
+          conflictColumns: (t) => [t.code],
+        ))!;
+
+        var updated = (await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'A', category: 'c2', value: 2),
+          conflictColumns: (t) => [t.code],
+          updateColumns: (t) => [t.value],
+        ))!;
+
+        expect(updated.id, inserted.id);
+        expect(updated.value, 2);
+        expect(updated.category, 'c1');
+      },
+    );
+
+    test(
+      'when upserting with updateWhere that does not match then returns null.',
+      () async {
+        await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'A', category: 'c1', value: 1),
+          conflictColumns: (t) => [t.code],
+        );
+
+        var result = await UpsertTestModel.db.upsertRow(
+          session,
+          UpsertTestModel(code: 'A', category: 'c2', value: 2),
+          conflictColumns: (t) => [t.code],
+          updateWhere: (t) => t.value.equals(99),
+        );
+
+        expect(result, isNull);
+      },
+    );
+  });
 }

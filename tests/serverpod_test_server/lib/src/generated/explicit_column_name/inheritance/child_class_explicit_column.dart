@@ -353,7 +353,7 @@ class ChildClassExplicitColumnRepository {
   /// Inserts a single [ChildClassExplicitColumn] and returns the inserted row.
   ///
   /// The returned [ChildClassExplicitColumn] will have its `id` field set.
-  Future<ChildClassExplicitColumn> insertRow(
+  Future<ChildClassExplicitColumn?> insertRow(
     _i2.DatabaseSession session,
     ChildClassExplicitColumn row, {
     _i2.Transaction? transaction,
@@ -379,14 +379,14 @@ class ChildClassExplicitColumnRepository {
     required _i2.ColumnSelections<ChildClassExplicitColumnTable>
     conflictColumns,
     _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? conflictWhere,
+    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
     _i2.Transaction? transaction,
   }) async {
     return session.db.upsert<ChildClassExplicitColumn>(
       rows,
       conflictColumns: conflictColumns(ChildClassExplicitColumn.t),
       updateColumns: updateColumns?.call(ChildClassExplicitColumn.t),
-      conflictWhere: conflictWhere?.call(ChildClassExplicitColumn.t),
+      updateWhere: updateWhere?.call(ChildClassExplicitColumn.t),
       transaction: transaction,
     );
   }
@@ -397,20 +397,20 @@ class ChildClassExplicitColumnRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ChildClassExplicitColumn] will have its `id` field set.
-  Future<ChildClassExplicitColumn> upsertRow(
+  Future<ChildClassExplicitColumn?> upsertRow(
     _i2.DatabaseSession session,
     ChildClassExplicitColumn row, {
     required _i2.ColumnSelections<ChildClassExplicitColumnTable>
     conflictColumns,
     _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? conflictWhere,
+    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
     _i2.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChildClassExplicitColumn>(
       row,
       conflictColumns: conflictColumns(ChildClassExplicitColumn.t),
       updateColumns: updateColumns?.call(ChildClassExplicitColumn.t),
-      conflictWhere: conflictWhere?.call(ChildClassExplicitColumn.t),
+      updateWhere: updateWhere?.call(ChildClassExplicitColumn.t),
       transaction: transaction,
     );
   }

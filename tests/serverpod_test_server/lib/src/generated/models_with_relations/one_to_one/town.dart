@@ -399,7 +399,7 @@ class TownRepository {
   /// Inserts a single [Town] and returns the inserted row.
   ///
   /// The returned [Town] will have its `id` field set.
-  Future<Town> insertRow(
+  Future<Town?> insertRow(
     _i1.DatabaseSession session,
     Town row, {
     _i1.Transaction? transaction,
@@ -424,14 +424,14 @@ class TownRepository {
     List<Town> rows, {
     required _i1.ColumnSelections<TownTable> conflictColumns,
     _i1.ColumnSelections<TownTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<TownTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Town>(
       rows,
       conflictColumns: conflictColumns(Town.t),
       updateColumns: updateColumns?.call(Town.t),
-      conflictWhere: conflictWhere?.call(Town.t),
+      updateWhere: updateWhere?.call(Town.t),
       transaction: transaction,
     );
   }
@@ -442,19 +442,19 @@ class TownRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [Town] will have its `id` field set.
-  Future<Town> upsertRow(
+  Future<Town?> upsertRow(
     _i1.DatabaseSession session,
     Town row, {
     required _i1.ColumnSelections<TownTable> conflictColumns,
     _i1.ColumnSelections<TownTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TownTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<TownTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Town>(
       row,
       conflictColumns: conflictColumns(Town.t),
       updateColumns: updateColumns?.call(Town.t),
-      conflictWhere: conflictWhere?.call(Town.t),
+      updateWhere: updateWhere?.call(Town.t),
       transaction: transaction,
     );
   }

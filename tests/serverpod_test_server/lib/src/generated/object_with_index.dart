@@ -347,7 +347,7 @@ class ObjectWithIndexRepository {
   /// Inserts a single [ObjectWithIndex] and returns the inserted row.
   ///
   /// The returned [ObjectWithIndex] will have its `id` field set.
-  Future<ObjectWithIndex> insertRow(
+  Future<ObjectWithIndex?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
@@ -372,14 +372,14 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     required _i1.ColumnSelections<ObjectWithIndexTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithIndexTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithIndex>(
       rows,
       conflictColumns: conflictColumns(ObjectWithIndex.t),
       updateColumns: updateColumns?.call(ObjectWithIndex.t),
-      conflictWhere: conflictWhere?.call(ObjectWithIndex.t),
+      updateWhere: updateWhere?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
@@ -390,19 +390,19 @@ class ObjectWithIndexRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithIndex] will have its `id` field set.
-  Future<ObjectWithIndex> upsertRow(
+  Future<ObjectWithIndex?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithIndex row, {
     required _i1.ColumnSelections<ObjectWithIndexTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithIndexTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithIndex>(
       row,
       conflictColumns: conflictColumns(ObjectWithIndex.t),
       updateColumns: updateColumns?.call(ObjectWithIndex.t),
-      conflictWhere: conflictWhere?.call(ObjectWithIndex.t),
+      updateWhere: updateWhere?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }

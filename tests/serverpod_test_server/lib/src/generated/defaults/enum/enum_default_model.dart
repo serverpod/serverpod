@@ -448,7 +448,7 @@ class EnumDefaultModelRepository {
   /// Inserts a single [EnumDefaultModel] and returns the inserted row.
   ///
   /// The returned [EnumDefaultModel] will have its `id` field set.
-  Future<EnumDefaultModel> insertRow(
+  Future<EnumDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     EnumDefaultModel row, {
     _i1.Transaction? transaction,
@@ -473,14 +473,14 @@ class EnumDefaultModelRepository {
     List<EnumDefaultModel> rows, {
     required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefaultModel>(
       rows,
       conflictColumns: conflictColumns(EnumDefaultModel.t),
       updateColumns: updateColumns?.call(EnumDefaultModel.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      updateWhere: updateWhere?.call(EnumDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -491,19 +491,19 @@ class EnumDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [EnumDefaultModel] will have its `id` field set.
-  Future<EnumDefaultModel> upsertRow(
+  Future<EnumDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefaultModel row, {
     required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultModel>(
       row,
       conflictColumns: conflictColumns(EnumDefaultModel.t),
       updateColumns: updateColumns?.call(EnumDefaultModel.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      updateWhere: updateWhere?.call(EnumDefaultModel.t),
       transaction: transaction,
     );
   }

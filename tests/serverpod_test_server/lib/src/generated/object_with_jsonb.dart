@@ -570,7 +570,7 @@ class ObjectWithJsonbRepository {
   /// Inserts a single [ObjectWithJsonb] and returns the inserted row.
   ///
   /// The returned [ObjectWithJsonb] will have its `id` field set.
-  Future<ObjectWithJsonb> insertRow(
+  Future<ObjectWithJsonb?> insertRow(
     _i1.DatabaseSession session,
     ObjectWithJsonb row, {
     _i1.Transaction? transaction,
@@ -595,14 +595,14 @@ class ObjectWithJsonbRepository {
     List<ObjectWithJsonb> rows, {
     required _i1.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithJsonb>(
       rows,
       conflictColumns: conflictColumns(ObjectWithJsonb.t),
       updateColumns: updateColumns?.call(ObjectWithJsonb.t),
-      conflictWhere: conflictWhere?.call(ObjectWithJsonb.t),
+      updateWhere: updateWhere?.call(ObjectWithJsonb.t),
       transaction: transaction,
     );
   }
@@ -613,19 +613,19 @@ class ObjectWithJsonbRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ObjectWithJsonb] will have its `id` field set.
-  Future<ObjectWithJsonb> upsertRow(
+  Future<ObjectWithJsonb?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithJsonb row, {
     required _i1.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithJsonb>(
       row,
       conflictColumns: conflictColumns(ObjectWithJsonb.t),
       updateColumns: updateColumns?.call(ObjectWithJsonb.t),
-      conflictWhere: conflictWhere?.call(ObjectWithJsonb.t),
+      updateWhere: updateWhere?.call(ObjectWithJsonb.t),
       transaction: transaction,
     );
   }

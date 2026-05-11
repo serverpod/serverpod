@@ -396,7 +396,7 @@ class DoubleDefaultMixRepository {
   /// Inserts a single [DoubleDefaultMix] and returns the inserted row.
   ///
   /// The returned [DoubleDefaultMix] will have its `id` field set.
-  Future<DoubleDefaultMix> insertRow(
+  Future<DoubleDefaultMix?> insertRow(
     _i1.DatabaseSession session,
     DoubleDefaultMix row, {
     _i1.Transaction? transaction,
@@ -421,14 +421,14 @@ class DoubleDefaultMixRepository {
     List<DoubleDefaultMix> rows, {
     required _i1.ColumnSelections<DoubleDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DoubleDefaultMix>(
       rows,
       conflictColumns: conflictColumns(DoubleDefaultMix.t),
       updateColumns: updateColumns?.call(DoubleDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultMix.t),
+      updateWhere: updateWhere?.call(DoubleDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -439,19 +439,19 @@ class DoubleDefaultMixRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DoubleDefaultMix] will have its `id` field set.
-  Future<DoubleDefaultMix> upsertRow(
+  Future<DoubleDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     DoubleDefaultMix row, {
     required _i1.ColumnSelections<DoubleDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DoubleDefaultMix>(
       row,
       conflictColumns: conflictColumns(DoubleDefaultMix.t),
       updateColumns: updateColumns?.call(DoubleDefaultMix.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultMix.t),
+      updateWhere: updateWhere?.call(DoubleDefaultMix.t),
       transaction: transaction,
     );
   }

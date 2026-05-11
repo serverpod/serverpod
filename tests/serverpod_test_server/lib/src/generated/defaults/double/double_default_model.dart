@@ -354,7 +354,7 @@ class DoubleDefaultModelRepository {
   /// Inserts a single [DoubleDefaultModel] and returns the inserted row.
   ///
   /// The returned [DoubleDefaultModel] will have its `id` field set.
-  Future<DoubleDefaultModel> insertRow(
+  Future<DoubleDefaultModel?> insertRow(
     _i1.DatabaseSession session,
     DoubleDefaultModel row, {
     _i1.Transaction? transaction,
@@ -379,14 +379,14 @@ class DoubleDefaultModelRepository {
     List<DoubleDefaultModel> rows, {
     required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DoubleDefaultModel>(
       rows,
       conflictColumns: conflictColumns(DoubleDefaultModel.t),
       updateColumns: updateColumns?.call(DoubleDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultModel.t),
+      updateWhere: updateWhere?.call(DoubleDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -397,19 +397,19 @@ class DoubleDefaultModelRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DoubleDefaultModel] will have its `id` field set.
-  Future<DoubleDefaultModel> upsertRow(
+  Future<DoubleDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     DoubleDefaultModel row, {
     required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DoubleDefaultModel>(
       row,
       conflictColumns: conflictColumns(DoubleDefaultModel.t),
       updateColumns: updateColumns?.call(DoubleDefaultModel.t),
-      conflictWhere: conflictWhere?.call(DoubleDefaultModel.t),
+      updateWhere: updateWhere?.call(DoubleDefaultModel.t),
       transaction: transaction,
     );
   }

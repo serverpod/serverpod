@@ -403,7 +403,7 @@ class CommentIntRepository {
   /// Inserts a single [CommentInt] and returns the inserted row.
   ///
   /// The returned [CommentInt] will have its `id` field set.
-  Future<CommentInt> insertRow(
+  Future<CommentInt?> insertRow(
     _i1.DatabaseSession session,
     CommentInt row, {
     _i1.Transaction? transaction,
@@ -428,14 +428,14 @@ class CommentIntRepository {
     List<CommentInt> rows, {
     required _i1.ColumnSelections<CommentIntTable> conflictColumns,
     _i1.ColumnSelections<CommentIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CommentIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CommentIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<CommentInt>(
       rows,
       conflictColumns: conflictColumns(CommentInt.t),
       updateColumns: updateColumns?.call(CommentInt.t),
-      conflictWhere: conflictWhere?.call(CommentInt.t),
+      updateWhere: updateWhere?.call(CommentInt.t),
       transaction: transaction,
     );
   }
@@ -446,19 +446,19 @@ class CommentIntRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [CommentInt] will have its `id` field set.
-  Future<CommentInt> upsertRow(
+  Future<CommentInt?> upsertRow(
     _i1.DatabaseSession session,
     CommentInt row, {
     required _i1.ColumnSelections<CommentIntTable> conflictColumns,
     _i1.ColumnSelections<CommentIntTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CommentIntTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CommentIntTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CommentInt>(
       row,
       conflictColumns: conflictColumns(CommentInt.t),
       updateColumns: updateColumns?.call(CommentInt.t),
-      conflictWhere: conflictWhere?.call(CommentInt.t),
+      updateWhere: updateWhere?.call(CommentInt.t),
       transaction: transaction,
     );
   }

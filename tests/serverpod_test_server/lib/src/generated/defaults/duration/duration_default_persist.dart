@@ -337,7 +337,7 @@ class DurationDefaultPersistRepository {
   /// Inserts a single [DurationDefaultPersist] and returns the inserted row.
   ///
   /// The returned [DurationDefaultPersist] will have its `id` field set.
-  Future<DurationDefaultPersist> insertRow(
+  Future<DurationDefaultPersist?> insertRow(
     _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     _i1.Transaction? transaction,
@@ -362,14 +362,14 @@ class DurationDefaultPersistRepository {
     List<DurationDefaultPersist> rows, {
     required _i1.ColumnSelections<DurationDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DurationDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(DurationDefaultPersist.t),
       updateColumns: updateColumns?.call(DurationDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultPersist.t),
+      updateWhere: updateWhere?.call(DurationDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -380,19 +380,19 @@ class DurationDefaultPersistRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [DurationDefaultPersist] will have its `id` field set.
-  Future<DurationDefaultPersist> upsertRow(
+  Future<DurationDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     required _i1.ColumnSelections<DurationDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefaultPersist>(
       row,
       conflictColumns: conflictColumns(DurationDefaultPersist.t),
       updateColumns: updateColumns?.call(DurationDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultPersist.t),
+      updateWhere: updateWhere?.call(DurationDefaultPersist.t),
       transaction: transaction,
     );
   }

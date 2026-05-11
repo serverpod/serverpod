@@ -601,7 +601,7 @@ class ChangedIdTypeSelfRepository {
   /// Inserts a single [ChangedIdTypeSelf] and returns the inserted row.
   ///
   /// The returned [ChangedIdTypeSelf] will have its `id` field set.
-  Future<ChangedIdTypeSelf> insertRow(
+  Future<ChangedIdTypeSelf?> insertRow(
     _i1.DatabaseSession session,
     ChangedIdTypeSelf row, {
     _i1.Transaction? transaction,
@@ -626,14 +626,14 @@ class ChangedIdTypeSelfRepository {
     List<ChangedIdTypeSelf> rows, {
     required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ChangedIdTypeSelf>(
       rows,
       conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
       updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
-      conflictWhere: conflictWhere?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
     );
   }
@@ -644,19 +644,19 @@ class ChangedIdTypeSelfRepository {
   /// updated. Otherwise, a new row is inserted.
   ///
   /// The returned [ChangedIdTypeSelf] will have its `id` field set.
-  Future<ChangedIdTypeSelf> upsertRow(
+  Future<ChangedIdTypeSelf?> upsertRow(
     _i1.DatabaseSession session,
     ChangedIdTypeSelf row, {
     required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChangedIdTypeSelf>(
       row,
       conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
       updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
-      conflictWhere: conflictWhere?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
     );
   }
