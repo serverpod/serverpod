@@ -330,7 +330,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
 
     var table = rows.first.table;
-    var query = UpsertQueryBuilder(
+    var query = InsertQueryBuilder(
       table: table,
       rows: rows,
       conflictColumns: conflictColumns,
