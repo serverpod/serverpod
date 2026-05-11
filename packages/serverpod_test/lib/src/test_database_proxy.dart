@@ -243,7 +243,7 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
@@ -251,7 +251,7 @@ class TestDatabaseProxy implements Database {
         rows,
         conflictColumns: conflictColumns,
         updateColumns: updateColumns,
-        conflictWhere: conflictWhere,
+        updateWhere: updateWhere,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
@@ -259,11 +259,11 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<T> upsertRow<T extends TableRow>(
+  Future<T?> upsertRow<T extends TableRow>(
     T row, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
@@ -271,7 +271,7 @@ class TestDatabaseProxy implements Database {
         row,
         conflictColumns: conflictColumns,
         updateColumns: updateColumns,
-        conflictWhere: conflictWhere,
+        updateWhere: updateWhere,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
