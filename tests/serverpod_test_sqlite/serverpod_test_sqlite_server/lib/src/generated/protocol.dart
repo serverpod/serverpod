@@ -160,9 +160,10 @@ import 'test_enum_stringified.dart' as _i137;
 import 'types.dart' as _i138;
 import 'unique_data.dart' as _i139;
 import 'unique_data_with_non_persist.dart' as _i140;
-import 'dart:typed_data' as _i141;
+import 'upsert_test_model.dart' as _i141;
+import 'dart:typed_data' as _i142;
 import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
-    as _i142;
+    as _i143;
 export 'changed_id_type/many_to_many/course.dart';
 export 'changed_id_type/many_to_many/enrollment.dart';
 export 'changed_id_type/many_to_many/student.dart';
@@ -301,6 +302,7 @@ export 'test_enum_stringified.dart';
 export 'types.dart';
 export 'unique_data.dart';
 export 'unique_data_with_non_persist.dart';
+export 'upsert_test_model.dart';
 
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
@@ -5103,6 +5105,73 @@ class Protocol extends _i1.DatabaseSerializationManager {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'upsert_test_model',
+      dartName: 'UpsertTestModel',
+      schema: 'public',
+      module: 'serverpod_test_sqlite',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'category',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'value',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'category_value_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'category',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'value',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'uri_default',
       dartName: 'UriDefault',
       schema: 'public',
@@ -5993,6 +6062,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i140.UniqueDataWithNonPersist) {
       return _i140.UniqueDataWithNonPersist.fromJson(data) as T;
     }
+    if (t == _i141.UpsertTestModel) {
+      return _i141.UpsertTestModel.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i3.CourseUuid?>()) {
       return (data != null ? _i3.CourseUuid.fromJson(data) : null) as T;
     }
@@ -6483,6 +6555,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
               : null)
           as T;
     }
+    if (t == _i1.getType<_i141.UpsertTestModel?>()) {
+      return (data != null ? _i141.UpsertTestModel.fromJson(data) : null) as T;
+    }
     if (t == List<_i4.EnrollmentInt>) {
       return (data as List)
               .map((e) => deserialize<_i4.EnrollmentInt>(e))
@@ -6843,11 +6918,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i141.ByteData>) {
+    if (t == Map<String, _i142.ByteData>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i141.ByteData>(v),
+              deserialize<_i142.ByteData>(v),
             ),
           )
           as T;
@@ -6894,11 +6969,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i141.ByteData?>) {
+    if (t == Map<String, _i142.ByteData?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i141.ByteData?>(v),
+              deserialize<_i142.ByteData?>(v),
             ),
           )
           as T;
@@ -7098,9 +7173,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
                 )
                 as T;
     }
-    if (t == List<_i142.SimpleData>) {
+    if (t == List<_i143.SimpleData>) {
       return (data as List)
-              .map((e) => deserialize<_i142.SimpleData>(e))
+              .map((e) => deserialize<_i143.SimpleData>(e))
               .toList()
           as T;
     }
@@ -7263,6 +7338,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i138.Types => 'Types',
       _i139.UniqueData => 'UniqueData',
       _i140.UniqueDataWithNonPersist => 'UniqueDataWithNonPersist',
+      _i141.UpsertTestModel => 'UpsertTestModel',
       _ => null,
     };
   }
@@ -7560,6 +7636,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'UniqueData';
       case _i140.UniqueDataWithNonPersist():
         return 'UniqueDataWithNonPersist';
+      case _i141.UpsertTestModel():
+        return 'UpsertTestModel';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -7994,6 +8072,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'UniqueDataWithNonPersist') {
       return deserialize<_i140.UniqueDataWithNonPersist>(data['data']);
     }
+    if (dataClassName == 'UpsertTestModel') {
+      return deserialize<_i141.UpsertTestModel>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -8258,6 +8339,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i139.UniqueData.t;
       case _i140.UniqueDataWithNonPersist:
         return _i140.UniqueDataWithNonPersist.t;
+      case _i141.UpsertTestModel:
+        return _i141.UpsertTestModel.t;
     }
     return null;
   }
