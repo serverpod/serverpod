@@ -98,7 +98,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<T> rows, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   });
 
@@ -108,7 +108,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     T row, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   });
 
