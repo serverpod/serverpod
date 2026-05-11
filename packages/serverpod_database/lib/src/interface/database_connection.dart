@@ -93,13 +93,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
-  ///
-  /// On conflict on [conflictColumns], the existing row is updated; otherwise
-  /// a new row is inserted. If [updateColumns] is provided, only those columns
-  /// are updated (defaults to all non-conflict, non-id columns). If
-  /// [updateWhere] is provided, the update applies only to rows matching the
-  /// expression — rows that don't match are skipped and not returned, so the
-  /// resulting list may be shorter than [rows].
   Future<List<T>> upsert<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {
@@ -110,10 +103,6 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
-  ///
-  /// See [upsert] for the semantics of [conflictColumns], [updateColumns] and
-  /// [updateWhere]. Returns `null` if no row was affected — typically when
-  /// [updateWhere] is provided and does not match the conflicting row.
   Future<T?> upsertRow<T extends TableRow>(
     DatabaseSession session,
     T row, {
