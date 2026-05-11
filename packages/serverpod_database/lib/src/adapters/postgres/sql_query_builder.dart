@@ -346,6 +346,9 @@ class _ListQueryAdditions {
 class InsertQueryBuilder {
   final Table _table;
   final bool _ignoreConflicts;
+  final List<Column>? _conflictColumns;
+  final List<Column>? _updateColumns;
+  final Expression? _updateWhere;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
@@ -353,14 +356,91 @@ class InsertQueryBuilder {
     required Table table,
     required List<TableRow> rows,
     bool ignoreConflicts = false,
+    List<Column>? conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
   }) : _table = table,
-       _ignoreConflicts = ignoreConflicts {
+       _ignoreConflicts = ignoreConflicts,
+       _conflictColumns = conflictColumns,
+       _updateColumns = updateColumns,
+       _updateWhere = updateWhere {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
         'rows',
         'Cannot be empty',
       );
+    }
+
+    if (ignoreConflicts && conflictColumns != null) {
+      throw ArgumentError(
+        'Cannot use both ignoreConflicts and conflictColumns',
+      );
+    }
+
+    if (conflictColumns != null) {
+      if (conflictColumns.isEmpty) {
+        throw ArgumentError.value(
+          conflictColumns,
+          'conflictColumns',
+          'Cannot be empty',
+        );
+      }
+
+      var tableColumnNames = table.columns.map((c) => c.columnName).toSet();
+      for (var col in conflictColumns) {
+        if (!tableColumnNames.contains(col.columnName)) {
+          throw ArgumentError.value(
+            conflictColumns,
+            'conflictColumns',
+            'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+          );
+        }
+        if (col.columnName == 'id') {
+          throw ArgumentError.value(
+            conflictColumns,
+            'conflictColumns',
+            'The "id" column cannot be used as a conflict column for upsert',
+          );
+        }
+      }
+
+      if (updateColumns != null) {
+        if (updateColumns.isEmpty) {
+          throw ArgumentError.value(
+            updateColumns,
+            'updateColumns',
+            'Cannot be empty',
+          );
+        }
+
+        var conflictColumnNames = conflictColumns
+            .map((c) => c.columnName)
+            .toSet();
+        for (var col in updateColumns) {
+          if (!tableColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+            );
+          }
+          if (col.columnName == 'id') {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'The "id" column cannot be used as an update column for upsert',
+            );
+          }
+          if (conflictColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" cannot be both a conflict column and an update column',
+            );
+          }
+        }
+      }
     }
 
     _rows = rows;
@@ -399,7 +479,43 @@ class InsertQueryBuilder {
         .join(', ');
 
     var returning = buildReturningClause(_table);
-    var onConflict = _ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
+    String onConflict;
+    if (_conflictColumns != null) {
+      var conflictColumnNames = _conflictColumns
+          .map((c) => '"${c.columnName}"')
+          .join(', ');
+
+      Iterable<Column> columnsToUpdate;
+      if (_updateColumns != null) {
+        columnsToUpdate = _updateColumns!;
+      } else {
+        var conflictColumnNameSet = _conflictColumns!
+            .map((c) => c.columnName)
+            .toSet();
+        columnsToUpdate = selectedColumns.where(
+          (c) =>
+              c.columnName != 'id' &&
+              !conflictColumnNameSet.contains(c.columnName),
+        );
+      }
+      var setClause = columnsToUpdate
+          .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
+          .join(', ');
+
+      if (setClause.isEmpty) {
+        final noOpColumn = _conflictColumns!.first.columnName;
+        setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
+      }
+      onConflict =
+          ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
+      if (_updateWhere != null) {
+        onConflict += ' WHERE $_updateWhere';
+      }
+    } else if (_ignoreConflicts) {
+      onConflict = ' ON CONFLICT DO NOTHING';
+    } else {
+      onConflict = '';
+    }
 
     return columnNames.isEmpty
         ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
@@ -420,198 +536,6 @@ WITH
 SELECT * FROM insertWithIdNull
 UNION ALL
 SELECT * FROM insertWithIdNotNull
-''';
-  }
-}
-
-/// Builds a SQL query for an upsert (INSERT ... ON CONFLICT ... DO UPDATE)
-/// statement.
-/// This is typically only used internally by the serverpod framework.
-class UpsertQueryBuilder {
-  final Table _table;
-  final List<Column> _conflictColumns;
-  final List<Column>? _updateColumns;
-  final Expression? _conflictWhere;
-  late final List<TableRow> _rows;
-
-  /// Creates a new [UpsertQueryBuilder].
-  ///
-  /// [table] is the target table.
-  /// [rows] is the list of rows to upsert (must not be empty).
-  /// [conflictColumns] defines which columns form the conflict target
-  /// (must not be empty, must be a subset of [table.columns], and must not
-  /// include the `id` column).
-  /// [updateColumns] optionally specifies which columns to update on conflict.
-  /// If null, all non-conflict, non-id columns are updated.
-  /// [conflictWhere] optionally adds a WHERE clause to the conflict resolution.
-  UpsertQueryBuilder({
-    required Table table,
-    required List<TableRow> rows,
-    required List<Column> conflictColumns,
-    List<Column>? updateColumns,
-    Expression? conflictWhere,
-  }) : _table = table,
-       _conflictColumns = conflictColumns,
-       _updateColumns = updateColumns,
-       _conflictWhere = conflictWhere {
-    if (rows.isEmpty) {
-      throw ArgumentError.value(
-        rows,
-        'rows',
-        'Cannot be empty',
-      );
-    }
-
-    if (conflictColumns.isEmpty) {
-      throw ArgumentError.value(
-        conflictColumns,
-        'conflictColumns',
-        'Cannot be empty',
-      );
-    }
-
-    var tableColumnNames = table.columns.map((c) => c.columnName).toSet();
-    for (var col in conflictColumns) {
-      if (!tableColumnNames.contains(col.columnName)) {
-        throw ArgumentError.value(
-          conflictColumns,
-          'conflictColumns',
-          'Column "${col.columnName}" is not a column of table "${table.tableName}"',
-        );
-      }
-      if (col.columnName == 'id') {
-        throw ArgumentError.value(
-          conflictColumns,
-          'conflictColumns',
-          'The "id" column cannot be used as a conflict column for upsert',
-        );
-      }
-    }
-
-    if (updateColumns != null) {
-      if (updateColumns.isEmpty) {
-        throw ArgumentError.value(
-          updateColumns,
-          'updateColumns',
-          'Cannot be empty',
-        );
-      }
-
-      var conflictColumnNames = conflictColumns
-          .map((c) => c.columnName)
-          .toSet();
-      for (var col in updateColumns) {
-        if (!tableColumnNames.contains(col.columnName)) {
-          throw ArgumentError.value(
-            updateColumns,
-            'updateColumns',
-            'Column "${col.columnName}" is not a column of table "${table.tableName}"',
-          );
-        }
-        if (col.columnName == 'id') {
-          throw ArgumentError.value(
-            updateColumns,
-            'updateColumns',
-            'The "id" column cannot be used as an update column for upsert',
-          );
-        }
-        if (conflictColumnNames.contains(col.columnName)) {
-          throw ArgumentError.value(
-            updateColumns,
-            'updateColumns',
-            'Column "${col.columnName}" cannot be both a conflict column and an update column',
-          );
-        }
-      }
-    }
-
-    _rows = rows;
-  }
-
-  /// Builds the upsert SQL sub-query for either rows with id null or not null.
-  String? _build(bool onlyWithIdNull) {
-    var selectedColumns = onlyWithIdNull
-        ? _table.columns.where((column) => column.columnName != 'id')
-        : _table.columns;
-
-    var columnNames = selectedColumns
-        .map((e) => '"${e.columnName}"')
-        .join(', ');
-
-    var filteredValues = onlyWithIdNull
-        ? _rows.where((row) => row.id == null)
-        : _rows.where((row) => row.id != null);
-
-    if (filteredValues.isEmpty) return null;
-
-    var values = filteredValues
-        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
-        .map((row) {
-          var values = selectedColumns
-              .map((column) {
-                var unformattedValue = row[column.columnName];
-                return ValueEncoder.instance.convert(
-                  unformattedValue,
-                  hasDefaults: column.hasDefault,
-                );
-              })
-              .join(', ');
-          return '($values)';
-        })
-        .join(', ');
-
-    var conflictColumnNames = _conflictColumns
-        .map((c) => '"${c.columnName}"')
-        .join(', ');
-
-    // Build the DO UPDATE SET clause
-    Iterable<Column> columnsToUpdate;
-    if (_updateColumns != null) {
-      columnsToUpdate = _updateColumns;
-    } else {
-      var conflictColumnNameSet = _conflictColumns
-          .map((c) => c.columnName)
-          .toSet();
-      columnsToUpdate = selectedColumns.where(
-        (c) =>
-            c.columnName != 'id' &&
-            !conflictColumnNameSet.contains(c.columnName),
-      );
-    }
-    var setClause = columnsToUpdate
-        .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
-        .join(', ');
-
-    var returning = buildReturningClause(_table);
-    if (setClause.isEmpty) {
-      final noOpColumn = _conflictColumns.first.columnName;
-      setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
-    }
-    var onConflict =
-        ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
-    if (_conflictWhere != null) {
-      onConflict += ' WHERE $_conflictWhere';
-    }
-
-    return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
-  }
-
-  /// Builds the upsert SQL query.
-  String build() {
-    // Can not be empty because the constructor checks for empty rows.
-    var upsertQueries = [true, false].map(_build).nonNulls;
-    if (upsertQueries.length == 1) return upsertQueries.single;
-
-    return '''
-WITH
-  upsertWithIdNull AS (${upsertQueries.first}),
-  upsertWithIdNotNull AS (${upsertQueries.last})
-
-SELECT * FROM upsertWithIdNull
-UNION ALL
-SELECT * FROM upsertWithIdNotNull
 ''';
   }
 }
