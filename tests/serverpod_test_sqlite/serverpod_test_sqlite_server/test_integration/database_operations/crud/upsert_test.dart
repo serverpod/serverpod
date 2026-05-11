@@ -57,11 +57,22 @@ void main() async {
             conflictColumns: (t) => [t.email],
           ),
           throwsA(
-            isA<DatabaseQueryException>().having(
-              (e) => e.code,
-              'code',
-              PgErrorCode.cardinalityViolation,
-            ),
+            isA<DatabaseQueryException>()
+                .having(
+                  (e) => e.code,
+                  'code',
+                  SqliteErrorCode.integrityConstraintViolation,
+                )
+                .having(
+                  (e) => e.message,
+                  'message',
+                  'ON CONFLICT DO UPDATE command cannot affect row a second time',
+                )
+                .having(
+                  (e) => e.hint,
+                  'hint',
+                  'Ensure that no rows proposed for insertion within the same command have duplicate constrained values.',
+                ),
           ),
         );
 
@@ -310,63 +321,17 @@ void main() async {
       tearDown(() async {
         await session.db.unsafeExecute(
           'ALTER TABLE unique_data_with_non_persist '
-          'DROP CONSTRAINT IF EXISTS check_number_not_99',
+          'DROP CONSTRAINT check_number_not_99',
         );
         await UniqueDataWithNonPersist.db.deleteWhere(
           session,
           where: (t) => Constant.bool(true),
         );
       });
-
-      test(
-        'when batch upserting without a transaction where one row violates the check constraint '
-        'then no rows are upserted (atomic rollback).',
-        () async {
-          var data = <UniqueDataWithNonPersist>[
-            UniqueDataWithNonPersist(
-              number: 1,
-              email: 'a@serverpod.dev',
-              extra: 'extra-a',
-            ),
-            UniqueDataWithNonPersist(
-              number: 99,
-              email: 'b@serverpod.dev',
-              extra: 'extra-b',
-            ),
-            UniqueDataWithNonPersist(
-              number: 3,
-              email: 'c@serverpod.dev',
-              extra: 'extra-c',
-            ),
-          ];
-
-          await expectLater(
-            UniqueDataWithNonPersist.db.upsert(
-              session,
-              data,
-              conflictColumns: (t) => [t.email],
-            ),
-            throwsA(
-              isA<DatabaseQueryException>().having(
-                (e) => e.code,
-                'code',
-                PgErrorCode.checkViolation,
-              ),
-            ),
-          );
-
-          var allRows = await UniqueDataWithNonPersist.db.find(session);
-          expect(
-            allRows,
-            isEmpty,
-            reason:
-                'The upsert without a transaction should be atomic: '
-                'a mid-batch failure must roll back all previously '
-                'upserted rows.',
-          );
-        },
-      );
     },
+
+    // NOTE: No test with check constraint on SQLite because it would require
+    // rebuilding the table and indexes, easily drifting from the model table.
   );
 
   group('Given a model with multiple unique indexes and an existing row', () {

@@ -312,10 +312,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
-      return DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (tx) async => [
+      return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+        tx,
+      ) async {
+        final results = [
           for (var row in rows)
             ...await upsert<T>(
               session,
@@ -325,8 +325,23 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               updateWhere: updateWhere,
               transaction: tx,
             ),
-        ],
-      );
+        ];
+
+        // NOTE: Since we transform batch inserts into multiple single-row
+        // inserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the input had duplicate rows - as happen with Postgres.
+        if (results.map((r) => r.id).toSet().length != rows.length) {
+          throw _SqliteDatabaseQueryException(
+            'ON CONFLICT DO UPDATE command cannot affect row a second time',
+            code: SqliteErrorCode.integrityConstraintViolation,
+            hint:
+                'Ensure that no rows proposed for insertion within the '
+                'same command have duplicate constrained values.',
+          );
+        }
+
+        return results;
+      });
     }
 
     var table = rows.first.table;
