@@ -1,12 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 import 'common/button.dart';
 import 'common/style.dart';
 import 'google_auth_controller.dart';
+import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
+import 'web/button.dart';
 
 export 'native/button.dart';
+export 'web/button.dart';
 
 /// A widget that provides Google Sign-In functionality for all platforms.
 ///
@@ -118,6 +123,15 @@ class GoogleSignInWidget extends StatefulWidget {
   /// instead to customize the button text.
   final String Function({bool isLoading})? getButtonText;
 
+  /// The pre-set locale of the button text.
+  ///
+  /// If not set, the device's default locale is used. This parameter only
+  /// applies to the web platform. On native, use [getButtonText] instead.
+  ///
+  /// Different users might see different versions of localized buttons,
+  /// possibly with different sizes.
+  final String? locale;
+
   /// A wrapper function to the rendered button to ensure style consistency.
   ///
   /// This wrapper ensures the consistency of the rendered button with the rest
@@ -125,6 +139,10 @@ class GoogleSignInWidget extends StatefulWidget {
   /// values, the wrapper will be called with a [GoogleSignInStyle] object that
   /// translates the enum values to actual style properties. The [Widget] is the
   /// rendered Google button that should be wrapped.
+  ///
+  /// Be mindful that creating the button with no wrapper will also result in a
+  /// dangling "Getting ready..." text that is returned while the iFrame is
+  /// being built.
   final Widget Function({
     required GoogleSignInStyle style,
     required Widget child,
@@ -148,6 +166,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.logoAlignment = GSIButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.getButtonText,
+    this.locale,
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
     super.key,
   }) : assert(
@@ -201,20 +220,51 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GoogleSignInNativeButton(
-          onPressed: _controller.signIn,
-          isLoading: _controller.isLoading,
-          isDisabled: !_controller.isInitialized || _controller.isLoading,
-          type: widget.type,
-          theme: widget.theme,
-          size: widget.size,
-          text: widget.text,
-          shape: widget.shape,
-          logoAlignment: widget.logoAlignment,
-          minimumWidth: widget.minimumWidth,
-          getButtonText: widget.getButtonText,
-          buttonWrapper: widget.buttonWrapper,
-        ),
+        if (kIsWeb && GoogleWebSignInService.instance.isInitialized)
+          // Flutter-rendered button → OAuth2 PKCE flow.
+          GoogleSignInNativeButton(
+            onPressed: _controller.signIn,
+            isLoading: _controller.isLoading,
+            isDisabled: !_controller.isInitialized || _controller.isLoading,
+            type: widget.type,
+            theme: widget.theme,
+            size: widget.size,
+            text: widget.text,
+            shape: widget.shape,
+            logoAlignment: widget.logoAlignment,
+            minimumWidth: widget.minimumWidth,
+            getButtonText: widget.getButtonText,
+            buttonWrapper: widget.buttonWrapper,
+          )
+        else if (GoogleSignIn.instance.supportsAuthenticate())
+          // Native platforms (iOS, Android, macOS, etc.).
+          GoogleSignInNativeButton(
+            onPressed: _controller.signIn,
+            isLoading: _controller.isLoading,
+            isDisabled: !_controller.isInitialized || _controller.isLoading,
+            type: widget.type,
+            theme: widget.theme,
+            size: widget.size,
+            text: widget.text,
+            shape: widget.shape,
+            logoAlignment: widget.logoAlignment,
+            minimumWidth: widget.minimumWidth,
+            getButtonText: widget.getButtonText,
+            buttonWrapper: widget.buttonWrapper,
+          )
+        else if (_controller.isInitialized)
+          // Google-hosted iFrame button, self-managed.
+          GoogleSignInWebButton(
+            type: widget.type,
+            theme: widget.theme,
+            size: widget.size,
+            text: widget.text,
+            shape: widget.shape,
+            logoAlignment: widget.logoAlignment,
+            minimumWidth: widget.minimumWidth,
+            locale: widget.locale,
+            buttonWrapper: widget.buttonWrapper,
+          ),
       ],
     );
   }

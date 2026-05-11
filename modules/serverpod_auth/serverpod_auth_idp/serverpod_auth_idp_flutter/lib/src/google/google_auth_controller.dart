@@ -116,7 +116,8 @@ class GoogleAuthController extends ChangeNotifier {
   Future<void> _initialize() async {
     if (_isInitialized) return;
 
-    if (kIsWeb) {
+    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+      // OAuth2 PKCE flow: no google_sign_in subscription needed.
       _isInitialized = true;
       _setState(GoogleAuthState.idle);
       return;
@@ -161,10 +162,20 @@ class GoogleAuthController extends ChangeNotifier {
   Future<void> signIn() async {
     if (_state == GoogleAuthState.loading) return;
     if (kIsWeb) {
-      await _signInWeb();
-    } else {
-      await _signInNative();
+      if (GoogleWebSignInService.instance.isInitialized) {
+        await _signInWeb();
+      } else {
+        // GoogleSignInWebButton is self-managed; signIn() is
+        // not called on the controller in this path.
+        throw StateError(
+          'controller.signIn() is not available with the iFrame-based Google '
+          'Sign-In button. Provide a redirectUri to initializeGoogleSignIn() '
+          'to use the controllable OAuth2 PKCE flow instead.',
+        );
+      }
+      return;
     }
+    await _signInNative();
   }
 
   Future<void> _signInWeb() async {

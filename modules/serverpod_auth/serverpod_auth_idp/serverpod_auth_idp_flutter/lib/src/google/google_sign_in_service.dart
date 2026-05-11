@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+import 'google_web_sign_in_service.dart';
+
 /// Service to manage Google Sign-In and ensure it is only initialized once
 /// throughout the app lifetime.
 class GoogleSignInService {
@@ -39,9 +41,6 @@ class GoogleSignInService {
   /// The parameters [nonce] and [hostedDomain] are optional and will be passed
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
-  ///
-  /// On web, this method must not be called. Use [GoogleWebSignInService] and
-  /// [initializeGoogleWebSignIn] instead.
   Future<GoogleSignIn> ensureInitialized({
     required FlutterAuthSessionManager auth,
     String? clientId,
@@ -49,11 +48,6 @@ class GoogleSignInService {
     String? nonce,
     String? hostedDomain,
   }) async {
-    assert(
-      !kIsWeb,
-      'GoogleSignInService must not be used on web. '
-      'Use GoogleWebSignInService.instance / initializeGoogleWebSignIn() instead.',
-    );
     if (_initializedClients.contains(identityHashCode(auth))) {
       return googleSignIn;
     }
@@ -134,13 +128,25 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
   ///
-  /// On web, this method is a no-op. Use [initializeGoogleWebSignIn] instead.
+  /// On web, when [redirectUri] is provided, the OAuth2 PKCE redirect flow is
+  /// used via [GoogleWebSignInService]. When [redirectUri] is absent on web (or
+  /// on all native platforms), the [google_sign_in] package is used.
   Future<void> initializeGoogleSignIn({
     String? clientId,
     String? serverClientId,
     String? nonce,
     String? hostedDomain,
+    String? redirectUri,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
+    if (kIsWeb && redirectUri != null) {
+      await GoogleWebSignInService.instance.ensureInitialized(
+        clientId: clientId ?? '',
+        redirectUri: redirectUri,
+        additionalAuthParams: additionalAuthParams,
+      );
+      return;
+    }
     await GoogleSignInService.instance.ensureInitialized(
       auth: this,
       clientId: clientId,

@@ -1,82 +1,16 @@
 import 'package:flutter/material.dart';
 
-/// The type of the Google Sign-In button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#type
-enum GSIButtonType {
-  /// A standard button with text and logo.
-  standard,
+import '../web/wrapper.dart';
 
-  /// An icon-only button.
-  icon,
-}
-
-/// The theme (color scheme) of the Google Sign-In button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#theme
-enum GSIButtonTheme {
-  /// White background with colored Google logo.
-  outline,
-
-  /// Blue background.
-  filledBlue,
-
-  /// Black background.
-  filledBlack,
-}
-
-/// The size of the Google Sign-In button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#size
-enum GSIButtonSize {
-  /// Large button (40px height).
-  large,
-
-  /// Medium button (32px height).
-  medium,
-
-  /// Small button (20px height).
-  small,
-}
-
-/// The text label of the Google Sign-In button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#text
-enum GSIButtonText {
-  /// "Sign in with Google".
-  signinWith,
-
-  /// "Sign up with Google".
-  signupWith,
-
-  /// "Continue with Google".
-  continueWith,
-
-  /// "Sign in".
-  signin,
-}
-
-/// The shape of the Google Sign-In button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#shape
-enum GSIButtonShape {
-  /// Rectangular button with slightly rounded corners.
-  rectangular,
-
-  /// Pill-shaped button.
-  pill,
-}
-
-/// The alignment of the Google logo within the button.
-///
-/// See: https://developers.google.com/identity/gsi/web/reference/js-reference#logo_alignment
-enum GSIButtonLogoAlignment {
-  /// Logo aligned to the left.
-  left,
-
-  /// Logo centered in the button.
-  center,
-}
+// Convenience export of the button configuration enums and style class.
+export '../web/wrapper.dart'
+    show
+        GSIButtonType,
+        GSIButtonTheme,
+        GSIButtonSize,
+        GSIButtonText,
+        GSIButtonShape,
+        GSIButtonLogoAlignment;
 
 /// The style of the rendered Google button.
 class GoogleSignInStyle {

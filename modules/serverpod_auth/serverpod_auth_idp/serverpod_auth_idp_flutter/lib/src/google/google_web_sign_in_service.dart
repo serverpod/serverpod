@@ -1,5 +1,3 @@
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
-
 import '../common/oauth2_pkce/oauth2_pkce_client_config.dart';
 import '../common/oauth2_pkce/oauth2_pkce_util.dart';
 
@@ -67,11 +65,21 @@ class GoogleWebSignInService {
     useWebview: _useWebview,
   );
 
+  /// Whether the service has been initialized with a redirect URI.
+  ///
+  /// When `true`, the OAuth2 PKCE web flow is active and [GoogleSignInWidget]
+  /// will show a Flutter-rendered button that triggers [signIn].
+  ///
+  /// When `false`, [GoogleSignInWidget] falls back to the Google-hosted iFrame
+  /// button or the native `google_sign_in` flow.
+  bool get isInitialized => _config != null;
+
   /// Default OAuth scopes for Google sign-in.
   ///
-  /// The `openid` scope is required so that Google's token endpoint returns
-  /// an `id_token`, which is used for server-side JWKS verification.
+  /// `openid` is required so that Google's token endpoint returns an `id_token`,
+  /// which is used for server-side JWKS verification.
   static const List<String> defaultScopes = [
+    'openid',
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
   ];
@@ -156,38 +164,6 @@ class GoogleWebSignInService {
       code: result.code,
       codeVerifier: result.codeVerifier!,
       redirectUri: _config!.redirectUri,
-    );
-  }
-}
-
-/// Extension on [FlutterAuthSessionManager] to initialize Google web sign-in.
-extension GoogleWebSignInServiceExtension on FlutterAuthSessionManager {
-  /// Initializes Google Sign-In for the web platform.
-  ///
-  /// Call this during app startup **before** showing the sign-in UI, on web
-  /// only. This method is idempotent — only the first call has effect.
-  ///
-  /// [clientId] is the **Web application** OAuth client ID from Google Cloud
-  /// Console. This must be the `Web application` credential type with the
-  /// associated `client_secret` stored server-side in `config/passwords.yaml`.
-  ///
-  /// [redirectUri] is the full URL to the `auth.html` file:
-  /// - Production: `'https://yourdomain.com/auth.html'`
-  /// - Local dev: `'http://localhost:PORT/auth.html'`
-  ///
-  /// [additionalAuthParams] are optional extra params for the authorization URL.
-  /// The defaults already include `prompt: select_account`.
-  Future<void> initializeGoogleWebSignIn({
-    required String clientId,
-    required String redirectUri,
-    String? callbackUrlScheme,
-    Map<String, String> additionalAuthParams = const {},
-  }) async {
-    await GoogleWebSignInService.instance.ensureInitialized(
-      clientId: clientId,
-      redirectUri: redirectUri,
-      callbackUrlScheme: callbackUrlScheme,
-      additionalAuthParams: additionalAuthParams,
     );
   }
 }
