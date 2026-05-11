@@ -103,7 +103,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> upsertRow<T extends TableRow>(
+  Future<T?> upsertRow<T extends TableRow>(
     DatabaseSession session,
     T row, {
     required List<Column> conflictColumns,
