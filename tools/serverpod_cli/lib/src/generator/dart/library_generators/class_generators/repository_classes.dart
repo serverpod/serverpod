@@ -775,7 +775,13 @@ class BuildRepositoryClass {
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add(refer(className)),
+            ..types.add(
+              TypeReference(
+                (t) => t
+                  ..symbol = className
+                  ..isNullable = true,
+              ),
+            ),
         )
         ..requiredParameters.addAll([
           Parameter(
@@ -875,7 +881,7 @@ class BuildRepositoryClass {
           Parameter(
             (p) => p
               ..type = typeWhereExpressionBuilder(className, serverCode)
-              ..name = 'conflictWhere'
+              ..name = 'updateWhere'
               ..named = true,
           ),
           Parameter(
@@ -903,7 +909,7 @@ class BuildRepositoryClass {
                 'updateColumns': refer('updateColumns')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
-                'conflictWhere': refer('conflictWhere')
+                'updateWhere': refer('updateWhere')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
                 'transaction': refer('transaction'),
@@ -929,7 +935,13 @@ class BuildRepositoryClass {
         ..returns = TypeReference(
           (r) => r
             ..symbol = 'Future'
-            ..types.add(refer(className)),
+            ..types.add(
+              TypeReference(
+                (t) => t
+                  ..symbol = className
+                  ..isNullable = true,
+              ),
+            ),
         )
         ..requiredParameters.addAll([
           Parameter(
@@ -969,7 +981,7 @@ class BuildRepositoryClass {
           Parameter(
             (p) => p
               ..type = typeWhereExpressionBuilder(className, serverCode)
-              ..name = 'conflictWhere'
+              ..name = 'updateWhere'
               ..named = true,
           ),
           Parameter(
@@ -997,7 +1009,7 @@ class BuildRepositoryClass {
                 'updateColumns': refer('updateColumns')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
-                'conflictWhere': refer('conflictWhere')
+                'updateWhere': refer('updateWhere')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
                 'transaction': refer('transaction'),
