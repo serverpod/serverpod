@@ -483,6 +483,13 @@ class CloudStorageEntryRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [CloudStorageEntry]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -492,14 +499,14 @@ class CloudStorageEntryRepository {
     List<CloudStorageEntry> rows, {
     required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
     _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<CloudStorageEntry>(
       rows,
       conflictColumns: conflictColumns(CloudStorageEntry.t),
       updateColumns: updateColumns?.call(CloudStorageEntry.t),
-      conflictWhere: conflictWhere?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
@@ -509,20 +516,27 @@ class CloudStorageEntryRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [CloudStorageEntry] will have its `id` field set.
-  Future<CloudStorageEntry> upsertRow(
+  Future<CloudStorageEntry?> upsertRow(
     _i1.DatabaseSession session,
     CloudStorageEntry row, {
     required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
     _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CloudStorageEntry>(
       row,
       conflictColumns: conflictColumns(CloudStorageEntry.t),
       updateColumns: updateColumns?.call(CloudStorageEntry.t),
-      conflictWhere: conflictWhere?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }

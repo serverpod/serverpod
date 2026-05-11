@@ -363,6 +363,13 @@ class EmployeeRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [Employee]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -372,14 +379,14 @@ class EmployeeRepository {
     List<Employee> rows, {
     required _i1.ColumnSelections<EmployeeTable> conflictColumns,
     _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Employee>(
       rows,
       conflictColumns: conflictColumns(Employee.t),
       updateColumns: updateColumns?.call(Employee.t),
-      conflictWhere: conflictWhere?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
       transaction: transaction,
     );
   }
@@ -389,20 +396,27 @@ class EmployeeRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [Employee] will have its `id` field set.
-  Future<Employee> upsertRow(
+  Future<Employee?> upsertRow(
     _i1.DatabaseSession session,
     Employee row, {
     required _i1.ColumnSelections<EmployeeTable> conflictColumns,
     _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Employee>(
       row,
       conflictColumns: conflictColumns(Employee.t),
       updateColumns: updateColumns?.call(Employee.t),
-      conflictWhere: conflictWhere?.call(Employee.t),
+      updateWhere: updateWhere?.call(Employee.t),
       transaction: transaction,
     );
   }

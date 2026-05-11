@@ -482,6 +482,13 @@ class OrganizationRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [Organization]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -491,14 +498,14 @@ class OrganizationRepository {
     List<Organization> rows, {
     required _i1.ColumnSelections<OrganizationTable> conflictColumns,
     _i1.ColumnSelections<OrganizationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Organization>(
       rows,
       conflictColumns: conflictColumns(Organization.t),
       updateColumns: updateColumns?.call(Organization.t),
-      conflictWhere: conflictWhere?.call(Organization.t),
+      updateWhere: updateWhere?.call(Organization.t),
       transaction: transaction,
     );
   }
@@ -508,20 +515,27 @@ class OrganizationRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [Organization] will have its `id` field set.
-  Future<Organization> upsertRow(
+  Future<Organization?> upsertRow(
     _i1.DatabaseSession session,
     Organization row, {
     required _i1.ColumnSelections<OrganizationTable> conflictColumns,
     _i1.ColumnSelections<OrganizationTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrganizationTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrganizationTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Organization>(
       row,
       conflictColumns: conflictColumns(Organization.t),
       updateColumns: updateColumns?.call(Organization.t),
-      conflictWhere: conflictWhere?.call(Organization.t),
+      updateWhere: updateWhere?.call(Organization.t),
       transaction: transaction,
     );
   }

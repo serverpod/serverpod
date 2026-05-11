@@ -464,6 +464,13 @@ class EnumDefaultModelRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [EnumDefaultModel]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -473,14 +480,14 @@ class EnumDefaultModelRepository {
     List<EnumDefaultModel> rows, {
     required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefaultModel>(
       rows,
       conflictColumns: conflictColumns(EnumDefaultModel.t),
       updateColumns: updateColumns?.call(EnumDefaultModel.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      updateWhere: updateWhere?.call(EnumDefaultModel.t),
       transaction: transaction,
     );
   }
@@ -490,20 +497,27 @@ class EnumDefaultModelRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [EnumDefaultModel] will have its `id` field set.
-  Future<EnumDefaultModel> upsertRow(
+  Future<EnumDefaultModel?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefaultModel row, {
     required _i1.ColumnSelections<EnumDefaultModelTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultModel>(
       row,
       conflictColumns: conflictColumns(EnumDefaultModel.t),
       updateColumns: updateColumns?.call(EnumDefaultModel.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultModel.t),
+      updateWhere: updateWhere?.call(EnumDefaultModel.t),
       transaction: transaction,
     );
   }

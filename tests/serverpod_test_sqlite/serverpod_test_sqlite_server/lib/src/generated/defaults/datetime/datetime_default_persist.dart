@@ -390,6 +390,13 @@ class DateTimeDefaultPersistRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [DateTimeDefaultPersist]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -399,14 +406,14 @@ class DateTimeDefaultPersistRepository {
     List<DateTimeDefaultPersist> rows, {
     required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DateTimeDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(DateTimeDefaultPersist.t),
       updateColumns: updateColumns?.call(DateTimeDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultPersist.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -416,20 +423,27 @@ class DateTimeDefaultPersistRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [DateTimeDefaultPersist] will have its `id` field set.
-  Future<DateTimeDefaultPersist> upsertRow(
+  Future<DateTimeDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     DateTimeDefaultPersist row, {
     required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultPersist>(
       row,
       conflictColumns: conflictColumns(DateTimeDefaultPersist.t),
       updateColumns: updateColumns?.call(DateTimeDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DateTimeDefaultPersist.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
     );
   }

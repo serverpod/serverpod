@@ -444,6 +444,13 @@ class ObjectWithSparseVectorRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [ObjectWithSparseVector]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -453,14 +460,14 @@ class ObjectWithSparseVectorRepository {
     List<ObjectWithSparseVector> rows, {
     required _i1.ColumnSelections<ObjectWithSparseVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithSparseVector>(
       rows,
       conflictColumns: conflictColumns(ObjectWithSparseVector.t),
       updateColumns: updateColumns?.call(ObjectWithSparseVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSparseVector.t),
+      updateWhere: updateWhere?.call(ObjectWithSparseVector.t),
       transaction: transaction,
     );
   }
@@ -470,20 +477,27 @@ class ObjectWithSparseVectorRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [ObjectWithSparseVector] will have its `id` field set.
-  Future<ObjectWithSparseVector> upsertRow(
+  Future<ObjectWithSparseVector?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     required _i1.ColumnSelections<ObjectWithSparseVectorTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithSparseVector>(
       row,
       conflictColumns: conflictColumns(ObjectWithSparseVector.t),
       updateColumns: updateColumns?.call(ObjectWithSparseVector.t),
-      conflictWhere: conflictWhere?.call(ObjectWithSparseVector.t),
+      updateWhere: updateWhere?.call(ObjectWithSparseVector.t),
       transaction: transaction,
     );
   }

@@ -346,6 +346,13 @@ class SecretChallengeRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [SecretChallenge]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -355,14 +362,14 @@ class SecretChallengeRepository {
     List<SecretChallenge> rows, {
     required _i1.ColumnSelections<SecretChallengeTable> conflictColumns,
     _i1.ColumnSelections<SecretChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<SecretChallenge>(
       rows,
       conflictColumns: conflictColumns(SecretChallenge.t),
       updateColumns: updateColumns?.call(SecretChallenge.t),
-      conflictWhere: conflictWhere?.call(SecretChallenge.t),
+      updateWhere: updateWhere?.call(SecretChallenge.t),
       transaction: transaction,
     );
   }
@@ -372,20 +379,27 @@ class SecretChallengeRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [SecretChallenge] will have its `id` field set.
-  Future<SecretChallenge> upsertRow(
+  Future<SecretChallenge?> upsertRow(
     _i1.DatabaseSession session,
     SecretChallenge row, {
     required _i1.ColumnSelections<SecretChallengeTable> conflictColumns,
     _i1.ColumnSelections<SecretChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SecretChallenge>(
       row,
       conflictColumns: conflictColumns(SecretChallenge.t),
       updateColumns: updateColumns?.call(SecretChallenge.t),
-      conflictWhere: conflictWhere?.call(SecretChallenge.t),
+      updateWhere: updateWhere?.call(SecretChallenge.t),
       transaction: transaction,
     );
   }

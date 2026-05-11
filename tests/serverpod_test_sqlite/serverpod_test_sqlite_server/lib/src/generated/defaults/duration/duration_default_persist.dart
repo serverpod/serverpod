@@ -353,6 +353,13 @@ class DurationDefaultPersistRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [DurationDefaultPersist]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -362,14 +369,14 @@ class DurationDefaultPersistRepository {
     List<DurationDefaultPersist> rows, {
     required _i1.ColumnSelections<DurationDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<DurationDefaultPersist>(
       rows,
       conflictColumns: conflictColumns(DurationDefaultPersist.t),
       updateColumns: updateColumns?.call(DurationDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultPersist.t),
+      updateWhere: updateWhere?.call(DurationDefaultPersist.t),
       transaction: transaction,
     );
   }
@@ -379,20 +386,27 @@ class DurationDefaultPersistRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [DurationDefaultPersist] will have its `id` field set.
-  Future<DurationDefaultPersist> upsertRow(
+  Future<DurationDefaultPersist?> upsertRow(
     _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     required _i1.ColumnSelections<DurationDefaultPersistTable> conflictColumns,
     _i1.ColumnSelections<DurationDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefaultPersist>(
       row,
       conflictColumns: conflictColumns(DurationDefaultPersist.t),
       updateColumns: updateColumns?.call(DurationDefaultPersist.t),
-      conflictWhere: conflictWhere?.call(DurationDefaultPersist.t),
+      updateWhere: updateWhere?.call(DurationDefaultPersist.t),
       transaction: transaction,
     );
   }

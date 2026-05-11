@@ -660,6 +660,13 @@ class ServerSideSessionRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [ServerSideSession]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -669,14 +676,14 @@ class ServerSideSessionRepository {
     List<ServerSideSession> rows, {
     required _i1.ColumnSelections<ServerSideSessionTable> conflictColumns,
     _i1.ColumnSelections<ServerSideSessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ServerSideSession>(
       rows,
       conflictColumns: conflictColumns(ServerSideSession.t),
       updateColumns: updateColumns?.call(ServerSideSession.t),
-      conflictWhere: conflictWhere?.call(ServerSideSession.t),
+      updateWhere: updateWhere?.call(ServerSideSession.t),
       transaction: transaction,
     );
   }
@@ -686,20 +693,27 @@ class ServerSideSessionRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [ServerSideSession] will have its `id` field set.
-  Future<ServerSideSession> upsertRow(
+  Future<ServerSideSession?> upsertRow(
     _i1.DatabaseSession session,
     ServerSideSession row, {
     required _i1.ColumnSelections<ServerSideSessionTable> conflictColumns,
     _i1.ColumnSelections<ServerSideSessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerSideSession>(
       row,
       conflictColumns: conflictColumns(ServerSideSession.t),
       updateColumns: updateColumns?.call(ServerSideSession.t),
-      conflictWhere: conflictWhere?.call(ServerSideSession.t),
+      updateWhere: updateWhere?.call(ServerSideSession.t),
       transaction: transaction,
     );
   }

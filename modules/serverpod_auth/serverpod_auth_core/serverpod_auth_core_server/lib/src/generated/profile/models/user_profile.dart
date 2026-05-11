@@ -606,6 +606,13 @@ class UserProfileRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [UserProfile]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -615,14 +622,14 @@ class UserProfileRepository {
     List<UserProfile> rows, {
     required _i1.ColumnSelections<UserProfileTable> conflictColumns,
     _i1.ColumnSelections<UserProfileTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserProfileTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UserProfile>(
       rows,
       conflictColumns: conflictColumns(UserProfile.t),
       updateColumns: updateColumns?.call(UserProfile.t),
-      conflictWhere: conflictWhere?.call(UserProfile.t),
+      updateWhere: updateWhere?.call(UserProfile.t),
       transaction: transaction,
     );
   }
@@ -632,20 +639,27 @@ class UserProfileRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [UserProfile] will have its `id` field set.
-  Future<UserProfile> upsertRow(
+  Future<UserProfile?> upsertRow(
     _i1.DatabaseSession session,
     UserProfile row, {
     required _i1.ColumnSelections<UserProfileTable> conflictColumns,
     _i1.ColumnSelections<UserProfileTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UserProfileTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserProfile>(
       row,
       conflictColumns: conflictColumns(UserProfile.t),
       updateColumns: updateColumns?.call(UserProfile.t),
-      conflictWhere: conflictWhere?.call(UserProfile.t),
+      updateWhere: updateWhere?.call(UserProfile.t),
       transaction: transaction,
     );
   }

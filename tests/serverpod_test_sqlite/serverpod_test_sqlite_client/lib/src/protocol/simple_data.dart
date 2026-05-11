@@ -336,6 +336,13 @@ class SimpleDataRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [SimpleData]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -345,14 +352,14 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
     _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<SimpleData>(
       rows,
       conflictColumns: conflictColumns(SimpleData.t),
       updateColumns: updateColumns?.call(SimpleData.t),
-      conflictWhere: conflictWhere?.call(SimpleData.t),
+      updateWhere: updateWhere?.call(SimpleData.t),
       transaction: transaction,
     );
   }
@@ -362,20 +369,27 @@ class SimpleDataRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [SimpleData] will have its `id` field set.
-  Future<SimpleData> upsertRow(
+  Future<SimpleData?> upsertRow(
     _i1.DatabaseSession session,
     SimpleData row, {
     required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
     _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SimpleData>(
       row,
       conflictColumns: conflictColumns(SimpleData.t),
       updateColumns: updateColumns?.call(SimpleData.t),
-      conflictWhere: conflictWhere?.call(SimpleData.t),
+      updateWhere: updateWhere?.call(SimpleData.t),
       transaction: transaction,
     );
   }

@@ -498,6 +498,13 @@ class OrderUuidRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [OrderUuid]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -507,14 +514,14 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
     _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<OrderUuid>(
       rows,
       conflictColumns: conflictColumns(OrderUuid.t),
       updateColumns: updateColumns?.call(OrderUuid.t),
-      conflictWhere: conflictWhere?.call(OrderUuid.t),
+      updateWhere: updateWhere?.call(OrderUuid.t),
       transaction: transaction,
     );
   }
@@ -524,20 +531,27 @@ class OrderUuidRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [OrderUuid] will have its `id` field set.
-  Future<OrderUuid> upsertRow(
+  Future<OrderUuid?> upsertRow(
     _i1.DatabaseSession session,
     OrderUuid row, {
     required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
     _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<OrderUuid>(
       row,
       conflictColumns: conflictColumns(OrderUuid.t),
       updateColumns: updateColumns?.call(OrderUuid.t),
-      conflictWhere: conflictWhere?.call(OrderUuid.t),
+      updateWhere: updateWhere?.call(OrderUuid.t),
       transaction: transaction,
     );
   }

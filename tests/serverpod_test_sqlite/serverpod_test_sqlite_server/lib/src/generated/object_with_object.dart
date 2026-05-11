@@ -704,6 +704,13 @@ class ObjectWithObjectRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [ObjectWithObject]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -713,14 +720,14 @@ class ObjectWithObjectRepository {
     List<ObjectWithObject> rows, {
     required _i1.ColumnSelections<ObjectWithObjectTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithObjectTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ObjectWithObject>(
       rows,
       conflictColumns: conflictColumns(ObjectWithObject.t),
       updateColumns: updateColumns?.call(ObjectWithObject.t),
-      conflictWhere: conflictWhere?.call(ObjectWithObject.t),
+      updateWhere: updateWhere?.call(ObjectWithObject.t),
       transaction: transaction,
     );
   }
@@ -730,20 +737,27 @@ class ObjectWithObjectRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [ObjectWithObject] will have its `id` field set.
-  Future<ObjectWithObject> upsertRow(
+  Future<ObjectWithObject?> upsertRow(
     _i1.DatabaseSession session,
     ObjectWithObject row, {
     required _i1.ColumnSelections<ObjectWithObjectTable> conflictColumns,
     _i1.ColumnSelections<ObjectWithObjectTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithObject>(
       row,
       conflictColumns: conflictColumns(ObjectWithObject.t),
       updateColumns: updateColumns?.call(ObjectWithObject.t),
-      conflictWhere: conflictWhere?.call(ObjectWithObject.t),
+      updateWhere: updateWhere?.call(ObjectWithObject.t),
       transaction: transaction,
     );
   }

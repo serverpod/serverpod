@@ -434,6 +434,13 @@ class EnumDefaultMixRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [EnumDefaultMix]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -443,14 +450,14 @@ class EnumDefaultMixRepository {
     List<EnumDefaultMix> rows, {
     required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<EnumDefaultMix>(
       rows,
       conflictColumns: conflictColumns(EnumDefaultMix.t),
       updateColumns: updateColumns?.call(EnumDefaultMix.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultMix.t),
+      updateWhere: updateWhere?.call(EnumDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -460,20 +467,27 @@ class EnumDefaultMixRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
-  Future<EnumDefaultMix> upsertRow(
+  Future<EnumDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     EnumDefaultMix row, {
     required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultMix>(
       row,
       conflictColumns: conflictColumns(EnumDefaultMix.t),
       updateColumns: updateColumns?.call(EnumDefaultMix.t),
-      conflictWhere: conflictWhere?.call(EnumDefaultMix.t),
+      updateWhere: updateWhere?.call(EnumDefaultMix.t),
       transaction: transaction,
     );
   }

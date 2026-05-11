@@ -493,6 +493,13 @@ class GitHubAccountRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [GitHubAccount]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -502,14 +509,14 @@ class GitHubAccountRepository {
     List<GitHubAccount> rows, {
     required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
     _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<GitHubAccount>(
       rows,
       conflictColumns: conflictColumns(GitHubAccount.t),
       updateColumns: updateColumns?.call(GitHubAccount.t),
-      conflictWhere: conflictWhere?.call(GitHubAccount.t),
+      updateWhere: updateWhere?.call(GitHubAccount.t),
       transaction: transaction,
     );
   }
@@ -519,20 +526,27 @@ class GitHubAccountRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [GitHubAccount] will have its `id` field set.
-  Future<GitHubAccount> upsertRow(
+  Future<GitHubAccount?> upsertRow(
     _i1.DatabaseSession session,
     GitHubAccount row, {
     required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
     _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GitHubAccount>(
       row,
       conflictColumns: conflictColumns(GitHubAccount.t),
       updateColumns: updateColumns?.call(GitHubAccount.t),
-      conflictWhere: conflictWhere?.call(GitHubAccount.t),
+      updateWhere: updateWhere?.call(GitHubAccount.t),
       transaction: transaction,
     );
   }

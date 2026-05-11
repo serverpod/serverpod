@@ -580,6 +580,13 @@ class QueryLogEntryRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [QueryLogEntry]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -589,14 +596,14 @@ class QueryLogEntryRepository {
     List<QueryLogEntry> rows, {
     required _i1.ColumnSelections<QueryLogEntryTable> conflictColumns,
     _i1.ColumnSelections<QueryLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<QueryLogEntryTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<QueryLogEntry>(
       rows,
       conflictColumns: conflictColumns(QueryLogEntry.t),
       updateColumns: updateColumns?.call(QueryLogEntry.t),
-      conflictWhere: conflictWhere?.call(QueryLogEntry.t),
+      updateWhere: updateWhere?.call(QueryLogEntry.t),
       transaction: transaction,
     );
   }
@@ -606,20 +613,27 @@ class QueryLogEntryRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [QueryLogEntry] will have its `id` field set.
-  Future<QueryLogEntry> upsertRow(
+  Future<QueryLogEntry?> upsertRow(
     _i1.DatabaseSession session,
     QueryLogEntry row, {
     required _i1.ColumnSelections<QueryLogEntryTable> conflictColumns,
     _i1.ColumnSelections<QueryLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<QueryLogEntryTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<QueryLogEntry>(
       row,
       conflictColumns: conflictColumns(QueryLogEntry.t),
       updateColumns: updateColumns?.call(QueryLogEntry.t),
-      conflictWhere: conflictWhere?.call(QueryLogEntry.t),
+      updateWhere: updateWhere?.call(QueryLogEntry.t),
       transaction: transaction,
     );
   }

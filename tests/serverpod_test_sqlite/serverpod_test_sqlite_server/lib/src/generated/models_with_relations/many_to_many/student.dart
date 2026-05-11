@@ -422,6 +422,13 @@ class StudentRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [Student]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -431,14 +438,14 @@ class StudentRepository {
     List<Student> rows, {
     required _i1.ColumnSelections<StudentTable> conflictColumns,
     _i1.ColumnSelections<StudentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StudentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Student>(
       rows,
       conflictColumns: conflictColumns(Student.t),
       updateColumns: updateColumns?.call(Student.t),
-      conflictWhere: conflictWhere?.call(Student.t),
+      updateWhere: updateWhere?.call(Student.t),
       transaction: transaction,
     );
   }
@@ -448,20 +455,27 @@ class StudentRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [Student] will have its `id` field set.
-  Future<Student> upsertRow(
+  Future<Student?> upsertRow(
     _i1.DatabaseSession session,
     Student row, {
     required _i1.ColumnSelections<StudentTable> conflictColumns,
     _i1.ColumnSelections<StudentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StudentTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<StudentTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Student>(
       row,
       conflictColumns: conflictColumns(Student.t),
       updateColumns: updateColumns?.call(Student.t),
-      conflictWhere: conflictWhere?.call(Student.t),
+      updateWhere: updateWhere?.call(Student.t),
       transaction: transaction,
     );
   }

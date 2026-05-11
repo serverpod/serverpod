@@ -369,6 +369,13 @@ class GoogleRefreshTokenRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [GoogleRefreshToken]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -378,14 +385,14 @@ class GoogleRefreshTokenRepository {
     List<GoogleRefreshToken> rows, {
     required _i1.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
     _i1.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<GoogleRefreshToken>(
       rows,
       conflictColumns: conflictColumns(GoogleRefreshToken.t),
       updateColumns: updateColumns?.call(GoogleRefreshToken.t),
-      conflictWhere: conflictWhere?.call(GoogleRefreshToken.t),
+      updateWhere: updateWhere?.call(GoogleRefreshToken.t),
       transaction: transaction,
     );
   }
@@ -395,20 +402,27 @@ class GoogleRefreshTokenRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [GoogleRefreshToken] will have its `id` field set.
-  Future<GoogleRefreshToken> upsertRow(
+  Future<GoogleRefreshToken?> upsertRow(
     _i1.DatabaseSession session,
     GoogleRefreshToken row, {
     required _i1.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
     _i1.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GoogleRefreshToken>(
       row,
       conflictColumns: conflictColumns(GoogleRefreshToken.t),
       updateColumns: updateColumns?.call(GoogleRefreshToken.t),
-      conflictWhere: conflictWhere?.call(GoogleRefreshToken.t),
+      updateWhere: updateWhere?.call(GoogleRefreshToken.t),
       transaction: transaction,
     );
   }

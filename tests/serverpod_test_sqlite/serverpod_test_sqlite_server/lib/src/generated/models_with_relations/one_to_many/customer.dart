@@ -424,6 +424,13 @@ class CustomerRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [Customer]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -433,14 +440,14 @@ class CustomerRepository {
     List<Customer> rows, {
     required _i1.ColumnSelections<CustomerTable> conflictColumns,
     _i1.ColumnSelections<CustomerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CustomerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Customer>(
       rows,
       conflictColumns: conflictColumns(Customer.t),
       updateColumns: updateColumns?.call(Customer.t),
-      conflictWhere: conflictWhere?.call(Customer.t),
+      updateWhere: updateWhere?.call(Customer.t),
       transaction: transaction,
     );
   }
@@ -450,20 +457,27 @@ class CustomerRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [Customer] will have its `id` field set.
-  Future<Customer> upsertRow(
+  Future<Customer?> upsertRow(
     _i1.DatabaseSession session,
     Customer row, {
     required _i1.ColumnSelections<CustomerTable> conflictColumns,
     _i1.ColumnSelections<CustomerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CustomerTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Customer>(
       row,
       conflictColumns: conflictColumns(Customer.t),
       updateColumns: updateColumns?.call(Customer.t),
-      conflictWhere: conflictWhere?.call(Customer.t),
+      updateWhere: updateWhere?.call(Customer.t),
       transaction: transaction,
     );
   }

@@ -415,6 +415,13 @@ class CompanyRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [Company]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -424,14 +431,14 @@ class CompanyRepository {
     List<Company> rows, {
     required _i1.ColumnSelections<CompanyTable> conflictColumns,
     _i1.ColumnSelections<CompanyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CompanyTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CompanyTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<Company>(
       rows,
       conflictColumns: conflictColumns(Company.t),
       updateColumns: updateColumns?.call(Company.t),
-      conflictWhere: conflictWhere?.call(Company.t),
+      updateWhere: updateWhere?.call(Company.t),
       transaction: transaction,
     );
   }
@@ -441,20 +448,27 @@ class CompanyRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [Company] will have its `id` field set.
-  Future<Company> upsertRow(
+  Future<Company?> upsertRow(
     _i1.DatabaseSession session,
     Company row, {
     required _i1.ColumnSelections<CompanyTable> conflictColumns,
     _i1.ColumnSelections<CompanyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CompanyTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<CompanyTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Company>(
       row,
       conflictColumns: conflictColumns(Company.t),
       updateColumns: updateColumns?.call(Company.t),
-      conflictWhere: conflictWhere?.call(Company.t),
+      updateWhere: updateWhere?.call(Company.t),
       transaction: transaction,
     );
   }

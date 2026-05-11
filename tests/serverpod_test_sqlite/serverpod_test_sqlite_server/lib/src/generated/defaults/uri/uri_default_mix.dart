@@ -422,6 +422,13 @@ class UriDefaultMixRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [UriDefaultMix]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -431,14 +438,14 @@ class UriDefaultMixRepository {
     List<UriDefaultMix> rows, {
     required _i1.ColumnSelections<UriDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<UriDefaultMix>(
       rows,
       conflictColumns: conflictColumns(UriDefaultMix.t),
       updateColumns: updateColumns?.call(UriDefaultMix.t),
-      conflictWhere: conflictWhere?.call(UriDefaultMix.t),
+      updateWhere: updateWhere?.call(UriDefaultMix.t),
       transaction: transaction,
     );
   }
@@ -448,20 +455,27 @@ class UriDefaultMixRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [UriDefaultMix] will have its `id` field set.
-  Future<UriDefaultMix> upsertRow(
+  Future<UriDefaultMix?> upsertRow(
     _i1.DatabaseSession session,
     UriDefaultMix row, {
     required _i1.ColumnSelections<UriDefaultMixTable> conflictColumns,
     _i1.ColumnSelections<UriDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UriDefaultMixTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<UriDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UriDefaultMix>(
       row,
       conflictColumns: conflictColumns(UriDefaultMix.t),
       updateColumns: updateColumns?.call(UriDefaultMix.t),
-      conflictWhere: conflictWhere?.call(UriDefaultMix.t),
+      updateWhere: updateWhere?.call(UriDefaultMix.t),
       transaction: transaction,
     );
   }

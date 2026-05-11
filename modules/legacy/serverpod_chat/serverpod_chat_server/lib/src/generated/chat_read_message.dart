@@ -394,6 +394,13 @@ class ChatReadMessageRepository {
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
   /// The returned [ChatReadMessage]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
@@ -403,14 +410,14 @@ class ChatReadMessageRepository {
     List<ChatReadMessage> rows, {
     required _i1.ColumnSelections<ChatReadMessageTable> conflictColumns,
     _i1.ColumnSelections<ChatReadMessageTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChatReadMessageTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsert<ChatReadMessage>(
       rows,
       conflictColumns: conflictColumns(ChatReadMessage.t),
       updateColumns: updateColumns?.call(ChatReadMessage.t),
-      conflictWhere: conflictWhere?.call(ChatReadMessage.t),
+      updateWhere: updateWhere?.call(ChatReadMessage.t),
       transaction: transaction,
     );
   }
@@ -420,20 +427,27 @@ class ChatReadMessageRepository {
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
   ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
   /// The returned [ChatReadMessage] will have its `id` field set.
-  Future<ChatReadMessage> upsertRow(
+  Future<ChatReadMessage?> upsertRow(
     _i1.DatabaseSession session,
     ChatReadMessage row, {
     required _i1.ColumnSelections<ChatReadMessageTable> conflictColumns,
     _i1.ColumnSelections<ChatReadMessageTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChatReadMessageTable>? conflictWhere,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? updateWhere,
     _i1.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChatReadMessage>(
       row,
       conflictColumns: conflictColumns(ChatReadMessage.t),
       updateColumns: updateColumns?.call(ChatReadMessage.t),
-      conflictWhere: conflictWhere?.call(ChatReadMessage.t),
+      updateWhere: updateWhere?.call(ChatReadMessage.t),
       transaction: transaction,
     );
   }
