@@ -506,47 +506,53 @@ class InsertQueryBuilder {
         .join(', ');
 
     var returning = buildReturningClause(_table);
-    String onConflict;
-    if (_conflictColumns != null) {
-      var conflictColumnNames = _conflictColumns
-          .map((c) => '"${c.columnName}"')
-          .join(', ');
-
-      Iterable<Column> columnsToUpdate;
-      if (_updateColumns != null) {
-        columnsToUpdate = _updateColumns;
-      } else {
-        var conflictColumnNameSet = _conflictColumns
-            .map((c) => c.columnName)
-            .toSet();
-        columnsToUpdate = selectedColumns.where(
-          (c) =>
-              c.columnName != 'id' &&
-              !conflictColumnNameSet.contains(c.columnName),
-        );
-      }
-      var setClause = columnsToUpdate
-          .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
-          .join(', ');
-
-      if (setClause.isEmpty) {
-        final noOpColumn = _conflictColumns.first.columnName;
-        setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
-      }
-      onConflict =
-          ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
-      if (_updateWhere != null) {
-        onConflict += ' WHERE $_updateWhere';
-      }
-    } else if (_ignoreConflicts) {
-      onConflict = ' ON CONFLICT DO NOTHING';
-    } else {
-      onConflict = '';
-    }
+    var onConflict = _buildOnConflictClause(selectedColumns);
 
     return columnNames.isEmpty
         ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
         : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
+  }
+
+  String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
+    if (_ignoreConflicts) {
+      return ' ON CONFLICT DO NOTHING';
+    }
+    if (_conflictColumns == null) {
+      return '';
+    }
+
+    final conflictColumnNames = _conflictColumns
+        .map((c) => '"${c.columnName}"')
+        .join(', ');
+
+    final conflictColumnNameSet = _conflictColumns
+        .map((c) => c.columnName)
+        .toSet();
+
+    final columnsToUpdate =
+        _updateColumns ??
+        selectedColumns.where(
+          (c) =>
+              c.columnName != 'id' &&
+              !conflictColumnNameSet.contains(c.columnName),
+        );
+
+    var setClause = columnsToUpdate
+        .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
+        .join(', ');
+
+    if (setClause.isEmpty) {
+      final noOpColumn = _conflictColumns.first.columnName;
+      setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
+    }
+
+    var onConflict =
+        ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
+    if (_updateWhere != null) {
+      onConflict += ' WHERE $_updateWhere';
+    }
+
+    return onConflict;
   }
 
   /// Builds the insert SQL query.
