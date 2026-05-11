@@ -500,7 +500,7 @@ class CityWithLongTableNameRepository {
   /// Inserts a single [CityWithLongTableName] and returns the inserted row.
   ///
   /// The returned [CityWithLongTableName] will have its `id` field set.
-  Future<CityWithLongTableName?> insertRow(
+  Future<CityWithLongTableName> insertRow(
     _i1.DatabaseSession session,
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
@@ -515,6 +515,13 @@ class CityWithLongTableNameRepository {
   ///
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
   ///
   /// The returned [CityWithLongTableName]s will have their `id` fields set.
   ///
@@ -541,6 +548,13 @@ class CityWithLongTableNameRepository {
   ///
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
   ///
   /// The returned [CityWithLongTableName] will have its `id` field set.
   Future<CityWithLongTableName?> upsertRow(

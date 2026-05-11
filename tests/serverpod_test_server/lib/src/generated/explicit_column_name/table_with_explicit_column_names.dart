@@ -353,7 +353,7 @@ class TableWithExplicitColumnNameRepository {
   /// Inserts a single [TableWithExplicitColumnName] and returns the inserted row.
   ///
   /// The returned [TableWithExplicitColumnName] will have its `id` field set.
-  Future<TableWithExplicitColumnName?> insertRow(
+  Future<TableWithExplicitColumnName> insertRow(
     _i1.DatabaseSession session,
     TableWithExplicitColumnName row, {
     _i1.Transaction? transaction,
@@ -368,6 +368,13 @@ class TableWithExplicitColumnNameRepository {
   ///
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
   ///
   /// The returned [TableWithExplicitColumnName]s will have their `id` fields set.
   ///
@@ -395,6 +402,13 @@ class TableWithExplicitColumnNameRepository {
   ///
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
   ///
   /// The returned [TableWithExplicitColumnName] will have its `id` field set.
   Future<TableWithExplicitColumnName?> upsertRow(

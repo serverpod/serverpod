@@ -431,7 +431,7 @@ class RelationToMultipleMaxFieldNameRepository {
   /// Inserts a single [RelationToMultipleMaxFieldName] and returns the inserted row.
   ///
   /// The returned [RelationToMultipleMaxFieldName] will have its `id` field set.
-  Future<RelationToMultipleMaxFieldName?> insertRow(
+  Future<RelationToMultipleMaxFieldName> insertRow(
     _i1.DatabaseSession session,
     RelationToMultipleMaxFieldName row, {
     _i1.Transaction? transaction,
@@ -446,6 +446,13 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// If a row conflicts on the given [conflictColumns], the existing row is
   /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
   ///
   /// The returned [RelationToMultipleMaxFieldName]s will have their `id` fields set.
   ///
@@ -474,6 +481,13 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// If the row conflicts on the given [conflictColumns], the existing row is
   /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
   ///
   /// The returned [RelationToMultipleMaxFieldName] will have its `id` field set.
   Future<RelationToMultipleMaxFieldName?> upsertRow(

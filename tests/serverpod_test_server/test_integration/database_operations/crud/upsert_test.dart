@@ -62,10 +62,10 @@ void main() async {
     late UniqueData existingRow;
 
     setUp(() async {
-      existingRow = (await UniqueData.db.insertRow(
+      existingRow = await UniqueData.db.insertRow(
         session,
         UniqueData(number: 1, email: 'existing@serverpod.dev'),
-      ))!;
+      );
     });
 
     test(
@@ -358,13 +358,13 @@ void main() async {
     );
 
     test(
-      'when upserting with updateWhere that does not match then returns null.',
+      'when upserting with updateWhere that does not match then returns null and existing row is unchanged.',
       () async {
-        await UpsertTestModel.db.upsertRow(
+        var inserted = (await UpsertTestModel.db.upsertRow(
           session,
           UpsertTestModel(code: 'A', category: 'c1', value: 1),
           conflictColumns: (t) => [t.code],
-        );
+        ))!;
 
         var result = await UpsertTestModel.db.upsertRow(
           session,
@@ -374,6 +374,11 @@ void main() async {
         );
 
         expect(result, isNull);
+
+        var stored = await UpsertTestModel.db.findById(session, inserted.id!);
+        expect(stored, isNotNull);
+        expect(stored!.category, 'c1');
+        expect(stored.value, 1);
       },
     );
   });

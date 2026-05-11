@@ -340,7 +340,8 @@ class _ListQueryAdditions {
   });
 }
 
-/// Builds a SQL query for an insert statement.
+/// Builds a SQL query for an INSERT statement, optionally with an
+/// `ON CONFLICT … DO UPDATE` (upsert) or `ON CONFLICT DO NOTHING` clause.
 /// This is typically only used internally by the serverpod framework.
 @internal
 class InsertQueryBuilder {
@@ -352,6 +353,15 @@ class InsertQueryBuilder {
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
+  ///
+  /// - Plain insert: leave [ignoreConflicts] false and [conflictColumns] null.
+  /// - Insert ignoring conflicts: set [ignoreConflicts] to true.
+  /// - Upsert: provide [conflictColumns]; optionally narrow the update with
+  ///   [updateColumns] and/or filter with [updateWhere].
+  ///
+  /// [ignoreConflicts] and [conflictColumns] are mutually exclusive.
+  /// [updateColumns] and [updateWhere] only apply to upserts and require
+  /// [conflictColumns].
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
@@ -376,6 +386,23 @@ class InsertQueryBuilder {
       throw ArgumentError(
         'Cannot use both ignoreConflicts and conflictColumns',
       );
+    }
+
+    if (conflictColumns == null) {
+      if (updateColumns != null) {
+        throw ArgumentError.value(
+          updateColumns,
+          'updateColumns',
+          'Can only be used together with conflictColumns',
+        );
+      }
+      if (updateWhere != null) {
+        throw ArgumentError.value(
+          updateWhere,
+          'updateWhere',
+          'Can only be used together with conflictColumns',
+        );
+      }
     }
 
     if (conflictColumns != null) {
@@ -487,9 +514,9 @@ class InsertQueryBuilder {
 
       Iterable<Column> columnsToUpdate;
       if (_updateColumns != null) {
-        columnsToUpdate = _updateColumns!;
+        columnsToUpdate = _updateColumns;
       } else {
-        var conflictColumnNameSet = _conflictColumns!
+        var conflictColumnNameSet = _conflictColumns
             .map((c) => c.columnName)
             .toSet();
         columnsToUpdate = selectedColumns.where(
@@ -503,7 +530,7 @@ class InsertQueryBuilder {
           .join(', ');
 
       if (setClause.isEmpty) {
-        final noOpColumn = _conflictColumns!.first.columnName;
+        final noOpColumn = _conflictColumns.first.columnName;
         setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
       }
       onConflict =

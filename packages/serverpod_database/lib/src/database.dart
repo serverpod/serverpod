@@ -347,7 +347,9 @@ class Database {
   /// conflict. If null, all non-conflict, non-id columns are updated.
   ///
   /// If [updateWhere] is provided, the update will only apply to rows
-  /// matching the given expression.
+  /// matching the given expression. Rows that conflict but don't match
+  /// [updateWhere] are skipped and not returned, so the resulting list may be
+  /// shorter than [rows].
   Future<List<T>> upsert<T extends TableRow>(
     List<T> rows, {
     required List<Column> conflictColumns,

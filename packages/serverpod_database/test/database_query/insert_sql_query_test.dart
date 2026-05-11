@@ -629,9 +629,9 @@ SELECT * FROM insertWithIdNotNull
     );
   });
 
-  group('Given conflictWhere parameter', () {
+  group('Given updateWhere parameter', () {
     test(
-      'when building upsert query with conflictWhere then WHERE appears after SET clause.',
+      'when building upsert query with updateWhere then WHERE appears after SET clause and RETURNING is present.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -645,11 +645,12 @@ SELECT * FROM insertWithIdNotNull
           query,
           contains('DO UPDATE SET "age" = EXCLUDED."age" WHERE'),
         );
+        expect(query, endsWith('RETURNING *'));
       },
     );
 
     test(
-      'when building upsert query with both updateColumns and conflictWhere then both are applied.',
+      'when building upsert query with both updateColumns and updateWhere then both are applied.',
       () {
         var table = PersonTable();
         var query = InsertQueryBuilder(
@@ -663,6 +664,37 @@ SELECT * FROM insertWithIdNotNull
         expect(
           query,
           contains('DO UPDATE SET "age" = EXCLUDED."age" WHERE'),
+        );
+        expect(query, endsWith('RETURNING *'));
+      },
+    );
+
+    test(
+      'when updateWhere is provided without conflictColumns then ArgumentError is thrown.',
+      () {
+        var table = PersonTable();
+        expect(
+          () => InsertQueryBuilder(
+            table: table,
+            rows: [PersonClass(name: 'Alex', age: 33)],
+            updateWhere: table.age.notEquals(99),
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test(
+      'when updateColumns is provided without conflictColumns then ArgumentError is thrown.',
+      () {
+        var table = PersonTable();
+        expect(
+          () => InsertQueryBuilder(
+            table: table,
+            rows: [PersonClass(name: 'Alex', age: 33)],
+            updateColumns: [table.age],
+          ),
+          throwsArgumentError,
         );
       },
     );

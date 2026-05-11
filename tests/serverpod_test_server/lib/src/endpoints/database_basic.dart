@@ -84,10 +84,10 @@ class BasicDatabase extends Endpoint {
     Session session,
     SimpleData simpleData,
   ) async {
-    return (await SimpleData.db.insertRow(
+    return SimpleData.db.insertRow(
       session,
       simpleData,
-    ))!;
+    );
   }
 
   Future<SimpleData> updateRowSimpleData(
@@ -134,7 +134,7 @@ class BasicDatabase extends Endpoint {
     Session session,
     Types value,
   ) async {
-    return (await Types.db.insertRow(session, value))!;
+    return Types.db.insertRow(session, value);
   }
 
   Future<Types> updateTypes(
@@ -178,7 +178,7 @@ class BasicDatabase extends Endpoint {
     Session session,
     ObjectWithEnum object,
   ) async {
-    return (await ObjectWithEnum.db.insertRow(session, object))!;
+    return ObjectWithEnum.db.insertRow(session, object);
   }
 
   Future<ObjectWithEnum?> getObjectWithEnum(Session session, int id) async {
@@ -189,7 +189,7 @@ class BasicDatabase extends Endpoint {
     Session session,
     ObjectWithEnumEnhanced object,
   ) async {
-    return (await ObjectWithEnumEnhanced.db.insertRow(session, object))!;
+    return ObjectWithEnumEnhanced.db.insertRow(session, object);
   }
 
   Future<ObjectWithEnumEnhanced?> getObjectWithEnumEnhanced(
@@ -203,7 +203,7 @@ class BasicDatabase extends Endpoint {
     Session session,
     ObjectWithObject object,
   ) async {
-    return (await ObjectWithObject.db.insertRow(session, object))!;
+    return ObjectWithObject.db.insertRow(session, object);
   }
 
   Future<ObjectWithObject?> getObjectWithObject(Session session, int id) async {

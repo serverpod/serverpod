@@ -370,6 +370,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       return null;
     }
 
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
     if (result.length > 1) {
       throw _SqliteDatabaseUpsertRowException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
