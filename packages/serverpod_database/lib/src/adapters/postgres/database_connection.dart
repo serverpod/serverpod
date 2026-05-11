@@ -253,7 +253,7 @@ class PostgresDatabaseConnection
 
     var table = rows.first.table;
 
-    var query = UpsertQueryBuilder(
+    var query = InsertQueryBuilder(
       table: table,
       rows: rows,
       conflictColumns: conflictColumns,
