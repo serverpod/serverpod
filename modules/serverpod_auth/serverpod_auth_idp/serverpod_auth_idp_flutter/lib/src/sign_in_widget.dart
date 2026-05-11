@@ -9,6 +9,7 @@ import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
 import 'common/external_idp_registry.dart';
 import 'common/widgets/column.dart';
+import 'common/sign_in_flow_coordinator.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
@@ -225,27 +226,29 @@ class _SignInWidgetState extends State<SignInWidget> {
     }
 
     // TODO: Make this adaptative.
-    return SignInWidgetsColumn(
-      spacing: 12,
-      children: [
-        if (hasEmail)
-          widget.emailSignInWidget ??
-              EmailSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
-        if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
-        ...socialProviders,
-        if (hasAnonymous) ...[
-          widget.anonymousSignInWidget ??
-              AnonymousSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
+    return SignInFlowCoordinatorWidget(
+      child: SignInWidgetsColumn(
+        spacing: 12,
+        children: [
+          if (hasEmail)
+            widget.emailSignInWidget ??
+                EmailSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
+          ...socialProviders,
+          if (hasAnonymous) ...[
+            widget.anonymousSignInWidget ??
+                AnonymousSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
