@@ -346,13 +346,13 @@ class Database {
   /// If [updateColumns] is provided, only those columns will be updated on
   /// conflict. If null, all non-conflict, non-id columns are updated.
   ///
-  /// If [conflictWhere] is provided, the update will only apply to rows
+  /// If [updateWhere] is provided, the update will only apply to rows
   /// matching the given expression.
   Future<List<T>> upsert<T extends TableRow>(
     List<T> rows, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     return _databaseConnection.upsert<T>(
@@ -360,7 +360,7 @@ class Database {
       rows,
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
     );
@@ -373,13 +373,13 @@ class Database {
   /// If [updateColumns] is provided, only those columns will be updated on
   /// conflict. If null, all non-conflict, non-id columns are updated.
   ///
-  /// If [conflictWhere] is provided, the update will only apply to rows
+  /// If [updateWhere] is provided, the update will only apply to rows
   /// matching the given expression.
-  Future<T> upsertRow<T extends TableRow>(
+  Future<T?> upsertRow<T extends TableRow>(
     T row, {
     required List<Column> conflictColumns,
     List<Column>? updateColumns,
-    Expression? conflictWhere,
+    Expression? updateWhere,
     Transaction? transaction,
   }) async {
     return _databaseConnection.upsertRow<T>(
@@ -387,7 +387,7 @@ class Database {
       row,
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
-      conflictWhere: conflictWhere,
+      updateWhere: updateWhere,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
     );
