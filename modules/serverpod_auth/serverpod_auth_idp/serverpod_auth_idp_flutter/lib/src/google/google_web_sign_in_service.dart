@@ -22,7 +22,7 @@ typedef GoogleWebSignInResult = ({
 
 /// Service to manage Google OAuth sign-in on the web platform.
 ///
-/// Handles the OAuth 2.0 authorization code flow with PKCE Proof Key for Code
+/// Handles the OAuth 2.0 authorization code flow with PKCE (Proof Key for Code
 /// Exchange) for Google authentication on web. Uses [flutter_web_auth_2] to
 /// open the browser to Google's authorization page and capture the callback
 /// via `window.postMessage`.
