@@ -220,24 +220,9 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (kIsWeb && GoogleWebSignInService.instance.isInitialized)
-          // Flutter-rendered button → OAuth2 PKCE flow.
-          GoogleSignInNativeButton(
-            onPressed: _controller.signIn,
-            isLoading: _controller.isLoading,
-            isDisabled: !_controller.isInitialized || _controller.isLoading,
-            type: widget.type,
-            theme: widget.theme,
-            size: widget.size,
-            text: widget.text,
-            shape: widget.shape,
-            logoAlignment: widget.logoAlignment,
-            minimumWidth: widget.minimumWidth,
-            getButtonText: widget.getButtonText,
-            buttonWrapper: widget.buttonWrapper,
-          )
-        else if (GoogleSignIn.instance.supportsAuthenticate())
-          // Native platforms (iOS, Android, macOS, etc.).
+        if ((kIsWeb && GoogleWebSignInService.instance.isInitialized) ||
+            GoogleSignIn.instance.supportsAuthenticate())
+          // Native platforms (iOS, Android, macOS, etc.) and web with OAuth2.
           GoogleSignInNativeButton(
             onPressed: _controller.signIn,
             isLoading: _controller.isLoading,

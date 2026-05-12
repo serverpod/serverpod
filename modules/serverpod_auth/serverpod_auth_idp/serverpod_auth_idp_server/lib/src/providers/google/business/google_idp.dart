@@ -148,78 +148,18 @@ class GoogleIdp {
     required final String redirectUri,
     final Transaction? transaction,
   }) async {
-    return await DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final tokens = await utils.exchangeCodeForToken(
-          session,
-          code: code,
-          codeVerifier: codeVerifier,
-          redirectUri: redirectUri,
-        );
+    final tokens = await utils.exchangeCodeForToken(
+      session,
+      code: code,
+      codeVerifier: codeVerifier,
+      redirectUri: redirectUri,
+    );
 
-        final account = await utils.authenticate(
-          session,
-          idToken: tokens.idToken,
-          accessToken: tokens.accessToken,
-          transaction: transaction,
-        );
-
-        final image = account.details.image;
-        if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.fullName?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new Google user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
-        } else if (image != null) {
-          try {
-            final user = await UserProfile.db.findFirstRow(
-              session,
-              where: (final t) => t.authUserId.equals(account.authUserId),
-              transaction: transaction,
-            );
-            if (user != null && user.image == null) {
-              await _userProfiles.setUserImageFromUrl(
-                session,
-                account.authUserId,
-                image,
-                transaction: transaction,
-              );
-            }
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to update user profile image for existing Google user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
-        }
-
-        return _tokenIssuer.issueToken(
-          session,
-          authUserId: account.authUserId,
-          transaction: transaction,
-          method: method,
-          scopes: account.scopes,
-        );
-      },
+    return login(
+      session,
+      idToken: tokens.idToken,
+      accessToken: tokens.accessToken,
+      transaction: transaction,
     );
   }
 
