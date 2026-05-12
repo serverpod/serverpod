@@ -22,10 +22,10 @@ typedef GoogleWebSignInResult = ({
 
 /// Service to manage Google OAuth sign-in on the web platform.
 ///
-/// Handles the OAuth 2.0 authorization code flow with PKCE
-/// (Proof Key for Code Exchange) for Google authentication on web.
-/// Uses [flutter_web_auth_2] to open the browser to Google's authorization
-/// page and capture the callback via `window.postMessage`.
+/// Handles the OAuth 2.0 authorization code flow with PKCE Proof Key for Code
+/// Exchange) for Google authentication on web. Uses [flutter_web_auth_2] to
+/// open the browser to Google's authorization page and capture the callback
+/// via `window.postMessage`.
 ///
 /// This service is intended **for web only**. On native platforms (iOS,
 /// Android, macOS), use [GoogleSignInService] with the `google_sign_in`
@@ -33,6 +33,7 @@ typedef GoogleWebSignInResult = ({
 /// automatically when running on web.
 ///
 /// Example usage:
+///
 /// ```dart
 /// // Initialize once during app startup (web only)
 /// await client.auth.initializeGoogleWebSignIn(
@@ -76,8 +77,8 @@ class GoogleWebSignInService {
 
   /// Default OAuth scopes for Google sign-in.
   ///
-  /// `openid` is required so that Google's token endpoint returns an `id_token`,
-  /// which is used for server-side JWKS verification.
+  /// The `openid` scope is required so that Google's token endpoint returns an
+  /// `id_token`, which is used for server-side JWKS verification.
   static const List<String> defaultScopes = [
     'openid',
     'https://www.googleapis.com/auth/userinfo.email',
@@ -86,7 +87,7 @@ class GoogleWebSignInService {
 
   /// Ensures that Google web sign-in is initialized.
   ///
-  /// This method is idempotent — only the first call has effect.
+  /// This method is idempotent - only the first call has effect.
   ///
   /// [clientId] is the **Web application** OAuth client ID from Google Cloud
   /// Console. This must be the `Web application` credential type.
@@ -103,11 +104,11 @@ class GoogleWebSignInService {
   ///
   /// [additionalAuthParams] are extra parameters merged into the authorization
   /// URL. The service already sends `prompt: select_account` and
-  /// `access_type: online` by default; any values provided here are merged
+  /// `access_type: online` by default. Any values provided here are merged
   /// on top and will override the defaults on conflict.
   ///
   /// [useWebview] controls the authentication method on Linux and Windows.
-  /// When `true`, uses the webview implementation. Defaults to `true`.
+  /// When `true`, uses the webview implementation (default).
   Future<void> ensureInitialized({
     required String clientId,
     required String redirectUri,

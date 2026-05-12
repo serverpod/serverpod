@@ -94,10 +94,12 @@ class GoogleIdpUtils {
             codeVerifier: codeVerifier,
             redirectUri: redirectUri,
           );
+
       final idToken = tokenResponse.raw['id_token'] as String?;
       if (idToken == null) {
         session.logAndThrow('Missing id_token in Google token response');
       }
+
       return (accessToken: tokenResponse.accessToken, idToken: idToken);
     } on OAuth2Exception catch (e) {
       session.log(e.toString(), level: LogLevel.debug);

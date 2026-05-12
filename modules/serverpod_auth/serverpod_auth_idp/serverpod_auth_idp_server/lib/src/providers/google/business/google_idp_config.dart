@@ -97,20 +97,6 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
     }
   }
 
-  @override
-  GoogleIdp build({
-    required final TokenManager tokenManager,
-    required final AuthUsers authUsers,
-    required final UserProfiles userProfiles,
-  }) {
-    return GoogleIdp(
-      this,
-      tokenIssuer: tokenManager,
-      authUsers: authUsers,
-      userProfiles: userProfiles,
-    );
-  }
-
   /// Parses Google's OAuth2 token response.
   ///
   /// Google returns a JSON object containing `access_token` and `id_token`
@@ -127,13 +113,29 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
         '${description != null ? ' - $description' : ''}',
       );
     }
+
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
       throw const OAuth2MissingAccessTokenException(
         'Missing access_token in Google token response',
       );
     }
+
     return OAuth2PkceTokenResponse(accessToken: accessToken, raw: responseBody);
+  }
+
+  @override
+  GoogleIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return GoogleIdp(
+      this,
+      tokenIssuer: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
   }
 
   /// OAuth2 PKCE server configuration for the web sign-in flow.

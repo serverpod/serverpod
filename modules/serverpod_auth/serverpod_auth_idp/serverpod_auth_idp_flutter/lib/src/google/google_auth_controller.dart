@@ -116,8 +116,8 @@ class GoogleAuthController extends ChangeNotifier {
   Future<void> _initialize() async {
     if (_isInitialized) return;
 
+    // OAuth2 PKCE flow on web: no google_sign_in subscription needed.
     if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
-      // OAuth2 PKCE flow: no google_sign_in subscription needed.
       _isInitialized = true;
       _setState(GoogleAuthState.idle);
       return;
@@ -155,30 +155,37 @@ class GoogleAuthController extends ChangeNotifier {
 
   /// Initiates the Google Sign-In flow.
   ///
-  /// On web, opens the browser to Google's authorization page using the
-  /// OAuth2 PKCE redirect flow via [GoogleWebSignInService].
+  /// On success, the authentication event will be handled automatically and the
+  /// user will be signed in. On failure, transitions to error state with the
+  /// error message.
   ///
-  /// On native platforms, delegates to the `google_sign_in` package.
+  /// On web with the redirect URI configured, opens the browser to Google's
+  /// authorization page using the OAuth2 PKCE redirect flow via
+  /// [GoogleWebSignInService].
   Future<void> signIn() async {
-    if (_state == GoogleAuthState.loading) return;
-    if (kIsWeb) {
-      if (GoogleWebSignInService.instance.isInitialized) {
-        await _signInWeb();
-      } else {
-        // GoogleSignInWebButton is self-managed; signIn() is
-        // not called on the controller in this path.
-        throw StateError(
-          'controller.signIn() is not available with the iFrame-based Google '
-          'Sign-In button. Provide a redirectUri to initializeGoogleSignIn() '
-          'to use the controllable OAuth2 PKCE flow instead.',
-        );
-      }
+    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+      await _signInWeb();
       return;
     }
-    await _signInNative();
+
+    if (!GoogleSignIn.instance.supportsAuthenticate()) {
+      throw StateError('This sign-in method is not supported on this platform');
+    }
+    _setState(GoogleAuthState.loading);
+
+    try {
+      // Only need to initialize the sign-in. The scopes authorization and server
+      // side authentication is handled by the authentication event listener.
+      await GoogleSignIn.instance.authenticate(scopeHint: scopes);
+    } catch (e) {
+      _handleAuthenticationError(e);
+    }
   }
 
   Future<void> _signInWeb() async {
+    if (_state == GoogleAuthState.loading) return;
+
+    _setState(GoogleAuthState.loading);
     try {
       final result = await GoogleWebSignInService.instance.signIn(
         scopes: scopes,
@@ -186,35 +193,6 @@ class GoogleAuthController extends ChangeNotifier {
       await _handleWebServerSideSignIn(result);
     } catch (error) {
       _handleAuthenticationError(error);
-    }
-  }
-
-  Future<void> _handleWebServerSideSignIn(GoogleWebSignInResult result) async {
-    _setState(GoogleAuthState.loading);
-    try {
-      final endpoint = client.getEndpointOfType<EndpointGoogleIdpBase>();
-      final authSuccess = await endpoint.loginWithCode(
-        code: result.code,
-        codeVerifier: result.codeVerifier,
-        redirectUri: result.redirectUri,
-      );
-      await client.auth.updateSignedInUser(authSuccess);
-      _setState(GoogleAuthState.authenticated);
-      onAuthenticated?.call();
-    } catch (error) {
-      _handleAuthenticationError(error);
-    }
-  }
-
-  Future<void> _signInNative() async {
-    if (!GoogleSignIn.instance.supportsAuthenticate()) {
-      throw StateError('This sign-in method is not supported on this platform');
-    }
-    _setState(GoogleAuthState.loading);
-    try {
-      await GoogleSignIn.instance.authenticate(scopeHint: scopes);
-    } catch (e) {
-      _handleAuthenticationError(e);
     }
   }
 
@@ -261,10 +239,29 @@ class GoogleAuthController extends ChangeNotifier {
     }
   }
 
+  Future<void> _handleWebServerSideSignIn(GoogleWebSignInResult result) async {
+    try {
+      final endpoint = client.getEndpointOfType<EndpointGoogleIdpBase>();
+      final authSuccess = await endpoint.loginWithCode(
+        code: result.code,
+        codeVerifier: result.codeVerifier,
+        redirectUri: result.redirectUri,
+      );
+
+      await client.auth.updateSignedInUser(authSuccess);
+
+      _setState(GoogleAuthState.authenticated);
+      onAuthenticated?.call();
+    } catch (error) {
+      _handleAuthenticationError(error);
+    }
+  }
+
   /// Handles authentication errors from the Google Sign-In service.
   void _handleAuthenticationError(Object error) {
     if (error is GoogleSignInException &&
         error.code == GoogleSignInExceptionCode.canceled) {
+      // The Google Sign-In package already prints these to the debug log.
       _setState(GoogleAuthState.idle);
       return;
     }
@@ -338,6 +335,13 @@ Exception? convertToUserFacingException(Object error) {
     );
   }
   if (error is GoogleSignInException) {
+    return UserFacingException(
+      'An error occurred while signing in with Google. Please try again later. '
+      'If the problem persists, please contact support.',
+      originalException: error,
+    );
+  }
+  if (error is OAuth2PkceException) {
     return UserFacingException(
       'An error occurred while signing in with Google. Please try again later. '
       'If the problem persists, please contact support.',

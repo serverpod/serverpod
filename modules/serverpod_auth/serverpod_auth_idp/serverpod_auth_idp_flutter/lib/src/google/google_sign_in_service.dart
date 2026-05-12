@@ -128,9 +128,10 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
   ///
-  /// On web, when [redirectUri] is provided, the OAuth2 PKCE redirect flow is
-  /// used via [GoogleWebSignInService]. When [redirectUri] is absent on web (or
-  /// on all native platforms), the [google_sign_in] package is used.
+  /// The [redirectUri] is optional and will be used to configure the OAuth2
+  /// PKCE redirect flow on web - which provides a better user experience than
+  /// the [google_sign_in_web] package. When [redirectUri] is absent on web,
+  /// the initialization will fallback to the [google_sign_in] package.
   Future<void> initializeGoogleSignIn({
     String? clientId,
     String? serverClientId,
@@ -140,13 +141,24 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
     Map<String, String> additionalAuthParams = const {},
   }) async {
     if (kIsWeb && redirectUri != null) {
+      clientId ??= _getClientIdFromEnvVar();
+      if (clientId == null) {
+        throw ArgumentError.notNull(
+          'clientId is required when initializing Google Sign-In on web '
+          'with a redirect URI. Provide clientId parameter or set '
+          'GOOGLE_CLIENT_ID environment variable.',
+        );
+      }
+
       await GoogleWebSignInService.instance.ensureInitialized(
-        clientId: clientId ?? '',
+        clientId: clientId,
         redirectUri: redirectUri,
         additionalAuthParams: additionalAuthParams,
       );
+
       return;
     }
+
     await GoogleSignInService.instance.ensureInitialized(
       auth: this,
       clientId: clientId,
@@ -162,17 +174,23 @@ extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// flow again on the next sign-in, including the account picker and consent
   /// screens.
   ///
-  /// On web, only signs out from the current device without revoking Google
-  /// access (native disconnect is not available in the web flow).
+  /// On web with the redirect URI configured, only signs out from the current
+  /// device without revoking Google access (native disconnect is not available
+  /// in the web flow).
   Future<void> disconnectGoogleAccount() async {
-    if (kIsWeb) {
+    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
       await signOutDevice();
       return;
     }
+
     final signIn = await GoogleSignInService.instance.ensureInitialized(
       auth: this,
     );
     await signIn.disconnect();
+
+    // NOTE: This delay prevents the Google Sign-In web button to render before
+    // the disconnect process is complete. Without this, the Sign-In screen will
+    // render the button on web still showing the user as signed in.
     await Future.delayed(const Duration(milliseconds: 300));
     await signOutDevice();
   }
