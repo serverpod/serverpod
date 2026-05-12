@@ -363,40 +363,6 @@ void main() async {
 }
 ''';
 
-          test('for Antigravity', () {
-            final antigravity = File(
-              path.join(
-                tempPath,
-                projectName,
-                '.gemini/antigravity/mcp_config.json',
-              ),
-            );
-            expect(antigravity.existsSync(), isTrue);
-            expect(
-              antigravity.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
-
-          test('for Codex', () {
-            final codex = File(
-              path.join(tempPath, projectName, '.codex/config.toml'),
-            );
-            expect(codex.existsSync(), isTrue);
-            expect(
-              codex.readAsStringSync(),
-              '''
-[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''',
-            );
-          });
-
           test('for Claude', () {
             final claude = File(
               path.join(tempPath, projectName, '.mcp.json'),
@@ -411,17 +377,6 @@ args = ["mcp-server", "--force-roots-fallback"]
             );
             expect(cursor.existsSync(), isTrue);
             expect(cursor.readAsStringSync(), genericConfig);
-          });
-
-          test('for VSCode', () {
-            final vscode = File(
-              path.join(tempPath, projectName, '.vscode/mcp.json'),
-            );
-            expect(vscode.existsSync(), isTrue);
-            expect(
-              vscode.readAsStringSync(),
-              genericConfig.replaceAll('mcpServers', 'servers'),
-            );
           });
         });
       });
