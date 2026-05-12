@@ -8,4 +8,5 @@ library;
 export 'src/embedded_postgres.dart';
 export 'src/exceptions.dart';
 export 'src/options.dart';
+export 'src/serverpod_config_mapping.dart';
 export 'src/transport.dart';
