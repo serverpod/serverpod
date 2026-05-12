@@ -3,7 +3,7 @@
 
 name: serverpod_cloud_storage_s3
 description: Serverpod integration for S3 cloud storage
-version: 3.5.0-beta.6
+version: 3.5.0-beta.7
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -12,8 +12,8 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 3.5.0-beta.6
-  serverpod_cloud_storage_s3_compat: 3.5.0-beta.6
+  serverpod: 3.5.0-beta.7
+  serverpod_cloud_storage_s3_compat: 3.5.0-beta.7
 
 dev_dependencies:
   cloud_storage_integration_test_support:

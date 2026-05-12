@@ -1,3 +1,10 @@
+## 3.5.0-beta.7
+
+feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
+fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
+chore: Improves the UX of create and start TUIs.
+
 ## 3.5.0-beta.6
 
 - feat: Makes the `serverpod create` command interactive for resources selection.

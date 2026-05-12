@@ -12,12 +12,12 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 3.5.0-beta.6
+  serverpod: 3.5.0-beta.7
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_service_client: 3.5.0-beta.6
-  serverpod_test: 3.5.0-beta.6
+  serverpod_service_client: 3.5.0-beta.7
+  serverpod_test: 3.5.0-beta.7
   serverpod_test_server:
     path: ../../serverpod_test_server
   test: ^1.25.5
