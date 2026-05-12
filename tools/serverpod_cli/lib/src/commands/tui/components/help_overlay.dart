@@ -1,12 +1,14 @@
 import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_cli/src/commands/tui/components/shrink_wrap_scroll_view.dart';
 import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 
 typedef HelpOverlayBindings = List<(String, List<(String, String)>)>;
 
-/// Help overlay showing all keybindings.
-///
-/// Pass [controller] to drive the help body's scroll position from outside.
-/// When null, the overlay manages its own controller.
+/// Width reserved for the activation-key column in the help body.
+const _keyColumnWidth = 24.0;
+
+/// Help overlay showing all keybindings. Sizes to its content; scrolls if
+/// content exceeds the available terminal height.
 class HelpOverlay extends StatefulComponent {
   const HelpOverlay({super.key, this.bindings, this.controller});
 
@@ -18,7 +20,7 @@ class HelpOverlay extends StatefulComponent {
 }
 
 class _HelpOverlayState extends State<HelpOverlay> {
-  static const _bindings = [
+  static const _defaultBindings = [
     (
       'Navigation',
       [
@@ -69,16 +71,18 @@ class _HelpOverlayState extends State<HelpOverlay> {
   @override
   Component build(BuildContext context) {
     final st = ServerpodTheme.of(context);
-
     final theme = TuiTheme.of(context);
-    final effectiveBindings = component.bindings ?? _bindings;
+    final effectiveBindings = component.bindings ?? _defaultBindings;
     final scrollController = _effectiveController;
 
-    return Center(
-      child: SizedBox(
-        width: 56,
-        height: 29,
+    // Outer Padding bounds the panel to (screen - 4) on each axis so
+    // SingleChildScrollView has finite extent to clamp against and scroll
+    // within when content overflows.
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: Center(
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           decoration: BoxDecoration(
             color: theme.surface,
             border: BoxBorder.all(
@@ -90,62 +94,58 @@ class _HelpOverlayState extends State<HelpOverlay> {
               style: TextStyle(color: st.primary),
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Scrollbar(
-                    controller: scrollController,
-                    thumbVisibility: true,
-                    child: ListView(
-                      controller: scrollController,
-                      children: [
-                        for (final (section, bindings)
-                            in effectiveBindings) ...[
-                          Text(
-                            section,
-                            style: TextStyle(
-                              color: st.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          for (final (key, desc) in bindings)
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 24,
-                                  child: Text(
-                                    '  $key',
-                                    style: TextStyle(
-                                      color: theme.onSurface,
-                                      fontWeight: FontWeight.dim,
-                                    ),
-                                  ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShrinkWrapScrollView(
+                controller: scrollController,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final (section, items) in effectiveBindings) ...[
+                      Text(
+                        section,
+                        style: TextStyle(
+                          color: st.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      for (final (key, desc) in items)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: _keyColumnWidth,
+                              child: Text(
+                                '  $key',
+                                style: TextStyle(
+                                  color: theme.onSurface,
+                                  fontWeight: FontWeight.dim,
                                 ),
-                                Text(
-                                  desc,
-                                  style: TextStyle(color: theme.onSurface),
-                                ),
-                              ],
+                              ),
                             ),
-                          const SizedBox(height: 1),
-                        ],
-                      ],
-                    ),
-                  ),
+                            Text(
+                              desc,
+                              style: TextStyle(color: theme.onSurface),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 1),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 1),
-                Text(
-                  'Press H or Esc to close',
-                  style: TextStyle(
-                    color: theme.onSurface,
-                    fontWeight: FontWeight.dim,
-                  ),
+              ),
+              const SizedBox(height: 1),
+              Text(
+                'Press H or Esc to close',
+                style: TextStyle(
+                  color: theme.onSurface,
+                  fontWeight: FontWeight.dim,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
