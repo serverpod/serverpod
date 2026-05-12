@@ -108,10 +108,13 @@ class GitHubAuthController extends ChangeNotifier {
   /// state and calls [onError].
   Future<void> signIn() async {
     if (_state == GitHubAuthState.loading) return;
+    _setState(GitHubAuthState.loading);
+
     try {
       final signInResult = await GitHubSignInService.instance.signIn(
         scopes: scopes,
       );
+
       await _handleServerSideSignIn(signInResult);
     } catch (error) {
       _handleAuthenticationError(error);
@@ -122,7 +125,6 @@ class GitHubAuthController extends ChangeNotifier {
   Future<void> _handleServerSideSignIn(
     GitHubSignInResult signInResult,
   ) async {
-    _setState(GitHubAuthState.loading);
     try {
       final endpoint = client.getEndpointOfType<EndpointGitHubIdpBase>();
       final authSuccess = await endpoint.login(
@@ -130,7 +132,9 @@ class GitHubAuthController extends ChangeNotifier {
         codeVerifier: signInResult.codeVerifier,
         redirectUri: signInResult.redirectUri,
       );
+
       await client.auth.updateSignedInUser(authSuccess);
+
       _setState(GitHubAuthState.authenticated);
       onAuthenticated?.call();
     } catch (error) {
