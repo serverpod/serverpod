@@ -475,7 +475,88 @@ final class SocketPathTooLongException;
 final class StaleClusterException;
 ```
 
-## 14. Verification plan
+## 14. `serverpod start` integration
+
+This package is consumed by `serverpod start` through a new
+`database.source` field on `ServerpodConfig.database` (added to
+`serverpod_shared`) and a new `--db-source` CLI flag. The CLI is the only
+consumer that auto-boots an embedded postmaster; the test fixture in
+`serverpod_test` reaches into [EmbeddedPostgres.start] directly.
+
+### Configuration field
+
+`database.source` is an optional `DatabaseSource` enum on the postgres
+arm of `DatabaseConfig`:
+
+```yaml
+database:
+  dialect: postgres
+  source: auto         # auto | embedded | config (default: config)
+  # host/port/user/password used when source resolves to 'config'
+```
+
+- `auto` - CLI decides at runtime which concrete source to use, based on
+  what's already running, what's reachable, and what the project has on
+  disk. Only valid in `development` run mode; outside dev it is a hard
+  error.
+- `embedded` - CLI boots an embedded postmaster via this package and
+  injects its endpoint into the spawned pod via `SERVERPOD_DATABASE_*`
+  environment variables. The pod's existing env-aware config loader
+  merges them automatically.
+- `config` - default when the field is absent. CLI does not provision
+  anything; the pod uses the connection details supplied in the
+  configuration as-is. This preserves the pre-existing behavior for
+  every project that doesn't opt into the new field.
+
+The field is silently ignored for `dialect: sqlite`; resolved `source` is
+always `null` on a `SqliteDatabaseConfig`.
+
+Environment override: `SERVERPOD_DATABASE_SOURCE=<value>` overrides the
+config-file value, mirroring the other `database.*` env vars.
+
+### CLI flag
+
+`serverpod start --db-source=<auto|embedded|config>`. The flag overrides
+whatever is set (or omitted) in the config file. Mirrors the YAML field
+name 1:1 - `--db-source=auto` maps to `database.source: auto`.
+
+The CLI flag is orthogonal to `--docker`. `--docker` controls whether
+`serverpod start` runs `docker compose up` against the project's
+compose file (for Redis and other services); `--db-source` controls
+where PostgreSQL comes from. The two compose: `--docker
+--db-source=embedded` runs compose for Redis and embedded PG handles
+the database.
+
+The default of `--docker` is `false` as of this work (was `true` in
+beta): "auto-up the compose stack" is now opt-in, matching the
+direction of removing implicit infrastructure assumptions.
+
+### Auto-resolution (development run mode only)
+
+When `source == auto`, the CLI runs this probe in order and resolves to
+the first match:
+
+1. `<server>/.serverpod/pgdata/PG_VERSION` exists -> `embedded`. The
+   data directory itself is the consent signal; no re-prompt.
+2. `--docker == true` AND `docker-compose.yaml` present AND
+   `docker compose ps` succeeds -> `config` (the compose-managed PG
+   handles it; the pod connects via the config-file host).
+3. `config.database.host` set AND ~500 ms TCP/UDS probe succeeds ->
+   `config`.
+4. Interactive (stdin is a tty) -> prompt: "No PostgreSQL reachable.
+   Boot embedded PG? (y/N) - downloads ~30 MB once." Non-interactive
+   fallback -> `embedded` with a one-line notice.
+
+The probe never parses `docker-compose.yaml`; step 2 is a presence
+check plus `docker compose ps` only.
+
+### Looking forward
+
+Redis will follow the same shape: a `redis.source` field with the same
+enum, a `--redis-source` CLI flag. The naming pattern `--<service>-<field>`
+extends naturally to any future per-service config override flag.
+
+## 15. Verification plan
 
 - Unit tests: URL construction, sha verification, config-block rewrite
   (idempotence + preservation of unmanaged lines).
