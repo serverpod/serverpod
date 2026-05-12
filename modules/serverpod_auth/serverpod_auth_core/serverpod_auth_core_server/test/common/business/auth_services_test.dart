@@ -456,7 +456,7 @@ Future<void> _waitForAdminScope(
       await session.close();
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
   }
 
   fail('Timed out waiting for admin scope to be assigned.');

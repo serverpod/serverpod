@@ -11,6 +11,7 @@ import '../integrations/token_manager_builder.dart';
 import 'multi_token_manager.dart';
 
 const _adminEmailsPasswordKey = 'adminEmails';
+const _adminScopeName = 'serverpod.admin';
 const _adminEmailsPasswordTypeError =
     'The `adminEmails` password must be a string or a list of strings.';
 const _adminEmailsPasswordEntryError =
@@ -255,7 +256,7 @@ Future<void> _backfillAdminScopesForConfiguredEmails(
     }
   } catch (e, stackTrace) {
     session.log(
-      'Failed to assign admin scope to configured admin emails.',
+      'Failed to assign admin scope to configured admin emails (${adminEmails.length} configured).',
       level: LogLevel.error,
       exception: e,
       stackTrace: stackTrace,
@@ -299,7 +300,7 @@ Future<void> _ensureAdminScopeForAuthUser(
       );
 
   if (resolvedAuthUser == null ||
-      resolvedAuthUser.scopeNames.contains(Scope.admin.name)) {
+      resolvedAuthUser.scopeNames.contains(_adminScopeName)) {
     return;
   }
 
@@ -308,7 +309,7 @@ Future<void> _ensureAdminScopeForAuthUser(
     resolvedAuthUser.copyWith(
       scopeNames: {
         ...resolvedAuthUser.scopeNames,
-        Scope.admin.name!,
+        _adminScopeName,
       },
     ),
     transaction: transaction,
