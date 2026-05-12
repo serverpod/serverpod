@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
+import 'package:serverpod_shared/log.dart' hide LogEntry;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart' hide Cache;
@@ -80,42 +80,49 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
+    // Filter by session start time (SessionLogEntry.time)
+    if (filter != null && filter.startTime != null) {
+      where = where & (SessionLogEntry.t.time >= filter.startTime!);
+    }
+    if (filter != null && filter.endTime != null) {
+      where = where & (SessionLogEntry.t.time < filter.endTime!);
+    }
+
     var rows = await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
-      orderBy: SessionLogEntry.t.id,
-      orderDescending: true,
+      orderBy: SessionLogEntry.t.id.desc(),
+      include: SessionLogEntry.include(
+        logs: LogEntry.includeList(
+          orderByList: (t) => [t.order.asc()],
+        ),
+        queries: QueryLogEntry.includeList(
+          orderByList: (t) => [t.order.asc()],
+        ),
+        messages: MessageLogEntry.includeList(
+          orderByList: (t) => [t.order.asc()],
+        ),
+      ),
     );
+
+    if (rows.isEmpty) {
+      return SessionLogResult(sessionLog: []);
+    }
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var futureLogRows = session.db.find<LogEntry>(
-        where: LogEntry.t.sessionLogId.equals(logEntry.id),
-        orderBy: LogEntry.t.order,
-      );
-
-      var futureQueryRows = session.db.find<QueryLogEntry>(
-        where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
-        orderBy: QueryLogEntry.t.order,
-      );
-
-      var futureMessageRows = session.db.find<MessageLogEntry>(
-        where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
-        orderBy: MessageLogEntry.t.order,
-      );
-
-      final (logRows, queryRows, messageRows) = await (
-        futureLogRows,
-        futureQueryRows,
-        futureMessageRows,
-      ).wait;
-
       sessionLogInfo.add(
         SessionLogInfo(
-          sessionLogEntry: logEntry,
-          logs: logRows,
-          queries: queryRows,
-          messages: messageRows,
+          // Remove the related entities to avoid sending the data duplicated.
+          sessionLogEntry: logEntry.copyWith(
+            logs: null,
+            queries: null,
+            messages: null,
+          ),
+          // Keep the old contract to avoid breaking changes on Insights.
+          logs: logEntry.logs!,
+          queries: logEntry.queries!,
+          messages: logEntry.messages!,
         ),
       );
     }
@@ -187,7 +194,7 @@ class InsightsEndpoint extends Endpoint {
   /// Performs a hot reload of the server.
   Future<bool> hotReload(Session session) async {
     if (!await HotReloader.isHotReloadAvailable()) {
-      stderr.writeln(
+      log.error(
         'Hot reload is not available. You need to run dart with --enable-vm-service.',
       );
       return false;
@@ -207,7 +214,7 @@ class InsightsEndpoint extends Endpoint {
   Future<List<TableDefinition>> getTargetTableDefinition(
     Session session,
   ) async {
-    return session.serverpod.serializationManager.getTargetTableDefinitions();
+    return session.db.analyzer.getTargetTableDefinitions();
   }
 
   /// Returns the structure of the live database by
@@ -232,7 +239,7 @@ class InsightsEndpoint extends Endpoint {
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations = await _getInstalledMigrationVersions(session);
 
-    var versions = await ServerMigrationManager(
+    var versions = await MigrationManager.fromDirectory(
       Directory.current,
     ).listAvailableVersions();
 
@@ -363,7 +370,7 @@ Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
     return await DatabaseMigrationVersion.db.find(session);
   } catch (e) {
     // Ignore if the table does not exist.
-    stderr.writeln('Failed to get installed migrations: $e');
+    log.error('Failed to get installed migrations', error: e);
     return [];
   }
 }

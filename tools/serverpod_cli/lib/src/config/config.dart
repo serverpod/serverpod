@@ -83,6 +83,7 @@ class GeneratorConfig implements ModelLoadConfig {
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
+    this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
@@ -266,6 +267,10 @@ class GeneratorConfig implements ModelLoadConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Whether serializable fields default to `jsonb` instead of `json` when
+  /// stored in the database.
+  final bool serializeAsJsonbByDefault;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -467,18 +472,12 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseDialect = DatabaseDialect.postgres;
-    final maybeDatabaseDialect = generatorConfig['databaseDialect'];
-    if (maybeDatabaseDialect != null) {
-      if (maybeDatabaseDialect is! String ||
-          !DatabaseDialect.values.any((d) => d.name == maybeDatabaseDialect)) {
-        throw SourceSpanFormatException(
-          'Invalid database dialect: "$maybeDatabaseDialect".',
-          maybeDatabaseDialect is YamlNode ? maybeDatabaseDialect.span : null,
-        );
-      }
-      databaseDialect = DatabaseDialect.values.byName(maybeDatabaseDialect);
-    }
+    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
+
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
+      file,
+      generatorConfig,
+    );
 
     return GeneratorConfig(
       name: name,
@@ -490,12 +489,70 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+  }
+
+  static bool _loadSerializeAsJsonbByDefault(
+    File file,
+    Map config,
+  ) {
+    if (!file.existsSync()) return false;
+    return config['serialize_as_jsonb_by_default'] ?? false;
+  }
+
+  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
+    String serverRootDir,
+  ) async {
+    final configDir = Directory(p.join(serverRootDir, 'config'));
+    if (!await configDir.exists()) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialectsByFile = <String, DatabaseDialect>{};
+    await for (final entity in configDir.list(followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
+          basename.startsWith('generator.') ||
+          basename.startsWith('passwords.')) {
+        continue;
+      }
+
+      final yamlRoot = loadYaml(await entity.readAsString());
+      if (yamlRoot == null || yamlRoot is! Map) continue;
+
+      final dialect = inferDatabaseDialectFromConfigMap(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
+      if (dialect != null) {
+        dialectsByFile[basename] = dialect;
+      }
+    }
+
+    if (dialectsByFile.isEmpty) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialects = dialectsByFile.values.toSet();
+    if (dialects.length > 1) {
+      final details = dialectsByFile.entries
+          .map((e) => '${e.key} (${e.value.name})')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database dialects across run-mode config files: $details. '
+        'A Serverpod project must use a single database dialect in all run modes.',
+      );
+    }
+
+    return dialects.single;
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
@@ -725,4 +782,8 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+extension on Iterable<String> {
+  List<String> sorted() => toList()..sort();
 }

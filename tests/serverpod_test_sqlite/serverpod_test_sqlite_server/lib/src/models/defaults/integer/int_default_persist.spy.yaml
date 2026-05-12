@@ -1,0 +1,4 @@
+class: IntDefaultPersist
+table: int_default_persist
+fields:
+  intDefaultPersist: int?, defaultPersist=10

@@ -95,6 +95,7 @@ abstract class DatabaseMigrationVersion
     int? limit,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
@@ -104,7 +105,8 @@ abstract class DatabaseMigrationVersion
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       include: include,
     );
@@ -225,6 +227,7 @@ class DatabaseMigrationVersionIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -270,6 +273,7 @@ class DatabaseMigrationVersionRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
@@ -280,7 +284,8 @@ class DatabaseMigrationVersionRepository {
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -311,6 +316,7 @@ class DatabaseMigrationVersionRepository {
     _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
@@ -321,7 +327,8 @@ class DatabaseMigrationVersionRepository {
       where: where?.call(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -378,6 +385,71 @@ class DatabaseMigrationVersionRepository {
   }) async {
     return session.db.insertRow<DatabaseMigrationVersion>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [DatabaseMigrationVersion]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DatabaseMigrationVersion]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<DatabaseMigrationVersion>> upsert(
+    _i2.DatabaseSession session,
+    List<DatabaseMigrationVersion> rows, {
+    required _i2.ColumnSelections<DatabaseMigrationVersionTable>
+    conflictColumns,
+    _i2.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<DatabaseMigrationVersion>(
+      rows,
+      conflictColumns: conflictColumns(DatabaseMigrationVersion.t),
+      updateColumns: updateColumns?.call(DatabaseMigrationVersion.t),
+      updateWhere: updateWhere?.call(DatabaseMigrationVersion.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [DatabaseMigrationVersion] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DatabaseMigrationVersion] will have its `id` field set.
+  Future<DatabaseMigrationVersion?> upsertRow(
+    _i2.DatabaseSession session,
+    DatabaseMigrationVersion row, {
+    required _i2.ColumnSelections<DatabaseMigrationVersionTable>
+    conflictColumns,
+    _i2.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DatabaseMigrationVersion>(
+      row,
+      conflictColumns: conflictColumns(DatabaseMigrationVersion.t),
+      updateColumns: updateColumns?.call(DatabaseMigrationVersion.t),
+      updateWhere: updateWhere?.call(DatabaseMigrationVersion.t),
       transaction: transaction,
     );
   }
@@ -443,6 +515,7 @@ class DatabaseMigrationVersionRepository {
     int? offset,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -453,7 +526,8 @@ class DatabaseMigrationVersionRepository {
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -469,6 +543,7 @@ class DatabaseMigrationVersionRepository {
     _i2.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
@@ -477,7 +552,8 @@ class DatabaseMigrationVersionRepository {
       rows,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -502,6 +578,7 @@ class DatabaseMigrationVersionRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i2.Transaction? transaction,
@@ -510,7 +587,8 @@ class DatabaseMigrationVersionRepository {
       where: where(DatabaseMigrationVersion.t),
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

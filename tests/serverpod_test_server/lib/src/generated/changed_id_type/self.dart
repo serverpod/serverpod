@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -162,6 +162,7 @@ abstract class ChangedIdTypeSelf
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
@@ -171,7 +172,8 @@ abstract class ChangedIdTypeSelf
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       include: include,
     );
@@ -434,6 +436,7 @@ class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -487,6 +490,7 @@ class ChangedIdTypeSelfRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
@@ -498,7 +502,8 @@ class ChangedIdTypeSelfRepository {
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -530,6 +535,7 @@ class ChangedIdTypeSelfRepository {
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
@@ -541,7 +547,8 @@ class ChangedIdTypeSelfRepository {
       where: where?.call(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -601,6 +608,69 @@ class ChangedIdTypeSelfRepository {
   }) async {
     return session.db.insertRow<ChangedIdTypeSelf>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ChangedIdTypeSelf]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChangedIdTypeSelf]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChangedIdTypeSelf>> upsert(
+    _i1.DatabaseSession session,
+    List<ChangedIdTypeSelf> rows, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChangedIdTypeSelf>(
+      rows,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChangedIdTypeSelf] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChangedIdTypeSelf] will have its `id` field set.
+  Future<ChangedIdTypeSelf?> upsertRow(
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf row, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChangedIdTypeSelf>(
+      row,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
     );
   }
@@ -666,6 +736,7 @@ class ChangedIdTypeSelfRepository {
     int? offset,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -676,7 +747,8 @@ class ChangedIdTypeSelfRepository {
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -692,6 +764,7 @@ class ChangedIdTypeSelfRepository {
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
@@ -700,7 +773,8 @@ class ChangedIdTypeSelfRepository {
       rows,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -725,6 +799,7 @@ class ChangedIdTypeSelfRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
@@ -733,7 +808,8 @@ class ChangedIdTypeSelfRepository {
       where: where(ChangedIdTypeSelf.t),
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

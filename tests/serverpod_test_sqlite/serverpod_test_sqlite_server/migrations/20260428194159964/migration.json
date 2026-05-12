@@ -1,0 +1,80 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_dynamic",
+        "dartName": "ObjectWithDynamic",
+        "module": "serverpod_test_sqlite",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "payload",
+            "fieldName": "payload",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "dynamic"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbPayload",
+            "fieldName": "jsonbPayload",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "dynamic"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "payloadList",
+            "fieldName": "payloadList",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<dynamic>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "payloadMap",
+            "fieldName": "payloadMap",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Map<String,dynamic>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "payloadSet",
+            "fieldName": "payloadSet",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Set<dynamic>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "payloadMapWithDynamicKeys",
+            "fieldName": "payloadMapWithDynamicKeys",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Map<dynamic,dynamic>"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

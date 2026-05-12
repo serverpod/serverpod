@@ -22,26 +22,36 @@ insightsServer:
   publicPort: 443
   publicScheme: https
 
+# {{#web}}
 # Configuration for the web server.
 webServer:
   port: 8082
   publicHost: app-staging.examplepod.com
   publicPort: 443
   publicScheme: https
+# {{/web}}
 
+# {{#database}}
 # This is the database setup for your servers. The default for the Google Cloud
 # Engine Terraform configuration is to connect on a private IP address.
 # If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
 # connect on the public IP of the database e.g. database-staging.examplepod.com.
 database:
+  # {{#postgres}}
   host: database.private-staging.examplepod.com
   port: 5432
   name: serverpod
   user: postgres
   requireSsl: true
   #isUnixSocket: true # defaults to false
+  # {{/postgres}}
+  # {{#sqlite}}
+  filePath: projectname_staging.db
+  # {{/sqlite}}
   #maxConnectionCount: 10 # Defaults to 10, a negative or null value removes the limit
+# {{/database}}
 
+# {{#redis}}
 # This is the setup for Redis. The default for the Google Cloud Engine Terraform
 # configuration is to connect on a private IP address.
 # If you are connecting on a public IP (e.g. on AWS or Google Cloud Run), you
@@ -52,11 +62,14 @@ redis:
   port: 6379
   #user: # defaults to empty
   #requireSsl: true # defaults to false
+# {{/redis}}
 
 maxRequestSize: 524288 # The maximum size of requests allowed in bytes
 
 sessionLogs:
+# {{#postgres}}
 # persistentEnabled: true
+# {{/postgres}}
 # consoleEnabled: true
 # consoleLogFormat: json # Defaults to "json", options are "text" or "json"
 

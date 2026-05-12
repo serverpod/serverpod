@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
@@ -33,6 +34,9 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   CompileResult nextIncrementalResult = _successResult();
 
   @override
+  String get outputDill => '/tmp/fake.dill';
+
+  @override
   Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
     if (changedPaths.isEmpty) {
       calls.add('compile');
@@ -61,6 +65,7 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 class _FakeServer extends Fake implements ServerProcess {
   final List<String> calls = [];
   final Completer<int> _exitCodeCompleter = Completer<int>();
+  final Completer<void> _vmServiceReadyCompleter = Completer<void>();
 
   bool _vmServiceConnected;
   bool reloadSuccess = true;
@@ -76,11 +81,17 @@ class _FakeServer extends Fake implements ServerProcess {
   @override
   Future<int> get exitCode => _exitCodeCompleter.future;
 
+  @override
+  Future<void> get vmServiceReady => _vmServiceReadyCompleter.future;
+
+  @override
+  String? get vmServiceUri => null;
+
   /// Completes [exitCode] with the given code, simulating a crash.
   void simulateExit(int code) => _exitCodeCompleter.complete(code);
 
   @override
-  Future<bool> reload(String dillPath) async {
+  Future<bool> reload(String? dillPath) async {
     calls.add('reload:$dillPath');
     return reloadSuccess;
   }
@@ -118,6 +129,40 @@ void main() {
   late Set<String> generatedFiles;
   late WatchSession session;
 
+  WatchSession buildSession({
+    required KernelCompiler compiler,
+    required ServerProcess initialServer,
+    ServerProcessFactory? createServer,
+    GenerateAction? generate,
+    ApplyMigrationsAction? applyMigrationsAction,
+    ProtocolChangeClassifier? classifyProtocolChange,
+  }) {
+    return WatchSession(
+      compiler: compiler,
+      generate:
+          generate ??
+          (affectedPaths, requirements) async {
+            generateCalls.add(affectedPaths);
+            return (
+              success: generateSuccess,
+              generatedFiles: generatedFiles,
+            );
+          },
+      createServer:
+          createServer ??
+          (String? dillPath) async {
+            factoryCalls.add('createServer:$dillPath');
+            return factoryServer;
+          },
+      initialServer: initialServer,
+      generatedDirPaths: {'/generated'},
+      applyMigrationsAction:
+          applyMigrationsAction ?? () async => const MigrationsApplied(),
+      classifyProtocolChange:
+          classifyProtocolChange ?? defaultProtocolChangeClassifier,
+    );
+  }
+
   setUp(() {
     compiler = _FakeCompiler();
     server = _FakeServer();
@@ -127,24 +172,7 @@ void main() {
     generateSuccess = true;
     generatedFiles = {};
 
-    session = WatchSession(
-      compiler: compiler,
-      generate: (affectedPaths, requirements) async {
-        generateCalls.add(affectedPaths);
-        return (
-          success: generateSuccess,
-          generatedFiles: generatedFiles,
-        );
-      },
-      createServer:
-          (String dillPath, {List<String> extraArgs = const []}) async {
-            final suffix = extraArgs.isEmpty ? '' : '(${extraArgs.join(',')})';
-            factoryCalls.add('createServer:$dillPath$suffix');
-            return factoryServer;
-          },
-      initialServer: server,
-      generatedDirPaths: {'/generated'},
-    );
+    session = buildSession(compiler: compiler, initialServer: server);
   });
 
   group('Given static-only file changes and VM service connected', () {
@@ -613,67 +641,6 @@ void main() {
     );
   });
 
-  group('Given applyMigration is called and compilation succeeds', () {
-    test(
-      'when applyMigration is called, '
-      'then it does a full compile, stops the server, '
-      'and creates a new server with --apply-migrations',
-      () async {
-        await session.applyMigration();
-
-        expect(compiler.calls, ['reset', 'compile', 'accept']);
-        expect(server.calls, ['stop']);
-        expect(factoryCalls, [
-          'createServer:/out.dill(--apply-migrations)',
-        ]);
-      },
-    );
-  });
-
-  group('Given applyMigration is called and compilation fails', () {
-    setUp(() {
-      compiler.nextCompileResult = _failResult();
-    });
-
-    test(
-      'when applyMigration is called, '
-      'then it throws and does not restart the server',
-      () async {
-        await expectLater(
-          session.applyMigration(),
-          throwsA(isA<StateError>()),
-        );
-
-        expect(compiler.calls, ['reset', 'compile', 'reject']);
-        expect(server.calls, isEmpty);
-        expect(factoryCalls, isEmpty);
-      },
-    );
-  });
-
-  group('Given applyMigration is called twice', () {
-    test(
-      'when called twice, '
-      'then each call passes --apply-migrations independently',
-      () async {
-        await session.applyMigration();
-
-        // The factory always returns factoryServer, which is now the
-        // current server. Clear call logs and call again.
-        factoryCalls.clear();
-        compiler.calls.clear();
-
-        await session.applyMigration();
-
-        expect(compiler.calls, ['reset', 'compile', 'accept']);
-        expect(factoryServer.calls, ['stop']);
-        expect(factoryCalls, [
-          'createServer:/out.dill(--apply-migrations)',
-        ]);
-      },
-    );
-  });
-
   group('Given applyMigration is called after dispose', () {
     test(
       'when applyMigration is called, '
@@ -695,6 +662,140 @@ void main() {
     );
   });
 
+  group('Given applyMigration is called with an in-place action', () {
+    late ApplyMigrationsOutcome Function() outcomeBuilder;
+    late int actionCalls;
+    late Completer<ApplyMigrationsOutcome>? gate;
+    late WatchSession inPlaceSession;
+
+    setUp(() {
+      outcomeBuilder = () => const MigrationsApplied();
+      actionCalls = 0;
+      gate = null;
+
+      inPlaceSession = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        applyMigrationsAction: () async {
+          actionCalls++;
+          final localGate = gate;
+          if (localGate != null) return localGate.future;
+          return outcomeBuilder();
+        },
+      );
+    });
+
+    test(
+      'when the action returns versions, '
+      'then it runs the action and leaves the pod alone',
+      () async {
+        await inPlaceSession.applyMigration();
+
+        expect(actionCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when the action returns an empty list, '
+      'then it succeeds (already up to date)',
+      () async {
+        outcomeBuilder = () => const MigrationsApplied();
+
+        await inPlaceSession.applyMigration();
+
+        expect(actionCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when the action throws, '
+      'then the error propagates and state returns to idle',
+      () async {
+        outcomeBuilder = () => throw StateError('boom');
+
+        await expectLater(
+          inPlaceSession.applyMigration(),
+          throwsA(
+            isA<StateError>().having((e) => e.message, 'message', 'boom'),
+          ),
+        );
+
+        // Same session: a follow-up call must reach the action rather
+        // than hit the in-flight latch.
+        outcomeBuilder = () => const MigrationsApplied();
+        await inPlaceSession.applyMigration();
+        expect(actionCalls, 2);
+      },
+    );
+
+    test(
+      'when applyMigration is called after dispose, '
+      'then it throws a StateError without invoking the action',
+      () async {
+        await inPlaceSession.dispose();
+
+        expect(
+          inPlaceSession.applyMigration,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(actionCalls, 0);
+      },
+    );
+
+    test(
+      'when applyMigration is called twice, '
+      'then the calls serialize via _pending',
+      () async {
+        gate = Completer<ApplyMigrationsOutcome>();
+
+        final firstCall = inPlaceSession.applyMigration();
+        // Second call queues behind the first.
+        final secondCall = inPlaceSession.applyMigration();
+
+        // Yield so any eager work runs.
+        await Future<void>.delayed(Duration.zero);
+        expect(actionCalls, 1, reason: 'second call must wait for first');
+
+        gate!.complete(const MigrationsApplied());
+        await firstCall;
+        await secondCall;
+
+        expect(actionCalls, 2);
+      },
+    );
+  });
+
+  group('Given the action returns MigrationsRequirePodRestart', () {
+    test(
+      'when applyMigration completes, '
+      'then the pod is restarted via the factory with the compiler dill',
+      () async {
+        final fallbackSession = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          applyMigrationsAction: () async =>
+              const MigrationsRequirePodRestart(),
+        );
+
+        await fallbackSession.applyMigration();
+
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/tmp/fake.dill']);
+      },
+    );
+  });
+
   group('Given dispose is called', () {
     test(
       'when disposing, '
@@ -708,17 +809,357 @@ void main() {
     );
 
     test(
-      'when server exit completes from stop, '
-      'then done does not complete',
+      'when disposing, '
+      'then done completes with the server exit code',
       () async {
-        // dispose() calls stop(), which completes initialExitCode.
+        // dispose() stops the server and must complete `done` so callers
+        // that `await session.done` from any path (e.g. the TUI quit
+        // path) do not hang.
         await session.dispose();
 
-        var doneCompleted = false;
-        unawaited(session.done.then((_) => doneCompleted = true));
-        await Future<void>.delayed(Duration.zero);
+        await expectLater(session.done, completion(0));
+      },
+    );
+  });
 
-        expect(doneCompleted, isFalse);
+  group(
+    'Given a watch session where no dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
+
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
+
+        classifierSession = buildSession(
+          compiler: classifierCompiler,
+          initialServer: classifierServer,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer: (String? dillPath) async => classifierServer,
+          classifyProtocolChange: (_) async => false,
+        );
+      });
+
+      test(
+        'when only a dart file changes, '
+        'then code generation is skipped and only compile + reload run',
+        () async {
+          final event = FileChangeEvent(dartFiles: {'/lib/helper.dart'});
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, isEmpty);
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/helper.dart]',
+            'accept',
+          ]);
+          expect(classifierServer.calls, ['reload:/out.dill']);
+        },
+      );
+
+      test(
+        'when a model file changes alongside a dart file, '
+        'then code generation still runs because model changes always force regeneration',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/helper.dart'},
+            modelFiles: {'/lib/src/models/user.spy.yaml'},
+          );
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(
+            classifierGenerateCalls.first,
+            containsAll(<String>{'/lib/src/models/user.spy.yaml'}),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where every dart change is protocol-relevant',
+    () {
+      late _FakeCompiler classifierCompiler;
+      late _FakeServer classifierServer;
+      late List<Set<String>> classifierGenerateCalls;
+      late WatchSession classifierSession;
+
+      setUp(() {
+        classifierCompiler = _FakeCompiler();
+        classifierServer = _FakeServer();
+        classifierGenerateCalls = [];
+
+        classifierSession = buildSession(
+          compiler: classifierCompiler,
+          initialServer: classifierServer,
+          generate: (affectedPaths, requirements) async {
+            classifierGenerateCalls.add(affectedPaths);
+            return (success: true, generatedFiles: <String>{});
+          },
+          createServer: (String? dillPath) async => classifierServer,
+          classifyProtocolChange: (_) async => true,
+        );
+      });
+
+      test(
+        'when a dart file changes, '
+        'then code generation runs and the changed file is included in '
+        'the regenerated paths',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/endpoints/user.dart'},
+          );
+
+          await classifierSession.handleFileChange(event);
+
+          expect(classifierGenerateCalls, hasLength(1));
+          expect(classifierGenerateCalls.first, {'/lib/endpoints/user.dart'});
+          expect(classifierCompiler.calls, [
+            'compile(changed):[/lib/endpoints/user.dart]',
+            'accept',
+          ]);
+        },
+      );
+    },
+  );
+
+  group('Given defaultProtocolChangeClassifier', () {
+    test(
+      'when the file does not exist, '
+      'then it returns true (conservative default for deletes)',
+      () async {
+        final result = await defaultProtocolChangeClassifier(
+          '/nonexistent/path/that/does/not/exist.dart',
+        );
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends Endpoint, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/endpoint.dart');
+        await file.writeAsString('''
+import 'package:serverpod/serverpod.dart';
+class MyEndpoint extends Endpoint {
+  Future<String> hello(Session session) async => 'hi';
+}
+''');
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends StreamingEndpoint, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/stream.dart');
+        await file.writeAsString(
+          'class S extends StreamingEndpoint { }',
+        );
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file contains extends FutureCall, '
+      'then it returns true',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/fcall.dart');
+        await file.writeAsString(
+          'class F extends FutureCall<MyModel> { }',
+        );
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isTrue);
+      },
+    );
+
+    test(
+      'when the file is pure helper code with no endpoint markers, '
+      'then it returns false',
+      () async {
+        final tempDir = await Directory.systemTemp.createTemp('watch_test_');
+        addTearDown(() => tempDir.delete(recursive: true));
+        final file = File('${tempDir.path}/helper.dart');
+        await file.writeAsString('''
+String greet(String name) => 'Hello, \$name';
+class Counter {
+  int value = 0;
+  void increment() => value++;
+}
+''');
+
+        final result = await defaultProtocolChangeClassifier(file.path);
+
+        expect(result, isFalse);
+      },
+    );
+  });
+
+  group('Given a watch session with no compiler', () {
+    late _FakeServer noCompilerServer;
+    late _FakeServer noCompilerFactoryServer;
+    late List<String> noCompilerFactoryCalls;
+    late List<Set<String>> noCompilerGenerateCalls;
+    late Set<String> noCompilerGeneratedFiles;
+    late WatchSession noCompilerSession;
+
+    setUp(() {
+      noCompilerServer = _FakeServer();
+      noCompilerFactoryServer = _FakeServer();
+      noCompilerFactoryCalls = [];
+      noCompilerGenerateCalls = [];
+      noCompilerGeneratedFiles = {};
+
+      noCompilerSession = WatchSession(
+        generate: (affectedPaths, requirements) async {
+          noCompilerGenerateCalls.add(affectedPaths);
+          return (success: true, generatedFiles: noCompilerGeneratedFiles);
+        },
+        createServer: (String? dillPath) async {
+          noCompilerFactoryCalls.add('createServer:$dillPath');
+          return noCompilerFactoryServer;
+        },
+        initialServer: noCompilerServer,
+        generatedDirPaths: {'/generated'},
+        applyMigrationsAction: () async => const MigrationsApplied(),
+      );
+    });
+
+    test(
+      'when a dart file changes, '
+      'then it runs codegen and triggers reload without compiling',
+      () async {
+        final event = FileChangeEvent(dartFiles: {'/lib/a.dart'});
+
+        await noCompilerSession.handleFileChange(event);
+
+        expect(noCompilerGenerateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(noCompilerServer.calls, ['reload:null']);
+      },
+    );
+
+    test(
+      'when only static files change, '
+      'then it notifies static change without reloading or generating',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {},
+          staticFilesChanged: true,
+        );
+
+        await noCompilerSession.handleFileChange(event);
+
+        expect(noCompilerServer.calls, ['notifyStaticChange']);
+        expect(noCompilerGenerateCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when forceReload is called, '
+      'then it triggers reload without compiling',
+      () async {
+        await noCompilerSession.forceReload();
+
+        expect(noCompilerServer.calls, ['reload:null']);
+      },
+    );
+
+    test(
+      'when forceReload is called and reload returns false, '
+      'then it does not throw',
+      () async {
+        noCompilerServer.reloadSuccess = false;
+
+        await noCompilerSession.forceReload();
+
+        expect(noCompilerServer.calls, ['reload:null']);
+      },
+    );
+
+    test(
+      'when forceReload is called and the VM service is not connected, '
+      'then it skips reload',
+      () async {
+        noCompilerServer.isVmServiceConnected = false;
+
+        await noCompilerSession.forceReload();
+
+        expect(noCompilerServer.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when applyMigration is called, '
+      'then it runs the in-place action and leaves the pod alone',
+      () async {
+        await noCompilerSession.applyMigration();
+
+        expect(noCompilerServer.calls, isEmpty);
+        expect(noCompilerFactoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when dispose is called, '
+      'then it stops the server (no compiler to dispose)',
+      () async {
+        await noCompilerSession.dispose();
+
+        expect(noCompilerServer.calls, ['stop']);
+      },
+    );
+  });
+
+  group('Given a watch session with no compiler and no factory', () {
+    late _FakeServer noFactoryServer;
+    late WatchSession noFactorySession;
+
+    setUp(() {
+      noFactoryServer = _FakeServer();
+      noFactorySession = WatchSession(
+        generate: (affectedPaths, requirements) async =>
+            (success: true, generatedFiles: <String>{}),
+        initialServer: noFactoryServer,
+        generatedDirPaths: {'/generated'},
+        applyMigrationsAction: () async => const MigrationsApplied(),
+      );
+    });
+
+    test(
+      'when forceReload is called, '
+      'then it triggers reload via the existing server',
+      () async {
+        await noFactorySession.forceReload();
+
+        expect(noFactoryServer.calls, ['reload:null']);
       },
     );
   });

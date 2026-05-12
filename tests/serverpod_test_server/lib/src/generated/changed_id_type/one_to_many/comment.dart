@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -102,6 +102,7 @@ abstract class CommentInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     CommentIntInclude? include,
@@ -111,7 +112,8 @@ abstract class CommentInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CommentInt.t),
       include: include,
     );
@@ -242,6 +244,7 @@ class CommentIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -289,6 +292,7 @@ class CommentIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -300,7 +304,8 @@ class CommentIntRepository {
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -332,6 +337,7 @@ class CommentIntRepository {
     _i1.WhereExpressionBuilder<CommentIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -343,7 +349,8 @@ class CommentIntRepository {
       where: where?.call(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -407,6 +414,69 @@ class CommentIntRepository {
     );
   }
 
+  /// Upserts all [CommentInt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CommentInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CommentInt>> upsert(
+    _i1.DatabaseSession session,
+    List<CommentInt> rows, {
+    required _i1.ColumnSelections<CommentIntTable> conflictColumns,
+    _i1.ColumnSelections<CommentIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CommentIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CommentInt>(
+      rows,
+      conflictColumns: conflictColumns(CommentInt.t),
+      updateColumns: updateColumns?.call(CommentInt.t),
+      updateWhere: updateWhere?.call(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CommentInt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CommentInt] will have its `id` field set.
+  Future<CommentInt?> upsertRow(
+    _i1.DatabaseSession session,
+    CommentInt row, {
+    required _i1.ColumnSelections<CommentIntTable> conflictColumns,
+    _i1.ColumnSelections<CommentIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CommentIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CommentInt>(
+      row,
+      conflictColumns: conflictColumns(CommentInt.t),
+      updateColumns: updateColumns?.call(CommentInt.t),
+      updateWhere: updateWhere?.call(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [CommentInt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
@@ -466,6 +536,7 @@ class CommentIntRepository {
     int? offset,
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -476,7 +547,8 @@ class CommentIntRepository {
       offset: offset,
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -492,6 +564,7 @@ class CommentIntRepository {
     _i1.DatabaseSession session,
     List<CommentInt> rows, {
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -500,7 +573,8 @@ class CommentIntRepository {
       rows,
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -525,6 +599,7 @@ class CommentIntRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CommentIntTable> where,
     _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -533,7 +608,8 @@ class CommentIntRepository {
       where: where(CommentInt.t),
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

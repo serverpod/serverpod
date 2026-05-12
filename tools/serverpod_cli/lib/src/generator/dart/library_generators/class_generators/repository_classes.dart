@@ -3,6 +3,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 
 class BuildRepositoryClass {
   final bool serverCode;
@@ -13,9 +14,11 @@ class BuildRepositoryClass {
     required this.config,
   });
 
+  String get _databaseRuntimeUrl => serverpodDatabaseRuntimeUrl(serverCode);
+
   Reference get _sessionReference => refer(
     'DatabaseSession',
-    'package:serverpod/serverpod.dart',
+    _databaseRuntimeUrl,
   );
 
   Class buildModelRepositoryClass(
@@ -79,6 +82,8 @@ class BuildRepositoryClass {
           _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
+          _buildUpsertMethod(className),
+          _buildUpsertRowMethod(className),
           _buildUpdateMethod(className),
           _buildUpdateRowMethod(className),
           _buildUpdateByIdMethod(className, idTypeReference),
@@ -211,9 +216,15 @@ class BuildRepositoryClass {
   }
 
   bool hasImplicitClassOperations(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
-    return fields.any((e) => e.hiddenSerializableField(serverCode));
+    List<SerializableModelFieldDefinition> fields, {
+    required bool hasTableForModel,
+  }) {
+    return fields.any(
+      (e) => e.shouldIncludeHiddenFieldInModelClass(
+        serverCode,
+        modelHasTable: hasTableForModel,
+      ),
+    );
   }
 
   bool _isListRelation(SerializableModelFieldDefinition field) {
@@ -330,6 +341,7 @@ class BuildRepositoryClass {
             (p) => p
               ..type = refer('bool')
               ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..defaultTo = const Code('false')
               ..named = true,
           ),
@@ -345,7 +357,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -367,7 +379,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -378,7 +390,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -402,7 +414,9 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': refer('orderDescending'),
+                'orderDescending': const CodeExpression(
+                  Code('// ignore: deprecated_member_use\norderDescending'),
+                ),
                 'limit': refer('limit'),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
@@ -491,6 +505,7 @@ class BuildRepositoryClass {
             (p) => p
               ..type = refer('bool')
               ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..defaultTo = const Code('false')
               ..named = true,
           ),
@@ -506,7 +521,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -528,7 +543,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -539,7 +554,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -563,7 +578,9 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': refer('orderDescending'),
+                'orderDescending': const CodeExpression(
+                  Code('// ignore: deprecated_member_use\norderDescending'),
+                ),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
@@ -619,7 +636,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -641,7 +658,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockMode'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockMode'
               ..named = true,
@@ -652,7 +669,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true,
@@ -717,7 +734,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -779,7 +796,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -792,6 +809,217 @@ class BuildRepositoryClass {
             .call(
               [refer('row')],
               {
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpsertMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts all [$className]s in the list and returns the resulting rows.
+///
+/// If a row conflicts on the given [conflictColumns], the existing row is
+/// updated with the new values. Otherwise, a new row is inserted.
+///
+/// If [updateColumns] is provided, only those columns will be updated on
+/// conflict. If null, all non-conflict, non-id columns are updated.
+///
+/// If [updateWhere] is provided, the update only applies to rows matching the
+/// given expression. Conflicting rows that don't match are skipped and not
+/// returned, so the resulting list may be shorter than [rows].
+///
+/// The returned [$className]s will have their `id` fields set.
+///
+/// This is an atomic operation, meaning that if one of the rows fails,
+/// none of the rows will be affected.''')
+        ..name = 'upsert'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer('List<$className>')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('List<$className>')
+              ..name = 'rows',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'conflictColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'updateColumns'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(className, serverCode)
+              ..name = 'updateWhere'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsert')
+            .call(
+              [refer('rows')],
+              {
+                'conflictColumns': refer('conflictColumns').call([
+                  refer(className).property('t'),
+                ]),
+                'updateColumns': refer('updateColumns')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'updateWhere': refer('updateWhere')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpsertRowMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts a single [$className] and returns the resulting row.
+///
+/// If the row conflicts on the given [conflictColumns], the existing row is
+/// updated. Otherwise, a new row is inserted.
+///
+/// If [updateColumns] is provided, only those columns will be updated on
+/// conflict. If null, all non-conflict, non-id columns are updated.
+///
+/// If [updateWhere] is provided, the update only applies when the existing
+/// row matches the expression. Returns `null` if no row was affected — for
+/// example when [updateWhere] does not match the conflicting row.
+///
+/// The returned [$className] will have its `id` field set.''')
+        ..name = 'upsertRow'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (t) => t
+                  ..symbol = className
+                  ..isNullable = true,
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer(className)
+              ..name = 'row',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'conflictColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'updateColumns'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(className, serverCode)
+              ..name = 'updateWhere'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsertRow')
+            .call(
+              [refer('row')],
+              {
+                'conflictColumns': refer('conflictColumns').call([
+                  refer(className).property('t'),
+                ]),
+                'updateColumns': refer('updateColumns')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'updateWhere': refer('updateWhere')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
                 'transaction': refer('transaction'),
               },
               [refer(className)],
@@ -835,7 +1063,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columns'
               ..named = true,
@@ -846,7 +1074,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -903,7 +1131,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'ColumnSelections<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columns'
               ..named = true,
@@ -914,7 +1142,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -978,7 +1206,7 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'columnValues'
               ..named = true
@@ -990,7 +1218,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1045,23 +1273,22 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
               ..name = 'columnValues'
+              ..type = typeColumnValueListBuilder(
+                className,
+                serverCode,
+              )
               ..named = true
               ..required = true,
           ),
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'WhereExpressionBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
               ..name = 'where'
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+                nullable: false,
+              )
               ..named = true
               ..required = true,
           ),
@@ -1079,32 +1306,23 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'OrderByBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart'
-                  ..isNullable = true,
-              )
               ..name = 'orderBy'
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..symbol = 'OrderByListBuilder<${className}Table>'
-                  ..url = 'package:serverpod/serverpod.dart'
-                  ..isNullable = true,
-              )
-              ..name = 'orderByList'
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
-              ..type = refer('bool', 'dart:core')
-              ..name = 'orderDescending'
               ..named = true
-              ..defaultTo = const Code('false'),
+              ..type = typeOrderByBuilder(className, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderByList'
+              ..named = true
+              ..type = typeOrderByListBuilder(className, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
+              ..named = true
+              ..defaultTo = const Code('false')
+              ..type = refer('bool'),
           ),
           Parameter(
             (p) => p
@@ -1112,7 +1330,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1139,7 +1357,9 @@ class BuildRepositoryClass {
                 'orderByList': refer('orderByList')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
-                'orderDescending': refer('orderDescending'),
+                'orderDescending': const CodeExpression(
+                  Code('// ignore: deprecated_member_use\norderDescending'),
+                ),
                 'transaction': refer('transaction'),
               },
               [refer(className)],
@@ -1199,6 +1419,7 @@ class BuildRepositoryClass {
             (p) => p
               ..type = refer('bool')
               ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..defaultTo = const Code('false')
               ..named = true,
           ),
@@ -1214,7 +1435,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1235,7 +1456,9 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': refer('orderDescending'),
+                'orderDescending': const CodeExpression(
+                  Code('// ignore: deprecated_member_use\norderDescending'),
+                ),
                 'transaction': refer('transaction'),
               },
               [refer(className)],
@@ -1278,7 +1501,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1353,6 +1576,7 @@ class BuildRepositoryClass {
             (p) => p
               ..type = refer('bool')
               ..name = 'orderDescending'
+              ..annotations.add(deprecatedOrderDescendingAnnotation())
               ..defaultTo = const Code('false')
               ..named = true,
           ),
@@ -1368,7 +1592,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1390,7 +1614,9 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': refer('orderDescending'),
+                'orderDescending': const CodeExpression(
+                  Code('// ignore: deprecated_member_use\norderDescending'),
+                ),
                 'transaction': refer('transaction'),
               },
               [refer(className)],
@@ -1445,7 +1671,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1499,14 +1725,14 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('LockMode', 'package:serverpod/serverpod.dart')
+              ..type = refer('LockMode', _databaseRuntimeUrl)
               ..name = 'lockMode'
               ..named = true
               ..required = true,
           ),
           Parameter(
             (p) => p
-              ..type = refer('Transaction', 'package:serverpod/serverpod.dart')
+              ..type = refer('Transaction', _databaseRuntimeUrl)
               ..name = 'transaction'
               ..named = true
               ..required = true,
@@ -1516,13 +1742,13 @@ class BuildRepositoryClass {
               ..type = TypeReference(
                 (b) => b
                   ..symbol = 'LockBehavior'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'lockBehavior'
               ..named = true
               ..defaultTo = refer(
                 'LockBehavior',
-                'package:serverpod/serverpod.dart',
+                _databaseRuntimeUrl,
               ).property('wait').code,
           ),
         ])
@@ -1645,7 +1871,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1722,7 +1948,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -1797,7 +2023,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2016,7 +2242,7 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-            refer(classFieldName, 'package:serverpod/serverpod.dart');
+            refer(classFieldName, _databaseRuntimeUrl);
           }),
         ])
         ..optionalParameters.add(
@@ -2026,7 +2252,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2103,7 +2329,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,
@@ -2168,7 +2394,7 @@ class BuildRepositoryClass {
                 (b) => b
                   ..isNullable = true
                   ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
+                  ..url = _databaseRuntimeUrl,
               )
               ..name = 'transaction'
               ..named = true,

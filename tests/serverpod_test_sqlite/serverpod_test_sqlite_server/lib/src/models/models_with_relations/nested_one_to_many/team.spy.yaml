@@ -1,0 +1,12 @@
+class: Team
+table: team
+database: all
+fields:
+  name: String
+  arenaId: int?
+  arena: Arena?, relation(name=arena_team, field=arenaId, onDelete=SetNull)
+  players: List<Player>?, relation(name=team_player)
+indexes:
+  arena_index_idx:
+    fields: arenaId
+    unique: true

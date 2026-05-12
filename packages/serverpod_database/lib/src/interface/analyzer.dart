@@ -1,7 +1,7 @@
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod_database.dart' hide Protocol;
-import '../util/stderr_util.dart';
 
 /// The current schema version of the database definition.
 const currentSchemaVersion = 2;
@@ -69,8 +69,22 @@ abstract class DatabaseAnalyzer {
       ];
     } catch (e) {
       // Ignore if the table does not exist.
-      writeError('Failed to get installed migrations: $e');
+      log.error('Failed to get installed migrations', error: e);
       return [];
     }
+  }
+}
+
+/// Extensions on [DatabaseAnalyzer] to add functionality not overridden by
+/// the concrete analyzer implementations.
+extension DatabaseAnalyzerExtensions on DatabaseAnalyzer {
+  /// Gets the target database definition for the current dialect.
+  ///
+  /// This is used to compare the live database to the target database. The
+  /// definitions returned by this method do not contain elements that are
+  /// ignored on the current dialect (e.g. unsupported index types).
+  List<TableDefinition> getTargetTableDefinitions() {
+    var tables = database.serializationManager.getTargetTableDefinitions();
+    return tables.forDialect(database.dialect);
   }
 }

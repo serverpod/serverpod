@@ -16,7 +16,8 @@ enum DependencyType {
   transitive('transitive'),
 
   /// Direct overridden dependency
-  directOverridden('direct overridden');
+  directOverridden('direct overridden'),
+  ;
 
   final String value;
   const DependencyType(this.value);
@@ -41,7 +42,8 @@ enum PackageSource {
   git('git'),
 
   /// SDK dependency (dart, flutter)
-  sdk('sdk');
+  sdk('sdk'),
+  ;
 
   final String value;
   const PackageSource(this.value);

@@ -46,4 +46,93 @@ void main() {
       },
     );
   }
+
+  test(
+    'Given SQLite database table definition '
+    'when generating SQL for SQLite, '
+    'then table id column uses INTEGER PRIMARY KEY.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder().withName('example_table').build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(sql, contains('"id" INTEGER PRIMARY KEY'));
+    },
+  );
+
+  for (var (idType, definitionContains) in [
+    (SupportedIdType.int, '"id" INTEGER PRIMARY KEY'),
+    (
+      SupportedIdType.uuidV4,
+      '"id" BLOB PRIMARY KEY DEFAULT (unhex(hex(randomblob(6)) || \'4\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
+    ),
+    (
+      SupportedIdType.uuidV7,
+      '"id" BLOB PRIMARY KEY DEFAULT (unhex(printf(\'%012x\', CAST(unixepoch(\'now\', \'subsecond\') * 1000 AS INTEGER)) || \'7\' || substr(hex(randomblob(2)), 2, 3) || substr(\'89AB\', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15)))',
+    ),
+  ]) {
+    test(
+      'Given SQLite database table definition '
+      'when generating SQL for SQLite with id set to ${idType.aliases.first}, '
+      'then the table id column contains expected fragment.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withIdType(idType)
+                  .withName('example_table')
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains(definitionContains));
+      },
+    );
+  }
+
+  test(
+    'Given SQLite definition where the last table ends with a basic column after non-basic columns, '
+    'when generating SQL for SQLite, '
+    'then the serverpod_sqlite_schema VALUES list terminates the last row with a semicolon.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            // The id is a non-basic column and the default text name column is
+            // the basic column that should be skipped.
+            TableDefinitionBuilder()
+                .withName('z_last_table')
+                .withIdType(SupportedIdType.uuidV4)
+                .build(),
+          )
+          .build();
+
+      var sql = databaseDefinition.toSqliteSql(
+        installedModules: databaseDefinition.installedModules,
+      );
+
+      expect(
+        sql,
+        contains("('z_last_table', 'id', 'uuid', NULL);"),
+        reason: 'Must close VALUES with ";" to be valid SQL.',
+      );
+      expect(
+        sql,
+        isNot(contains("('z_last_table', 'id', 'uuid', NULL),")),
+        reason: 'Trailing "," after the final row is invalid SQL.',
+      );
+    },
+  );
 }

@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -147,6 +147,7 @@ abstract class CitizenInt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
@@ -156,7 +157,8 @@ abstract class CitizenInt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CitizenInt.t),
       include: include,
     );
@@ -368,6 +370,7 @@ class CitizenIntIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -417,6 +420,7 @@ class CitizenIntRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -428,7 +432,8 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -460,6 +465,7 @@ class CitizenIntRepository {
     _i1.WhereExpressionBuilder<CitizenIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -471,7 +477,8 @@ class CitizenIntRepository {
       where: where?.call(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -535,6 +542,69 @@ class CitizenIntRepository {
     );
   }
 
+  /// Upserts all [CitizenInt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CitizenInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CitizenInt>> upsert(
+    _i1.DatabaseSession session,
+    List<CitizenInt> rows, {
+    required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
+    _i1.ColumnSelections<CitizenIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CitizenInt>(
+      rows,
+      conflictColumns: conflictColumns(CitizenInt.t),
+      updateColumns: updateColumns?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CitizenInt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CitizenInt] will have its `id` field set.
+  Future<CitizenInt?> upsertRow(
+    _i1.DatabaseSession session,
+    CitizenInt row, {
+    required _i1.ColumnSelections<CitizenIntTable> conflictColumns,
+    _i1.ColumnSelections<CitizenIntTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CitizenIntTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CitizenInt>(
+      row,
+      conflictColumns: conflictColumns(CitizenInt.t),
+      updateColumns: updateColumns?.call(CitizenInt.t),
+      updateWhere: updateWhere?.call(CitizenInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [CitizenInt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
@@ -594,6 +664,7 @@ class CitizenIntRepository {
     int? offset,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -604,7 +675,8 @@ class CitizenIntRepository {
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -620,6 +692,7 @@ class CitizenIntRepository {
     _i1.DatabaseSession session,
     List<CitizenInt> rows, {
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -628,7 +701,8 @@ class CitizenIntRepository {
       rows,
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -653,6 +727,7 @@ class CitizenIntRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
@@ -661,7 +736,8 @@ class CitizenIntRepository {
       where: where(CitizenInt.t),
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

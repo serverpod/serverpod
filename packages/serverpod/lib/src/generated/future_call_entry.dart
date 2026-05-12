@@ -11,6 +11,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'future_call_scheduling.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry
@@ -22,6 +24,7 @@ abstract class FutureCallEntry
     this.serializedObject,
     required this.serverId,
     this.identifier,
+    this.scheduling,
   });
 
   factory FutureCallEntry({
@@ -31,6 +34,7 @@ abstract class FutureCallEntry
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,6 +45,11 @@ abstract class FutureCallEntry
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,
+      scheduling: jsonSerialization['scheduling'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.FutureCallScheduling>(
+              jsonSerialization['scheduling'],
+            ),
     );
   }
 
@@ -66,6 +75,10 @@ abstract class FutureCallEntry
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  /// Specifies how recurring calls should be scheduled.
+  /// This field is null for one-off future calls.
+  _i2.FutureCallScheduling? scheduling;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -79,6 +92,7 @@ abstract class FutureCallEntry
     String? serializedObject,
     String? serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,6 +104,7 @@ abstract class FutureCallEntry
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJson(),
     };
   }
 
@@ -103,6 +118,7 @@ abstract class FutureCallEntry
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
+      if (scheduling != null) 'scheduling': scheduling?.toJsonForProtocol(),
     };
   }
 
@@ -115,6 +131,7 @@ abstract class FutureCallEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
@@ -124,7 +141,8 @@ abstract class FutureCallEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
     );
@@ -146,6 +164,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serializedObject,
     required String serverId,
     String? identifier,
+    _i2.FutureCallScheduling? scheduling,
   }) : super._(
          id: id,
          name: name,
@@ -153,6 +172,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
          serializedObject: serializedObject,
          serverId: serverId,
          identifier: identifier,
+         scheduling: scheduling,
        );
 
   /// Returns a shallow copy of this [FutureCallEntry]
@@ -166,6 +186,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     Object? serializedObject = _Undefined,
     String? serverId,
     Object? identifier = _Undefined,
+    Object? scheduling = _Undefined,
   }) {
     return FutureCallEntry(
       id: id is int? ? id : this.id,
@@ -176,6 +197,9 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
+      scheduling: scheduling is _i2.FutureCallScheduling?
+          ? scheduling
+          : this.scheduling?.copyWith(),
     );
   }
 }
@@ -208,6 +232,12 @@ class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
     table.identifier,
     value,
   );
+
+  _i1.ColumnValue<_i2.FutureCallScheduling, _i2.FutureCallScheduling>
+  scheduling(_i2.FutureCallScheduling? value) => _i1.ColumnValue(
+    table.scheduling,
+    value,
+  );
 }
 
 class FutureCallEntryTable extends _i1.Table<int?> {
@@ -234,6 +264,10 @@ class FutureCallEntryTable extends _i1.Table<int?> {
       'identifier',
       this,
     );
+    scheduling = _i1.ColumnSerializable<_i2.FutureCallScheduling>(
+      'scheduling',
+      this,
+    );
   }
 
   late final FutureCallEntryUpdateTable updateTable;
@@ -253,6 +287,10 @@ class FutureCallEntryTable extends _i1.Table<int?> {
   /// An optional identifier which can be used to cancel the call.
   late final _i1.ColumnString identifier;
 
+  /// Specifies how recurring calls should be scheduled.
+  /// This field is null for one-off future calls.
+  late final _i1.ColumnSerializable<_i2.FutureCallScheduling> scheduling;
+
   @override
   List<_i1.Column> get columns => [
     id,
@@ -261,6 +299,7 @@ class FutureCallEntryTable extends _i1.Table<int?> {
     serializedObject,
     serverId,
     identifier,
+    scheduling,
   ];
 }
 
@@ -280,6 +319,7 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -325,6 +365,7 @@ class FutureCallEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -335,7 +376,8 @@ class FutureCallEntryRepository {
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -366,6 +408,7 @@ class FutureCallEntryRepository {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -376,7 +419,8 @@ class FutureCallEntryRepository {
       where: where?.call(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -433,6 +477,69 @@ class FutureCallEntryRepository {
   }) async {
     return session.db.insertRow<FutureCallEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [FutureCallEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [FutureCallEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<FutureCallEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<FutureCallEntry> rows, {
+    required _i1.ColumnSelections<FutureCallEntryTable> conflictColumns,
+    _i1.ColumnSelections<FutureCallEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<FutureCallEntry>(
+      rows,
+      conflictColumns: conflictColumns(FutureCallEntry.t),
+      updateColumns: updateColumns?.call(FutureCallEntry.t),
+      updateWhere: updateWhere?.call(FutureCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [FutureCallEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [FutureCallEntry] will have its `id` field set.
+  Future<FutureCallEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    FutureCallEntry row, {
+    required _i1.ColumnSelections<FutureCallEntryTable> conflictColumns,
+    _i1.ColumnSelections<FutureCallEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<FutureCallEntry>(
+      row,
+      conflictColumns: conflictColumns(FutureCallEntry.t),
+      updateColumns: updateColumns?.call(FutureCallEntry.t),
+      updateWhere: updateWhere?.call(FutureCallEntry.t),
       transaction: transaction,
     );
   }
@@ -498,6 +605,7 @@ class FutureCallEntryRepository {
     int? offset,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -508,7 +616,8 @@ class FutureCallEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -524,6 +633,7 @@ class FutureCallEntryRepository {
     _i1.DatabaseSession session,
     List<FutureCallEntry> rows, {
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -532,7 +642,8 @@ class FutureCallEntryRepository {
       rows,
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -557,6 +668,7 @@ class FutureCallEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -565,7 +677,8 @@ class FutureCallEntryRepository {
       where: where(FutureCallEntry.t),
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

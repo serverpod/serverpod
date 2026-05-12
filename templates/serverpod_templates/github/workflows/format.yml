@@ -15,7 +15,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.8.0
+          sdk: 3.10.3
 
       - name: Install dependencies
         working-directory: projectname_server

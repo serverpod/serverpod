@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../serverpod_database.dart';
+import '../adapters/sqlite/value_encoder.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
@@ -66,6 +67,19 @@ class ColumnByteData extends Column<ByteData> {
 class ColumnSerializable<T> extends Column<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+}
+
+/// A [Column] holding a [SerializableModel]. The entity will be stored in the
+/// database as a binary-encoded object that retains the JSON structure.
+/// Stored as JSONB on Postgres (with indexing support) and BLOB on SQLite.
+class ColumnStructured<T> extends Column<T> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnStructured(
     super.columnName,
     super.table, {
     super.hasDefault,
@@ -877,14 +891,20 @@ class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _ILikeExpression(super.column, super.other);
 
   @override
-  String get operator => 'ILIKE';
+  String get operator => switch (ValueEncoder.instance) {
+    SqliteValueEncoder() => 'LIKE',
+    _ => 'ILIKE',
+  };
 }
 
 class _NotILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _NotILikeExpression(super.column, super.other);
 
   @override
-  String get operator => 'NOT ILIKE';
+  String get operator => switch (ValueEncoder.instance) {
+    SqliteValueEncoder() => 'NOT LIKE',
+    _ => 'NOT ILIKE',
+  };
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {

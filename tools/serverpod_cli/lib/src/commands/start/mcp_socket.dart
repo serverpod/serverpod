@@ -1,33 +1,49 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/util/platform_check.dart';
-import 'package:stream_channel/stream_channel.dart';
 
 import 'mcp_server.dart';
 
 /// Manages a Unix socket that accepts MCP client connections.
 ///
-/// The CLI process listens on a socket file (typically
-/// `.dart_tool/serverpod/mcp.sock`). Clients connect to interact with the
-/// running dev environment via JSON-RPC (MCP protocol). Only one client
-/// connection is active at a time.
+/// Each `serverpod start --watch` process listens on
+/// `<systemTemp>/serverpod/serverpod-<pid>-<project>.sock`. Clients connect
+/// to interact with the running dev environment via JSON-RPC (MCP protocol).
+/// Only one client connection is active at a time.
 class McpSocketServer {
+  /// Sanitized project name embedded in the socket filename.
+  final String project;
+
+  /// Absolute path to this server's socket file.
   final String socketPath;
+
   ServerSocket? _serverSocket;
   Socket? _clientSocket;
   ServerpodMcpServer? _mcpServer;
   Future<void>? _pendingShutdown;
   bool _closing = false;
 
-  /// Callback wired once via [connect].
+  /// Callbacks wired once via [connect].
   Future<void> Function()? _onApplyMigration;
+  Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
+  _onCreateMigration;
+  Future<void> Function()? _onHotReload;
+  List<Object> Function()? _getLogHistory;
+  String? Function()? _getVmServiceUri;
+  Stream<void>? _vmServiceUriChanges;
 
-  McpSocketServer({required this.socketPath});
+  McpSocketServer({required String project})
+    : project = sanitizeProjectName(project),
+      socketPath = serverpodMcpSocketPath(
+        pid: pid,
+        project: project,
+      );
 
   /// Start listening for connections.
   Future<void> start() async {
+    ensureServerpodMcpSocketDir();
     _serverSocket = await bindUnixSocket(socketPath);
     _serverSocket!.listen(_handleConnection);
   }
@@ -36,9 +52,28 @@ class McpSocketServer {
   /// after a client connects.
   void connect({
     required Future<void> Function() onApplyMigration,
+    Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
+    onCreateMigration,
+    Future<void> Function()? onHotReload,
+    List<Object> Function()? getLogHistory,
+    String? Function()? getVmServiceUri,
+    Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
-    _mcpServer?.onApplyMigration = onApplyMigration;
+    _onCreateMigration = onCreateMigration;
+    _onHotReload = onHotReload;
+    _getLogHistory = getLogHistory;
+    _getVmServiceUri = getVmServiceUri;
+    _vmServiceUriChanges = vmServiceUriChanges;
+    final server = _mcpServer;
+    if (server != null) {
+      server.onApplyMigration = onApplyMigration;
+      server.onCreateMigration = onCreateMigration;
+      server.onHotReload = onHotReload;
+      server.getLogHistory = getLogHistory;
+      server.getVmServiceUri = getVmServiceUri;
+      server.vmServiceUriChanges = vmServiceUriChanges;
+    }
   }
 
   /// Shut down the socket server and clean up.
@@ -82,14 +117,17 @@ class McpSocketServer {
     _clientSocket?.destroy();
     _clientSocket = socket;
 
-    final channel = _socketChannel(socket);
+    final channel = socketChannel(socket);
     final server = ServerpodMcpServer(channel);
     _mcpServer = server;
 
-    // Wire callback if already connected.
-    if (_onApplyMigration != null) {
-      server.onApplyMigration = _onApplyMigration;
-    }
+    // Wire callbacks if already connected.
+    server.onApplyMigration = _onApplyMigration;
+    server.onCreateMigration = _onCreateMigration;
+    server.onHotReload = _onHotReload;
+    server.getLogHistory = _getLogHistory;
+    server.getVmServiceUri = _getVmServiceUri;
+    server.vmServiceUriChanges = _vmServiceUriChanges;
 
     // Clean up on disconnect.
     unawaited(
@@ -101,22 +139,4 @@ class McpSocketServer {
       }),
     );
   }
-}
-
-/// Create a [StreamChannel<String>] from a [Socket] for MCP JSON-RPC.
-///
-/// Same line-delimited protocol as stdio transport.
-StreamChannel<String> _socketChannel(Socket socket) {
-  final inStream = socket
-      .cast<List<int>>()
-      .transform(utf8.decoder)
-      .transform(const LineSplitter());
-
-  final outController = StreamController<String>();
-  outController.stream.listen(
-    (line) => socket.write('$line\n'),
-    onDone: () => socket.close(),
-  );
-
-  return StreamChannel<String>(inStream, outController.sink);
 }

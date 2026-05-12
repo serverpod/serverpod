@@ -50,7 +50,7 @@ extension GenerateCode on Library {
 
     try {
       return DartFormatter(
-        languageVersion: Version(3, 8, 0),
+        languageVersion: Version(3, 10, 0),
         trailingCommas: TrailingCommas.preserve,
       ).format('$_fileHeader${ignoreForFile.isEmpty ? '\n' : ''}$code');
     } on FormatterException catch (e) {

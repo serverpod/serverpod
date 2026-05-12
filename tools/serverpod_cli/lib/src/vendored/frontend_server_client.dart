@@ -10,6 +10,9 @@
  * Modifications: Simplified to use sdkRoot to locate the dart executable and
  * frontend server snapshots. The upstream version uses
  * Platform.resolvedExecutable which breaks when running as an AOT binary.
+ * Added optional `nativeAssetsPath` parameter to forward the
+ * `--native-assets <path>` flag, used to feed `frontend_server` the manifest
+ * produced by `package:hooks_runner` so `@Native` lookups resolve correctly.
  *
  * Copyright 2020 The Dart Authors. All rights reserved.
  *
@@ -58,8 +61,9 @@ class FrontendServerClient {
     this._entrypoint,
     this._feServer,
     this._feServerStdoutLines,
+    IOSink errorSink,
   ) : _state = _ClientState.waitingForFirstCompile {
-    _feServer.stderr.transform(utf8.decoder).listen(stderr.write);
+    _feServer.stderr.transform(utf8.decoder).listen(errorSink.write);
   }
 
   static Future<FrontendServerClient> start(
@@ -69,6 +73,8 @@ class FrontendServerClient {
     required String sdkRoot,
     String target = 'vm',
     String? packagesJson,
+    String? nativeAssetsPath,
+    IOSink? errorSink,
   }) async {
     final entrypointUri = Uri.file(p.absolute(entrypoint));
     final arguments = <String>[
@@ -80,6 +86,10 @@ class FrontendServerClient {
       outputDillPath,
       if (packagesJson != null)
         '--packages=${Uri.file(p.absolute(packagesJson))}',
+      if (nativeAssetsPath != null) ...[
+        '--native-assets',
+        p.absolute(nativeAssetsPath),
+      ],
       '--incremental',
     ];
     final exe = Platform.isWindows ? '.exe' : '';
@@ -113,6 +123,7 @@ class FrontendServerClient {
       '$entrypointUri',
       feServer,
       feServerStdoutLines,
+      errorSink ?? stderr,
     );
   }
 

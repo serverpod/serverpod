@@ -291,4 +291,50 @@ void main() {
       },
     );
   });
+
+  group('Given gin index on jsonb serialized column types', () {
+    test(
+      'when comparing gin indexes with different gin operator classes then mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('gin_idx')
+            .withType('gin')
+            .withGinOperatorClass(GinOperatorClass.jsonbPathOps)
+            .withElements([
+              IndexElementDefinition(
+                definition: 'gin_col',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = index1.copyWith(
+          ginOperatorClass: GinOperatorClass.jsonbOps,
+        );
+
+        expect(index1.like(index2), isFalse);
+      },
+    );
+
+    test(
+      'when comparing gin indexes with same gin operator class then no mismatch is found.',
+      () {
+        var index1 = IndexDefinitionBuilder()
+            .withIndexName('gin_idx')
+            .withType('gin')
+            .withGinOperatorClass(GinOperatorClass.jsonbPathOps)
+            .withElements([
+              IndexElementDefinition(
+                definition: 'gin_col',
+                type: IndexElementDefinitionType.column,
+              ),
+            ])
+            .build();
+
+        var index2 = index1.copyWith();
+
+        expect(index1.like(index2), isTrue);
+      },
+    );
+  });
 }

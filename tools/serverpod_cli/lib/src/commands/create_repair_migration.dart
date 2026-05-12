@@ -35,7 +35,8 @@ enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
           'fetching the live database definition.',
       allowedValues: runModes,
     ),
-  );
+  ),
+  ;
 
   static const runModes = <String>['development', 'staging', 'production'];
 
@@ -78,7 +79,8 @@ class CreateRepairMigrationCommand
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load(interactive: interactive);
-    } catch (_) {
+    } catch (e) {
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 

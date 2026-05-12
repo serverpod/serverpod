@@ -1,9 +1,20 @@
+import 'dart:async';
+
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/app.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
+import 'package:serverpod_cli/src/commands/tui/run_app.dart';
+import 'package:serverpod_cli/src/commands/tui/terminal_backend.dart';
+import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 enum CreateOption<V> implements OptionDefinition<V> {
@@ -53,7 +64,8 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  );
+  )
+  ;
 
   static const _templateGroup = MutuallyExclusive(
     'Project Template',
@@ -117,19 +129,145 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
       if (!resourceManager.isTemplatesInstalled) {
         log.error(
-          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.',
+          'Could not download the required resources for Serverpod. '
+          'Make sure that you are connected to the internet and that '
+          'you are using the latest version of Serverpod.',
         );
         throw ExitException.error();
       }
     }
 
-    if (!await performCreate(
+    final context = TemplateContext(
+      auth: true,
+      redis: true,
+      postgres: true,
+      web: true,
+      skills: true,
+    );
+
+    final useTui = (interactive ?? true) && !ci.isCI;
+
+    if (useTui && !template.isMini) {
+      // Dry run to collect early errors and exit if needed.
+      final dryRunProjectPath = await performCreate(
+        name,
+        template,
+        force,
+        dryRun: true,
+        interactive: interactive,
+        context: context,
+      );
+
+      if (dryRunProjectPath == null) {
+        throw ExitException.error();
+      }
+
+      await _performCreateWithTui(
+        name,
+        template,
+        force,
+        interactive: true,
+      );
+      return;
+    }
+
+    final projectPath = await performCreate(
       name,
       template,
       force,
       interactive: interactive,
-    )) {
+      context: context,
+    );
+
+    if (projectPath == null) {
       throw ExitException.error();
     }
+  }
+
+  /// Shuts down TUI and closes the TuiLogWriter.
+  /// Initializes the default logger for post-tui logs.
+  Future<void> _shutdownTuiApp([int exitCode = 0]) async {
+    await closeLogger();
+    initializeLogger();
+    shutdownServerpodApp(exitCode);
+  }
+
+  /// Flushes success logs if [projectPath] is not null.
+  /// Error logs are flushed if any.
+  /// This is done when shutting down TUI but before exiting
+  /// the Dart process.
+  Future<void> _preExit({
+    required ServerpodTemplateType template,
+    String? projectPath,
+  }) async {
+    CommandLineTools.flushErrors();
+    flushPerformCreateErrors();
+
+    if (projectPath != null) {
+      log.info(
+        'Serverpod project created.',
+        newParagraph: true,
+        type: TextLogType.success,
+      );
+
+      if (template.isServer) logStartInstructions(projectPath);
+      if (template.isMini) logMiniStartInstructions(projectPath);
+    }
+
+    await log.flush();
+  }
+
+  /// Creates Serverpod project with TUI.
+  Future<void> _performCreateWithTui(
+    String name,
+    ServerpodTemplateType template,
+    bool force, {
+    required bool? interactive,
+  }) async {
+    final flutterBuildCompleter = Completer<int>();
+    final state = CreateConfigState(template);
+    final holder = CreateAppStateHolder(state);
+
+    final tuiWriter = TuiLogWriter();
+    initializeLoggerWith(ServerpodCliLogger(tuiWriter));
+    tuiWriter.attach(holder);
+
+    String? projectPath;
+
+    final backend = ServerpodTerminalBackend(
+      preExit: () => _preExit(
+        template: state.template ?? template,
+        projectPath: projectPath,
+      ),
+    );
+
+    await runServerpodApp(
+      backend: backend,
+      ServerpodCreateApp(
+        name: name,
+        holder: holder,
+        onCreate: () async {
+          final context = state.toTemplateContext();
+          projectPath = await performCreate(
+            name,
+            state.template ?? template,
+            force,
+            flutterBuildCompleter: flutterBuildCompleter,
+            interactive: interactive,
+            context: context,
+          );
+
+          final success = projectPath != null;
+
+          await _shutdownTuiApp(success ? 0 : 1);
+        },
+        onQuit: () => _shutdownTuiApp(1),
+        onSkipFlutterBuild: () {
+          if (!flutterBuildCompleter.isCompleted) {
+            flutterBuildCompleter.complete(0);
+          }
+        },
+      ),
+    );
   }
 }

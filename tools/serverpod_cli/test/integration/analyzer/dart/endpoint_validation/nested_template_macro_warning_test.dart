@@ -10,13 +10,12 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-var pathToServerpodRoot = Directory('../..').absolute.path;
 late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
     testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
-    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
+    await createTestEnvironment(testProjectDirectory);
   });
 
   tearDownAll(() {

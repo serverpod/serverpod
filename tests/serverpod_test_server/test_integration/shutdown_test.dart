@@ -164,12 +164,9 @@ void main() {
 
       await expectLater(
         processOutput.errQueue,
-        emitsInOrder([
-          emitsThrough(contains('serverpod shutdown test auditor enabled')),
-          emitsThrough(
-            contains('Exception: serverpod shutdown test auditor throwing'),
-          ),
-        ]),
+        emitsThrough(
+          contains('Exception: serverpod shutdown test auditor throwing'),
+        ),
       );
 
       var exitCode = await processOutput.process.exitCode.timeout(

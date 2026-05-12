@@ -3,7 +3,19 @@ import 'package:meta/meta.dart';
 import '../../serverpod_database.dart';
 
 @internal
-abstract interface class MigrationRunner {
+abstract class MigrationRunner {
+  /// Creates a new migration runner.
+  const MigrationRunner({this.runMode});
+
+  /// The run mode of the server.
+  ///
+  /// This is used to determine if additional database integrity checks should
+  /// be run, since they can be expensive and not matter in production.
+  ///
+  /// If the run mode is not set, the migration runner will not run any
+  /// additional database integrity checks.
+  final String? runMode;
+
   /// Runs a migration action.
   ///
   /// This method is used by the migration manager to run migrations. Database

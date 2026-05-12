@@ -3,7 +3,6 @@ import '../concepts/columns.dart';
 import '../concepts/database_result.dart';
 import '../concepts/expressions.dart';
 import '../concepts/includes.dart';
-import '../concepts/order.dart';
 import '../concepts/row_lock.dart';
 import '../concepts/table.dart';
 import '../concepts/transaction.dart';
@@ -35,8 +34,9 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? limit,
     int? offset,
     Column? orderBy,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
-    List<Order>? orderByList,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
@@ -49,7 +49,8 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -88,6 +89,26 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<T> insertRow<T extends TableRow>(
     DatabaseSession session,
     T row, {
+    Transaction? transaction,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
     Transaction? transaction,
   });
 
@@ -136,7 +157,8 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });
@@ -146,7 +168,8 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     List<T> rows, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });
@@ -163,7 +186,8 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     Expression where, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   });
@@ -216,10 +240,4 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     required TransactionSettings settings,
     required DatabaseSession session,
   });
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<void> runMigrations(
-    DatabaseSession session,
-    Future<void> Function(Transaction? transaction) action,
-  );
 }

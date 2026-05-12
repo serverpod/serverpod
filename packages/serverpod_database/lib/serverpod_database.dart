@@ -1,4 +1,7 @@
+export 'package:serverpod_shared/serverpod_shared.dart' show DatabaseDialect;
+
 export 'src/adapters/postgres/postgres_error_codes.dart';
+export 'src/adapters/sqlite/sqlite_error_codes.dart';
 export 'src/bulk_data.dart';
 export 'src/concepts/column_value.dart';
 export 'src/concepts/columns.dart';
@@ -18,13 +21,16 @@ export 'src/definition/default_keywords.dart';
 export 'src/extensions.dart';
 export 'src/generated/protocol.dart';
 export 'src/interface/analyzer.dart';
+export 'src/interface/client_database_session.dart';
 export 'src/interface/database_pool_manager.dart';
 export 'src/interface/database_session.dart';
+export 'src/interface/definition_restrictions.dart';
 export 'src/interface/provider.dart';
 export 'src/interface/serialization_manager.dart';
 export 'src/interface/value_encoder.dart';
 export 'src/migrations/migration_artifacts.dart';
 export 'src/migrations/migration_artifacts_store/file_system.dart';
+export 'src/migrations/migration_artifacts_store/runtime_list.dart';
 export 'src/migrations/migration_manager.dart';
 export 'src/query_parameters.dart';
 export 'src/util/database_util.dart';

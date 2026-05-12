@@ -1,6 +1,6 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod/database.dart' as db;
 import 'package:test/test.dart';
 
 void main() async {
@@ -10,11 +10,11 @@ void main() async {
     tearDown(() async {
       await OrderUuid.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
       await CustomerInt.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
     });
 
@@ -40,8 +40,7 @@ void main() async {
         var fetchedCustomers = await CustomerInt.db.find(
           session,
           // OrderUuid by number of orders in descending order
-          orderBy: (t) => t.orders.count(),
-          orderDescending: true,
+          orderBy: (t) => t.orders.count().desc(),
         );
 
         var customerNames = fetchedCustomers.map((e) => e.name);
@@ -80,8 +79,8 @@ void main() async {
         var fetchedCustomers = await CustomerInt.db.find(
           session,
           // OrderUuid by number of Prem orders in descending order
-          orderBy: (t) => t.orders.count((o) => o.description.ilike('prem%')),
-          orderDescending: true,
+          orderBy: (t) =>
+              t.orders.count((o) => o.description.ilike('prem%')).desc(),
         );
 
         var customerNames = fetchedCustomers.map((e) => e.name);
@@ -94,13 +93,13 @@ void main() async {
     tearDown(() async {
       await Person.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
       await Organization.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
-      await City.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await City.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
     test(
       'when fetching models ordered on multiple separate one to many relations then result order is as expected.',
@@ -155,14 +154,8 @@ void main() async {
           session,
           // OrderUuid cities by number of citizens and then the number of organizations
           orderByList: (t) => [
-            db.Order(
-              column: t.citizens.count(),
-              orderDescending: true,
-            ),
-            db.Order(
-              column: t.organizations.count(),
-              orderDescending: true,
-            ),
+            t.citizens.count().desc(),
+            t.organizations.count().desc(),
           ],
         );
 

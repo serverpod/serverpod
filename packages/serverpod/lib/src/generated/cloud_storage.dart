@@ -131,6 +131,7 @@ abstract class CloudStorageEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
@@ -140,7 +141,8 @@ abstract class CloudStorageEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CloudStorageEntry.t),
       include: include,
     );
@@ -314,6 +316,7 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -359,6 +362,7 @@ class CloudStorageEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -369,7 +373,8 @@ class CloudStorageEntryRepository {
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -400,6 +405,7 @@ class CloudStorageEntryRepository {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -410,7 +416,8 @@ class CloudStorageEntryRepository {
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -467,6 +474,69 @@ class CloudStorageEntryRepository {
   }) async {
     return session.db.insertRow<CloudStorageEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [CloudStorageEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CloudStorageEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CloudStorageEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<CloudStorageEntry> rows, {
+    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CloudStorageEntry>(
+      rows,
+      conflictColumns: conflictColumns(CloudStorageEntry.t),
+      updateColumns: updateColumns?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CloudStorageEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CloudStorageEntry] will have its `id` field set.
+  Future<CloudStorageEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    CloudStorageEntry row, {
+    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CloudStorageEntry>(
+      row,
+      conflictColumns: conflictColumns(CloudStorageEntry.t),
+      updateColumns: updateColumns?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
@@ -532,6 +602,7 @@ class CloudStorageEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -542,7 +613,8 @@ class CloudStorageEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -558,6 +630,7 @@ class CloudStorageEntryRepository {
     _i1.DatabaseSession session,
     List<CloudStorageEntry> rows, {
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -566,7 +639,8 @@ class CloudStorageEntryRepository {
       rows,
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -591,6 +665,7 @@ class CloudStorageEntryRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -599,7 +674,8 @@ class CloudStorageEntryRepository {
       where: where(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

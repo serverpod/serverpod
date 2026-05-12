@@ -1,0 +1,7 @@
+class: EnumDefaultModel
+table: enum_default_model
+fields:
+  byNameEnumDefaultModel: ByNameEnum, defaultModel=byName1
+  byNameEnumDefaultModelNull: ByNameEnum?, defaultModel=byName2
+  byIndexEnumDefaultModel: ByIndexEnum, defaultModel=byIndex1
+  byIndexEnumDefaultModelNull: ByIndexEnum?, defaultModel=byIndex2

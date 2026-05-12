@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -21,6 +22,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"dateTime" INTEGER NOT NULL',
+          );
+        },
+      );
     });
 
     group('with CURRENT_TIMESTAMP as default value', () {
@@ -38,6 +49,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"dateTime" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"dateTime" INTEGER NOT NULL DEFAULT (CAST(unixepoch(\'subsecond\') * 1000 AS INTEGER))',
           );
         },
       );
@@ -61,6 +82,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"dateTime" INTEGER NOT NULL DEFAULT (1704070861000)',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -77,6 +108,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"dateTime" timestamp without time zone',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"dateTime" INTEGER',
           );
         },
       );
@@ -97,6 +138,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"dateTime" timestamp without time zone DEFAULT CURRENT_TIMESTAMP',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"dateTime" INTEGER DEFAULT (CAST(unixepoch(\'subsecond\') * 1000 AS INTEGER))',
           );
         },
       );

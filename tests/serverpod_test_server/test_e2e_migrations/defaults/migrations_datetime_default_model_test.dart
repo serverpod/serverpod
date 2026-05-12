@@ -1,20 +1,9 @@
 @Timeout(Duration(minutes: 5))
-import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
+import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var serviceClient = Client(
-    serviceServerUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestServiceKeyManager(
-      '0',
-      'super_SECRET_password',
-    ),
-  );
-
   group(
     'Given an empty database and new protocol model with table and fields with "defaultModel" value',
     () {
@@ -34,7 +23,7 @@ void main() {
             'migrated_table':
                 '''
         class: MigratedTable
-        table: $tableName 
+        table: $tableName
         fields:
           dateTimeDefaultNow: DateTime, defaultModel=now
         ''',
@@ -100,7 +89,7 @@ void main() {
             'migrated_table':
                 '''
         class: MigratedTable
-        table: $tableName 
+        table: $tableName
         fields:
           dateTimeDefaultStr: DateTime, defaultModel=2024-05-24T22:00:00.000Z
         ''',

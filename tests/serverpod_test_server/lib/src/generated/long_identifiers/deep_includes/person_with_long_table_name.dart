@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -115,6 +115,7 @@ abstract class PersonWithLongTableName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     PersonWithLongTableNameInclude? include,
@@ -124,7 +125,8 @@ abstract class PersonWithLongTableName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(PersonWithLongTableName.t),
       include: include,
     );
@@ -324,6 +326,7 @@ class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -373,6 +376,7 @@ class PersonWithLongTableNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -384,7 +388,8 @@ class PersonWithLongTableNameRepository {
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -416,6 +421,7 @@ class PersonWithLongTableNameRepository {
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -427,7 +433,8 @@ class PersonWithLongTableNameRepository {
       where: where?.call(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -487,6 +494,69 @@ class PersonWithLongTableNameRepository {
   }) async {
     return session.db.insertRow<PersonWithLongTableName>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [PersonWithLongTableName]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [PersonWithLongTableName]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<PersonWithLongTableName>> upsert(
+    _i1.DatabaseSession session,
+    List<PersonWithLongTableName> rows, {
+    required _i1.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
+    _i1.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<PersonWithLongTableName>(
+      rows,
+      conflictColumns: conflictColumns(PersonWithLongTableName.t),
+      updateColumns: updateColumns?.call(PersonWithLongTableName.t),
+      updateWhere: updateWhere?.call(PersonWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [PersonWithLongTableName] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [PersonWithLongTableName] will have its `id` field set.
+  Future<PersonWithLongTableName?> upsertRow(
+    _i1.DatabaseSession session,
+    PersonWithLongTableName row, {
+    required _i1.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
+    _i1.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<PersonWithLongTableName>(
+      row,
+      conflictColumns: conflictColumns(PersonWithLongTableName.t),
+      updateColumns: updateColumns?.call(PersonWithLongTableName.t),
+      updateWhere: updateWhere?.call(PersonWithLongTableName.t),
       transaction: transaction,
     );
   }
@@ -552,6 +622,7 @@ class PersonWithLongTableNameRepository {
     int? offset,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -562,7 +633,8 @@ class PersonWithLongTableNameRepository {
       offset: offset,
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -578,6 +650,7 @@ class PersonWithLongTableNameRepository {
     _i1.DatabaseSession session,
     List<PersonWithLongTableName> rows, {
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -586,7 +659,8 @@ class PersonWithLongTableNameRepository {
       rows,
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -611,6 +685,7 @@ class PersonWithLongTableNameRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -619,7 +694,8 @@ class PersonWithLongTableNameRepository {
       where: where(PersonWithLongTableName.t),
       orderBy: orderBy?.call(PersonWithLongTableName.t),
       orderByList: orderByList?.call(PersonWithLongTableName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

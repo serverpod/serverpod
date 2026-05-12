@@ -1,6 +1,56 @@
 import '../../../serverpod_database.dart';
 
+/// Extension methods for [ColumnType] to convert default values to PostgreSQL.
+extension PostgresColumnTypeDefault on ColumnType {
+  /// Converts abstract default values to PostgreSQL column default SQL.
+  String? getPgColumnDefault(dynamic defaultValue, String tableName) {
+    if (defaultValue == null) return null;
+
+    if ((this == ColumnType.integer || this == ColumnType.bigint) &&
+        defaultValue == defaultIntSerial) {
+      return "nextval('${tableName}_id_seq'::regclass)";
+    }
+
+    switch (this) {
+      case ColumnType.timestampWithoutTimeZone:
+        if (defaultValue is! String) {
+          throw StateError('Invalid DateTime default value: $defaultValue');
+        }
+        if (defaultValue == defaultDateTimeValueNow) {
+          return 'CURRENT_TIMESTAMP';
+        }
+        var dateTime = DateTime.parse(defaultValue);
+        // Date format: 'yyyy-MM-dd HH:mm:ss.SSS'
+        var formatted = dateTime
+            .toIso8601String()
+            .replaceAll('T', ' ')
+            .substring(0, 23);
+        return "'$formatted'::timestamp without time zone";
+      case ColumnType.boolean:
+      case ColumnType.integer:
+      case ColumnType.doublePrecision:
+      case ColumnType.bigint:
+        return '$defaultValue';
+      case ColumnType.text:
+      case ColumnType.json:
+        return '$defaultValue::text';
+      case ColumnType.uuid:
+        return switch (defaultValue) {
+          defaultUuidValueRandom => 'gen_random_uuid()',
+          defaultUuidValueRandomV7 => 'gen_random_uuid_v7()',
+          _ => '$defaultValue::uuid',
+        };
+      default:
+        return '$defaultValue::text';
+    }
+  }
+}
+
 /// Converts PostgreSQL column_default SQL to dialect-neutral abstract default.
+///
+/// This is the inverse of [PostgresColumnTypeDefault.getPgColumnDefault] to be
+/// used when parsing the database definition from the database to compare with
+/// the dialect-neutral target database definition.
 String? pgSqlToAbstractDefault(
   String? sql,
   ColumnType columnType,

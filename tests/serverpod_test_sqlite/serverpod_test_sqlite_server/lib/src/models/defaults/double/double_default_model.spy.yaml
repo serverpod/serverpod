@@ -1,0 +1,5 @@
+class: DoubleDefaultModel
+table: double_default_model
+fields:
+  doubleDefaultModel: double, defaultModel=10.5
+  doubleDefaultModelNull: double, defaultModel=20.5

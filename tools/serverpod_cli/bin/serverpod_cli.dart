@@ -12,6 +12,8 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/mcp.dart';
+import 'package:serverpod_cli/src/commands/migrate.dart';
+import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
 import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
@@ -47,18 +49,18 @@ final Analytics _analytics = CompoundAnalytics([
 void main(List<String> args) async {
   await runZonedGuarded(
     () async {
+      var exitCode = 0;
       try {
         await _main(args);
-        await _preExit();
       } on ExitException catch (e) {
-        await _preExit();
-        exit(e.exitCode);
+        exitCode = e.exitCode;
       } catch (error, stackTrace) {
-        // Last resort error handling.
         printInternalError(error, stackTrace);
+        exitCode = ExitException.codeError;
+      } finally {
         await _preExit();
-        exit(ExitException.codeError);
       }
+      exit(exitCode);
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
@@ -112,12 +114,14 @@ ServerpodCommandRunner buildCommandRunner() {
   )..addCommands([
     AnalyzePubspecsCommand(),
     CreateCommand(),
+    QuickstartCommand(),
     GenerateCommand(),
     GeneratePubspecsCommand(),
     LanguageServerCommand(),
     McpCommand(),
     CreateMigrationCommand(),
     CreateRepairMigrationCommand(),
+    MigrateCommand(),
     RunCommand(),
     StartCommand(),
     UpgradeCommand(),

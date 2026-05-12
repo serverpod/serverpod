@@ -168,6 +168,7 @@ abstract class ChatMessage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     ChatMessageInclude? include,
@@ -177,7 +178,8 @@ abstract class ChatMessage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChatMessage.t),
       include: include,
     );
@@ -370,6 +372,7 @@ class ChatMessageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -415,6 +418,7 @@ class ChatMessageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -425,7 +429,8 @@ class ChatMessageRepository {
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -456,6 +461,7 @@ class ChatMessageRepository {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -466,7 +472,8 @@ class ChatMessageRepository {
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -523,6 +530,69 @@ class ChatMessageRepository {
   }) async {
     return session.db.insertRow<ChatMessage>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ChatMessage]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChatMessage]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChatMessage>> upsert(
+    _i1.DatabaseSession session,
+    List<ChatMessage> rows, {
+    required _i1.ColumnSelections<ChatMessageTable> conflictColumns,
+    _i1.ColumnSelections<ChatMessageTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChatMessageTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChatMessage>(
+      rows,
+      conflictColumns: conflictColumns(ChatMessage.t),
+      updateColumns: updateColumns?.call(ChatMessage.t),
+      updateWhere: updateWhere?.call(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChatMessage] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChatMessage] will have its `id` field set.
+  Future<ChatMessage?> upsertRow(
+    _i1.DatabaseSession session,
+    ChatMessage row, {
+    required _i1.ColumnSelections<ChatMessageTable> conflictColumns,
+    _i1.ColumnSelections<ChatMessageTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChatMessageTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChatMessage>(
+      row,
+      conflictColumns: conflictColumns(ChatMessage.t),
+      updateColumns: updateColumns?.call(ChatMessage.t),
+      updateWhere: updateWhere?.call(ChatMessage.t),
       transaction: transaction,
     );
   }
@@ -586,6 +656,7 @@ class ChatMessageRepository {
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -596,7 +667,8 @@ class ChatMessageRepository {
       offset: offset,
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -612,6 +684,7 @@ class ChatMessageRepository {
     _i1.DatabaseSession session,
     List<ChatMessage> rows, {
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -620,7 +693,8 @@ class ChatMessageRepository {
       rows,
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -645,6 +719,7 @@ class ChatMessageRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -653,7 +728,8 @@ class ChatMessageRepository {
       where: where(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -106,7 +106,7 @@ class SelectQueryBuilder {
     if (groupBy != null) query += ' GROUP BY $groupBy';
     if (_having != null) query += ' HAVING $_having';
     if (orderBy != null) query += ' ORDER BY $orderBy';
-    var lockClause = _buildLockClause();
+    var lockClause = _buildLockClause(restrictLockToBaseTable: join != null);
     if (lockClause != null) query += ' $lockClause';
     if (limit != null) query += ' LIMIT $limit';
     if (offset != null) query += ' OFFSET $_offset';
@@ -303,7 +303,7 @@ class SelectQueryBuilder {
     return this;
   }
 
-  String? _buildLockClause() {
+  String? _buildLockClause({required bool restrictLockToBaseTable}) {
     if (_lockMode == null) return null;
 
     var clause = switch (_lockMode!) {
@@ -312,6 +312,10 @@ class SelectQueryBuilder {
       LockMode.forShare => 'FOR SHARE',
       LockMode.forKeyShare => 'FOR KEY SHARE',
     };
+
+    if (restrictLockToBaseTable) {
+      clause += ' OF "${_table.tableName}"';
+    }
 
     if (_lockBehavior != null && _lockBehavior != LockBehavior.wait) {
       clause += switch (_lockBehavior!) {
@@ -336,27 +340,134 @@ class _ListQueryAdditions {
   });
 }
 
-/// Builds a SQL query for an insert statement.
+/// Builds a SQL query for an INSERT statement, optionally with an
+/// `ON CONFLICT … DO UPDATE` (upsert) or `ON CONFLICT DO NOTHING` clause.
 /// This is typically only used internally by the serverpod framework.
 @internal
 class InsertQueryBuilder {
   final Table _table;
   final bool _ignoreConflicts;
+  final List<Column>? _conflictColumns;
+  final List<Column>? _updateColumns;
+  final Expression? _updateWhere;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
+  ///
+  /// - Plain insert: leave [ignoreConflicts] false and [conflictColumns] null.
+  /// - Insert ignoring conflicts: set [ignoreConflicts] to true.
+  /// - Upsert: provide [conflictColumns]; optionally narrow the update with
+  ///   [updateColumns] and/or filter with [updateWhere].
+  ///
+  /// [ignoreConflicts] and [conflictColumns] are mutually exclusive.
+  /// [updateColumns] and [updateWhere] only apply to upserts and require
+  /// [conflictColumns].
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
     bool ignoreConflicts = false,
+    List<Column>? conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
   }) : _table = table,
-       _ignoreConflicts = ignoreConflicts {
+       _ignoreConflicts = ignoreConflicts,
+       _conflictColumns = conflictColumns,
+       _updateColumns = updateColumns,
+       _updateWhere = updateWhere {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
         'rows',
         'Cannot be empty',
       );
+    }
+
+    if (ignoreConflicts && conflictColumns != null) {
+      throw ArgumentError(
+        'Cannot use both ignoreConflicts and conflictColumns',
+      );
+    }
+
+    if (conflictColumns == null) {
+      if (updateColumns != null) {
+        throw ArgumentError.value(
+          updateColumns,
+          'updateColumns',
+          'Can only be used together with conflictColumns',
+        );
+      }
+      if (updateWhere != null) {
+        throw ArgumentError.value(
+          updateWhere,
+          'updateWhere',
+          'Can only be used together with conflictColumns',
+        );
+      }
+    }
+
+    if (conflictColumns != null) {
+      if (conflictColumns.isEmpty) {
+        throw ArgumentError.value(
+          conflictColumns,
+          'conflictColumns',
+          'Cannot be empty',
+        );
+      }
+
+      var tableColumnNames = table.columns.map((c) => c.columnName).toSet();
+      for (var col in conflictColumns) {
+        if (!tableColumnNames.contains(col.columnName)) {
+          throw ArgumentError.value(
+            conflictColumns,
+            'conflictColumns',
+            'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+          );
+        }
+        if (col.columnName == 'id') {
+          throw ArgumentError.value(
+            conflictColumns,
+            'conflictColumns',
+            'The "id" column cannot be used as a conflict column for upsert',
+          );
+        }
+      }
+
+      if (updateColumns != null) {
+        if (updateColumns.isEmpty) {
+          throw ArgumentError.value(
+            updateColumns,
+            'updateColumns',
+            'Cannot be empty',
+          );
+        }
+
+        var conflictColumnNames = conflictColumns
+            .map((c) => c.columnName)
+            .toSet();
+        for (var col in updateColumns) {
+          if (!tableColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+            );
+          }
+          if (col.columnName == 'id') {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'The "id" column cannot be used as an update column for upsert',
+            );
+          }
+          if (conflictColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" cannot be both a conflict column and an update column',
+            );
+          }
+        }
+      }
     }
 
     _rows = rows;
@@ -395,11 +506,53 @@ class InsertQueryBuilder {
         .join(', ');
 
     var returning = buildReturningClause(_table);
-    var onConflict = _ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
+    var onConflict = _buildOnConflictClause(selectedColumns);
 
     return columnNames.isEmpty
         ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
         : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
+  }
+
+  String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
+    if (_ignoreConflicts) {
+      return ' ON CONFLICT DO NOTHING';
+    }
+    if (_conflictColumns == null) {
+      return '';
+    }
+
+    final conflictColumnNames = _conflictColumns
+        .map((c) => '"${c.columnName}"')
+        .join(', ');
+
+    final conflictColumnNameSet = _conflictColumns
+        .map((c) => c.columnName)
+        .toSet();
+
+    final columnsToUpdate =
+        _updateColumns ??
+        selectedColumns.where(
+          (c) =>
+              c.columnName != 'id' &&
+              !conflictColumnNameSet.contains(c.columnName),
+        );
+
+    var setClause = columnsToUpdate
+        .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
+        .join(', ');
+
+    if (setClause.isEmpty) {
+      final noOpColumn = _conflictColumns.first.columnName;
+      setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
+    }
+
+    var onConflict =
+        ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
+    if (_updateWhere != null) {
+      onConflict += ' WHERE $_updateWhere';
+    }
+
+    return onConflict;
   }
 
   /// Builds the insert SQL query.

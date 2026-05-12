@@ -14,14 +14,14 @@ echo ""
 echo "### Resetting database"
 env PGPASSWORD="password" psql -h postgres -U postgres -d serverpod_test -f /app/tests/docker/tests_integration/reset_db.pgsql
 
-# We apply migrations to database 
+# We apply migrations to database
 echo "### Apply migrations"
 pwd
-dart bin/main.dart -m production -r maintenance --apply-migrations
+dart run bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests
 echo "### Running tests"
-# Have to set INTEGRATION_TEST_SERVERPOD_MODE to 'test' to use the `test.yaml` config file. 
+# Have to set INTEGRATION_TEST_SERVERPOD_MODE to 'test' to use the `test.yaml` config file.
 # This avoids conflicting server ports in the test files that boots up the server outside
 # of a test group.
 INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration --reporter=failures-only

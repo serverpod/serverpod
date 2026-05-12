@@ -1,0 +1,9 @@
+class: ObjectWithDynamic
+table: object_with_dynamic
+fields:
+  payload: dynamic
+  jsonbPayload: dynamic, serializationDataType=jsonb
+  payloadList: List<dynamic>
+  payloadMap: Map<String, dynamic>
+  payloadSet: Set<dynamic>
+  payloadMapWithDynamicKeys: Map<dynamic, dynamic>, serializationDataType=jsonb

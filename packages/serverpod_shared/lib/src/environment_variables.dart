@@ -75,6 +75,9 @@ enum ServerpodEnv {
   /// The dialect of the database.
   databaseDialect,
 
+  /// The file path to the SQLite database.
+  databaseFilePath,
+
   /// The address to the redis broker.
   redisHost,
 
@@ -187,7 +190,8 @@ enum ServerpodEnv {
   validateHeaders,
 
   /// The interval in seconds between websocket ping messages.
-  websocketPingInterval;
+  websocketPingInterval,
+  ;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -201,6 +205,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
       (ServerpodEnv.databaseMaxConnectionCount) => 'maxConnectionCount',
       (ServerpodEnv.databaseDialect) => 'dialect',
+      (ServerpodEnv.databaseFilePath) => 'filePath',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
@@ -258,6 +263,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseMaxConnectionCount) =>
         'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT',
       (ServerpodEnv.databaseDialect) => 'SERVERPOD_DATABASE_DIALECT',
+      (ServerpodEnv.databaseFilePath) => 'SERVERPOD_DATABASE_FILE_PATH',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
@@ -323,7 +329,8 @@ enum ServerpodPassword {
   serviceSecret,
 
   /// The password for the redis broker.
-  redisPassword;
+  redisPassword,
+  ;
 
   /// The key used in the password configuration file.
   String get configKey {

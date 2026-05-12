@@ -92,6 +92,7 @@ abstract class ChildEntity extends _i1.BaseEntity
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
@@ -101,7 +102,8 @@ abstract class ChildEntity extends _i1.BaseEntity
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChildEntity.t),
       include: include,
     );
@@ -253,6 +255,7 @@ class ChildEntityIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -298,6 +301,7 @@ class ChildEntityRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
@@ -308,7 +312,8 @@ class ChildEntityRepository {
       where: where?.call(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -339,6 +344,7 @@ class ChildEntityRepository {
     _i2.WhereExpressionBuilder<ChildEntityTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
@@ -349,7 +355,8 @@ class ChildEntityRepository {
       where: where?.call(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -406,6 +413,69 @@ class ChildEntityRepository {
   }) async {
     return session.db.insertRow<ChildEntity>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ChildEntity]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChildEntity]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChildEntity>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildEntity> rows, {
+    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
+    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChildEntity>(
+      rows,
+      conflictColumns: conflictColumns(ChildEntity.t),
+      updateColumns: updateColumns?.call(ChildEntity.t),
+      updateWhere: updateWhere?.call(ChildEntity.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChildEntity] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChildEntity] will have its `id` field set.
+  Future<ChildEntity?> upsertRow(
+    _i2.DatabaseSession session,
+    ChildEntity row, {
+    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
+    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildEntity>(
+      row,
+      conflictColumns: conflictColumns(ChildEntity.t),
+      updateColumns: updateColumns?.call(ChildEntity.t),
+      updateWhere: updateWhere?.call(ChildEntity.t),
       transaction: transaction,
     );
   }
@@ -469,6 +539,7 @@ class ChildEntityRepository {
     int? offset,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -479,7 +550,8 @@ class ChildEntityRepository {
       offset: offset,
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -495,6 +567,7 @@ class ChildEntityRepository {
     _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
@@ -503,7 +576,8 @@ class ChildEntityRepository {
       rows,
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -528,6 +602,7 @@ class ChildEntityRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildEntityTable> where,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
@@ -536,7 +611,8 @@ class ChildEntityRepository {
       where: where(ChildEntity.t),
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

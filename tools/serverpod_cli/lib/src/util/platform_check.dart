@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -42,12 +43,37 @@ String shortestPath(String path) {
   return relative.length < normalized.length ? relative : normalized;
 }
 
+/// Maximum number of bytes a Unix domain socket path may occupy on the
+/// current platform.
+///
+/// `sockaddr_un.sun_path` is 104 on macOS/iOS/BSD and 108 on Linux. Windows
+/// AF_UNIX matches the Linux size.
+int maxUnixSocketPathBytes() {
+  if (Platform.isMacOS || Platform.isIOS) return 104;
+  return 108;
+}
+
+/// Throws a [SocketException] if [path] (after shortening) does not fit within
+/// the platform's `sockaddr_un.sun_path`.
+void requireUnixSocketPathFits(String path) {
+  final shortened = shortestPath(path);
+  final bytes = utf8.encode(shortened).length + 1; // extra for NUL byte
+  final limit = maxUnixSocketPathBytes();
+  if (bytes <= limit) return;
+  throw SocketException(
+    'Unix socket path is too long for this platform '
+    '($bytes bytes; max $limit on ${Platform.operatingSystem}). '
+    'Path: $shortened',
+  );
+}
+
 /// Binds a [ServerSocket] to a Unix domain socket at [path].
 ///
 /// Removes any stale socket file before binding and uses [shortestPath] to
-/// minimize the path length (Unix sockets are limited to 104–108 bytes).
+/// minimize the path length.
 Future<ServerSocket> bindUnixSocket(String path) async {
   requireUnixSocketSupport();
+  requireUnixSocketPathFits(path);
 
   // Clean up stale socket file if it exists.
   await File(path).deleteIfExists();
@@ -64,6 +90,7 @@ Future<ServerSocket> bindUnixSocket(String path) async {
 /// to 104–108 bytes).
 Future<Socket> connectUnixSocket(String path) async {
   requireUnixSocketSupport();
+  requireUnixSocketPathFits(path);
 
   return Socket.connect(
     InternetAddress(shortestPath(path), type: InternetAddressType.unix),

@@ -7,7 +7,7 @@ import '../test_util/many_relation_builder.dart';
 import '../test_util/table_relation_builder.dart';
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -102,7 +102,7 @@ void main() {
       var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
           .withOrderBy([
-            Order(column: manyRelation.count((t) => t.id.equals(1))),
+            manyRelation.count((t) => t.id.equals(1)).asc(),
           ])
           .build();
 

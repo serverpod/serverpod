@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
@@ -5,6 +6,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'common/button.dart';
 import 'common/style.dart';
 import 'google_auth_controller.dart';
+import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
 import 'web/button.dart';
 
@@ -218,7 +220,9 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (GoogleSignIn.instance.supportsAuthenticate())
+        if ((kIsWeb && GoogleWebSignInService.instance.isInitialized) ||
+            GoogleSignIn.instance.supportsAuthenticate())
+          // Native platforms (iOS, Android, macOS, etc.) and web with OAuth2.
           GoogleSignInNativeButton(
             onPressed: _controller.signIn,
             isLoading: _controller.isLoading,
@@ -234,6 +238,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             buttonWrapper: widget.buttonWrapper,
           )
         else if (_controller.isInitialized)
+          // Google-hosted iFrame button, self-managed.
           GoogleSignInWebButton(
             type: widget.type,
             theme: widget.theme,

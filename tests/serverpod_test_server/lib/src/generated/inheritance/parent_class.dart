@@ -85,6 +85,7 @@ class ParentClass extends _i1.GrandparentClass
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
@@ -94,7 +95,8 @@ class ParentClass extends _i1.GrandparentClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ParentClass.t),
       include: include,
     );
@@ -167,6 +169,7 @@ class ParentClassIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -212,6 +215,7 @@ class ParentClassRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -222,7 +226,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -253,6 +258,7 @@ class ParentClassRepository {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -263,7 +269,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -320,6 +327,69 @@ class ParentClassRepository {
   }) async {
     return session.db.insertRow<ParentClass>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ParentClass]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ParentClass]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ParentClass>> upsert(
+    _i2.DatabaseSession session,
+    List<ParentClass> rows, {
+    required _i2.ColumnSelections<ParentClassTable> conflictColumns,
+    _i2.ColumnSelections<ParentClassTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ParentClassTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ParentClass>(
+      rows,
+      conflictColumns: conflictColumns(ParentClass.t),
+      updateColumns: updateColumns?.call(ParentClass.t),
+      updateWhere: updateWhere?.call(ParentClass.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ParentClass] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ParentClass] will have its `id` field set.
+  Future<ParentClass?> upsertRow(
+    _i2.DatabaseSession session,
+    ParentClass row, {
+    required _i2.ColumnSelections<ParentClassTable> conflictColumns,
+    _i2.ColumnSelections<ParentClassTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ParentClassTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ParentClass>(
+      row,
+      conflictColumns: conflictColumns(ParentClass.t),
+      updateColumns: updateColumns?.call(ParentClass.t),
+      updateWhere: updateWhere?.call(ParentClass.t),
       transaction: transaction,
     );
   }
@@ -383,6 +453,7 @@ class ParentClassRepository {
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -393,7 +464,8 @@ class ParentClassRepository {
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -409,6 +481,7 @@ class ParentClassRepository {
     _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -417,7 +490,8 @@ class ParentClassRepository {
       rows,
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -442,6 +516,7 @@ class ParentClassRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -450,7 +525,8 @@ class ParentClassRepository {
       where: where(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
