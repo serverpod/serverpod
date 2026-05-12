@@ -335,6 +335,8 @@ Set<String> _parseAdminEmails(final String? configuredValue) {
     throw const FormatException(_adminEmailsPasswordTypeError);
   }
 
+  // Supports plain-text configuration values, such as a single e-mail address
+  // or a comma / newline separated list from an environment variable.
   return _normalizedAdminEmails(trimmedValue.split(RegExp(r'[\n,]')));
 }
 

@@ -7,6 +7,8 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 import 'fakes/fakes.dart';
 
+const _adminScopeBackfillTimeout = Duration(seconds: 5);
+
 void main() {
   withServerpod(
     'Given AuthServices is being configured',
@@ -439,7 +441,7 @@ Future<void> _waitForAdminScope(
   final Serverpod serverpod,
   final UuidValue authUserId,
 ) async {
-  final deadline = DateTime.now().add(const Duration(seconds: 5));
+  final deadline = DateTime.now().add(_adminScopeBackfillTimeout);
 
   while (DateTime.now().isBefore(deadline)) {
     final session = await serverpod.createSession(enableLogging: false);
