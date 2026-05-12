@@ -104,10 +104,13 @@ class CreateRepairMigrationCommand
           type: TextLogType.bullet,
         );
         log.info('Done.', type: TextLogType.success);
-      case RepairMigrationNotCreated():
-        // MigrationGenerator.repairMigration logs the specific reason
-        // ("No changes detected" or "Migration aborted") via log.info before
-        // returning null, so we just exit non-zero here.
+      case RepairMigrationNoChanges():
+        log.info(
+          'No changes detected. Use --force to create an empty repair migration.',
+        );
+        throw ExitException.error();
+      case RepairMigrationAborted():
+        log.info('Migration aborted. Use --force to ignore warnings.');
         throw ExitException.error();
       case RepairMigrationFailed(:final message):
         log.error(message);

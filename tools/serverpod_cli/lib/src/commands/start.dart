@@ -978,10 +978,12 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
       message: 'Repair migration "$versionName" created at $filePath.',
       isError: false,
     ),
-    RepairMigrationNotCreated() => (
-      message:
-          'No repair migration created. Either no schema drift was '
-          'detected, or warnings were present. $forceHint',
+    RepairMigrationNoChanges() => (
+      message: 'Repair migration skipped. No schema drift detected.',
+      isError: false,
+    ),
+    RepairMigrationAborted() => (
+      message: 'Repair migration aborted due to warnings. $forceHint',
       isError: true,
     ),
     RepairMigrationFailed(:final message) => (

@@ -25,11 +25,16 @@ class RepairMigrationCreated extends RepairMigrationOutcome {
   final String filePath;
 }
 
-/// The generator returned `null` - either no schema drift was detected, or
-/// warnings were present and `force` was false. Both cases require `force`
-/// to override.
-class RepairMigrationNotCreated extends RepairMigrationOutcome {
-  const RepairMigrationNotCreated();
+/// No schema drift was detected between the target migration version and the
+/// live database. `force` will create an empty repair migration anyway.
+class RepairMigrationNoChanges extends RepairMigrationOutcome {
+  const RepairMigrationNoChanges();
+}
+
+/// Warnings were present and `force` was false. `force` will create the
+/// migration despite the warnings (data may be destroyed).
+class RepairMigrationAborted extends RepairMigrationOutcome {
+  const RepairMigrationAborted();
 }
 
 /// The repair migration could not be created.
@@ -86,6 +91,8 @@ Future<RepairMigrationOutcome> createRepairMigrationAction({
       dialect: config.databaseDialect,
       targetMigrationVersion: targetMigrationVersion,
     );
+  } on MigrationAbortedException {
+    return const RepairMigrationAborted();
   } on MigrationRepairTargetNotFoundException catch (e) {
     if (e.versionsFound.isEmpty) {
       return const RepairMigrationFailed(
@@ -114,7 +121,7 @@ Future<RepairMigrationOutcome> createRepairMigrationAction({
   }
 
   if (repairMigration == null) {
-    return const RepairMigrationNotCreated();
+    return const RepairMigrationNoChanges();
   }
 
   final versionName = path.basenameWithoutExtension(repairMigration.path);
