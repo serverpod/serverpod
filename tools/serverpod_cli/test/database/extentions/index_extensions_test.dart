@@ -6,6 +6,158 @@ import '../../test_util/builders/database/index_definition_builder.dart';
 
 void main() {
   test(
+    'Given indexes with the same single column element, '
+    'when comparing, '
+    'then no mismatch is found.',
+    () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('message_id_idx')
+          .withIsUnique(true)
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      var index2 = index1.copyWith();
+
+      expect(index1.like(index2), isTrue);
+    },
+  );
+
+  test(
+    'Given indexes that differ only by an added column element, '
+    'when comparing, '
+    'then a mismatch is found.',
+    () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('message_id_idx')
+          .withIsUnique(true)
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      var index2 = IndexDefinitionBuilder()
+          .withIndexName('message_id_idx')
+          .withIsUnique(true)
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+            IndexElementDefinition(
+              definition: 'subscriber',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      expect(index1.like(index2), isFalse);
+    },
+  );
+
+  test(
+    'Given indexes that differ only by the column name of an element, '
+    'when comparing, '
+    'then a mismatch is found.',
+    () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('message_id_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      var index2 = IndexDefinitionBuilder()
+          .withIndexName('message_id_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'subscriber',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      expect(index1.like(index2), isFalse);
+    },
+  );
+
+  test(
+    'Given indexes that differ only by the order of column elements, '
+    'when comparing, '
+    'then a mismatch is found.',
+    () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('composite_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+            IndexElementDefinition(
+              definition: 'subscriber',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      var index2 = IndexDefinitionBuilder()
+          .withIndexName('composite_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'subscriber',
+              type: IndexElementDefinitionType.column,
+            ),
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      expect(index1.like(index2), isFalse);
+    },
+  );
+
+  test(
+    'Given indexes that differ only by the type of an element, '
+    'when comparing, '
+    'then a mismatch is found.',
+    () {
+      var index1 = IndexDefinitionBuilder()
+          .withIndexName('expr_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.column,
+            ),
+          ])
+          .build();
+
+      var index2 = IndexDefinitionBuilder()
+          .withIndexName('expr_idx')
+          .withElements([
+            IndexElementDefinition(
+              definition: 'messageId',
+              type: IndexElementDefinitionType.expression,
+            ),
+          ])
+          .build();
+
+      expect(index1.like(index2), isFalse);
+    },
+  );
+
+  test(
     'Given identical vector indexes, '
     'when comparing, '
     'then no mismatches are found.',
