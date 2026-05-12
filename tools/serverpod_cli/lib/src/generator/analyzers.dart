@@ -41,9 +41,9 @@ class Analyzers {
     final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
     final collection = createAnalysisContextCollection(libDirectory);
     final endpointsAnalyzer = EndpointsAnalyzer(
-      config,
       libDirectory,
       collection: collection,
+      extraClasses: config.extraClasses
     );
     final yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (

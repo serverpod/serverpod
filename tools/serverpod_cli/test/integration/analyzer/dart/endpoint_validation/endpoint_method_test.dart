@@ -43,7 +43,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -106,7 +106,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -178,7 +178,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -216,7 +216,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -252,7 +252,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -297,7 +297,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -341,7 +341,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -385,7 +385,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -429,7 +429,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -465,7 +465,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -518,7 +518,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -562,7 +562,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -613,7 +613,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -669,7 +669,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -725,7 +725,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -782,7 +782,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -837,7 +837,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -893,7 +893,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -937,7 +937,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -991,7 +991,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1038,7 +1038,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1087,7 +1087,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1145,7 +1145,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1214,7 +1214,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1263,7 +1263,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1317,7 +1317,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1367,7 +1367,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1416,7 +1416,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1456,7 +1456,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1518,7 +1518,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,
@@ -1587,7 +1587,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1612,7 +1612,8 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
-    'Given an endpoint method that has non serializable parameters after the first positional Session parameter',
+    'Given an endpoint method that has non serializable parameters after the first positional Session parameter, '
+    'when analyzing,',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -1633,7 +1634,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -1665,7 +1666,8 @@ class ExampleEndpoint extends Endpoint {
     },
   );
 
-  group('Given an endpoint method with a non serializable model return type', () {
+  group('Given an endpoint method with a non serializable model return type, '
+      'when analyzing,', () {
     var collector = CodeGenerationCollector();
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
@@ -1685,7 +1687,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(
         collector: collector,
         models: StatefulAnalyzer(config, []).models,

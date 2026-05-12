@@ -33,7 +33,7 @@ class _CachedFileResult {
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
-  final GeneratorConfig config;
+  final List<TypeDefinition> extraClasses;
 
   final AnalysisContextCollection collection;
 
@@ -46,10 +46,11 @@ class EndpointsAnalyzer {
   /// When [collection] is provided it is reused (e.g. shared with
   /// [FutureCallsAnalyzer]). Otherwise a new one is created internally.
   EndpointsAnalyzer(
-    this.config,
     Directory directory, {
+    List<TypeDefinition>? extraClasses,
     AnalysisContextCollection? collection,
-  }) : collection = collection ?? createAnalysisContextCollection(directory),
+  }) : extraClasses = extraClasses ?? [],
+       collection = collection ?? createAnalysisContextCollection(directory),
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for endpoint files.
@@ -440,13 +441,13 @@ class EndpointsAnalyzer {
           method,
           classElement,
           library,
-          config.extraClasses,
+          extraClasses,
           models,
         );
         errors.addAll(
           EndpointParameterAnalyzer.validate(
             method.formalParameters,
-            config.extraClasses,
+            extraClasses,
             models,
           ),
         );

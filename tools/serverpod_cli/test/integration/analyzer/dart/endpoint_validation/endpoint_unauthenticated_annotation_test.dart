@@ -49,7 +49,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -101,7 +101,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -169,7 +169,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,
@@ -229,7 +229,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(
           collector: collector,
           models: StatefulAnalyzer(config, []).models,

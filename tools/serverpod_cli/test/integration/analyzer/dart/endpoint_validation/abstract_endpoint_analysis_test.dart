@@ -7,13 +7,11 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
-  var config = GeneratorConfigBuilder().build();
 
   setUpAll(() async {
     await createTestEnvironment(testProjectDirectory);
@@ -45,7 +43,7 @@ abstract class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(config, testDirectory);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -90,7 +88,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -161,7 +159,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -224,7 +222,7 @@ class ConcreteEndpoint extends BaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
@@ -294,7 +292,7 @@ class ConcreteImplementationEndpoint extends HiddenBaseEndpoint {
   }
 }
 ''');
-        analyzer = EndpointsAnalyzer(config, testDirectory);
+        analyzer = EndpointsAnalyzer(testDirectory);
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
