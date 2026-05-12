@@ -520,7 +520,11 @@ class TypeDefinition {
     return genericType;
   }
 
-  /// Generates the constructors for List and Map types
+  /// Generates value expressions used as bodies of `(data, protocol) => ...`
+  /// closures in `Protocol._deserializers`. Recursive `deserialize<X>` calls
+  /// route through `protocol.deserialize<X>` because the closure has no
+  /// access to `this`; the trailing `as T` cast is added once by the caller
+  /// on the result of the map lookup.
   List<MapEntry<Expression, Code>> generateDeserialization(
     bool serverCode, {
     required GeneratorConfig config,
@@ -534,7 +538,7 @@ class TypeDefinition {
           ).call([], {}, [reference(serverCode, config: config)]),
           Block.of(
             [
-              if (nullable) const Code(' (data == null) ? null as T : '),
+              if (nullable) const Code(' (data == null) ? null : '),
               const Code('('),
               for (final (i, positionalField)
                   in positionalRecordFields.indexed) ...[
@@ -542,7 +546,7 @@ class TypeDefinition {
                   Code(
                     "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : ",
                   ),
-                const Code('deserialize<'),
+                const Code('protocol.deserialize<'),
                 positionalField
                     .reference(serverCode, config: config, nullable: false)
                     .code,
@@ -562,7 +566,7 @@ class TypeDefinition {
                     Code(
                       "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : ",
                     ),
-                  const Code('deserialize<'),
+                  const Code('protocol.deserialize<'),
                   namedField
                       .reference(serverCode, config: config, nullable: false)
                       .code,
@@ -579,7 +583,7 @@ class TypeDefinition {
                   const Code(','),
                 ],
               ],
-              const Code(') as T'),
+              const Code(')'),
             ],
           ),
         ),
@@ -607,22 +611,22 @@ class TypeDefinition {
                     const Code(
                       '(data!=null?'
                       '(data as List).map((e) =>'
-                      'deserialize<',
+                      'protocol.deserialize<',
                     ),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
                       '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                      ':null) as T',
+                      ':null)',
                     ),
                   ])
                 : Block.of([
                     const Code(
                       '(data as List).map((e) =>'
-                      'deserialize<',
+                      'protocol.deserialize<',
                     ),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T',
+                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}',
                     ),
                   ]),
           ]),
@@ -651,34 +655,34 @@ class TypeDefinition {
                           const Code(
                             '(data!=null?'
                             '(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<',
+                            'MapEntry(protocol.deserialize<',
                           ),
                           generics.first
                               .reference(serverCode, config: config)
                               .code,
-                          const Code('>(k),deserialize<'),
+                          const Code('>(k),protocol.deserialize<'),
                           generics[1]
                               .reference(serverCode, config: config)
                               .code,
                           const Code(
                             '>(v)))'
-                            ':null) as T',
+                            ':null)',
                           ),
                         ])
                       : Block.of([
                           // using Code.scope only sets the generic to List
                           const Code(
                             '(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<',
+                            'MapEntry(protocol.deserialize<',
                           ),
                           generics.first
                               .reference(serverCode, config: config)
                               .code,
-                          const Code('>(k),deserialize<'),
+                          const Code('>(k),protocol.deserialize<'),
                           generics[1]
                               .reference(serverCode, config: config)
                               .code,
-                          const Code('>(v))) as T'),
+                          const Code('>(v)))'),
                         ])
                 : // Key is not String -> stored as list of map entries
                   nullable
@@ -687,26 +691,26 @@ class TypeDefinition {
                     const Code(
                       '(data!=null?'
                       'Map.fromEntries((data as List).map((e) =>'
-                      'MapEntry(deserialize<',
+                      'MapEntry(protocol.deserialize<',
                     ),
                     generics.first.reference(serverCode, config: config).code,
-                    const Code('>(e[\'k\']),deserialize<'),
+                    const Code('>(e[\'k\']),protocol.deserialize<'),
                     generics[1].reference(serverCode, config: config).code,
                     const Code(
                       '>(e[\'v\']))))'
-                      ':null) as T',
+                      ':null)',
                     ),
                   ])
                 : Block.of([
                     // using Code.scope only sets the generic to List
                     const Code(
                       'Map.fromEntries((data as List).map((e) =>'
-                      'MapEntry(deserialize<',
+                      'MapEntry(protocol.deserialize<',
                     ),
                     generics.first.reference(serverCode, config: config).code,
-                    const Code('>(e[\'k\']),deserialize<'),
+                    const Code('>(e[\'k\']),protocol.deserialize<'),
                     generics[1].reference(serverCode, config: config).code,
-                    const Code('>(e[\'v\'])))) as T'),
+                    const Code('>(e[\'v\']))))'),
                   ]),
           ]),
         ),
@@ -739,9 +743,9 @@ class TypeDefinition {
             (a) => nullable
                 ? '(data!=null?'
                       '${a(reference(serverCode, config: config))}'
-                      '.fromJson(data):null)as T'
+                      '.fromJson(data):null)'
                 : '${a(reference(serverCode, config: config))}'
-                      '.fromJson(data) as T',
+                      '.fromJson(data)',
           ),
         ),
       ];
