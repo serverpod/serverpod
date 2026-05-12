@@ -44,6 +44,16 @@ class IdeConfigReplacement {
   final String to;
 }
 
+extension TemplateIdeExtension on TemplateIde {
+  String get effectiveConfig {
+    String result = config;
+    for (final replacement in replacements) {
+      result = result.replaceAll(replacement.from, replacement.to);
+    }
+    return result;
+  }
+}
+
 /// Generic MCP server config for IDEs.
 const _genericConfig = '''{
   "mcpServers": {

@@ -410,7 +410,7 @@ Future<void> _configureMcpServer(
     (ide) async {
       await _createFileAndWrite(
         p.join(projectDirPath, ide.filePath),
-        ide.config,
+        ide.effectiveConfig,
       );
     },
   );
