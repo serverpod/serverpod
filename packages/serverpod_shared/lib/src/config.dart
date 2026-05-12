@@ -449,6 +449,31 @@ enum DatabaseDialect {
   sqlite,
 }
 
+/// How the database is provisioned for the running server. Postgres-only;
+/// silently ignored when [DatabaseConfig.dialect] is [DatabaseDialect.sqlite].
+///
+/// Consumed by `serverpod start` to decide whether to boot an embedded
+/// PostgreSQL postmaster, expect `docker compose` to have brought one up,
+/// or simply connect to whatever the config file points at.
+enum DatabaseSource {
+  /// `serverpod start` decides at runtime which concrete source to use,
+  /// based on what's already running, what's reachable, and what the
+  /// project has on disk. Resolves to one of the other values; never
+  /// surfaces directly to the running pod.
+  ///
+  /// Only valid in `development` run mode.
+  auto,
+
+  /// `serverpod start` boots a managed PostgreSQL child process via
+  /// `serverpod_embedded_postgres` and injects its endpoint into the pod
+  /// via environment variables.
+  embedded,
+
+  /// Use the connection details supplied in the configuration as-is. No
+  /// provisioning. Default when the field is absent.
+  config,
+}
+
 /// Configuration for a database.
 ///
 /// Use [DatabaseConfig.forDialect] to create a dialect-specific configuration,
@@ -489,6 +514,11 @@ abstract class DatabaseConfig {
   /// Database dialect.
   final DatabaseDialect dialect;
 
+  /// How the database is provisioned. Postgres-only; always `null` when
+  /// [dialect] is [DatabaseDialect.sqlite]. Defaults to
+  /// [DatabaseSource.config] for postgres when the field is absent.
+  final DatabaseSource? source;
+
   /// Private constructor for subclasses.
   DatabaseConfig._({
     required this.host,
@@ -501,9 +531,13 @@ abstract class DatabaseConfig {
     required this.searchPaths,
     this.maxConnectionCount = defaultMaxConnectionCount,
     required this.dialect,
+    required this.source,
   });
 
   /// Creates a new [DatabaseConfig] (PostgreSQL by default).
+  ///
+  /// [source] is forwarded to [PostgresDatabaseConfig] and silently dropped
+  /// when [dialect] is [DatabaseDialect.sqlite].
   factory DatabaseConfig({
     required String host,
     required int port,
@@ -515,6 +549,7 @@ abstract class DatabaseConfig {
     List<String>? searchPaths,
     int? maxConnectionCount = defaultMaxConnectionCount,
     DatabaseDialect dialect = DatabaseDialect.postgres,
+    DatabaseSource source = DatabaseSource.config,
   }) => switch (dialect) {
     DatabaseDialect.postgres => PostgresDatabaseConfig(
       host: host,
@@ -526,6 +561,7 @@ abstract class DatabaseConfig {
       isUnixSocket: isUnixSocket,
       searchPaths: searchPaths,
       maxConnectionCount: maxConnectionCount,
+      source: source,
     ),
     DatabaseDialect.sqlite => SqliteDatabaseConfig(
       filePath: host,
@@ -578,6 +614,7 @@ abstract class DatabaseConfig {
     }
     str += 'database max connection count: $maxConnectionCount\n';
     str += 'database dialect: ${dialect.name}\n';
+    if (source != null) str += 'database source: ${source!.name}\n';
     return str;
   }
 }
@@ -585,6 +622,9 @@ abstract class DatabaseConfig {
 /// PostgreSQL-specific database configuration.
 class PostgresDatabaseConfig extends DatabaseConfig {
   /// Creates a new [PostgresDatabaseConfig].
+  ///
+  /// [source] defaults to [DatabaseSource.config], i.e. "use the supplied
+  /// connection details as-is, don't auto-provision."
   PostgresDatabaseConfig({
     required super.host,
     required super.port,
@@ -595,7 +635,8 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     super.isUnixSocket = false,
     super.searchPaths,
     super.maxConnectionCount,
-  }) : super._(dialect: DatabaseDialect.postgres);
+    DatabaseSource source = DatabaseSource.config,
+  }) : super._(dialect: DatabaseDialect.postgres, source: source);
 
   factory PostgresDatabaseConfig._fromJson(
     Map dbSetup,
@@ -630,6 +671,10 @@ class PostgresDatabaseConfig extends DatabaseConfig {
       maxConnectionCount = null;
     }
 
+    var source = _parseDatabaseSource(
+      dbSetup[ServerpodEnv.databaseSource.configKey],
+    );
+
     return PostgresDatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
       port: dbSetup[ServerpodEnv.databasePort.configKey],
@@ -643,6 +688,29 @@ class PostgresDatabaseConfig extends DatabaseConfig {
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
       maxConnectionCount: maxConnectionCount,
+      source: source,
+    );
+  }
+}
+
+/// Parses [raw] into a [DatabaseSource]. Returns [DatabaseSource.config] when
+/// [raw] is null (the documented default for the `database.source` field).
+/// Throws [ArgumentError] on unrecognized strings with a helpful enumeration
+/// of valid values.
+DatabaseSource _parseDatabaseSource(Object? raw) {
+  if (raw == null) return DatabaseSource.config;
+  if (raw is! String) {
+    throw ArgumentError(
+      'Invalid database source: $raw (expected a string). '
+      'Valid values are: ${DatabaseSource.values.map((v) => v.name).join(", ")}.',
+    );
+  }
+  try {
+    return DatabaseSource.values.byName(raw);
+  } on ArgumentError {
+    throw ArgumentError(
+      'Invalid database source: "$raw". '
+      'Valid values are: ${DatabaseSource.values.map((v) => v.name).join(", ")}.',
     );
   }
 }
@@ -663,6 +731,7 @@ class SqliteDatabaseConfig extends DatabaseConfig {
          isUnixSocket: false,
          searchPaths: null,
          dialect: DatabaseDialect.sqlite,
+         source: null,
        );
 
   /// The file path to the SQLite database.
@@ -1071,6 +1140,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
     (ServerpodEnv.databaseSearchPaths, null),
     (ServerpodEnv.databaseMaxConnectionCount, int.parse),
+    (ServerpodEnv.databaseSource, null),
   ]);
 }
 

@@ -78,6 +78,10 @@ enum ServerpodEnv {
   /// The file path to the SQLite database.
   databaseFilePath,
 
+  /// How the database is provisioned (auto, embedded, config). Postgres-only;
+  /// ignored when dialect is sqlite.
+  databaseSource,
+
   /// The address to the redis broker.
   redisHost,
 
@@ -206,6 +210,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseMaxConnectionCount) => 'maxConnectionCount',
       (ServerpodEnv.databaseDialect) => 'dialect',
       (ServerpodEnv.databaseFilePath) => 'filePath',
+      (ServerpodEnv.databaseSource) => 'source',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
@@ -264,6 +269,7 @@ enum ServerpodEnv {
         'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT',
       (ServerpodEnv.databaseDialect) => 'SERVERPOD_DATABASE_DIALECT',
       (ServerpodEnv.databaseFilePath) => 'SERVERPOD_DATABASE_FILE_PATH',
+      (ServerpodEnv.databaseSource) => 'SERVERPOD_DATABASE_SOURCE',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',

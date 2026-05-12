@@ -990,4 +990,213 @@ database:
       );
     },
   );
+
+  group('Given a Postgres database config', () {
+    test(
+      'when source is omitted then it defaults to DatabaseSource.config.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.database?.source, DatabaseSource.config);
+      },
+    );
+
+    for (var src in [
+      DatabaseSource.auto,
+      DatabaseSource.embedded,
+      DatabaseSource.config,
+    ]) {
+      test('when source is "${src.name}" then it parses to $src.', () {
+        var serverpodConfig =
+            '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  source: ${src.name}
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.database?.source, src);
+      });
+    }
+
+    test(
+      'when source is an unknown string then ArgumentError is thrown with valid values listed.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  source: docker
+''';
+
+        expect(
+          () => ServerpodConfig.loadFromMap(
+            runMode,
+            serverId,
+            {...passwords, 'database': 'password'},
+            loadYaml(serverpodConfig),
+          ),
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message.toString(),
+              'message',
+              allOf(
+                contains('"docker"'),
+                contains('auto'),
+                contains('embedded'),
+                contains('config'),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when SERVERPOD_DATABASE_SOURCE is set then it overrides the config-file value.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  source: config
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+          environment: {'SERVERPOD_DATABASE_SOURCE': 'embedded'},
+        );
+
+        expect(config.database?.source, DatabaseSource.embedded);
+      },
+    );
+
+    test(
+      'when source is present then toString includes the database source line.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  source: auto
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.database.toString(), contains('database source: auto'));
+      },
+    );
+  });
+
+  group('Given a SQLite database config', () {
+    test(
+      'when source is present in YAML then it is silently ignored and resolves to null.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+  source: embedded
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.database, isA<SqliteDatabaseConfig>());
+        expect(config.database?.source, isNull);
+      },
+    );
+
+    test('then toString does not include a database source line.', () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database.toString(), isNot(contains('database source')));
+    });
+  });
 }
