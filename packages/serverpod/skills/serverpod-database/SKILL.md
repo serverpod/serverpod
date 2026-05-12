@@ -9,6 +9,16 @@ Serverpod generates ORM code for models with `table` in `.spy.yaml`. PostgreSQL 
 
 ## CRUD
 
+```spy.yaml
+class: Company
+table: company
+fields:
+  name: String
+  foundedDate: DateTime
+```
+
+See [Serverpod Models](../serverpod-models/SKILL.md) for more on defining models and relations.
+
 ```dart
 var company = Company(name: 'Serverpod Inc.', foundedDate: DateTime.now());
 company = await Company.db.insertRow(session, company);

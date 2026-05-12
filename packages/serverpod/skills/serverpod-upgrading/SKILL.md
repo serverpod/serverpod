@@ -1,23 +1,25 @@
 ---
 name: serverpod-upgrading
-description: Upgrade Serverpod — minor/patch updates, major upgrade to v3, pubspec updates across all packages. Use when upgrading Serverpod versions or updating dependencies.
+description: Upgrade Serverpod — minor/patch updates, major upgrade to v3. Use when upgrading Serverpod versions or updating dependencies.
 ---
 
-# Serverpod Upgrading
+# Serverpod minor/patch upgrade
 
 Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
-Use the same pinned Serverpod version across all packages.
+Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Ask the user to start the server with `serverpod start` after the upgrade. NEVER update the CLI tooling, instead STOP and ask the user to do it.
 
-1. Update the CLI to the latest version: `dart install serverpod_cli`
-2. Run `serverpod version` to get the updated Serverpod version.
-4. Update all Serverpod packages in all pubspecs to the Serverpod version.
-5. Run `dart pub upgrade` + `serverpod generate` from the server directory.
-6. Follow the [migration workflow](../serverpod-migrations/SKILL.md).
+1. Check the latest version of Serverpod: https://pub.dev/packages/serverpod (unless the user has requested a specific version).
+2. Run `serverpod version` to verify that the tooling has the correct version. If not, STOP and ask the user to install the correct version (`dart install serverpod_cli` for latest or `dart install serverpod_cli 3.x.x` for specific version).
+3. Update all Serverpod packages in all relevant package pubspec.yaml (server, client, flutter, shared).
+4. Run `dart pub upgrade` in all packages.
+5. Run `serverpod generate`.
+6. Run `serverpod create-migration`.
+7. Run `dart analyze` in the root of the project and address any issues.
+8. Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
+9. Inform the user that the upgrade is complete and they should start the server with `serverpod start`.
 
-Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
-
-## Major upgrade: to Serverpod 3.0
+## Major upgrade: Serverpod 2.x to 3.0
 
 After following the regular upgrade process, ensure that the following breaking changes are addressed.
 
@@ -40,11 +42,3 @@ After following the regular upgrade process, ensure that the following breaking 
 
 **Deprecated:** Legacy streaming endpoints; use streaming methods.
 
-### Checklist
-
-1. CLI, pubspecs (versions + SDK), Dockerfile
-2. Route classes, widgets, static routes
-3. Enum serialization strategy
-4. `SerializableEntity` → `SerializableModel`, YAML keywords
-5. Auth usage updates
-6. Migration + tests
