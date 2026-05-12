@@ -1165,6 +1165,31 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
   ).dialect;
 }
 
+/// Infer the database source from one run-mode config map (the body of
+/// `config/<runMode>.yaml`), using the same `database` merging rules as
+/// [ServerpodConfig.loadFromMap].
+///
+/// Returns `null` when there is no database section or the dialect is
+/// SQLite (source doesn't apply). Postgres-shaped configs return their
+/// resolved [DatabaseSource]; absent `source` field resolves to
+/// [DatabaseSource.config] (the documented default).
+///
+/// Used by `serverpod_cli` to inspect the configured source without doing
+/// a full [ServerpodConfig.load] (which would require `passwords.yaml`).
+DatabaseSource? inferDatabaseSourceFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  if (dbSetup == null) return null;
+  final config = DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  );
+  return config.source;
+}
+
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   var redisConfig = configMap[ServerpodConfigMap.redis] ?? {};
 
