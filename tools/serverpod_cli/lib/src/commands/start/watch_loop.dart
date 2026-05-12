@@ -36,6 +36,12 @@ class WatchLoopContext {
   final StreamSubscription<void>? fileChangeSub;
   final Future<void> Function() closeAnalyzers;
   final Future<void> Function()? stopDocker;
+
+  /// Cleanup hook for the embedded PostgreSQL postmaster booted by the
+  /// db-source resolver (when source resolves to `embedded`). Null when no
+  /// embedded PG was booted for this run.
+  final Future<void> Function()? stopEmbeddedDb;
+
   final String vmServiceInfoFile;
   bool _disposed = false;
 
@@ -46,6 +52,7 @@ class WatchLoopContext {
     required this.fileChangeSub,
     required this.closeAnalyzers,
     required this.stopDocker,
+    required this.stopEmbeddedDb,
     required this.vmServiceInfoFile,
   });
 
@@ -62,5 +69,6 @@ class WatchLoopContext {
     await proxy?.close();
     await File(vmServiceInfoFile).deleteIfExists();
     await stopDocker?.call();
+    await stopEmbeddedDb?.call();
   }
 }
