@@ -2,6 +2,11 @@ import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 
 /// A keyboard-activated button with a highlighted activation character.
+///
+/// When [onShiftActivate] is non-null, the button also dispatches `Shift+key`
+/// to that callback and appends a `⇧` glyph to [name] as a discoverability
+/// cue (terminals can't tell us when Shift is pressed without a key, so the
+/// hint is shown statically). Help (`H`) lists what each `⇧` does.
 class Button extends StatelessComponent {
   const Button({
     super.key,
@@ -9,43 +14,36 @@ class Button extends StatelessComponent {
     required this.activationChar,
     required this.activationKeys,
     required this.onActivate,
+    this.onShiftActivate,
     this.enabled = true,
-    this.shift,
-    this.ctrl,
-    this.alt,
-    this.meta,
   }) : assert(activationKeys.length > 0, 'activationKeys can not be empty');
 
   final String name;
   final String activationChar;
   final List<LogicalKey> activationKeys;
   final void Function(LogicalKey) onActivate;
+  final void Function(LogicalKey)? onShiftActivate;
   final bool enabled;
-
-  /// Modifier requirements forwarded to [KeyboardEvent.matches]. `null` means
-  /// "don't care" (matches with or without). Set explicitly to disambiguate
-  /// when two buttons share the same key (e.g. `r` with `shift: false` and
-  /// `Shift+R` with `shift: true`).
-  final bool? shift;
-  final bool? ctrl;
-  final bool? alt;
-  final bool? meta;
 
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
+    final hasShiftVariant = onShiftActivate != null;
 
     return Focusable(
       focused: enabled,
       onKeyEvent: (event) {
         for (final key in activationKeys) {
-          if (event.matches(
-            key,
-            shift: shift,
-            ctrl: ctrl,
-            alt: alt,
-            meta: meta,
-          )) {
+          if (hasShiftVariant) {
+            if (event.matches(key, shift: false)) {
+              onActivate(key);
+              return true;
+            }
+            if (event.matches(key, shift: true)) {
+              onShiftActivate!(key);
+              return true;
+            }
+          } else if (event.matches(key)) {
             onActivate(key);
             return true;
           }
@@ -70,7 +68,7 @@ class Button extends StatelessComponent {
             ),
             const Text(' '),
             Text(
-              name,
+              hasShiftVariant ? '$name⇧' : name,
               style: TextStyle(
                 fontWeight: enabled ? FontWeight.normal : FontWeight.dim,
               ),

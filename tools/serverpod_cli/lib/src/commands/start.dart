@@ -833,18 +833,20 @@ Future<void> _runTuiBackend({
         holder.onHotRestart = () {
           runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
         };
-        holder.onCreateMigration = () {
+        holder.onCreateMigration = ({bool force = false}) {
           runTrackedAction(
             holder,
-            'Creating migration',
-            () => _runCreateMigrationForTui(config),
+            force ? 'Force-creating migration' : 'Creating migration',
+            () => _runCreateMigrationForTui(config, force: force),
           );
         };
-        holder.onCreateRepairMigration = () {
+        holder.onCreateRepairMigration = ({bool force = false}) {
           runTrackedAction(
             holder,
-            'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(config),
+            force
+                ? 'Force-creating repair migration'
+                : 'Creating repair migration',
+            () => _runCreateRepairMigrationForTui(config, force: force),
           );
         };
         holder.onApplyMigration = () {
@@ -931,8 +933,11 @@ Future<void> _runTuiBackend({
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
-Future<void> _runCreateMigrationForTui(GeneratorConfig config) async {
-  final outcome = await createMigrationAction(config: config);
+Future<void> _runCreateMigrationForTui(
+  GeneratorConfig config, {
+  bool force = false,
+}) async {
+  final outcome = await createMigrationAction(config: config, force: force);
   final result = _describeCreateMigration(
     outcome,
     forceHint: 'Run `serverpod create-migration --force` to create it anyway.',
@@ -970,10 +975,13 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
-Future<void> _runCreateRepairMigrationForTui(GeneratorConfig config) async {
+Future<void> _runCreateRepairMigrationForTui(
+  GeneratorConfig config, {
+  bool force = false,
+}) async {
   final File? file;
   try {
-    file = await createRepairMigrationAction(config: config);
+    file = await createRepairMigrationAction(config: config, force: force);
   } on MigrationAbortedException {
     log.info(
       'Run `serverpod create-repair-migration --force` to create it anyway.',

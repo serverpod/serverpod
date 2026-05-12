@@ -46,11 +46,10 @@ class _HelpOverlayState extends State<HelpOverlay> {
     (
       'Actions',
       [
-        ('R', 'Hot Reload'),
-        ('Shift+R', 'Hot Restart'),
-        ('M', 'Create Migration'),
-        ('Shift+M', 'Repair Migration'),
-        ('A', 'Apply Migration'),
+        ('R / Shift+R', 'Hot reload / restart'),
+        ('M / Shift+M', 'Create migration (⇧ = force)'),
+        ('P / Shift+P', 'Repair migration (⇧ = force)'),
+        ('A', 'Apply migration'),
         ('Q', 'Quit'),
       ],
     ),

@@ -45,8 +45,8 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
-  final VoidCallback? onCreateMigration;
-  final VoidCallback? onCreateRepairMigration;
+  final void Function({bool force})? onCreateMigration;
+  final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
 
@@ -169,61 +169,41 @@ class MainScreen extends StatelessComponent {
     return ButtonBar(
       buttons: [
         Button(
-          name: 'Hot Reload',
+          name: 'Reload',
           activationChar: 'R',
           activationKeys: const [LogicalKey.keyR],
-          shift: false,
-          onActivate: (_) {
-            onHotReload?.call();
-          },
+          onActivate: (_) => onHotReload?.call(),
+          onShiftActivate: (_) => onHotRestart?.call(),
           enabled: actionsEnabled && onHotReload != null,
         ),
         Button(
-          name: 'Hot Restart',
-          activationChar: '⇧R',
-          activationKeys: const [LogicalKey.keyR],
-          shift: true,
-          onActivate: (_) {
-            onHotRestart?.call();
-          },
-          enabled: actionsEnabled && onHotRestart != null,
-        ),
-        Button(
-          name: 'Create Migration',
+          name: 'Migrate',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
-          shift: false,
-          onActivate: (_) {
-            onCreateMigration?.call();
-          },
+          onActivate: (_) => onCreateMigration?.call(),
+          onShiftActivate: (_) => onCreateMigration?.call(force: true),
           enabled: actionsEnabled && onCreateMigration != null,
         ),
         Button(
-          name: 'Repair Migration',
-          activationChar: '⇧M',
-          activationKeys: const [LogicalKey.keyM],
-          shift: true,
-          onActivate: (_) {
-            onCreateRepairMigration?.call();
-          },
+          name: 'Repair',
+          activationChar: 'P',
+          activationKeys: const [LogicalKey.keyP],
+          onActivate: (_) => onCreateRepairMigration?.call(),
+          onShiftActivate: (_) => onCreateRepairMigration?.call(force: true),
           enabled: actionsEnabled && onCreateRepairMigration != null,
         ),
         Button(
-          name: 'Apply Migration',
+          name: 'Apply',
           activationChar: 'A',
           activationKeys: const [LogicalKey.keyA],
-          onActivate: (_) {
-            onApplyMigration?.call();
-          },
+          onActivate: (_) => onApplyMigration?.call(),
           enabled: actionsEnabled && onApplyMigration != null,
         ),
         Button(
           name: 'Help',
           activationChar: 'H',
           activationKeys: const [LogicalKey.keyH],
-          onActivate: (_) {
-            onToggleHelp?.call();
-          },
+          onActivate: (_) => onToggleHelp?.call(),
           enabled: onToggleHelp != null,
         ),
         Button(

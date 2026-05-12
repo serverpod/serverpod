@@ -17,8 +17,8 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
   VoidCallback? _onHotRestart;
-  VoidCallback? _onCreateMigration;
-  VoidCallback? _onCreateRepairMigration;
+  void Function({bool force})? _onCreateMigration;
+  void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
 
@@ -54,12 +54,12 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
     _widgetState?.onHotRestart = cb;
   }
 
-  set onCreateMigration(VoidCallback? cb) {
+  set onCreateMigration(void Function({bool force})? cb) {
     _onCreateMigration = cb;
     _widgetState?.onCreateMigration = cb;
   }
 
-  set onCreateRepairMigration(VoidCallback? cb) {
+  set onCreateRepairMigration(void Function({bool force})? cb) {
     _onCreateRepairMigration = cb;
     _widgetState?.onCreateRepairMigration = cb;
   }
@@ -97,8 +97,8 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onHotRestart;
-  VoidCallback? onCreateMigration;
-  VoidCallback? onCreateRepairMigration;
+  void Function({bool force})? onCreateMigration;
+  void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
 
