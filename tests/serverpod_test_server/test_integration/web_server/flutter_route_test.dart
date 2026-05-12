@@ -188,7 +188,14 @@ void main() {
         ),
       );
 
-      pod.webServer.addRoute(FlutterRoute(webDir));
+      pod.webServer.addRoute(
+        FlutterRoute(
+          webDir,
+          cacheControlFactory: StaticRoute.public(
+            maxAge: const Duration(hours: 1),
+          ),
+        ),
+      );
 
       await pod.start();
       port = pod.webServer.port!;
@@ -249,7 +256,7 @@ void main() {
     });
 
     test(
-      'Given index.html when requested then no-cache headers are present.',
+      'when index.html is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/index.html'),
@@ -261,7 +268,7 @@ void main() {
     );
 
     test(
-      'Given flutter_service_worker.js when requested then no-cache headers are present.',
+      'when flutter_service_worker.js is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/flutter_service_worker.js'),
@@ -273,7 +280,7 @@ void main() {
     );
 
     test(
-      'Given flutter_bootstrap.js when requested then no-cache headers are present.',
+      'when flutter_bootstrap.js is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/flutter_bootstrap.js'),
@@ -285,7 +292,7 @@ void main() {
     );
 
     test(
-      'Given manifest.json when requested then no-cache headers are present.',
+      'when manifest.json is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/manifest.json'),
@@ -297,7 +304,7 @@ void main() {
     );
 
     test(
-      'Given version.json when requested then no-cache headers are present.',
+      'when version.json is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/version.json'),
@@ -309,26 +316,26 @@ void main() {
     );
 
     test(
-      'Given main.dart.js when requested then cache-control header is public and max-age=86400.',
+      'when main.dart.js is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/main.dart.js'),
         );
         expect(response.statusCode, 200);
-        expect(response.headers['cache-control'], contains('public'));
-        expect(response.headers['cache-control'], contains('max-age=86400'));
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
       },
     );
 
     test(
-      'Given assets/image.png when requested then cache-control header is public and max-age=86400.',
+      'when assets/image.png is requested then no-cache headers are present',
       () async {
         final response = await client.get(
           Uri.http('localhost:$port', '/assets/image.png'),
         );
         expect(response.statusCode, 200);
-        expect(response.headers['cache-control'], contains('public'));
-        expect(response.headers['cache-control'], contains('max-age=86400'));
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
       },
     );
   });
