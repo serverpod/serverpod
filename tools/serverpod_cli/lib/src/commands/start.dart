@@ -966,46 +966,27 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
   );
 }
 
-/// Maps a [RepairMigrationOutcome] to a `(message, isError)` pair shared by
-/// the TUI and MCP wrappers. [forceHint] is the surface-specific instruction
-/// for retrying past warnings or empty diffs.
-({String message, bool isError}) _describeCreateRepairMigration(
-  RepairMigrationOutcome outcome, {
-  required String forceHint,
-}) {
-  return switch (outcome) {
-    RepairMigrationCreated(:final versionName, :final filePath) => (
-      message: 'Repair migration "$versionName" created at $filePath.',
-      isError: false,
-    ),
-    RepairMigrationNoChanges() => (
-      message: 'Repair migration skipped. No schema drift detected.',
-      isError: false,
-    ),
-    RepairMigrationAborted() => (
-      message: 'Repair migration aborted due to warnings. $forceHint',
-      isError: true,
-    ),
-    RepairMigrationFailed(:final message) => (
-      message: message,
-      isError: true,
-    ),
-  };
-}
-
 /// Runs `create-repair-migration` for the TUI's Repair Migration button.
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
 Future<void> _runCreateRepairMigrationForTui(GeneratorConfig config) async {
-  final outcome = await createRepairMigrationAction(config: config);
-  final result = _describeCreateRepairMigration(
-    outcome,
-    forceHint:
-        'Run `serverpod create-repair-migration --force` to create it anyway.',
-  );
-  if (result.isError) throw Exception(result.message);
-  log.info(result.message);
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(config: config);
+  } on MigrationAbortedException {
+    log.info(
+      'Run `serverpod create-repair-migration --force` to create it anyway.',
+    );
+    rethrow;
+  }
+
+  if (file == null) {
+    log.info('Repair migration skipped. No schema drift detected.');
+    return;
+  }
+  final versionName = p.basenameWithoutExtension(file.path);
+  log.info('Repair migration "$versionName" created at ${file.path}.');
 }
 
 /// Runs `create-repair-migration` for the MCP `create_repair_migration` tool.
@@ -1016,21 +997,35 @@ Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
   bool force = false,
   String? targetMigrationVersion,
 }) async {
-  final outcome = await createRepairMigrationAction(
-    config: config,
-    tag: tag,
-    force: force,
-    targetMigrationVersion: targetMigrationVersion,
-  );
-  final result = _describeCreateRepairMigration(
-    outcome,
-    forceHint: 'Call again with `force: true` to create it anyway.',
-  );
-  final followUp = outcome is RepairMigrationCreated
-      ? ' Call `apply_migrations` to run it against the database.'
-      : '';
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(
+      config: config,
+      tag: tag,
+      force: force,
+      targetMigrationVersion: targetMigrationVersion,
+    );
+  } on MigrationAbortedException {
+    return const CreateMigrationMcpResult(
+      message:
+          'Repair migration aborted due to warnings. '
+          'Call again with `force: true` to create it anyway.',
+      isError: true,
+    );
+  } on Exception catch (e) {
+    return CreateMigrationMcpResult(message: '$e', isError: true);
+  }
+
+  if (file == null) {
+    return const CreateMigrationMcpResult(
+      message: 'Repair migration skipped. No schema drift detected.',
+    );
+  }
+
+  final versionName = p.basenameWithoutExtension(file.path);
   return CreateMigrationMcpResult(
-    message: result.message + followUp,
-    isError: result.isError,
+    message:
+        'Repair migration "$versionName" created at ${file.path}. '
+        'Call `apply_migrations` to run it against the database.',
   );
 }

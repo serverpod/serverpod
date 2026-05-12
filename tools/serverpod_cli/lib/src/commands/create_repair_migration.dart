@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 import 'create_migration.dart' show CreateMigrationCommand;
 
@@ -82,39 +83,40 @@ class CreateRepairMigrationCommand
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    late RepairMigrationOutcome outcome;
-    await log.progress('Creating repair migration', () async {
-      outcome = await createRepairMigrationAction(
-        config: config,
-        tag: tag,
-        force: force,
-        runMode: mode,
-        targetMigrationVersion: targetVersion,
-      );
-      return outcome is RepairMigrationCreated;
-    });
-
-    switch (outcome) {
-      case RepairMigrationCreated(:final filePath):
-        log.info(
-          'Repair migration created: ${path.relative(
-            filePath,
-            from: Directory.current.path,
-          )}',
-          type: TextLogType.bullet,
+    File? repairMigration;
+    try {
+      await log.progress('Creating repair migration', () async {
+        repairMigration = await createRepairMigrationAction(
+          config: config,
+          tag: tag,
+          force: force,
+          runMode: mode,
+          targetMigrationVersion: targetVersion,
         );
-        log.info('Done.', type: TextLogType.success);
-      case RepairMigrationNoChanges():
-        log.info(
-          'No changes detected. Use --force to create an empty repair migration.',
-        );
-        throw ExitException.error();
-      case RepairMigrationAborted():
-        log.info('Migration aborted. Use --force to ignore warnings.');
-        throw ExitException.error();
-      case RepairMigrationFailed(:final message):
-        log.error(message);
-        throw ExitException.error();
+        return repairMigration != null;
+      });
+    } on MigrationAbortedException {
+      log.info('Migration aborted. Use --force to ignore warnings.');
+      throw ExitException.error();
+    } on Exception catch (e) {
+      log.error('$e');
+      throw ExitException.error();
     }
+
+    if (repairMigration == null) {
+      log.info(
+        'No changes detected. Use --force to create an empty repair migration.',
+      );
+      throw ExitException.error();
+    }
+
+    log.info(
+      'Repair migration created: ${path.relative(
+        repairMigration!.path,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
+    log.info('Done.', type: TextLogType.success);
   }
 }
