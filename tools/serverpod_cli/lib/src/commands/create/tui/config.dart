@@ -128,7 +128,7 @@ enum IdeOption implements ConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VSCode')
+  vsCode('VS Code')
   ;
 
   const IdeOption(this.label);

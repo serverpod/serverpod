@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -93,6 +94,12 @@ void main() {
           state.getStateFor(ServerpodCreateConfig.ide)?.focusedOptionIndex,
           -1,
         );
+
+        final selectedIdes = state.getSelectedOptionsFor<IdeOption>(
+          ServerpodCreateConfig.ide,
+        );
+
+        expect(selectedIdes, isEmpty);
       });
 
       test(
@@ -141,6 +148,114 @@ void main() {
         },
       );
 
+      group(
+        'given an ide option is selected',
+        () {
+          setUp(() {
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.vsCode,
+            );
+          });
+
+          test(
+            'then getSelectedOptionsFor returns the selected ide',
+            () {
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                contains(IdeOption.vsCode),
+              );
+            },
+          );
+
+          test(
+            'then getStatus returns true for selected option',
+            () {
+              final status = state.getStatus(
+                ServerpodCreateConfig.ide,
+                IdeOption.vsCode,
+              );
+
+              expect(status, isTrue);
+            },
+          );
+
+          test(
+            'then getStatus returns false for unselected option',
+            () {
+              final status = state.getStatus(
+                ServerpodCreateConfig.ide,
+                IdeOption.cursor,
+              );
+
+              expect(status, isFalse);
+            },
+          );
+
+          test(
+            'when selecting the same ide option again, '
+            'then it is deselected',
+            () {
+              state.updateSelectedOption(
+                ServerpodCreateConfig.ide,
+                IdeOption.vsCode,
+              );
+
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                isEmpty,
+              );
+            },
+          );
+
+          test(
+            'then toTemplateContext has the correct TemplateIde values',
+            () {
+              final context = state.toTemplateContext();
+              expect(context.ides, [TemplateIde.vscode]);
+            },
+          );
+        },
+      );
+
+      group(
+        'given multiple ide options are selected, ',
+        () {
+          setUp(() {
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.vsCode,
+            );
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.cursor,
+            );
+          });
+
+          test(
+            'when calling getSelectedOptionsFor, '
+            'then all selected options are returned',
+            () {
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                containsAll([IdeOption.vsCode, IdeOption.cursor]),
+              );
+            },
+          );
+
+          test(
+            'then toTemplateContext has the correct TemplateIde values',
+            () {
+              final context = state.toTemplateContext();
+              expect(
+                context.ides,
+                containsAll([TemplateIde.vscode, TemplateIde.cursor]),
+              );
+            },
+          );
+        },
+      );
+
       test(
         'then toTemplateContext creates TemplateContext with defaults',
         () {
@@ -150,6 +265,7 @@ void main() {
           expect(context.postgres, isTrue);
           expect(context.sqlite, isFalse);
           expect(context.web, isTrue);
+          expect(context.ides, isEmpty);
         },
       );
 
@@ -302,6 +418,20 @@ void main() {
               );
             },
           );
+        },
+      );
+
+      test(
+        'when moving focus to ide config, '
+        'then the focused option index starts at -1 for multiSelect',
+        () {
+          // Move to IDE config (index 4 for server template)
+          for (var i = 0; i < 4; i++) {
+            state.updateFocusedConfig(1);
+          }
+
+          final ideState = state.getStateFor(ServerpodCreateConfig.ide);
+          expect(ideState?.focusedOptionIndex, -1);
         },
       );
 
