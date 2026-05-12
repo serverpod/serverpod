@@ -126,6 +126,24 @@ development:
     );
   });
 
+  test('Given a config file with a list password then it is JSON encoded.', () {
+    var passwordsContent = '''
+development:
+  adminEmails:
+    - 'admin@serverpod.dev'
+    - 'ops@serverpod.dev'
+''';
+
+    var passwords = PasswordManager(
+      runMode: 'development',
+    ).loadPasswordsFromMap(loadYaml(passwordsContent));
+
+    expect(
+      passwords['adminEmails'],
+      '["admin@serverpod.dev","ops@serverpod.dev"]',
+    );
+  });
+
   group('Given an empty config file with all env passwords defined', () {
     var passwords = PasswordManager(runMode: 'development')
         .loadPasswordsFromMap(
