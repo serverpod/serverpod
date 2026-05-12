@@ -707,9 +707,14 @@ Future<void> _copyFlutterUpgrade(
   );
 
   if (customServerpodPath != null) {
-    log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
+    log.debug(
+      'Adding auth path overrides to root pubspec_overrides',
+      newParagraph: true,
+    );
     _addDependenciesToPubspec(
-      pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+      pubspecFile: File(
+        p.join(serverpodDirs.projectDir.path, 'pubspec_overrides.yaml'),
+      ),
       additions: [
         (
           name: 'serverpod_auth_idp_flutter',
@@ -971,12 +976,12 @@ Future<void> _copyServerUpgrade(
 
     if (customServerpodPath != null) {
       log.debug(
-        'Adding auth path overrides to root pubspec',
+        'Adding auth path overrides to root pubspec_overrides',
         newParagraph: true,
       );
       _addDependenciesToPubspec(
         pubspecFile: File(
-          p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+          p.join(serverpodDirs.projectDir.path, 'pubspec_overrides.yaml'),
         ),
         additions: [
           (

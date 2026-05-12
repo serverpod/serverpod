@@ -76,6 +76,19 @@ void main() async {
         expect(content, contains('serverpod_auth_idp_flutter'));
       });
 
+      test('then the root pubspec overrides contains auth path overrides', () {
+        final pubspecOverrides = File(
+          path.join(d.sandbox, projectName, 'pubspec_overrides.yaml'),
+        );
+        final content = pubspecOverrides.readAsStringSync();
+        expect(content, contains('serverpod_auth_idp_server'));
+        expect(content, contains('serverpod_auth_core_server'));
+        expect(content, contains('serverpod_auth_idp_flutter'));
+        expect(content, contains('serverpod_auth_core_client'));
+        expect(content, contains('serverpod_auth_core_flutter'));
+        expect(content, contains('serverpod_auth_idp_client'));
+      });
+
       test('then the email idp endpoint file is created', () {
         final endpointFile = File(
           path.join(
