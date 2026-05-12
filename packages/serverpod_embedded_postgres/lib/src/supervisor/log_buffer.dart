@@ -22,8 +22,4 @@ class LogBuffer {
   /// Returns the buffered lines in insertion order. The returned list is
   /// a defensive copy; callers can mutate it freely.
   List<String> snapshot() => List.unmodifiable(_lines);
-
-  /// Convenience for single-string formatting (e.g. to embed in an
-  /// exception message).
-  String joined({String separator = '\n'}) => _lines.join(separator);
 }

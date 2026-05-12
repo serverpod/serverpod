@@ -56,8 +56,6 @@ void main() {
           InitdbException() => 'initdb',
           StartupTimeoutException() => 'timeout',
           CrashedException() => 'crashed',
-          StopTimeoutException() => 'stop_timeout',
-          SocketPathTooLongException() => 'sun_path',
           StaleClusterException() => 'stale',
         };
 

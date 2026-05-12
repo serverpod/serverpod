@@ -28,13 +28,5 @@ void main() {
         expect(buf.snapshot(), ['c', 'd', 'e']);
       },
     );
-
-    test('when joined is called then lines are concatenated with newline.', () {
-      var buf = LogBuffer(capacity: 5)
-        ..add('first')
-        ..add('second');
-
-      expect(buf.joined(), 'first\nsecond');
-    });
   });
 }

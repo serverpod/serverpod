@@ -115,6 +115,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
   static Future<EmbeddedPostgres> start(
     EmbeddedPostgresOptions options,
   ) async {
+    // Validate up front so a bad name fails before we download ~30 MB of
+    // binaries or initdb a cluster we can't use.
+    _validateDatabaseName(options.databaseName);
+
     // Layout: <dataDir parent>/pgdata/, <dataDir parent>/run/. Caller
     // typically passes `<project>/.serverpod/pgdata` so the run dir is at
     // `<project>/.serverpod/run`.

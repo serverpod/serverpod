@@ -68,22 +68,6 @@ final class CrashedException extends EmbeddedPostgresException {
   const CrashedException(super.message, this.exitCode, this.logTail);
 }
 
-/// `stop()` escalated through SIGINT -> SIGTERM -> SIGKILL without the
-/// process exiting in time.
-final class StopTimeoutException extends EmbeddedPostgresException {
-  /// Creates a [StopTimeoutException] with [message].
-  const StopTimeoutException(super.message);
-}
-
-/// Computed `sun_path` would exceed the platform cap (104 bytes on macOS,
-/// 108 on Linux/Windows). With the spec's relative-path bind strategy this
-/// is only triggered by pathological custom `dataDir` values; the normal
-/// `<project>/.serverpod/pgdata` layout always fits.
-final class SocketPathTooLongException extends EmbeddedPostgresException {
-  /// Creates a [SocketPathTooLongException] with [message].
-  const SocketPathTooLongException(super.message);
-}
-
 /// PG_VERSION inside the data dir doesn't match
 /// [EmbeddedPostgresOptions.version]. Cross-major upgrades aren't handled
 /// automatically; the caller must `reset()` (and lose the data) or run

@@ -471,7 +471,21 @@ enum DatabaseSource {
 
   /// Use the connection details supplied in the configuration as-is. No
   /// provisioning. Default when the field is absent.
-  config,
+  config
+  ;
+
+  /// Parses [raw] as a [DatabaseSource]. Throws [ArgumentError] with a
+  /// helpful enumeration of valid values for unrecognized strings.
+  static DatabaseSource parse(String raw) {
+    try {
+      return DatabaseSource.values.byName(raw);
+    } on ArgumentError {
+      throw ArgumentError(
+        'Invalid database source: "$raw". '
+        'Valid values are: ${values.map((v) => v.name).join(", ")}.',
+      );
+    }
+  }
 }
 
 /// Configuration for a database.
@@ -695,8 +709,6 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 
 /// Parses [raw] into a [DatabaseSource]. Returns [DatabaseSource.config] when
 /// [raw] is null (the documented default for the `database.source` field).
-/// Throws [ArgumentError] on unrecognized strings with a helpful enumeration
-/// of valid values.
 DatabaseSource _parseDatabaseSource(Object? raw) {
   if (raw == null) return DatabaseSource.config;
   if (raw is! String) {
@@ -705,14 +717,7 @@ DatabaseSource _parseDatabaseSource(Object? raw) {
       'Valid values are: ${DatabaseSource.values.map((v) => v.name).join(", ")}.',
     );
   }
-  try {
-    return DatabaseSource.values.byName(raw);
-  } on ArgumentError {
-    throw ArgumentError(
-      'Invalid database source: "$raw". '
-      'Valid values are: ${DatabaseSource.values.map((v) => v.name).join(", ")}.',
-    );
-  }
+  return DatabaseSource.parse(raw);
 }
 
 /// SQLite-specific database configuration.
@@ -1156,13 +1161,10 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
 }) {
-  final dbSetup = _databaseConfigMap(configMap, environment);
-  if (dbSetup == null) return null;
-  return DatabaseConfig._fromJson(
-    dbSetup,
-    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
-    ServerpodConfigMap.database,
-  ).dialect;
+  return inferDatabaseConfigFromConfigMap(
+    configMap,
+    environment: environment,
+  )?.dialect;
 }
 
 /// Infer the database source from one run-mode config map (the body of
@@ -1180,14 +1182,34 @@ DatabaseSource? inferDatabaseSourceFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
 }) {
+  return inferDatabaseConfigFromConfigMap(
+    configMap,
+    environment: environment,
+  )?.source;
+}
+
+/// Parse the full database configuration from one run-mode config map (the
+/// body of `config/<runMode>.yaml`), using the same `database` merging rules
+/// as [ServerpodConfig.loadFromMap]. The returned [DatabaseConfig] carries
+/// host/port/isUnixSocket/dialect/source ready for read-only inspection.
+///
+/// Returns `null` when there is no database section.
+///
+/// Uses a placeholder password so PostgreSQL configs can be parsed without
+/// a `passwords.yaml` file - never use the returned config to open a
+/// connection. Consumers wanting just the dialect / source should call
+/// [inferDatabaseDialectFromConfigMap] / [inferDatabaseSourceFromConfigMap].
+DatabaseConfig? inferDatabaseConfigFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
   final dbSetup = _databaseConfigMap(configMap, environment);
   if (dbSetup == null) return null;
-  final config = DatabaseConfig._fromJson(
+  return DatabaseConfig._fromJson(
     dbSetup,
     {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
     ServerpodConfigMap.database,
   );
-  return config.source;
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {

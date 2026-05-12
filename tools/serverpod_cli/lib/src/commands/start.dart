@@ -316,12 +316,9 @@ Future<void> _stopDockerServices(String serverDir) async {
 DatabaseSource? _parseDbSourceOverride(String? raw) {
   if (raw == null) return null;
   try {
-    return DatabaseSource.values.byName(raw);
-  } on ArgumentError {
-    log.error(
-      'Invalid --db-source "$raw". Valid values: '
-      '${DatabaseSource.values.map((v) => v.name).join(", ")}.',
-    );
+    return DatabaseSource.parse(raw);
+  } on ArgumentError catch (e) {
+    log.error('Invalid --db-source: ${e.message}');
     throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
   }
 }
@@ -334,63 +331,38 @@ Future<ResolvedDbSource?> _resolveDbSourceForProject({
   required String serverDir,
   required String runMode,
   required DatabaseSource? cliOverride,
-  required bool useDocker,
   required String projectName,
 }) async {
   final configFile = File(p.join(serverDir, 'config', '$runMode.yaml'));
   Map<dynamic, dynamic> configMap = const {};
   if (configFile.existsSync()) {
-    final raw = configFile.readAsStringSync();
-    final parsed = yaml.loadYaml(raw);
+    final parsed = yaml.loadYaml(configFile.readAsStringSync());
     if (parsed is Map) configMap = parsed;
   }
 
-  final dialect = inferDatabaseDialectFromConfigMap(
+  // Single parse: env-var overrides flow through here so `SERVERPOD_DATABASE_*`
+  // reaches the auto probe.
+  final inferred = inferDatabaseConfigFromConfigMap(
     configMap,
     environment: Platform.environment,
   );
-  final configSource = inferDatabaseSourceFromConfigMap(
-    configMap,
-    environment: Platform.environment,
-  );
 
-  // Skip the resolver when there's no database at all AND no CLI request.
-  if (dialect == null && cliOverride == null) return null;
-
-  // Pull host/port/isUnixSocket directly off the database section for the
-  // auto probe. Default-empty when no database section.
-  final dbSection = (configMap[ServerpodConfigMap.database] is Map)
-      ? configMap[ServerpodConfigMap.database] as Map
-      : const {};
-  final configuredHost = dbSection[ServerpodEnv.databaseHost.configKey]
-      ?.toString();
-  final rawPort = dbSection[ServerpodEnv.databasePort.configKey];
-  final configuredPort = switch (rawPort) {
-    int p => p,
-    String s => int.tryParse(s),
-    _ => null,
-  };
-  final configuredIsUnixSocket =
-      dbSection[ServerpodEnv.databaseIsUnixSocket.configKey] == true;
-
-  final databaseName =
-      (dbSection[ServerpodEnv.databaseName.configKey] as String?) ??
-      projectName;
-  final username =
-      (dbSection[ServerpodEnv.databaseUser.configKey] as String?) ?? 'postgres';
+  // No database configured AND no CLI request: nothing to resolve.
+  if (inferred == null && cliOverride == null) return null;
 
   return resolveDbSource(
     serverDir: serverDir,
     runMode: runMode,
-    dialect: dialect,
-    configSource: configSource,
+    dialect: inferred?.dialect,
+    configSource: inferred?.source,
     cliOverride: cliOverride,
-    databaseName: databaseName,
-    username: username,
-    configuredHost: configuredHost,
-    configuredPort: configuredPort,
-    configuredIsUnixSocket: configuredIsUnixSocket,
-    useDocker: useDocker,
+    databaseName: inferred?.name.isNotEmpty == true
+        ? inferred!.name
+        : projectName,
+    username: inferred?.user.isNotEmpty == true ? inferred!.user : 'postgres',
+    configuredHost: inferred?.host,
+    configuredPort: inferred?.port,
+    configuredIsUnixSocket: inferred?.isUnixSocket ?? false,
     interactive: stdin.hasTerminal,
   );
 }
@@ -452,13 +424,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  // Resolve runMode early - both Docker compose-up gating and the db-source
-  // resolver need it, and the resolver needs to run before we spawn the pod.
   final runMode = runModeFromServerArgs(serverArgs.value);
 
-  // Start Docker Compose services if needed. Default off (beta change);
-  // pass --docker to opt in. Brought up before the db-source probe so the
-  // auto-resolver can see compose-managed PG as reachable.
+  // If a server is already running, abort so the IDE can attach to the
+  // existing instance via the unchanged info file. Cheap local check; runs
+  // before any provisioning so we don't pay docker compose-up or embedded
+  // PG boot just to discard them.
+  final existingUri = await _checkExistingServer(vmServiceInfoFile);
+  if (existingUri != null) {
+    log.info('Existing server found.');
+    log.info('VM service proxy listening on $existingUri');
+    return const WatchLoopAborted(0);
+  }
+
   var startedDocker = false;
   if (docker) {
     await log.progress('Starting Docker services', () async {
@@ -474,17 +452,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Resolve database.source: peek at the project's config to see the
   // declared source (and host/port for the auto probe), then call the
   // resolver. May boot an embedded postmaster as a side effect; the
-  // teardown function below covers that case.
+  // rollback below covers that case.
   ResolvedDbSource? resolvedDbSource;
-
-  Future<void> stopEmbeddedDbIfStarted() async {
-    final onStop = resolvedDbSource?.onStop;
-    if (onStop != null) await onStop();
-  }
-
   Future<void> rollbackResolvedDbSource() async {
     await stopDockerIfStarted();
-    await stopEmbeddedDbIfStarted();
+    await resolvedDbSource?.onStop?.call();
   }
 
   try {
@@ -492,7 +464,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       serverDir: serverDir,
       runMode: runMode,
       cliOverride: dbSourceOverride,
-      useDocker: docker,
       projectName: config.name,
     );
   } on DbSourceResolutionException catch (e) {
@@ -502,16 +473,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   }
   if (resolvedDbSource != null) {
     log.info('database.source: ${resolvedDbSource.diagnostic}');
-  }
-
-  // If a server is already running, abort so the IDE can attach to the
-  // existing instance via the unchanged info file.
-  final existingUri = await _checkExistingServer(vmServiceInfoFile);
-  if (existingUri != null) {
-    log.info('Existing server found.');
-    log.info('VM service proxy listening on $existingUri');
-    await rollbackResolvedDbSource();
-    return const WatchLoopAborted(0);
   }
 
   // Apply pending migrations from the CLI before booting the pod.

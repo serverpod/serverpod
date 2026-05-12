@@ -122,13 +122,17 @@ class BinaryStore {
         return installDir;
       }
 
-      onProgress?.call(0.0, 'verify');
-      var expectedSha = await _fetchSha256(artifact);
-      onProgress?.call(1.0, 'verify');
-
+      // SHA and JAR are independent fetches; run them in parallel to save one
+      // RTT. The progress callback fires once each completes - granular
+      // progress would require streaming the responses, which we don't do.
       onProgress?.call(0.0, 'download');
-      var jarBytes = await _downloadJar(artifact);
+      var fetches = await Future.wait([
+        _fetchSha256(artifact),
+        _downloadJar(artifact),
+      ]);
       onProgress?.call(1.0, 'download');
+      var expectedSha = fetches[0] as String;
+      var jarBytes = fetches[1] as Uint8List;
 
       var actualSha = sha256.convert(jarBytes).toString();
       if (actualSha != expectedSha) {

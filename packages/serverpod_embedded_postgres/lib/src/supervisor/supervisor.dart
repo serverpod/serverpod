@@ -24,7 +24,6 @@ class Supervisor implements SupervisedProcess {
   /// postmaster (and not a PID-recycled foreign process).
   final ProcessIdentity identity;
   final File _pidFile;
-  final File _logFile;
   final LogBuffer _ring;
   final IOSink _logSink;
   final List<StreamSubscription<ProcessSignal>> _signalSubs;
@@ -36,13 +35,11 @@ class Supervisor implements SupervisedProcess {
     required Process process,
     required this.identity,
     required File pidFile,
-    required File logFile,
     required LogBuffer ring,
     required IOSink logSink,
     required List<StreamSubscription<ProcessSignal>> signalSubs,
   }) : _process = process,
        _pidFile = pidFile,
-       _logFile = logFile,
        _ring = ring,
        _logSink = logSink,
        _signalSubs = signalSubs {
@@ -61,10 +58,6 @@ class Supervisor implements SupervisedProcess {
   /// 200 lines, per the spec).
   @override
   List<String> get logTail => _ring.snapshot();
-
-  /// Path of the captured log file. Convenience for error messages and
-  /// for callers that want to tail it externally.
-  String get logFilePath => _logFile.path;
 
   /// Spawns `<installDir>/bin/postgres -D <dataDir>` and waits for the
   /// postmaster to become ready (socket accepts connections for UDS, port
@@ -124,7 +117,6 @@ class Supervisor implements SupervisedProcess {
       process: process,
       identity: identity,
       pidFile: pidFile,
-      logFile: logFile,
       ring: ring,
       logSink: logSink,
       signalSubs: signalSubs,
@@ -156,47 +148,6 @@ class Supervisor implements SupervisedProcess {
     }
 
     return supervisor;
-  }
-
-  /// Reattaches to a postmaster recorded in [pidFile], if it is still our
-  /// postmaster. Returns null when the pidfile is absent, points at a dead
-  /// process, or points at a foreign process. The pidfile is removed in
-  /// the dead-process case.
-  ///
-  /// Used both internally by [start] (idempotency check) and by the
-  /// public `EmbeddedPostgres.attach` entry point.
-  static Future<Supervisor?> tryAttach({
-    required Directory installDir,
-    required Directory dataDir,
-    required Directory runDir,
-    required Transport transport,
-    required File pidFile,
-    required File logFile,
-  }) async {
-    var recorded = ProcessIdentity.read(pidFile);
-    if (recorded == null) return null;
-
-    var match = verifyIdentity(recorded);
-    switch (match) {
-      case IdentityMatch.notRunning:
-        if (pidFile.existsSync()) pidFile.deleteSync();
-        return null;
-      case IdentityMatch.foreign:
-        return null;
-      case IdentityMatch.matchesOurs:
-        // Phase 5 wires the public attach() to a richer "RunningSupervisor"
-        // that doesn't own the Process handle. For now: we know it's our
-        // postmaster, but we cannot SIGINT it without the Process handle.
-        // Returning null here is intentional - the caller falls through to
-        // start(), which will spawn a fresh process. Since the running
-        // postmaster holds the data dir lock, that spawn will fail loudly
-        // (PG refuses to start a second postmaster against the same data
-        // dir), surfacing the conflict to the user.
-        //
-        // The real attach flow lives in phase 7; for now, this returns
-        // null and start() will detect the dataDir-lock collision.
-        return null;
-    }
   }
 
   /// Smart shutdown of the postmaster:

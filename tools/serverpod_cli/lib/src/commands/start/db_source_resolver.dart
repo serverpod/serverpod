@@ -97,7 +97,6 @@ Future<ResolvedDbSource> resolveDbSource({
   String? configuredHost,
   int? configuredPort,
   bool configuredIsUnixSocket = false,
-  bool useDocker = false,
   bool interactive = false,
   EmbeddedPostgresStarter? embeddedPostgresStarter,
   DatabaseReachabilityProbe? reachabilityProbe,
@@ -146,7 +145,6 @@ Future<ResolvedDbSource> resolveDbSource({
         configuredHost: configuredHost,
         configuredPort: configuredPort,
         configuredIsUnixSocket: configuredIsUnixSocket,
-        useDocker: useDocker,
         interactive: interactive,
         starter: embeddedPostgresStarter ?? EmbeddedPostgres.start,
         probe: reachabilityProbe ?? _defaultReachabilityProbe,
@@ -162,7 +160,6 @@ Future<ResolvedDbSource> _autoResolve({
   required String? configuredHost,
   required int? configuredPort,
   required bool configuredIsUnixSocket,
-  required bool useDocker,
   required bool interactive,
   required EmbeddedPostgresStarter starter,
   required DatabaseReachabilityProbe probe,
@@ -261,28 +258,23 @@ Future<ResolvedDbSource> _bootEmbedded({
 }
 
 /// Default connectivity probe. Opens a socket (UDS or TCP), times out
-/// after 500 ms.
+/// after 200 ms. Any failure (timeout, refused, malformed host, etc.) is
+/// reported as "not reachable" - the probe must never crash the start
+/// command. 200 ms is plenty for loopback / LAN; remote DBs are not the
+/// audience for `source: auto`.
 Future<bool> _defaultReachabilityProbe({
   required String host,
   required int port,
   required bool isUnixSocket,
 }) async {
-  const timeout = Duration(milliseconds: 500);
+  const timeout = Duration(milliseconds: 200);
   try {
-    if (isUnixSocket) {
-      final socket = await connectUnixSocket(host).timeout(timeout);
-      socket.destroy();
-      return true;
-    }
-    final socket = await Socket.connect(host, port, timeout: timeout);
+    final socket = isUnixSocket
+        ? await connectUnixSocket(host).timeout(timeout)
+        : await Socket.connect(host, port, timeout: timeout);
     socket.destroy();
     return true;
-  } on Exception {
-    return false;
-  } on Error {
-    // Some platform-specific failures surface as Errors (e.g. malformed
-    // host). Treat them as "not reachable" rather than letting the
-    // resolver crash the whole start command.
+  } catch (_) {
     return false;
   }
 }
