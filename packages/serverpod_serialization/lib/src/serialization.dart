@@ -65,7 +65,7 @@ abstract class SerializationManager {
     if (value is String) return decodeWithType(value);
     if (value is Map<String, dynamic>) return deserializeByClassName(value);
     throw FormatException(
-      'Dynamic fields are serialized as a Map with the type, but got '
+      'Dynamic fields are encoded as a Map with the type, but got '
       '${value.runtimeType} instead.',
     );
   }
