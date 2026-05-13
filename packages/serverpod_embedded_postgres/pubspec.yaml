@@ -12,10 +12,10 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  archive: '>=3.6.0 <5.0.0'
+  archive: '>=3.3.7 <5.0.0'
   args: ^2.7.0
   crypto: ^3.0.2
-  http: ^1.2.0
+  http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   path: ^1.8.3
   postgres: ^3.4.0
