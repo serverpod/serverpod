@@ -200,7 +200,7 @@ Uint8List _buildJar(List<(String, Uint8List)> entries) {
     archive.addFile(ArchiveFile(name, bytes.length, bytes));
   }
   var zipBytes = ZipEncoder().encode(archive);
-  return Uint8List.fromList(zipBytes!);
+  return Uint8List.fromList(zipBytes);
 }
 
 /// Returns opaque bytes used as `.txz` payload in JAR-shape tests. The

@@ -157,5 +157,5 @@ Uint8List _buildSyntheticJar() {
 
   var zip = Archive();
   zip.addFile(ArchiveFile('postgres-test.txz', txzBytes.length, txzBytes));
-  return Uint8List.fromList(ZipEncoder().encode(zip)!);
+  return Uint8List.fromList(ZipEncoder().encode(zip));
 }
