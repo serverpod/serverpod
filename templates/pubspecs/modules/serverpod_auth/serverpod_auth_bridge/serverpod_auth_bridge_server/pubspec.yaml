@@ -31,6 +31,8 @@ dependency_overrides:
     path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_database:
     path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
