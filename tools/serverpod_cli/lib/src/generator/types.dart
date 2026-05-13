@@ -360,7 +360,8 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                (['UuidValue', 'GeographyPoint', ...vectorClassNames])
+                    .contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -477,6 +478,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
+    if (className == 'GeographyPoint') return 'geography';
     if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
@@ -504,6 +506,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
 
     if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
@@ -815,6 +818,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
     if (className == 'Bit') return ValueType.bit;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -1046,6 +1050,7 @@ enum ValueType {
   halfVector,
   sparseVector,
   bit,
+  geographyPoint,
   uri,
 }
 

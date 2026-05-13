@@ -251,6 +251,7 @@ import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i223;
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/parent.dart'
     as _i224;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i225;
+import 'object_with_geography_point.dart' as _i226;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -411,6 +412,7 @@ export 'object_with_duration.dart';
 export 'object_with_dynamic.dart';
 export 'object_with_enum.dart';
 export 'object_with_enum_enhanced.dart';
+export 'object_with_geography_point.dart';
 export 'object_with_half_vector.dart';
 export 'object_with_index.dart';
 export 'object_with_jsonb.dart';
@@ -3429,6 +3431,36 @@ class Protocol extends _i1.DatabaseSerializationManager {
           columnType: _i2.ColumnType.json,
           isNullable: false,
           dartType: 'List<protocol:TestEnumEnhancedByName>',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'object_with_geography_point',
+      dartName: 'ObjectWithGeographyPoint',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'location',
+          columnType: _i2.ColumnType.geography,
+          isNullable: false,
+          dartType: 'GeographyPoint',
+        ),
+        _i2.ColumnDefinition(
+          name: 'locationNullable',
+          columnType: _i2.ColumnType.geography,
+          isNullable: true,
+          dartType: 'GeographyPoint?',
         ),
       ],
       foreignKeys: [],
@@ -6770,6 +6802,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i166.ObjectWithEnumEnhanced) {
       return _i166.ObjectWithEnumEnhanced.fromJson(data) as T;
     }
+    if (t == _i226.ObjectWithGeographyPoint) {
+      return _i226.ObjectWithGeographyPoint.fromJson(data) as T;
+    }
     if (t == _i167.ObjectWithHalfVector) {
       return _i167.ObjectWithHalfVector.fromJson(data) as T;
     }
@@ -7539,6 +7574,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i1.getType<_i166.ObjectWithEnumEnhanced?>()) {
       return (data != null ? _i166.ObjectWithEnumEnhanced.fromJson(data) : null)
           as T;
+    }
+    if (t == _i1.getType<_i226.ObjectWithGeographyPoint?>()) {
+      return (data != null
+          ? _i226.ObjectWithGeographyPoint.fromJson(data)
+          : null) as T;
     }
     if (t == _i1.getType<_i167.ObjectWithHalfVector?>()) {
       return (data != null ? _i167.ObjectWithHalfVector.fromJson(data) : null)
@@ -11918,6 +11958,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i164.ObjectWithDynamic => 'ObjectWithDynamic',
       _i165.ObjectWithEnum => 'ObjectWithEnum',
       _i166.ObjectWithEnumEnhanced => 'ObjectWithEnumEnhanced',
+      _i226.ObjectWithGeographyPoint => 'ObjectWithGeographyPoint',
       _i167.ObjectWithHalfVector => 'ObjectWithHalfVector',
       _i168.ObjectWithIndex => 'ObjectWithIndex',
       _i169.ObjectWithJsonb => 'ObjectWithJsonb',
@@ -12332,6 +12373,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'ObjectWithEnum';
       case _i166.ObjectWithEnumEnhanced():
         return 'ObjectWithEnumEnhanced';
+      case _i226.ObjectWithGeographyPoint():
+        return 'ObjectWithGeographyPoint';
       case _i167.ObjectWithHalfVector():
         return 'ObjectWithHalfVector';
       case _i168.ObjectWithIndex():
@@ -13546,6 +13589,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i165.ObjectWithEnum.t;
       case _i166.ObjectWithEnumEnhanced:
         return _i166.ObjectWithEnumEnhanced.t;
+      case _i226.ObjectWithGeographyPoint:
+        return _i226.ObjectWithGeographyPoint.t;
       case _i167.ObjectWithHalfVector:
         return _i167.ObjectWithHalfVector.t;
       case _i168.ObjectWithIndex:

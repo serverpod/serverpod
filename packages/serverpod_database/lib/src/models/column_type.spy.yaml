@@ -34,3 +34,5 @@ values:
   - bit
   ### Esp. for serializable objects as [jsonb].
   - jsonb
+  ### Dart type: [GeographyPoint]
+  - geography

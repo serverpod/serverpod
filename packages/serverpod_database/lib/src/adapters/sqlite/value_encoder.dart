@@ -62,6 +62,8 @@ class SqliteValueEncoder implements ValueEncoder {
       }
       if (!escapeStrings) return input;
       return "'${_escapeString(input)}'";
+    } else if (input is GeographyPoint) {
+      return "'${_escapeString(input.toString())}'";
     } else if (input is Vector ||
         input is HalfVector ||
         input is SparseVector ||
@@ -121,6 +123,8 @@ class SqliteValueEncoder implements ValueEncoder {
       ColumnDuration() => DurationJsonExtension.fromJson(value),
       ColumnUuid() => UuidValueJsonExtension.fromJson(value),
       ColumnByteData() => ByteDataJsonExtension.fromJson(value),
+      ColumnGeographyPoint() =>
+        GeographyPointJsonExtension.fromJson(_decodeJsonValue(value)),
       ColumnStructured() => _decodeJsonbValue(value),
       ColumnSerializable() => _decodeJsonValue(value),
       _ => value,

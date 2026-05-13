@@ -160,6 +160,7 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
       case ColumnType.halfvec:
       case ColumnType.sparsevec:
       case ColumnType.bit:
+      case ColumnType.geography:
         type = 'TEXT';
       case ColumnType.unknown:
         throw const FormatException('Unknown column type');

@@ -416,6 +416,7 @@ const extensionSerializedTypes = [
   'HalfVector',
   'SparseVector',
   'Bit',
+  'GeographyPoint',
   'Map',
   'List',
   'Set',
