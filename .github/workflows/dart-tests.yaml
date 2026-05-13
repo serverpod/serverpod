@@ -216,7 +216,39 @@ jobs:
       - name: Resolve dependencies
         run: dart pub get
         working-directory: packages/serverpod_embedded_postgres
+      # windows-latest runs as runneradmin (elevated), but Postgres refuses
+      # to start under an Administrators-group token. Strip admin via
+      # PsExec -l. Two non-obvious bits the rest of this block handles:
+      #   - PsExec -l drops the inner process's stdout in GHA (exit code
+      #     propagates fine), so dart test redirects to a file inside
+      #     run-test.cmd and we type that file from the outer step.
+      #   - The limited token still needs read+execute on the Flutter SDK
+      #     to find dart.bat / dart.exe.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-test.cmd <<'EOF'
+          @echo off
+          dart test --tags=integration --reporter=failures-only > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+        working-directory: packages/serverpod_embedded_postgres
+      - name: Run integration tests against real Zonky PG (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-test.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
+        working-directory: packages/serverpod_embedded_postgres
+        timeout-minutes: 10
       - name: Run integration tests against real Zonky PG
+        if: matrix.os != 'windows-latest'
         run: dart test --tags=integration --reporter=failures-only
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
