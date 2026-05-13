@@ -17,7 +17,7 @@ class Checkbox extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final marker = value ? '[✔]' : '[ ]';
+    final marker = value ? '⏹' : '☐';
     final effectiveStyle = style ?? TextStyle(color: theme.subtleDivider);
 
     return Row(
