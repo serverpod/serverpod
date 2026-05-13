@@ -504,9 +504,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
+  bool canCreateFlutterProcess =
+      launchFlutterApp && config.flutterPackagePathParts.isNotEmpty;
+
   FlutterProcess? flutterProcess;
 
-  if (launchFlutterApp) {
+  if (canCreateFlutterProcess) {
     flutterProcess = FlutterProcess(
       flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
       spawnFromTui: useTui,
@@ -593,10 +596,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
         .listen((_) {});
 
-    FileWatcher? flutterWatcher;
-
-    if (launchFlutterApp) {
-      flutterWatcher = FileWatcher(
+    if (canCreateFlutterProcess) {
+      final flutterWatcher = FileWatcher(
         watchPaths: {
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
         },
@@ -760,7 +761,10 @@ Future<int> _runWithTui({
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
-  final state = ServerWatchState()..showFlutterOutput = launchFlutterApp;
+  bool showFlutterOutput =
+      launchFlutterApp && config.flutterPackagePathParts.isNotEmpty;
+
+  final state = ServerWatchState()..showFlutterOutput = showFlutterOutput;
   final holder = StartAppStateHolder(state);
   var backendStarted = false;
 
