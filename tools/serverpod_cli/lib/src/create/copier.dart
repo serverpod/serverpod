@@ -15,7 +15,7 @@ class Copier {
 
   List<String> removePatterns;
 
-  List<String> ignoreFileNames;
+  Set<String> ignoreFileNames;
 
   bool processUncommentMarker;
 
@@ -25,9 +25,12 @@ class Copier {
     required this.replacements,
     required this.fileNameReplacements,
     this.removePatterns = const <String>[],
-    this.ignoreFileNames = const <String>[],
+    List<String> ignoreFileNames = const <String>[],
     this.processUncommentMarker = true,
-  });
+  }) : ignoreFileNames = ignoreFileNames.toSet()
+         // Automatically ignore files that might exist in the local clone of
+         // the Serverpod repository when using a local built CLI.
+         ..addAll(['pubspec.lock', 'pubspec_overrides.yaml']);
 
   void copyFiles() {
     _copyDirectory(srcDir, '');
@@ -52,6 +55,9 @@ class Copier {
   void _copyFile(File srcFile, String relativePath) {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
+
+    // Ignore melos project files.
+    if (fileName.startsWith('melos_') && fileName.endsWith('.iml')) return;
 
     var dstFileName = _replace(
       p.join(relativePath, fileName),
