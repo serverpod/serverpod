@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 /// Public-API end-to-end: EmbeddedPostgres.start -> endpoint -> SELECT 1
@@ -23,7 +24,13 @@ void main() {
     if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
   });
 
-  group('Given a fresh project layout', () {
+  // Default transport is UnixTransport. Skip on platforms without Dart UDS
+  // support (Windows < Dart 3.11).
+  var udsSkip = hasUnixSocketSupport()
+      ? null
+      : 'Unix domain sockets not available on this Dart/platform';
+
+  group('Given a fresh project layout', skip: udsSkip, () {
     test(
       'when EmbeddedPostgres.start runs with UnixTransport defaults then '
       'endpoint connects, SELECT 1 returns 1, and stop() releases the '
