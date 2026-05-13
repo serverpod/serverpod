@@ -29,8 +29,9 @@ void main() {
 
         var dir = await store.ensure(artifact);
 
-        var postgres = File(p.join(dir.path, 'bin', 'postgres'));
-        var initdb = File(p.join(dir.path, 'bin', 'initdb'));
+        var exeSuffix = Platform.isWindows ? '.exe' : '';
+        var postgres = File(p.join(dir.path, 'bin', 'postgres$exeSuffix'));
+        var initdb = File(p.join(dir.path, 'bin', 'initdb$exeSuffix'));
         expect(
           postgres.existsSync(),
           isTrue,
