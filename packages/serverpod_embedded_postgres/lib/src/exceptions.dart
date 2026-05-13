@@ -52,6 +52,9 @@ final class StartupTimeoutException extends EmbeddedPostgresException {
 
   /// Creates a [StartupTimeoutException] with [message] and [logTail].
   const StartupTimeoutException(super.message, this.logTail);
+
+  @override
+  String toString() => _withLogTail(runtimeType, message, logTail);
 }
 
 /// Postmaster exited unexpectedly while the supervisor was waiting for it
@@ -66,6 +69,17 @@ final class CrashedException extends EmbeddedPostgresException {
   /// Creates a [CrashedException] with [message], [exitCode], and
   /// [logTail].
   const CrashedException(super.message, this.exitCode, this.logTail);
+
+  @override
+  String toString() => _withLogTail(runtimeType, message, logTail);
+}
+
+String _withLogTail(Type type, String message, List<String> logTail) {
+  if (logTail.isEmpty) return '$type: $message';
+  return '$type: $message\n'
+      '--- postgres log tail (${logTail.length} lines) ---\n'
+      '${logTail.join('\n')}\n'
+      '--- end log tail ---';
 }
 
 /// PG_VERSION inside the data dir doesn't match
