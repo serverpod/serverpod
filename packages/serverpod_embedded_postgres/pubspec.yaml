@@ -12,7 +12,7 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  archive: '>=3.3.7 <5.0.0'
+  archive: ^4.0.0
   args: ^2.7.0
   crypto: ^3.0.2
   http: '>=1.1.0 <2.0.0'

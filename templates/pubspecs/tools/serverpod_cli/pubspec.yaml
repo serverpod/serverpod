@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   analyzer: '>=8.1.0 <11.0.0'
-  archive: '>=3.3.7 <5.0.0'
+  archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0
   built_collection: ^5.1.1
