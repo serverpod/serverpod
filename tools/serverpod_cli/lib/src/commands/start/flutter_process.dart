@@ -35,7 +35,7 @@ class FlutterProcess {
 
   /// Matches the `flutter run` output that points to the
   /// URL where the app is served.
-  late final _hostRegex = RegExp(r'(served)\s+(at)\s+(http:\/\/localhost:\d+)');
+  late final _hostRegex = RegExp(r'served\s+at\s+(http:\/\/localhost:\d+)');
 
   Future<void> start() async {
     if (_process != null) return;
@@ -73,7 +73,6 @@ class FlutterProcess {
     // Forward stdin if process is spawn in --no-tui mode.
     if (!_spawnFromTui) {
       _stdinSub = stdin.listen((data) {
-        if (utf8.decode(data) == 'q') _restoreTerminal();
         process.stdin.add(data);
       });
     }
@@ -85,7 +84,7 @@ class FlutterProcess {
 
       final line = utf8.decode(data);
       final match = _hostRegex.firstMatch(line);
-      final url = match?.group(3);
+      final url = match?.group(1);
       if (url != null) {
         log.info('Flutter app is running at $url');
         if (!progressCompleter.isCompleted) {
