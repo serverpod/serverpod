@@ -1,0 +1,5 @@
+class: ObjectWithGeographyPoint
+table: object_with_geography_point
+fields:
+  location: GeographyPoint
+  locationNullable: GeographyPoint?

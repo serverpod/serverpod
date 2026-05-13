@@ -68,6 +68,11 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
       out += '\n';
     }
 
+    if (tables.any((t) => t.columns.any((c) => c.isGeographyColumn))) {
+      out += _sqlCreatePostgisExtension();
+      out += '\n';
+    }
+
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
       (t) => t.columns.any(
@@ -177,6 +182,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
+  /// Whether the column is of a geography type.
+  bool get isGeographyColumn => columnType == ColumnType.geography;
+
   String toPgSqlFragment({String tableName = ''}) {
     String type;
     switch (columnType) {
@@ -221,6 +229,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.bit:
         type = 'bit(${vectorDimension!})';
+        break;
+      case ColumnType.geography:
+        type = 'geography(Point,4326)';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
@@ -366,6 +377,17 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
               e.alterTable!.addColumns.any((c) => c.isVectorColumn)),
     )) {
       out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any((c) => c.isGeographyColumn)) ||
+          (e.alterTable != null &&
+              e.alterTable!.addColumns.any((c) => c.isGeographyColumn)),
+    )) {
+      out += _sqlCreatePostgisExtension();
       out += '\n';
     }
 
@@ -638,6 +660,22 @@ String _sqlCreateVectorExtensionIfAvailable() {
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
       '\n  ELSE'
       '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
+String _sqlCreatePostgisExtension() {
+  return '--'
+      '\n-- CREATE POSTGIS EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'

@@ -464,6 +464,22 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
   }
 }
 
+/// A [Column] holding a [GeographyPoint] from PostGIS.
+class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
+    with _ColumnDefaultOperations<GeographyPoint> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPoint(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyPoint value) =>
+      EscapedExpression(value);
+}
+
 /// A [Column] holding the result of a vector distance operation.
 class ColumnVectorDistance<T> extends ColumnDouble {
   final VectorDistanceExpression<T> _expression;

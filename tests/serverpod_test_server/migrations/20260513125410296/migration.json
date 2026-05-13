@@ -1,0 +1,48 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_point",
+        "dartName": "ObjectWithGeographyPoint",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "location",
+            "fieldName": "location",
+            "columnType": 15,
+            "isNullable": false,
+            "dartType": "GeographyPoint"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "locationNullable",
+            "fieldName": "locationNullable",
+            "columnType": 15,
+            "isNullable": true,
+            "dartType": "GeographyPoint?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
