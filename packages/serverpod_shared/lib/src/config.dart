@@ -126,16 +126,12 @@ class ServerpodConfig {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
-    sessionLogs?._validate(
-      databaseEnabled: database != null,
-    );
+    sessionLogs?._validate(databaseEnabled: database != null);
   }
 
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
-    return ServerpodConfig(
-      apiServer: _createDefaultApiServer(),
-    );
+    return ServerpodConfig(apiServer: _createDefaultApiServer());
   }
 
   /// Creates a new [ServerpodConfig] from a configuration Map.
@@ -171,10 +167,7 @@ class ServerpodConfig {
     var apiConfig = _apiConfigMap(configMap, environment);
 
     var apiServer = apiConfig != null
-        ? ServerConfig._fromJson(
-            apiConfig,
-            ServerpodConfigMap.apiServer,
-          )
+        ? ServerConfig._fromJson(apiConfig, ServerpodConfigMap.apiServer)
         : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
@@ -187,10 +180,7 @@ class ServerpodConfig {
 
     var webConfig = _webConfigMap(configMap, environment);
     var webServer = webConfig != null
-        ? ServerConfig._fromJson(
-            webConfig,
-            ServerpodConfigMap.webServer,
-          )
+        ? ServerConfig._fromJson(webConfig, ServerpodConfigMap.webServer)
         : null;
 
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
@@ -247,10 +237,7 @@ class ServerpodConfig {
       environment,
     );
 
-    var validateHeaders = _readValidateHeaders(
-      configMap,
-      environment,
-    );
+    var validateHeaders = _readValidateHeaders(configMap, environment);
 
     var websocketPingInterval = _readWebsocketPingInterval(
       configMap,
@@ -723,21 +710,19 @@ DatabaseSource _parseDatabaseSource(Object? raw) {
 /// SQLite-specific database configuration.
 class SqliteDatabaseConfig extends DatabaseConfig {
   /// Creates a new [SqliteDatabaseConfig].
-  SqliteDatabaseConfig({
-    required String filePath,
-    super.maxConnectionCount,
-  }) : super._(
-         host: filePath,
-         port: 0,
-         user: '',
-         password: '',
-         name: '',
-         requireSsl: false,
-         isUnixSocket: false,
-         searchPaths: null,
-         dialect: DatabaseDialect.sqlite,
-         source: null,
-       );
+  SqliteDatabaseConfig({required String filePath, super.maxConnectionCount})
+    : super._(
+        host: filePath,
+        port: 0,
+        user: '',
+        password: '',
+        name: '',
+        requireSsl: false,
+        isUnixSocket: false,
+        searchPaths: null,
+        dialect: DatabaseDialect.sqlite,
+        source: null,
+      );
 
   /// The file path to the SQLite database.
   String get filePath => host;
@@ -816,9 +801,7 @@ class RedisConfig {
 
     var password = passwords[ServerpodPassword.redisPassword.configKey];
     if (password == null) {
-      throw PasswordMissingException(
-        ServerpodPassword.redisPassword.configKey,
-      );
+      throw PasswordMissingException(ServerpodPassword.redisPassword.configKey);
     }
 
     return RedisConfig(
@@ -944,7 +927,7 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text,
+  text
   ;
 
   /// Returns a list of all enum names.
@@ -1076,9 +1059,7 @@ class SessionLogConfig {
     );
   }
 
-  void _validate({
-    required bool databaseEnabled,
-  }) {
+  void _validate({required bool databaseEnabled}) {
     if (persistentEnabled && !databaseEnabled) {
       throw StateError(
         'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
@@ -1205,11 +1186,9 @@ DatabaseConfig? inferDatabaseConfigFromConfigMap(
 }) {
   final dbSetup = _databaseConfigMap(configMap, environment);
   if (dbSetup == null) return null;
-  return DatabaseConfig._fromJson(
-    dbSetup,
-    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
-    ServerpodConfigMap.database,
-  );
+  return DatabaseConfig._fromJson(dbSetup, {
+    ServerpodPassword.databasePassword.configKey: '__placeholder__',
+  }, ServerpodConfigMap.database);
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
