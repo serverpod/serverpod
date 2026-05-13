@@ -89,9 +89,11 @@ import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/con
 import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/container_module.dart'
     as _i68;
 import 'package:serverpod_test_server/src/generated/types_record.dart' as _i69;
-import 'package:serverpod_test_server/src/generated/module_datatype.dart'
+import 'package:serverpod_test_server/src/generated/object_with_dynamic.dart'
     as _i70;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i71;
+import 'package:serverpod_test_server/src/generated/module_datatype.dart'
+    as _i71;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i72;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
@@ -8530,6 +8532,25 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['testTools'] as _i47.TestToolsEndpoint)
                   .createSimpleDatasInParallelTransactionCalls(session),
         ),
+        'echoDynamic': _i1.MethodConnector(
+          name: 'echoDynamic',
+          params: {
+            'anything': _i1.ParameterDescription(
+              name: 'anything',
+              type: _i1.getType<dynamic>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['testTools'] as _i47.TestToolsEndpoint)
+                  .echoDynamic(
+                    session,
+                    params['anything'],
+                  ),
+        ),
         'echoSimpleData': _i1.MethodConnector(
           name: 'echoSimpleData',
           params: {
@@ -8566,6 +8587,25 @@ class Endpoints extends _i1.EndpointDispatch {
                   .echoSimpleDatas(
                     session,
                     params['simpleDatas'],
+                  ),
+        ),
+        'echoObjectWithDynamic': _i1.MethodConnector(
+          name: 'echoObjectWithDynamic',
+          params: {
+            'objectWithDynamic': _i1.ParameterDescription(
+              name: 'objectWithDynamic',
+              type: _i1.getType<_i70.ObjectWithDynamic>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['testTools'] as _i47.TestToolsEndpoint)
+                  .echoObjectWithDynamic(
+                    session,
+                    params['objectWithDynamic'],
                   ),
         ),
         'echoTypes': _i1.MethodConnector(
@@ -8611,7 +8651,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'moduleDatatype': _i1.ParameterDescription(
               name: 'moduleDatatype',
-              type: _i1.getType<_i70.ModuleDatatype>(),
+              type: _i1.getType<_i71.ModuleDatatype>(),
               nullable: false,
             ),
           },
@@ -9068,12 +9108,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'initialValue': _i1.ParameterDescription(
               name: 'initialValue',
-              type: _i1.getType<_i70.ModuleDatatype?>(),
+              type: _i1.getType<_i71.ModuleDatatype?>(),
               nullable: true,
             ),
           },
           streamParams: {
-            'values': _i1.StreamParameterDescription<_i70.ModuleDatatype?>(
+            'values': _i1.StreamParameterDescription<_i71.ModuleDatatype?>(
               name: 'values',
               nullable: false,
             ),
@@ -9088,7 +9128,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .streamModuleDatatype(
                     session,
                     params['initialValue'],
-                    streamParams['values']!.cast<_i70.ModuleDatatype?>(),
+                    streamParams['values']!.cast<_i71.ModuleDatatype?>(),
                   ),
         ),
         'streamModuleClass': _i1.MethodStreamConnector(
@@ -9644,6 +9684,6 @@ class Endpoints extends _i1.EndpointDispatch {
 
   @override
   _i1.FutureCallDispatch? get futureCalls {
-    return _i71.FutureCalls();
+    return _i72.FutureCalls();
   }
 }

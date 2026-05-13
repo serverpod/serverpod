@@ -1,5 +1,6 @@
 class: Player
 table: player
+database: all
 fields:
   name: String
   team: Team?, relation(name=team_player, optional, onDelete=SetNull)

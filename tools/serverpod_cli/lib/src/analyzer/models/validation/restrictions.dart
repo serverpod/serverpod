@@ -258,6 +258,73 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateDatabaseKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property can only be used on classes with a "table" property.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDatabase(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var database = ModelDatabaseDefinition.values
+        .where((e) => e.name == content)
+        .firstOrNull;
+
+    if (database == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property must be one of: '
+          '${ModelDatabaseDefinition.values.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition ||
+        database == ModelDatabaseDefinition.server) {
+      return [];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var invalidScopedFields = definition.fieldsIncludingInherited.where(
+      (field) =>
+          field.shouldPersist &&
+          field.scope == ModelFieldScopeDefinition.serverOnly &&
+          field.name != defaultPrimaryKeyName,
+    );
+
+    for (var field in invalidScopedFields) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field "${field.name}" must use scope "all" when the class has '
+          '"database: ${database.name}".',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,
@@ -1332,14 +1399,15 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (_isUnsupportedType(fieldType)) {
+    if (typeText != null &&
+        (typeText == 'dynamic?' || typeText.contains('<dynamic?>'))) {
       errors.add(
         SourceSpanSeverityException(
-          'The datatype "${fieldType.className}" is not supported in models.',
+          'The type "$typeText" contains a redundant "?" mark. Remove the "?" '
+          'mark to use the type "dynamic" instead, since it is already nullable.',
           span,
         ),
       );
-      return errors;
     }
 
     var moduleAlias = fieldType.moduleAlias;
@@ -1489,6 +1557,28 @@ class Restrictions {
           span,
         ),
       );
+    }
+
+    var classWithRelation = documentDefinition;
+    if (classWithRelation is ModelClassDefinition &&
+        classWithRelation.tableName != null &&
+        referenceClass is ModelClassDefinition &&
+        referenceClass.tableName != null) {
+      var className = classWithRelation.className;
+      var classDatabase = classWithRelation.database.name;
+      var relatedDatabase = referenceClass.database;
+      if (relatedDatabase != ModelDatabaseDefinition.all &&
+          relatedDatabase != classWithRelation.database) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The class "$className" has database "$classDatabase" but the '
+            'related class "$parsedType" has database "${relatedDatabase.name}". '
+            'Relations can only be defined between tables with the same database '
+            'scope. Either use "database: all" or the same "database" for both tables.',
+            span,
+          ),
+        );
+      }
     }
 
     return errors;
@@ -1756,8 +1846,8 @@ class Restrictions {
         if (nonJsonbFields.isNotEmpty) {
           return [
             SourceSpanSeverityException(
-              'The "gin" index type requires all indexed fields to use '
-              '"${Keyword.serializationDataType}: jsonb" (fields: ${nonJsonbFields.join(', ')}).',
+              'The "gin" index type requires all indexed fields to be stored '
+              'as jsonb columns (fields: ${nonJsonbFields.join(', ')}).',
               span,
             ),
           ];
@@ -2497,10 +2587,6 @@ class Restrictions {
     return valueCount;
   }
 
-  var blackListedTypes = [
-    'dynamic',
-  ];
-
   bool _isNoValidationType(String type) {
     return type.startsWith('package:') || type.startsWith('project:');
   }
@@ -2510,10 +2596,6 @@ class Restrictions {
         _isModelType(type) ||
         _isCustomType(type) ||
         _isRecordType(type);
-  }
-
-  bool _isUnsupportedType(TypeDefinition type) {
-    return blackListedTypes.contains(type.className);
   }
 
   bool _isUnresolvedModuleType(TypeDefinition type) {

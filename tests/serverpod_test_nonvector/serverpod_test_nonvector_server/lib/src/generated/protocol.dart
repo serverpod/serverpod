@@ -15,7 +15,7 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'greeting.dart' as _i3;
 export 'greeting.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

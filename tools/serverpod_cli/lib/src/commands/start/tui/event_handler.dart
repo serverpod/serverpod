@@ -1,14 +1,15 @@
+import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart' hide log;
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
 import 'app.dart';
-import 'state.dart';
 
 int _actionCounter = 0;
 
 /// Dispatches a structured server log event to the TUI state.
-void handleServerLogEvent(AppStateHolder holder, Event event) {
+void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
   if (event.extensionKind != 'ext.serverpod.log') return;
   final data = event.extensionData?.data;
   if (data == null) return;
@@ -25,6 +26,7 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
               DateTime.now(),
           message: data['message'] as String? ?? '',
           scope: LogScope.root('server'),
+          error: data['error']?.toString(),
         ),
       );
 
@@ -63,7 +65,7 @@ void handleServerLogEvent(AppStateHolder holder, Event event) {
 /// Guards against concurrent actions - if [state.actionBusy] is true or
 /// [state.serverReady] is false, the action is silently ignored.
 void runTrackedAction(
-  AppStateHolder holder,
+  StartAppStateHolder holder,
   String label,
   Future<void> Function() action,
 ) {
@@ -87,7 +89,7 @@ void runTrackedAction(
 }
 
 void _completeTrackedAction(
-  AppStateHolder holder,
+  StartAppStateHolder holder,
   String id, {
   required bool success,
 }) {

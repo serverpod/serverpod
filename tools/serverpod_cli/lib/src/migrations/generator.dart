@@ -1,15 +1,14 @@
 import 'dart:io';
 
-import 'package:cli_tools/cli_tools.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/database/sql_generator.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/migrations/client_side/client_migration_artifact_store.dart';
+import 'package:serverpod_cli/src/migrations/context.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 // This is a temporary internal import since the normalize functions are not
@@ -23,10 +22,12 @@ class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
     required this.projectName,
+    this.serverCode = true,
   });
 
   final Directory directory;
   final String projectName;
+  final bool serverCode;
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
@@ -38,11 +39,17 @@ class MigrationGenerator {
     return versionName;
   }
 
+  late final _artifactStore = serverCode
+      ? FileSystemMigrationArtifactStore(projectDirectory: directory)
+      : ClientMigrationArtifactStore(clientPackageRoot: directory);
+
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
   /// warnings.
   /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// A [precomputedVersion] can be provided to skip the version name creation.
   ///
   /// Returns the migration version, or null if no migration was created.
   ///
@@ -52,13 +59,12 @@ class MigrationGenerator {
   /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
-  MigrationArtifactStore get _artifactStore =>
-      FileSystemMigrationArtifactStore(projectDirectory: directory);
-
   Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
+    String? precomputedVersion,
     required bool force,
     required GeneratorConfig config,
+    MigrationGenerationContext? context,
     bool write = true,
   }) async {
     var versions = await _artifactStore.listVersions();
@@ -69,21 +75,15 @@ class MigrationGenerator {
       latestVersion,
     );
 
-    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
-      config,
-    );
-    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
-      collector.printErrors();
-
-      if (collector.hasSevereErrors) {
-        throw GenerateMigrationDatabaseDefinitionException();
-      }
-    }).validateAll();
+    var modelDefinitions =
+        (context ?? await MigrationGenerationContext.load(config))
+            .modelDefinitions;
 
     var databaseDefinitionProject = createDatabaseDefinitionFromModels(
       modelDefinitions,
       config.name,
       config.modulesAll,
+      serverCode: serverCode,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -91,7 +91,7 @@ class MigrationGenerator {
       directory,
     );
 
-    var versionName = createVersionName(tag);
+    var versionName = precomputedVersion ?? createVersionName(tag);
     var nextMigrationVersion = DatabaseMigrationVersionModel(
       module: projectName,
       version: versionName,
@@ -109,26 +109,26 @@ class MigrationGenerator {
     );
 
     var warnings = migration.warnings;
-    _printWarnings(warnings);
+    _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      log.info('Migration aborted. Use --force to ignore warnings.');
       throw const MigrationAbortedException();
     }
 
     if (migration.isEmpty) {
-      log.info(
-        'No changes detected.',
-      );
       return null;
     }
 
-    var sqlGenerator = SqlGenerator.forDialect(config.databaseDialect);
+    final dialect = serverCode
+        ? config.databaseDialect
+        : DatabaseDialect.sqlite;
+
+    var sqlGenerator = SqlGenerator.forDialect(dialect);
 
     // Filter the elements here to keep the definition files complete. Only
     // the migration and definition SQL will be filtered by the dialect.
     var databaseDefinitionNextForDialect = databaseDefinitionNext.forDialect(
-      config.databaseDialect,
+      dialect,
       logWarnings: log.warning,
     );
 
@@ -227,7 +227,7 @@ class MigrationGenerator {
     );
 
     var warnings = migration.warnings;
-    _printWarnings(warnings);
+    _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
@@ -307,7 +307,9 @@ class MigrationGenerator {
     }
 
     try {
-      var artifacts = await _artifactStore.readVersion(migrationVersionName);
+      var artifacts = await _artifactStore.readVersionDefinition(
+        migrationVersionName,
+      );
       if (artifacts == null) {
         throw MigrationVersionLoadException(
           versionName: migrationVersionName,
@@ -355,7 +357,7 @@ class MigrationGenerator {
     return false;
   }
 
-  Future<List<MigrationVersionArtifacts>> _loadMigrationVersionsFromModules(
+  Future<List<MigrationVersionDefinition>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     required Directory directory,
   }) async {
@@ -363,7 +365,7 @@ class MigrationGenerator {
       (module) => module.migrationVersions.isNotEmpty,
     );
 
-    var moduleMigrationArtifacts = <MigrationVersionArtifacts>[];
+    var moduleMigrationArtifacts = <MigrationVersionDefinition>[];
 
     for (var module in selectedModules) {
       var versionName = module.migrationVersions.last;
@@ -375,7 +377,9 @@ class MigrationGenerator {
         projectDirectory: Directory.fromUri(uri),
       );
 
-      var artifacts = await moduleArtifactStore.readVersion(versionName);
+      var artifacts = await moduleArtifactStore.readVersionDefinition(
+        versionName,
+      );
       if (artifacts == null) {
         throw MigrationVersionLoadException(
           versionName: versionName,
@@ -419,15 +423,15 @@ class MigrationGenerator {
     );
   }
 
-  void _printWarnings(List<DatabaseMigrationWarning> warnings) {
+  void _logWarnings(List<DatabaseMigrationWarning> warnings) {
     if (warnings.isNotEmpty) {
-      log.warning('Migration Warnings:');
+      final databaseLabel = serverCode ? 'server' : 'client';
+      final message = StringBuffer();
+      message.writeln('\nMigration warnings ($databaseLabel database):');
       for (var warning in warnings) {
-        log.warning(
-          warning.message,
-          type: TextLogType.bullet,
-        );
+        message.writeln('  • ${warning.message}');
       }
+      log.warning(message.toString());
     }
   }
 

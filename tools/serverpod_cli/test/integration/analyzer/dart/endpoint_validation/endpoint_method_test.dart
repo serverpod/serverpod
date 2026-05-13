@@ -578,16 +578,20 @@ class ExampleEndpoint extends Endpoint {
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
-      test('then a validation errors is reported.', () {
+      test('then a validation error is reported.', () {
         expect(collector.errors, hasLength(1));
       });
 
-      test('then validation error informs that return type must be future', () {
-        expect(
-          collector.errors.firstOrNull?.message,
-          'Return generic must have a type defined. E.g. Future<String>.',
-        );
-      });
+      test(
+        'then validation error informs that return type needs explicit type argument.',
+        () {
+          expect(
+            collector.errors.first.message,
+            'Use an explicit Future type argument. E.g. Future<String> or '
+            'Future<dynamic>.',
+          );
+        },
+      );
 
       test('then endpoint definition is created.', () {
         expect(endpointDefinitions, hasLength(1));
@@ -880,25 +884,30 @@ class ExampleEndpoint extends Endpoint {
         endpointDefinitions = await analyzer.analyze(collector: collector);
       });
 
-      test('then a validation errors is reported.', () {
-        expect(collector.errors, hasLength(1));
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
       });
 
-      test('then validation error informs that return type must be future', () {
-        expect(
-          collector.errors.firstOrNull?.message,
-          'Return generic must have a type defined. E.g. Future<String>.',
-        );
-      });
-
-      test('then endpoint definition is created.', () {
+      test('then the endpoint definition is created.', () {
         expect(endpointDefinitions, hasLength(1));
       });
 
-      test('then no endpoint method definition is created.', () {
+      test('then the endpoint method definition is created.', () {
         var methods = endpointDefinitions.firstOrNull?.methods;
-        expect(methods, isEmpty);
+        expect(methods, isNotEmpty);
       });
+
+      test(
+        'then the endpoint method definition has the correct return type.',
+        () {
+          var returnType =
+              endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
+          expect(returnType, isNotNull);
+          expect(returnType!.className, 'Future');
+          expect(returnType.generics, hasLength(1));
+          expect(returnType.generics.firstOrNull?.className, 'dynamic');
+        },
+      );
     },
   );
 

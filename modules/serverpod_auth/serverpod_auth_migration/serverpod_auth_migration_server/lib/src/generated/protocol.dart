@@ -22,7 +22,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
 import 'migrated_user.dart' as _i7;
 export 'migrated_user.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

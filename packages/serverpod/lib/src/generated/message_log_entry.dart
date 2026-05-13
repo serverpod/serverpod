@@ -575,6 +575,69 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Upserts all [MessageLogEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [MessageLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<MessageLogEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<MessageLogEntry> rows, {
+    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<MessageLogEntry>(
+      rows,
+      conflictColumns: conflictColumns(MessageLogEntry.t),
+      updateColumns: updateColumns?.call(MessageLogEntry.t),
+      updateWhere: updateWhere?.call(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [MessageLogEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [MessageLogEntry] will have its `id` field set.
+  Future<MessageLogEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    MessageLogEntry row, {
+    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<MessageLogEntry>(
+      row,
+      conflictColumns: conflictColumns(MessageLogEntry.t),
+      updateColumns: updateColumns?.call(MessageLogEntry.t),
+      updateWhere: updateWhere?.call(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [MessageLogEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

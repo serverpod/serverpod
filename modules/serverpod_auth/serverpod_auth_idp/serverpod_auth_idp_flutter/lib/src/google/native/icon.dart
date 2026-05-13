@@ -77,7 +77,7 @@ class GoogleSignInIcon extends StatelessWidget {
           child: SizedBox(
             height: iconSize,
             width: iconSize,
-            child: picture,
+            child: FittedBox(child: picture),
           ),
         ),
       ),

@@ -302,6 +302,101 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+    if (rows.length > 1) {
+      return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+        tx,
+      ) async {
+        final results = [
+          for (var row in rows)
+            ...await upsert<T>(
+              session,
+              [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              transaction: tx,
+            ),
+        ];
+
+        // NOTE: Since we transform batch inserts into multiple single-row
+        // inserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the input had duplicate rows - as happen with Postgres.
+        if (results.map((r) => r.id).toSet().length != rows.length) {
+          throw _SqliteDatabaseQueryException(
+            'ON CONFLICT DO UPDATE command cannot affect row a second time',
+            code: SqliteErrorCode.integrityConstraintViolation,
+            hint:
+                'Ensure that no rows proposed for insertion within the '
+                'same command have duplicate constrained values.',
+          );
+        }
+
+        return results;
+      });
+    }
+
+    var table = rows.first.table;
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+    ).build();
+
+    var results = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+      table: table,
+    );
+    var merged = _mergeResultsWithNonPersistedFields(rows)(results);
+    return merged.map(poolManager.serializationManager.deserialize<T>).toList();
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
+    if (result.length > 1) {
+      throw _SqliteDatabaseUpsertRowException(
+        'Failed to upsert row, affected number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {

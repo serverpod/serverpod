@@ -23,6 +23,7 @@ gitHubIdp:
   - hasAccount:
 googleIdp:
   - login:
+  - loginWithCode:
   - hasAccount:
 refreshJwtTokens:
   - refreshAccessToken:

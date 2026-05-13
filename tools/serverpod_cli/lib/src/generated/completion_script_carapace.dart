@@ -75,8 +75,6 @@ commands:
       - [stdio, no-stdio]
 
   - name: mcp
-    flags:
-      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
 
   - name: create-migration
     flags:

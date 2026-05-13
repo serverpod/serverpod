@@ -31,7 +31,7 @@ export 'session_metadata.dart';
 export 'token_metadata.dart';
 export 'user_data.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

@@ -1,5 +1,6 @@
 class: UniqueData
 table: unique_data
+database: all
 fields:
   number: int
   email: String

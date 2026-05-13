@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
@@ -18,11 +19,11 @@ Event _logEvent(Map<String, Object?> data) {
 
 void main() {
   late ServerWatchState state;
-  late AppStateHolder holder;
+  late StartAppStateHolder holder;
 
   setUp(() {
     state = ServerWatchState();
-    holder = AppStateHolder(state);
+    holder = StartAppStateHolder(state);
   });
 
   group('Given a log event', () {
@@ -62,6 +63,36 @@ void main() {
       final entry = state.logHistory.first as LogEntry;
       expect(entry.level, LogLevel.warning);
     });
+  });
+
+  group('Given an error log event with error details and stackTrace', () {
+    test(
+      'when dispatched then stores the error text but not the stack trace',
+      () {
+        handleServerLogEvent(
+          holder,
+          _logEvent({
+            'type': 'log',
+            'level': 'error',
+            'message': 'Failed to apply database migrations.',
+            'error':
+                'Exception: DB has migration version 20260428173453748 '
+                'registered but it is not found in the project files.',
+            'stackTrace': '#0      fake (file:///fake.dart:1:1)',
+          }),
+        );
+
+        final entry = state.logHistory.first as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.message, 'Failed to apply database migrations.');
+        expect(
+          entry.error,
+          'Exception: DB has migration version 20260428173453748 '
+          'registered but it is not found in the project files.',
+        );
+        expect(entry.stackTrace, isNull);
+      },
+    );
   });
 
   group('Given a scope_start event', () {

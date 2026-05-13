@@ -84,12 +84,12 @@ void main() {
     'then Scripts contains one entry',
     () {
       var scripts = _buildScripts('''
-start: dart bin/main.dart
+start: dart run bin/main.dart
 ''');
 
       expect(scripts.length, 1);
       expect(scripts['start']?.name, 'start');
-      expect(scripts['start']?.command, 'dart bin/main.dart');
+      expect(scripts['start']?.command, 'dart run bin/main.dart');
     },
   );
 
@@ -99,13 +99,13 @@ start: dart bin/main.dart
     'then Scripts contains all entries',
     () {
       var scripts = _buildScripts('''
-start: dart bin/main.dart
+start: dart run bin/main.dart
 test: dart test
 build: dart compile exe bin/main.dart
 ''');
 
       expect(scripts.length, 3);
-      expect(scripts['start']?.command, 'dart bin/main.dart');
+      expect(scripts['start']?.command, 'dart run bin/main.dart');
       expect(scripts['test']?.command, 'dart test');
       expect(scripts['build']?.command, 'dart compile exe bin/main.dart');
     },
@@ -205,8 +205,8 @@ version: 1.0.0
 
 serverpod:
   scripts:
-    start: dart bin/main.dart --apply-migrations
-    dev: dart bin/main.dart --role webserver
+    start: dart run bin/main.dart --apply-migrations
+    dev: dart run bin/main.dart --role webserver
 ''').create();
 
       var scripts = Scripts.fromPubspecFile(
@@ -216,9 +216,12 @@ serverpod:
       expect(scripts.length, 2);
       expect(
         scripts['start']?.command,
-        'dart bin/main.dart --apply-migrations',
+        'dart run bin/main.dart --apply-migrations',
       );
-      expect(scripts['dev']?.command, 'dart bin/main.dart --role webserver');
+      expect(
+        scripts['dev']?.command,
+        'dart run bin/main.dart --role webserver',
+      );
     },
   );
 

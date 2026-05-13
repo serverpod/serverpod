@@ -6,6 +6,7 @@ class TemplateContext {
     this.postgres = false,
     this.sqlite = false,
     this.web = false,
+    this.skills = false,
   });
 
   /// True if auth is enabled.
@@ -23,6 +24,9 @@ class TemplateContext {
   /// True if web is enabled.
   final bool web;
 
+  /// True if agent skills is enabled.
+  final bool skills;
+
   /// True if docker is enabled.
   bool get docker => postgres || redis;
 
@@ -38,6 +42,7 @@ class TemplateContext {
       'web': web,
       'docker': docker,
       'database': database,
+      'skills': skills,
     };
   }
 }

@@ -416,6 +416,69 @@ class DateTimeDefaultModelRepository {
     );
   }
 
+  /// Upserts all [DateTimeDefaultModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [DateTimeDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<DateTimeDefaultModel>> upsert(
+    _i1.DatabaseSession session,
+    List<DateTimeDefaultModel> rows, {
+    required _i1.ColumnSelections<DateTimeDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<DateTimeDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<DateTimeDefaultModel>(
+      rows,
+      conflictColumns: conflictColumns(DateTimeDefaultModel.t),
+      updateColumns: updateColumns?.call(DateTimeDefaultModel.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [DateTimeDefaultModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [DateTimeDefaultModel] will have its `id` field set.
+  Future<DateTimeDefaultModel?> upsertRow(
+    _i1.DatabaseSession session,
+    DateTimeDefaultModel row, {
+    required _i1.ColumnSelections<DateTimeDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<DateTimeDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<DateTimeDefaultModel>(
+      row,
+      conflictColumns: conflictColumns(DateTimeDefaultModel.t),
+      updateColumns: updateColumns?.call(DateTimeDefaultModel.t),
+      updateWhere: updateWhere?.call(DateTimeDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [DateTimeDefaultModel]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

@@ -1,10 +1,16 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
+import 'package:serverpod_cli/src/commands/tui/components/button.dart';
+import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
+import 'package:serverpod_cli/src/commands/tui/components/log_operation.dart';
+import 'package:serverpod_cli/src/commands/tui/components/tab_bar.dart';
+import 'package:serverpod_cli/src/commands/tui/run_app.dart';
+import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart';
 
-import 'components.dart';
-import 'help_overlay.dart';
+import '../../tui/components/help_overlay.dart';
 import 'loading_screen.dart';
-import 'serverpod_theme.dart';
 import 'state.dart';
 
 /// Main screen shown after startup completes.
@@ -20,6 +26,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.logScrollController,
     required this.rawScrollController,
+    required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
     this.onCreateMigration,
@@ -32,6 +39,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController logScrollController;
   final ScrollController rawScrollController;
+  final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onCreateMigration;
@@ -47,59 +55,40 @@ class MainScreen extends StatelessComponent {
         Column(
           children: [
             Expanded(
-              child: Stack(
-                children: [
-                  BorderedBox(
-                    color: st.activeTab,
-                    child: Column(
-                      children: [
-                        Expanded(child: _buildTabContent()),
-                        // Pinned active operations
-                        if (state.activeOperations.isNotEmpty) ...[
-                          for (final op in state.activeOperations.values)
-                            TrackedOperationWidget(
-                              key: ValueKey(op.id),
-                              operation: op,
-                            ),
-                        ],
-                      ],
+              child: BorderedBox(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 1),
+                      child: _buildTabBar(st),
                     ),
-                  ),
-                  // Tab labels overlaid on top border, offset past the corner.
-                  Padding(
-                    padding: const EdgeInsets.only(left: 1),
-                    child: _buildTabBar(st),
-                  ),
-                ],
+                    Expanded(child: _buildTabContent()),
+                    // Pinned active operations
+                    if (state.activeOperations.isNotEmpty) ...[
+                      for (final op in state.activeOperations.values)
+                        TrackedOperationWidget(
+                          key: ValueKey(op.id),
+                          operation: op,
+                        ),
+                    ],
+                  ],
+                ),
               ),
             ),
             _buildButtonBar(),
           ],
         ),
         LoadingScreen(visible: showSplash),
-        if (state.showHelp) const HelpOverlay(),
+        if (state.showHelp) HelpOverlay(controller: helpScrollController),
       ],
     );
   }
 
   Component _buildTabBar(ServerpodThemeData st) {
-    const labels = ['Log Messages', 'Raw Output'];
-    return Row(
-      children: [
-        for (var i = 0; i < labels.length; i++)
-          if (i == state.selectedTab) ...[
-            Text('▐', style: TextStyle(color: st.activeTab)),
-            Text(
-              labels[i],
-              style: TextStyle(color: st.activeTab, reverse: true),
-            ),
-            Text('▌─', style: TextStyle(color: st.activeTab)),
-          ] else ...[
-            Text(' ', style: TextStyle(color: st.activeTab)),
-            Text(labels[i], style: const TextStyle(fontWeight: FontWeight.dim)),
-            Text(' ─', style: TextStyle(color: st.activeTab)),
-          ],
-      ],
+    return TabBar(
+      labels: const ['Log Messages', 'Raw server output'],
+      selectedTab: state.selectedTab,
+      onTabChanged: onTabChanged,
     );
   }
 
@@ -173,50 +162,56 @@ class MainScreen extends StatelessComponent {
   Component _buildButtonBar() {
     final actionsEnabled = state.serverReady && !state.actionBusy;
 
-    return Row(
-      children: [
-        const SizedBox(width: 1),
+    return ButtonBar(
+      buttons: [
         Button(
           name: 'Hot Reload',
           activationChar: 'R',
-          activationKey: LogicalKey.keyR,
-          onActivate: onHotReload ?? () {},
+          activationKeys: const [LogicalKey.keyR],
+          onActivate: (_) {
+            onHotReload?.call();
+          },
           enabled: actionsEnabled && onHotReload != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Create Migration',
           activationChar: 'M',
-          activationKey: LogicalKey.keyM,
-          onActivate: onCreateMigration ?? () {},
+          activationKeys: const [LogicalKey.keyM],
+          onActivate: (_) {
+            onCreateMigration?.call();
+          },
           enabled: actionsEnabled && onCreateMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Apply Migration',
           activationChar: 'A',
-          activationKey: LogicalKey.keyA,
-          onActivate: onApplyMigration ?? () {},
+          activationKeys: const [LogicalKey.keyA],
+          onActivate: (_) {
+            onApplyMigration?.call();
+          },
           enabled: actionsEnabled && onApplyMigration != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Help',
           activationChar: 'H',
-          activationKey: LogicalKey.keyH,
-          onActivate: onToggleHelp ?? () {},
+          activationKeys: const [LogicalKey.keyH],
+          onActivate: (_) {
+            onToggleHelp?.call();
+          },
           enabled: onToggleHelp != null,
         ),
-        const SizedBox(width: 2),
         Button(
           name: 'Quit',
           activationChar: 'Q',
-          activationKey: LogicalKey.keyQ,
-          onActivate:
-              onQuit ??
-              () {
-                shutdownApp(0);
-              },
+          activationKeys: const [LogicalKey.keyQ],
+          onActivate: (_) {
+            if (onQuit != null) {
+              onQuit?.call();
+            } else {
+              // Boot path: [onQuit] is wired only after [WatchLoopReady].
+              shutdownServerpodApp(0);
+            }
+          },
         ),
       ],
     );

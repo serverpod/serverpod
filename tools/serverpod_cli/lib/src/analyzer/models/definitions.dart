@@ -76,6 +76,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// database.
   final String? tableName;
 
+  /// Determines where table-backed database code should be generated.
+  final ModelDatabaseDefinition database;
+
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
   ///
@@ -113,6 +116,7 @@ final class ModelClassDefinition extends ClassDefinition {
     required super.type,
     required this.isSealed,
     required this.isImmutable,
+    this.database = ModelDatabaseDefinition.server,
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
@@ -127,6 +131,17 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If the field is not present, an error is thrown.
   SerializableModelFieldDefinition get idField =>
       findField(defaultPrimaryKeyName)!;
+
+  /// Returns true if database code should be generated for the specified side.
+  bool shouldGenerateTableCode(bool serverCode) {
+    if (tableName == null) return false;
+
+    return switch (database) {
+      ModelDatabaseDefinition.server => serverCode,
+      ModelDatabaseDefinition.client => !serverCode,
+      ModelDatabaseDefinition.all => true,
+    };
+  }
 
   /// Returns the `ModelClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
@@ -371,21 +386,57 @@ class SerializableModelFieldDefinition {
   /// Returns true, if this field should be added to the serialization for the
   /// database.
   /// [serverCode] specifies if it's code on the server or client side.
-  /// This method should only be called for server side code.
   ///
   /// See also:
   /// - [shouldIncludeField]
   /// - [shouldSerializeField]
   bool shouldSerializeFieldForDatabase(bool serverCode) {
-    return shouldPersist;
+    if (serverCode) {
+      return shouldPersist;
+    }
+    if (shouldPersist && scope == ModelFieldScopeDefinition.all) {
+      return true;
+    }
+
+    // Client: one-to-many implicit "child" FKs only.
+    final relation = this.relation;
+    return shouldPersist &&
+        scope == ModelFieldScopeDefinition.none &&
+        relation is ForeignRelationDefinition &&
+        relation.containerField == null;
   }
 
-  /// Returns true, if this is serialized field that should be hidden.
-  /// [serverCode] specifies if it's code on the server or client side.
+  /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
+  /// from the wire protocol but stored in the database. On the client, implicit
+  /// one-to-many child keys are hidden.
   bool hiddenSerializableField(bool serverCode) {
-    return serverCode &&
-        shouldPersist &&
-        scope == ModelFieldScopeDefinition.none;
+    if (serverCode) {
+      return shouldPersist && scope == ModelFieldScopeDefinition.none;
+    }
+    if (!shouldPersist || scope != ModelFieldScopeDefinition.none) {
+      return false;
+    }
+    final relation = this.relation;
+    return relation is ForeignRelationDefinition &&
+        relation.containerField == null;
+  }
+
+  /// Whether code generation should emit this field on the in-memory model
+  /// and *Implicit* copy/fromJson helpers.
+  ///
+  /// On the client, [modelHasTable] must be [true] when the model class is
+  /// table-backed for this code side (e.g. [ModelClassDefinition.shouldGenerateTableCode]).
+  bool shouldIncludeHiddenFieldInModelClass(
+    bool serverCode, {
+    bool modelHasTable = true,
+  }) {
+    if (!hiddenSerializableField(serverCode)) {
+      return false;
+    }
+    if (serverCode) {
+      return true;
+    }
+    return modelHasTable;
   }
 
   /// When [shouldCreateUniqueIndex] is true, the btree unique index that is
@@ -408,6 +459,13 @@ enum ModelFieldScopeDefinition {
   all,
   serverOnly,
   none,
+}
+
+/// The side that should generate table-backed database code for a model.
+enum ModelDatabaseDefinition {
+  server,
+  client,
+  all,
 }
 
 /// The definition of an index for a file, that is also stored in the database.

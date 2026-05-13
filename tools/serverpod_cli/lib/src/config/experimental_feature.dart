@@ -11,7 +11,8 @@ class CommandLineExperimentalFeatures {
 }
 
 enum ExperimentalFeature {
-  all;
+  all,
+  ;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {

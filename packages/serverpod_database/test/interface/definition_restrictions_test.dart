@@ -48,7 +48,7 @@ void main() {
         equals(
           'The following indexes will be skipped due to unsupported types '
           'by the database dialect "sqlite":\n'
-          '  - vector_search_idx (hnsw)',
+          '  • vector_search_idx (hnsw)\n',
         ),
       );
     },

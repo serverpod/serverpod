@@ -4,3 +4,13 @@
 
 # Pubspec overrides
 pubspec_overrides.yaml
+
+# Agents
+.dart_skills/
+.agents/
+.claude/
+.gemini/
+.cursor/
+.vscode/mcp.json
+.codex/
+.mcp.json

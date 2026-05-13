@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
@@ -240,7 +239,7 @@ class InsightsEndpoint extends Endpoint {
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations = await _getInstalledMigrationVersions(session);
 
-    var versions = await ServerMigrationManager(
+    var versions = await MigrationManager.fromDirectory(
       Directory.current,
     ).listAvailableVersions();
 

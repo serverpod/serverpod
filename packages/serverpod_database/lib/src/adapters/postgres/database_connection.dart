@@ -220,6 +220,90 @@ class PostgresDatabaseConnection
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    // When the model has non-persisted fields, fall back to single-row upserts
+    // so we can safely merge non-persisted fields with each result row.
+    if (rows.length > 1 && _hasNonPersistedFields(session, rows)) {
+      return DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (tx) async => [
+          for (var row in rows)
+            ...await upsert<T>(
+              session,
+              [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              transaction: tx,
+            ),
+        ],
+        settings: const TransactionSettings(),
+      );
+    }
+
+    var table = rows.first.table;
+
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+    ).build();
+
+    return (await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        ).then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
+    if (result.length > 1) {
+      throw _PgDatabaseUpsertRowException(
+        'Failed to upsert row, affected number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {

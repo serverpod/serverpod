@@ -30,7 +30,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
 
     final classNames = resolvedItem.declarations
         .whereType<ClassDeclaration>()
-        .map((d) => d.name.lexeme)
+        .map((d) => d.namePart.typeName.lexeme)
         .join(', ');
 
     return mismatchDescription.add(
@@ -69,7 +69,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
         this,
         resolveMatch: _matchedFeatureValueOf,
         extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<FieldDeclaration>(),
+            classDeclaration.body.childEntities.whereType<FieldDeclaration>(),
       ),
       fieldName,
       isNullable: isNullable,
@@ -91,7 +91,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
         this,
         resolveMatch: _matchedFeatureValueOf,
         extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<MethodDeclaration>(),
+            classDeclaration.body.childEntities.whereType<MethodDeclaration>(),
       ),
       methodName,
       isOverride: isOverride,
@@ -153,8 +153,8 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<ConstructorDeclaration>(),
+        extractValue: (classDeclaration) => classDeclaration.body.childEntities
+            .whereType<ConstructorDeclaration>(),
       ),
       name: constructorName,
       isFactory: isFactory,
@@ -164,6 +164,6 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
 
 extension on ClassDeclaration {
   bool _hasMatchingClass(String name) {
-    return this.name.lexeme == name;
+    return namePart.typeName.lexeme == name;
   }
 }

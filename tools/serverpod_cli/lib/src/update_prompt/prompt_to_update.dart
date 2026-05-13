@@ -37,7 +37,7 @@ Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
 void _printPrompt(Version version) {
   var message = '''A new version $version of Serverpod is available!
 
-To update to the latest version, run "dart pub global activate serverpod_cli".
+To update to the latest version, run "dart install serverpod_cli".
 Also, do not forget to update packages in your server, client, and flutter projects.''';
 
   log.info(

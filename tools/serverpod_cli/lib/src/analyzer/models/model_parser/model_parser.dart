@@ -32,6 +32,7 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
+    var database = _parseDatabase(documentContents);
     var serializationDataType = _parseSerializationDataType(documentContents);
 
     return _initializeFromClassFields(
@@ -58,6 +59,7 @@ class ModelParser {
               isImmutable: isImmutable,
               extendsClass: extendsClass,
               sourceFileName: protocolSource.yamlSourceUri.path,
+              database: database,
               tableName: tableName,
               serializationDataType: serializationDataType,
               manageMigration: manageMigration,
@@ -264,6 +266,23 @@ class ModelParser {
     );
   }
 
+  static void _resolveSerializationDataType(
+    TypeDefinition typeResult,
+    YamlMap documentContents,
+    SerializationDataType? defaultSerializationDataType,
+  ) {
+    final explicitValue = _parseSerializationDataType(documentContents);
+    if (explicitValue != null) {
+      typeResult.serializationDataType = explicitValue;
+    } else if (typeResult.isColumnSerializable ||
+        typeResult.isColumnStructured) {
+      // Only serializable types should receive the default override (like
+      // lists, maps, serializable models and custom classes). Otherwise we
+      // would incorrectly flag other types as `.isJsonbSerialized`.
+      typeResult.serializationDataType = defaultSerializationDataType;
+    }
+  }
+
   static EnumSerialization _parseSerializedAs(YamlMap documentContents) {
     var serializedAs = documentContents.nodes[Keyword.serialized]?.value;
 
@@ -279,6 +298,17 @@ class ModelParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static ModelDatabaseDefinition _parseDatabase(YamlMap documentContents) {
+    var database = documentContents.nodes[Keyword.database]?.value;
+    if (database is! String) return ModelDatabaseDefinition.server;
+
+    return convertToEnum(
+      value: database,
+      enumDefault: ModelDatabaseDefinition.server,
+      enumValues: ModelDatabaseDefinition.values,
+    );
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(
@@ -357,12 +387,14 @@ class ModelParser {
       typeValue,
       extraClasses: extraClasses,
     );
+    _resolveSerializationDataType(
+      typeResult,
+      node,
+      defaultSerializationDataType,
+    );
 
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
-
-    typeResult.serializationDataType =
-        _parseSerializationDataType(node) ?? defaultSerializationDataType;
 
     var defaultModelValue = _parseDefaultValue(
       node,

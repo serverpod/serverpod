@@ -140,6 +140,29 @@ class GoogleIdp {
     );
   }
 
+  /// {@macro google_idp_base_endpoint.login_with_code}
+  Future<AuthSuccess> loginWithCode(
+    final Session session, {
+    required final String code,
+    required final String codeVerifier,
+    required final String redirectUri,
+    final Transaction? transaction,
+  }) async {
+    final tokens = await utils.exchangeCodeForToken(
+      session,
+      code: code,
+      codeVerifier: codeVerifier,
+      redirectUri: redirectUri,
+    );
+
+    return login(
+      session,
+      idToken: tokens.idToken,
+      accessToken: tokens.accessToken,
+      transaction: transaction,
+    );
+  }
+
   /// Determines whether the current session has an associated Google account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;

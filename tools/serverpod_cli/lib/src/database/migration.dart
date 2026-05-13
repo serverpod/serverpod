@@ -241,7 +241,7 @@ TableMigration? generateTableMigration(
       continue;
     }
     // The column name must be the same for the like comparison.
-    if (!srcColumn.copyWith(name: dstColumn.name).like(dstColumn)) {
+    if (!srcColumn.like(dstColumn)) {
       if (srcColumn.canMigrateTo(dstColumn)) {
         // Column can be modified
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
@@ -264,7 +264,10 @@ TableMigration? generateTableMigration(
 
         modifyColumns.add(
           ColumnMigration(
-            columnName: dstColumn.name,
+            columnName: srcColumn.name,
+            newColumnName: srcColumn.name != dstColumn.name
+                ? dstColumn.name
+                : null,
             addNullable: addNullable,
             removeNullable: removeNullable,
             changeDefault: changeDefault,
@@ -405,7 +408,6 @@ TableMigration? generateTableMigration(
     deleteColumns: deleteColumns,
     addColumns: addColumns,
     modifyColumns: modifyColumns,
-    renameColumns: renameColumns.isEmpty ? null : renameColumns,
     deleteIndexes: deleteIndexes,
     addIndexes: addIndexes,
     deleteForeignKeys: deleteForeignKeys,

@@ -1,5 +1,6 @@
 class: Enrollment
 table: enrollment
+database: all
 fields:
   student: Student?, relation(name=student_enrollments, onDelete=Cascade)
   course: Course?, relation(name=course_enrollments, onDelete=Cascade)

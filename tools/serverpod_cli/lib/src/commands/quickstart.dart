@@ -49,7 +49,8 @@ enum QuickstartOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  );
+  ),
+  ;
 
   const QuickstartOption(this.option);
 
@@ -115,13 +116,15 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       }
     }
 
-    if (!await performCreate(
+    final projectPath = await performCreate(
       name,
       template,
       force,
       interactive: interactive,
-      context: TemplateContext(sqlite: true, web: true),
-    )) {
+      context: TemplateContext(sqlite: true, web: true, skills: true),
+    );
+
+    if (projectPath == null) {
       throw ExitException.error();
     }
   }

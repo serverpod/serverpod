@@ -5,7 +5,7 @@ description: Define Serverpod endpoints, use Session, pass parameters, and call 
 
 # Serverpod Endpoints
 
-Extend `Endpoint` with async methods; first parameter is `Session`, return `Future<T>` (or `Stream<T>` for real-time data streaming). Place anywhere under server `lib/`. Run `serverpod generate` to update the client.
+Extend `Endpoint` with instance methods; first parameter is `Session`, return `Future<T>` (or `Stream<T>` for real-time data streaming). Place anywhere under server `lib/`. If `serverpod start` is not running with hot-reload, run `serverpod generate` to update the client.
 
 ## Defining an endpoint
 
@@ -66,7 +66,7 @@ Overriding is allowed: same signature, different behavior, client code unchanged
 
 ## Backward compatibility
 
-Older app versions may still call your server. Do not rename parameters (REST API passes by name). Do not delete methods or change signatures — add new methods or optional named parameters instead.
+Older app versions may still call your server. Do not rename parameters (REST API passes by name). Do not delete methods, add required parameters, or change signatures; add new methods or optional named parameters instead.
 
 When you must break an endpoint's API, create a versioned endpoint:
 

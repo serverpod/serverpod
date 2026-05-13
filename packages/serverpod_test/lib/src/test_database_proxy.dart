@@ -29,7 +29,7 @@ class TestDatabaseProxy implements Database {
   DatabaseDialect get dialect => _db.dialect;
 
   @override
-  SerializationManagerServer get serializationManager =>
+  DatabaseSerializationManager get serializationManager =>
       _db.serializationManager;
 
   @override
@@ -232,6 +232,46 @@ class TestDatabaseProxy implements Database {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insertRow<T>(
         row,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsert<T>(
+        rows,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsertRow<T>(
+        row,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/server_migration_manager.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
@@ -38,7 +38,7 @@ void main() {
     ''';
 
       setUp(() async {
-        existingMigrations = await ServerMigrationManager(
+        existingMigrations = await MigrationManager.fromDirectory(
           Directory.current,
         ).listAvailableVersions();
 
@@ -95,7 +95,7 @@ void main() {
           logWriter.add(testWriter);
           addTearDown(() => logWriter.remove(testWriter));
 
-          var migrationManager = ServerMigrationManager(
+          var migrationManager = MigrationManager.fromDirectory(
             Directory(d.sandbox),
           );
           await migrationManager.migrateToLatest(sessionBuilder.build());

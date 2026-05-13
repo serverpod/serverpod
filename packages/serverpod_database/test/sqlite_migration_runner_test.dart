@@ -22,6 +22,7 @@ void main() {
       _TestSerializationManager(),
       SqliteDatabaseConfig(filePath: p.join(tempDir.path, 'test.db')),
     )..start();
+    await poolManager.started;
 
     session = _TestSession(() => database);
     database = DatabaseConstructor.create(
@@ -145,7 +146,7 @@ Future<void> _createParentChildTables(
   );
 }
 
-class _TestSerializationManager extends SerializationManagerServer {
+class _TestSerializationManager extends DatabaseSerializationManager {
   @override
   String getModuleName() => 'test';
 

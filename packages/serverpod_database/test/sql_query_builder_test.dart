@@ -1088,6 +1088,38 @@ void main() {
       });
     });
 
+    test(
+      'when building with lock mode, lock behavior noWait and a where clause that adds a left join '
+      'then the query contains OF clause before NOWAIT',
+      () {
+        var companyTbl = Table<int?>(tableName: 'company');
+        var relationTable = Table<int?>(
+          tableName: companyTbl.tableName,
+          tableRelation: TableRelation([
+            TableRelationEntry(
+              relationAlias: 'company',
+              field: ColumnInt('companyId', table),
+              foreignField: ColumnInt('id', companyTbl),
+            ),
+          ]),
+        );
+
+        var query = SelectQueryBuilder(table: table)
+            .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
+            .withLockMode(LockMode.forUpdate, LockBehavior.noWait)
+            .build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" '
+          'LEFT JOIN "company" AS "citizen_company_company" '
+          'ON "citizen"."companyId" = "citizen_company_company"."id" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' '
+          'FOR UPDATE OF "citizen" NOWAIT',
+        );
+      },
+    );
+
     group('when building with lock behavior skipLocked', () {
       test('then query contains SKIP LOCKED suffix', () {
         var query = SelectQueryBuilder(
@@ -1114,6 +1146,38 @@ void main() {
         );
       });
     });
+
+    test(
+      'when building with lock mode and a where clause that adds a left join '
+      'then lock clause uses FOR UPDATE OF base table.',
+      () {
+        var companyTbl = Table<int?>(tableName: 'company');
+        var relationTable = Table<int?>(
+          tableName: companyTbl.tableName,
+          tableRelation: TableRelation([
+            TableRelationEntry(
+              relationAlias: 'company',
+              field: ColumnInt('companyId', table),
+              foreignField: ColumnInt('id', companyTbl),
+            ),
+          ]),
+        );
+
+        var query = SelectQueryBuilder(table: table)
+            .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
+            .withLockMode(LockMode.forUpdate)
+            .build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" '
+          'LEFT JOIN "company" AS "citizen_company_company" '
+          'ON "citizen"."companyId" = "citizen_company_company"."id" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' '
+          'FOR UPDATE OF "citizen"',
+        );
+      },
+    );
 
     group('when building with lock mode and order by', () {
       test('then lock clause appears after order by', () {

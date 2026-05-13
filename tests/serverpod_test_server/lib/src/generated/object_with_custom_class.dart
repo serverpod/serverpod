@@ -91,13 +91,17 @@ abstract class ObjectWithCustomClass
           ? (customClassWithoutProtocolSerialization
                     as _i1.ProtocolSerialization)
                 .toJsonForProtocol()
-          : customClassWithoutProtocolSerialization.toJson(),
+          :
+            // ignore: dead_code
+            customClassWithoutProtocolSerialization.toJson(),
       'customClassWithProtocolSerialization':
           // ignore: unnecessary_type_check
           customClassWithProtocolSerialization is _i1.ProtocolSerialization
           ? (customClassWithProtocolSerialization as _i1.ProtocolSerialization)
                 .toJsonForProtocol()
-          : customClassWithProtocolSerialization.toJson(),
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerialization.toJson(),
       'customClassWithProtocolSerializationMethod':
           // ignore: unnecessary_type_check
           customClassWithProtocolSerializationMethod
@@ -105,7 +109,9 @@ abstract class ObjectWithCustomClass
           ? (customClassWithProtocolSerializationMethod
                     as _i1.ProtocolSerialization)
                 .toJsonForProtocol()
-          : customClassWithProtocolSerializationMethod.toJson(),
+          :
+            // ignore: dead_code
+            customClassWithProtocolSerializationMethod.toJson(),
     };
   }
 

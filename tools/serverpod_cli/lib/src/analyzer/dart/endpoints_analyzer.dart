@@ -415,7 +415,7 @@ class EndpointsAnalyzer {
         EndpointMethodAnalyzer.isEndpointMethod,
       );
       for (var method in endpointMethods) {
-        errors = EndpointMethodAnalyzer.validate(method, classElement);
+        errors = EndpointMethodAnalyzer.validate(method, classElement, library);
         errors.addAll(
           EndpointParameterAnalyzer.validate(method.formalParameters),
         );

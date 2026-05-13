@@ -29,13 +29,11 @@ class TemplateRenderer {
     Directory dir,
     TemplateContext context,
   ) async {
-    final entries = dir.listSync();
-
-    for (final entry in entries) {
-      if (entry is File) {
-        await _renderFile(entry, context);
-      } else if (entry is Directory) {
-        await _handleDirectoryRendering(entry, context);
+    await for (final entity in dir.list(recursive: false, followLinks: false)) {
+      if (entity is File) {
+        await _renderFile(entity, context);
+      } else if (entity is Directory) {
+        await _handleDirectoryRendering(entity, context);
       }
     }
   }

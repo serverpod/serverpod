@@ -162,4 +162,36 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given `serializeAsJsonbByDefault` enabled and a class without `serializationDataType` and a non-serializable field, '
+    'when validating, '
+    'then the field has no `serializationDataType` set.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
+        class: Example
+        table: example
+        fields:
+          name: String
+        ''').build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(collector.errors, isEmpty);
+      expect(
+        definition.fields.last.type.serializationDataType,
+        isNull,
+      );
+    },
+  );
 }

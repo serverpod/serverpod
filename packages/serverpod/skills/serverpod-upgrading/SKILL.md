@@ -1,33 +1,27 @@
 ---
 name: serverpod-upgrading
-description: Upgrade Serverpod — minor/patch updates, major upgrade to v3, pubspec updates across all packages. Use when upgrading Serverpod versions or updating dependencies.
+description: Upgrade Serverpod — minor/patch updates, major upgrade to v3. Use when upgrading Serverpod versions or updating dependencies.
 ---
 
-# Serverpod Upgrading
+# Serverpod minor/patch upgrade
 
-## Minor/patch upgrades
+Requirements: Dart 3.10.3+, Flutter 3.38.4+.
 
-Use the same pinned Serverpod version across all packages.
+Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Ask the user to start the server with `serverpod start` after the upgrade. NEVER update the CLI tooling, instead STOP and ask the user to do it.
 
-1. **Update CLI:** `dart pub global activate serverpod_cli`
-2. **Update pubspecs** in every package:
-   - Server: `serverpod`, `serverpod_test` (dev), module server packages
-   - Client: `serverpod_client`, module client packages
-   - Flutter: `serverpod_flutter`, module Flutter packages
-3. **Fetch and regenerate:** `dart pub upgrade` + `serverpod generate` from server directory
-4. **Migrations (if needed):** `serverpod create-migration` + `dart run bin/main.dart --apply-migrations`
+1. Check the latest version of Serverpod: https://pub.dev/packages/serverpod (unless the user has requested a specific version).
+2. Run `serverpod version` to verify that the tooling has the correct version. If not, STOP and ask the user to install the correct version (`dart install serverpod_cli` for latest or `dart install serverpod_cli 3.x.x` for specific version).
+3. Update all Serverpod packages in all relevant package pubspec.yaml (server, client, flutter, shared).
+4. Run `dart pub upgrade` in all packages.
+5. Run `serverpod generate`.
+6. Run `serverpod create-migration`.
+7. Run `dart analyze` in the root of the project and address any issues.
+8. Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
+9. Inform the user that the upgrade is complete and they should start the server with `serverpod start`.
 
-## Major upgrade: to Serverpod 3.0
+## Major upgrade: Serverpod 2.x to 3.0
 
-Requirements: Dart 3.8.0+, Flutter 3.32.0+.
-
-### Steps
-
-1. Update CLI: `dart pub global activate serverpod_cli`
-2. Update all pubspecs to `3.0.0`+ and SDK constraint: `sdk: '>=3.8.0 <4.0.0'`
-3. Update Dockerfile: `FROM dart:3.8 AS build`
-4. `dart pub upgrade` + `serverpod generate`
-5. Create and apply migration (session log user ID changed to String)
+After following the regular upgrade process, ensure that the following breaking changes are addressed.
 
 ### Breaking changes
 
@@ -48,15 +42,3 @@ Requirements: Dart 3.8.0+, Flutter 3.32.0+.
 
 **Deprecated:** Legacy streaming endpoints; use streaming methods.
 
-### Checklist
-
-1. CLI, pubspecs (versions + SDK), Dockerfile
-2. Route classes, widgets, static routes
-3. Enum serialization strategy
-4. `SerializableEntity` → `SerializableModel`, YAML keywords
-5. Auth usage updates
-6. Migration + tests
-
-## Mini to full Serverpod
-
-From server directory: `serverpod create .` — adds full config and structure. Back up first. Then add DB, create-migration, apply.

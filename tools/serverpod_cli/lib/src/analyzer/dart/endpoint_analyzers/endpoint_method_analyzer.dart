@@ -1,3 +1,5 @@
+import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
@@ -90,12 +92,14 @@ abstract class EndpointMethodAnalyzer {
   static List<SourceSpanSeverityException> validate(
     MethodElement method,
     ClassElement classElement,
+    ResolvedLibraryResult resolvedLibrary,
   ) {
     List<SourceSpanSeverityException?> errors = [
       _validateReturnType(
         dartType: method.returnType,
         dartElement: method,
-        hasStreamParameter: method.formalParameters._hasStream(),
+        method: method,
+        resolvedLibrary: resolvedLibrary,
       ),
       _validateUnauthenticatedAnnotation(method, classElement),
     ];
@@ -106,7 +110,8 @@ abstract class EndpointMethodAnalyzer {
   static SourceSpanSeverityException? _validateReturnType({
     required DartType dartType,
     required Element dartElement,
-    required bool hasStreamParameter,
+    required MethodElement method,
+    required ResolvedLibraryResult resolvedLibrary,
   }) {
     if (!(dartType.isDartAsyncFuture || dartType.isDartAsyncStream)) {
       return SourceSpanSeverityException(
@@ -145,9 +150,12 @@ abstract class EndpointMethodAnalyzer {
       return null;
     }
 
-    if (innerType is DynamicType && !dartType.isDartAsyncStream) {
+    if (innerType is DynamicType &&
+        dartType.isDartAsyncFuture &&
+        _isBareFutureReturnType(method, resolvedLibrary)) {
       return SourceSpanSeverityException(
-        'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
+        'Use an explicit Future type argument. E.g. ${dartType.element.name}<String> '
+        'or ${dartType.element.name}<dynamic>.',
         dartElement.span,
       );
     }
@@ -162,6 +170,26 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return null;
+  }
+
+  /// `Future` without `<...>` defaults to dynamic but is easy to miss. Require
+  /// an explicit type argument (including `<dynamic>`).
+  static bool _isBareFutureReturnType(
+    MethodElement method,
+    ResolvedLibraryResult resolvedLibrary,
+  ) {
+    final methodReturn = method.firstFragment;
+    final declaration = resolvedLibrary.getFragmentDeclaration(methodReturn);
+    if (declaration == null) return false;
+
+    final node = declaration.node;
+    if (node is! MethodDeclaration) return false;
+
+    final returnType = node.returnType;
+    if (returnType is! NamedType) return false;
+
+    if (returnType.name.lexeme != 'Future') return false;
+    return returnType.typeArguments == null;
   }
 
   static SourceSpanSeverityException? _validateUnauthenticatedAnnotation(
@@ -182,12 +210,6 @@ abstract class EndpointMethodAnalyzer {
       );
     }
     return null;
-  }
-}
-
-extension on List<FormalParameterElement> {
-  bool _hasStream() {
-    return any((element) => element.type.isDartAsyncStream);
   }
 }
 

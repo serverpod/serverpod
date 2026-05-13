@@ -797,6 +797,39 @@ class Endpoints extends _i1.EndpointDispatch {
                         accessToken: params['accessToken'],
                       ),
         ),
+        'loginWithCode': _i1.MethodConnector(
+          name: 'loginWithCode',
+          params: {
+            'code': _i1.ParameterDescription(
+              name: 'code',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'codeVerifier': _i1.ParameterDescription(
+              name: 'codeVerifier',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'redirectUri': _i1.ParameterDescription(
+              name: 'redirectUri',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['googleAccountBackwardsCompatibilityTest']
+                          as _i9.GoogleAccountBackwardsCompatibilityTestEndpoint)
+                      .loginWithCode(
+                        session,
+                        code: params['code'],
+                        codeVerifier: params['codeVerifier'],
+                        redirectUri: params['redirectUri'],
+                      ),
+        ),
         'hasAccount': _i1.MethodConnector(
           name: 'hasAccount',
           params: {},
@@ -839,6 +872,38 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         idToken: params['idToken'],
                         accessToken: params['accessToken'],
+                      ),
+        ),
+        'loginWithCode': _i1.MethodConnector(
+          name: 'loginWithCode',
+          params: {
+            'code': _i1.ParameterDescription(
+              name: 'code',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'codeVerifier': _i1.ParameterDescription(
+              name: 'codeVerifier',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'redirectUri': _i1.ParameterDescription(
+              name: 'redirectUri',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['googleAccount'] as _i10.GoogleAccountEndpoint)
+                      .loginWithCode(
+                        session,
+                        code: params['code'],
+                        codeVerifier: params['codeVerifier'],
+                        redirectUri: params['redirectUri'],
                       ),
         ),
         'hasAccount': _i1.MethodConnector(

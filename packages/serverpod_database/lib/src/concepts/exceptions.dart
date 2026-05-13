@@ -64,6 +64,12 @@ abstract base class DatabaseDeleteRowException implements DatabaseException {
   String toString() => 'DatabaseDeleteRowException: $message';
 }
 
+/// Exception thrown when an upsert row operation fails.
+abstract base class DatabaseUpsertRowException implements DatabaseException {
+  @override
+  String toString() => 'DatabaseUpsertRowException: $message';
+}
+
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
 /// reports one or more rows that violate foreign key constraints.
 final class SqliteForeignKeyViolationException implements DatabaseException {

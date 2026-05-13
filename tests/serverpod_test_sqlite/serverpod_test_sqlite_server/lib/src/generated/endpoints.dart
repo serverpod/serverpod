@@ -12,6 +12,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/test_tools.dart' as _i2;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i3;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -107,5 +110,10 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  _i1.FutureCallDispatch? get futureCalls {
+    return _i3.FutureCalls();
   }
 }

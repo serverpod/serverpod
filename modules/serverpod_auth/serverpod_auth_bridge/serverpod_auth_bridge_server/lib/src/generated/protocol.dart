@@ -31,7 +31,7 @@ export 'legacy_session.dart';
 export 'legacy_user_info.dart';
 export 'legacy_user_settings_config.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

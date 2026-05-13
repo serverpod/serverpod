@@ -118,7 +118,7 @@ class TestServerpod {
 
   TestServerpod(
     List<String> args,
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     EndpointDispatch endpoints, {
     ServerpodConfig? config,
     RuntimeParametersListBuilder? runtimeParametersBuilder,

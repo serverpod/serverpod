@@ -364,6 +364,71 @@ class ChildClassExplicitColumnRepository {
     );
   }
 
+  /// Upserts all [ChildClassExplicitColumn]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChildClassExplicitColumn]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChildClassExplicitColumn>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildClassExplicitColumn> rows, {
+    required _i2.ColumnSelections<ChildClassExplicitColumnTable>
+    conflictColumns,
+    _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChildClassExplicitColumn>(
+      rows,
+      conflictColumns: conflictColumns(ChildClassExplicitColumn.t),
+      updateColumns: updateColumns?.call(ChildClassExplicitColumn.t),
+      updateWhere: updateWhere?.call(ChildClassExplicitColumn.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChildClassExplicitColumn] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChildClassExplicitColumn] will have its `id` field set.
+  Future<ChildClassExplicitColumn?> upsertRow(
+    _i2.DatabaseSession session,
+    ChildClassExplicitColumn row, {
+    required _i2.ColumnSelections<ChildClassExplicitColumnTable>
+    conflictColumns,
+    _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildClassExplicitColumn>(
+      row,
+      conflictColumns: conflictColumns(ChildClassExplicitColumn.t),
+      updateColumns: updateColumns?.call(ChildClassExplicitColumn.t),
+      updateWhere: updateWhere?.call(ChildClassExplicitColumn.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChildClassExplicitColumn]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

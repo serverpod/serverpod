@@ -10,11 +10,13 @@ Event messaging via `session.messages` on named channels. Messages must be seria
 ## Sending
 
 ```dart
-session.messages.postMessage('user_updates', UserUpdate(...));
+await session.messages.postMessage('user_updates', UserUpdate(...));
 
 // Cross-server (requires Redis):
-session.messages.postMessage('user_updates', message, global: true);
+await session.messages.postMessage('user_updates', message, global: true);
 ```
+
+Posting with `global: true` throws if Redis is not enabled. Fall back to local messages only when cross-server delivery is not required.
 
 ## Receiving
 
@@ -24,6 +26,8 @@ session.messages.postMessage('user_updates', message, global: true);
 var stream = session.messages.createStream<UserUpdate>('user_updates');
 stream.listen((message) => print('Received: $message'));
 ```
+
+If a message on the channel is not of type `T`, the stream emits an error. Use exact serializable types or a deliberate shared base type.
 
 **Listener:**
 

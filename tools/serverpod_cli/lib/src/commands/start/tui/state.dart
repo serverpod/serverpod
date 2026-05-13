@@ -1,58 +1,24 @@
-import 'bounded_queue_list.dart';
-
-/// A tracked operation (server session or CLI progress).
-///
-/// While active, rendered as a pinned entry with spinner at the bottom of the
-/// log area. On completion, collapses into a divider-style summary line.
-final class TrackedOperation {
-  TrackedOperation({
-    required this.id,
-    required this.label,
-  }) {
-    stopwatch.start();
-  }
-
-  final String id;
-  final String label;
-  final Stopwatch stopwatch = Stopwatch();
-
-  /// Null while active, set on completion.
-  bool? success;
-
-  /// Duration in seconds, set on completion.
-  double? duration;
-}
-
-/// Completed tracked operation, stored in the log history.
-final class CompletedOperation {
-  CompletedOperation({
-    required this.label,
-    required this.success,
-    required this.duration,
-    DateTime? completedAt,
-  }) : completedAt = completedAt ?? DateTime.now();
-
-  final String label;
-  final bool success;
-  final Duration duration;
-  final DateTime completedAt;
-}
+import 'package:serverpod_cli/src/commands/tui/bounded_queue_list.dart';
+import 'package:serverpod_cli/src/commands/tui/state.dart';
 
 /// Central state for the TUI, mutated by the backend and rendered by nocterm.
-final class ServerWatchState {
+class ServerWatchState extends ServerpodState {
   ServerWatchState();
 
   /// Log history entries: [LogEntry] (from serverpod_shared) or
   /// [CompletedOperation].
+  @override
   final logHistory = BoundedQueueList<Object>(maxLogEntries);
 
-  /// Raw stdout/stderr lines for the "Raw Output" tab.
+  /// Raw stdout/stderr lines for the "Raw server output" tab.
+  @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
   /// Currently active tracked operations (keyed by ID).
+  @override
   final Map<String, TrackedOperation> activeOperations = {};
 
-  /// Currently selected tab index (0 = Log Messages, 1 = Raw Output).
+  /// Currently selected tab index (0 = Log Messages, 1 = Raw server output).
   int selectedTab = 0;
 
   /// Whether a tracked action (hot reload, migration) is in progress.
@@ -64,9 +30,6 @@ final class ServerWatchState {
   /// Whether to show the splash overlay. Starts true, set to false
   /// after 5 seconds or explicitly by the backend.
   bool showSplash = true;
-
-  /// Whether the help overlay is visible.
-  bool showHelp = false;
 
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;

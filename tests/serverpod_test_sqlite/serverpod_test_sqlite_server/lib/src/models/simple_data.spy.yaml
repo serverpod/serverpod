@@ -1,6 +1,7 @@
 ### Just some simple data.
 class: SimpleData
 table: simple_data
+database: all
 fields:
   # No Documentation (1)
   ### The only field of [SimpleData]

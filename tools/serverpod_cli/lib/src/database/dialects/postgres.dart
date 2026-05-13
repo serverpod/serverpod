@@ -503,10 +503,10 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
     }
 
     // Rename columns (must happen before add/modify to avoid naming conflicts)
-    if (renameColumns != null) {
-      for (var entry in renameColumns!.entries) {
-        var fromName = entry.key;
-        var toName = entry.value;
+    for (var modifiedColumn in modifyColumns) {
+      var fromName = modifiedColumn.columnName;
+      var toName = modifiedColumn.newColumnName;
+      if (toName != null && toName != fromName) {
         out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
       }
     }
@@ -522,7 +522,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += alterColumn.toPgSql(
         tableName: name,
         columnDefinition: targetColumns.firstWhere(
-          (c) => c.name == alterColumn.columnName,
+          (c) => c.name == alterColumn.physicalName,
         ),
       );
     }
@@ -549,6 +549,11 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 }
 
 extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
+  /// The physical name of the column to be used in the SQL statements, taking
+  /// renames into consideration. Ensure that any using statement happen after
+  /// the rename statements.
+  String get physicalName => newColumnName ?? columnName;
+
   String toPgSql({
     required String tableName,
     required ColumnDefinition columnDefinition,
@@ -556,17 +561,17 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
     var out = '';
     if (addNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' DROP NOT NULL;\n';
     } else if (removeNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' SET NOT NULL;\n';
     }
     if (changeDefault) {
       if (newDefault == null) {
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
       } else {
@@ -575,7 +580,7 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
           tableName,
         );
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' SET DEFAULT $newDefaultSql;\n';
       }
     }
