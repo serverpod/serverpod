@@ -6,15 +6,12 @@ final class PasswordlessIdpTestFixture {
   late final PasswordlessIdp passwordlessIdp;
   late final TokenManager tokenManager;
   final AuthUsers authUsers = const AuthUsers();
-  final UserProfiles userProfiles = const UserProfiles();
 
   PasswordlessIdpTestFixture({
     required final PasswordlessIdpConfig config,
     TokenManager? tokenManager,
   }) {
     tokenManager ??= AuthServices(
-      authUsers: authUsers,
-      userProfiles: userProfiles,
       primaryTokenManagerBuilder: ServerSideSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),

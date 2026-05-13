@@ -695,7 +695,7 @@ void main() {
         );
 
         test(
-          'when finishLogin succeeds then it does not insert login_verify rate limit rows for that request id',
+          'when finishLogin succeeds then it records a login_verify attempt for that request id',
           () async {
             final requestId = await fixture.passwordlessIdp.startLogin(
               session,
@@ -721,7 +721,7 @@ void main() {
                 session,
                 loginRequestId: requestId,
               ),
-              equals(0),
+              equals(1),
             );
           },
         );
@@ -810,6 +810,70 @@ void main() {
                     ),
               ),
             );
+          },
+        );
+      });
+
+      group('Given a provider that creates auth users during resolution', () {
+        late UuidValue createdAuthUserId;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          handleToUserId = {};
+          verificationCode = const Uuid().v4().toString();
+
+          fixture = PasswordlessIdpTestFixture(
+            config: PasswordlessIdpConfig(
+              secretHashPepper: 'pepper',
+              resolveAuthUserId:
+                  (
+                    final Session session, {
+                    required final String handle,
+                    required final String? handleType,
+                    required final Transaction? transaction,
+                  }) async {
+                    final authUser = await fixture.authUsers.create(
+                      session,
+                      transaction: transaction,
+                    );
+                    createdAuthUserId = authUser.id;
+                    return authUser.id;
+                  },
+              loginVerificationCodeGenerator: () => verificationCode,
+              sendLoginVerificationCode:
+                  (
+                    final Session session, {
+                    required final String handle,
+                    required final UuidValue requestId,
+                    required final String verificationCode,
+                    required final Transaction? transaction,
+                    required final String? handleType,
+                  }) async {
+                    deliveredVerificationCode = verificationCode;
+                  },
+            ),
+          );
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        test(
+          'when login is completed then it returns AuthSuccess for the created auth user',
+          () async {
+            final requestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+
+            final result = await fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            expect(result.authUserId, equals(createdAuthUserId));
           },
         );
       });
@@ -1166,7 +1230,7 @@ void main() {
         );
 
         test(
-          'when finishLogin is called after expiration with an invalid verification code then it throws PasswordlessLoginException with reason "expired"',
+          'when finishLogin is called after expiration with an invalid verification code then it throws PasswordlessLoginException with reason "invalid"',
           () async {
             await withClock(
               Clock.fixed(clock.now().add(const Duration(minutes: 2))),
@@ -1183,7 +1247,7 @@ void main() {
                     isA<PasswordlessLoginException>().having(
                       (final e) => e.reason,
                       'reason',
-                      PasswordlessLoginExceptionReason.expired,
+                      PasswordlessLoginExceptionReason.invalid,
                     ),
                   ),
                 );
@@ -1193,7 +1257,7 @@ void main() {
         );
 
         test(
-          'when finishLogin is called after expiration then it does not insert login_verify rate limit rows for that request id',
+          'when finishLogin is called after expiration then it records a login_verify attempt for that request id',
           () async {
             expect(
               await _countPasswordlessLoginVerifyAttempts(
@@ -1229,7 +1293,7 @@ void main() {
                 session,
                 loginRequestId: requestId,
               ),
-              equals(0),
+              equals(1),
             );
           },
         );
@@ -1256,7 +1320,7 @@ void main() {
               session,
               requestId,
             );
-            expect(row, isNotNull);
+            expect(row, isNull);
           },
         );
 
@@ -1288,7 +1352,7 @@ void main() {
               session,
               challengeId,
             );
-            expect(challenge, isNotNull);
+            expect(challenge, isNull);
           },
         );
       });
@@ -1635,5 +1699,5 @@ Future<int> _countPasswordlessLoginVerifyAttempts(
   where: (final t) =>
       t.domain.equals('passwordless') &
       t.source.equals('login_verify') &
-      t.nonce.equals(loginRequestId.uuid),
+      t.nonce.equals(SerializationManager.encode(loginRequestId)),
 );

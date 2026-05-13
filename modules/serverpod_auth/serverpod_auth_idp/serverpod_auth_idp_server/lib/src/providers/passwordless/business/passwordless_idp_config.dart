@@ -63,17 +63,17 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
   /// The lifetime of login verification codes.
   final Duration loginVerificationCodeLifetime;
 
-  /// Maximum number of recorded failed verification attempts allowed per login
-  /// request within [loginVerificationCodeLifetime].
+  /// Maximum number of recorded verification attempts allowed per login request
+  /// within [loginVerificationCodeLifetime].
   ///
-  /// Counting is keyed by the pending login request id. The stored attempt
-  /// count is compared to this limit before the rest of verification runs; when
-  /// already at the limit, no additional row is recorded.
+  /// Counting is keyed by the pending login request id. Unless already over the
+  /// limit, each call that enters the verification flow records one attempt
+  /// before the request is loaded and the code is checked.
   ///
-  /// A failed attempt is recorded when the code does not match, when the
-  /// request or challenge cannot be loaded, or when the request row is missing
-  /// after a matching code (for example concurrent completion). Successful
-  /// verification and failures due to expiration do not increase the count.
+  /// Successful verification, invalid codes, missing requests, expired
+  /// requests, and concurrent completion failures all count as verification
+  /// attempts. If the request is already over the limit, no additional row is
+  /// recorded and the login fails with too many attempts.
   final int loginVerificationCodeAllowedAttempts;
 
   /// Function to generate login verification codes.

@@ -11,15 +11,19 @@ import '../../../core.dart';
 /// different authentication flows that require secret challenges (e.g. email
 /// registration verification, password reset verification, passwordless login).
 ///
-/// The challenge flow follows a two-step verification pattern:
+/// The completion-token challenge flow follows a three-step pattern:
 /// 1. Create a challenge with a verification code sent to the user.
 /// 2. Verify the code and create a completion token.
 /// 3. Use the completion token to complete the operation.
+///
+/// Flows that complete immediately after verifying a challenge can instead use
+/// [verifyAndConsumeChallenge].
 /// {@endtemplate}
 class SecretChallengeUtil<T> {
   final Argon2HashUtil _hashUtil;
-  final SecretChallengeVerificationConfig<T> _verificationConfig;
-  final SecretChallengeCompletionConfig<T> _completionConfig;
+  final SecretChallengeVerificationConfig<T>? _verificationConfig;
+  final SecretChallengeCompletionConfig<T>? _completionConfig;
+  final SecretChallengeConsumptionConfig<T>? _consumptionConfig;
 
   /// Creates a new [SecretChallengeUtil] instance.
   ///
@@ -32,6 +36,16 @@ class SecretChallengeUtil<T> {
     required final SecretChallengeCompletionConfig<T> completionConfig,
   }) : _verificationConfig = verificationConfig,
        _completionConfig = completionConfig,
+       _consumptionConfig = null,
+       _hashUtil = hashUtil;
+
+  /// Creates a [SecretChallengeUtil] for one-step verification and consumption.
+  SecretChallengeUtil.forConsumption({
+    required final Argon2HashUtil hashUtil,
+    required final SecretChallengeConsumptionConfig<T> consumptionConfig,
+  }) : _verificationConfig = null,
+       _completionConfig = null,
+       _consumptionConfig = consumptionConfig,
        _hashUtil = hashUtil;
 
   /// Creates a new [SecretChallenge] from a verification code.
@@ -80,6 +94,9 @@ class SecretChallengeUtil<T> {
     required final Transaction transaction,
   }) async {
     final config = _verificationConfig;
+    if (config == null) {
+      throw StateError('SecretChallengeUtil has no verification config.');
+    }
 
     if (await config.hasTooManyAttempts(
       session,
@@ -131,6 +148,72 @@ class SecretChallengeUtil<T> {
     return completionTokenResult.encodedToken;
   }
 
+  /// Verifies a verification code and consumes the request in one step.
+  ///
+  /// Throws:
+  /// - [ChallengeRequestNotFoundException] if the request or challenge is not found.
+  /// - [ChallengeInvalidVerificationCodeException] if the verification code is invalid.
+  /// - [ChallengeExpiredException] if the request has expired.
+  /// - [ChallengeRateLimitExceededException] if the rate limit is exceeded.
+  ///
+  /// Returns the verified request after [SecretChallengeConsumptionConfig.consumeRequest]
+  /// succeeds.
+  Future<T> verifyAndConsumeChallenge(
+    final Session session, {
+    required final UuidValue requestId,
+    required final String verificationCode,
+    required final Transaction transaction,
+  }) async {
+    final config = _consumptionConfig;
+    if (config == null) {
+      throw StateError('SecretChallengeUtil has no consumption config.');
+    }
+
+    if (await config.hasTooManyAttempts(
+      session,
+      nonce: requestId,
+    )) {
+      throw ChallengeRateLimitExceededException();
+    }
+
+    final request = await config.getRequest(
+      session,
+      requestId,
+      transaction: transaction,
+    );
+    if (request == null) {
+      throw ChallengeRequestNotFoundException();
+    }
+
+    final challenge = config.getChallenge(request);
+    if (challenge == null) {
+      throw ChallengeRequestNotFoundException();
+    }
+
+    if (!await _validateVerificationCode(
+      verificationCode: verificationCode,
+      challenge: challenge,
+    )) {
+      throw ChallengeInvalidVerificationCodeException();
+    }
+
+    if (config.isExpired(request)) {
+      await config.onExpired(session, request);
+      throw ChallengeExpiredException();
+    }
+
+    final consumed = await config.consumeRequest(
+      session,
+      request,
+      transaction: transaction,
+    );
+    if (!consumed) {
+      throw ChallengeRequestNotFoundException();
+    }
+
+    return request;
+  }
+
   /// Validates a completion token with all protection mechanisms.
   ///
   /// This method handles the complete completion token validation flow including:
@@ -154,6 +237,9 @@ class SecretChallengeUtil<T> {
     required final Transaction transaction,
   }) async {
     final config = _completionConfig;
+    if (config == null) {
+      throw StateError('SecretChallengeUtil has no completion config.');
+    }
 
     final credentials = _decodeCompletionToken(completionToken);
 
