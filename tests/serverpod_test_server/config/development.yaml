@@ -17,14 +17,16 @@ webServer:
   publicScheme: http
 
 database:
-  host: localhost
+  # Use 127.0.0.1 so the VM client hits Docker-published ports on IPv4. Using
+  # "localhost" can prefer ::1 where nothing is listening (connection refused).
+  host: 127.0.0.1
   port: 8090
   name: serverpod_test
   user: postgres
 
 redis:
   enabled: true
-  host: localhost
+  host: 127.0.0.1
   port: 8091
 
 sessionLogs:

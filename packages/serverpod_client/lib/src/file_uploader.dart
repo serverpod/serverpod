@@ -29,6 +29,12 @@ class FileUploader {
   /// Uploads a file from a [Stream], returns true if successful. The [length]
   /// of the stream is optional, but if it's not provided for a multipart upload,
   /// the entire file will be buffered in memory.
+  ///
+  /// For **binary** uploads on **web** (dart2wasm / dart2js), omitting [length]
+  /// also buffers the stream first: browser HTTP stacks need a known body size
+  /// and do not reliably support chunked request bodies. Pass [length] when you
+  /// know the byte count to avoid an extra full-buffer copy and enable true
+  /// streaming.
   Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
       _upload(stream.toByteStream(), length);
 
@@ -52,24 +58,23 @@ class FileUploader {
 
           const isWeb =
               bool.fromEnvironment('dart.library.js_interop') ||
-              identical(0, 0.0);
-          http.StreamedResponse response;
-          if (isWeb) {
-            var request = http.Request(method, _uploadDescription.url);
-            request.headers.addAll(headers);
-            request.bodyBytes = await stream.toBytes();
-            response = await request.send();
-          } else {
-            var request = http.StreamedRequest(method, _uploadDescription.url);
-            request.headers.addAll(headers);
-            request.contentLength = length;
-
-            final (_, res) = await (
-              stream.pipe(request.sink),
-              request.send(),
-            ).wait;
-            response = res;
+              bool.fromEnvironment('dart.library.wasm');
+          var uploadStream = stream;
+          var uploadLength = length;
+          if (isWeb && length == null) {
+            final buffered = await stream.toBytes();
+            uploadStream = http.ByteStream.fromBytes(buffered);
+            uploadLength = buffered.length;
           }
+
+          var request = http.StreamedRequest(method, _uploadDescription.url);
+          request.headers.addAll(headers);
+          request.contentLength = uploadLength;
+
+          final (_, response) = await (
+            uploadStream.pipe(request.sink),
+            request.send(),
+          ).wait;
 
           await response.stream.drain();
 
