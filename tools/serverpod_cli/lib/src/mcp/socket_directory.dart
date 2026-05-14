@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 /// Shared directory under the system temp folder where every running
@@ -15,37 +16,12 @@ final serverpodMcpSocketDir = p.join(
   'serverpod',
 );
 
-/// Ensure [serverpodMcpSocketDir] exists, creating it if necessary.
-///
-/// On POSIX, [Directory.systemTemp] resolves to `/tmp` when `TMPDIR` is
-/// unset (typical Linux desktop). A plain `Directory.createSync()` calls
-/// `mkdir(2)`, which derives the new directory's mode from `0777 & ~umask`.
-/// With the typical desktop umask of 0022 that yields mode 0755, leaving
-/// the directory (and the sockets inside it) world-readable. Unix domain
-/// sockets accept any client that can `connect(2)` to the path, so any
-/// other local user could attach to a developer's `serverpod start --watch`
-/// MCP socket and call `apply_migrations`.
-///
-/// `Directory.createTempSync()` is specified to call `mkdtemp(3)`, which
-/// always creates with mode 0700. We then `rename(2)` to the canonical
-/// path: the syscall preserves the inode (and therefore the mode) and
-/// avoids a separate `chmod` step that Dart's `Directory` API does not
-/// expose without `Process.runSync('chmod', ...)`. On `EEXIST` we lose the
-/// race against another runner that created the dir first, which is fine.
-///
-/// macOS and Windows already give each user a private temp dir, but this
-/// path hardens Linux without any platform-specific calls.
+/// Ensure [serverpodMcpSocketDir] exists with mode 0700 on POSIX (so
+/// other local users can't `connect(2)` to a developer's MCP socket and
+/// invoke `apply_migrations`). Delegates to the shared mkdtemp+rename
+/// helper.
 void ensureServerpodMcpSocketDir() {
-  final dir = Directory(serverpodMcpSocketDir);
-  if (dir.existsSync()) return;
-
-  final temp = Directory.systemTemp.createTempSync('serverpod-mcp-init-');
-  try {
-    temp.renameSync(serverpodMcpSocketDir);
-  } on FileSystemException {
-    // Lost the race against another runner that created the dir first.
-    temp.deleteSync();
-  }
+  ensureSecureDirectorySync(serverpodMcpSocketDir);
 }
 
 /// Build the canonical socket path for a `serverpod start --watch` instance.
