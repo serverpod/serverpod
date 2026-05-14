@@ -424,7 +424,12 @@ class WatchSession {
     }
     return _chain(() async {
       if (_compiler == null) {
-        await _reloadOrRestart(null);
+        // Preserve the historical contract: forceReload with no compiler
+        // tries hot reload on the existing pod and surfaces the result
+        // without falling through to a restart. The file-change path
+        // _does_ fall through (via _reloadOrRestart) - those are
+        // different intents.
+        await _reload(null);
       } else {
         await _compileAndReload(
           dartFiles: const {},

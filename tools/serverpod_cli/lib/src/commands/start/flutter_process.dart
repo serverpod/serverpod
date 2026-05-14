@@ -65,6 +65,12 @@ class FlutterProcess {
   /// `app.progress` messages from the Flutter daemon in between.
   final void Function(String stage)? _onProgress;
 
+  /// Test-only override of the spawn args. When non-null, replaces the
+  /// default `['run', '--machine', '-d', <device>, ...extraArgs]` list.
+  /// Lets unit tests target a Dart shim that emits hand-crafted machine
+  /// JSON without needing a Flutter SDK on PATH.
+  final List<String>? _argsOverrideForTesting;
+
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
   StreamSubscription<List<int>>? _stdoutBytesSub;
@@ -84,7 +90,11 @@ class FlutterProcess {
   String? _vmServiceUri;
   String? _flutterAppUrl;
 
-  final Completer<String> _vmServiceUriCompleter = Completer<String>();
+  // Completes with the http VM service URI once `app.debugPort` arrives,
+  // or with `null` if the process exits first. Using a nullable result
+  // (rather than completing with an error) keeps the future safely
+  // awaitable even when nothing called connectToVmService().
+  final Completer<String?> _vmServiceUriCompleter = Completer<String?>();
   final Completer<int> _exitCodeCompleter = Completer<int>();
   final Completer<void> _vmServiceReady = Completer<void>();
 
@@ -100,6 +110,7 @@ class FlutterProcess {
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    @visibleForTesting List<String>? argsOverrideForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
        _flutterExecutable = flutterExecutable,
        _device = device,
@@ -108,7 +119,8 @@ class FlutterProcess {
        _startupTimeout = startupTimeout,
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr;
+       _stderr = stderrSink ?? stderr,
+       _argsOverrideForTesting = argsOverrideForTesting;
 
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
@@ -141,7 +153,9 @@ class FlutterProcess {
       throw StateError('FlutterProcess is already running.');
     }
 
-    final args = <String>['run', '--machine', '-d', _device, ..._extraArgs];
+    final args =
+        _argsOverrideForTesting ??
+        <String>['run', '--machine', '-d', _device, ..._extraArgs];
 
     if (_vmServiceInfoFile != null) {
       // Clear any stale info file from a prior run so consumers (IDE,
@@ -181,23 +195,45 @@ class FlutterProcess {
       );
     }
 
-    // Tee raw stdout/stderr bytes to the configured sinks so the TUI's
-    // Flutter tab still gets full output, while a parallel decoded
-    // line-stream feeds the --machine JSON parser.
-    _stdoutBytesSub = process.stdout.listen(_stdout.add);
+    // process.stdout is single-subscription, so fan out from one listen:
+    // forward raw bytes to the configured sink (TUI Flutter tab keeps
+    // full output) AND feed line-wise UTF-8 through the --machine JSON
+    // parser.
+    final stdoutLines = StreamController<String>();
+    const lineSplitter = LineSplitter();
+    final lineBuffer = StringBuffer();
+    _stdoutBytesSub = process.stdout.listen(
+      (data) {
+        _stdout.add(data);
+        lineBuffer.write(utf8.decode(data, allowMalformed: true));
+        // Drain only complete lines; keep the tail in the buffer.
+        final bufferStr = lineBuffer.toString();
+        final lastNewline = bufferStr.lastIndexOf('\n');
+        if (lastNewline == -1) return;
+        final ready = bufferStr.substring(0, lastNewline);
+        lineBuffer.clear();
+        lineBuffer.write(bufferStr.substring(lastNewline + 1));
+        for (final line in lineSplitter.convert(ready)) {
+          stdoutLines.add(line);
+        }
+      },
+      onDone: () {
+        if (lineBuffer.isNotEmpty) {
+          for (final line in lineSplitter.convert(lineBuffer.toString())) {
+            stdoutLines.add(line);
+          }
+          lineBuffer.clear();
+        }
+        stdoutLines.close();
+      },
+    );
+    _machineLinesSub = stdoutLines.stream.listen(handleMachineLine);
     _stderrBytesSub = process.stderr.listen(_stderr.add);
-
-    _machineLinesSub = process.stdout
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .listen(handleMachineLine);
 
     unawaited(
       process.exitCode.then((code) async {
         if (!_vmServiceUriCompleter.isCompleted) {
-          _vmServiceUriCompleter.completeError(
-            StateError('flutter exited before publishing VM service URI'),
-          );
+          _vmServiceUriCompleter.complete(null);
         }
         if (!_exitCodeCompleter.isCompleted) {
           _exitCodeCompleter.complete(code);
@@ -214,19 +250,22 @@ class FlutterProcess {
   Future<void> connectToVmService() async {
     _onProgress?.call('connecting');
 
-    final String httpUri;
+    final String? maybeUri;
     try {
-      httpUri = await _vmServiceUriCompleter.future.timeout(_startupTimeout);
+      maybeUri = await _vmServiceUriCompleter.future.timeout(_startupTimeout);
     } on TimeoutException {
       log.warning(
         'Flutter did not publish a VM service URI within '
         '${_startupTimeout.inSeconds}s. Reload via VM service is unavailable.',
       );
       return;
-    } catch (e) {
-      log.warning('Flutter VM service URI not available: $e');
+    }
+    if (maybeUri == null) {
+      // Process exited before publishing - silent return, the exit
+      // listener has already wound things down.
       return;
     }
+    final httpUri = maybeUri;
     _vmServiceUri = httpUri;
 
     if (_vmServiceInfoFile != null) {
