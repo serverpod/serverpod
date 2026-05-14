@@ -47,7 +47,7 @@ void main() {
 
           var shortened = shortestPathRelativeTo(run.path, from: pgData.path);
 
-          expect(shortened, '../run');
+          expect(shortened, p.join('..', 'run'));
         } finally {
           tmp.deleteSync(recursive: true);
         }
