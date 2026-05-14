@@ -20,7 +20,7 @@ class AttachedSupervisor implements SupervisedProcess {
   final File _pidFile;
   final File _logFile;
 
-  bool _stopped = false;
+  Future<void>? _stopFuture;
 
   AttachedSupervisor._({
     required this.identity,
@@ -70,11 +70,11 @@ class AttachedSupervisor implements SupervisedProcess {
   }
 
   @override
-  int? get pid => _stopped ? null : identity.pid;
+  int? get pid => _stopFuture != null ? null : identity.pid;
 
   @override
   bool get isRunning {
-    if (_stopped) return false;
+    if (_stopFuture != null) return false;
     return verifyIdentity(identity) == IdentityMatch.matchesOurs;
   }
 
@@ -90,10 +90,10 @@ class AttachedSupervisor implements SupervisedProcess {
   }
 
   @override
-  Future<void> stop({Duration timeout = const Duration(seconds: 10)}) async {
-    if (_stopped) return;
-    _stopped = true;
+  Future<void> stop({Duration timeout = const Duration(seconds: 10)}) =>
+      _stopFuture ??= _stop(timeout);
 
+  Future<void> _stop(Duration timeout) async {
     Process.killPid(identity.pid, ProcessSignal.sigint);
 
     var halfway = timeout ~/ 2;
