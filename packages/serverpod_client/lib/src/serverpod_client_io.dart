@@ -24,6 +24,7 @@ class ServerpodClientRequestDelegateImpl
     required this.connectionTimeout,
     required this.serializationManager,
     dynamic securityContext,
+    bool withCredentials = false,
   }) {
     assert(
       securityContext == null || securityContext is SecurityContext,

@@ -230,6 +230,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    bool withCredentials = false,
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
@@ -242,6 +243,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       connectionTimeout: this.connectionTimeout,
       serializationManager: serializationManager,
       securityContext: securityContext,
+      withCredentials: withCredentials,
     );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =

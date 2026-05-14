@@ -1087,6 +1087,18 @@ class LibraryGenerator {
                             ..isNullable = true,
                         ),
                     ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'withCredentials'
+                        ..named = true
+                        ..type = TypeReference(
+                          (t) => t
+                            ..symbol = 'bool'
+                            ..url = 'dart:core'
+                            ..isNullable = false,
+                        )
+                        ..defaultTo = literalFalse.code,
+                    ),
                   ])
                   ..initializers.add(
                     refer('super')
@@ -1106,6 +1118,7 @@ class LibraryGenerator {
                             'disconnectStreamsOnLostInternetConnection': refer(
                               'disconnectStreamsOnLostInternetConnection',
                             ),
+                            'withCredentials': refer('withCredentials'),
                           },
                         )
                         .code,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
@@ -24,8 +24,9 @@ class ServerpodClientRequestDelegateImpl
     required this.connectionTimeout,
     required this.serializationManager,
     dynamic securityContext,
+    bool withCredentials = false,
   }) {
-    _httpClient = http.Client();
+    _httpClient = BrowserClient()..withCredentials = withCredentials;
   }
 
   @override
