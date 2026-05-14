@@ -1,9 +1,9 @@
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ColumnDefinitionBuilder {
   String _name;
+  String? _fieldName;
   ColumnType _columnType;
   bool _isNullable;
   String? _columnDefault;
@@ -20,6 +20,7 @@ class ColumnDefinitionBuilder {
   ColumnDefinition build() {
     return ColumnDefinition(
       name: _name,
+      fieldName: _fieldName,
       columnType: _columnType,
       isNullable: _isNullable,
       columnDefault: _columnDefault,
@@ -28,11 +29,15 @@ class ColumnDefinitionBuilder {
     );
   }
 
+  ColumnDefinitionBuilder withFieldName(String? fieldName) {
+    _fieldName = fieldName;
+    return this;
+  }
+
   ColumnDefinitionBuilder withIdColumn(
     String tableName, {
     SupportedIdType? type,
     bool nullableModelField = false,
-    DatabaseDialect dialect = DatabaseDialect.postgres,
   }) {
     var idType = type ?? SupportedIdType.int;
 

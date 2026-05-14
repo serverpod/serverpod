@@ -51,7 +51,7 @@ class _TableWithManyRelation extends Table<int?> {
 }
 
 void main() {
-  ValueEncoder.set(PostgresValueEncoder());
+  ValueEncoder.set(const PostgresValueEncoder());
 
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -153,10 +153,7 @@ void main() {
     test(
       'when query with single order by is built then output is single order by query.',
       () {
-        Order order = Order(
-          column: ColumnString('id', citizenTable),
-          orderDescending: false,
-        );
+        var order = ColumnString('id', citizenTable).asc();
 
         var query = SelectQueryBuilder(
           table: citizenTable,
@@ -173,18 +170,9 @@ void main() {
       'when query with multiple order by is built then output is query with multiple order by requirements.',
       () {
         var orders = [
-          Order(
-            column: ColumnString('id', citizenTable),
-            orderDescending: false,
-          ),
-          Order(
-            column: ColumnString('name', citizenTable),
-            orderDescending: true,
-          ),
-          Order(
-            column: ColumnString('age', citizenTable),
-            orderDescending: false,
-          ),
+          ColumnString('id', citizenTable).asc(),
+          ColumnString('name', citizenTable).desc(),
+          ColumnString('age', citizenTable).asc(),
         ];
 
         var query = SelectQueryBuilder(
@@ -205,10 +193,7 @@ void main() {
           tableName: citizenTable.tableName,
           relationAlias: 'friends',
         );
-        Order order = Order(
-          column: relationTable.manyRelation.count(),
-          orderDescending: false,
-        );
+        var order = relationTable.manyRelation.count().asc();
 
         var query = SelectQueryBuilder(
           table: relationTable,
@@ -228,10 +213,9 @@ void main() {
           tableName: citizenTable.tableName,
           relationAlias: 'friends',
         );
-        Order order = Order(
-          column: relationTable.manyRelation.count((t) => t.id.equals(5)),
-          orderDescending: false,
-        );
+        var order = relationTable.manyRelation
+            .count((t) => t.id.equals(5))
+            .asc();
 
         var query = SelectQueryBuilder(
           table: citizenTable,
@@ -365,16 +349,11 @@ void main() {
             ).equals('Serverpod'),
           )
           .withOrderBy([
-            Order(
-              column: ColumnString('id', citizenTable),
-              orderDescending: true,
-            ),
-            Order(
-              column: ColumnCount(
-                manyRelationTable.id.equals(5),
-                manyRelationTable.id,
-              ),
-            ),
+            ColumnString('id', citizenTable).desc(),
+            ColumnCount(
+              manyRelationTable.id.equals(5),
+              manyRelationTable.id,
+            ).asc(),
           ])
           .withLimit(10)
           .withOffset(5)
@@ -413,7 +392,7 @@ void main() {
       () {
         var queryBuilder = SelectQueryBuilder(
           table: citizenTable,
-        ).withOrderBy([Order(column: ColumnString('name', companyTable))]);
+        ).withOrderBy([ColumnString('name', companyTable).asc()]);
 
         expect(
           () => queryBuilder.build(),
@@ -467,9 +446,7 @@ void main() {
           citizenTable.id,
         );
         var queryBuilder = SelectQueryBuilder(table: citizenTable).withOrderBy([
-          Order(
-            column: countColumn,
-          ),
+          countColumn.asc(),
         ]);
 
         expect(
@@ -507,8 +484,8 @@ void main() {
           relationTable.id,
         );
         var query = SelectQueryBuilder(table: citizenTable).withOrderBy([
-          Order(column: countColumn),
-          Order(column: countColumn, orderDescending: true),
+          countColumn.asc(),
+          countColumn.desc(),
         ]).build();
 
         expect(
@@ -531,14 +508,8 @@ void main() {
         );
 
         List<Order> orderByList = [
-          Order(
-            column: friendsRelationTable.manyRelation.count(),
-            orderDescending: false,
-          ),
-          Order(
-            column: enemiesRelationTable.manyRelation.count(),
-            orderDescending: false,
-          ),
+          friendsRelationTable.manyRelation.count().asc(),
+          enemiesRelationTable.manyRelation.count().asc(),
         ];
 
         var query = SelectQueryBuilder(
@@ -860,7 +831,7 @@ void main() {
             .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
             .withReturn(Returning.all)
             .withOrderBy([
-              Order(column: ColumnString('id', citizenTable)),
+              ColumnString('id', citizenTable).asc(),
             ])
             .build();
 
@@ -1117,6 +1088,38 @@ void main() {
       });
     });
 
+    test(
+      'when building with lock mode, lock behavior noWait and a where clause that adds a left join '
+      'then the query contains OF clause before NOWAIT',
+      () {
+        var companyTbl = Table<int?>(tableName: 'company');
+        var relationTable = Table<int?>(
+          tableName: companyTbl.tableName,
+          tableRelation: TableRelation([
+            TableRelationEntry(
+              relationAlias: 'company',
+              field: ColumnInt('companyId', table),
+              foreignField: ColumnInt('id', companyTbl),
+            ),
+          ]),
+        );
+
+        var query = SelectQueryBuilder(table: table)
+            .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
+            .withLockMode(LockMode.forUpdate, LockBehavior.noWait)
+            .build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" '
+          'LEFT JOIN "company" AS "citizen_company_company" '
+          'ON "citizen"."companyId" = "citizen_company_company"."id" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' '
+          'FOR UPDATE OF "citizen" NOWAIT',
+        );
+      },
+    );
+
     group('when building with lock behavior skipLocked', () {
       test('then query contains SKIP LOCKED suffix', () {
         var query = SelectQueryBuilder(
@@ -1144,10 +1147,42 @@ void main() {
       });
     });
 
+    test(
+      'when building with lock mode and a where clause that adds a left join '
+      'then lock clause uses FOR UPDATE OF base table.',
+      () {
+        var companyTbl = Table<int?>(tableName: 'company');
+        var relationTable = Table<int?>(
+          tableName: companyTbl.tableName,
+          tableRelation: TableRelation([
+            TableRelationEntry(
+              relationAlias: 'company',
+              field: ColumnInt('companyId', table),
+              foreignField: ColumnInt('id', companyTbl),
+            ),
+          ]),
+        );
+
+        var query = SelectQueryBuilder(table: table)
+            .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
+            .withLockMode(LockMode.forUpdate)
+            .build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" '
+          'LEFT JOIN "company" AS "citizen_company_company" '
+          'ON "citizen"."companyId" = "citizen_company_company"."id" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' '
+          'FOR UPDATE OF "citizen"',
+        );
+      },
+    );
+
     group('when building with lock mode and order by', () {
       test('then lock clause appears after order by', () {
         var query = SelectQueryBuilder(table: table)
-            .withOrderBy([Order(column: ColumnString('name', table))])
+            .withOrderBy([ColumnString('name', table).asc()])
             .withLockMode(LockMode.forUpdate)
             .build();
 
@@ -1174,7 +1209,7 @@ void main() {
     group('when building with lock mode, order by, and limit', () {
       test('then lock clause appears between order by and limit', () {
         var query = SelectQueryBuilder(table: table)
-            .withOrderBy([Order(column: ColumnString('name', table))])
+            .withOrderBy([ColumnString('name', table).asc()])
             .withLimit(10)
             .withLockMode(LockMode.forUpdate, LockBehavior.noWait)
             .build();

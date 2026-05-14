@@ -1,0 +1,5 @@
+enum: ByNameEnum
+serialized: byName
+values:
+  - byName1
+  - byName2

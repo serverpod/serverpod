@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -106,6 +106,7 @@ abstract class AnonymousAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     AnonymousAccountInclude? include,
@@ -115,7 +116,8 @@ abstract class AnonymousAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(AnonymousAccount.t),
       include: include,
     );
@@ -254,6 +256,7 @@ class AnonymousAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -301,6 +304,7 @@ class AnonymousAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -312,7 +316,8 @@ class AnonymousAccountRepository {
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -344,6 +349,7 @@ class AnonymousAccountRepository {
     _i1.WhereExpressionBuilder<AnonymousAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -355,7 +361,8 @@ class AnonymousAccountRepository {
       where: where?.call(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -415,6 +422,69 @@ class AnonymousAccountRepository {
   }) async {
     return session.db.insertRow<AnonymousAccount>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [AnonymousAccount]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [AnonymousAccount]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<AnonymousAccount>> upsert(
+    _i1.DatabaseSession session,
+    List<AnonymousAccount> rows, {
+    required _i1.ColumnSelections<AnonymousAccountTable> conflictColumns,
+    _i1.ColumnSelections<AnonymousAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AnonymousAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<AnonymousAccount>(
+      rows,
+      conflictColumns: conflictColumns(AnonymousAccount.t),
+      updateColumns: updateColumns?.call(AnonymousAccount.t),
+      updateWhere: updateWhere?.call(AnonymousAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [AnonymousAccount] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [AnonymousAccount] will have its `id` field set.
+  Future<AnonymousAccount?> upsertRow(
+    _i1.DatabaseSession session,
+    AnonymousAccount row, {
+    required _i1.ColumnSelections<AnonymousAccountTable> conflictColumns,
+    _i1.ColumnSelections<AnonymousAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AnonymousAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<AnonymousAccount>(
+      row,
+      conflictColumns: conflictColumns(AnonymousAccount.t),
+      updateColumns: updateColumns?.call(AnonymousAccount.t),
+      updateWhere: updateWhere?.call(AnonymousAccount.t),
       transaction: transaction,
     );
   }
@@ -480,6 +550,7 @@ class AnonymousAccountRepository {
     int? offset,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -490,7 +561,8 @@ class AnonymousAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -506,6 +578,7 @@ class AnonymousAccountRepository {
     _i1.DatabaseSession session,
     List<AnonymousAccount> rows, {
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -514,7 +587,8 @@ class AnonymousAccountRepository {
       rows,
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -539,6 +613,7 @@ class AnonymousAccountRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AnonymousAccountTable> where,
     _i1.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -547,7 +622,8 @@ class AnonymousAccountRepository {
       where: where(AnonymousAccount.t),
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

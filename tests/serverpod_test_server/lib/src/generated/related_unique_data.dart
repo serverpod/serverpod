@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -100,6 +100,7 @@ abstract class RelatedUniqueData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
@@ -109,7 +110,8 @@ abstract class RelatedUniqueData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
     );
@@ -243,6 +245,7 @@ class RelatedUniqueDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -290,6 +293,7 @@ class RelatedUniqueDataRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -301,7 +305,8 @@ class RelatedUniqueDataRepository {
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -333,6 +338,7 @@ class RelatedUniqueDataRepository {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -344,7 +350,8 @@ class RelatedUniqueDataRepository {
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -404,6 +411,69 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.db.insertRow<RelatedUniqueData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [RelatedUniqueData]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [RelatedUniqueData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<RelatedUniqueData>> upsert(
+    _i1.DatabaseSession session,
+    List<RelatedUniqueData> rows, {
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<RelatedUniqueData>(
+      rows,
+      conflictColumns: conflictColumns(RelatedUniqueData.t),
+      updateColumns: updateColumns?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [RelatedUniqueData] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [RelatedUniqueData] will have its `id` field set.
+  Future<RelatedUniqueData?> upsertRow(
+    _i1.DatabaseSession session,
+    RelatedUniqueData row, {
+    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RelatedUniqueData>(
+      row,
+      conflictColumns: conflictColumns(RelatedUniqueData.t),
+      updateColumns: updateColumns?.call(RelatedUniqueData.t),
+      updateWhere: updateWhere?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
@@ -469,6 +539,7 @@ class RelatedUniqueDataRepository {
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -479,7 +550,8 @@ class RelatedUniqueDataRepository {
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -495,6 +567,7 @@ class RelatedUniqueDataRepository {
     _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -503,7 +576,8 @@ class RelatedUniqueDataRepository {
       rows,
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -528,6 +602,7 @@ class RelatedUniqueDataRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -536,7 +611,8 @@ class RelatedUniqueDataRepository {
       where: where(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

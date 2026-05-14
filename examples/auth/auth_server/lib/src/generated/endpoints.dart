@@ -508,6 +508,37 @@ class Endpoints extends _i1.EndpointDispatch {
                     accessToken: params['accessToken'],
                   ),
         ),
+        'loginWithCode': _i1.MethodConnector(
+          name: 'loginWithCode',
+          params: {
+            'code': _i1.ParameterDescription(
+              name: 'code',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'codeVerifier': _i1.ParameterDescription(
+              name: 'codeVerifier',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'redirectUri': _i1.ParameterDescription(
+              name: 'redirectUri',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['googleIdp'] as _i8.GoogleIdpEndpoint)
+                  .loginWithCode(
+                    session,
+                    code: params['code'],
+                    codeVerifier: params['codeVerifier'],
+                    redirectUri: params['redirectUri'],
+                  ),
+        ),
         'hasAccount': _i1.MethodConnector(
           name: 'hasAccount',
           params: {},

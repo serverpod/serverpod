@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -100,6 +100,7 @@ abstract class CourseUuid
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     CourseUuidInclude? include,
@@ -109,7 +110,8 @@ abstract class CourseUuid
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CourseUuid.t),
       include: include,
     );
@@ -246,6 +248,7 @@ class CourseUuidIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -299,6 +302,7 @@ class CourseUuidRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -310,7 +314,8 @@ class CourseUuidRepository {
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -342,6 +347,7 @@ class CourseUuidRepository {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -353,7 +359,8 @@ class CourseUuidRepository {
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -417,6 +424,69 @@ class CourseUuidRepository {
     );
   }
 
+  /// Upserts all [CourseUuid]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CourseUuid]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CourseUuid>> upsert(
+    _i1.DatabaseSession session,
+    List<CourseUuid> rows, {
+    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
+    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CourseUuid>(
+      rows,
+      conflictColumns: conflictColumns(CourseUuid.t),
+      updateColumns: updateColumns?.call(CourseUuid.t),
+      updateWhere: updateWhere?.call(CourseUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CourseUuid] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CourseUuid] will have its `id` field set.
+  Future<CourseUuid?> upsertRow(
+    _i1.DatabaseSession session,
+    CourseUuid row, {
+    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
+    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CourseUuid>(
+      row,
+      conflictColumns: conflictColumns(CourseUuid.t),
+      updateColumns: updateColumns?.call(CourseUuid.t),
+      updateWhere: updateWhere?.call(CourseUuid.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [CourseUuid]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
@@ -476,6 +546,7 @@ class CourseUuidRepository {
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -486,7 +557,8 @@ class CourseUuidRepository {
       offset: offset,
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -502,6 +574,7 @@ class CourseUuidRepository {
     _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -510,7 +583,8 @@ class CourseUuidRepository {
       rows,
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -535,6 +609,7 @@ class CourseUuidRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -543,7 +618,8 @@ class CourseUuidRepository {
       where: where(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -98,6 +98,7 @@ abstract class UserNoteCollectionWithALongName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     UserNoteCollectionWithALongNameInclude? include,
@@ -107,7 +108,8 @@ abstract class UserNoteCollectionWithALongName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
       include: include,
     );
@@ -255,6 +257,7 @@ class UserNoteCollectionWithALongNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -310,6 +313,7 @@ class UserNoteCollectionWithALongNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -321,7 +325,8 @@ class UserNoteCollectionWithALongNameRepository {
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -353,6 +358,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -364,7 +370,8 @@ class UserNoteCollectionWithALongNameRepository {
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -424,6 +431,73 @@ class UserNoteCollectionWithALongNameRepository {
   }) async {
     return session.db.insertRow<UserNoteCollectionWithALongName>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [UserNoteCollectionWithALongName]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [UserNoteCollectionWithALongName]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<UserNoteCollectionWithALongName>> upsert(
+    _i1.DatabaseSession session,
+    List<UserNoteCollectionWithALongName> rows, {
+    required _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>
+    conflictColumns,
+    _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<UserNoteCollectionWithALongName>(
+      rows,
+      conflictColumns: conflictColumns(UserNoteCollectionWithALongName.t),
+      updateColumns: updateColumns?.call(UserNoteCollectionWithALongName.t),
+      updateWhere: updateWhere?.call(UserNoteCollectionWithALongName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [UserNoteCollectionWithALongName] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [UserNoteCollectionWithALongName] will have its `id` field set.
+  Future<UserNoteCollectionWithALongName?> upsertRow(
+    _i1.DatabaseSession session,
+    UserNoteCollectionWithALongName row, {
+    required _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>
+    conflictColumns,
+    _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<UserNoteCollectionWithALongName>(
+      row,
+      conflictColumns: conflictColumns(UserNoteCollectionWithALongName.t),
+      updateColumns: updateColumns?.call(UserNoteCollectionWithALongName.t),
+      updateWhere: updateWhere?.call(UserNoteCollectionWithALongName.t),
       transaction: transaction,
     );
   }
@@ -494,6 +568,7 @@ class UserNoteCollectionWithALongNameRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -504,7 +579,8 @@ class UserNoteCollectionWithALongNameRepository {
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -520,6 +596,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.DatabaseSession session,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -528,7 +605,8 @@ class UserNoteCollectionWithALongNameRepository {
       rows,
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -554,6 +632,7 @@ class UserNoteCollectionWithALongNameRepository {
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
     where,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
@@ -562,7 +641,8 @@ class UserNoteCollectionWithALongNameRepository {
       where: where(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

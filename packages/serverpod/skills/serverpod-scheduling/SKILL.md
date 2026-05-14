@@ -1,11 +1,11 @@
 ---
 name: serverpod-scheduling
-description: Schedule future work in Serverpod — FutureCall, callWithDelay, callAtTime, recurring tasks, cancellation. Use when scheduling delayed or recurring tasks.
+description: Schedule future work in Serverpod — FutureCall, callWithDelay, callAtTime, recurring tasks, cancellation. Use when scheduling one-off or recurring tasks.
 ---
 
 # Serverpod Scheduling (Future Calls)
 
-Future calls run at a specified time, are stored in the database, and survive restarts. Each call executes once across all instances. Not available in serverless mode.
+Future calls run at a specified time, are stored in the database, and survive restarts. Each call is claimed for one execution across the cluster. Future calls require database support; execution is started by monolith/maintenance roles, not serverless role.
 
 ## Defining a future call
 
@@ -50,21 +50,19 @@ await pod.futureCalls
     .callWithDelay(const Duration(hours: 1), identifier: 'my-job-id')
     .example.doWork();
 
+// Recurring task from `Duration` interval with an optional start time
+await pod.futureCalls
+    .callRecurring()
+    .every(const Duration(hours: 1), start: DateTime.now())
+    .example.doWork();
+
+// Recurring task from `cron` expression
+await pod.futureCalls
+    .callRecurring()
+    .cron("0 * * * *")
+    .example.doWork();
+
 await pod.futureCalls.cancel('my-job-id');  // Cancels all with that identifier
-```
-
-## Recurring tasks
-
-Have the future call reschedule itself:
-
-```dart
-Future<void> doWork(Session session) async {
-  await _actualWork(session);
-  // Reschedule next run
-  await session.serverpod.futureCalls
-      .callWithDelay(const Duration(minutes: 20))
-      .example.doWork();
-}
 ```
 
 Handle failures inside the call and reschedule if the work must eventually succeed.
@@ -74,6 +72,8 @@ Handle failures inside the call and reschedule if the work must eventually succe
 ```yaml
 futureCallExecutionEnabled: true  # SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED
 futureCall:
-  concurrencyLimit: 5             # SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT (default 1, negative=unlimited)
+  concurrencyLimit: 5             # SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT (default 1, <1 maps to unlimited and is not recommended)
   scanInterval: 2000              # SERVERPOD_FUTURE_CALL_SCAN_INTERVAL (ms, default 5000)
 ```
+
+Keep future calls idempotent. A call should tolerate retries or restarts without duplicating irreversible side effects.

@@ -3,7 +3,7 @@ import '../database.dart';
 
 /// Function type for logging a query.
 typedef LogQueryFunction =
-    Future<void> Function({
+    void Function({
       required String query,
       required Duration duration,
       required int? numRowsAffected,

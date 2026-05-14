@@ -45,6 +45,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -316,6 +317,14 @@ void main() {
           },
         );
 
+        test('has a root .gitignore that ignores workspace .dart_tool', () {
+          final rootGitignore = File(
+            path.join(tempPath, projectName, '.gitignore'),
+          );
+          expect(rootGitignore.existsSync(), isTrue);
+          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
+        });
+
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
             path.join(tempPath, serverDir, 'pubspec.yaml'),
@@ -337,6 +346,151 @@ void main() {
             reason: 'Root pubspec.lock file does not exist.',
           );
         });
+
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final genericConfig = '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Antigravity', () {
+            final antigravity = File(
+              path.join(
+                tempPath,
+                projectName,
+                '.gemini/antigravity/mcp_config.json',
+              ),
+            );
+            expect(antigravity.existsSync(), isTrue);
+            expect(
+              antigravity.readAsStringSync(),
+              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
+            );
+          });
+
+          test('for Codex', () {
+            final codex = File(
+              path.join(tempPath, projectName, '.codex/config.toml'),
+            );
+            expect(codex.existsSync(), isTrue);
+            expect(
+              codex.readAsStringSync(),
+              '''
+[mcp_servers.serverpod]
+command = "serverpod"
+args = ["mcp"]
+
+[mcp_servers.dart_mcp]
+command = "dart"
+args = ["mcp-server", "--force-roots-fallback"]
+''',
+            );
+          });
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VSCode', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
       });
     });
   });
@@ -357,6 +511,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,

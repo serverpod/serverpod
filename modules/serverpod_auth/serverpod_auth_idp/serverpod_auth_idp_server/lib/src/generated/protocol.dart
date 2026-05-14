@@ -106,7 +106,7 @@ export 'providers/passwordless/models/exceptions/passwordless_login_exception.da
 export 'providers/passwordless/models/exceptions/passwordless_login_exception_reason.dart';
 export 'providers/passwordless/models/passwordless_login_request.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;

@@ -1,0 +1,7 @@
+class: City
+table: city
+database: all
+fields:
+  name: String
+  citizens: List<Person>?, relation
+  organizations: List<Organization>?, relation(name=city_org)

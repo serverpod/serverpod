@@ -14,7 +14,7 @@ abstract interface class DatabasePoolManager {
   DateTime? lastDatabaseOperationTime;
 
   /// Access to the serialization manager.
-  SerializationManagerServer get serializationManager;
+  DatabaseSerializationManager get serializationManager;
 
   /// The encoder used to encode objects for storing in the database.
   ValueEncoder get encoder;
@@ -22,10 +22,14 @@ abstract interface class DatabasePoolManager {
   /// Starts the database pool.
   void start();
 
+  /// Resolves once async initialisation kicked off by [start] has completed.
+  Future<void> get started;
+
   /// Closes the database pool.
   Future<void> stop();
 
   /// Tests the database connection.
+  ///
   /// Throws an exception if the connection is not working.
   Future<bool> testConnection();
 }

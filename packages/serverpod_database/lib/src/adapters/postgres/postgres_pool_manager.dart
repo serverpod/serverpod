@@ -18,12 +18,13 @@ class PostgresPoolManager implements DatabasePoolManager {
   DateTime? lastDatabaseOperationTime;
 
   /// Database configuration.
-  final DatabaseConfig config;
+  final PostgresDatabaseConfig config;
 
-  late SerializationManagerServer _serializationManager;
+  late DatabaseSerializationManager _serializationManager;
 
   @override
-  SerializationManagerServer get serializationManager => _serializationManager;
+  DatabaseSerializationManager get serializationManager =>
+      _serializationManager;
 
   pg.Pool? _pgPool;
 
@@ -42,12 +43,12 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   @override
-  PostgresValueEncoder get encoder => PostgresValueEncoder();
+  PostgresValueEncoder get encoder => const PostgresValueEncoder();
 
   /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
   /// when starting the [Server].
   PostgresPoolManager(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
   ) : _poolSettings = pg.PoolSettings(
@@ -97,6 +98,12 @@ class PostgresPoolManager implements DatabasePoolManager {
       settings: _poolSettings,
     );
   }
+
+  /// Postgres [start] is synchronous - the pool is fully ready as soon
+  /// as [pg.Pool.withEndpoints] returns - so this is just a resolved
+  /// future for interface symmetry with SQLite.
+  @override
+  Future<void> get started => Future.value();
 
   @override
   Future<void> stop() async {

@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -120,6 +120,7 @@ abstract class LegacySession
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     LegacySessionInclude? include,
@@ -129,7 +130,8 @@ abstract class LegacySession
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(LegacySession.t),
       include: include,
     );
@@ -303,6 +305,7 @@ class LegacySessionIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -350,6 +353,7 @@ class LegacySessionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -361,7 +365,8 @@ class LegacySessionRepository {
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -393,6 +398,7 @@ class LegacySessionRepository {
     _i1.WhereExpressionBuilder<LegacySessionTable>? where,
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -404,7 +410,8 @@ class LegacySessionRepository {
       where: where?.call(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -468,6 +475,69 @@ class LegacySessionRepository {
     );
   }
 
+  /// Upserts all [LegacySession]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [LegacySession]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<LegacySession>> upsert(
+    _i1.DatabaseSession session,
+    List<LegacySession> rows, {
+    required _i1.ColumnSelections<LegacySessionTable> conflictColumns,
+    _i1.ColumnSelections<LegacySessionTable>? updateColumns,
+    _i1.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<LegacySession>(
+      rows,
+      conflictColumns: conflictColumns(LegacySession.t),
+      updateColumns: updateColumns?.call(LegacySession.t),
+      updateWhere: updateWhere?.call(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [LegacySession] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [LegacySession] will have its `id` field set.
+  Future<LegacySession?> upsertRow(
+    _i1.DatabaseSession session,
+    LegacySession row, {
+    required _i1.ColumnSelections<LegacySessionTable> conflictColumns,
+    _i1.ColumnSelections<LegacySessionTable>? updateColumns,
+    _i1.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<LegacySession>(
+      row,
+      conflictColumns: conflictColumns(LegacySession.t),
+      updateColumns: updateColumns?.call(LegacySession.t),
+      updateWhere: updateWhere?.call(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [LegacySession]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
@@ -527,6 +597,7 @@ class LegacySessionRepository {
     int? offset,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -537,7 +608,8 @@ class LegacySessionRepository {
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -553,6 +625,7 @@ class LegacySessionRepository {
     _i1.DatabaseSession session,
     List<LegacySession> rows, {
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -561,7 +634,8 @@ class LegacySessionRepository {
       rows,
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -586,6 +660,7 @@ class LegacySessionRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LegacySessionTable> where,
     _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
     _i1.Transaction? transaction,
@@ -594,7 +669,8 @@ class LegacySessionRepository {
       where: where(LegacySession.t),
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

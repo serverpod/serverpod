@@ -1,0 +1,199 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_jsonb",
+        "dartName": "ObjectWithJsonb",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "notJsonb",
+            "fieldName": "notJsonb",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonb",
+            "fieldName": "jsonb",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbMap",
+            "fieldName": "jsonbMap",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "Map<String,String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbObject",
+            "fieldName": "jsonbObject",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "protocol:SimpleData"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbIndexed",
+            "fieldName": "jsonbIndexed",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbIndexedGin",
+            "fieldName": "jsonbIndexedGin",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbIndexedGinJsonbPath",
+            "fieldName": "jsonbIndexedGinJsonbPath",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "jsonbIndexedImplicitGin",
+            "fieldName": "jsonbIndexedImplicitGin",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "nullableJsonb",
+            "fieldName": "nullableJsonb",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "List<String>?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "jsonb_index_gin",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "jsonbIndexedGin"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "jsonbOps"
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "jsonb_index_gin_with_operator_class",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "jsonbIndexedGinJsonbPath"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "jsonbPathOps"
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "jsonb_index_implicit_gin",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "jsonbIndexedImplicitGin"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "jsonbOps"
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_jsonb_class_level",
+        "dartName": "ObjectWithJsonbClassLevel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "implicitJsonb",
+            "fieldName": "implicitJsonb",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "explicitJsonb",
+            "fieldName": "explicitJsonb",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "json",
+            "fieldName": "json",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<String>"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

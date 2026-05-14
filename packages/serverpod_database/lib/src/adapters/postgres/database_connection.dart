@@ -39,20 +39,21 @@ class PostgresDatabaseConnection
     int? limit,
     int? offset,
     Column? orderBy,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
-    List<Order>? orderByList,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
         .withWhere(where)
-        .withOrderBy(orderByList)
+        .withOrderBy(orderByCols)
         .withLimit(limit)
         .withOffset(offset)
         .withInclude(include)
@@ -75,7 +76,8 @@ class PostgresDatabaseConnection
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -89,6 +91,7 @@ class PostgresDatabaseConnection
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
@@ -217,6 +220,90 @@ class PostgresDatabaseConnection
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    // When the model has non-persisted fields, fall back to single-row upserts
+    // so we can safely merge non-persisted fields with each result row.
+    if (rows.length > 1 && _hasNonPersistedFields(session, rows)) {
+      return DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (tx) async => [
+          for (var row in rows)
+            ...await upsert<T>(
+              session,
+              [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              transaction: tx,
+            ),
+        ],
+        settings: const TransactionSettings(),
+      );
+    }
+
+    var table = rows.first.table;
+
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+    ).build();
+
+    return (await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        ).then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
+    if (result.length > 1) {
+      throw _PgDatabaseUpsertRowException(
+        'Failed to upsert row, affected number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {
@@ -337,7 +424,8 @@ class PostgresDatabaseConnection
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -410,7 +498,8 @@ class PostgresDatabaseConnection
     DatabaseSession session,
     List<T> rows, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -426,6 +515,7 @@ class PostgresDatabaseConnection
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
     );
@@ -457,18 +547,19 @@ class PostgresDatabaseConnection
     DatabaseSession session,
     Expression where, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
     var query = DeleteQueryBuilder(table: table)
         .withReturn(Returning.all)
         .withWhere(where)
-        .withOrderBy(orderByList)
+        .withOrderBy(orderByCols)
         .build();
 
     return await _deserializedMappedQuery(
@@ -774,40 +865,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// Migrations on Postgres use a transaction to ensure that the advisory lock
-  /// is retained until the transaction is completed.
-  ///
-  /// The transaction ensures that the session used for acquiring the lock is
-  /// kept alive in the underlying connection pool, and that we can later use
-  /// that exact same session for releasing the lock. The transaction is thus
-  /// only used to get the desired behavior from the database driver, and does
-  /// not have any effect on the Postgres level.
-  ///
-  /// This ensures that we are only running migrations one at a time.
-  @override
-  Future<void> runMigrations(
-    DatabaseSession session,
-    Future<void> Function(Transaction? transaction) action,
-  ) async {
-    const String lockName = 'serverpod_migration_lock';
-
-    await session.db.transaction((transaction) async {
-      await session.db.unsafeExecute(
-        "SELECT pg_advisory_lock(hashtext('$lockName'));",
-        transaction: transaction,
-      );
-
-      try {
-        await action(null);
-      } finally {
-        await session.db.unsafeExecute(
-          "SELECT pg_advisory_unlock(hashtext('$lockName'));",
-          transaction: transaction,
-        );
-      }
-    });
-  }
-
   Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
   _queryIncludedLists(
     DatabaseSession session,
@@ -844,6 +901,7 @@ class PostgresDatabaseConnection
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
+          // ignore: deprecated_member_use_from_same_package
           nestedInclude.orderDescending,
         );
 
@@ -919,16 +977,17 @@ class PostgresDatabaseConnection
   }
 
   List<Order>? _resolveOrderBy(
-    List<Order>? orderByList,
+    List<Column>? orderByList,
     Column<dynamic>? orderBy,
     bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      // If order by is set then order by list is overridden.
-      return [Order(column: orderBy, orderDescending: orderDescending)];
+      if (orderBy is Order) return [orderBy];
+      return [orderDescending ? orderBy.desc() : orderBy.asc()];
     }
-    return orderByList;
+    if (orderByList == null || orderByList.isEmpty) return null;
+    return orderByList.asOrderBy();
   }
 
   String _createQueryValueList(
@@ -970,6 +1029,7 @@ class PostgresDatabaseConnection
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    if (column is ColumnStructured) return 'jsonb';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {

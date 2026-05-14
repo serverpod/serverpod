@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -94,6 +94,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BookTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
@@ -103,7 +104,8 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Book.t),
       include: include,
     );
@@ -240,6 +242,7 @@ class BookIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -293,6 +296,7 @@ class BookRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<BookTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
@@ -304,7 +308,8 @@ class BookRepository {
       where: where?.call(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -336,6 +341,7 @@ class BookRepository {
     _i1.WhereExpressionBuilder<BookTable>? where,
     int? offset,
     _i1.OrderByBuilder<BookTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
@@ -347,7 +353,8 @@ class BookRepository {
       where: where?.call(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -411,6 +418,69 @@ class BookRepository {
     );
   }
 
+  /// Upserts all [Book]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Book]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Book>> upsert(
+    _i1.DatabaseSession session,
+    List<Book> rows, {
+    required _i1.ColumnSelections<BookTable> conflictColumns,
+    _i1.ColumnSelections<BookTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Book>(
+      rows,
+      conflictColumns: conflictColumns(Book.t),
+      updateColumns: updateColumns?.call(Book.t),
+      updateWhere: updateWhere?.call(Book.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Book] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Book] will have its `id` field set.
+  Future<Book?> upsertRow(
+    _i1.DatabaseSession session,
+    Book row, {
+    required _i1.ColumnSelections<BookTable> conflictColumns,
+    _i1.ColumnSelections<BookTable>? updateColumns,
+    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Book>(
+      row,
+      conflictColumns: conflictColumns(Book.t),
+      updateColumns: updateColumns?.call(Book.t),
+      updateWhere: updateWhere?.call(Book.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Book]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
@@ -470,6 +540,7 @@ class BookRepository {
     int? offset,
     _i1.OrderByBuilder<BookTable>? orderBy,
     _i1.OrderByListBuilder<BookTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -480,7 +551,8 @@ class BookRepository {
       offset: offset,
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -496,6 +568,7 @@ class BookRepository {
     _i1.DatabaseSession session,
     List<Book> rows, {
     _i1.OrderByBuilder<BookTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
@@ -504,7 +577,8 @@ class BookRepository {
       rows,
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -529,6 +603,7 @@ class BookRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BookTable> where,
     _i1.OrderByBuilder<BookTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<BookTable>? orderByList,
     _i1.Transaction? transaction,
@@ -537,7 +612,8 @@ class BookRepository {
       where: where(Book.t),
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

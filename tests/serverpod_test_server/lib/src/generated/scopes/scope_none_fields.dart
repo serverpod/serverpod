@@ -77,6 +77,7 @@ abstract class ScopeNoneFields
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
@@ -86,7 +87,8 @@ abstract class ScopeNoneFields
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ScopeNoneFields.t),
       include: include,
     );
@@ -207,6 +209,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -252,6 +255,7 @@ class ScopeNoneFieldsRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -262,7 +266,8 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -293,6 +298,7 @@ class ScopeNoneFieldsRepository {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -303,7 +309,8 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -360,6 +367,69 @@ class ScopeNoneFieldsRepository {
   }) async {
     return session.db.insertRow<ScopeNoneFields>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ScopeNoneFields]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ScopeNoneFields]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ScopeNoneFields>> upsert(
+    _i1.DatabaseSession session,
+    List<ScopeNoneFields> rows, {
+    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ScopeNoneFields>(
+      rows,
+      conflictColumns: conflictColumns(ScopeNoneFields.t),
+      updateColumns: updateColumns?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ScopeNoneFields] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ScopeNoneFields] will have its `id` field set.
+  Future<ScopeNoneFields?> upsertRow(
+    _i1.DatabaseSession session,
+    ScopeNoneFields row, {
+    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ScopeNoneFields>(
+      row,
+      conflictColumns: conflictColumns(ScopeNoneFields.t),
+      updateColumns: updateColumns?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
       transaction: transaction,
     );
   }
@@ -425,6 +495,7 @@ class ScopeNoneFieldsRepository {
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -435,7 +506,8 @@ class ScopeNoneFieldsRepository {
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -451,6 +523,7 @@ class ScopeNoneFieldsRepository {
     _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -459,7 +532,8 @@ class ScopeNoneFieldsRepository {
       rows,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -484,6 +558,7 @@ class ScopeNoneFieldsRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -492,7 +567,8 @@ class ScopeNoneFieldsRepository {
       where: where(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

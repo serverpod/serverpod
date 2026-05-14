@@ -83,7 +83,7 @@ void main() {
       'then it returns false',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isFalse);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
   });
@@ -101,7 +101,7 @@ void main() {
       'then it returns true',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isTrue);
+        expect(await isGenerationUpToDate(config, sources), isTrue);
       },
     );
   });
@@ -122,7 +122,7 @@ void main() {
       'then it returns false',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isFalse);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
   });
@@ -140,7 +140,7 @@ void main() {
       'then it returns false',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isFalse);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
   });
@@ -159,7 +159,7 @@ void main() {
       'then it returns false',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isFalse);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
   });
@@ -187,7 +187,7 @@ void main() {
       'then isGenerationUpToDate returns true',
       () async {
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isTrue);
+        expect(await isGenerationUpToDate(config, sources), isTrue);
       },
     );
 
@@ -197,7 +197,7 @@ void main() {
       () async {
         await generatedFile.delete();
         final sources = await enumerateSourceFiles(config);
-        expect(isGenerationUpToDate(config, sources), isFalse);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
   });
@@ -237,7 +237,7 @@ void main() {
       'then it returns false',
       () async {
         final sources = await enumerateSourceFiles(sharedConfig);
-        expect(isGenerationUpToDate(sharedConfig, sources), isFalse);
+        expect(await isGenerationUpToDate(sharedConfig, sources), isFalse);
       },
     );
   });

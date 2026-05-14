@@ -138,12 +138,17 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
   ///
+  /// [additionalAuthParams] are extra parameters merged into the authorization
+  /// URL. The service already sends `prompt: select_account` by default;
+  /// any values provided here are merged on top and will override the defaults on conflict.
+  ///
   /// The [useWebview] controls the authentication method on Linux and Windows.
   Future<void> initializeGitHubSignIn({
     String? clientId,
     String? redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
     final effectiveClientId = clientId ?? _getClientIdFromEnvVar();
     final effectiveRedirectUri = redirectUri ?? _getRedirectUriFromEnvVar();
@@ -167,6 +172,10 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
       redirectUri: effectiveRedirectUri,
       callbackUrlScheme: callbackUrlScheme,
       useWebview: useWebview,
+      additionalAuthParams: {
+        'prompt': 'select_account',
+        ...additionalAuthParams,
+      },
     );
   }
 }

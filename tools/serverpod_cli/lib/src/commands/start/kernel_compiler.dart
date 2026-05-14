@@ -19,8 +19,19 @@ class KernelCompiler {
   final String outputDill;
   final String? packagesPath;
 
-  late final String _sdkRoot;
-  late final String _platformDill;
+  /// Native-assets manifest path forwarded as `--native-assets` to the
+  /// Frontend Server on [start]. Mutable so callers can swap the manifest
+  /// between Frontend Server restarts; the FES reads this only at startup,
+  /// so changes require a [restart] to take effect.
+  String? nativeAssetsPath;
+
+  late final String _sdkRoot = getSdkPath();
+  late final String _platformDill = p.join(
+    _sdkRoot,
+    'lib',
+    '_internal',
+    'vm_platform_strong.dill',
+  );
   late Future<FrontendServerClient> _client;
 
   bool _needsFullCompile = true;
@@ -30,10 +41,14 @@ class KernelCompiler {
     required this.entryPoint,
     this.outputDill = '.dart_tool/serverpod/server.dill',
     this.packagesPath,
+    this.nativeAssetsPath,
   });
 
   /// The path to the `dart` executable from the SDK used by this compiler.
   String get dartExecutable => p.join(_sdkRoot, 'bin', 'dart');
+
+  /// Whether [start] has run.
+  bool get isStarted => _started;
 
   /// Start the Frontend Server process.
   ///
@@ -42,14 +57,6 @@ class KernelCompiler {
   Future<void> start() async {
     if (_started) return;
 
-    _sdkRoot = getSdkPath();
-    _platformDill = p.join(
-      _sdkRoot,
-      'lib',
-      '_internal',
-      'vm_platform_strong.dill',
-    );
-
     _client = FrontendServerClient.start(
       entryPoint,
       outputDill,
@@ -57,6 +64,7 @@ class KernelCompiler {
       sdkRoot: _sdkRoot,
       target: 'vm',
       packagesJson: packagesPath,
+      nativeAssetsPath: nativeAssetsPath,
     );
     _started = true;
     _needsFullCompile = true;
@@ -65,19 +73,20 @@ class KernelCompiler {
   /// Returns `true` if [outputDill] exists, is newer than every file under
   /// [watchDirs], and is compatible with the current Dart SDK's kernel binary
   /// format.
-  bool isDillUpToDate(Set<String> watchDirs) {
+  Future<bool> isDillUpToDate(Set<String> watchDirs) async {
     final dillFile = File(outputDill);
-    if (!dillFile.existsSync()) return false;
+    if (!await dillFile.exists()) return false;
 
     if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
 
-    final dillMtime = dillFile.statSync().modified;
+    final dillMtime = (await dillFile.stat()).modified;
 
     for (final watchDir in watchDirs) {
       final dir = Directory(watchDir);
-      if (!dir.existsSync()) continue;
-      for (final entity in dir.listSync(recursive: true)) {
-        if (entity is File && entity.statSync().modified.isAfter(dillMtime)) {
+      if (!await dir.exists()) continue;
+      await for (final entity in dir.list(recursive: true)) {
+        if (entity is File &&
+            (await entity.stat()).modified.isAfter(dillMtime)) {
           return false;
         }
       }
@@ -91,7 +100,7 @@ class KernelCompiler {
   /// Returns `true` on success (including when no compilation was needed).
   /// Returns `false` if compilation failed.
   Future<bool> compileIfNeeded(Set<String> watchDirs) async {
-    if (isDillUpToDate(watchDirs)) {
+    if (await isDillUpToDate(watchDirs)) {
       log.debug('Cached server.dill is up to date, skipping initial compile.');
       return true;
     }
@@ -133,6 +142,7 @@ class KernelCompiler {
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
   Future<void> reset() async {
+    if (_needsFullCompile) return; // No compile yet; already in full state.
     final client = await _client;
     client.reset();
     _needsFullCompile = true;

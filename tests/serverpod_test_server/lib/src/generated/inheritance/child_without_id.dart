@@ -93,6 +93,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     ChildClassWithoutIdInclude? include,
@@ -102,7 +103,8 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChildClassWithoutId.t),
       include: include,
     );
@@ -220,6 +222,7 @@ class ChildClassWithoutIdIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -265,6 +268,7 @@ class ChildClassWithoutIdRepository {
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
@@ -275,7 +279,8 @@ class ChildClassWithoutIdRepository {
       where: where?.call(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -306,6 +311,7 @@ class ChildClassWithoutIdRepository {
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
@@ -316,7 +322,8 @@ class ChildClassWithoutIdRepository {
       where: where?.call(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -373,6 +380,69 @@ class ChildClassWithoutIdRepository {
   }) async {
     return session.db.insertRow<ChildClassWithoutId>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ChildClassWithoutId]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChildClassWithoutId]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChildClassWithoutId>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildClassWithoutId> rows, {
+    required _i2.ColumnSelections<ChildClassWithoutIdTable> conflictColumns,
+    _i2.ColumnSelections<ChildClassWithoutIdTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChildClassWithoutId>(
+      rows,
+      conflictColumns: conflictColumns(ChildClassWithoutId.t),
+      updateColumns: updateColumns?.call(ChildClassWithoutId.t),
+      updateWhere: updateWhere?.call(ChildClassWithoutId.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChildClassWithoutId] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChildClassWithoutId] will have its `id` field set.
+  Future<ChildClassWithoutId?> upsertRow(
+    _i2.DatabaseSession session,
+    ChildClassWithoutId row, {
+    required _i2.ColumnSelections<ChildClassWithoutIdTable> conflictColumns,
+    _i2.ColumnSelections<ChildClassWithoutIdTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildClassWithoutId>(
+      row,
+      conflictColumns: conflictColumns(ChildClassWithoutId.t),
+      updateColumns: updateColumns?.call(ChildClassWithoutId.t),
+      updateWhere: updateWhere?.call(ChildClassWithoutId.t),
       transaction: transaction,
     );
   }
@@ -438,6 +508,7 @@ class ChildClassWithoutIdRepository {
     int? offset,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -448,7 +519,8 @@ class ChildClassWithoutIdRepository {
       offset: offset,
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -464,6 +536,7 @@ class ChildClassWithoutIdRepository {
     _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
@@ -472,7 +545,8 @@ class ChildClassWithoutIdRepository {
       rows,
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -497,6 +571,7 @@ class ChildClassWithoutIdRepository {
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
@@ -505,7 +580,8 @@ class ChildClassWithoutIdRepository {
       where: where(ChildClassWithoutId.t),
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

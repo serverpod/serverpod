@@ -1,3 +1,56 @@
+## 3.5.0-beta.7
+
+feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
+fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
+chore: Improves the UX of create and start TUIs.
+
+## 3.5.0-beta.6
+
+- feat: Makes the `serverpod create` command interactive for resources selection.
+- feat: Adds Serverpod SKILLs upon `serverpod create` and `serverpod quickstart` commands.
+- feat: Improves the reliability of the `serverpod start` command when launched by the IDE.
+- feat: Removes the need to restart the server to apply migrations when running from `serverpod start`.
+- feat: Makes an additional request to get emails on GitHub IDP if missing in the first attempt.
+- fix: Fixes missing `_Undefined` sentinel on generated code for `dynamic` fields
+- fix: Prevents concurrent hot-reload requests while on `serverpod start` from breaking the FES.
+- fix: Restores terminal settings when force quitting the TUI on `serverpod` commands.
+- refactor: Drops the `--no-fes` flag from the `serverpod start` command.
+- chore: Improves the look and feel of the TUI on `serverpod` commands.
+- chore: Improves Serverpod skills for a better agentic-development experience.
+
+## 3.5.0-beta.5
+
+- feat(EXPERIMENTAL): Introduces a new `database` keyword on models that generates a client-side database.
+- feat: Adds support for `dynamic` fields on models, database and endpoints.
+- feat: Adds support for `jsonb` columns and `GIN` indexes, with lossless `json` <-> `jsonb` column type migration. ([@developerjamiu](https://github.com/developerjamiu))
+- feat: Makes the Serverpod MCP server always running regardless of a running project server with `serverpod start` command.
+- feat: Adds a new `serverpod quickstart` command to the `serverpod_cli`.
+- fix: Ensures `serverpod start` works with build hook dependencies.
+- fix: Fixes Postgres throwing when using row-lock on `find` methods with `includes`.
+- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
+- refactor: Moves the column rename from `TableMigration` to `ColumnMigration` (breaking change since last beta version).
+- perf: Reduces the size of SQLlite migration SQL by only storing metadata for non-basic types.
+- chore: Removes the requirement for Flutter to run the `serverpod_cli` on CI.
+- chore: Bumps minimum Dart version to 3.10.3 and Flutter version to 3.38.4.
+
+## 3.5.0-beta.4
+
+- feat(EXPERIMENTAL): Adds `nocterm` based TUI to `serverpod start` command.
+- feat(EXPERIMENTAL): Implements SQLite database support.
+- feat: Adds dedicated support for recurring future calls.
+- feat: Allows overriding a `column` name on models, with proper migration support.
+- feat: Exposes a `unique` keyword on models for simplified creation of unique indexes.
+- feat: Exposes datetime filter parameters on Insights endpoints.
+- feat: Adds supports for `serverpod create .` call in the current directory.
+- feat: Adds support for `orderBy` and `orderByList` in `delete` and `deleteWhere` methods ([@henycave](https://github.com/henycave)).
+- feat: Adds `HmacSha256` JWT algorithm on the auth core package.
+- feat: Introduces `asc()` / `desc()` convenience methods on orderable columns.
+- fix: Deprecates the manual creation of `Order` objects in favor of the new `asc()` / `desc()` methods.
+- fix: Adds missing `onRefreshTokenCreated` to `JwtConfigFromPasswords` constructor.
+- perf: Optimizes Insights queries 60x by using object relations and improved indexes.
+- chore: Adds `.gitignore` to the top-level directory on new projects to ignore `.dart_tool`.
+
 ## 3.5.0-beta.3
 
 - feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
@@ -20,6 +73,23 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.7
+
+- fix: Fixes constraints drop failing on Postgres due to already removed columns.
+- fix: Adds missing `configOverride` forward to the test server.
+- fix: Prevents triggering auth event listener when invalidating cache for JWT token refresh.
+
+## 3.4.6
+
+- fix: Removes wrong documentation link on `PasswordMissingException`.
+- fix: Adds top-level `.gitignore` on created projects to ignore the `.dart_tool` of the workspace.
+- fix: Allows `serverpod create .` in the current directory.
+- fix: Makes `insert` with `ignoreConflicts` and `!persist` fields atomic.
+- fix: Extends immutable non-constant default validation to cover id field.
+- fix: Adds missing `onSessionCreated` to `ServerSideSessionsConfigFromPasswords` constructor.
+- fix: Invalidates the cached refresh token before rotating in case the storage has changed.
+- chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`. Also backported to 2.9.3.
 
 ## 3.4.5
 
@@ -343,6 +413,9 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - chore: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
 - chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - chore: Bumps minimum Dart version to 3.8.0 and Flutter version to 3.32.0.
+
+### 2.9.3
+- chore: Bumps `jose` dependency on legacy auth to fix `CVE-2026-34240`. Backported from 3.4.6.
 
 ## 2.9.2
 - fix: Fixes a crash when persistent logging is disabled but database is enabled.

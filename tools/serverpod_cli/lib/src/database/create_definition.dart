@@ -12,12 +12,12 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
   List<ModuleConfig> allModules, {
-  DatabaseDialect dialect = DatabaseDialect.postgres,
+  bool serverCode = true,
 }) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
-          classDefinition.tableName != null)
+          classDefinition.shouldGenerateTableCode(serverCode))
         TableDefinition(
           module: moduleName,
           name: classDefinition.tableName!,
@@ -25,9 +25,10 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           schema: 'public',
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
-              if (column.shouldSerializeFieldForDatabase(true))
+              if (column.shouldSerializeFieldForDatabase(serverCode))
                 ColumnDefinition(
                   name: column.columnName,
+                  fieldName: column.name,
                   columnType: ColumnType.values.byName(
                     column.type.databaseTypeEnum,
                   ),
@@ -53,6 +54,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
+                ginOperatorClass: index.isGinIndex
+                    ? index.ginOperatorClass
+                    : null,
                 vectorDistanceFunction: index.isVectorIndex
                     ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
                     : null,

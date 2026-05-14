@@ -98,6 +98,7 @@ abstract class EmailFailedSignIn
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
@@ -107,7 +108,8 @@ abstract class EmailFailedSignIn
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(EmailFailedSignIn.t),
       include: include,
     );
@@ -227,6 +229,7 @@ class EmailFailedSignInIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -272,6 +275,7 @@ class EmailFailedSignInRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
@@ -282,7 +286,8 @@ class EmailFailedSignInRepository {
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -313,6 +318,7 @@ class EmailFailedSignInRepository {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
@@ -323,7 +329,8 @@ class EmailFailedSignInRepository {
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -380,6 +387,69 @@ class EmailFailedSignInRepository {
   }) async {
     return session.db.insertRow<EmailFailedSignIn>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [EmailFailedSignIn]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [EmailFailedSignIn]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EmailFailedSignIn>> upsert(
+    _i1.DatabaseSession session,
+    List<EmailFailedSignIn> rows, {
+    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EmailFailedSignIn>(
+      rows,
+      conflictColumns: conflictColumns(EmailFailedSignIn.t),
+      updateColumns: updateColumns?.call(EmailFailedSignIn.t),
+      updateWhere: updateWhere?.call(EmailFailedSignIn.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EmailFailedSignIn] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [EmailFailedSignIn] will have its `id` field set.
+  Future<EmailFailedSignIn?> upsertRow(
+    _i1.DatabaseSession session,
+    EmailFailedSignIn row, {
+    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmailFailedSignIn>(
+      row,
+      conflictColumns: conflictColumns(EmailFailedSignIn.t),
+      updateColumns: updateColumns?.call(EmailFailedSignIn.t),
+      updateWhere: updateWhere?.call(EmailFailedSignIn.t),
       transaction: transaction,
     );
   }
@@ -445,6 +515,7 @@ class EmailFailedSignInRepository {
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -455,7 +526,8 @@ class EmailFailedSignInRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -471,6 +543,7 @@ class EmailFailedSignInRepository {
     _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
@@ -479,7 +552,8 @@ class EmailFailedSignInRepository {
       rows,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -504,6 +578,7 @@ class EmailFailedSignInRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
@@ -512,7 +587,8 @@ class EmailFailedSignInRepository {
       where: where(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

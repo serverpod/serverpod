@@ -1,0 +1,6 @@
+class: IntDefaultMix
+table: int_default_mix
+fields:
+  intDefaultAndDefaultModel: int, default=10, defaultModel=20
+  intDefaultAndDefaultPersist: int, default=10, defaultPersist=20
+  intDefaultModelAndDefaultPersist: int, defaultModel=10, defaultPersist=20

@@ -74,6 +74,26 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeColumnValueListBuilder(
+  String className,
+  bool serverCode, {
+  nullable = false,
+}) {
+  return _typeWithTableCallback(
+    '${className}Update',
+    'ColumnValueListBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
+/// Deprecation annotation for the [orderDescending] parameter.
+Expression deprecatedOrderDescendingAnnotation() {
+  return refer('Deprecated').call([
+    literalString('Use desc() on the orderBy column instead.'),
+  ]);
+}
+
 Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,
@@ -106,7 +126,7 @@ TypeReference _typeWithTableCallback(
       ..types.addAll([
         refer('${className}Table'),
       ])
-      ..url = serverpodUrl(serverCode)
+      ..url = serverpodDatabaseRuntimeUrl(serverCode)
       ..isNullable = nullable,
   );
 }
@@ -162,6 +182,19 @@ Expression _buildFromJson(
         valueExpression,
         serverCode,
         field,
+      );
+    case ValueType.dynamicType:
+      return CodeExpression(
+        getProtocolReference(
+              serverCode,
+              config,
+              currentSharedPackageName: currentSharedPackageName,
+            )
+            .call([])
+            .property('decodeDynamicFieldValue')
+            .call([valueExpression])
+            .checkIfNull(type, valueExpression: valueExpression)
+            .code,
       );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;

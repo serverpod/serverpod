@@ -9,7 +9,8 @@ enum LanguageServerOption<V> implements OptionDefinition<V> {
       argName: 'stdio',
       defaultsTo: true,
     ),
-  );
+  ),
+  ;
 
   const LanguageServerOption(this.option);
 

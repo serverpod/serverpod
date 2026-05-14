@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
@@ -578,12 +579,11 @@ class Server implements RouterInjectable {
     Request? request,
     OperationType? operationType,
   }) async {
-    var now = DateTime.now().toUtc();
-    if (message != null) {
-      io.stderr.writeln('$now ERROR: $message');
-    }
-    io.stderr.writeln('$now ERROR: $e');
-    io.stderr.writeln('$stackTrace');
+    log.error(
+      message ?? 'Unhandled exception',
+      error: e,
+      stackTrace: stackTrace,
+    );
 
     var context = request != null
         ? contextFromRequest(this, request, operationType)

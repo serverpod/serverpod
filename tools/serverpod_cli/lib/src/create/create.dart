@@ -1,3 +1,5 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -10,6 +12,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
+import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
@@ -23,14 +26,19 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:skills/skills.dart';
+import 'package:skills/src/core/workspace_resolver.dart';
+import 'package:skills/src/ide/ide.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
+import 'template_renderer.dart';
 
 enum ServerpodTemplateType {
   mini('mini'),
   server('server'),
-  module('module');
+  module('module'),
+  ;
 
   final String name;
   const ServerpodTemplateType(this.name);
@@ -45,35 +53,81 @@ enum ServerpodTemplateType {
   }
 }
 
-Future<bool> performCreate(
+extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
+  bool get isServer => this == ServerpodTemplateType.server;
+  bool get isModule => this == ServerpodTemplateType.module;
+  bool get isMini => this == ServerpodTemplateType.mini;
+}
+
+/// Holds error messages to be flushed at a later time.
+/// This is typically used to replay logs to the terminal
+/// after exiting the tui's alternate screen
+/// but before killing the Dart process.
+List<String> _errorBuffer = [];
+
+/// Logs a message with error level and adds it to the error buffer.
+void _logError(String message) {
+  _errorBuffer.add(message);
+  log.error(message);
+}
+
+/// Log all messages in the error buffer with error level.
+void flushPerformCreateErrors() {
+  _errorBuffer.forEach(log.error);
+  _errorBuffer.clear();
+}
+
+/// Creates a project for the provided [template].
+/// If successful, a future that resolves to the project directory path
+/// is returned. Otherwise, a future that resolves to null is returned.
+Future<String?> performCreate(
   String name,
   ServerpodTemplateType template,
   bool force, {
+  Completer<int>? flutterBuildCompleter,
+  bool dryRun = false,
   required bool? interactive,
+  required TemplateContext context,
 }) async {
-  // If the name is a dot, we are upgrading an existing project
-  // Instead of creating a new one, we try to upgrade the current directory.
+  _errorBuffer.clear();
+  // If the name is a dot, we can either create a new project in the current
+  // directory or upgrade an existing project.
   if (name == '.') {
-    return await _performUpgrade(template, interactive: interactive);
+    if (findServerDirectory(Directory.current) != null) {
+      return await _performUpgrade(
+        template,
+        dryRun: dryRun,
+        interactive: interactive,
+        context: context,
+      );
+    }
+
+    // If we are creating a new project in the current directory, we need to
+    // use the parent directory as the project root.
+    name = p.basename(Directory.current.absolute.path);
+    Directory.current = Directory.current.parent;
   }
 
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
-    log.error(
+    _logError(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return false;
+    return null;
   }
 
   var serverpodDirs = ServerpodDirectories(
     projectDir: Directory(p.join(Directory.current.path, name)),
     name: name,
   );
-  if (serverpodDirs.projectDir.existsSync()) {
-    log.error('Project $name already exists.');
-    return false;
+  var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
+  if (pubspecFile.existsSync()) {
+    _logError('Project $name already exists.');
+    return null;
   }
+
+  if (dryRun) return p.basename(serverpodDirs.projectDir.path);
 
   if (template == ServerpodTemplateType.module) {
     log.info(
@@ -143,6 +197,8 @@ Future<bool> performCreate(
     );
   }
 
+  success &= await _renderTemplates(serverpodDirs.projectDir, context);
+
   success &= await log.progress('Getting workspace dependencies.', () {
     return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
   });
@@ -180,19 +236,20 @@ Future<bool> performCreate(
   }
 
   if (template == ServerpodTemplateType.server) {
+    String skipKey = interactive == true ? 'S' : 'CTRL+C';
     await log.progress(
-      'Building Flutter web app (press CTRL+C to skip).',
+      'Building Flutter web app (press $skipKey to skip).',
       () async {
         final Script? script;
         try {
           script = _locateFlutterBuildScript(serverpodDirs.serverDir);
         } catch (e) {
-          log.error('Error when locating flutter build script: $e');
+          _logError('Error when locating flutter build script: $e');
           return false;
         }
 
         if (script == null) {
-          log.error('Failed to locate flutter build script, skipping build.');
+          _logError('Failed to locate flutter build script, skipping build.');
           return false;
         }
 
@@ -206,19 +263,82 @@ Future<bool> performCreate(
         stderrController.stream
             .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
-            .listen((data) => log.error(data));
+            .listen((data) => _logError(data));
         final toErrorLog = IOSink(stderrController);
 
-        final exitCode = await execute(
+        final executionFuture = execute(
           script.command,
           workingDirectory: serverpodDirs.serverDir,
           stdout: toDebugLog,
           stderr: toErrorLog,
         );
 
+        final exitCode = await Future.any([
+          ?flutterBuildCompleter?.future,
+          executionFuture,
+        ]);
+
         return exitCode == 0;
       },
     );
+  }
+
+  await log.progress('Configuring Serverpod MCP server', () async {
+    await _configureMcpServer(serverpodDirs.projectDir.path);
+    return true;
+  });
+
+  if (context.skills) {
+    await log.progress('Installing agent skills', () async {
+      try {
+        final workspace = await const WorkspaceResolver().resolve(
+          serverpodDirs.projectDir.path,
+        );
+
+        final stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(const Utf8Decoder(allowMalformed: true))
+            .transform(const LineSplitter())
+            .listen((data) => log.debug(data));
+        final toDebugLog = IOSink(stdoutController);
+        final stderrController = StreamController<List<int>>();
+        stderrController.stream
+            .transform(const Utf8Decoder(allowMalformed: true))
+            .transform(const LineSplitter())
+            .listen((data) => _logError(data));
+        final toErrorLog = IOSink(stderrController);
+
+        final success = await getSkills(
+          ides: [Ide.claude, Ide.generic],
+          workspace: workspace,
+          stdout: toDebugLog,
+          stderr: toErrorLog,
+        );
+
+        if (!success) {
+          _logError('Failed to install agent skills');
+          return false;
+        }
+
+        final agentDir = Directory(
+          p.join(serverpodDirs.projectDir.path, '.agent'),
+        );
+        final agentsDir = Directory(
+          p.join(serverpodDirs.projectDir.path, '.agents'),
+        );
+
+        try {
+          await _moveDirectoryContents(agentDir, agentsDir);
+          await agentDir.delete();
+        } on FileSystemException {
+          //
+        }
+      } catch (_) {
+        _logError('Failed to install agent skills');
+        return false;
+      }
+      return true;
+    });
   }
 
   if (success || force) {
@@ -228,42 +348,133 @@ Future<bool> performCreate(
       type: TextLogType.success,
     );
 
+    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
+
     if (template == ServerpodTemplateType.server) {
-      _logStartInstructions(name);
+      logStartInstructions(projectDirPath);
     } else if (template == ServerpodTemplateType.mini) {
-      _logMiniStartInstructions(name);
+      logMiniStartInstructions(projectDirPath);
     }
+
+    return projectDirPath;
   }
 
-  return success;
+  return null;
 }
 
-Future<bool> _performUpgrade(
+Future<void> _moveDirectoryContents(
+  Directory source,
+  Directory destination,
+) async {
+  if (!await source.exists()) {
+    throw Exception('Source directory does not exist: ${source.path}');
+  }
+
+  // Ensure destination exists
+  if (!await destination.exists()) {
+    await destination.create(recursive: true);
+  }
+
+  await for (final entity in source.list()) {
+    final newPath = p.join(destination.path, p.basename(entity.path));
+
+    if (entity is File) {
+      await entity.rename(newPath);
+    } else if (entity is Directory) {
+      final newDir = await Directory(newPath).create(recursive: true);
+      await _moveDirectoryContents(entity, newDir);
+      await entity.delete();
+    }
+  }
+}
+
+Future<void> _configureMcpServer(String projectDirPath) async {
+  const antigravityPath = '.gemini/antigravity/mcp_config.json';
+  const cursorPath = '.cursor/mcp.json';
+  const claudePath = '.mcp.json';
+  const vscodePath = '.vscode/mcp.json';
+  const codexPath = '.codex/config.toml';
+
+  const genericConfig = '''{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+  const codexConfig = '''[mcp_servers.serverpod]
+command = "serverpod"
+args = ["mcp"]
+
+[mcp_servers.dart_mcp]
+command = "dart"
+args = ["mcp-server", "--force-roots-fallback"]
+''';
+
+  await Future.forEach(
+    [cursorPath, claudePath],
+    (path) async {
+      await _createFileAndWrite(p.join(projectDirPath, path), genericConfig);
+    },
+  );
+
+  await _createFileAndWrite(
+    p.join(projectDirPath, antigravityPath),
+    genericConfig.replaceAll(r'"dart":', r'"dart-mcp-server":'),
+  );
+
+  await _createFileAndWrite(
+    p.join(projectDirPath, vscodePath),
+    genericConfig.replaceAll(r'"mcpServers":', r'"servers":'),
+  );
+
+  await _createFileAndWrite(p.join(projectDirPath, codexPath), codexConfig);
+}
+
+Future<void> _createFileAndWrite(String path, String content) async {
+  final file = File(path);
+  try {
+    await file.create(recursive: true);
+    await file.writeAsString(content);
+  } on FileSystemException {
+    //
+  }
+}
+
+/// Upgrades a server project.
+/// If successful, a future that resolves to the project directory path
+/// is returned. Otherwise, a future that resolves to null is returned.
+Future<String?> _performUpgrade(
   ServerpodTemplateType template, {
+  bool dryRun = false,
   required bool? interactive,
+  required TemplateContext context,
 }) async {
   if (template != ServerpodTemplateType.server) {
-    log.error(
-      'The upgrade command can only be used with server templates.',
-    );
-    return false;
+    _logError('The upgrade command can only be used with server templates.');
+    return null;
   }
 
   var serverDir = findServerDirectory(Directory.current);
   if (serverDir == null) {
-    log.error(
-      'Could not find a Serverpod project in the current directory.',
-    );
-    return false;
+    _logError('Could not find a Serverpod project in the current directory.');
+    return null;
   }
 
   var name = await getProjectName(serverDir);
   if (name == null) {
-    log.error(
-      'Could not find a project name in the pubspec.yaml file.',
-    );
-    return false;
+    _logError('Could not find a project name in the pubspec.yaml file.');
+    return null;
   }
+
+  if (dryRun) return name;
 
   var serverpodDir = ServerpodDirectories(
     name: name,
@@ -283,6 +494,8 @@ Future<bool> _performUpgrade(
       return true;
     },
   );
+
+  success &= await _renderTemplates(serverpodDir.projectDir, context);
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -305,13 +518,22 @@ Future<bool> _performUpgrade(
       type: TextLogType.success,
     );
 
-    _logStartInstructions(name);
+    logStartInstructions(name);
+    return name;
   }
 
-  return success;
+  return null;
 }
 
-void _logMiniStartInstructions(String name) {
+/// Parses and renders the template files in the given directory.
+Future<bool> _renderTemplates(Directory dir, TemplateContext context) async {
+  return await log.progress('Applying template options', () async {
+    await TemplateRenderer(dir: dir).render(context);
+    return true;
+  });
+}
+
+void logMiniStartInstructions(String relativeProjectPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -327,30 +549,28 @@ void _logMiniStartInstructions(String name) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
+      'cd .\\$relativeProjectPath\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'dart .\\bin\\main.dart',
-      type: TextLogType.command,
     );
   } else {
     log.info(
-      'cd ${p.join(name, '${name}_server')}',
+      'cd $relativeProjectPath',
       type: TextLogType.command,
       newParagraph: true,
     );
-    log.info(
-      'dart bin/main.dart',
-      type: TextLogType.command,
-    );
   }
+
+  log.info(
+    'serverpod start',
+    type: TextLogType.command,
+    newParagraph: true,
+  );
 
   log.info(' ');
 }
 
-void _logStartInstructions(String name) {
+void logStartInstructions(String relativeProjectPath) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -366,33 +586,23 @@ void _logStartInstructions(String name) {
 
   if (Platform.isWindows) {
     log.info(
-      'cd .\\${p.join(name, '${name}_server')}\\',
+      'cd .\\$relativeProjectPath\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart .\\bin\\main.dart --apply-migrations',
-      type: TextLogType.command,
     );
   } else {
     log.info(
-      'cd ${p.join(name, '${name}_server')}',
+      'cd $relativeProjectPath',
       type: TextLogType.command,
       newParagraph: true,
     );
-    log.info(
-      'docker compose up --build --detach',
-      type: TextLogType.command,
-    );
-    log.info(
-      'dart bin/main.dart --apply-migrations',
-      type: TextLogType.command,
-    );
   }
+
+  log.info(
+    'serverpod start',
+    type: TextLogType.command,
+    newParagraph: true,
+  );
 
   log.info(' ');
 }
@@ -840,7 +1050,12 @@ void _copyServerTemplates(
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
-    fileNameReplacements: const [],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
     ignoreFileNames: const [],
   );
   rootCopier.copyFiles();
@@ -872,7 +1087,6 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -903,7 +1117,6 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -935,8 +1148,6 @@ void _copyServerTemplates(
       ),
     ],
     ignoreFileNames: [
-      'pubspec.lock',
-      'pubspec_overrides.yaml',
       'ios',
       'android',
       'web',
@@ -986,7 +1197,12 @@ void _copyModuleTemplates(
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
-    fileNameReplacements: const [],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
     ignoreFileNames: const [],
   );
   rootCopier.copyFiles();
@@ -1018,7 +1234,6 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -1049,7 +1264,6 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 

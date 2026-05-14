@@ -132,4 +132,129 @@ void main() {
       },
     );
   });
+
+  group('Given a SQLite database table definition with a Uri column ', () {
+    test(
+      'when generating SQL with a specific Uri default value, then TEXT uses parenthesized literal default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('uriDefault')
+                        .withColumnType(ColumnType.text)
+                        .withColumnDefault('\'https://serverpod.dev/\'')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"uriDefault" TEXT NOT NULL DEFAULT (\'https://serverpod.dev/\')',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the Uri column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('uriNoDefault')
+                        .withColumnType(ColumnType.text)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"uriNoDefault" TEXT NOT NULL'));
+        expect(
+          sql,
+          isNot(contains('"uriNoDefault" TEXT NOT NULL DEFAULT')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable Uri field and columnDefault, then the column is nullable with default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('nullableUriDefault')
+                        .withColumnType(ColumnType.text)
+                        .withIsNullable(true)
+                        .withColumnDefault('\'https://serverpod.dev\'')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"nullableUriDefault" TEXT DEFAULT (\'https://serverpod.dev\')',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable Uri field and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('nullableUriNoDefault')
+                        .withColumnType(ColumnType.text)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"nullableUriNoDefault" TEXT\n'));
+        expect(sql, isNot(contains('"nullableUriNoDefault" TEXT DEFAULT')));
+      },
+    );
+  });
 }

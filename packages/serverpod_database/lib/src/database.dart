@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:serverpod_shared/serverpod_shared.dart';
-
 import '../serverpod_database.dart';
 import 'interface/database_connection.dart';
 
@@ -44,7 +42,7 @@ class Database {
   DatabaseDialect get dialect => _databaseConnection.poolManager.dialect;
 
   /// The serialization manager to use for the database.
-  SerializationManagerServer get serializationManager =>
+  DatabaseSerializationManager get serializationManager =>
       _databaseConnection.poolManager.serializationManager;
 
   /// The analyzer for this database.
@@ -76,7 +74,8 @@ class Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -99,6 +98,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: resolvedTransaction,
       include: include,
@@ -126,7 +126,8 @@ class Database {
     Expression? where,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -148,6 +149,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: resolvedTransaction,
       include: include,
@@ -282,7 +284,8 @@ class Database {
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -294,6 +297,7 @@ class Database {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
@@ -334,6 +338,63 @@ class Database {
     );
   }
 
+  /// Upserts all [TableRow]s in the list and returns the resulting rows.
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  /// This is an atomic operation.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update will only apply to rows
+  /// matching the given expression. Rows that conflict but don't match
+  /// [updateWhere] are skipped and not returned, so the resulting list may be
+  /// shorter than [rows].
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.upsert<T>(
+      _session,
+      rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
+  /// Upserts a single [TableRow] and returns the resulting row.
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update will only apply to rows
+  /// matching the given expression.
+  Future<T?> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.upsertRow<T>(
+      _session,
+      row,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
@@ -344,7 +405,8 @@ class Database {
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -353,6 +415,7 @@ class Database {
       rows,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
@@ -379,7 +442,8 @@ class Database {
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Column? orderBy,
-    List<Order>? orderByList,
+    List<Column>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
   }) async {
@@ -388,6 +452,7 @@ class Database {
       where,
       orderBy: orderBy,
       orderByList: orderByList,
+      // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,

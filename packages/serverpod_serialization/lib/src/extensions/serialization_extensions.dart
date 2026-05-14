@@ -57,6 +57,7 @@ extension UuidValueJsonExtension on UuidValue {
   /// Returns a deserialized version of the [UuidValue].
   static UuidValue fromJson(dynamic value) {
     if (value is UuidValue) return value;
+    if (value is Uint8List) return UuidValue.fromByteList(value);
     return UuidValue.withValidation(value as String);
   }
 

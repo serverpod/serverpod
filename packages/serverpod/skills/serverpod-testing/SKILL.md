@@ -5,7 +5,9 @@ description: Test Serverpod endpoints and business logic — withServerpod, sess
 
 # Serverpod Testing
 
-Generated test tools let you call endpoints in tests with full server context (DB, caching, etc.). Import the **generated** test tools file, not `serverpod_test` directly — it re-exports everything needed.
+Generated test tools let you call endpoints in tests with full server context (DB, caching, etc.). Import the **generated** test tools file, not `serverpod_test` directly — it re-exports everything needed. The import path comes from `config/generator.yaml` (`server_test_tools_path`); the examples below use the common `test_tools/serverpod_test_tools.dart` output.
+
+Prefer Given/when/then descriptions. Across nested groups plus the test name, there should be one clear Given, one when, and one then that can explain a failure without reading the code.
 
 ## Basic test
 
@@ -23,7 +25,7 @@ void main() {
 }
 ```
 
-Start DB before running: `docker compose up -d`, then `dart test`.
+Start required services before running tests. In default Docker/PostgreSQL projects this is usually `docker compose up -d`, then `dart test`; SQLite or Mini projects may not need Docker, and Redis is only needed for Redis/global-cache/message tests.
 
 ## Session builder
 
@@ -156,12 +158,16 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 | Option | Default | Description |
 | ------ | ------- | ----------- |
 | `applyMigrations` | `true` | Apply pending migrations on start |
+| `configOverride` | — | Override loaded server config for tests |
 | `enableSessionLogging` | `false` | Enable session logging |
+| `experimentalFeatures` | `null` | Experimental features to enable for the tests |
 | `rollbackDatabase` | `afterEach` | When to rollback (afterEach, afterAll, disabled) |
 | `runMode` | `ServerpodRunMode.test` | Run mode (test, development, etc.) |
+| `runtimeParametersBuilder` | `null` | Override global runtime parameters for the tests |
 | `serverpodLoggingMode` | `normal` | Logging mode |
 | `serverpodStartTimeout` | `30s` | Timeout for Serverpod startup |
 | `testGroupTagsOverride` | `['integration']` | Tags for the test group |
+| `testServerOutputMode` | `normal` | Control stdout/stderr from the test server |
 
 ## Running tests
 
@@ -172,15 +178,6 @@ dart test -t integration      # Only integration tests
 dart test -x integration      # Only unit tests
 dart test -t integration --concurrency=1  # Sequential (for rollback disabled)
 ```
-
-## Test exceptions
-
-Exported from generated test tools:
-
-- `ServerpodUnauthenticatedException` — endpoint called without auth
-- `ServerpodInsufficientAccessException` — auth key lacks required scope
-- `ConnectionClosedException` — stream connection closed with error
-- `InvalidConfigurationException` — invalid config (e.g. nested transactions with rollback enabled)
 
 ## DB connection limits
 

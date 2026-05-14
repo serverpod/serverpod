@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -138,6 +138,7 @@ abstract class UserProfileImage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     UserProfileImageInclude? include,
@@ -147,7 +148,8 @@ abstract class UserProfileImage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UserProfileImage.t),
       include: include,
     );
@@ -338,6 +340,7 @@ class UserProfileImageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -385,6 +388,7 @@ class UserProfileImageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -396,7 +400,8 @@ class UserProfileImageRepository {
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -428,6 +433,7 @@ class UserProfileImageRepository {
     _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -439,7 +445,8 @@ class UserProfileImageRepository {
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -499,6 +506,69 @@ class UserProfileImageRepository {
   }) async {
     return session.db.insertRow<UserProfileImage>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [UserProfileImage]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [UserProfileImage]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<UserProfileImage>> upsert(
+    _i1.DatabaseSession session,
+    List<UserProfileImage> rows, {
+    required _i1.ColumnSelections<UserProfileImageTable> conflictColumns,
+    _i1.ColumnSelections<UserProfileImageTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<UserProfileImage>(
+      rows,
+      conflictColumns: conflictColumns(UserProfileImage.t),
+      updateColumns: updateColumns?.call(UserProfileImage.t),
+      updateWhere: updateWhere?.call(UserProfileImage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [UserProfileImage] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [UserProfileImage] will have its `id` field set.
+  Future<UserProfileImage?> upsertRow(
+    _i1.DatabaseSession session,
+    UserProfileImage row, {
+    required _i1.ColumnSelections<UserProfileImageTable> conflictColumns,
+    _i1.ColumnSelections<UserProfileImageTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<UserProfileImage>(
+      row,
+      conflictColumns: conflictColumns(UserProfileImage.t),
+      updateColumns: updateColumns?.call(UserProfileImage.t),
+      updateWhere: updateWhere?.call(UserProfileImage.t),
       transaction: transaction,
     );
   }
@@ -564,6 +634,7 @@ class UserProfileImageRepository {
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -574,7 +645,8 @@ class UserProfileImageRepository {
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -590,6 +662,7 @@ class UserProfileImageRepository {
     _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -598,7 +671,8 @@ class UserProfileImageRepository {
       rows,
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -623,6 +697,7 @@ class UserProfileImageRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
@@ -631,7 +706,8 @@ class UserProfileImageRepository {
       where: where(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

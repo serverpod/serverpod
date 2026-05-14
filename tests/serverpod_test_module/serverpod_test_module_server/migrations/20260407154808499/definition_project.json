@@ -1,0 +1,14 @@
+{
+  "__className__": "serverpod.DatabaseDefinition",
+  "schemaVersion": 2,
+  "moduleName": "serverpod_test_module",
+  "tables": [],
+  "installedModules": [
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod",
+      "version": "20260407154349528"
+    }
+  ],
+  "migrationApiVersion": 1
+}

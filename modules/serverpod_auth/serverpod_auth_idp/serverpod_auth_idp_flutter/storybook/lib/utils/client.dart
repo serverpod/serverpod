@@ -150,6 +150,16 @@ class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
   }
 
   @override
+  Future<AuthSuccess> loginWithCode({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+  }) async {
+    _mockData.hasAccount = true;
+    return _mockData.authSuccess;
+  }
+
+  @override
   Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 

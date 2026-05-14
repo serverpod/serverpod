@@ -377,6 +377,7 @@ abstract class SharedModelContainer
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
@@ -386,7 +387,8 @@ abstract class SharedModelContainer
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(SharedModelContainer.t),
       include: include,
     );
@@ -925,6 +927,7 @@ class SharedModelContainerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -970,6 +973,7 @@ class SharedModelContainerRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -980,7 +984,8 @@ class SharedModelContainerRepository {
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -1011,6 +1016,7 @@ class SharedModelContainerRepository {
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -1021,7 +1027,8 @@ class SharedModelContainerRepository {
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -1078,6 +1085,69 @@ class SharedModelContainerRepository {
   }) async {
     return session.db.insertRow<SharedModelContainer>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [SharedModelContainer]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [SharedModelContainer]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SharedModelContainer>> upsert(
+    _i1.DatabaseSession session,
+    List<SharedModelContainer> rows, {
+    required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
+    _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SharedModelContainer>(
+      rows,
+      conflictColumns: conflictColumns(SharedModelContainer.t),
+      updateColumns: updateColumns?.call(SharedModelContainer.t),
+      updateWhere: updateWhere?.call(SharedModelContainer.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SharedModelContainer] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [SharedModelContainer] will have its `id` field set.
+  Future<SharedModelContainer?> upsertRow(
+    _i1.DatabaseSession session,
+    SharedModelContainer row, {
+    required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
+    _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SharedModelContainer>(
+      row,
+      conflictColumns: conflictColumns(SharedModelContainer.t),
+      updateColumns: updateColumns?.call(SharedModelContainer.t),
+      updateWhere: updateWhere?.call(SharedModelContainer.t),
       transaction: transaction,
     );
   }
@@ -1143,6 +1213,7 @@ class SharedModelContainerRepository {
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -1153,7 +1224,8 @@ class SharedModelContainerRepository {
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -1169,6 +1241,7 @@ class SharedModelContainerRepository {
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -1177,7 +1250,8 @@ class SharedModelContainerRepository {
       rows,
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -1202,6 +1276,7 @@ class SharedModelContainerRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -1210,7 +1285,8 @@ class SharedModelContainerRepository {
       where: where(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }

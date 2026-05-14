@@ -1,0 +1,6 @@
+class: ObjectFieldScopes
+table: object_field_scopes
+fields:
+  normal: String
+  api: String?, !persist
+  database: String?, scope=serverOnly
