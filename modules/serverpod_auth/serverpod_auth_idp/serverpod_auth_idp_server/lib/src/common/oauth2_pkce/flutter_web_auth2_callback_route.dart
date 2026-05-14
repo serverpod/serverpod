@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
-/// {@template flutter_web_auth2_redirect_route}
+/// {@template flutter_web_auth2_callback_route}
 /// Route that serves the [flutter_web_auth_2](https://pub.dev/packages/flutter_web_auth_2)
-/// redirect page for the OAuth2 PKCE web sign-in flow.
+/// callback page for the OAuth2 PKCE web sign-in flow.
 ///
 /// This route is **provider-agnostic** — register it once and share it across
 /// all OAuth2 PKCE-based identity providers (Google, GitHub, Microsoft, etc.).
@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart';
 /// ## Same-origin requirement
 ///
 /// This route **must** be served from the same host and port as your Flutter
-/// web application. The redirect page uses `window.postMessage` to deliver
+/// web application. The callback page uses `window.postMessage` to deliver
 /// the OAuth result back to the Flutter app. Browsers enforce that
 /// `postMessage` with a specific `targetOrigin` is only delivered when the
 /// receiving window has the same origin (scheme + host + port).
@@ -29,7 +29,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// ```dart
 /// // server.dart
-/// pod.configureOAuth2WebRedirectRoute(
+/// pod.configureFlutterWebAuth2CallbackRoute(
 ///   host: 'example.com',
 /// );
 ///
@@ -51,15 +51,15 @@ import 'package:serverpod/serverpod.dart';
 /// file provided by `flutter_web_auth_2` in your Flutter app's `web/`
 /// directory and use its URL as the `redirectUri`.
 /// {@endtemplate}
-final class FlutterWebAuth2RedirectRoute extends Route {
-  /// Creates a [FlutterWebAuth2RedirectRoute].
+final class FlutterWebAuth2CallbackRoute extends Route {
+  /// Creates a [FlutterWebAuth2CallbackRoute].
   ///
   /// The optional [host] restricts this route to requests whose `Host` header
   /// matches the given value. Defaults to `null`, which matches any host.
   ///
   /// Set [host] to the domain that serves your Flutter web app to ensure the
   /// callback is only reachable from the correct origin.
-  FlutterWebAuth2RedirectRoute({super.host}) : super(methods: {Method.get});
+  FlutterWebAuth2CallbackRoute({super.host}) : super(methods: {Method.get});
 
   @override
   FutureOr<Result> handleCall(final Session session, final Request request) {
@@ -95,15 +95,15 @@ final class FlutterWebAuth2RedirectRoute extends Route {
 </script>''';
 }
 
-/// Extension to register the [FlutterWebAuth2RedirectRoute] on the web server.
-extension FlutterWebAuth2ConfigureRoute on Serverpod {
-  /// {@macro flutter_web_auth2_redirect_route}
-  void configureOAuth2WebRedirectRoute({
+/// Extension to register the [FlutterWebAuth2CallbackRoute] on the web server.
+extension FlutterWebAuth2ConfigureCallbackRoute on Serverpod {
+  /// {@macro flutter_web_auth2_callback_route}
+  void configureFlutterWebAuth2CallbackRoute({
     final String path = '/auth/callback',
     final String? host,
   }) {
     webServer.addRoute(
-      FlutterWebAuth2RedirectRoute(host: host),
+      FlutterWebAuth2CallbackRoute(host: host),
       path,
     );
   }
