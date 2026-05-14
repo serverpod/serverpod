@@ -73,11 +73,10 @@ String _udsTransportSection({required Directory pgDataDir}) {
     runDir.path,
     from: pgDataDir.path,
   );
-  // PG accepts forward slashes on Windows; native backslashes inside a
-  // quoted .conf string get parsed as C-style escapes (`\r` -> CR),
-  // mangling the path. Re-join with the POSIX context to normalize, then
-  // escape per PG conf-string rules in case the user has unusual chars
-  // in the project path (`'` or `\` on Linux).
+  // PG parses C-style escapes inside quoted .conf strings (`\r` -> CR),
+  // so a Windows-native `..\run` mangles the path. Re-join with POSIX
+  // separators and then run through the conf-string escape for any
+  // residual `'` / `\` (legal in Linux project paths).
   var posixSocketDir = p.posix.joinAll(p.split(relativeSocketDir));
   return """
 listen_addresses = ''

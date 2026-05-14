@@ -125,6 +125,84 @@ void main() {
       onPlatform: const {'windows': Skip('POSIX exec bits not honored')},
     );
 
+    test(
+      'when a file entry name contains ../ that escapes the destination '
+      'then BinaryFetchException is thrown (tar-slip).',
+      () {
+        var tar = _buildTar([
+          _TarEntry.file('../escape.txt', Uint8List.fromList([1])),
+        ]);
+
+        expect(
+          () => ZonkyArchive.extractTarballInto(tar, tmp),
+          throwsA(isA<BinaryFetchException>()),
+        );
+        expect(
+          File(p.join(tmp.parent.path, 'escape.txt')).existsSync(),
+          isFalse,
+          reason: 'sibling-dir file must not be created',
+        );
+      },
+    );
+
+    test(
+      'when a file entry name is an absolute path then BinaryFetchException '
+      'is thrown.',
+      () {
+        // POSIX absolute - on Windows package:path treats /etc/... as
+        // root-relative-to-current-drive, which still won't be inside tmp.
+        var tar = _buildTar([
+          _TarEntry.file('/etc/passwd', Uint8List.fromList([1])),
+        ]);
+
+        expect(
+          () => ZonkyArchive.extractTarballInto(tar, tmp),
+          throwsA(isA<BinaryFetchException>()),
+        );
+      },
+    );
+
+    test(
+      'when a symlink target resolves outside the destination then '
+      'BinaryFetchException is thrown (symlink-traversal).',
+      () {
+        var tar = _buildTar([
+          _TarEntry.file('lib/real.txt', Uint8List.fromList([1])),
+          _TarEntry.symlink(
+            'lib/escape',
+            target: '../../../../etc/passwd',
+          ),
+        ]);
+
+        expect(
+          () => ZonkyArchive.extractTarballInto(tar, tmp),
+          throwsA(isA<BinaryFetchException>()),
+        );
+        expect(
+          Link(p.join(tmp.path, 'lib/escape')).existsSync(),
+          isFalse,
+          reason: 'escaping symlink must not be created',
+        );
+      },
+      onPlatform: const {'windows': Skip('Windows symlink perms')},
+    );
+
+    test(
+      'when a symlink target is an absolute path then '
+      'BinaryFetchException is thrown.',
+      () {
+        var tar = _buildTar([
+          _TarEntry.symlink('boom', target: '/etc/passwd'),
+        ]);
+
+        expect(
+          () => ZonkyArchive.extractTarballInto(tar, tmp),
+          throwsA(isA<BinaryFetchException>()),
+        );
+      },
+      onPlatform: const {'windows': Skip('Windows symlink perms')},
+    );
+
     test('when extracting then onProgress is called and ends at 1.0.', () {
       var tar = _buildTar([
         for (var i = 0; i < 50; i++)

@@ -74,6 +74,7 @@ class ZonkyArchive {
 
     for (var entry in entries) {
       var outPath = p.join(destination.path, entry.name);
+      _requireInsideDestination(outPath, destination.path, entry.name);
 
       if (entry.isSymbolicLink) {
         symlinks.add(entry);
@@ -106,6 +107,14 @@ class ZonkyArchive {
           'Symbolic link ${entry.name} has empty target string in TAR.',
         );
       }
+      var resolvedTarget = p.isAbsolute(target)
+          ? target
+          : p.join(p.dirname(outPath), target);
+      _requireInsideDestination(
+        resolvedTarget,
+        destination.path,
+        '${entry.name} -> $target',
+      );
       var link = Link(outPath);
       if (link.existsSync() || File(outPath).existsSync()) {
         link.deleteSync();
@@ -155,6 +164,23 @@ class ZonkyArchive {
       );
     }
   }
+}
+
+/// Throws [BinaryFetchException] when [path] is not equal to or strictly
+/// within [destination]. Used to reject tar-slip / symlink-traversal
+/// attacks: the SHA-256 check covers the JAR bytes but says nothing about
+/// the legitimacy of entry names.
+void _requireInsideDestination(
+  String path,
+  String destination,
+  String entryLabel,
+) {
+  if (p.equals(path, destination) || p.isWithin(destination, path)) return;
+  throw BinaryFetchException(
+    'Archive entry escapes destination: $entryLabel '
+    '(resolved to ${p.normalize(path)}; destination is '
+    '${p.normalize(destination)})',
+  );
 }
 
 /// Reads a symlink's target across both archive 3.x (`nameOfLinkedFile`,
