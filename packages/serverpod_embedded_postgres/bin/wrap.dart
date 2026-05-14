@@ -124,6 +124,19 @@ Future<void> main(List<String> args) async {
   stdout.writeln('Ready in ${sw.elapsedMilliseconds}ms (pid=${pg.pid}).');
   stdout.writeln('Connection string: ${pg.connectionString}');
 
+  // Embedded PG may bind a different port than the one in the runMode.yaml
+  // after an port allocation retry on the requested port. Instead of failing,
+  // we override the address and port for Serverpod to pick up when connecting
+  // to the database.
+  Map<String, String>? childEnvironment;
+  if (useTcp) {
+    var uri = pg.connectionUri;
+    var host = uri.host.isNotEmpty ? uri.host : '127.0.0.1';
+    childEnvironment = Map<String, String>.from(Platform.environment)
+      ..['SERVERPOD_DATABASE_HOST'] = host
+      ..['SERVERPOD_DATABASE_PORT'] = '${uri.port}';
+  }
+
   // Run the wrapped command. inheritStdio makes test reporters and
   // Ctrl+C work as expected.
   var commandExitCode = 1;
@@ -132,6 +145,7 @@ Future<void> main(List<String> args) async {
       rest.first,
       rest.skip(1).toList(),
       workingDirectory: p.absolute(moduleDir),
+      environment: childEnvironment,
       mode: ProcessStartMode.inheritStdio,
     );
     commandExitCode = await process.exitCode;
