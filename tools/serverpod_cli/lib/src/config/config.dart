@@ -87,8 +87,10 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
+    required List<String> relativeFlutterPackagePathParts,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
+       _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
 
@@ -224,6 +226,27 @@ class GeneratorConfig implements ModelLoadConfig {
     ...serverPackageDirectoryPathParts,
     ..._relativeDartClientPackagePathParts,
   ];
+
+  /// Path parts from the server package to the Flutter package (when the
+  /// project has one). Defaults to `['..', '${name}_flutter']`.
+  final List<String> _relativeFlutterPackagePathParts;
+
+  /// Absolute path parts to the Flutter package. Does not check existence;
+  /// use [hasFlutterPackage] before resolving against the filesystem.
+  List<String> get flutterPackagePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ..._relativeFlutterPackagePathParts,
+  ];
+
+  /// True when [flutterPackagePathParts] resolves to a directory that looks
+  /// like a Flutter project (directory exists AND contains a `pubspec.yaml`).
+  /// The pubspec check guards against unrelated directories that happen to
+  /// match the `<name>_flutter` naming convention (e.g. in module projects).
+  bool get hasFlutterPackage {
+    final dirPath = p.joinAll(flutterPackagePathParts);
+    if (!Directory(dirPath).existsSync()) return false;
+    return File(p.join(dirPath, 'pubspec.yaml')).existsSync();
+  }
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
@@ -363,6 +386,8 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
+    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
+
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
       relativeServerTestToolsPathParts = p.split(
@@ -489,6 +514,7 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
