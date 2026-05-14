@@ -2,17 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "projectname_flutter",
-      "cwd": "${workspaceFolder}/projectname_flutter",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart"
-    },
-    {
       "name": "projectname_server",
       "type": "dart",
       "request": "attach",
       "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/vm-service-info.json",
+      "preLaunchTask": "serverpod_start",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      // Attaches to the Flutter app that `serverpod start` spawns via
+      // its `--flutter` flag (default on when a Flutter package is
+      // present). Don't launch a second Flutter instance from VS Code -
+      // that would race the spawn for the same web-server port.
+      "name": "projectname_flutter",
+      "type": "dart",
+      "request": "attach",
+      "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/flutter-vm-service-info.json",
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
     }
@@ -21,6 +26,9 @@
     {
       "name": "projectname (full stack)",
       "configurations": ["projectname_server", "projectname_flutter"],
+      // Stop both debug sessions when the user stops one. Without this
+      // the orphan keeps running and the next launch fails to re-attach.
+      "stopAll": true,
       "presentation": {
         "order": 1
       }
