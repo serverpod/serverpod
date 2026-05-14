@@ -323,7 +323,15 @@ class BinaryStore {
   }
 
   Future<String> _fetchSha256(ZonkyArtifact artifact) async {
-    final resp = await _http.get(artifact.sha256Url);
+    final resp = await _http
+        .get(artifact.sha256Url)
+        .timeout(
+          _sha256Timeout,
+          onTimeout: () => throw BinaryFetchException(
+            'Timed out after ${_sha256Timeout.inSeconds}s fetching '
+            '${artifact.sha256Url}',
+          ),
+        );
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.sha256Url} returned ${resp.statusCode}',
@@ -340,7 +348,15 @@ class BinaryStore {
   }
 
   Future<Uint8List> _downloadJar(ZonkyArtifact artifact) async {
-    final resp = await _http.get(artifact.jarUrl);
+    final resp = await _http
+        .get(artifact.jarUrl)
+        .timeout(
+          _jarTimeout,
+          onTimeout: () => throw BinaryFetchException(
+            'Timed out after ${_jarTimeout.inMinutes} min downloading '
+            '${artifact.jarUrl}',
+          ),
+        );
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.jarUrl} returned ${resp.statusCode}',
@@ -374,3 +390,13 @@ String _formatDuration(Duration d) {
 }
 
 enum _LoserOutcome { metaAppeared, staleStolen, timedOut }
+
+/// Cap on the SHA-256 sidecar fetch (~80 bytes over HTTPS). Generous so
+/// transient mirror latency doesn't fail an otherwise-healthy fetch.
+const Duration _sha256Timeout = Duration(seconds: 60);
+
+/// Cap on the JAR download (~200 MB cold). Sized for a slow Maven mirror
+/// over a constrained CI connection - tighter risks false-positive
+/// failures on legitimately-slow networks; looser defeats the point of
+/// adding the timeout at all.
+const Duration _jarTimeout = Duration(minutes: 5);
