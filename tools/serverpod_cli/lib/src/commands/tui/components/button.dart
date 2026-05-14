@@ -14,7 +14,7 @@ class Button extends StatelessComponent {
     this.ctrl,
     this.alt,
     this.meta,
-  }) : assert(activationKeys == const [], 'activationKeys can not be empty');
+  }) : assert(activationKeys.length > 0, 'activationKeys can not be empty');
 
   final String name;
   final String activationChar;
