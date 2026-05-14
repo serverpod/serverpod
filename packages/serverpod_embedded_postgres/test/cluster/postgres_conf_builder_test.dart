@@ -112,5 +112,25 @@ void main() {
         );
       },
     );
+
+    test(
+      'when the managed block uses CRLF line endings then the END marker '
+      "'s trailing \\r\\n is consumed (no stray \\r leaks past the block).",
+      () {
+        var crlf =
+            '# keep\r\n$confBlockBeginMarker\r\nold = 1\r\n'
+            '$confBlockEndMarker\r\nafter = 2\r\n';
+
+        var result = rewriteManagedBlock(crlf, 'new = 1\n');
+
+        expect(
+          result,
+          isNot(contains('\r\nafter')),
+          reason: 'no orphan \\r should remain between block and suffix',
+        );
+        expect(result, contains('after = 2'));
+        expect(result, contains('new = 1'));
+      },
+    );
   });
 }

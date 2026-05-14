@@ -73,16 +73,26 @@ String _udsTransportSection({required Directory pgDataDir}) {
     runDir.path,
     from: pgDataDir.path,
   );
-  // PG accepts forward slashes on Windows; native backslashes get parsed
-  // as C-style escapes in quoted .conf strings (`\r` -> CR), mangling the
-  // path. Re-join with the POSIX context sidesteps that.
+  // PG accepts forward slashes on Windows; native backslashes inside a
+  // quoted .conf string get parsed as C-style escapes (`\r` -> CR),
+  // mangling the path. Re-join with the POSIX context to normalize, then
+  // escape per PG conf-string rules in case the user has unusual chars
+  // in the project path (`'` or `\` on Linux).
   var posixSocketDir = p.posix.joinAll(p.split(relativeSocketDir));
   return """
 listen_addresses = ''
-unix_socket_directories = '$posixSocketDir'
+unix_socket_directories = '${_quoteConfString(posixSocketDir)}'
 unix_socket_permissions = 0700
 """;
 }
+
+/// Escapes a string for use inside a single-quoted PostgreSQL .conf
+/// value. Per PG's conf parser, backslashes are doubled and single
+/// quotes are doubled. Other escape sequences (`\n`, `\r`, `\t`, `\xnn`)
+/// remain interpreted - but since we always emit the backslash-doubled
+/// form, no literal backslash in [s] can be misread as an escape lead-in.
+String _quoteConfString(String s) =>
+    s.replaceAll(r'\', r'\\').replaceAll("'", "''");
 
 String _tcpTransportSection({required int port}) {
   return """
@@ -114,6 +124,12 @@ String rewriteManagedBlock(String original, String body) {
     );
   }
   var afterEnd = endIdx + confBlockEndMarker.length;
+  // Consume the marker's trailing line ending (LF, CR, or CRLF) so a
+  // Windows-saved file doesn't leave a stray \r when we splice in a
+  // body that uses LF.
+  if (afterEnd < original.length && original[afterEnd] == '\r') {
+    afterEnd++;
+  }
   if (afterEnd < original.length && original[afterEnd] == '\n') {
     afterEnd++;
   }
