@@ -29,7 +29,7 @@ class Supervisor implements SupervisedProcess {
   final List<StreamSubscription<ProcessSignal>> _signalSubs;
   final Completer<int> _exitCompleter = Completer();
 
-  bool _stopped = false;
+  Future<void>? _stopFuture;
 
   Supervisor._({
     required Process process,
@@ -46,13 +46,13 @@ class Supervisor implements SupervisedProcess {
     unawaited(_process.exitCode.then(_exitCompleter.complete));
   }
 
-  /// PID of the running postmaster, or null after [stop] completes.
+  /// PID of the running postmaster, or null once [stop] has been called.
   @override
-  int? get pid => _stopped ? null : _process.pid;
+  int? get pid => _stopFuture != null ? null : _process.pid;
 
   /// True between [start] and [stop].
   @override
-  bool get isRunning => !_stopped && !_exitCompleter.isCompleted;
+  bool get isRunning => _stopFuture == null && !_exitCompleter.isCompleted;
 
   /// Captured tail of the postmaster's stdout + stderr (most recent first
   /// 200 lines, per the spec).
@@ -155,12 +155,14 @@ class Supervisor implements SupervisedProcess {
   ///   2. After [timeout]/2, SIGTERM (immediate fast-shutdown).
   ///   3. After [timeout], SIGKILL (last resort).
   ///
-  /// Removes the pidfile and closes the log sink. Idempotent.
+  /// Removes the pidfile and closes the log sink. Idempotent: subsequent
+  /// callers share the first call's future and only return once the
+  /// underlying work is fully done.
   @override
-  Future<void> stop({Duration timeout = const Duration(seconds: 10)}) async {
-    if (_stopped) return;
-    _stopped = true;
+  Future<void> stop({Duration timeout = const Duration(seconds: 10)}) =>
+      _stopFuture ??= _stop(timeout);
 
+  Future<void> _stop(Duration timeout) async {
     for (var sub in _signalSubs) {
       await sub.cancel();
     }
