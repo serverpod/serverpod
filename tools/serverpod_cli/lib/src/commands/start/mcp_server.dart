@@ -105,10 +105,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _applyMigrations(CallToolRequest request) async {
     final callback = onApplyMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
     try {
@@ -154,10 +151,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _createMigration(CallToolRequest request) async {
     final callback = onCreateMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
     final tag = _stringArg(request, 'tag');
@@ -209,10 +203,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _createRepairMigration(CallToolRequest request) async {
     final callback = onCreateRepairMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
     try {
@@ -266,10 +257,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _hotReload(CallToolRequest request) async {
     final callback = onHotReload;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
     try {
       await callback();
@@ -297,10 +285,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _hotRestart(CallToolRequest request) async {
     final callback = onHotRestart;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
     try {
       await callback();
@@ -356,6 +341,13 @@ base class ServerpodMcpServer extends MCPServer
     );
   }
 }
+
+/// Returns the standard error response for tools whose callback is unset
+/// because the watch session has not yet attached.
+CallToolResult _notConnectedError() => CallToolResult(
+  content: [TextContent(text: 'Watch session not connected.')],
+  isError: true,
+);
 
 /// Reads a string argument; treats missing, non-string, and empty values as
 /// `null`.
