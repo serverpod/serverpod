@@ -853,6 +853,30 @@ void main() {
         expect(order, ['reload', 'restart']);
       },
     );
+
+    test(
+      'when invoked while an applyMigration is in flight, '
+      'then it runs after the migration completes',
+      () async {
+        final order = <String>[];
+        compiler.calls.clear();
+        server.calls.clear();
+        factoryCalls.clear();
+
+        // applyMigration also queues onto [_chain], so a forceRestart issued
+        // before it returns must wait for it.
+        final apply = session.applyMigration().then(
+          (_) => order.add('apply'),
+        );
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
+        );
+
+        await Future.wait([apply, restart]);
+
+        expect(order, ['apply', 'restart']);
+      },
+    );
   });
 
   group('Given dispose is called', () {
