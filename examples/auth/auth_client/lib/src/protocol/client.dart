@@ -585,6 +585,7 @@ class Client extends _i2.ServerpodClientShared {
     onFailedCall,
     Function(_i2.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    bool withCredentials = false,
   }) : super(
          host,
          _i7.Protocol(),
@@ -595,6 +596,7 @@ class Client extends _i2.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         withCredentials: withCredentials,
        ) {
     anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);

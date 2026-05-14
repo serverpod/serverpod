@@ -79,6 +79,7 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    bool withCredentials = false,
   }) : super(
          host,
          _i4.Protocol(),
@@ -89,6 +90,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         withCredentials: withCredentials,
        ) {
     testTools = EndpointTestTools(this);
   }
