@@ -1,5 +1,5 @@
 import 'package:postgres/postgres.dart' as pg;
-import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
+import 'package:serverpod_embedded_postgres/serverpod_config_mapping.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
