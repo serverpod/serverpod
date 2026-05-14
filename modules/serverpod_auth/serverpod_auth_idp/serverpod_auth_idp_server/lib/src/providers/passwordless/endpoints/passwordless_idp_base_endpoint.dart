@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 import '../business/passwordless_idp.dart';
+import '../business/passwordless_idp_config.dart';
 
 /// Base endpoint for passwordless login.
 ///
@@ -47,6 +48,9 @@ abstract class PasswordlessIdpBaseEndpoint extends Endpoint {
   /// Starts the login process and delivers a verification code using the
   /// configured callback.
   ///
+  /// If [handleType] is omitted, [PasswordlessIdpConfig.defaultHandleType] is
+  /// used as the handle namespace.
+  ///
   /// Returns the login request ID.
   ///
   /// Throws a [PasswordlessLoginException] with reason
@@ -56,7 +60,7 @@ abstract class PasswordlessIdpBaseEndpoint extends Endpoint {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
-    final String? handleType,
+    final String handleType = 'default',
   }) async {
     return passwordlessIdp.startLogin(
       session,

@@ -24,7 +24,8 @@ enum PasswordlessLoginExceptionReason implements _i1.SerializableModel {
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown;
+  unknown
+  ;
 
   static PasswordlessLoginExceptionReason fromJson(String name) {
     switch (name) {

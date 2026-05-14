@@ -87,7 +87,7 @@ class PasswordlessIdp {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
-    final String? handleType,
+    final String handleType = PasswordlessIdpConfig.defaultHandleType,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(

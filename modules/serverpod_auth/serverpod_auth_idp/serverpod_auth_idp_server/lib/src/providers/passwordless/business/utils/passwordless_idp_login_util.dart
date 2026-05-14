@@ -17,43 +17,42 @@ import 'passwordless_login_request_store.dart';
 /// {@endtemplate}
 class PasswordlessIdpLoginUtil {
   final PasswordlessIdpConfig _config;
-  final Argon2HashUtil _hashUtil;
-  late final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
+  final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
   final PasswordlessLoginRequestStore _requestStore;
   final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
   final DatabaseRateLimitedRequestAttemptUtil<UuidValue> _verifyRateLimiter;
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
-  PasswordlessIdpLoginUtil({
+  factory PasswordlessIdpLoginUtil({
     required final PasswordlessIdpConfig config,
-  }) : _config = config,
-       // 19MiB memory cost as recommended by OWASP:
-       // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-       _hashUtil = Argon2HashUtil(
-         hashPepper: config.secretHashPepper,
-         fallbackHashPeppers: config.fallbackSecretHashPeppers,
-         hashSaltLength: config.secretHashSaltLength,
-         parameters: Argon2HashParameters(memory: 19456),
-       ),
-       _requestStore = const PasswordlessLoginRequestStore(),
-       _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
-         RateLimitedRequestAttemptConfig<String>(
-           domain: 'passwordless',
-           source: 'login_request',
-           maxAttempts: config.loginRequestRateLimit.maxAttempts,
-           timeframe: config.loginRequestRateLimit.timeframe,
-         ),
-       ),
-       _verifyRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
-         RateLimitedRequestAttemptConfig(
-           domain: 'passwordless',
-           source: 'login_verify',
-           maxAttempts: config.loginVerificationCodeAllowedAttempts,
-           timeframe: config.loginVerificationCodeLifetime,
-         ),
-       ) {
-    _challengeUtil = SecretChallengeUtil.forConsumption(
-      hashUtil: _hashUtil,
+  }) {
+    // 19MiB memory cost as recommended by OWASP:
+    // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+    final hashUtil = Argon2HashUtil(
+      hashPepper: config.secretHashPepper,
+      fallbackHashPeppers: config.fallbackSecretHashPeppers,
+      hashSaltLength: config.secretHashSaltLength,
+      parameters: Argon2HashParameters(memory: 19456),
+    );
+    const requestStore = PasswordlessLoginRequestStore();
+    final requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil<String>(
+      RateLimitedRequestAttemptConfig<String>(
+        domain: 'passwordless',
+        source: 'login_request',
+        maxAttempts: config.loginRequestRateLimit.maxAttempts,
+        timeframe: config.loginRequestRateLimit.timeframe,
+      ),
+    );
+    final verifyRateLimiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
+      RateLimitedRequestAttemptConfig<UuidValue>(
+        domain: 'passwordless',
+        source: 'login_verify',
+        maxAttempts: config.loginVerificationCodeAllowedAttempts,
+        timeframe: config.loginVerificationCodeLifetime,
+      ),
+    );
+    final challengeUtil = SecretChallengeUtil.forConsumption(
+      hashUtil: hashUtil,
       consumptionConfig: SecretChallengeConsumptionConfig(
         getRequest:
             (
@@ -61,17 +60,19 @@ class PasswordlessIdpLoginUtil {
               final requestId, {
               required final transaction,
             }) {
-              return _requestStore.getRequestWithChallenge(
+              return requestStore.getRequestWithChallenge(
                 session,
                 requestId: requestId,
                 transaction: transaction,
               );
             },
         getChallenge: (final request) => request.challenge,
-        isExpired: _isExpired,
+        isExpired: (final request) => request.createdAt
+            .add(config.loginVerificationCodeLifetime)
+            .isBefore(clock.now()),
         onExpired: (final session, final request) async {
           await session.db.transaction(
-            (final transaction) => _requestStore.deleteById(
+            (final transaction) => requestStore.deleteById(
               session,
               requestId: request.id,
               transaction: transaction,
@@ -84,22 +85,47 @@ class PasswordlessIdpLoginUtil {
               final request, {
               required final transaction,
             }) {
-              return _requestStore.deleteById(
+              return requestStore.deleteById(
                 session,
                 requestId: request.id,
                 transaction: transaction,
               );
             },
-        rateLimiter: _verifyRateLimiter,
+        rateLimiter: verifyRateLimiter,
       ),
     );
+
+    return PasswordlessIdpLoginUtil._(
+      config: config,
+      challengeUtil: challengeUtil,
+      requestStore: requestStore,
+      requestRateLimiter: requestRateLimiter,
+      verifyRateLimiter: verifyRateLimiter,
+    );
   }
+
+  PasswordlessIdpLoginUtil._({
+    required final PasswordlessIdpConfig config,
+    required final SecretChallengeUtil<PasswordlessLoginRequestData>
+    challengeUtil,
+    required final PasswordlessLoginRequestStore requestStore,
+    required final DatabaseRateLimitedRequestAttemptUtil<String>
+    requestRateLimiter,
+    required final DatabaseRateLimitedRequestAttemptUtil<UuidValue>
+    verifyRateLimiter,
+  }) : _config = config,
+       _challengeUtil = challengeUtil,
+       _requestStore = requestStore,
+       _requestRateLimiter = requestRateLimiter,
+       _verifyRateLimiter = verifyRateLimiter;
 
   /// {@template passwordless_idp_login_util.delete_incomplete_login_attempts}
   /// Cleans up passwordless login state older than [olderThan].
   ///
   /// This removes pending passwordless login requests, their associated
   /// verification challenges, and both login request and verification attempts.
+  /// Linked [SecretChallenge] rows are deleted explicitly after request rows,
+  /// because the foreign-key cascade only applies in the opposite direction.
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// windows checked upon login request creation and login verification, and
@@ -134,7 +160,7 @@ class PasswordlessIdpLoginUtil {
   Future<UuidValue> startLogin(
     final Session session, {
     required final String handle,
-    required final String? handleType,
+    required final String handleType,
     required final Transaction transaction,
   }) async {
     final rateLimitNonce = _loginRequestRateLimitNonce(
@@ -185,8 +211,8 @@ class PasswordlessIdpLoginUtil {
 
   /// Verifies the login code and consumes the request in one step.
   ///
-  /// Rate limiting for verification attempts uses
-  /// [PasswordlessIdpConfig.loginVerificationCodeAllowedAttempts] and
+  /// Rate limiting for verification attempts is handled by [SecretChallengeUtil]
+  /// and uses [PasswordlessIdpConfig.loginVerificationCodeAllowedAttempts] and
   /// [PasswordlessIdpConfig.loginVerificationCodeLifetime].
   ///
   /// On success, deletes the request row within [transaction]. After it commits,
@@ -210,15 +236,9 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  bool _isExpired(final PasswordlessLoginRequestData request) {
-    return request.createdAt
-        .add(_config.loginVerificationCodeLifetime)
-        .isBefore(clock.now());
-  }
-
   String _loginRequestRateLimitNonce({
     required final String handle,
-    required final String? handleType,
+    required final String handleType,
   }) {
     return jsonEncode([handle, handleType]);
   }

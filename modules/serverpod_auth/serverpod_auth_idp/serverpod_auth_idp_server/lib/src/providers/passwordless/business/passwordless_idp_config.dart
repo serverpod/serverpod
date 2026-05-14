@@ -17,20 +17,26 @@ export '../../utils/default_code_generators.dart'
 /// Called after the verification code has been successfully verified.
 /// If the handle does not correspond to an existing user, the implementation
 /// is responsible for creating one and returning the new auth user ID.
+///
+/// The [handleType] is a non-null namespace key for the handle. Calls that do
+/// not specify one use [PasswordlessIdpConfig.defaultHandleType].
 typedef ResolveAuthUserIdFunction =
     FutureOr<UuidValue> Function(
       Session session, {
       required String handle,
-      required String? handleType,
+      required String handleType,
       required Transaction? transaction,
     });
 
 /// Function for sending out passwordless verification codes.
+///
+/// The [handleType] is a non-null namespace key for the handle. Calls that do
+/// not specify one use [PasswordlessIdpConfig.defaultHandleType].
 typedef SendPasswordlessVerificationCodeFunction =
     FutureOr<void> Function(
       Session session, {
       required String handle,
-      required String? handleType,
+      required String handleType,
       required UuidValue requestId,
       required String verificationCode,
       required Transaction? transaction,
@@ -40,6 +46,9 @@ typedef SendPasswordlessVerificationCodeFunction =
 /// Configuration options for the passwordless identity provider.
 /// {@endtemplate}
 class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
+  /// Default handle type used when callers do not specify a namespace.
+  static const String defaultHandleType = 'default';
+
   /// The pepper used for hashing verification codes.
   ///
   /// To rotate peppers without invalidating existing codes, use

@@ -12,7 +12,7 @@ class PasswordlessLoginRequestStore {
   Future<UuidValue> createRequest(
     final Session session, {
     required final String handle,
-    required final String? handleType,
+    required final String handleType,
     required final UuidValue challengeId,
     required final Transaction transaction,
   }) async {
@@ -33,7 +33,7 @@ class PasswordlessLoginRequestStore {
   Future<void> deleteByHandle(
     final Session session, {
     required final String handle,
-    required final String? handleType,
+    required final String handleType,
     required final Transaction transaction,
   }) async {
     final deleted = await PasswordlessLoginRequest.db.deleteWhere(
@@ -120,8 +120,8 @@ class PasswordlessLoginRequestData {
   /// Handle stored with the request.
   final String handle;
 
-  /// Optional type tag for the handle (e.g., "email", "sms").
-  final String? handleType;
+  /// Namespace key for the handle (e.g., "default", "email", "sms").
+  final String handleType;
 
   /// The verification challenge for this request.
   final SecretChallenge? challenge;
@@ -131,7 +131,7 @@ class PasswordlessLoginRequestData {
     required this.id,
     required this.createdAt,
     required this.handle,
-    this.handleType,
+    required this.handleType,
     required this.challenge,
   });
 }

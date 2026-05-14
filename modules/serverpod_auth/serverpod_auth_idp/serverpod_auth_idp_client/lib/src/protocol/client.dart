@@ -395,6 +395,9 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   /// Starts the login process and delivers a verification code using the
   /// configured callback.
   ///
+  /// If [handleType] is omitted, [PasswordlessIdpConfig.defaultHandleType] is
+  /// used as the handle namespace.
+  ///
   /// Returns the login request ID.
   ///
   /// Throws a [PasswordlessLoginException] with reason
@@ -402,7 +405,7 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   /// have been made.
   _i2.Future<_i1.UuidValue> startLogin({
     required String handle,
-    String? handleType,
+    String handleType = 'default',
   });
 }
 

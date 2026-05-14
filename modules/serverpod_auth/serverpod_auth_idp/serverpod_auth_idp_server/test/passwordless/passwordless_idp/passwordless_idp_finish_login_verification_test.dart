@@ -42,7 +42,7 @@ void main() {
                 (
                   final Session session, {
                   required final String handle,
-                  required final String? handleType,
+                  required final String handleType,
                   required final Transaction? transaction,
                 }) async {
                   final authUserId = handleToUserId[handle];
@@ -60,7 +60,7 @@ void main() {
                   required final UuidValue requestId,
                   required final String verificationCode,
                   required final Transaction? transaction,
-                  required final String? handleType,
+                  required final String handleType,
                 }) async {
                   deliveredVerificationCode = verificationCode;
                 },
@@ -126,7 +126,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
-                    required final String? handleType,
+                    required final String handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -230,7 +230,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
-                    required final String? handleType,
+                    required final String handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -247,7 +247,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
-                    required final String? handleType,
+                    required final String handleType,
                   }) async {
                     deliveredVerificationCode = verificationCode;
                   },

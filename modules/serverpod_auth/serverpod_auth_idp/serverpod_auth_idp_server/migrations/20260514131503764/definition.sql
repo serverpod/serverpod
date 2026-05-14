@@ -205,7 +205,7 @@ CREATE TABLE "serverpod_auth_idp_passwordless_login_request" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "handle" text NOT NULL,
-    "handleType" text,
+    "handleType" text NOT NULL DEFAULT 'default'::text,
     "challengeId" uuid NOT NULL
 );
 
@@ -761,9 +761,9 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260514002214924', now())
+    VALUES ('serverpod_auth_idp', '20260514131503764', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260514002214924', "timestamp" = now();
+    DO UPDATE SET "version" = '20260514131503764', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

@@ -248,8 +248,8 @@ test:
             resolveAuthUserId:
                 (
                   final session, {
-                  required final handle,
-                  required final handleType,
+                  required final String handle,
+                  required final String handleType,
                   required final transaction,
                 }) async => throw UnimplementedError(),
           );
@@ -292,8 +292,8 @@ test:
               resolveAuthUserId:
                   (
                     final session, {
-                    required final handle,
-                    required final handleType,
+                    required final String handle,
+                    required final String handleType,
                     required final transaction,
                   }) async => throw UnimplementedError(),
             ),

@@ -24,6 +24,7 @@ void main() {
       late String verificationCode;
       late UuidValue deliveredRequestId;
       late String deliveredHandle;
+      late String deliveredHandleType;
       late String deliveredVerificationCode;
 
       Future<void> initializeFixture() async {
@@ -37,7 +38,7 @@ void main() {
                 (
                   final Session session, {
                   required final String handle,
-                  required final String? handleType,
+                  required final String handleType,
                   required final Transaction? transaction,
                 }) async {
                   final authUserId = handleToUserId[handle];
@@ -54,9 +55,10 @@ void main() {
                   required final UuidValue requestId,
                   required final String verificationCode,
                   required final Transaction? transaction,
-                  required final String? handleType,
+                  required final String handleType,
                 }) async {
                   deliveredHandle = handle;
+                  deliveredHandleType = handleType;
                   deliveredRequestId = requestId;
                   deliveredVerificationCode = verificationCode;
                 },
@@ -85,10 +87,30 @@ void main() {
               handle: handle,
             );
 
+            final request = await PasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+
             expect(requestId, isA<UuidValue>());
             expect(deliveredRequestId, equals(requestId));
             expect(deliveredHandle, equals(handle));
+            expect(
+              deliveredHandleType,
+              equals(PasswordlessIdpConfig.defaultHandleType),
+            );
             expect(deliveredVerificationCode, equals(verificationCode));
+            expect(
+              request!.handleType,
+              equals(PasswordlessIdpConfig.defaultHandleType),
+            );
+            expect(
+              await countPasswordlessLoginRequestAttempts(
+                session,
+                handle: handle,
+              ),
+              equals(1),
+            );
           },
         );
       });
@@ -108,7 +130,7 @@ void main() {
                     (
                       final Session session, {
                       required final String handle,
-                      required final String? handleType,
+                      required final String handleType,
                       required final Transaction? transaction,
                     }) async {
                       final authUserId = handleToUserId[handle];
@@ -164,7 +186,7 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
-                    required final String? handleType,
+                    required final String handleType,
                     required final Transaction? transaction,
                   }) async {
                     final authUserId = handleToUserId[handle];
@@ -181,7 +203,7 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
-                    required final String? handleType,
+                    required final String handleType,
                   }) async {
                     throw StateError('send failed');
                   },

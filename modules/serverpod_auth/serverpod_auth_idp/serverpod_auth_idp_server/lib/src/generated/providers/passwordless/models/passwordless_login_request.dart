@@ -22,10 +22,11 @@ abstract class PasswordlessLoginRequest
     this.id,
     DateTime? createdAt,
     required this.handle,
-    this.handleType,
+    String? handleType,
     required this.challengeId,
     this.challenge,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       handleType = handleType ?? 'default';
 
   factory PasswordlessLoginRequest({
     _i1.UuidValue? id,
@@ -74,12 +75,12 @@ abstract class PasswordlessLoginRequest
   /// an auth user.
   String handle;
 
-  /// Optional type tag for the handle (e.g., "email", "sms").
+  /// Namespace key for the handle (e.g., "default", "email", "sms").
   ///
   /// Passed through to the `sendLoginVerificationCode` and
   /// `resolveAuthUserId` callbacks so integrators can distinguish channels
   /// without parsing the handle string.
-  String? handleType;
+  String handleType;
 
   _i1.UuidValue challengeId;
 
@@ -107,7 +108,7 @@ abstract class PasswordlessLoginRequest
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'handle': handle,
-      if (handleType != null) 'handleType': handleType,
+      'handleType': handleType,
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
     };
@@ -179,7 +180,7 @@ class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
     Object? id = _Undefined,
     DateTime? createdAt,
     String? handle,
-    Object? handleType = _Undefined,
+    String? handleType,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
   }) {
@@ -187,7 +188,7 @@ class _PasswordlessLoginRequestImpl extends PasswordlessLoginRequest {
       id: id is _i1.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       handle: handle ?? this.handle,
-      handleType: handleType is String? ? handleType : this.handleType,
+      handleType: handleType ?? this.handleType,
       challengeId: challengeId ?? this.challengeId,
       challenge: challenge is _i2.SecretChallenge?
           ? challenge
@@ -211,7 +212,7 @@ class PasswordlessLoginRequestUpdateTable
     value,
   );
 
-  _i1.ColumnValue<String, String> handleType(String? value) => _i1.ColumnValue(
+  _i1.ColumnValue<String, String> handleType(String value) => _i1.ColumnValue(
     table.handleType,
     value,
   );
@@ -240,6 +241,7 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
     handleType = _i1.ColumnString(
       'handleType',
       this,
+      hasDefault: true,
     );
     challengeId = _i1.ColumnUuid(
       'challengeId',
@@ -257,7 +259,7 @@ class PasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// an auth user.
   late final _i1.ColumnString handle;
 
-  /// Optional type tag for the handle (e.g., "email", "sms").
+  /// Namespace key for the handle (e.g., "default", "email", "sms").
   ///
   /// Passed through to the `sendLoginVerificationCode` and
   /// `resolveAuthUserId` callbacks so integrators can distinguish channels

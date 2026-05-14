@@ -19,7 +19,9 @@ void main() {
       late Map<String, UuidValue> handleToUserId;
       late String verificationCode;
       late String deliveredHandle;
+      late String deliveredHandleType;
       late String resolvedHandle;
+      late String resolvedHandleType;
       late UuidValue deliveredRequestId;
       late String deliveredVerificationCode;
 
@@ -43,10 +45,11 @@ void main() {
                   (
                     final Session session, {
                     required final String handle,
-                    required final String? handleType,
+                    required final String handleType,
                     required final Transaction? transaction,
                   }) async {
                     resolvedHandle = handle;
+                    resolvedHandleType = handleType;
                     return handleToUserId[handle]!;
                   },
               loginVerificationCodeGenerator: () => verificationCode,
@@ -57,9 +60,10 @@ void main() {
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
-                    required final String? handleType,
+                    required final String handleType,
                   }) async {
                     deliveredHandle = handle;
+                    deliveredHandleType = handleType;
                     deliveredRequestId = requestId;
                     deliveredVerificationCode = verificationCode;
                   },
@@ -113,6 +117,10 @@ void main() {
 
           expect(requestId, equals(deliveredRequestId));
           expect(deliveredHandle, equals(handle));
+          expect(
+            deliveredHandleType,
+            equals(PasswordlessIdpConfig.defaultHandleType),
+          );
           expect(deliveredVerificationCode, equals(verificationCode));
 
           final authSuccess = await endpoint.finishLogin(
@@ -123,6 +131,10 @@ void main() {
 
           expect(authSuccess, isA<AuthSuccess>());
           expect(resolvedHandle, equals(handle));
+          expect(
+            resolvedHandleType,
+            equals(PasswordlessIdpConfig.defaultHandleType),
+          );
         },
       );
 

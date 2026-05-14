@@ -1102,8 +1102,9 @@
           "name": "handleType",
           "fieldName": "handleType",
           "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
+          "isNullable": false,
+          "columnDefault": "'default'",
+          "dartType": "String"
         },
         {
           "__className__": "serverpod.ColumnDefinition",

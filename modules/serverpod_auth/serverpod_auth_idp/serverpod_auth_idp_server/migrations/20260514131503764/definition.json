@@ -1102,8 +1102,9 @@
           "name": "handleType",
           "fieldName": "handleType",
           "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
+          "isNullable": false,
+          "columnDefault": "'default'",
+          "dartType": "String"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
@@ -3094,7 +3095,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersionModel",
       "module": "serverpod_auth_idp",
-      "version": "20260514002214924"
+      "version": "20260514131503764"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

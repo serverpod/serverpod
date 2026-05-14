@@ -617,6 +617,48 @@ void main() {
   );
 
   group(
+    'Given an endpoint that takes a named parameter with a default value when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder().withName('myEndpoint').withParametersNamed([
+            ParameterDefinitionBuilder()
+                .withName('handleType')
+                .withRequired(false)
+                .withDefaultValue("'default'")
+                .build(),
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the client endpoint method emits the default value without required.',
+        () {
+          expect(
+            codeMap[expectedClientFileName],
+            contains("String handleType = 'default'"),
+          );
+          expect(
+            codeMap[expectedClientFileName],
+            isNot(contains('required String handleType')),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given serverOnly models with List field of another serverOnly model when generating protocol files',
     () {
       var serverOnlyModel = 'Article';

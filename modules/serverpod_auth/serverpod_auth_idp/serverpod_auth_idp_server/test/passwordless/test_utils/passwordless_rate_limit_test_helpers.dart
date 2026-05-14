@@ -2,11 +2,12 @@ import 'dart:convert' show jsonEncode;
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/passwordless.dart';
 
 Future<int> countPasswordlessLoginRequestAttempts(
   final Session session, {
   required final String handle,
-  final String? handleType,
+  final String handleType = PasswordlessIdpConfig.defaultHandleType,
 }) => RateLimitedRequestAttempt.db.count(
   session,
   where: (final t) =>
@@ -19,7 +20,7 @@ Future<int> countPasswordlessLoginRequestAttempts(
 
 String passwordlessLoginRequestRateLimitNonce(
   final String handle, {
-  final String? handleType,
+  final String handleType = PasswordlessIdpConfig.defaultHandleType,
 }) => jsonEncode([handle, handleType]);
 
 Future<int> countPasswordlessLoginVerifyAttempts(

@@ -990,8 +990,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
         _i2.ColumnDefinition(
           name: 'handleType',
           columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'default\'',
         ),
         _i2.ColumnDefinition(
           name: 'challengeId',
