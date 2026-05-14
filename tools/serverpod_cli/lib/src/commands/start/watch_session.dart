@@ -419,12 +419,9 @@ class WatchSession {
     );
   }
 
-  /// Forces a full server process restart (stop + spawn).
-  ///
-  /// Unlike [forceReload], this does not attempt VM-level reload - it always
-  /// restarts the pod. With a compiler, this resets the compiler and produces
-  /// a fresh full dill before spawning, since incremental dills accumulated
-  /// across reloads are not bootable. Useful for clearing in-memory state.
+  /// Forces a full server process restart (clears singletons, pools, and
+  /// caches that survive a hot reload). More expensive than [forceReload];
+  /// recompiles from scratch.
   Future<void> forceRestart() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
