@@ -78,6 +78,7 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
 class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
+  final flutterRawScrollController = ScrollController();
   final helpScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
@@ -139,6 +140,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         showSplash: state.showSplash,
         logScrollController: logScrollController,
         rawScrollController: rawScrollController,
+        flutterRawScrollController: flutterRawScrollController,
         helpScrollController: helpScrollController,
         onToggleHelp: () {
           state.showHelp = !state.showHelp;
@@ -171,8 +173,9 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Tab cycling: Tab and Right cycle forward, Left cycles back.
-    const tabCount = 2;
+    // Tab cycling: Tab and Right cycle forward, Left cycles back. The
+    // Flutter output tab is appended when a Flutter app is attached.
+    final tabCount = state.showFlutterOutput ? 3 : 2;
     if (event.logicalKey == LogicalKey.tab ||
         event.logicalKey == LogicalKey.arrowRight) {
       state.selectedTab = (state.selectedTab + 1) % tabCount;
@@ -194,10 +197,17 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
+    if (event.logicalKey == LogicalKey.digit3 && state.showFlutterOutput) {
+      state.selectedTab = 2;
+      _rebuild();
+      return true;
+    }
 
-    final c = state.selectedTab == 0
-        ? logScrollController
-        : rawScrollController;
+    final c = switch (state.selectedTab) {
+      0 => logScrollController,
+      1 => rawScrollController,
+      _ => flutterRawScrollController,
+    };
     return _handleScrollKey(c, event);
   }
 
