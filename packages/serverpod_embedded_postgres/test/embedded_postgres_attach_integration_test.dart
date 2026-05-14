@@ -105,8 +105,8 @@ void main() {
       );
 
       test(
-        'when attach is called on a dataDir that was never started then a '
-        'CrashedException is thrown.',
+        'when attach is called on a dataDir that was never started then an '
+        'AttachException is thrown.',
         () async {
           var pgDataDir = Directory(
             p.join(tmpRoot.path, '.serverpod', 'pgdata'),
@@ -114,7 +114,7 @@ void main() {
 
           await expectLater(
             EmbeddedPostgres.attach(pgDataDir),
-            throwsA(isA<CrashedException>()),
+            throwsA(isA<AttachException>()),
           );
         },
       );

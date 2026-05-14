@@ -82,6 +82,16 @@ String _withLogTail(Type type, String message, List<String> logTail) {
       '--- end log tail ---';
 }
 
+/// `EmbeddedPostgres.attach()` couldn't find a postmaster to re-attach
+/// to. Distinct from [CrashedException]: the postmaster wasn't running
+/// in the first place, or the state file written by the original
+/// `start()` is missing or malformed. The remedy is to call `start()`
+/// instead, not to investigate a crash.
+final class AttachException extends EmbeddedPostgresException {
+  /// Creates an [AttachException] with [message].
+  const AttachException(super.message);
+}
+
 /// PG_VERSION inside the data dir doesn't match
 /// [EmbeddedPostgresOptions.version]. Cross-major upgrades aren't handled
 /// automatically; the caller must `reset()` (and lose the data) or run

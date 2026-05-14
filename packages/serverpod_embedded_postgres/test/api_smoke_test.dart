@@ -56,6 +56,7 @@ void main() {
           InitdbException() => 'initdb',
           StartupTimeoutException() => 'timeout',
           CrashedException() => 'crashed',
+          AttachException() => 'attach',
           StaleClusterException() => 'stale',
         };
 

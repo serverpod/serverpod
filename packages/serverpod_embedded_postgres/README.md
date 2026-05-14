@@ -151,8 +151,8 @@ Errors are a sealed hierarchy rooted at `EmbeddedPostgresException`:
 `BinaryFetchException`, `BinaryVerificationException`,
 `UnsupportedPlatformException`, `InitdbException`,
 `StartupTimeoutException`, `CrashedException` (carries `logTail`),
-`StopTimeoutException`, `SocketPathTooLongException`,
-`StaleClusterException`. `switch` over them exhaustively.
+`AttachException`, `StaleClusterException`. `switch` over them
+exhaustively.
 
 ## What's not included
 

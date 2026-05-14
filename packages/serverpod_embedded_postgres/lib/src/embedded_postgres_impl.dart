@@ -68,24 +68,20 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       logFile: logFile,
     );
     if (attached == null) {
-      throw const CrashedException(
+      throw const AttachException(
         'No live postmaster found at the recorded pidfile. Either the '
         'previous start used detach: false (so the postmaster died with '
         'its parent), or the OS recycled the PID to a foreign process. '
         'Call EmbeddedPostgres.start to spawn a fresh postmaster.',
-        -1,
-        [],
       );
     }
 
     var tcpPassword = pwFile.existsSync() ? pwFile.readAsStringSync() : null;
     var state = EmbeddedPostgresState.read(stateFile, tcpPassword: tcpPassword);
     if (state == null) {
-      throw const CrashedException(
+      throw const AttachException(
         'embedded_postgres_state.json missing or malformed. attach() '
         'cannot reconstruct the public-API surface without it.',
-        -1,
-        [],
       );
     }
 
@@ -129,14 +125,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var logFile = File(p.join(dataRoot.path, 'postgres.log'));
     var pwFile = File(p.join(dataRoot.path, 'postgres.password'));
 
-    runDir.createSync(recursive: true);
-    if (Platform.isLinux || Platform.isMacOS) {
-      // 0700 on the socket dir keeps the trust auth honest - only the
-      // owner can read the socket. PG enforces this anyway via
-      // unix_socket_permissions, but creating the dir 0700 prevents a
-      // race where a stale 0755 from a prior run leaks visibility.
-      _chmod0700(runDir.path);
-    }
+    ensureSecureDirectorySync(runDir.path);
 
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
     var artifact = ZonkyArtifact.forCurrentPlatform(version: options.version);
@@ -488,10 +477,4 @@ String _generatePassword() {
   const chars =
       'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   return List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
-}
-
-void _chmod0700(String path) {
-  // Cheap shell-out; FFI to chmod(2) is overkill for a one-shot dir-perm
-  // tweak. Windows skips this entirely.
-  Process.runSync('chmod', ['0700', path]);
 }
