@@ -39,8 +39,6 @@ class EndpointsAnalyzer {
 
   final String absoluteIncludedPaths;
 
-  List<SerializableModelDefinition>? _cachedModels;
-
   /// Create a new [EndpointsAnalyzer] for [directory].
   ///
   /// When [collection] is provided it is reused (e.g. shared with
@@ -120,9 +118,6 @@ class EndpointsAnalyzer {
     List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
   }) async {
-    if (models != null) {
-      _cachedModels = models;
-    }
 
     changedFiles ??= {};
     await refreshAnalysisContext(collection, changedFiles);
@@ -237,20 +232,18 @@ class EndpointsAnalyzer {
       templateRegistry.addAll(templates);
     }
 
-    final hasModels = _cachedModels != null;
-
     // Phase 4: Validate and parse re-analyzed files, update cache.
     for (var (library, filePath, fileTemplates) in validLibraries) {
       var failingExceptions = <String, List<SourceSpanSeverityException>>{};
 
       templateRegistry.addAll(fileTemplates);
 
-      if (hasModels) {
+      if (models != null) {
         var severityExceptions = _validateLibrary(
           library,
           filePath,
           duplicateEndpointClasses,
-          _cachedModels!,
+          models,
         );
         collector.addErrors(
           severityExceptions.values.expand((e) => e).toList(),

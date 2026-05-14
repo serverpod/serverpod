@@ -110,24 +110,30 @@ abstract class EndpointParameterAnalyzer {
           }
         }
 
+        final TypeDefinition typeDefinition;
         try {
-          var typeDefinition = TypeDefinition.fromDartType(parameter.type);
-          if (parameter.type.element?.displayName != Keyword.sessionClassName) {
-            if (!TypeValidators.isValidType(
-              typeDefinition,
-              extraClasses,
-              models,
-            )) {
-              var typeName = typeDefinition.className;
-              return SourceSpanSeverityException(
-                'The type has an invalid datatype "$typeName". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
-                parameter.span,
-              );
-            }
-          }
+          typeDefinition = TypeDefinition.fromDartType(parameter.type);
         } on FromDartTypeClassNameException catch (e) {
           return SourceSpanSeverityException(
             'The type "${e.type}" is not a supported endpoint parameter type.',
+            parameter.span,
+          );
+        }
+
+        if (parameter.type.element?.displayName == Keyword.sessionClassName) {
+          return null;
+        }
+
+        if (!TypeValidators.isValidType(
+          typeDefinition,
+          extraClasses,
+          models,
+        )) {
+          var typeName = typeDefinition.className;
+          return SourceSpanSeverityException(
+            'The type has an invalid datatype "$typeName". If this is a '
+            'custom model, make sure it is added to config/generator.yaml so '
+            'Serverpod can generate the necessary serialization code.',
             parameter.span,
           );
         }

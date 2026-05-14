@@ -173,18 +173,22 @@ abstract class EndpointMethodAnalyzer {
       return null;
     }
 
+    final TypeDefinition typeDefinition;
     try {
-      var typeDefinition = TypeDefinition.fromDartType(innerType);
-      if (!TypeValidators.isValidType(typeDefinition, extraClasses, models)) {
-        var typeName = typeDefinition.className;
-        return SourceSpanSeverityException(
-          'The return type has an invalid datatype "$typeName". If this is a custom model, make sure it is added to config/generator.yaml so Serverpod can generate the necessary serialization code.',
-          dartElement.span,
-        );
-      }
+      typeDefinition = TypeDefinition.fromDartType(innerType);
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',
+        dartElement.span,
+      );
+    }
+
+    if (!TypeValidators.isValidType(typeDefinition, extraClasses, models)) {
+      var typeName = typeDefinition.className;
+      return SourceSpanSeverityException(
+        'The return type has an invalid datatype "$typeName". If this is a '
+        'custom model, make sure it is added to config/generator.yaml so '
+        'Serverpod can generate the necessary serialization code.',
         dartElement.span,
       );
     }
