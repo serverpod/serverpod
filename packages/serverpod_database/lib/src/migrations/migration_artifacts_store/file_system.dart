@@ -36,13 +36,25 @@ class FileSystemMigrationArtifactStore
       return [];
     }
 
-    return await migrationsDirectory
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((directory) => path.basename(directory.path))
-          .toList()
-      ..sort();
+    var versions =
+        await migrationsDirectory
+              .list()
+              .where((entity) => entity is Directory)
+              .cast<Directory>()
+              .map((directory) => path.basename(directory.path))
+              .toList()
+          ..sort();
+
+    final prunedAny =
+        await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+          versions,
+        );
+
+    if (prunedAny && await _migrationRegistryFile().exists()) {
+      await writeVersionRegistry(versions);
+    }
+
+    return versions;
   }
 
   @override
@@ -178,14 +190,16 @@ class FileSystemMigrationArtifactStore
     );
   }
 
+  File _migrationRegistryFile() => File(
+    path.join(
+      MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
+      'migration_registry.txt',
+    ),
+  );
+
   @override
   Future<void> writeVersionRegistry(List<String> versions) async {
-    var registryFile = File(
-      path.join(
-        MigrationConstants.migrationsBaseDirectory(_projectDirectory).path,
-        'migration_registry.txt',
-      ),
-    );
+    var registryFile = _migrationRegistryFile();
 
     var contents = StringBuffer(_migrationRegistryHeader);
     for (var version in versions) {
@@ -245,6 +259,44 @@ class FileSystemMigrationArtifactStore
     } catch (e) {
       throw MigrationRepairWriteException(exception: e.toString());
     }
+  }
+
+  /// Removes migration version directories from the end of [versions] that
+  /// contain no files or subdirectories (e.g. left over after discarding a
+  /// migration). Directories that contain any entity but are missing required
+  /// migration artifacts are left intact so callers can still report corruption.
+  ///
+  /// Returns `true` if at least one directory was deleted.
+  Future<bool> _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+    List<String> versions,
+  ) async {
+    var prunedAny = false;
+    while (versions.isNotEmpty) {
+      final version = versions.last;
+      final versionDir = MigrationConstants.migrationVersionDirectory(
+        _projectDirectory,
+        version,
+      );
+      if (!await versionDir.exists()) {
+        versions.removeLast();
+        prunedAny = true;
+        continue;
+      }
+      if (!await _directoryHasNoEntities(versionDir)) {
+        break;
+      }
+      await versionDir.delete(recursive: false);
+      versions.removeLast();
+      prunedAny = true;
+    }
+    return prunedAny;
+  }
+
+  static Future<bool> _directoryHasNoEntities(Directory dir) async {
+    await for (final _ in dir.list(followLinks: false)) {
+      return false;
+    }
+    return true;
   }
 
   static Future<String?> _readFileIfExists(File file) async {

@@ -30,13 +30,64 @@ class ClientMigrationArtifactStore implements MigrationArtifactStoreWriter {
     if (!await _migrationsBase.exists()) {
       return [];
     }
-    return await _migrationsBase
-          .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
-          .map((dir) => path.basename(dir.path))
-          .toList()
-      ..sort();
+    var versions =
+        await _migrationsBase
+              .list()
+              .where((entity) => entity is Directory)
+              .cast<Directory>()
+              .map((dir) => path.basename(dir.path))
+              .toList()
+          ..sort();
+
+    final prunedAny =
+        await _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+          versions,
+        );
+
+    if (prunedAny) {
+      final registryFile = File(
+        path.join(_migrationsBase.path, 'migration_registry.dart'),
+      );
+      if (await registryFile.exists()) {
+        await writeVersionRegistry(versions);
+      }
+    }
+
+    return versions;
+  }
+
+  /// Same semantics as
+  /// [FileSystemMigrationArtifactStore._deleteTrailingCompletelyEmptyMigrationVersionDirectories].
+  Future<bool> _deleteTrailingCompletelyEmptyMigrationVersionDirectories(
+    List<String> versions,
+  ) async {
+    var prunedAny = false;
+    while (versions.isNotEmpty) {
+      final version = versions.last;
+      final versionDir = MigrationConstants.clientMigrationVersionDirectory(
+        _projectDirectory,
+        version,
+      );
+      if (!await versionDir.exists()) {
+        versions.removeLast();
+        prunedAny = true;
+        continue;
+      }
+      if (!await _directoryHasNoEntities(versionDir)) {
+        break;
+      }
+      await versionDir.delete(recursive: false);
+      versions.removeLast();
+      prunedAny = true;
+    }
+    return prunedAny;
+  }
+
+  static Future<bool> _directoryHasNoEntities(Directory dir) async {
+    await for (final _ in dir.list(followLinks: false)) {
+      return false;
+    }
+    return true;
   }
 
   @override
