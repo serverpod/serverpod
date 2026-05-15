@@ -26,6 +26,8 @@ void main() {
           executable: '/abs/postgres',
           dataDir: '/abs/pgdata',
           startedAt: DateTime.utc(2026, 5, 7, 10),
+          supervisorPid: 5678,
+          supervisorExecutable: '/usr/bin/dart',
         );
 
         ProcessIdentity.writeAtomic(pidFile, written);
@@ -35,6 +37,8 @@ void main() {
         expect(read.executable, written.executable);
         expect(read.dataDir, written.dataDir);
         expect(read.startedAt, written.startedAt);
+        expect(read.supervisorPid, written.supervisorPid);
+        expect(read.supervisorExecutable, written.supervisorExecutable);
       },
     );
 
@@ -72,6 +76,8 @@ void main() {
           executable: '/nope/postgres',
           dataDir: '/nope/pgdata',
           startedAt: DateTime.now().toUtc(),
+          supervisorPid: 12345,
+          supervisorExecutable: '/usr/bin/dart',
         );
 
         expect(verifyIdentity(dead), IdentityMatch.notRunning);
@@ -89,6 +95,8 @@ void main() {
           executable: '/fake/postgres',
           dataDir: '/fake/pgdata',
           startedAt: DateTime.now().toUtc(),
+          supervisorPid: 12345,
+          supervisorExecutable: '/usr/bin/dart',
         );
 
         expect(verifyIdentity(ours), IdentityMatch.foreign);

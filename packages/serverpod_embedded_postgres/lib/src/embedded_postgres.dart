@@ -24,6 +24,10 @@ abstract class EmbeddedPostgres {
   /// Phases on cold first run: download Zonky binaries (if not cached) ->
   /// `initdb` -> spawn `postgres` -> wait for ready -> `CREATE DATABASE`.
   /// Network download is gated by [opts.onProgress], not [opts.startTimeout].
+  ///
+  /// Set [EmbeddedPostgresOptions.repairStaleLocks] to remove stale pidfiles
+  /// and recover a postmaster that survived after its original Dart parent
+  /// died abruptly.
   static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts) =>
       EmbeddedPostgresImpl.start(opts);
 

@@ -14,6 +14,7 @@ import 'exceptions.dart';
 import 'options.dart';
 import 'state_file.dart';
 import 'supervisor/attached_supervisor.dart';
+import 'supervisor/stale_lock_repair.dart';
 import 'supervisor/supervised_process.dart';
 import 'supervisor/supervisor.dart';
 import 'transport.dart';
@@ -157,6 +158,14 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       );
     }
     cluster.reconcilePostgresConf(transport: resolvedTransport);
+
+    if (options.repairStaleLocks) {
+      await repairStaleEmbeddedPostgresLocks(
+        pgDataDir: pgDataDir,
+        serverpodPidFile: pidFile,
+        pgCtlExecutable: File(p.join(installDir.path, 'bin', 'pg_ctl')),
+      );
+    }
 
     var supervisor = await _startSupervisorWithPortRetry(
       installDir: installDir,

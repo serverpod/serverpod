@@ -130,6 +130,8 @@ void main() {
             executable: p.join(installDir.path, 'bin', 'postgres'),
             dataDir: pgDataDir.absolute.path,
             startedAt: DateTime.now().toUtc(),
+            supervisorPid: pid,
+            supervisorExecutable: p.absolute(Platform.resolvedExecutable),
           );
 
           // The PID is now released; verifyIdentity should report

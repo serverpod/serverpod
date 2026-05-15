@@ -24,6 +24,16 @@ class ProcessIdentity {
   /// ISO-8601 UTC timestamp of when the supervisor wrote this record.
   final DateTime startedAt;
 
+  /// PID of the Dart supervisor process that spawned the postmaster.
+  ///
+  /// Used by stale-lock repair to detect when the postmaster survived but its
+  /// original parent VM did not.
+  final int supervisorPid;
+
+  /// Absolute path to the supervisor executable (`dart`, `flutter_tester`,
+  /// etc.).
+  final String supervisorExecutable;
+
   /// Creates an identity record. Most callers should use [capture] rather
   /// than constructing directly.
   ProcessIdentity({
@@ -31,6 +41,8 @@ class ProcessIdentity {
     required this.executable,
     required this.dataDir,
     required this.startedAt,
+    required this.supervisorPid,
+    required this.supervisorExecutable,
   });
 
   /// Captures the identity of a freshly spawned [Process] for [executable]
@@ -45,6 +57,8 @@ class ProcessIdentity {
       executable: p.absolute(executable),
       dataDir: p.absolute(dataDir.path),
       startedAt: DateTime.now().toUtc(),
+      supervisorPid: _currentProcessPid(),
+      supervisorExecutable: p.absolute(Platform.resolvedExecutable),
     );
   }
 
@@ -54,6 +68,8 @@ class ProcessIdentity {
     'executable': executable,
     'dataDir': dataDir,
     'startedAt': startedAt.toIso8601String(),
+    'supervisorPid': supervisorPid,
+    'supervisorExecutable': supervisorExecutable,
   };
 
   /// Inverse of [toJson]; throws [FormatException] if any required field
@@ -63,10 +79,14 @@ class ProcessIdentity {
     var exe = json['executable'];
     var data = json['dataDir'];
     var started = json['startedAt'];
+    var supervisorPid = json['supervisorPid'];
+    var supervisorExecutable = json['supervisorExecutable'];
     if (pid is! int ||
         exe is! String ||
         data is! String ||
-        started is! String) {
+        started is! String ||
+        supervisorPid is! int ||
+        supervisorExecutable is! String) {
       throw const FormatException('malformed ProcessIdentity JSON');
     }
     return ProcessIdentity(
@@ -74,6 +94,8 @@ class ProcessIdentity {
       executable: exe,
       dataDir: data,
       startedAt: DateTime.parse(started),
+      supervisorPid: supervisorPid,
+      supervisorExecutable: supervisorExecutable,
     );
   }
 
@@ -114,6 +136,26 @@ enum IdentityMatch {
   foreign,
 }
 
+/// Relationship between a recorded postmaster and the Dart supervisor that
+/// originally spawned it.
+enum SupervisorRelationship {
+  /// The postmaster is still parented by the recorded supervisor process.
+  attached,
+
+  /// The postmaster still matches our recorded identity, but its original
+  /// Dart supervisor is gone and it has been reparented.
+  orphaned,
+
+  /// There isn't enough trustworthy information to decide.
+  indeterminate,
+}
+
+/// Whether OS-level checks report [pid] as a running process.
+///
+/// Used by stale-lock repair and [verifyIdentity]. Semantics match
+/// `kill(pid, 0)` on POSIX via `ps`; see [_isProcessAlive] implementation.
+bool processPidIsLive(int pid) => _isProcessAlive(pid);
+
 /// Verifies the live process at [identity.pid] is the postmaster we
 /// originally started.
 ///
@@ -132,17 +174,42 @@ IdentityMatch verifyIdentity(ProcessIdentity identity) {
     return IdentityMatch.foreign;
   }
 
-  var args = _readPosixCmdline(identity.pid);
-  if (args == null) return IdentityMatch.foreign;
-
-  // Expected argv looks like: '<absolute path to postgres> -D <abs PGDATA>'
-  // followed by anything else PG might add. We tolerate extra tokens.
-  var hasExe =
-      args.contains(identity.executable) ||
-      args.contains(p.basename(identity.executable));
-  var hasData = args.contains(identity.dataDir);
-  if (hasExe && hasData) return IdentityMatch.matchesOurs;
+  if (_livePosixProcessMatches(
+    identity.pid,
+    executable: identity.executable,
+    dataDir: identity.dataDir,
+  )) {
+    return IdentityMatch.matchesOurs;
+  }
   return IdentityMatch.foreign;
+}
+
+/// Whether the live postmaster still belongs to the Dart supervisor that
+/// originally spawned it.
+///
+/// Returns [SupervisorRelationship.orphaned] only when the postmaster still
+/// matches [identity], its current parent PID no longer matches the recorded
+/// supervisor, and the recorded supervisor no longer looks alive.
+SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
+  if (Platform.isWindows) return SupervisorRelationship.indeterminate;
+  if (verifyIdentity(identity) != IdentityMatch.matchesOurs) {
+    return SupervisorRelationship.indeterminate;
+  }
+
+  var parentPid = readPosixParentPid(identity.pid);
+  if (parentPid == null) return SupervisorRelationship.indeterminate;
+  if (parentPid == identity.supervisorPid) {
+    return SupervisorRelationship.attached;
+  }
+
+  if (_isRecordedSupervisorStillAlive(
+    supervisorPid: identity.supervisorPid,
+    supervisorExecutable: identity.supervisorExecutable,
+  )) {
+    return SupervisorRelationship.indeterminate;
+  }
+
+  return SupervisorRelationship.orphaned;
 }
 
 bool _isProcessAlive(int pid) {
@@ -163,22 +230,159 @@ bool _isProcessAlive(int pid) {
   return result.exitCode == 0;
 }
 
-/// Returns the argv of [pid] as a single whitespace-joined string, or null
-/// if the process isn't accessible.
-String? _readPosixCmdline(int pid) {
-  // /proc/<pid>/cmdline is the cheap path on Linux. On macOS no /proc, so
-  // fall back to `ps`.
+/// Argv for [pid] (POSIX), for stale-lock verification outside
+/// [verifyIdentity]. Null if unavailable.
+String? readPosixProcessCmdline(int pid) => _readPosixCmdline(pid);
+
+/// Parent PID for [pid] (POSIX), or null if unavailable.
+int? readPosixParentPid(int pid) => _readPosixParentPid(pid);
+
+/// Whether [pid] appears to be a `postgres -D <dataDir>` postmaster.
+///
+/// Used by stale-lock repair when only PostgreSQL's native pidfile is
+/// available.
+bool verifyPostmasterPidForDataDir(int pid, String dataDir) {
+  if (Platform.isWindows) return false;
+  return _livePosixProcessMatches(
+    pid,
+    executable: 'postgres',
+    dataDir: dataDir,
+  );
+}
+
+bool _isRecordedSupervisorStillAlive({
+  required int supervisorPid,
+  required String supervisorExecutable,
+}) {
+  if (!_isProcessAlive(supervisorPid)) return false;
+  return _livePosixProcessMatchesExecutable(
+    supervisorPid,
+    executable: supervisorExecutable,
+  );
+}
+
+bool _livePosixProcessMatches(
+  int pid, {
+  required String executable,
+  required String dataDir,
+}) {
+  var argv = _readPosixArgv(pid);
+  if (argv == null || argv.isEmpty) return false;
+  return _argvContainsExecutable(argv, executable) &&
+      _argvContainsDataDir(argv, dataDir);
+}
+
+bool _livePosixProcessMatchesExecutable(
+  int pid, {
+  required String executable,
+}) {
+  var argv = _readPosixArgv(pid);
+  if (argv == null || argv.isEmpty) return false;
+  return _argvContainsExecutable(argv, executable);
+}
+
+bool _argvContainsExecutable(List<String> argv, String executable) {
+  var expected = _normalizedPathForms(executable);
+  var expectedBasename = p.basename(executable);
+  for (var arg in argv) {
+    if (_normalizedPathForms(arg).intersection(expected).isNotEmpty) {
+      return true;
+    }
+    if (p.basename(arg) == expectedBasename) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _argvContainsDataDir(List<String> argv, String dataDir) {
+  var expected = _normalizedPathForms(dataDir);
+  for (var i = 0; i < argv.length; i++) {
+    var arg = argv[i];
+    if (arg == '-D' && i + 1 < argv.length) {
+      if (_normalizedPathForms(argv[i + 1]).intersection(expected).isNotEmpty) {
+        return true;
+      }
+      continue;
+    }
+
+    if (!arg.startsWith('-D') || arg.length <= 2) continue;
+    if (_normalizedPathForms(
+      arg.substring(2),
+    ).intersection(expected).isNotEmpty) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Set<String> _normalizedPathForms(String path) {
+  var forms = <String>{};
+  var absolute = p.normalize(p.absolute(path));
+  forms.add(absolute);
+
+  try {
+    FileSystemEntity entity;
+    if (Directory(path).existsSync()) {
+      entity = Directory(path);
+    } else {
+      entity = File(path);
+    }
+    forms.add(p.normalize(entity.resolveSymbolicLinksSync()));
+  } on FileSystemException {
+    // Path may not exist or may not be readable; absolute normalized form is
+    // still useful.
+  }
+
+  return forms;
+}
+
+List<String>? _readPosixArgv(int pid) {
   if (Platform.isLinux) {
     var f = File('/proc/$pid/cmdline');
     if (!f.existsSync()) return null;
     var raw = f.readAsBytesSync();
     if (raw.isEmpty) return null;
-    // Tokens are separated by NUL bytes.
-    return utf8.decode(raw, allowMalformed: true).replaceAll('\x00', ' ');
+    return utf8
+        .decode(raw, allowMalformed: true)
+        .split('\x00')
+        .where((token) => token.isNotEmpty)
+        .toList();
   }
 
   var result = Process.runSync('ps', ['-p', '$pid', '-o', 'args=']);
   if (result.exitCode != 0) return null;
   var out = (result.stdout as String).trim();
-  return out.isEmpty ? null : out;
+  if (out.isEmpty) return null;
+  return out.split(RegExp(r'\s+'));
 }
+
+/// Returns the argv of [pid] as a single whitespace-joined string, or null
+/// if the process isn't accessible.
+String? _readPosixCmdline(int pid) {
+  var argv = _readPosixArgv(pid);
+  if (argv == null) return null;
+  return argv.join(' ');
+}
+
+int? _readPosixParentPid(int pid) {
+  if (Platform.isLinux) {
+    var status = File('/proc/$pid/status');
+    if (!status.existsSync()) return null;
+    try {
+      for (var line in status.readAsLinesSync()) {
+        if (!line.startsWith('PPid:')) continue;
+        return int.tryParse(line.substring(5).trim());
+      }
+    } on FileSystemException {
+      return null;
+    }
+    return null;
+  }
+
+  var result = Process.runSync('ps', ['-p', '$pid', '-o', 'ppid=']);
+  if (result.exitCode != 0) return null;
+  return int.tryParse((result.stdout as String).trim());
+}
+
+int _currentProcessPid() => pid;

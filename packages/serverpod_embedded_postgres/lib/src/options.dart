@@ -58,6 +58,19 @@ class EmbeddedPostgresOptions {
   /// Default: `false`.
   final bool detach;
 
+  /// When `true`, before spawning the postmaster, best-effort recovery:
+  /// - Removes Serverpod `postgres.pid` when it references a dead PID.
+  /// - Removes PostgreSQL `postmaster.pid` when its PID is dead.
+  /// - **POSIX:** if both pidfiles still reference our recorded postmaster and
+  ///   that postmaster no longer has its original Dart supervisor as parent,
+  ///   prefers `pg_ctl stop` from the same Zonky `bin/` (passed from
+  ///   [EmbeddedPostgres.start]) so backends and **SysV shared memory** are
+  ///   torn down cleanly; then kills any remaining subtree on Linux (`/proc`).
+  ///   Skipped on Windows and older pidfiles without supervisor metadata.
+  ///
+  /// Default: `false`.
+  final bool repairStaleLocks;
+
   /// Optional callback for binary download / extraction progress on the
   /// very first run. Receives `(fraction, stage)` where `stage` is one of
   /// 'download', 'verify', 'extract'.
@@ -76,6 +89,7 @@ class EmbeddedPostgresOptions {
     this.binaryCache,
     this.startTimeout = const Duration(seconds: 60),
     this.detach = false,
+    this.repairStaleLocks = false,
     this.onProgress,
   }) : version = version ?? defaultPostgresVersion;
 }

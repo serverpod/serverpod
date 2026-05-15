@@ -186,6 +186,7 @@ class PostgresPoolManager implements DatabasePoolManager {
           databaseName: config.name,
           username: config.user,
           detach: false,
+          repairStaleLocks: true,
         ),
       );
       return (embeddedPostgres, connectivityFrom(embeddedPostgres.endpoint));
