@@ -183,7 +183,11 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.bit;
 
   /// Whether the column is of a geography type.
-  bool get isGeographyColumn => columnType == ColumnType.geography;
+  bool get isGeographyColumn =>
+      columnType == ColumnType.geography ||
+      columnType == ColumnType.geographyLineString ||
+      columnType == ColumnType.geographyPolygon ||
+      columnType == ColumnType.geographyGeometryCollection;
 
   String toPgSqlFragment({String tableName = ''}) {
     String type;
@@ -232,6 +236,15 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.geography:
         type = 'geography(Point,4326)';
+        break;
+      case ColumnType.geographyLineString:
+        type = 'geography(LineString,4326)';
+        break;
+      case ColumnType.geographyPolygon:
+        type = 'geography(Polygon,4326)';
+        break;
+      case ColumnType.geographyGeometryCollection:
+        type = 'geography(GeometryCollection,4326)';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));

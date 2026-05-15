@@ -1,0 +1,5 @@
+class: ObjectWithGeographyPolygon
+table: object_with_geography_polygon
+fields:
+  polygon: GeographyPolygon
+  polygonNullable: GeographyPolygon?

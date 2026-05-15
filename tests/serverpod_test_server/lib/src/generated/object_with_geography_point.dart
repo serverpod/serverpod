@@ -244,6 +244,15 @@ class ObjectWithGeographyPointRepository {
   ///
   /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<ObjectWithGeographyPoint>> find(
     _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
@@ -272,6 +281,22 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Returns the first matching [ObjectWithGeographyPoint] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<ObjectWithGeographyPoint?> findFirstRow(
     _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
@@ -314,6 +339,15 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Inserts all [ObjectWithGeographyPoint]s in the list and returns the inserted rows.
+  ///
+  /// The returned [ObjectWithGeographyPoint]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ObjectWithGeographyPoint>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
@@ -328,6 +362,8 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Inserts a single [ObjectWithGeographyPoint] and returns the inserted row.
+  ///
+  /// The returned [ObjectWithGeographyPoint] will have its `id` field set.
   Future<ObjectWithGeographyPoint> insertRow(
     _i1.DatabaseSession session,
     ObjectWithGeographyPoint row, {
@@ -339,7 +375,11 @@ class ObjectWithGeographyPointRepository {
     );
   }
 
-  /// Updates all [ObjectWithGeographyPoint]s in the list and returns the updated rows.
+  /// Updates all [ObjectWithGeographyPoint]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
   Future<List<ObjectWithGeographyPoint>> update(
     _i1.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
@@ -353,7 +393,9 @@ class ObjectWithGeographyPointRepository {
     );
   }
 
-  /// Updates a single [ObjectWithGeographyPoint].
+  /// Updates a single [ObjectWithGeographyPoint]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<ObjectWithGeographyPoint> updateRow(
     _i1.DatabaseSession session,
     ObjectWithGeographyPoint row, {
@@ -368,6 +410,7 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Updates a single [ObjectWithGeographyPoint] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithGeographyPoint?> updateById(
     _i1.DatabaseSession session,
     int id, {
@@ -382,7 +425,8 @@ class ObjectWithGeographyPointRepository {
     );
   }
 
-  /// Updates all [ObjectWithGeographyPoint]s matching the [where] expression.
+  /// Updates all [ObjectWithGeographyPoint]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
   Future<List<ObjectWithGeographyPoint>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithGeographyPointUpdateTable>
@@ -410,6 +454,12 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Deletes all [ObjectWithGeographyPoint]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithGeographyPoint>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
@@ -442,6 +492,9 @@ class ObjectWithGeographyPointRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectWithGeographyPoint>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
@@ -461,7 +514,8 @@ class ObjectWithGeographyPointRepository {
     );
   }
 
-  /// Counts the number of rows matching the [where] expression.
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
   Future<int> count(
     _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,

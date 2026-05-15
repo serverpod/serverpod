@@ -464,9 +464,48 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
   }
 }
 
+/// Mixin providing PostGIS spatial operations for geography columns.
+///
+/// All geography column types mix this in so that `intersects`, `dwithin`,
+/// `distance`, `contains`, and `within` are available on every geography column.
+mixin _GeographySpatialOperations<T> on Column<T> {
+  /// Returns an [Expression] that is true when this column's geometry
+  /// intersects [other] — wraps `ST_Intersects`.
+  Expression intersects(Geography other) => Expression(
+        'ST_Intersects($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}))',
+      );
+
+  /// Returns an [Expression] that is true when this column's geometry is
+  /// within [distanceMeters] metres of [other] — wraps `ST_DWithin`.
+  Expression dwithin(Geography other, double distanceMeters) => Expression(
+        'ST_DWithin($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
+      );
+
+  /// Returns a [ColumnGeographyDistance] suitable for use in `orderBy` —
+  /// wraps `ST_Distance`.
+  ColumnGeographyDistance distance(Geography other) =>
+      ColumnGeographyDistance(this, other);
+
+  /// Returns an [Expression] that is true when this column's geometry
+  /// spatially contains [other] — wraps `ST_Covers` (geography-compatible
+  /// equivalent of `ST_Contains`).
+  Expression contains(Geography other) => Expression(
+        'ST_Covers($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
+      );
+
+  /// Returns an [Expression] that is true when this column's geometry is
+  /// spatially within [other] — wraps `ST_CoveredBy` (geography-compatible
+  /// equivalent of `ST_Within`).
+  Expression within(Geography other) => Expression(
+        'ST_CoveredBy($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
+      );
+}
+
 /// A [Column] holding a [GeographyPoint] from PostGIS.
 class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
-    with _ColumnDefaultOperations<GeographyPoint> {
+    with
+        _ColumnDefaultOperations<GeographyPoint>,
+        _GeographySpatialOperations<GeographyPoint> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnGeographyPoint(
     super.columnName,
@@ -478,6 +517,78 @@ class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
   @override
   Expression _encodeValueForQuery(GeographyPoint value) =>
       EscapedExpression(value);
+}
+
+/// A [Column] holding a [GeographyLineString] from PostGIS.
+class ColumnGeographyLineString
+    extends _ValueOperatorColumn<GeographyLineString>
+    with
+        _ColumnDefaultOperations<GeographyLineString>,
+        _GeographySpatialOperations<GeographyLineString> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyLineString(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyLineString value) =>
+      EscapedExpression(value);
+}
+
+/// A [Column] holding a [GeographyPolygon] from PostGIS.
+class ColumnGeographyPolygon extends _ValueOperatorColumn<GeographyPolygon>
+    with
+        _ColumnDefaultOperations<GeographyPolygon>,
+        _GeographySpatialOperations<GeographyPolygon> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPolygon(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyPolygon value) =>
+      EscapedExpression(value);
+}
+
+/// A [Column] holding a [GeographyGeometryCollection] from PostGIS.
+class ColumnGeographyGeometryCollection
+    extends _ValueOperatorColumn<GeographyGeometryCollection>
+    with
+        _ColumnDefaultOperations<GeographyGeometryCollection>,
+        _GeographySpatialOperations<GeographyGeometryCollection> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyGeometryCollection(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyGeometryCollection value) =>
+      EscapedExpression(value);
+}
+
+/// A [Column] representing the result of `ST_Distance` between a geography
+/// column and a fixed geometry. Extends [ColumnDouble] so it can be used
+/// directly in `orderBy`.
+class ColumnGeographyDistance extends ColumnDouble {
+  final String _sql;
+
+  /// Creates a distance column from [column] and a target [geometry].
+  ColumnGeographyDistance(Column column, Geography geometry)
+      : _sql =
+            'ST_Distance($column, ST_GeomFromEWKT(${EscapedExpression(geometry.toEwkt())}))',
+        super(column.columnName, column.table, fieldName: column.fieldName);
+
+  @override
+  String toString() => _sql;
 }
 
 /// A [Column] holding the result of a vector distance operation.

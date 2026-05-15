@@ -71,7 +71,22 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
       // Get the columns of this table and sort them based on their position.
       '''
 SELECT column_name, column_default, is_nullable,
-       CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
+       CASE
+         WHEN (data_type = 'USER-DEFINED' AND udt_name = 'geography') THEN (
+           CASE (SELECT type FROM geography_columns
+                 WHERE f_table_schema = '$schemaName'
+                   AND f_table_name = '$tableName'
+                   AND f_geography_column = column_name)
+             WHEN 'Point' THEN 'geography'
+             WHEN 'LineString' THEN 'geography line string'
+             WHEN 'Polygon' THEN 'geography polygon'
+             WHEN 'GeometryCollection' THEN 'geography geometry collection'
+             ELSE 'geography'
+           END
+         )
+         WHEN (data_type = 'USER-DEFINED') THEN udt_name
+         ELSE data_type
+       END as data_type,
        CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
