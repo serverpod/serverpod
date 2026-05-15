@@ -25,7 +25,11 @@ void main() {
     });
 
     test('returns EWKT with custom SRID.', () {
-      const p = GeographyPoint(longitude: 2.3522, latitude: 48.8566, srid: 3857);
+      const p = GeographyPoint(
+        longitude: 2.3522,
+        latitude: 48.8566,
+        srid: 3857,
+      );
       expect(p.toString(), 'SRID=3857;POINT(2.3522 48.8566)');
     });
   });
@@ -58,8 +62,9 @@ void main() {
     });
 
     test('given EWKT string with custom SRID parses correctly.', () {
-      final p =
-          GeographyPointJsonExtension.fromJson('SRID=3857;POINT(2.3522 48.8566)');
+      final p = GeographyPointJsonExtension.fromJson(
+        'SRID=3857;POINT(2.3522 48.8566)',
+      );
       expect(p.longitude, 2.3522);
       expect(p.latitude, 48.8566);
       expect(p.srid, 3857);
@@ -90,8 +95,22 @@ void main() {
         0x01, // little-endian byte order
         0x01, 0x00, 0x00, 0x20, // type: Point | SRID_FLAG (0x20000001)
         0xE6, 0x10, 0x00, 0x00, // SRID: 4326 in LE
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F, // lon: 1.0 (IEEE-754 LE)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, // lat: 2.0 (IEEE-754 LE)
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xF0,
+        0x3F, // lon: 1.0 (IEEE-754 LE)
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x40, // lat: 2.0 (IEEE-754 LE)
       ]);
       final p = GeographyPointJsonExtension.fromJson(ewkb);
       expect(p.longitude, 1.0);
@@ -115,8 +134,11 @@ void main() {
     });
 
     test('round-trip preserves custom SRID.', () {
-      const original =
-          GeographyPoint(longitude: 0.0, latitude: 0.0, srid: 3857);
+      const original = GeographyPoint(
+        longitude: 0.0,
+        latitude: 0.0,
+        srid: 3857,
+      );
       final restored = GeographyPointJsonExtension.fromJson(original.toJson());
       expect(restored.srid, 3857);
     });

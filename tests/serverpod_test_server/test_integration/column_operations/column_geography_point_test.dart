@@ -20,32 +20,35 @@ void main() async {
   tearDown(() async => await _deleteAll(session));
 
   group('Given geography point column in database', () {
-    test('when inserting a row then the row is returned with correct values.',
-        () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(location: _london),
-      );
+    test(
+      'when inserting a row then the row is returned with correct values.',
+      () async {
+        var inserted = await ObjectWithGeographyPoint.db.insertRow(
+          session,
+          ObjectWithGeographyPoint(location: _london),
+        );
 
-      expect(inserted.id, isNotNull);
-      expect(inserted.location, equals(_london));
-      expect(inserted.locationNullable, isNull);
-    });
+        expect(inserted.id, isNotNull);
+        expect(inserted.location, equals(_london));
+        expect(inserted.locationNullable, isNull);
+      },
+    );
 
     test(
-        'when inserting a row with a nullable field then it round-trips correctly.',
-        () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(
-          location: _paris,
-          locationNullable: _london,
-        ),
-      );
+      'when inserting a row with a nullable field then it round-trips correctly.',
+      () async {
+        var inserted = await ObjectWithGeographyPoint.db.insertRow(
+          session,
+          ObjectWithGeographyPoint(
+            location: _paris,
+            locationNullable: _london,
+          ),
+        );
 
-      expect(inserted.location, equals(_paris));
-      expect(inserted.locationNullable, equals(_london));
-    });
+        expect(inserted.location, equals(_paris));
+        expect(inserted.locationNullable, equals(_london));
+      },
+    );
 
     test('when fetching by id then the correct row is returned.', () async {
       var inserted = await ObjectWithGeographyPoint.db.insertRow(
@@ -113,56 +116,59 @@ void main() async {
     });
 
     test(
-        'when filtering by location equality then only matching rows are returned.',
-        () async {
-      await ObjectWithGeographyPoint.db.insert(session, [
-        ObjectWithGeographyPoint(location: _london),
-        ObjectWithGeographyPoint(location: _paris),
-      ]);
+      'when filtering by location equality then only matching rows are returned.',
+      () async {
+        await ObjectWithGeographyPoint.db.insert(session, [
+          ObjectWithGeographyPoint(location: _london),
+          ObjectWithGeographyPoint(location: _paris),
+        ]);
 
-      var result = await ObjectWithGeographyPoint.db.find(
-        session,
-        where: (t) => t.location.equals(_london),
-      );
+        var result = await ObjectWithGeographyPoint.db.find(
+          session,
+          where: (t) => t.location.equals(_london),
+        );
 
-      expect(result.length, 1);
-      expect(result.first.location, equals(_london));
-    });
-
-    test(
-        'when using count with a where clause then the correct count is returned.',
-        () async {
-      await ObjectWithGeographyPoint.db.insert(session, [
-        ObjectWithGeographyPoint(location: _london),
-        ObjectWithGeographyPoint(location: _paris),
-        ObjectWithGeographyPoint(location: _london),
-      ]);
-
-      var count = await ObjectWithGeographyPoint.db.count(
-        session,
-        where: (t) => t.location.equals(_london),
-      );
-
-      expect(count, 2);
-    });
+        expect(result.length, 1);
+        expect(result.first.location, equals(_london));
+      },
+    );
 
     test(
-        'when updating nullable field to null then null is persisted.',
-        () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(
-          location: _london,
-          locationNullable: _paris,
-        ),
-      );
+      'when using count with a where clause then the correct count is returned.',
+      () async {
+        await ObjectWithGeographyPoint.db.insert(session, [
+          ObjectWithGeographyPoint(location: _london),
+          ObjectWithGeographyPoint(location: _paris),
+          ObjectWithGeographyPoint(location: _london),
+        ]);
 
-      var updated = await ObjectWithGeographyPoint.db.updateRow(
-        session,
-        inserted.copyWith(locationNullable: null),
-      );
+        var count = await ObjectWithGeographyPoint.db.count(
+          session,
+          where: (t) => t.location.equals(_london),
+        );
 
-      expect(updated.locationNullable, isNull);
-    });
+        expect(count, 2);
+      },
+    );
+
+    test(
+      'when updating nullable field to null then null is persisted.',
+      () async {
+        var inserted = await ObjectWithGeographyPoint.db.insertRow(
+          session,
+          ObjectWithGeographyPoint(
+            location: _london,
+            locationNullable: _paris,
+          ),
+        );
+
+        var updated = await ObjectWithGeographyPoint.db.updateRow(
+          session,
+          inserted.copyWith(locationNullable: null),
+        );
+
+        expect(updated.locationNullable, isNull);
+      },
+    );
   });
 }

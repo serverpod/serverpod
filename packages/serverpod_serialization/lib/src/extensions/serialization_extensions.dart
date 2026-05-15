@@ -257,4 +257,3 @@ extension BitJsonExtension on Bit {
         : _fromList(json.decode(value) as List);
   }
 }
-

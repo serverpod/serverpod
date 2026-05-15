@@ -157,13 +157,19 @@ class ObjectWithGeographyGeometryCollectionUpdateTable
     extends _i1.UpdateTable<ObjectWithGeographyGeometryCollectionTable> {
   ObjectWithGeographyGeometryCollectionUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.GeographyGeometryCollection, _i1.GeographyGeometryCollection>
+  _i1.ColumnValue<
+    _i1.GeographyGeometryCollection,
+    _i1.GeographyGeometryCollection
+  >
   collection(_i1.GeographyGeometryCollection value) => _i1.ColumnValue(
     table.collection,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyGeometryCollection, _i1.GeographyGeometryCollection>
+  _i1.ColumnValue<
+    _i1.GeographyGeometryCollection,
+    _i1.GeographyGeometryCollection
+  >
   collectionNullable(_i1.GeographyGeometryCollection? value) => _i1.ColumnValue(
     table.collectionNullable,
     value,
@@ -377,6 +383,79 @@ class ObjectWithGeographyGeometryCollectionRepository {
   }) async {
     return session.db.insertRow<ObjectWithGeographyGeometryCollection>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ObjectWithGeographyGeometryCollection]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ObjectWithGeographyGeometryCollection]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectWithGeographyGeometryCollection>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectWithGeographyGeometryCollection> rows, {
+    required _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
+    conflictColumns,
+    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
+    updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectWithGeographyGeometryCollection>(
+      rows,
+      conflictColumns: conflictColumns(ObjectWithGeographyGeometryCollection.t),
+      updateColumns: updateColumns?.call(
+        ObjectWithGeographyGeometryCollection.t,
+      ),
+      updateWhere: updateWhere?.call(ObjectWithGeographyGeometryCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectWithGeographyGeometryCollection] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ObjectWithGeographyGeometryCollection] will have its `id` field set.
+  Future<ObjectWithGeographyGeometryCollection?> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectWithGeographyGeometryCollection row, {
+    required _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
+    conflictColumns,
+    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
+    updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectWithGeographyGeometryCollection>(
+      row,
+      conflictColumns: conflictColumns(ObjectWithGeographyGeometryCollection.t),
+      updateColumns: updateColumns?.call(
+        ObjectWithGeographyGeometryCollection.t,
+      ),
+      updateWhere: updateWhere?.call(ObjectWithGeographyGeometryCollection.t),
       transaction: transaction,
     );
   }

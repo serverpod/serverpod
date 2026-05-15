@@ -39,46 +39,50 @@ void main() async {
   tearDown(() async => await _deleteAll(session));
 
   group('Given geography geometry collection column in database', () {
-    test('when inserting a row then the row is returned with correct values.',
-        () async {
-      var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
-        session,
-        ObjectWithGeographyGeometryCollection(collection: _pointsOnly),
-      );
+    test(
+      'when inserting a row then the row is returned with correct values.',
+      () async {
+        var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
+          session,
+          ObjectWithGeographyGeometryCollection(collection: _pointsOnly),
+        );
 
-      expect(inserted.id, isNotNull);
-      expect(inserted.collection.geometries.length, 2);
-      expect(inserted.collectionNullable, isNull);
-    });
+        expect(inserted.id, isNotNull);
+        expect(inserted.collection.geometries.length, 2);
+        expect(inserted.collectionNullable, isNull);
+      },
+    );
 
     test(
-        'when inserting a mixed collection then all geometry types round-trip.',
-        () async {
-      var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
-        session,
-        ObjectWithGeographyGeometryCollection(collection: _mixedCollection),
-      );
+      'when inserting a mixed collection then all geometry types round-trip.',
+      () async {
+        var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
+          session,
+          ObjectWithGeographyGeometryCollection(collection: _mixedCollection),
+        );
 
-      expect(inserted.collection.geometries.length, 3);
-      expect(inserted.collection.geometries[0], isA<GeographyPoint>());
-      expect(inserted.collection.geometries[1], isA<GeographyLineString>());
-      expect(inserted.collection.geometries[2], isA<GeographyPolygon>());
-    });
+        expect(inserted.collection.geometries.length, 3);
+        expect(inserted.collection.geometries[0], isA<GeographyPoint>());
+        expect(inserted.collection.geometries[1], isA<GeographyLineString>());
+        expect(inserted.collection.geometries[2], isA<GeographyPolygon>());
+      },
+    );
 
     test(
-        'when inserting a row with a nullable field then it round-trips correctly.',
-        () async {
-      var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
-        session,
-        ObjectWithGeographyGeometryCollection(
-          collection: _pointsOnly,
-          collectionNullable: _mixedCollection,
-        ),
-      );
+      'when inserting a row with a nullable field then it round-trips correctly.',
+      () async {
+        var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
+          session,
+          ObjectWithGeographyGeometryCollection(
+            collection: _pointsOnly,
+            collectionNullable: _mixedCollection,
+          ),
+        );
 
-      expect(inserted.collection.geometries.length, 2);
-      expect(inserted.collectionNullable?.geometries.length, 3);
-    });
+        expect(inserted.collection.geometries.length, 2);
+        expect(inserted.collectionNullable?.geometries.length, 3);
+      },
+    );
 
     test('when fetching by id then the correct row is returned.', () async {
       var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
@@ -130,7 +134,9 @@ void main() async {
       );
 
       await ObjectWithGeographyGeometryCollection.db.deleteRow(
-          session, inserted);
+        session,
+        inserted,
+      );
 
       var fetched = await ObjectWithGeographyGeometryCollection.db.findById(
         session,
@@ -140,22 +146,23 @@ void main() async {
     });
 
     test(
-        'when updating nullable field to null then null is persisted.',
-        () async {
-      var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
-        session,
-        ObjectWithGeographyGeometryCollection(
-          collection: _pointsOnly,
-          collectionNullable: _mixedCollection,
-        ),
-      );
+      'when updating nullable field to null then null is persisted.',
+      () async {
+        var inserted = await ObjectWithGeographyGeometryCollection.db.insertRow(
+          session,
+          ObjectWithGeographyGeometryCollection(
+            collection: _pointsOnly,
+            collectionNullable: _mixedCollection,
+          ),
+        );
 
-      var updated = await ObjectWithGeographyGeometryCollection.db.updateRow(
-        session,
-        inserted.copyWith(collectionNullable: null),
-      );
+        var updated = await ObjectWithGeographyGeometryCollection.db.updateRow(
+          session,
+          inserted.copyWith(collectionNullable: null),
+        );
 
-      expect(updated.collectionNullable, isNull);
-    });
+        expect(updated.collectionNullable, isNull);
+      },
+    );
   });
 }

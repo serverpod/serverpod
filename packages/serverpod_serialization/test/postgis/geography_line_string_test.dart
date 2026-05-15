@@ -133,15 +133,17 @@ void main() {
   group('GeographyLineString round-trip', () {
     test('toJson then fromJson preserves values.', () {
       const original = GeographyLineString(points: [london, paris]);
-      final restored =
-          GeographyLineStringJsonExtension.fromJson(original.toJson());
+      final restored = GeographyLineStringJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored, equals(original));
     });
 
     test('round-trip preserves custom SRID.', () {
       const original = GeographyLineString(points: [london, paris], srid: 3857);
-      final restored =
-          GeographyLineStringJsonExtension.fromJson(original.toJson());
+      final restored = GeographyLineStringJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.srid, 3857);
     });
   });

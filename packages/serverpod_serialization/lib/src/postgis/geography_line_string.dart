@@ -48,8 +48,7 @@ class GeographyLineString implements Geography {
 
   @override
   String toEwkt() {
-    final coords =
-        points.map((p) => '${p.longitude} ${p.latitude}').join(', ');
+    final coords = points.map((p) => '${p.longitude} ${p.latitude}').join(', ');
     return 'SRID=$srid;LINESTRING($coords)';
   }
 
@@ -61,8 +60,10 @@ class GeographyLineString implements Geography {
       other is GeographyLineString &&
       other.srid == srid &&
       other.points.length == points.length &&
-      List.generate(points.length, (i) => points[i] == other.points[i])
-          .every((v) => v);
+      List.generate(
+        points.length,
+        (i) => points[i] == other.points[i],
+      ).every((v) => v);
 
   @override
   int get hashCode => Object.hash(srid, Object.hashAll(points));

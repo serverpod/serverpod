@@ -978,34 +978,37 @@ END
     });
   });
 
-  group('Given a table definition with a GeographyGeometryCollection field', () {
-    var modelName = 'geoCollectionModel';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.sentenceCase)
-          .withFileName(modelName)
-          .withTableName(modelName)
-          .withSimpleField('shapes', 'GeographyGeometryCollection')
-          .build(),
-    ];
+  group(
+    'Given a table definition with a GeographyGeometryCollection field',
+    () {
+      var modelName = 'geoCollectionModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withSimpleField('shapes', 'GeographyGeometryCollection')
+            .build(),
+      ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    );
-
-    test('then code for creating PostGIS extension is generated.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains(createPostgisExtension));
-    });
-
-    test('then the column uses geography(GeometryCollection,4326) type.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(
-        pgsql,
-        contains('"shapes" geography(GeometryCollection,4326) NOT NULL'),
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
       );
-    });
-  });
+
+      test('then code for creating PostGIS extension is generated.', () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      });
+
+      test('then the column uses geography(GeometryCollection,4326) type.', () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(
+          pgsql,
+          contains('"shapes" geography(GeometryCollection,4326) NOT NULL'),
+        );
+      });
+    },
+  );
 }

@@ -88,10 +88,10 @@ class GeographyPolygon implements Geography {
 
   @override
   int get hashCode => Object.hash(
-        srid,
-        Object.hashAll(exteriorRing),
-        Object.hashAll(holes.map(Object.hashAll)),
-      );
+    srid,
+    Object.hashAll(exteriorRing),
+    Object.hashAll(holes.map(Object.hashAll)),
+  );
 }
 
 /// Expose toJson on [GeographyPolygon] and a static fromJson builder.
@@ -110,18 +110,17 @@ extension GeographyPolygonJsonExtension on GeographyPolygon {
     if (value is Map) {
       final srid = value['srid'] as int? ?? 4326;
       List<GeographyPoint> parseRing(List pts) => pts.map((p) {
-            final m = p as Map;
-            return GeographyPoint(
-              longitude: (m['longitude'] as num).toDouble(),
-              latitude: (m['latitude'] as num).toDouble(),
-            );
-          }).toList();
+        final m = p as Map;
+        return GeographyPoint(
+          longitude: (m['longitude'] as num).toDouble(),
+          latitude: (m['latitude'] as num).toDouble(),
+        );
+      }).toList();
       final exterior = parseRing(value['exteriorRing'] as List);
       final holes = (value['holes'] as List? ?? [])
           .map((h) => parseRing(h as List))
           .toList();
-      return GeographyPolygon(
-          exteriorRing: exterior, holes: holes, srid: srid);
+      return GeographyPolygon(exteriorRing: exterior, holes: holes, srid: srid);
     }
     throw ArgumentError(
       'Cannot deserialize ${value.runtimeType} as GeographyPolygon',

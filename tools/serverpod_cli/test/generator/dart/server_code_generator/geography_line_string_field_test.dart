@@ -126,7 +126,9 @@ void main() {
 
             final fromJsonSource = fromJsonConstructor!.toSource();
             expect(
-              fromJsonSource.contains('GeographyLineStringJsonExtension.fromJson'),
+              fromJsonSource.contains(
+                'GeographyLineStringJsonExtension.fromJson',
+              ),
               isTrue,
               reason:
                   'fromJson should use GeographyLineStringJsonExtension.fromJson',

@@ -60,8 +60,7 @@ void main() {
       );
       // toEwkt joins rings with '), (' (close + comma + space + open).
       final rings = poly.toEwkt().split('), (');
-      expect(rings.length, 2,
-          reason: 'EWKT should contain two rings');
+      expect(rings.length, 2, reason: 'EWKT should contain two rings');
     });
 
     test('toString returns same as toEwkt.', () {
@@ -175,8 +174,9 @@ void main() {
   group('GeographyPolygon round-trip', () {
     test('toJson then fromJson preserves exterior ring.', () {
       const original = GeographyPolygon(exteriorRing: squareRing);
-      final restored =
-          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      final restored = GeographyPolygonJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.exteriorRing.length, original.exteriorRing.length);
       expect(restored.srid, original.srid);
     });
@@ -186,16 +186,18 @@ void main() {
         exteriorRing: squareRing,
         holes: [holeRing],
       );
-      final restored =
-          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      final restored = GeographyPolygonJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.holes.length, 1);
       expect(restored.holes[0].length, holeRing.length);
     });
 
     test('round-trip preserves custom SRID.', () {
       const original = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
-      final restored =
-          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      final restored = GeographyPolygonJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.srid, 3857);
     });
   });

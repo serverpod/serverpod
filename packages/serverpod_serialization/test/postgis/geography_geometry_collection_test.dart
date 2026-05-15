@@ -104,13 +104,15 @@ void main() {
       expect(col.geometries[2], isA<GeographyPolygon>());
     });
 
-    test('given EWKT string with empty collection returns empty geometries.',
-        () {
-      final col = GeographyGeometryCollectionJsonExtension.fromJson(
-        'SRID=4326;GEOMETRYCOLLECTION()',
-      );
-      expect(col.geometries, isEmpty);
-    });
+    test(
+      'given EWKT string with empty collection returns empty geometries.',
+      () {
+        final col = GeographyGeometryCollectionJsonExtension.fromJson(
+          'SRID=4326;GEOMETRYCOLLECTION()',
+        );
+        expect(col.geometries, isEmpty);
+      },
+    );
 
     test('given Map with string geometries parses correctly.', () {
       final col = GeographyGeometryCollectionJsonExtension.fromJson({
@@ -167,8 +169,9 @@ void main() {
       const original = GeographyGeometryCollection(
         geometries: [london, paris],
       );
-      final restored =
-          GeographyGeometryCollectionJsonExtension.fromJson(original.toJson());
+      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.geometries.length, 2);
       expect(restored.geometries[0], isA<GeographyPoint>());
       expect(restored.geometries[0], equals(london));
@@ -178,8 +181,9 @@ void main() {
       const original = GeographyGeometryCollection(
         geometries: [london, routeLP, squarePolygon],
       );
-      final restored =
-          GeographyGeometryCollectionJsonExtension.fromJson(original.toJson());
+      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.geometries.length, 3);
       expect(restored.geometries[0], isA<GeographyPoint>());
       expect(restored.geometries[1], isA<GeographyLineString>());
@@ -191,8 +195,9 @@ void main() {
         geometries: [london],
         srid: 3857,
       );
-      final restored =
-          GeographyGeometryCollectionJsonExtension.fromJson(original.toJson());
+      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+        original.toJson(),
+      );
       expect(restored.srid, 3857);
     });
   });
