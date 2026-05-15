@@ -53,8 +53,8 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
       return '\'${input.toString()}\'';
     } else if (input is Bit) {
       return '\'${input.toString()}\'';
-    } else if (input is GeographyPoint) {
-      return '\'${input.toString()}\'';
+    } else if (input is Geography) {
+      return '\'${input.toEwkt()}\'';
     } else if (input is SerializableModel && input is Enum) {
       return super.convert(
         input.toJson(),

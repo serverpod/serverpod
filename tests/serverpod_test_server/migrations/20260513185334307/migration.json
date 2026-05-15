@@ -1,0 +1,130 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_geometry_collection",
+        "dartName": "ObjectWithGeographyGeometryCollection",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "collection",
+            "fieldName": "collection",
+            "columnType": 18,
+            "isNullable": false,
+            "dartType": "GeographyGeometryCollection"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "collectionNullable",
+            "fieldName": "collectionNullable",
+            "columnType": 18,
+            "isNullable": true,
+            "dartType": "GeographyGeometryCollection?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_line_string",
+        "dartName": "ObjectWithGeographyLineString",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineString",
+            "fieldName": "lineString",
+            "columnType": 16,
+            "isNullable": false,
+            "dartType": "GeographyLineString"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineStringNullable",
+            "fieldName": "lineStringNullable",
+            "columnType": 16,
+            "isNullable": true,
+            "dartType": "GeographyLineString?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_geography_polygon",
+        "dartName": "ObjectWithGeographyPolygon",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "fieldName": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "serial",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygon",
+            "fieldName": "polygon",
+            "columnType": 17,
+            "isNullable": false,
+            "dartType": "GeographyPolygon"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygonNullable",
+            "fieldName": "polygonNullable",
+            "columnType": 17,
+            "isNullable": true,
+            "dartType": "GeographyPolygon?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
+import 'geography.dart';
+
 /// Represents a geographic point with longitude, latitude, and spatial
 /// reference system identifier (SRID) for use with PostGIS.
-class GeographyPoint {
+class GeographyPoint implements Geography {
   /// Longitude (X coordinate) in decimal degrees.
   final double longitude;
 
@@ -10,6 +12,7 @@ class GeographyPoint {
   final double latitude;
 
   /// Spatial reference system identifier. Defaults to WGS 84 (EPSG:4326).
+  @override
   final int srid;
 
   /// Creates a new [GeographyPoint].
@@ -42,9 +45,12 @@ class GeographyPoint {
     return GeographyPoint(longitude: longitude, latitude: latitude, srid: srid);
   }
 
+  @override
+  String toEwkt() => 'SRID=$srid;POINT($longitude $latitude)';
+
   /// Returns the EWKT representation accepted by PostGIS for inserts.
   @override
-  String toString() => 'SRID=$srid;POINT($longitude $latitude)';
+  String toString() => toEwkt();
 
   @override
   bool operator ==(Object other) =>
@@ -104,5 +110,5 @@ extension GeographyPointJsonExtension on GeographyPoint {
   ///
   /// This is the format the PostgreSQL encoder uses when building INSERT/UPDATE
   /// SQL. The value flows through [TableRow.toJson] → encoder → SQL literal.
-  String toJson() => toString();
+  String toJson() => toEwkt();
 }

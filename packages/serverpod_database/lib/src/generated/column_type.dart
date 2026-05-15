@@ -62,7 +62,16 @@ enum ColumnType implements _i1.SerializableModel {
   jsonb,
 
   /// Dart type: [GeographyPoint]
-  geography;
+  geography,
+
+  /// Dart type: [GeographyLineString]
+  geographyLineString,
+
+  /// Dart type: [GeographyPolygon]
+  geographyPolygon,
+
+  /// Dart type: [GeographyGeometryCollection]
+  geographyGeometryCollection;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -98,6 +107,12 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.jsonb;
       case 15:
         return ColumnType.geography;
+      case 16:
+        return ColumnType.geographyLineString;
+      case 17:
+        return ColumnType.geographyPolygon;
+      case 18:
+        return ColumnType.geographyGeometryCollection;
       default:
         throw ArgumentError(
           'Value "$index" cannot be converted to "ColumnType"',

@@ -235,6 +235,10 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i210;
 import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/parent.dart'
     as _i211;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i212;
+import 'object_with_geography_point.dart' as _i213;
+import 'object_with_geography_line_string.dart' as _i214;
+import 'object_with_geography_polygon.dart' as _i215;
+import 'object_with_geography_geometry_collection.dart' as _i216;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -390,6 +394,10 @@ export 'object_with_duration.dart';
 export 'object_with_dynamic.dart';
 export 'object_with_enum.dart';
 export 'object_with_enum_enhanced.dart';
+export 'object_with_geography_point.dart';
+export 'object_with_geography_line_string.dart';
+export 'object_with_geography_polygon.dart';
+export 'object_with_geography_geometry_collection.dart';
 export 'object_with_half_vector.dart';
 export 'object_with_index.dart';
 export 'object_with_jsonb.dart';
@@ -943,6 +951,18 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i155.ObjectWithEnumEnhanced) {
       return _i155.ObjectWithEnumEnhanced.fromJson(data) as T;
+    }
+    if (t == _i213.ObjectWithGeographyPoint) {
+      return _i213.ObjectWithGeographyPoint.fromJson(data) as T;
+    }
+    if (t == _i214.ObjectWithGeographyLineString) {
+      return _i214.ObjectWithGeographyLineString.fromJson(data) as T;
+    }
+    if (t == _i215.ObjectWithGeographyPolygon) {
+      return _i215.ObjectWithGeographyPolygon.fromJson(data) as T;
+    }
+    if (t == _i216.ObjectWithGeographyGeometryCollection) {
+      return _i216.ObjectWithGeographyGeometryCollection.fromJson(data) as T;
     }
     if (t == _i156.ObjectWithHalfVector) {
       return _i156.ObjectWithHalfVector.fromJson(data) as T;
@@ -1658,6 +1678,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i155.ObjectWithEnumEnhanced?>()) {
       return (data != null ? _i155.ObjectWithEnumEnhanced.fromJson(data) : null)
           as T;
+    }
+    if (t == _i1.getType<_i213.ObjectWithGeographyPoint?>()) {
+      return (data != null
+          ? _i213.ObjectWithGeographyPoint.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i214.ObjectWithGeographyLineString?>()) {
+      return (data != null
+          ? _i214.ObjectWithGeographyLineString.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i215.ObjectWithGeographyPolygon?>()) {
+      return (data != null
+          ? _i215.ObjectWithGeographyPolygon.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i216.ObjectWithGeographyGeometryCollection?>()) {
+      return (data != null
+          ? _i216.ObjectWithGeographyGeometryCollection.fromJson(data)
+          : null) as T;
     }
     if (t == _i1.getType<_i156.ObjectWithHalfVector?>()) {
       return (data != null ? _i156.ObjectWithHalfVector.fromJson(data) : null)
@@ -5977,6 +6017,11 @@ class Protocol extends _i1.SerializationManager {
       _i153.ObjectWithDynamic => 'ObjectWithDynamic',
       _i154.ObjectWithEnum => 'ObjectWithEnum',
       _i155.ObjectWithEnumEnhanced => 'ObjectWithEnumEnhanced',
+      _i213.ObjectWithGeographyPoint => 'ObjectWithGeographyPoint',
+      _i214.ObjectWithGeographyLineString => 'ObjectWithGeographyLineString',
+      _i215.ObjectWithGeographyPolygon => 'ObjectWithGeographyPolygon',
+      _i216.ObjectWithGeographyGeometryCollection =>
+          'ObjectWithGeographyGeometryCollection',
       _i156.ObjectWithHalfVector => 'ObjectWithHalfVector',
       _i157.ObjectWithIndex => 'ObjectWithIndex',
       _i158.ObjectWithJsonb => 'ObjectWithJsonb',
@@ -6371,6 +6416,14 @@ class Protocol extends _i1.SerializationManager {
         return 'ObjectWithEnum';
       case _i155.ObjectWithEnumEnhanced():
         return 'ObjectWithEnumEnhanced';
+      case _i213.ObjectWithGeographyPoint():
+        return 'ObjectWithGeographyPoint';
+      case _i214.ObjectWithGeographyLineString():
+        return 'ObjectWithGeographyLineString';
+      case _i215.ObjectWithGeographyPolygon():
+        return 'ObjectWithGeographyPolygon';
+      case _i216.ObjectWithGeographyGeometryCollection():
+        return 'ObjectWithGeographyGeometryCollection';
       case _i156.ObjectWithHalfVector():
         return 'ObjectWithHalfVector';
       case _i157.ObjectWithIndex():

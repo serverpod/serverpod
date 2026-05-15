@@ -1,0 +1,231 @@
+import 'dart:typed_data';
+
+import 'package:serverpod_serialization/src/postgis.dart';
+import 'package:test/test.dart';
+
+// A simple closed square: (0,0) -> (1,0) -> (1,1) -> (0,1) -> (0,0)
+const squareRing = [
+  GeographyPoint(longitude: 0.0, latitude: 0.0),
+  GeographyPoint(longitude: 1.0, latitude: 0.0),
+  GeographyPoint(longitude: 1.0, latitude: 1.0),
+  GeographyPoint(longitude: 0.0, latitude: 1.0),
+  GeographyPoint(longitude: 0.0, latitude: 0.0),
+];
+
+// A hole inside the square.
+const holeRing = [
+  GeographyPoint(longitude: 0.2, latitude: 0.2),
+  GeographyPoint(longitude: 0.8, latitude: 0.2),
+  GeographyPoint(longitude: 0.8, latitude: 0.8),
+  GeographyPoint(longitude: 0.2, latitude: 0.8),
+  GeographyPoint(longitude: 0.2, latitude: 0.2),
+];
+
+void main() {
+  group('GeographyPolygon construction', () {
+    test('stores exterior ring, empty holes, and default SRID.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      expect(poly.exteriorRing, squareRing);
+      expect(poly.holes, isEmpty);
+      expect(poly.srid, 4326);
+    });
+
+    test('stores holes when provided.', () {
+      const poly = GeographyPolygon(
+        exteriorRing: squareRing,
+        holes: [holeRing],
+      );
+      expect(poly.holes.length, 1);
+    });
+
+    test('accepts custom SRID.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
+      expect(poly.srid, 3857);
+    });
+  });
+
+  group('GeographyPolygon.toEwkt', () {
+    test('returns EWKT for a simple polygon (no holes).', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      final ewkt = poly.toEwkt();
+      expect(ewkt, startsWith('SRID=4326;POLYGON('));
+      expect(ewkt, contains('0.0 0.0'));
+      expect(ewkt, contains('1.0 0.0'));
+    });
+
+    test('EWKT contains interior ring when polygon has a hole.', () {
+      const poly = GeographyPolygon(
+        exteriorRing: squareRing,
+        holes: [holeRing],
+      );
+      // toEwkt joins rings with '), (' (close + comma + space + open).
+      final rings = poly.toEwkt().split('), (');
+      expect(rings.length, 2,
+          reason: 'EWKT should contain two rings');
+    });
+
+    test('toString returns same as toEwkt.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      expect(poly.toString(), poly.toEwkt());
+    });
+  });
+
+  group('GeographyPolygonJsonExtension.toJson', () {
+    test('returns a String.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      expect(poly.toJson(), isA<String>());
+    });
+
+    test('returns EWKT matching toEwkt.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      expect(poly.toJson(), poly.toEwkt());
+    });
+  });
+
+  group('GeographyPolygonJsonExtension.fromJson', () {
+    test('given GeographyPolygon returns it unchanged.', () {
+      const poly = GeographyPolygon(exteriorRing: squareRing);
+      expect(GeographyPolygonJsonExtension.fromJson(poly), same(poly));
+    });
+
+    test('given EWKT string (no holes) parses correctly.', () {
+      final poly = GeographyPolygonJsonExtension.fromJson(
+        'SRID=4326;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))',
+      );
+      expect(poly.srid, 4326);
+      expect(poly.exteriorRing.length, 4);
+      expect(poly.holes, isEmpty);
+    });
+
+    test('given EWKT string with hole parses both rings.', () {
+      final poly = GeographyPolygonJsonExtension.fromJson(
+        'SRID=4326;POLYGON('
+        '(0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0), '
+        '(0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.2)'
+        ')',
+      );
+      expect(poly.holes.length, 1);
+      expect(poly.holes[0].length, 4);
+    });
+
+    test('given Map (no holes) parses correctly.', () {
+      final poly = GeographyPolygonJsonExtension.fromJson({
+        'srid': 4326,
+        'exteriorRing': [
+          {'longitude': 0.0, 'latitude': 0.0},
+          {'longitude': 1.0, 'latitude': 0.0},
+          {'longitude': 1.0, 'latitude': 1.0},
+          {'longitude': 0.0, 'latitude': 0.0},
+        ],
+        'holes': [],
+      });
+      expect(poly.srid, 4326);
+      expect(poly.exteriorRing.length, 4);
+      expect(poly.holes, isEmpty);
+    });
+
+    test('given Map without srid defaults to 4326.', () {
+      final poly = GeographyPolygonJsonExtension.fromJson({
+        'exteriorRing': [
+          {'longitude': 0.0, 'latitude': 0.0},
+          {'longitude': 1.0, 'latitude': 0.0},
+          {'longitude': 0.0, 'latitude': 0.0},
+        ],
+      });
+      expect(poly.srid, 4326);
+    });
+
+    test('given Uint8List (EWKB) decodes binary representation.', () {
+      // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
+      final ewkb = Uint8List.fromList([
+        0x01, // LE
+        0x03, 0x00, 0x00, 0x20, // Polygon | SRID_FLAG
+        0xE6, 0x10, 0x00, 0x00, // SRID 4326
+        0x01, 0x00, 0x00, 0x00, // numRings = 1
+        0x04, 0x00, 0x00, 0x00, // ring[0] numPoints = 4
+        // (0.0, 0.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        // (1.0, 0.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        // (1.0, 1.0)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+        // (0.0, 0.0) closing point
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      ]);
+      final poly = GeographyPolygonJsonExtension.fromJson(ewkb);
+      expect(poly.srid, 4326);
+      expect(poly.exteriorRing.length, 4);
+      expect(poly.holes, isEmpty);
+      expect(poly.exteriorRing[0].longitude, 0.0);
+      expect(poly.exteriorRing[1].longitude, 1.0);
+    });
+
+    test('given unsupported type throws ArgumentError.', () {
+      expect(
+        () => GeographyPolygonJsonExtension.fromJson(42),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+  });
+
+  group('GeographyPolygon round-trip', () {
+    test('toJson then fromJson preserves exterior ring.', () {
+      const original = GeographyPolygon(exteriorRing: squareRing);
+      final restored =
+          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      expect(restored.exteriorRing.length, original.exteriorRing.length);
+      expect(restored.srid, original.srid);
+    });
+
+    test('toJson then fromJson preserves holes.', () {
+      const original = GeographyPolygon(
+        exteriorRing: squareRing,
+        holes: [holeRing],
+      );
+      final restored =
+          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      expect(restored.holes.length, 1);
+      expect(restored.holes[0].length, holeRing.length);
+    });
+
+    test('round-trip preserves custom SRID.', () {
+      const original = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
+      final restored =
+          GeographyPolygonJsonExtension.fromJson(original.toJson());
+      expect(restored.srid, 3857);
+    });
+  });
+
+  group('GeographyPolygon equality', () {
+    test('two polygons with same exterior ring and SRID are equal.', () {
+      const a = GeographyPolygon(exteriorRing: squareRing);
+      const b = GeographyPolygon(exteriorRing: squareRing);
+      expect(a, equals(b));
+    });
+
+    test('polygon with hole is not equal to polygon without hole.', () {
+      const a = GeographyPolygon(exteriorRing: squareRing);
+      const b = GeographyPolygon(
+        exteriorRing: squareRing,
+        holes: [holeRing],
+      );
+      expect(a, isNot(equals(b)));
+    });
+
+    test('two polygons with different SRIDs are not equal.', () {
+      const a = GeographyPolygon(exteriorRing: squareRing, srid: 4326);
+      const b = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
+      expect(a, isNot(equals(b)));
+    });
+
+    test('equal polygons have the same hashCode.', () {
+      const a = GeographyPolygon(exteriorRing: squareRing);
+      const b = GeographyPolygon(exteriorRing: squareRing);
+      expect(a.hashCode, b.hashCode);
+    });
+  });
+}

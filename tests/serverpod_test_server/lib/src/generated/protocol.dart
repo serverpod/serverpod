@@ -252,6 +252,9 @@ import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/par
     as _i224;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i225;
 import 'object_with_geography_point.dart' as _i226;
+import 'object_with_geography_line_string.dart' as _i227;
+import 'object_with_geography_polygon.dart' as _i228;
+import 'object_with_geography_geometry_collection.dart' as _i229;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -413,6 +416,9 @@ export 'object_with_dynamic.dart';
 export 'object_with_enum.dart';
 export 'object_with_enum_enhanced.dart';
 export 'object_with_geography_point.dart';
+export 'object_with_geography_line_string.dart';
+export 'object_with_geography_polygon.dart';
+export 'object_with_geography_geometry_collection.dart';
 export 'object_with_half_vector.dart';
 export 'object_with_index.dart';
 export 'object_with_jsonb.dart';
@@ -3461,6 +3467,96 @@ class Protocol extends _i1.DatabaseSerializationManager {
           columnType: _i2.ColumnType.geography,
           isNullable: true,
           dartType: 'GeographyPoint?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'object_with_geography_line_string',
+      dartName: 'ObjectWithGeographyLineString',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lineString',
+          columnType: _i2.ColumnType.geographyLineString,
+          isNullable: false,
+          dartType: 'GeographyLineString',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lineStringNullable',
+          columnType: _i2.ColumnType.geographyLineString,
+          isNullable: true,
+          dartType: 'GeographyLineString?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'object_with_geography_polygon',
+      dartName: 'ObjectWithGeographyPolygon',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'polygon',
+          columnType: _i2.ColumnType.geographyPolygon,
+          isNullable: false,
+          dartType: 'GeographyPolygon',
+        ),
+        _i2.ColumnDefinition(
+          name: 'polygonNullable',
+          columnType: _i2.ColumnType.geographyPolygon,
+          isNullable: true,
+          dartType: 'GeographyPolygon?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'object_with_geography_geometry_collection',
+      dartName: 'ObjectWithGeographyGeometryCollection',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _i2.ColumnDefinition(
+          name: 'collection',
+          columnType: _i2.ColumnType.geographyGeometryCollection,
+          isNullable: false,
+          dartType: 'GeographyGeometryCollection',
+        ),
+        _i2.ColumnDefinition(
+          name: 'collectionNullable',
+          columnType: _i2.ColumnType.geographyGeometryCollection,
+          isNullable: true,
+          dartType: 'GeographyGeometryCollection?',
         ),
       ],
       foreignKeys: [],
@@ -6805,6 +6901,15 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i226.ObjectWithGeographyPoint) {
       return _i226.ObjectWithGeographyPoint.fromJson(data) as T;
     }
+    if (t == _i227.ObjectWithGeographyLineString) {
+      return _i227.ObjectWithGeographyLineString.fromJson(data) as T;
+    }
+    if (t == _i228.ObjectWithGeographyPolygon) {
+      return _i228.ObjectWithGeographyPolygon.fromJson(data) as T;
+    }
+    if (t == _i229.ObjectWithGeographyGeometryCollection) {
+      return _i229.ObjectWithGeographyGeometryCollection.fromJson(data) as T;
+    }
     if (t == _i167.ObjectWithHalfVector) {
       return _i167.ObjectWithHalfVector.fromJson(data) as T;
     }
@@ -7578,6 +7683,21 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i1.getType<_i226.ObjectWithGeographyPoint?>()) {
       return (data != null
           ? _i226.ObjectWithGeographyPoint.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i227.ObjectWithGeographyLineString?>()) {
+      return (data != null
+          ? _i227.ObjectWithGeographyLineString.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i228.ObjectWithGeographyPolygon?>()) {
+      return (data != null
+          ? _i228.ObjectWithGeographyPolygon.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i229.ObjectWithGeographyGeometryCollection?>()) {
+      return (data != null
+          ? _i229.ObjectWithGeographyGeometryCollection.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i167.ObjectWithHalfVector?>()) {
@@ -11959,6 +12079,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i165.ObjectWithEnum => 'ObjectWithEnum',
       _i166.ObjectWithEnumEnhanced => 'ObjectWithEnumEnhanced',
       _i226.ObjectWithGeographyPoint => 'ObjectWithGeographyPoint',
+      _i227.ObjectWithGeographyLineString => 'ObjectWithGeographyLineString',
+      _i228.ObjectWithGeographyPolygon => 'ObjectWithGeographyPolygon',
+      _i229.ObjectWithGeographyGeometryCollection =>
+          'ObjectWithGeographyGeometryCollection',
       _i167.ObjectWithHalfVector => 'ObjectWithHalfVector',
       _i168.ObjectWithIndex => 'ObjectWithIndex',
       _i169.ObjectWithJsonb => 'ObjectWithJsonb',
@@ -12375,6 +12499,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'ObjectWithEnumEnhanced';
       case _i226.ObjectWithGeographyPoint():
         return 'ObjectWithGeographyPoint';
+      case _i227.ObjectWithGeographyLineString():
+        return 'ObjectWithGeographyLineString';
+      case _i228.ObjectWithGeographyPolygon():
+        return 'ObjectWithGeographyPolygon';
+      case _i229.ObjectWithGeographyGeometryCollection():
+        return 'ObjectWithGeographyGeometryCollection';
       case _i167.ObjectWithHalfVector():
         return 'ObjectWithHalfVector';
       case _i168.ObjectWithIndex():
@@ -13591,6 +13721,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i166.ObjectWithEnumEnhanced.t;
       case _i226.ObjectWithGeographyPoint:
         return _i226.ObjectWithGeographyPoint.t;
+      case _i227.ObjectWithGeographyLineString:
+        return _i227.ObjectWithGeographyLineString.t;
+      case _i228.ObjectWithGeographyPolygon:
+        return _i228.ObjectWithGeographyPolygon.t;
+      case _i229.ObjectWithGeographyGeometryCollection:
+        return _i229.ObjectWithGeographyGeometryCollection.t;
       case _i167.ObjectWithHalfVector:
         return _i167.ObjectWithHalfVector.t;
       case _i168.ObjectWithIndex:
