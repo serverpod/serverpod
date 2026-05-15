@@ -29,12 +29,16 @@ class SqlitePoolManager implements DatabasePoolManager {
   SqliteDatabase? _db;
 
   /// Tracks the PRAGMA future kicked off by [start]
-  Future<void> _started = Future.value();
+  Future<void>? _startedFuture;
+  bool _databaseStopped = false;
 
   /// The SQLite database instance.
   ///
-  /// Throws a [StateError] if the database has not been started.
-  SqliteDatabase get database {
+  /// If the database has not been started yet, this will start it and then
+  /// return the database instance. Throws a [StateError] if the database is
+  /// not started (e.g. after [stop] has been called).
+  Future<SqliteDatabase> get database async {
+    await started;
     var db = _db;
     if (db == null) {
       throw StateError('Database not started.');
@@ -55,40 +59,47 @@ class SqlitePoolManager implements DatabasePoolManager {
     _serializationManager = serializationManager;
   }
 
-  /// Starts the database connection.
-  ///
-  /// Callers can await [started] to ensure initialization is complete,
-  /// and surface any errors.
   @override
   void start() {
+    _databaseStopped = false;
     if (_db != null) return;
     final db = SqliteDatabase(
       path: config.filePath,
-      // This will only be available from 0.14 onwards.
-      // options: SqliteOptions(
-      //   maxReaders:
-      //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
-      // ),
+      options: SqliteOptions(
+        maxReaders:
+            config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
+      ),
     );
     _db = db;
-    _started = db.execute('PRAGMA foreign_keys = ON');
+    _startedFuture = db.execute('PRAGMA foreign_keys = ON');
   }
 
   @override
-  Future<void> get started => _started;
+  Future<void> get started {
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
+    start();
+    return _startedFuture!;
+  }
 
   /// Closes the database.
   @override
   Future<void> stop() async {
-    await _db?.close();
+    _databaseStopped = true;
+    final db = _db;
+
     _db = null;
-    _started = Future.value();
+    _startedFuture = null;
+
+    await db?.close();
   }
 
   /// Tests the database connection.
   @override
   Future<bool> testConnection() async {
-    await database.get('SELECT 1');
+    final connection = await database;
+    await connection.get('SELECT 1');
     return true;
   }
 }

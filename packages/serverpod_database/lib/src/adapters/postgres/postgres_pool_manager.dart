@@ -32,13 +32,15 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   /// Postgresql connection pool created from configuration.
   ///
-  /// Throws a [StateError] if the pool has not been started.
-  pg.Pool get pool {
+  /// If the database has not been started yet, this will start it and then
+  /// return the database instance. Throws a [StateError] if the database is
+  /// not started (e.g. after [stop] has been called).
+  Future<pg.Pool> get pool async {
+    await started;
     var pgPool = _pgPool;
     if (pgPool == null) {
       throw StateError('Database pool not started.');
     }
-
     return pgPool;
   }
 
@@ -107,13 +109,17 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   @override
   Future<void> stop() async {
-    await _pgPool?.close();
+    final pgPool = _pgPool;
+
     _pgPool = null;
+
+    await pgPool?.close();
   }
 
   @override
   Future<bool> testConnection() async {
-    await pool.execute(
+    final connection = await pool;
+    await connection.execute(
       'SELECT 1;',
       timeout: const Duration(seconds: 2),
     );

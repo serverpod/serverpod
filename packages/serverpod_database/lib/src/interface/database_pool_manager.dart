@@ -20,9 +20,22 @@ abstract interface class DatabasePoolManager {
   ValueEncoder get encoder;
 
   /// Starts the database pool.
+  ///
+  /// This method kicks off an async initialization process that must be
+  /// awaited from [started] to avoid unhandled futures. Use it only to start
+  /// the database pool after [stop] has been called. Otherwise prefer awaiting
+  /// [started] instead, since it will lazily initialize the database pool on
+  /// the first access.
   void start();
 
-  /// Resolves once async initialisation kicked off by [start] has completed.
+  /// Ensures the database pool is started.
+  ///
+  /// If [start] has been previously called, this will simply return the future
+  /// kicked off by [start]. Otherwise, it will create an initialization process
+  /// and return the future. This method alone is enough to ensure the database
+  /// pool is first started.
+  ///
+  /// This method is idempotent and can be called multiple times.
   Future<void> get started;
 
   /// Closes the database pool.

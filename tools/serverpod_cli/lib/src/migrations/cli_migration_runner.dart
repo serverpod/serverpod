@@ -58,12 +58,12 @@ Future<List<String>> applyPendingMigrations({
   // the same file the pod will
   final resolvedDbConfig = _resolveDbConfigPaths(dbConfig, serverDir);
 
-  final pool =
-      DatabaseProvider.forDialect(resolvedDbConfig.dialect).createPoolManager(
+  final pool = DatabaseProvider.forDialect(resolvedDbConfig.dialect)
+      .createPoolManager(
         serializationManager,
         null,
         resolvedDbConfig,
-      )..start();
+      );
   await pool.started;
 
   try {
