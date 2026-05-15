@@ -16,10 +16,37 @@ $$;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "object_with_geography_geometry_collection" (
+    "id" bigserial PRIMARY KEY,
+    "collection" geography(GeometryCollection,4326) NOT NULL,
+    "collectionNullable" geography(GeometryCollection,4326)
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "object_with_geography_line_string" (
+    "id" bigserial PRIMARY KEY,
+    "lineString" geography(LineString,4326) NOT NULL,
+    "lineStringNullable" geography(LineString,4326)
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "object_with_geography_point" (
     "id" bigserial PRIMARY KEY,
     "location" geography(Point,4326) NOT NULL,
     "locationNullable" geography(Point,4326)
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "object_with_geography_polygon" (
+    "id" bigserial PRIMARY KEY,
+    "polygon" geography(Polygon,4326) NOT NULL,
+    "polygonNullable" geography(Polygon,4326)
 );
 
 
@@ -27,9 +54,9 @@ CREATE TABLE "object_with_geography_point" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260513125410296', now())
+    VALUES ('serverpod_test', '20260515123529275', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260513125410296', "timestamp" = now();
+    DO UPDATE SET "version" = '20260515123529275', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
