@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:redis/redis.dart';
 import 'package:serverpod_shared/log.dart';
@@ -28,6 +29,13 @@ class RedisController {
   /// require ssl
   final bool requireSsl;
 
+  /// Maximum time to wait while opening the TCP/TLS connection to Redis.
+  ///
+  /// After this duration, the attempt fails with [TimeoutException] instead of
+  /// relying on OS-level connect timeouts (which can be very long when traffic
+  /// is dropped).
+  final Duration connectTimeout;
+
   final Map<String, RedisSubscriptionCallback> _subscriptions = {};
 
   Command? _command;
@@ -46,16 +54,23 @@ class RedisController {
     required this.requireSsl,
     this.user,
     this.password,
+    this.connectTimeout = const Duration(seconds: 10),
   });
 
   /// Starts the controller and connects to Redis. Maintains an open connection
   /// until [stop] is called.
-  Future<void> start([bool Function(Exception e)? handleError]) async {
-    final connected = await _connect(handleError);
+  ///
+  /// If [connectTimeout] is set, it overrides [RedisController.connectTimeout]
+  /// for the TCP/TLS connections opened during this [start] call only.
+  Future<void> start({
+    bool Function(Exception e)? handleError,
+    Duration? connectTimeout,
+  }) async {
+    final connected = await _connect(handleError, connectTimeout);
     if (!connected && handleError != null) {
       return;
     }
-    await _connectPubSub();
+    await _connectPubSub(connectTimeout);
 
     unawaited(_keepAlive());
   }
@@ -67,16 +82,23 @@ class RedisController {
     await _pubSubCommand?.get_connection().close();
   }
 
+  Future<Socket> _openRedisSocket([Duration? connectTimeoutOverride]) async {
+    final timeout = connectTimeoutOverride ?? connectTimeout;
+    if (requireSsl) {
+      return SecureSocket.connect(host, port, timeout: timeout);
+    }
+    return Socket.connect(host, port, timeout: timeout);
+  }
+
   /// Shared helper to create and authenticate a Redis Command connection.
-  Future<Command?> _createAndAuthCommand([
+  Future<Command?> _createAndAuthCommand({
     bool Function(Exception e)? handleError,
-  ]) async {
+    Duration? connectTimeoutOverride,
+  }) async {
     try {
+      final socket = await _openRedisSocket(connectTimeoutOverride);
       var connection = RedisConnection();
-      Command command = switch (requireSsl) {
-        true => await connection.connectSecure(host, port),
-        false => await connection.connect(host, port),
-      };
+      var command = await connection.connectWithSocket(socket);
 
       if (password != null) {
         dynamic result = switch (user) {
@@ -100,7 +122,10 @@ class RedisController {
     }
   }
 
-  Future<bool> _connect([bool Function(Exception e)? handleError]) async {
+  Future<bool> _connect([
+    bool Function(Exception e)? handleError,
+    Duration? connectTimeoutOverride,
+  ]) async {
     if (_command != null) {
       return true;
     }
@@ -109,7 +134,10 @@ class RedisController {
     }
     _connecting = true;
 
-    _command = await _createAndAuthCommand(handleError);
+    _command = await _createAndAuthCommand(
+      handleError: handleError,
+      connectTimeoutOverride: connectTimeoutOverride,
+    );
     _connecting = false;
     return _command != null;
   }
@@ -123,7 +151,7 @@ class RedisController {
     }
   }
 
-  Future<bool> _connectPubSub() async {
+  Future<bool> _connectPubSub([Duration? connectTimeoutOverride]) async {
     if (_pubSub != null) {
       return true;
     }
@@ -132,7 +160,9 @@ class RedisController {
     }
     _connectingPubSub = true;
 
-    _pubSubCommand = await _createAndAuthCommand();
+    _pubSubCommand = await _createAndAuthCommand(
+      connectTimeoutOverride: connectTimeoutOverride,
+    );
     if (_pubSubCommand == null) {
       _connectingPubSub = false;
       return false;
