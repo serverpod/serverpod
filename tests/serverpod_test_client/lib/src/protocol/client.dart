@@ -55,7 +55,8 @@ import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart'
     as _i28;
 import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
     as _i29;
-import 'protocol.dart' as _i30;
+import 'package:http/http.dart' as _i30;
+import 'protocol.dart' as _i31;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -4452,10 +4453,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    bool withCredentials = false,
+    _i30.Client? httpClientOverride,
   }) : super(
          host,
-         _i30.Protocol(),
+         _i31.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -4463,7 +4464,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
-         withCredentials: withCredentials,
+         httpClientOverride: httpClientOverride,
        ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);
