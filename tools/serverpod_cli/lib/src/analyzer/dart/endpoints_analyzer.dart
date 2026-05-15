@@ -118,7 +118,6 @@ class EndpointsAnalyzer {
     List<SerializableModelDefinition>? models,
     Set<String>? changedFiles,
   }) async {
-
     changedFiles ??= {};
     await refreshAnalysisContext(collection, changedFiles);
 

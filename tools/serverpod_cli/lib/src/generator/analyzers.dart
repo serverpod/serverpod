@@ -43,7 +43,7 @@ class Analyzers {
     final endpointsAnalyzer = EndpointsAnalyzer(
       libDirectory,
       collection: collection,
-      extraClasses: config.extraClasses
+      extraClasses: config.extraClasses,
     );
     final yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (
