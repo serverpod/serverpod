@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
-import 'package:serverpod_cli/src/commands/start/db_source_resolver.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -37,7 +36,6 @@ import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
-import 'package:yaml/yaml.dart' as yaml;
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
@@ -68,17 +66,7 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText:
           'Start Docker Compose services if a docker-compose.yaml exists. '
           'Default off; pass --docker to opt in to compose-managed services '
-          '(typically Redis, when paired with embedded PG).',
-    ),
-  ),
-  dbSource(
-    StringOption(
-      argName: 'db-source',
-      mandatory: false,
-      helpText:
-          'Override the database source for this run. One of: auto, '
-          'embedded, config. Overrides database.source in development.yaml. '
-          'See database.source spec for resolution rules.',
+          '(typically Redis when running PostgreSQL separately).',
     ),
   ),
   tui(
@@ -180,9 +168,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
-    final dbSourceOverride = _parseDbSourceOverride(
-      commandConfig.optionalValue(StartOption.dbSource),
-    );
 
     // Listen for termination signals before starting any services so that
     // a SIGINT at any point triggers graceful shutdown (including Docker
@@ -201,7 +186,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
         serverArgs: serverArgs,
         watch: watch,
         docker: docker,
-        dbSourceOverride: dbSourceOverride,
         shutdown: shutdown,
       );
       switch (result) {
@@ -310,63 +294,6 @@ Future<void> _stopDockerServices(String serverDir) async {
   );
 }
 
-/// Parses the `--db-source` CLI option (a free-form string) into a
-/// [DatabaseSource]. Returns null when the flag is absent. Throws
-/// [ExitException] with a helpful message on an unrecognized value.
-DatabaseSource? _parseDbSourceOverride(String? raw) {
-  if (raw == null) return null;
-  try {
-    return DatabaseSource.parse(raw);
-  } on ArgumentError catch (e) {
-    log.error('Invalid --db-source: ${e.message}');
-    throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-  }
-}
-
-/// Loads `config/<runMode>.yaml` (if present), infers the database dialect
-/// and source from it, and calls [resolveDbSource]. Returns null when the
-/// project has no database section AND no CLI override is requesting one -
-/// nothing to resolve.
-Future<ResolvedDbSource?> _resolveDbSourceForProject({
-  required String serverDir,
-  required String runMode,
-  required DatabaseSource? cliOverride,
-  required String projectName,
-}) async {
-  final configFile = File(p.join(serverDir, 'config', '$runMode.yaml'));
-  Map<dynamic, dynamic> configMap = const {};
-  if (configFile.existsSync()) {
-    final parsed = yaml.loadYaml(configFile.readAsStringSync());
-    if (parsed is Map) configMap = parsed;
-  }
-
-  // Single parse: env-var overrides flow through here so `SERVERPOD_DATABASE_*`
-  // reaches the auto probe.
-  final inferred = inferDatabaseConfigFromConfigMap(
-    configMap,
-    environment: Platform.environment,
-  );
-
-  // No database configured AND no CLI request: nothing to resolve.
-  if (inferred == null && cliOverride == null) return null;
-
-  return resolveDbSource(
-    serverDir: serverDir,
-    runMode: runMode,
-    dialect: inferred?.dialect,
-    configSource: inferred?.source,
-    cliOverride: cliOverride,
-    databaseName: inferred?.name.isNotEmpty == true
-        ? inferred!.name
-        : projectName,
-    username: inferred?.user.isNotEmpty == true ? inferred!.user : 'postgres',
-    configuredHost: inferred?.host,
-    configuredPort: inferred?.port,
-    configuredIsUnixSocket: inferred?.isUnixSocket ?? false,
-    interactive: stdin.hasTerminal,
-  );
-}
-
 /// Prepends `--apply-migrations` to [serverArgs] unless it is already present.
 ///
 /// Used for the **first** pod process started by `serverpod start` so pending
@@ -408,7 +335,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required ServerArgsRef serverArgs,
   required bool watch,
   required bool docker,
-  required DatabaseSource? dbSourceOverride,
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
@@ -424,12 +350,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  final runMode = runModeFromServerArgs(serverArgs.value);
-
   // If a server is already running, abort so the IDE can attach to the
   // existing instance via the unchanged info file. Cheap local check; runs
-  // before any provisioning so we don't pay docker compose-up or embedded
-  // PG boot just to discard them.
+  // before Docker Compose provisioning so we don't pay compose-up just to
+  // discard it.
   final existingUri = await _checkExistingServer(vmServiceInfoFile);
   if (existingUri != null) {
     log.info('Existing server found.');
@@ -449,37 +373,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (startedDocker) await _stopDockerServices(serverDir);
   }
 
-  // Resolve database.source: peek at the project's config to see the
-  // declared source (and host/port for the auto probe), then call the
-  // resolver. May boot an embedded postmaster as a side effect; the
-  // rollback below covers that case.
-  ResolvedDbSource? resolvedDbSource;
-  Future<void> rollbackResolvedDbSource() async {
+  Future<void> rollbackProvisioning() async {
     await stopDockerIfStarted();
-    await resolvedDbSource?.onStop?.call();
-  }
-
-  try {
-    resolvedDbSource = await _resolveDbSourceForProject(
-      serverDir: serverDir,
-      runMode: runMode,
-      cliOverride: dbSourceOverride,
-      projectName: config.name,
-    );
-  } on DbSourceResolutionException catch (e) {
-    log.error(e.message);
-    await rollbackResolvedDbSource();
-    return const WatchLoopAborted(1);
-  }
-  if (resolvedDbSource != null) {
-    log.info('database.source: ${resolvedDbSource.diagnostic}');
   }
 
   // Apply pending migrations from the CLI before booting the pod.
   try {
     serverArgs.value = _withApplyMigrations(serverArgs.value);
   } catch (_) {
-    await rollbackResolvedDbSource();
+    await rollbackProvisioning();
     rethrow;
   }
 
@@ -507,7 +409,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (!genResult.success) {
       log.error('Code generation failed.');
       await closeAnalyzers();
-      await rollbackResolvedDbSource();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
   }
@@ -536,7 +438,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     });
     if (!hooksOk) {
       await closeAnalyzers();
-      await rollbackResolvedDbSource();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
 
@@ -551,7 +453,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
       await closeAnalyzers();
-      await rollbackResolvedDbSource();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
 
@@ -573,7 +475,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: podInfoFile,
       stdoutSink: serverStdoutSink,
       stderrSink: serverStderrSink,
-      environmentOverlay: resolvedDbSource?.envOverlay,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();
@@ -594,8 +495,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Construct the watch session. runMode was resolved earlier so the
-  // db-source resolver could gate auto on dev mode.
+  // Construct the watch session.
+  final runMode = runModeFromServerArgs(serverArgs.value);
   session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
@@ -676,7 +577,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
-      stopEmbeddedDb: resolvedDbSource?.onStop,
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
@@ -882,9 +782,6 @@ Future<void> _runTuiBackend({
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
-    final dbSourceOverride = _parseDbSourceOverride(
-      commandConfig.optionalValue(StartOption.dbSource),
-    );
 
     final argsRef = ServerArgsRef(serverArgs);
 
@@ -897,7 +794,6 @@ Future<void> _runTuiBackend({
       serverArgs: argsRef,
       watch: watch,
       docker: docker,
-      dbSourceOverride: dbSourceOverride,
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,

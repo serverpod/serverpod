@@ -436,45 +436,6 @@ enum DatabaseDialect {
   sqlite,
 }
 
-/// How the database is provisioned for the running server. Postgres-only;
-/// silently ignored when [DatabaseConfig.dialect] is [DatabaseDialect.sqlite].
-///
-/// Consumed by `serverpod start` to decide whether to boot an embedded
-/// PostgreSQL postmaster, expect `docker compose` to have brought one up,
-/// or simply connect to whatever the config file points at.
-enum DatabaseSource {
-  /// `serverpod start` decides at runtime which concrete source to use,
-  /// based on what's already running, what's reachable, and what the
-  /// project has on disk. Resolves to one of the other values; never
-  /// surfaces directly to the running pod.
-  ///
-  /// Only valid in `development` run mode.
-  auto,
-
-  /// `serverpod start` boots a managed PostgreSQL child process via
-  /// `serverpod_embedded_postgres` and injects its endpoint into the pod
-  /// via environment variables.
-  embedded,
-
-  /// Use the connection details supplied in the configuration as-is. No
-  /// provisioning. Default when the field is absent.
-  config
-  ;
-
-  /// Parses [raw] as a [DatabaseSource]. Throws [ArgumentError] with a
-  /// helpful enumeration of valid values for unrecognized strings.
-  static DatabaseSource parse(String raw) {
-    try {
-      return DatabaseSource.values.byName(raw);
-    } on ArgumentError {
-      throw ArgumentError(
-        'Invalid database source: "$raw". '
-        'Valid values are: ${values.map((v) => v.name).join(", ")}.',
-      );
-    }
-  }
-}
-
 /// Configuration for a database.
 ///
 /// Use [DatabaseConfig.forDialect] to create a dialect-specific configuration,
@@ -515,11 +476,6 @@ abstract class DatabaseConfig {
   /// Database dialect.
   final DatabaseDialect dialect;
 
-  /// How the database is provisioned. Postgres-only; always `null` when
-  /// [dialect] is [DatabaseDialect.sqlite]. Defaults to
-  /// [DatabaseSource.config] for postgres when the field is absent.
-  final DatabaseSource? source;
-
   /// Private constructor for subclasses.
   DatabaseConfig._({
     required this.host,
@@ -532,13 +488,9 @@ abstract class DatabaseConfig {
     required this.searchPaths,
     this.maxConnectionCount = defaultMaxConnectionCount,
     required this.dialect,
-    required this.source,
   });
 
   /// Creates a new [DatabaseConfig] (PostgreSQL by default).
-  ///
-  /// [source] is forwarded to [PostgresDatabaseConfig] and silently dropped
-  /// when [dialect] is [DatabaseDialect.sqlite].
   factory DatabaseConfig({
     required String host,
     required int port,
@@ -550,7 +502,7 @@ abstract class DatabaseConfig {
     List<String>? searchPaths,
     int? maxConnectionCount = defaultMaxConnectionCount,
     DatabaseDialect dialect = DatabaseDialect.postgres,
-    DatabaseSource source = DatabaseSource.config,
+    String? dataPath,
   }) => switch (dialect) {
     DatabaseDialect.postgres => PostgresDatabaseConfig(
       host: host,
@@ -562,7 +514,7 @@ abstract class DatabaseConfig {
       isUnixSocket: isUnixSocket,
       searchPaths: searchPaths,
       maxConnectionCount: maxConnectionCount,
-      source: source,
+      dataPath: dataPath,
     ),
     DatabaseDialect.sqlite => SqliteDatabaseConfig(
       filePath: host,
@@ -615,17 +567,23 @@ abstract class DatabaseConfig {
     }
     str += 'database max connection count: $maxConnectionCount\n';
     str += 'database dialect: ${dialect.name}\n';
-    if (source != null) str += 'database source: ${source!.name}\n';
     return str;
   }
 }
 
 /// PostgreSQL-specific database configuration.
 class PostgresDatabaseConfig extends DatabaseConfig {
-  /// Creates a new [PostgresDatabaseConfig].
+  /// PGDATA directory for embedded PostgreSQL (`serverpod_embedded_postgres`).
   ///
-  /// [source] defaults to [DatabaseSource.config], i.e. "use the supplied
-  /// connection details as-is, don't auto-provision."
+  /// When non-null and non-empty after trimming, [PostgresPoolManager] boots a
+  /// managed postmaster in this directory before opening connections.
+  ///
+  /// Relative paths are resolved from [Directory.current] when the pool starts
+  /// (typically the server package root). The CLI resolves relative paths
+  /// against the server directory before connecting.
+  final String? dataPath;
+
+  /// Creates a new [PostgresDatabaseConfig].
   PostgresDatabaseConfig({
     required super.host,
     required super.port,
@@ -636,8 +594,8 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     super.isUnixSocket = false,
     super.searchPaths,
     super.maxConnectionCount,
-    DatabaseSource source = DatabaseSource.config,
-  }) : super._(dialect: DatabaseDialect.postgres, source: source);
+    this.dataPath,
+  }) : super._(dialect: DatabaseDialect.postgres);
 
   factory PostgresDatabaseConfig._fromJson(
     Map dbSetup,
@@ -672,9 +630,15 @@ class PostgresDatabaseConfig extends DatabaseConfig {
       maxConnectionCount = null;
     }
 
-    var source = _parseDatabaseSource(
-      dbSetup[ServerpodEnv.databaseSource.configKey],
-    );
+    final rawDataPath = dbSetup[ServerpodEnv.databaseDataPath.configKey];
+    String? dataPath;
+    if (rawDataPath is String && rawDataPath.trim().isNotEmpty) {
+      dataPath = path.normalize(rawDataPath.trim());
+    } else if (rawDataPath != null && rawDataPath is! String) {
+      throw ArgumentError(
+        'Invalid database dataPath: $rawDataPath (expected a string).',
+      );
+    }
 
     return PostgresDatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
@@ -689,22 +653,16 @@ class PostgresDatabaseConfig extends DatabaseConfig {
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
       maxConnectionCount: maxConnectionCount,
-      source: source,
+      dataPath: dataPath,
     );
   }
-}
 
-/// Parses [raw] into a [DatabaseSource]. Returns [DatabaseSource.config] when
-/// [raw] is null (the documented default for the `database.source` field).
-DatabaseSource _parseDatabaseSource(Object? raw) {
-  if (raw == null) return DatabaseSource.config;
-  if (raw is! String) {
-    throw ArgumentError(
-      'Invalid database source: $raw (expected a string). '
-      'Valid values are: ${DatabaseSource.values.map((v) => v.name).join(", ")}.',
-    );
+  @override
+  String toString() {
+    var str = super.toString();
+    if (dataPath != null) str += 'database data path: $dataPath\n';
+    return str;
   }
-  return DatabaseSource.parse(raw);
 }
 
 /// SQLite-specific database configuration.
@@ -721,7 +679,6 @@ class SqliteDatabaseConfig extends DatabaseConfig {
         isUnixSocket: false,
         searchPaths: null,
         dialect: DatabaseDialect.sqlite,
-        source: null,
       );
 
   /// The file path to the SQLite database.
@@ -1126,7 +1083,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
     (ServerpodEnv.databaseSearchPaths, null),
     (ServerpodEnv.databaseMaxConnectionCount, int.parse),
-    (ServerpodEnv.databaseSource, null),
+    (ServerpodEnv.databaseDataPath, null),
   ]);
 }
 
@@ -1142,53 +1099,13 @@ DatabaseDialect? inferDatabaseDialectFromConfigMap(
   Map<dynamic, dynamic> configMap, {
   Map<String, String> environment = const {},
 }) {
-  return inferDatabaseConfigFromConfigMap(
-    configMap,
-    environment: environment,
-  )?.dialect;
-}
-
-/// Infer the database source from one run-mode config map (the body of
-/// `config/<runMode>.yaml`), using the same `database` merging rules as
-/// [ServerpodConfig.loadFromMap].
-///
-/// Returns `null` when there is no database section or the dialect is
-/// SQLite (source doesn't apply). Postgres-shaped configs return their
-/// resolved [DatabaseSource]; absent `source` field resolves to
-/// [DatabaseSource.config] (the documented default).
-///
-/// Used by `serverpod_cli` to inspect the configured source without doing
-/// a full [ServerpodConfig.load] (which would require `passwords.yaml`).
-DatabaseSource? inferDatabaseSourceFromConfigMap(
-  Map<dynamic, dynamic> configMap, {
-  Map<String, String> environment = const {},
-}) {
-  return inferDatabaseConfigFromConfigMap(
-    configMap,
-    environment: environment,
-  )?.source;
-}
-
-/// Parse the full database configuration from one run-mode config map (the
-/// body of `config/<runMode>.yaml`), using the same `database` merging rules
-/// as [ServerpodConfig.loadFromMap]. The returned [DatabaseConfig] carries
-/// host/port/isUnixSocket/dialect/source ready for read-only inspection.
-///
-/// Returns `null` when there is no database section.
-///
-/// Uses a placeholder password so PostgreSQL configs can be parsed without
-/// a `passwords.yaml` file - never use the returned config to open a
-/// connection. Consumers wanting just the dialect / source should call
-/// [inferDatabaseDialectFromConfigMap] / [inferDatabaseSourceFromConfigMap].
-DatabaseConfig? inferDatabaseConfigFromConfigMap(
-  Map<dynamic, dynamic> configMap, {
-  Map<String, String> environment = const {},
-}) {
   final dbSetup = _databaseConfigMap(configMap, environment);
   if (dbSetup == null) return null;
-  return DatabaseConfig._fromJson(dbSetup, {
-    ServerpodPassword.databasePassword.configKey: '__placeholder__',
-  }, ServerpodConfigMap.database);
+  return DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  ).dialect;
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {

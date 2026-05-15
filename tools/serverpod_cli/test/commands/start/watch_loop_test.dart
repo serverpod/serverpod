@@ -201,7 +201,6 @@ void main() {
                 stopDockerCalls++;
               }
             : null,
-        stopEmbeddedDb: null,
         vmServiceInfoFile: vmServiceInfoFile,
       );
     }
@@ -292,7 +291,6 @@ void main() {
             closeAnalyzersCalls++;
           },
           stopDocker: null,
-          stopEmbeddedDb: null,
           vmServiceInfoFile: vmServiceInfoFile,
         );
 

@@ -29,12 +29,6 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Extra environment variables merged into the child's environment on top
-  /// of the parent VM's. Used by `serverpod start` to inject embedded-PG
-  /// connection details (`SERVERPOD_DATABASE_*`) so the spawned pod's config
-  /// loader picks them up without any custom plumbing.
-  final Map<String, String>? _environmentOverlay;
-
   /// Path to write the VM service info JSON file to. When set, the file
   /// is passed to the child via `--write-service-info` and the URI is read
   /// from the file instead of parsing stdout. IDEs can use this path in
@@ -66,15 +60,13 @@ class ServerProcess {
     String? vmServiceInfoFile,
     IOSink? stdoutSink,
     IOSink? stderrSink,
-    Map<String, String>? environmentOverlay,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr,
-       _environmentOverlay = environmentOverlay;
+       _stderr = stderrSink ?? stderr;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -132,8 +124,6 @@ class ServerProcess {
       _dartExecutable,
       args,
       workingDirectory: _serverDir,
-      environment: _environmentOverlay,
-      includeParentEnvironment: true,
     );
     _process = process;
 

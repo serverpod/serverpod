@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../concepts/runtime_parameters.dart';
@@ -29,6 +34,14 @@ class PostgresPoolManager implements DatabasePoolManager {
   pg.Pool? _pgPool;
 
   final pg.PoolSettings _poolSettings;
+
+  /// Only retained when [EmbeddedPostgres.start] supervised this cluster in
+  /// this process. Omitted for `attach()` so [stop] does not shut another
+  /// supervisor's postmaster.
+  EmbeddedPostgres? _embeddedPostgres;
+
+  Future<void>? _startedFuture;
+  bool _databaseStopped = false;
 
   /// Postgresql connection pool created from configuration.
   ///
@@ -85,35 +98,59 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   @override
   void start() {
-    // Setup database connection pool
-    _pgPool ??= pg.Pool.withEndpoints(
-      [
-        pg.Endpoint(
-          host: config.host,
-          port: config.port,
-          database: config.name,
-          username: config.user,
-          password: config.password,
-          isUnixSocket: config.isUnixSocket,
-        ),
-      ],
-      settings: _poolSettings,
-    );
+    _databaseStopped = false;
+    _startedFuture ??= _bootstrap();
   }
 
-  /// Postgres [start] is synchronous - the pool is fully ready as soon
-  /// as [pg.Pool.withEndpoints] returns - so this is just a resolved
-  /// future for interface symmetry with SQLite.
+  Future<void> _bootstrap() async {
+    if (_pgPool != null) return;
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
+
+    try {
+      final (embeddedPostgres, embeddedConfig) =
+          await _launchEmbeddedPostgresIfNeeded();
+
+      _embeddedPostgres = embeddedPostgres;
+      final effectiveConfig = embeddedConfig ?? config;
+
+      _pgPool = pg.Pool.withEndpoints(
+        [
+          pg.Endpoint(
+            host: effectiveConfig.host,
+            port: effectiveConfig.port,
+            database: effectiveConfig.name,
+            username: effectiveConfig.user,
+            password: effectiveConfig.password,
+            isUnixSocket: effectiveConfig.isUnixSocket,
+          ),
+        ],
+        settings: _poolSettings,
+      );
+    } catch (e, st) {
+      await _embeddedPostgres?.stop();
+      _embeddedPostgres = null;
+      _startedFuture = null;
+      Error.throwWithStackTrace(e, st);
+    }
+  }
+
   @override
-  Future<void> get started => Future.value();
+  Future<void> get started => _startedFuture ??= _bootstrap();
 
   @override
   Future<void> stop() async {
+    _databaseStopped = true;
     final pgPool = _pgPool;
+    final embeddedPostgres = _embeddedPostgres;
 
     _pgPool = null;
+    _embeddedPostgres = null;
+    _startedFuture = null;
 
     await pgPool?.close();
+    await embeddedPostgres?.stop();
   }
 
   @override
@@ -124,5 +161,76 @@ class PostgresPoolManager implements DatabasePoolManager {
       timeout: const Duration(seconds: 2),
     );
     return true;
+  }
+
+  /// Launches an embedded PostgreSQL server if [config.dataPath] is set.
+  ///
+  /// If a running postmaster is found, attaches to it as a client-only handle
+  /// and returns only the [PostgresDatabaseConfig] for the attached server.
+  ///
+  /// If no running postmaster is found, starts a new embedded server in the
+  /// [PostgresDatabaseConfig.dataPath] directory and returns both the started
+  /// [EmbeddedPostgres] instance and the [PostgresDatabaseConfig] for it.
+  Future<(EmbeddedPostgres?, PostgresDatabaseConfig?)>
+  _launchEmbeddedPostgresIfNeeded() async {
+    final dataDir = config.embeddedPostgresDataDir;
+    if (dataDir == null) return (null, null);
+
+    try {
+      // Attempt to start a new embedded server. We intentionally do not try to
+      // attach first to avoid grabbing servers that are in shutdown process -
+      // which proven very common between tests, even with concurrency=1.
+      final embeddedPostgres = await EmbeddedPostgres.start(
+        EmbeddedPostgresOptions(
+          dataDir: dataDir,
+          databaseName: config.name,
+          username: config.user,
+          detach: false,
+        ),
+      );
+      return (embeddedPostgres, connectivityFrom(embeddedPostgres.endpoint));
+    } on CrashedException catch (exc, stackTrace) {
+      // Another Serverpod/process already supervises this PGDATA. Attach as a
+      // client and return only the endpoint.
+      if (exc.isPostmasterLockBusy) {
+        try {
+          final attached = await EmbeddedPostgres.attach(dataDir);
+          return (null, connectivityFrom(attached.endpoint));
+        } on AttachException {
+          Error.throwWithStackTrace(exc, stackTrace);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  PostgresDatabaseConfig connectivityFrom(pg.Endpoint endpoint) =>
+      PostgresDatabaseConfig(
+        host: endpoint.host,
+        port: endpoint.port,
+        user: endpoint.username ?? config.user,
+        password: endpoint.password ?? config.password,
+        name: config.name,
+        isUnixSocket: endpoint.isUnixSocket,
+      );
+}
+
+extension on CrashedException {
+  bool get isPostmasterLockBusy => logTail.any((line) {
+    final lower = line.toLowerCase();
+    return lower.contains('postmaster.pid') && lower.contains('already exists');
+  });
+}
+
+extension on PostgresDatabaseConfig {
+  /// The effective data [Directory] for the embedded PostgreSQL, if configured.
+  Directory? get embeddedPostgresDataDir {
+    final dataPath = this.dataPath?.trim();
+    if (dataPath == null || dataPath.isEmpty) return null;
+    return Directory(
+      path.isAbsolute(dataPath)
+          ? dataPath
+          : path.join(Directory.current.path, dataPath),
+    );
   }
 }
