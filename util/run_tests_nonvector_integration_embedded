@@ -7,9 +7,6 @@
 # integration tests do not exercise any redis-backed feature. withServerpod
 # logs Redis connection failures during startup but those don't fail the
 # test - the framework treats redis as best-effort at the connection level.
-#
-# Uses serverpod_embedded_postgres:wrap as a slim entry point - see the
-# module runner's comment for the rationale.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -19,19 +16,22 @@ fi
 
 set -e
 export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
 
 REPO_ROOT="$(pwd)"
-WRAP="$REPO_ROOT/packages/serverpod_embedded_postgres/bin/wrap.dart"
-MODULE_DIR="tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
 
-dart run "$WRAP" \
-    --module-dir="$MODULE_DIR" \
-    --tcp \
-    --port=5432 \
-    --db-name='serverpod_test' \
-    --password='password' \
-    -- \
-    dart test \
-        -t integration \
-        --reporter=failures-only \
-        "$@"
+cd "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+
+dart test -t integration --concurrency=1 --reporter=failures-only
+
+# Verify that the database data path exists
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+# Remove the database data path
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+cd "$REPO_ROOT"
