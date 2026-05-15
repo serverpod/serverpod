@@ -84,10 +84,7 @@ AND NOT EXISTS (
 SELECT column_name, column_default, is_nullable,
        CASE
          WHEN (data_type = 'USER-DEFINED' AND udt_name = 'geography') THEN (
-           CASE (SELECT type FROM geography_columns
-                 WHERE f_table_schema = '$schemaName'
-                   AND f_table_name = '$tableName'
-                   AND f_geography_column = column_name)
+           CASE substring(format_type(a.atttypid, a.atttypmod) FROM '^geography\\(([^,)]+)')
              WHEN 'Point' THEN 'geography'
              WHEN 'LineString' THEN 'geography line string'
              WHEN 'Polygon' THEN 'geography polygon'
