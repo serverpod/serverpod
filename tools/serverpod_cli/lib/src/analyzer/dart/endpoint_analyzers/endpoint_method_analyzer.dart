@@ -183,7 +183,16 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
-    if (!TypeValidators.isValidType(typeDefinition, extraClasses, models)) {
+    if (!TypeValidators.isValidType(
+      typeDefinition,
+      TypeValidationOptions(
+        extraClasses: extraClasses,
+        models: models,
+        allowRecordType: true,
+        allowSerializableDartType: true,
+        allowStreamType: true,
+      ),
+    )) {
       var typeName = typeDefinition.className;
       return SourceSpanSeverityException(
         'The return type has an invalid datatype "$typeName". If this is a '

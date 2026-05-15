@@ -126,8 +126,13 @@ abstract class EndpointParameterAnalyzer {
 
         if (!TypeValidators.isValidType(
           typeDefinition,
-          extraClasses,
-          models,
+          TypeValidationOptions(
+            extraClasses: extraClasses,
+            models: models,
+            allowRecordType: true,
+            allowSerializableDartType: true,
+            allowStreamType: true,
+          ),
         )) {
           var typeName = typeDefinition.className;
           return SourceSpanSeverityException(
