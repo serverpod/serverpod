@@ -3459,6 +3459,75 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
+      "name": "object_with_dynamic",
+      "dartName": "ObjectWithDynamic",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payload",
+          "fieldName": "payload",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "dynamic"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "jsonbPayload",
+          "fieldName": "jsonbPayload",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "dynamic"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadList",
+          "fieldName": "payloadList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadMap",
+          "fieldName": "payloadMap",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "Map<String,dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadSet",
+          "fieldName": "payloadSet",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "Set<dynamic>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "payloadMapWithDynamicKeys",
+          "fieldName": "payloadMapWithDynamicKeys",
+          "columnType": 14,
+          "isNullable": false,
+          "dartType": "Map<dynamic,dynamic>"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
       "name": "object_with_enum",
       "dartName": "ObjectWithEnum",
       "module": "serverpod_test",
@@ -3589,6 +3658,80 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
+      "name": "object_with_geography_geometry_collection",
+      "dartName": "ObjectWithGeographyGeometryCollection",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "collection",
+          "fieldName": "collection",
+          "columnType": 18,
+          "isNullable": false,
+          "dartType": "GeographyGeometryCollection"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "collectionNullable",
+          "fieldName": "collectionNullable",
+          "columnType": 18,
+          "isNullable": true,
+          "dartType": "GeographyGeometryCollection?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_geography_line_string",
+      "dartName": "ObjectWithGeographyLineString",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "lineString",
+          "fieldName": "lineString",
+          "columnType": 16,
+          "isNullable": false,
+          "dartType": "GeographyLineString"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "lineStringNullable",
+          "fieldName": "lineStringNullable",
+          "columnType": 16,
+          "isNullable": true,
+          "dartType": "GeographyLineString?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
       "name": "object_with_geography_point",
       "dartName": "ObjectWithGeographyPoint",
       "module": "serverpod_test",
@@ -3618,6 +3761,43 @@
           "columnType": 15,
           "isNullable": true,
           "dartType": "GeographyPoint?"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "object_with_geography_polygon",
+      "dartName": "ObjectWithGeographyPolygon",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "polygon",
+          "fieldName": "polygon",
+          "columnType": 17,
+          "isNullable": false,
+          "dartType": "GeographyPolygon"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "polygonNullable",
+          "fieldName": "polygonNullable",
+          "columnType": 17,
+          "isNullable": true,
+          "dartType": "GeographyPolygon?"
         }
       ],
       "foreignKeys": [],
@@ -6448,6 +6628,85 @@
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
               "definition": "email"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "upsert_test_model",
+      "dartName": "UpsertTestModel",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "code",
+          "fieldName": "code",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "category",
+          "fieldName": "category",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "value",
+          "fieldName": "value",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "code_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "code"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "category_value_unique_idx",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "category"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "value"
             }
           ],
           "type": "btree",

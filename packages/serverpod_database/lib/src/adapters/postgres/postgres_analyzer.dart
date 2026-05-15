@@ -19,11 +19,22 @@ class PostgresDatabaseAnalyzer extends DatabaseAnalyzer {
   @override
   Future<List<TableDefinition>> getTableDefinitions() async {
     var tableSchemas = await database.unsafeQuery(
-      // Get list of all tables and the schema they are in.
+      // Get list of all tables and the schema they are in, excluding
+      // tables that are owned by an extension (e.g. PostGIS spatial_ref_sys).
       '''
-SELECT schemaname, tablename
-FROM pg_catalog.pg_tables
-WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
+SELECT t.schemaname, t.tablename
+FROM pg_catalog.pg_tables t
+WHERE t.schemaname != 'pg_catalog' AND t.schemaname != 'information_schema'
+AND NOT EXISTS (
+  SELECT 1
+  FROM pg_depend d
+  JOIN pg_class c ON c.oid = d.objid
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE d.deptype = 'e'
+    AND d.classid = 'pg_class'::regclass
+    AND c.relname = t.tablename
+    AND n.nspname = t.schemaname
+);
 ''',
     );
 

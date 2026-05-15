@@ -756,6 +756,19 @@ CREATE TABLE "object_with_duration" (
 );
 
 --
+-- Class ObjectWithDynamic as table object_with_dynamic
+--
+CREATE TABLE "object_with_dynamic" (
+    "id" bigserial PRIMARY KEY,
+    "payload" json NOT NULL,
+    "jsonbPayload" jsonb NOT NULL,
+    "payloadList" json NOT NULL,
+    "payloadMap" json NOT NULL,
+    "payloadSet" json NOT NULL,
+    "payloadMapWithDynamicKeys" jsonb NOT NULL
+);
+
+--
 -- Class ObjectWithEnum as table object_with_enum
 --
 CREATE TABLE "object_with_enum" (
@@ -1322,6 +1335,20 @@ CREATE TABLE "unique_data_with_non_persist" (
 
 -- Indexes
 CREATE UNIQUE INDEX "unique_email_idx" ON "unique_data_with_non_persist" USING btree ("email");
+
+--
+-- Class UpsertTestModel as table upsert_test_model
+--
+CREATE TABLE "upsert_test_model" (
+    "id" bigserial PRIMARY KEY,
+    "code" text NOT NULL,
+    "category" text NOT NULL,
+    "value" bigint NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "code_unique_idx" ON "upsert_test_model" USING btree ("code");
+CREATE UNIQUE INDEX "category_value_unique_idx" ON "upsert_test_model" USING btree ("category", "value");
 
 --
 -- Class UriDefault as table uri_default
@@ -2276,9 +2303,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260513185334307', now())
+    VALUES ('serverpod_test', '20260515123529275', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260513185334307', "timestamp" = now();
+    DO UPDATE SET "version" = '20260515123529275', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
