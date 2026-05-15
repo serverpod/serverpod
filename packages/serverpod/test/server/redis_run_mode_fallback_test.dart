@@ -1,4 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/cache/local_cache.dart';
+import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 
@@ -48,6 +50,10 @@ void main() {
       test('then Redis controller is cleared.', () async {
         expect(pod.redisController, isNull);
       });
+
+      test('then global cache falls back to local storage.', () async {
+        expect(pod.caches.global, isA<LocalCache>());
+      });
     },
   );
 
@@ -81,6 +87,10 @@ void main() {
 
       test('then Redis controller remains configured.', () async {
         expect(pod.redisController, isNotNull);
+      });
+
+      test('then global cache stays Redis-backed.', () async {
+        expect(pod.caches.global, isA<RedisCache>());
       });
     },
   );
