@@ -808,7 +808,13 @@ class Serverpod {
     // Connect to Redis
     if (Features.enableRedis) {
       _internalLogVerbose('Connecting to Redis.');
-      await redisController?.start();
+      await redisController?.start((e) {
+        if (runMode == ServerpodRunMode.production) return false;
+        log.warning('Failed to connect to Redis. Falling back to local cache.');
+        redisController = null;
+        _caches = Caches(serializationManager, config, serverId, null);
+        return true;
+      });
     } else {
       _internalLogVerbose('Redis is disabled, skipping.');
     }

@@ -50,8 +50,11 @@ class RedisController {
 
   /// Starts the controller and connects to Redis. Maintains an open connection
   /// until [stop] is called.
-  Future<void> start() async {
-    await _connect();
+  Future<void> start([bool Function(Exception e)? handleError]) async {
+    final connected = await _connect(handleError);
+    if (!connected && handleError != null) {
+      return;
+    }
     await _connectPubSub();
 
     unawaited(_keepAlive());
@@ -65,7 +68,9 @@ class RedisController {
   }
 
   /// Shared helper to create and authenticate a Redis Command connection.
-  Future<Command?> _createAndAuthCommand() async {
+  Future<Command?> _createAndAuthCommand([
+    bool Function(Exception e)? handleError,
+  ]) async {
     try {
       var connection = RedisConnection();
       Command command = switch (requireSsl) {
@@ -83,6 +88,9 @@ class RedisController {
       }
       return command;
     } catch (e, stackTrace) {
+      if (handleError != null && e is Exception && handleError(e)) {
+        return null;
+      }
       log.error(
         'Internal server error. Failed to connect to Redis.',
         error: e,
@@ -92,7 +100,7 @@ class RedisController {
     }
   }
 
-  Future<bool> _connect() async {
+  Future<bool> _connect([bool Function(Exception e)? handleError]) async {
     if (_command != null) {
       return true;
     }
@@ -101,7 +109,7 @@ class RedisController {
     }
     _connecting = true;
 
-    _command = await _createAndAuthCommand();
+    _command = await _createAndAuthCommand(handleError);
     _connecting = false;
     return _command != null;
   }
