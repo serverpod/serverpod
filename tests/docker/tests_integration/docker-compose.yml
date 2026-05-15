@@ -29,12 +29,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
       POSTGRES_PASSWORD: password
-    ports:
-      - '8090:5432'
   redis:
     image: redis:6.2.6
     command: redis-server --requirepass password
     environment:
       - REDIS_REPLICATION_MODE=master
-    ports:
-      - '8091:6379'
