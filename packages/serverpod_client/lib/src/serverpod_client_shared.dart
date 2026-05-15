@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
@@ -230,7 +231,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    bool withCredentials = false,
+    http.Client? httpClientOverride,
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
@@ -243,7 +244,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       connectionTimeout: this.connectionTimeout,
       serializationManager: serializationManager,
       securityContext: securityContext,
-      withCredentials: withCredentials,
+      httpClientOverride: httpClientOverride,
     );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
