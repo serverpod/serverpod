@@ -57,32 +57,35 @@ void main() async {
   tearDown(() async => await _deleteAll(session));
 
   group('Given geography polygon column in database', () {
-    test('when inserting a row then the row is returned with correct values.',
-        () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(polygon: _londonBbox),
-      );
+    test(
+      'when inserting a row then the row is returned with correct values.',
+      () async {
+        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
+          session,
+          ObjectWithGeographyPolygon(polygon: _londonBbox),
+        );
 
-      expect(inserted.id, isNotNull);
-      expect(inserted.polygon, equals(_londonBbox));
-      expect(inserted.polygonNullable, isNull);
-    });
+        expect(inserted.id, isNotNull);
+        expect(inserted.polygon, equals(_londonBbox));
+        expect(inserted.polygonNullable, isNull);
+      },
+    );
 
     test(
-        'when inserting a row with a nullable field then it round-trips correctly.',
-        () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(
-          polygon: _londonBbox,
-          polygonNullable: _parisBbox,
-        ),
-      );
+      'when inserting a row with a nullable field then it round-trips correctly.',
+      () async {
+        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
+          session,
+          ObjectWithGeographyPolygon(
+            polygon: _londonBbox,
+            polygonNullable: _parisBbox,
+          ),
+        );
 
-      expect(inserted.polygon, equals(_londonBbox));
-      expect(inserted.polygonNullable, equals(_parisBbox));
-    });
+        expect(inserted.polygon, equals(_londonBbox));
+        expect(inserted.polygonNullable, equals(_parisBbox));
+      },
+    );
 
     test('when fetching by id then the correct row is returned.', () async {
       var inserted = await ObjectWithGeographyPolygon.db.insertRow(
@@ -151,39 +154,41 @@ void main() async {
     });
 
     test(
-        'when filtering by equality then only matching rows are returned.',
-        () async {
-      await ObjectWithGeographyPolygon.db.insert(session, [
-        ObjectWithGeographyPolygon(polygon: _londonBbox),
-        ObjectWithGeographyPolygon(polygon: _parisBbox),
-      ]);
+      'when filtering by equality then only matching rows are returned.',
+      () async {
+        await ObjectWithGeographyPolygon.db.insert(session, [
+          ObjectWithGeographyPolygon(polygon: _londonBbox),
+          ObjectWithGeographyPolygon(polygon: _parisBbox),
+        ]);
 
-      var result = await ObjectWithGeographyPolygon.db.find(
-        session,
-        where: (t) => t.polygon.equals(_londonBbox),
-      );
+        var result = await ObjectWithGeographyPolygon.db.find(
+          session,
+          where: (t) => t.polygon.equals(_londonBbox),
+        );
 
-      expect(result.length, 1);
-      expect(result.first.polygon, equals(_londonBbox));
-    });
+        expect(result.length, 1);
+        expect(result.first.polygon, equals(_londonBbox));
+      },
+    );
 
     test(
-        'when updating nullable field to null then null is persisted.',
-        () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(
-          polygon: _londonBbox,
-          polygonNullable: _parisBbox,
-        ),
-      );
+      'when updating nullable field to null then null is persisted.',
+      () async {
+        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
+          session,
+          ObjectWithGeographyPolygon(
+            polygon: _londonBbox,
+            polygonNullable: _parisBbox,
+          ),
+        );
 
-      var updated = await ObjectWithGeographyPolygon.db.updateRow(
-        session,
-        inserted.copyWith(polygonNullable: null),
-      );
+        var updated = await ObjectWithGeographyPolygon.db.updateRow(
+          session,
+          inserted.copyWith(polygonNullable: null),
+        );
 
-      expect(updated.polygonNullable, isNull);
-    });
+        expect(updated.polygonNullable, isNull);
+      },
+    );
   });
 }

@@ -431,28 +431,31 @@ void main() {
     });
   });
 
-  group('Given a table definition with a GeographyGeometryCollection field', () {
-    var modelName = 'geoCollectionModel';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.sentenceCase)
-          .withFileName(modelName)
-          .withTableName(modelName)
-          .withSimpleField('shapes', 'GeographyGeometryCollection')
-          .build(),
-    ];
+  group(
+    'Given a table definition with a GeographyGeometryCollection field',
+    () {
+      var modelName = 'geoCollectionModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withSimpleField('shapes', 'GeographyGeometryCollection')
+            .build(),
+      ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    );
-
-    test('then the column maps to TEXT in SQLite.', () {
-      var sqlite = databaseDefinition.toSqliteSql(
-        installedModules: _sqliteModules(databaseDefinition),
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
       );
-      expect(sqlite, contains('"shapes" TEXT NOT NULL'));
-    });
-  });
+
+      test('then the column maps to TEXT in SQLite.', () {
+        var sqlite = databaseDefinition.toSqliteSql(
+          installedModules: _sqliteModules(databaseDefinition),
+        );
+        expect(sqlite, contains('"shapes" TEXT NOT NULL'));
+      });
+    },
+  );
 }

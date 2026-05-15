@@ -104,9 +104,9 @@ extension GeographyGeometryCollectionJsonExtension
     s = s.trim();
     final start = s.indexOf('(');
     final inner = s.substring(start + 1, s.length - 1).trim();
-    final geoms = _splitTopLevel(inner)
-        .map((g) => _geomFromEwktString(g.trim()))
-        .toList();
+    final geoms = _splitTopLevel(
+      inner,
+    ).map((g) => _geomFromEwktString(g.trim())).toList();
     return GeographyGeometryCollection(geometries: geoms, srid: srid);
   }
 
@@ -174,8 +174,8 @@ class _WkbParser {
   int _offset = 0;
 
   _WkbParser(Uint8List bytes)
-      : _bytes = bytes,
-        _buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
+    : _bytes = bytes,
+      _buf = ByteData.view(bytes.buffer, bytes.offsetInBytes);
 
   Endian _readByteOrder() {
     final bo = _bytes[_offset++];

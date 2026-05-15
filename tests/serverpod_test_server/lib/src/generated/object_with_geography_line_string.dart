@@ -161,9 +161,8 @@ class ObjectWithGeographyLineStringUpdateTable
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString> lineStringNullable(
-    _i1.GeographyLineString? value,
-  ) => _i1.ColumnValue(
+  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString>
+  lineStringNullable(_i1.GeographyLineString? value) => _i1.ColumnValue(
     table.lineStringNullable,
     value,
   );
@@ -371,6 +370,71 @@ class ObjectWithGeographyLineStringRepository {
   }) async {
     return session.db.insertRow<ObjectWithGeographyLineString>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ObjectWithGeographyLineString]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ObjectWithGeographyLineString]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectWithGeographyLineString>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectWithGeographyLineString> rows, {
+    required _i1.ColumnSelections<ObjectWithGeographyLineStringTable>
+    conflictColumns,
+    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectWithGeographyLineString>(
+      rows,
+      conflictColumns: conflictColumns(ObjectWithGeographyLineString.t),
+      updateColumns: updateColumns?.call(ObjectWithGeographyLineString.t),
+      updateWhere: updateWhere?.call(ObjectWithGeographyLineString.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectWithGeographyLineString] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ObjectWithGeographyLineString] will have its `id` field set.
+  Future<ObjectWithGeographyLineString?> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectWithGeographyLineString row, {
+    required _i1.ColumnSelections<ObjectWithGeographyLineStringTable>
+    conflictColumns,
+    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectWithGeographyLineString>(
+      row,
+      conflictColumns: conflictColumns(ObjectWithGeographyLineString.t),
+      updateColumns: updateColumns?.call(ObjectWithGeographyLineString.t),
+      updateWhere: updateWhere?.call(ObjectWithGeographyLineString.t),
       transaction: transaction,
     );
   }

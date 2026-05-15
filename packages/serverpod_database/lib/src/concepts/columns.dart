@@ -472,14 +472,14 @@ mixin _GeographySpatialOperations<T> on Column<T> {
   /// Returns an [Expression] that is true when this column's geometry
   /// intersects [other] — wraps `ST_Intersects`.
   Expression intersects(Geography other) => Expression(
-        'ST_Intersects($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}))',
-      );
+    'ST_Intersects($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}))',
+  );
 
   /// Returns an [Expression] that is true when this column's geometry is
   /// within [distanceMeters] metres of [other] — wraps `ST_DWithin`.
   Expression dwithin(Geography other, double distanceMeters) => Expression(
-        'ST_DWithin($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
-      );
+    'ST_DWithin($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
+  );
 
   /// Returns a [ColumnGeographyDistance] suitable for use in `orderBy` —
   /// wraps `ST_Distance`.
@@ -490,15 +490,15 @@ mixin _GeographySpatialOperations<T> on Column<T> {
   /// spatially contains [other] — wraps `ST_Covers` (geography-compatible
   /// equivalent of `ST_Contains`).
   Expression contains(Geography other) => Expression(
-        'ST_Covers($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
-      );
+    'ST_Covers($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
+  );
 
   /// Returns an [Expression] that is true when this column's geometry is
   /// spatially within [other] — wraps `ST_CoveredBy` (geography-compatible
   /// equivalent of `ST_Within`).
   Expression within(Geography other) => Expression(
-        'ST_CoveredBy($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
-      );
+    'ST_CoveredBy($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
+  );
 }
 
 /// A [Column] holding a [GeographyPoint] from PostGIS.
@@ -583,9 +583,9 @@ class ColumnGeographyDistance extends ColumnDouble {
 
   /// Creates a distance column from [column] and a target [geometry].
   ColumnGeographyDistance(Column column, Geography geometry)
-      : _sql =
-            'ST_Distance($column, ST_GeomFromEWKT(${EscapedExpression(geometry.toEwkt())}))',
-        super(column.columnName, column.table, fieldName: column.fieldName);
+    : _sql =
+          'ST_Distance($column, ST_GeomFromEWKT(${EscapedExpression(geometry.toEwkt())}))',
+      super(column.columnName, column.table, fieldName: column.fieldName);
 
   @override
   String toString() => _sql;

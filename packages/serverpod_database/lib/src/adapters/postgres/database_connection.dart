@@ -17,8 +17,7 @@ part 'postgres_exceptions.dart';
 /// A connection to the database. In most cases the [Database] db object in
 /// the [DatabaseSession] object should be used when connecting with the database.
 @internal
-class PostgresDatabaseConnection
-    extends DatabaseConnection<PostgresPoolManager> {
+class PostgresDatabaseConnection extends DatabaseConnection<PostgresPoolManager> {
   /// Access to the raw Postgresql connection pool.
   Future<pg.Pool> get _postgresConnection => poolManager.pool;
 
@@ -40,8 +39,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
+    @Deprecated('Use desc() on the orderBy column instead.') bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
@@ -77,8 +75,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
+    @Deprecated('Use desc() on the orderBy column instead.') bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -135,11 +132,9 @@ class PostgresDatabaseConnection
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'lockRows');
 
-    var query = SelectQueryBuilder(table: table)
-        .withSelectFields([table.id])
-        .withWhere(where)
-        .withLockMode(lockMode, lockBehavior)
-        .build();
+    var query = SelectQueryBuilder(
+      table: table,
+    ).withSelectFields([table.id]).withWhere(where).withLockMode(lockMode, lockBehavior).build();
 
     await _query(
       session,
@@ -161,9 +156,7 @@ class PostgresDatabaseConnection
     // When ignoring conflicts AND the model has non-persistent fields,
     // fall back to single-row inserts so we can safely merge non-persistent
     // fields with each successfully inserted row.
-    if (ignoreConflicts &&
-        rows.length > 1 &&
-        _hasNonPersistedFields(session, rows)) {
+    if (ignoreConflicts && rows.length > 1 && _hasNonPersistedFields(session, rows)) {
       // Wrap in a transaction or savepoint to ensure the per-row inserts are
       // atomic as a whole.
       return DatabaseUtil.runInTransactionOrSavepoint(
@@ -190,12 +183,10 @@ class PostgresDatabaseConnection
     ).build();
 
     return (await _mappedResultsQuery(
-          session,
-          query,
-          transaction: transaction,
-        ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(poolManager.serializationManager.deserialize<T>)
-        .toList();
+      session,
+      query,
+      transaction: transaction,
+    ).then((_mergeResultsWithNonPersistedFields(rows)))).map(poolManager.serializationManager.deserialize<T>).toList();
   }
 
   @override
@@ -262,12 +253,10 @@ class PostgresDatabaseConnection
     ).build();
 
     return (await _mappedResultsQuery(
-          session,
-          query,
-          transaction: transaction,
-        ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(poolManager.serializationManager.deserialize<T>)
-        .toList();
+      session,
+      query,
+      transaction: transaction,
+    ).then((_mergeResultsWithNonPersistedFields(rows)))).map(poolManager.serializationManager.deserialize<T>).toList();
   }
 
   @override
@@ -326,15 +315,11 @@ class PostgresDatabaseConnection
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);
 
-    var columnNames = selectedColumnNames
-        .map((columnName) => '"$columnName"')
-        .join(', ');
+    var columnNames = selectedColumnNames.map((columnName) => '"$columnName"').join(', ');
 
     var values = _createQueryValueList(rows, selectedColumns);
 
-    var setColumns = selectedColumnNames
-        .map((columnName) => '"$columnName" = data."$columnName"')
-        .join(', ');
+    var setColumns = selectedColumnNames.map((columnName) => '"$columnName" = data."$columnName"').join(', ');
 
     const tableAlias = 't';
     var returning = buildReturningClause(table, tableAlias: tableAlias);
@@ -343,12 +328,10 @@ class PostgresDatabaseConnection
         'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
 
     return (await _mappedResultsQuery(
-          session,
-          query,
-          transaction: transaction,
-        ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(poolManager.serializationManager.deserialize<T>)
-        .toList();
+      session,
+      query,
+      transaction: transaction,
+    ).then((_mergeResultsWithNonPersistedFields(rows)))).map(poolManager.serializationManager.deserialize<T>).toList();
   }
 
   @override
@@ -425,8 +408,7 @@ class PostgresDatabaseConnection
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
+    @Deprecated('Use desc() on the orderBy column instead.') bool orderDescending = false,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
@@ -444,21 +426,13 @@ class PostgresDatabaseConnection
 
     String updateQuery;
 
-    var requiresFilteredSubquery =
-        limit != null ||
-        offset != null ||
-        orderBy != null ||
-        orderByList != null;
+    var requiresFilteredSubquery = limit != null || offset != null || orderBy != null || orderByList != null;
 
     if (requiresFilteredSubquery) {
       var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
-      var subquery = SelectQueryBuilder(table: table)
-          .withSelectFields([table.id])
-          .withWhere(where)
-          .withOrderBy(orders)
-          .withLimit(limit)
-          .withOffset(offset)
-          .build();
+      var subquery = SelectQueryBuilder(
+        table: table,
+      ).withSelectFields([table.id]).withWhere(where).withOrderBy(orders).withLimit(limit).withOffset(offset).build();
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
@@ -499,8 +473,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
+    @Deprecated('Use desc() on the orderBy column instead.') bool orderDescending = false,
     Transaction? transaction,
   }) async {
     if (rows.isEmpty) return [];
@@ -548,19 +521,16 @@ class PostgresDatabaseConnection
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
+    @Deprecated('Use desc() on the orderBy column instead.') bool orderDescending = false,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
     var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
-    var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.all)
-        .withWhere(where)
-        .withOrderBy(orderByCols)
-        .build();
+    var query = DeleteQueryBuilder(
+      table: table,
+    ).withReturn(Returning.all).withWhere(where).withOrderBy(orderByCols).build();
 
     return await _deserializedMappedQuery(
       session,
@@ -644,14 +614,11 @@ class PostgresDatabaseConnection
     required Future<pg.Session> context,
   }) async {
     assert(
-      simpleQueryMode == false ||
-          (simpleQueryMode == true && parameters == null),
+      simpleQueryMode == false || (simpleQueryMode == true && parameters == null),
       'simpleQueryMode does not support parameters',
     );
 
-    var timeout = timeoutInSeconds != null
-        ? Duration(seconds: timeoutInSeconds)
-        : null;
+    var timeout = timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
@@ -767,9 +734,7 @@ class PostgresDatabaseConnection
           // Serverpod serialization already knows the type of the target
           // class, so we can remove `UndecodedBytes` here to avoid the
           // dependency of serverpod_serialization on the `postgres` package.
-          entry.key: entry.value is pg.UndecodedBytes
-              ? (entry.value as pg.UndecodedBytes).bytes
-              : entry.value,
+          entry.key: entry.value is pg.UndecodedBytes ? (entry.value as pg.UndecodedBytes).bytes : entry.value,
       };
     });
   }
@@ -867,8 +832,7 @@ class PostgresDatabaseConnection
     );
   }
 
-  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
-  _queryIncludedLists(
+  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>> _queryIncludedLists(
     DatabaseSession session,
     Table table,
     Include? include,
@@ -877,8 +841,7 @@ class PostgresDatabaseConnection
   ) async {
     if (include == null) return {};
 
-    Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations =
-        {};
+    Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations = {};
 
     for (var entry in include.includes.entries) {
       var nestedInclude = entry.value;
@@ -1032,7 +995,9 @@ class PostgresDatabaseConnection
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
     if (column is ColumnGeographyPoint) return 'geography(Point,4326)';
-    if (column is ColumnGeographyLineString) return 'geography(LineString,4326)';
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LineString,4326)';
+    }
     if (column is ColumnGeographyPolygon) return 'geography(Polygon,4326)';
     if (column is ColumnGeographyGeometryCollection) {
       return 'geography(GeometryCollection,4326)';
@@ -1057,15 +1022,14 @@ class PostgresDatabaseConnection
   _mergeResultsWithNonPersistedFields<T extends TableRow>(
     List<T> rows,
   ) {
-    return (Iterable<Map<String, dynamic>> dbResults) =>
-        List<Map<String, dynamic>>.generate(dbResults.length, (i) {
-          return {
-            // Add non-persisted fields from the original object
-            ...rows[i].toJson(),
-            // Override with database fields (common fields)
-            ...dbResults.elementAt(i),
-          };
-        });
+    return (Iterable<Map<String, dynamic>> dbResults) => List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+      return {
+        // Add non-persisted fields from the original object
+        ...rows[i].toJson(),
+        // Override with database fields (common fields)
+        ...dbResults.elementAt(i),
+      };
+    });
   }
 
   /// Returns true if the model has fields in [TableRow.toJson] that are not
@@ -1079,9 +1043,7 @@ class PostgresDatabaseConnection
 
     var table = row.table;
     var columnFieldNames = table.columns.map((c) => c.fieldName).toSet();
-    var hasNonPersisted = json.keys
-        .where((k) => k != '__className__')
-        .any((key) => !columnFieldNames.contains(key));
+    var hasNonPersisted = json.keys.where((k) => k != '__className__').any((key) => !columnFieldNames.contains(key));
 
     if (hasNonPersisted && rows.length > 100) {
       session.logWarning?.call(
