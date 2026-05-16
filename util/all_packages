@@ -40,6 +40,7 @@ declare -a DART_PACKAGES_PATHS=(
     "packages/serverpod_service_client"
     "packages/serverpod_shared"
     "packages/serverpod_database"
+    "packages/serverpod_embedded_postgres"
     "packages/serverpod_test"
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"

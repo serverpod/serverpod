@@ -52,6 +52,8 @@ dependency_overrides:
     path: $pathToServerpodRoot/packages/serverpod_client
   serverpod_database:
     path: $pathToServerpodRoot/packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: $pathToServerpodRoot/packages/serverpod_embedded_postgres
 ''');
 
   final result = await Process.run(
