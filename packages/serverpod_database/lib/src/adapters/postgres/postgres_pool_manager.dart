@@ -198,18 +198,15 @@ class PostgresPoolManager implements DatabasePoolManager {
         ),
       );
       return (embeddedPostgres, connectivityFrom(embeddedPostgres.endpoint));
-    } on CrashedException catch (exc, stackTrace) {
+    } on PostmasterLockBusyException catch (exc, stackTrace) {
       // Another Serverpod/process already supervises this PGDATA. Attach as a
       // client and return only the endpoint.
-      if (exc.isPostmasterLockBusy) {
-        try {
-          final attached = await EmbeddedPostgres.attach(dataDir);
-          return (null, connectivityFrom(attached.endpoint));
-        } on AttachException {
-          Error.throwWithStackTrace(exc, stackTrace);
-        }
+      try {
+        final attached = await EmbeddedPostgres.attach(dataDir);
+        return (null, connectivityFrom(attached.endpoint));
+      } on AttachException {
+        Error.throwWithStackTrace(exc, stackTrace);
       }
-      rethrow;
     }
   }
 
@@ -222,13 +219,6 @@ class PostgresPoolManager implements DatabasePoolManager {
         name: config.name,
         isUnixSocket: endpoint.isUnixSocket,
       );
-}
-
-extension on CrashedException {
-  bool get isPostmasterLockBusy => logTail.any((line) {
-    final lower = line.toLowerCase();
-    return lower.contains('postmaster.pid') && lower.contains('already exists');
-  });
 }
 
 extension on PostgresDatabaseConfig {

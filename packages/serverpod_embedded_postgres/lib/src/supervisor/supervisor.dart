@@ -228,6 +228,16 @@ Future<void> _waitForReady({
   while (DateTime.now().isBefore(deadline)) {
     if (supervisor._exitCompleter.isCompleted) {
       var code = await supervisor._exitCompleter.future;
+      // Race window: another postmaster grabbed the lock between our
+      // pre-spawn check and this child's startup. PG's own message is
+      // localised, so the grep is best-effort - but converging on a typed
+      // exception here keeps callers off the log text.
+      if (_logTailIndicatesLockBusy(supervisor.logTail)) {
+        throw const PostmasterLockBusyException(
+          'postmaster.pid was acquired by another process between '
+          'pre-spawn check and supervisor start.',
+        );
+      }
       throw CrashedException(
         'postgres exited with code $code before becoming ready.',
         code,
@@ -264,6 +274,20 @@ Future<void> _waitForReady({
 bool _isReady(Supervisor supervisor) {
   for (var line in supervisor.logTail) {
     if (line.contains('database system is ready to accept connections')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/// Heuristic for the PG-side "another postmaster owns this PGDATA" failure.
+/// Localised by PG itself, so this is best-effort; the en_US phrase has
+/// been stable across modern PG versions. Used only as a race-window
+/// fallback for the precheck in `EmbeddedPostgresImpl.start`.
+bool _logTailIndicatesLockBusy(List<String> logTail) {
+  for (var line in logTail) {
+    var lower = line.toLowerCase();
+    if (lower.contains('postmaster.pid') && lower.contains('already exists')) {
       return true;
     }
   }

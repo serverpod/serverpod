@@ -57,6 +57,7 @@ void main() {
           StartupTimeoutException() => 'timeout',
           CrashedException() => 'crashed',
           AttachException() => 'attach',
+          PostmasterLockBusyException() => 'lock-busy',
           StaleClusterException() => 'stale',
         };
 

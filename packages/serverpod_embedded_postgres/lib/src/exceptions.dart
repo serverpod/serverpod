@@ -92,6 +92,23 @@ final class AttachException extends EmbeddedPostgresException {
   const AttachException(super.message);
 }
 
+/// `postmaster.pid` in the target PGDATA is held by a live postmaster.
+///
+/// Detected before spawn when possible (locale-independent), or recognised
+/// at the supervisor level from PG's own startup error otherwise. Callers
+/// can react by re-attaching via [EmbeddedPostgres.attach] instead of
+/// retrying [EmbeddedPostgres.start].
+final class PostmasterLockBusyException extends EmbeddedPostgresException {
+  /// PID found in the existing `postmaster.pid` when known. `null` when the
+  /// condition was detected at the supervisor level (race between pre-check
+  /// and spawn) and the PID wasn't captured.
+  final int? existingPid;
+
+  /// Creates a [PostmasterLockBusyException] with [message] and an optional
+  /// [existingPid].
+  const PostmasterLockBusyException(super.message, {this.existingPid});
+}
+
 /// PG_VERSION inside the data dir doesn't match
 /// [EmbeddedPostgresOptions.version]. Cross-major upgrades aren't handled
 /// automatically; the caller must `reset()` (and lose the data) or run
