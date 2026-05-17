@@ -69,6 +69,12 @@ class EmbeddedPostgresOptions {
   /// If true, PG survives parent exit; reattach via [attach]. Default: false.
   final bool detach;
 
+  /// Best-effort cleanup of stale lock state from an abrupt prior exit
+  /// (debugger stop, killed VM, orphaned postmaster reparented to init).
+  /// Removes dead pidfiles and, on POSIX, terminates an orphan postmaster
+  /// whose recorded supervisor is gone. Default: false.
+  final bool repairStaleLocks;
+
   /// Progress callback for binary download/extraction.
   final void Function(double fraction, String stage)? onProgress;
 }
@@ -470,91 +476,62 @@ final class UnsupportedPlatformException;
 final class InitdbException;
 final class StartupTimeoutException;
 final class CrashedException;
-final class StopTimeoutException;
-final class SocketPathTooLongException;
+final class AttachException;
+final class PostmasterLockBusyException;
 final class StaleClusterException;
 ```
 
-## 14. `serverpod start` integration
+Socket-path-length validation is delegated to `serverpod_shared`'s
+`unix_socket` util, which throws `SocketException` directly.
 
-This package is consumed by `serverpod start` through a new
-`database.source` field on `ServerpodConfig.database` (added to
-`serverpod_shared`) and a new `--db-source` CLI flag. The CLI is the only
-consumer that auto-boots an embedded postmaster; the test fixture in
-`serverpod_test` reaches into [EmbeddedPostgres.start] directly.
+## 14. Serverpod integration
+
+Embedded-PG lifecycle is owned by `PostgresPoolManager` in
+`serverpod_database`, not by the CLI. A new `dataPath` field on the
+postgres arm of `DatabaseConfig` is the only knob; setting it turns
+embedded PG on, omitting it keeps the pool talking to whatever
+host/port/user/password the config supplies.
 
 ### Configuration field
-
-`database.source` is an optional `DatabaseSource` enum on the postgres
-arm of `DatabaseConfig`:
 
 ```yaml
 database:
   dialect: postgres
-  source: auto         # auto | embedded | config (default: config)
-  # host/port/user/password used when source resolves to 'config'
+  dataPath: .serverpod/pgdata   # turn on embedded PG; omit to use host/port below
+  host: ...
+  port: ...
+  user: ...
 ```
 
-- `auto` - CLI decides at runtime which concrete source to use, based on
-  what's already running, what's reachable, and what the project has on
-  disk. Only valid in `development` run mode; outside dev it is a hard
-  error.
-- `embedded` - CLI boots an embedded postmaster via this package and
-  injects its endpoint into the spawned pod via `SERVERPOD_DATABASE_*`
-  environment variables. The pod's existing env-aware config loader
-  merges them automatically.
-- `config` - default when the field is absent. CLI does not provision
-  anything; the pod uses the connection details supplied in the
-  configuration as-is. This preserves the pre-existing behavior for
-  every project that doesn't opt into the new field.
+- Relative paths resolve from the pool's `Directory.current` when it
+  bootstraps (typically the server package root). The CLI normalises to
+  absolute before opening a pool for migrations.
+- Silently ignored for `dialect: sqlite`.
+- Env override: `SERVERPOD_DATABASE_DATA_PATH=<path>`.
 
-The field is silently ignored for `dialect: sqlite`; resolved `source` is
-always `null` on a `SqliteDatabaseConfig`.
+### Pool-manager behaviour
 
-Environment override: `SERVERPOD_DATABASE_SOURCE=<value>` overrides the
-config-file value, mirroring the other `database.*` env vars.
+When `dataPath` is set, `PostgresPoolManager._bootstrap`:
 
-### CLI flag
+1. Tries `EmbeddedPostgres.start(repairStaleLocks: true)` against `dataPath`.
+2. On `PostmasterLockBusyException` (another process already supervises
+   that PGDATA), falls back to `EmbeddedPostgres.attach(dataPath)` and
+   holds a client-only handle - `stop()` will close the pool but leave
+   the postmaster alone.
+3. On any other failure, `stop()`s the just-spawned postmaster and
+   rethrows.
 
-`serverpod start --db-source=<auto|embedded|config>`. The flag overrides
-whatever is set (or omitted) in the config file. Mirrors the YAML field
-name 1:1 - `--db-source=auto` maps to `database.source: auto`.
+The pool's connection endpoint is rewritten from the supervised
+postmaster's `pg.Endpoint`, so the host/port/user fields in the config
+are overridden when `dataPath` wins.
 
-The CLI flag is orthogonal to `--docker`. `--docker` controls whether
-`serverpod start` runs `docker compose up` against the project's
-compose file (for Redis and other services); `--db-source` controls
-where PostgreSQL comes from. The two compose: `--docker
---db-source=embedded` runs compose for Redis and embedded PG handles
-the database.
+### Watch-loop note
 
-The default of `--docker` is `false` as of this work (was `true` in
-beta): "auto-up the compose stack" is now opt-in, matching the
-direction of removing implicit infrastructure assumptions.
-
-### Auto-resolution (development run mode only)
-
-When `source == auto`, the CLI runs this probe in order and resolves to
-the first match:
-
-1. `<server>/.serverpod/pgdata/PG_VERSION` exists -> `embedded`. The
-   data directory itself is the consent signal; no re-prompt.
-2. `--docker == true` AND `docker-compose.yaml` present AND
-   `docker compose ps` succeeds -> `config` (the compose-managed PG
-   handles it; the pod connects via the config-file host).
-3. `config.database.host` set AND ~500 ms TCP/UDS probe succeeds ->
-   `config`.
-4. Interactive (stdin is a tty) -> prompt: "No PostgreSQL reachable.
-   Boot embedded PG? (y/N) - downloads ~30 MB once." Non-interactive
-   fallback -> `embedded` with a one-line notice.
-
-The probe never parses `docker-compose.yaml`; step 2 is a presence
-check plus `docker compose ps` only.
-
-### Looking forward
-
-Redis will follow the same shape: a `redis.source` field with the same
-enum, a `--redis-source` CLI flag. The naming pattern `--<service>-<field>`
-extends naturally to any future per-service config override flag.
+A pod child VM started by `serverpod start --watch` spawns its own
+postmaster (no `detach`) and tears it down on shutdown, so each
+file-save restart cycles the postmaster. Acceptable for v1; revisit
+with a measurement if save-to-ready latency becomes a developer
+complaint.
 
 ## 15. Verification plan
 
