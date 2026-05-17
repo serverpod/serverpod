@@ -159,7 +159,9 @@ void main() {
       expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isTrue);
     },
     onPlatform: const {
-      'windows': Skip('POSIX parent-process verification only'),
+      'windows': Skip(
+        'fake postmaster is an sh script; Windows-equivalent fake is a follow-up - see PLATFORMS.md',
+      ),
     },
   );
 
@@ -198,7 +200,9 @@ void main() {
       spawnedPids.remove(orphanPid);
     },
     onPlatform: const {
-      'windows': Skip('POSIX parent-process verification only'),
+      'windows': Skip(
+        'fake postmaster is an sh script; Windows-equivalent fake is a follow-up - see PLATFORMS.md',
+      ),
     },
   );
 }

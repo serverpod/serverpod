@@ -12,14 +12,6 @@ import 'package:test/test.dart';
 /// detach: true survives the original handle being dropped (no shutdown
 /// hooks fired), and a fresh attach() can re-acquire it via the persisted
 /// pidfile + state.json.
-///
-/// Skipped on Windows: process-identity verification needs FFI to
-/// QueryFullProcessImageName, which lands in a separate Windows-port
-/// commit. See PLATFORMS.md.
-final _windowsAttachSkip = Platform.isWindows
-    ? 'Windows attach() needs QFPIN FFI; see PLATFORMS.md'
-    : null;
-
 void main() {
   late Directory tmpRoot;
 
@@ -33,7 +25,6 @@ void main() {
 
   group(
     'Given a detached postmaster',
-    skip: _windowsAttachSkip,
     () {
       test(
         'when start runs with detach: true, the original handle is dropped, and attach is called on the same dataDir '
@@ -190,7 +181,6 @@ void main() {
 
   group(
     'Given a dataDir that was never started',
-    skip: _windowsAttachSkip,
     () {
       test(
         'when attach is called '

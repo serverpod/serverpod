@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart' as win32;
 
 // libc is statically linked into every Dart binary on POSIX, so we can
@@ -28,14 +29,63 @@ final int Function(int pid, int sig) _libcKill = Platform.isWindows
 /// handle iff the PID is assigned, with no ACL grant required.
 bool isProcessAlive(int pid) {
   if (Platform.isWindows) {
-    var handle = win32.OpenProcess(
-      win32.PROCESS_QUERY_LIMITED_INFORMATION,
-      win32.FALSE,
-      pid,
-    );
-    if (handle == 0) return false;
-    win32.CloseHandle(handle);
-    return true;
+    return _withProcessHandle(pid, (_) => true) ?? false;
   }
   return _libcKill(pid, 0) == 0;
+}
+
+/// Absolute path to the executable image of the process at [pid], or null
+/// when the process is gone, inaccessible, or the host has no cheap way to
+/// resolve it.
+///
+/// Linux: reads `/proc/<pid>/exe` (always points at the original executable
+/// even after rename/delete). Windows: `QueryFullProcessImageNameW` via
+/// `package:win32`. macOS returns null - `proc_pidpath` via FFI is doable
+/// but not yet wired; macOS identity checks fall back to argv matching.
+String? readProcessExecutable(int pid) {
+  if (Platform.isWindows) return _readWindowsImagePath(pid);
+  if (Platform.isLinux) {
+    try {
+      return Link('/proc/$pid/exe').targetSync();
+    } on FileSystemException {
+      return null;
+    }
+  }
+  return null;
+}
+
+String? _readWindowsImagePath(int pid) {
+  return _withProcessHandle(pid, (handle) {
+    // 32768 wide chars covers the extended-path limit (Win10+).
+    const capacity = 32768;
+    final buffer = calloc<Uint16>(capacity).cast<Utf16>();
+    final sizePtr = calloc<Uint32>()..value = capacity;
+    try {
+      if (win32.QueryFullProcessImageName(handle, 0, buffer, sizePtr) == 0) {
+        return null;
+      }
+      return buffer.toDartString(length: sizePtr.value);
+    } finally {
+      calloc
+        ..free(buffer)
+        ..free(sizePtr);
+    }
+  });
+}
+
+/// Opens a `PROCESS_QUERY_LIMITED_INFORMATION` handle to [pid], runs [body]
+/// with it, and closes the handle. Returns null when the PID is unassigned.
+/// Windows-only.
+T? _withProcessHandle<T>(int pid, T? Function(int handle) body) {
+  final handle = win32.OpenProcess(
+    win32.PROCESS_QUERY_LIMITED_INFORMATION,
+    win32.FALSE,
+    pid,
+  );
+  if (handle == 0) return null;
+  try {
+    return body(handle);
+  } finally {
+    win32.CloseHandle(handle);
+  }
 }

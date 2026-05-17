@@ -14,15 +14,15 @@ import 'process_identity.dart';
 /// - Deletes PostgreSQL's `postmaster.pid` in [pgDataDir] when its first-line
 ///   PID is not running.
 ///
-/// Async step (POSIX only; skipped on Windows): if both pidfiles still point
-/// at the same live postmaster and that postmaster has been reparented away
-/// from the recorded Dart supervisor:
+/// Async step: if both pidfiles still point at the same live postmaster
+/// whose original Dart supervisor is gone:
 /// 1. Prefer [`pg_ctl stop`](https://www.postgresql.org/docs/current/app-pg-ctl.html)
 ///    when [pgCtlExecutable] exists (same Zonky `bin/` as `postgres`) so
 ///    backends exit and SysV shared memory is released cleanly.
-/// 2. Fall back to SIGTERM/SIGKILL on the postmaster. PG's SIGTERM handler
-///    propagates to its backends; if both that and pg_ctl fail, orphan
-///    backends keep the shared-memory grip and the user has to clean up.
+/// 2. Fall back to SIGTERM/SIGKILL on the postmaster (TerminateProcess on
+///    Windows). PG's SIGTERM handler propagates to its backends; if both
+///    that and pg_ctl fail, orphan backends keep the shared-memory grip
+///    and the user has to clean up.
 Future<void> repairStaleEmbeddedPostgresLocks({
   required Directory pgDataDir,
   required File serverpodPidFile,
@@ -30,7 +30,7 @@ Future<void> repairStaleEmbeddedPostgresLocks({
 }) async {
   _repairServerpodPidfile(serverpodPidFile);
   _repairNativePostmasterPidfileIfDeadPid(pgDataDir);
-  await _terminateLiveOrphanPostmasterIfVerifiedPosix(
+  await _terminateLiveOrphanPostmaster(
     pgDataDir,
     serverpodPidFile: serverpodPidFile,
     pgCtlExecutable: pgCtlExecutable,
@@ -63,13 +63,11 @@ void _repairNativePostmasterPidfileIfDeadPid(Directory pgDataDir) {
   }
 }
 
-Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
+Future<void> _terminateLiveOrphanPostmaster(
   Directory pgDataDir, {
   required File serverpodPidFile,
   File? pgCtlExecutable,
 }) async {
-  if (Platform.isWindows) return;
-
   final identity = ProcessIdentity.read(serverpodPidFile);
   if (identity == null) return;
 
@@ -83,13 +81,13 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
     return;
   }
 
-  // Prefer pg_ctl so shared memory is released; fall back to subtree kill
-  // if PG hasn't exited.
+  // Prefer pg_ctl so shared memory is released cleanly; fall back to
+  // SIGTERM/SIGKILL on the postmaster.
   if (pgCtlExecutable != null && pgCtlExecutable.existsSync()) {
     await _tryPgCtlStop(pgCtlExecutable, pgDataDir);
   }
   if (isProcessAlive(pid)) {
-    await _killPostmasterPosix(pid);
+    await _killPostmaster(pid);
   }
 
   _tryDelete(serverpodPidFile);
@@ -137,12 +135,13 @@ Future<void> _tryPgCtlStop(File pgCtl, Directory pgDataDir) async {
   await Future<void>.delayed(const Duration(milliseconds: 80));
 }
 
-/// SIGTERM-then-SIGKILL the postmaster. PG's own SIGTERM handler propagates
-/// to its backends, so we do not walk the subtree ourselves. If pg_ctl ALSO
-/// failed and SIGTERM doesn't bring PG down within 3s, SIGKILL leaves orphan
-/// backends with the SysV shared-memory segment held; recoverable manually
-/// with `rm -rf .serverpod/pgdata` or a real `pg_ctl stop`.
-Future<void> _killPostmasterPosix(int pid) async {
+/// SIGTERM-then-SIGKILL the postmaster (Process.killPid maps to
+/// TerminateProcess on Windows, so this works cross-platform). PG's own
+/// SIGTERM handler propagates to its backends; if pg_ctl ALSO failed and
+/// SIGTERM doesn't bring PG down within 3s, SIGKILL leaves orphan backends
+/// with the SysV shared-memory segment held - recoverable manually with
+/// `rm -rf .serverpod/pgdata` or a real `pg_ctl stop`.
+Future<void> _killPostmaster(int pid) async {
   _signalPid(pid, ProcessSignal.sigterm);
   if (await _waitForPidExit(pid, const Duration(seconds: 3))) return;
   _signalPid(pid, ProcessSignal.sigkill);

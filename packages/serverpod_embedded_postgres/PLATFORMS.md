@@ -9,37 +9,32 @@ covered by Zonky's binaries.
 | `macos-x64`        | yes                      | Full integration test suite (BinaryStore -> ClusterStore -> Supervisor -> SELECT 1, UDS + TCP, attach round-trip) passes on a 2019 Intel Mac running macOS 25.3. |
 | `linux-x64`        | not yet                  | Should work; relies only on cross-platform Dart APIs. CI matrix in phase 10. |
 | `linux-arm64`      | not yet                  | Same as above. |
-| `windows-x64`      | partial (see below)      | UDS path is wired correctly; orphan recovery is intentionally degraded - see "Windows gaps". |
+| `windows-x64`      | partial (see below)      | UDS path is wired correctly; identity check uses exe-path equality only (no dataDir match); orphan-kill works via TerminateProcess. |
 
-## Windows gaps (phase 9 follow-up)
-
-The following pieces compile on Windows and the cross-platform Dart APIs
-should make them work, but full validation requires a Windows host. The
-package is shipped with conservative behavior in the meantime - **we
-never signal a foreign process** even at the cost of degrading some
-features.
+## Windows notes
 
 ### 1. Process identity verification
 
-`verifyIdentity()` on Windows currently returns `IdentityMatch.foreign`
-for any live PID, on the principle that we'd rather lose `attach()`
-functionality than ever signal a PID-recycled foreign process.
-
-The proper fix uses [`QueryFullProcessImageName`][qfpin] via FFI
-(`package:ffi` + `package:win32` is one route) to read a target
-process's executable path, which we'd compare against
-`ProcessIdentity.executable`. cwd verification on Windows requires
-`NtQueryInformationProcess` + `PEB.ProcessParameters.CurrentDirectory`
-which is more involved.
-
-**User-visible effect today:** `EmbeddedPostgres.attach(dataDir)` always
-throws on Windows. Workaround: don't use `detach: true` on Windows;
-the supervisor's parent-exit hooks handle Ctrl+C cleanly via
-`CTRL_BREAK_EVENT`.
+`verifyIdentity()` on Windows compares `identity.executable` against the
+running process's exe path read via [`QueryFullProcessImageName`][qfpin]
+(through `package:win32`). It does NOT match `identity.dataDir` against
+the running process's command line - reading another process's command
+line on Windows requires `NtQueryInformationProcess` +
+`PEB.ProcessParameters.CommandLine`, which is not yet wired. The
+exe-only check is sufficient for orphan recovery because the supervisor
+PID identity (also recorded) gives a second pin.
 
 [qfpin]: https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-queryfullprocessimagenamew
 
-### 2. AF_UNIX availability
+### 2. Supervisor-relationship detection
+
+`verifySupervisorRelationship()` on Windows reports `orphaned` when the
+recorded supervisor PID is no longer alive; it does not read the
+postmaster's current parent PID (would need Toolhelp32 or NtQuery FFI).
+The failure mode is "leave an orphan alone when we could have killed
+it" - safe, and the recovery falls through to the user.
+
+### 3. AF_UNIX availability
 
 PostgreSQL 13+ on Windows 10 1803+ supports AF_UNIX, and Zonky's
 `windows-amd64` artifact is built with that flag. Dart 3.11+ added

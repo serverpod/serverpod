@@ -154,17 +154,18 @@ enum SupervisorRelationship {
 /// Verifies the live process at [identity.pid] is the postmaster we
 /// originally started.
 ///
-/// On POSIX, `/proc/<pid>/cmdline` (Linux) or `ps -p <pid>` (macOS) is
-/// matched against the expected `<executable> -D <dataDir>` argv. Windows
-/// returns `foreign` until phase 9 lands a host-specific check (FFI to
-/// `QueryFullProcessImageName`).
+/// POSIX (Linux/macOS): argv-matched against the expected
+/// `<executable> -D <dataDir>` form. Windows: exe-path equality via
+/// [readProcessExecutable]; no dataDir check because reading another
+/// process's command line on Windows requires PEB reading.
 IdentityMatch verifyIdentity(ProcessIdentity identity) {
   if (!isProcessAlive(identity.pid)) return IdentityMatch.notRunning;
 
   if (Platform.isWindows) {
-    // Phase 9 will replace this with QueryFullProcessImageName via FFI.
-    // For now treat alive Windows processes as foreign so we never accidentally
-    // signal the wrong one.
+    var exe = readProcessExecutable(identity.pid);
+    if (exe != null && p.equals(exe, identity.executable)) {
+      return IdentityMatch.matchesOurs;
+    }
     return IdentityMatch.foreign;
   }
 
@@ -181,16 +182,23 @@ IdentityMatch verifyIdentity(ProcessIdentity identity) {
 /// Whether the live postmaster still belongs to the Dart supervisor that
 /// originally spawned it.
 ///
-/// Returns [SupervisorRelationship.orphaned] only when the postmaster still
-/// matches [identity], its current parent PID no longer matches the recorded
-/// supervisor, and the recorded supervisor no longer looks alive.
+/// POSIX: compares the postmaster's current parent PID against the recorded
+/// supervisor, falling back to argv-checking the recorded supervisor PID is
+/// still a live Dart process. Windows: orphaned iff the recorded supervisor
+/// PID is no longer alive (we cannot cheaply read PPID on Windows; the
+/// failure mode is leaving an orphan alone when we could have killed it).
 SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
-  if (Platform.isWindows) return SupervisorRelationship.indeterminate;
   if (verifyIdentity(identity) != IdentityMatch.matchesOurs) {
     return SupervisorRelationship.indeterminate;
   }
 
-  var parentPid = readPosixParentPid(identity.pid);
+  if (Platform.isWindows) {
+    return isProcessAlive(identity.supervisorPid)
+        ? SupervisorRelationship.indeterminate
+        : SupervisorRelationship.orphaned;
+  }
+
+  var parentPid = _readPosixParentPid(identity.pid);
   if (parentPid == null) return SupervisorRelationship.indeterminate;
   if (parentPid == identity.supervisorPid) {
     return SupervisorRelationship.attached;
@@ -205,9 +213,6 @@ SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
 
   return SupervisorRelationship.orphaned;
 }
-
-/// Parent PID for [pid] (POSIX), or null if unavailable.
-int? readPosixParentPid(int pid) => _readPosixParentPid(pid);
 
 bool _isRecordedSupervisorStillAlive({
   required int supervisorPid,
