@@ -1,7 +1,20 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:win32/win32.dart' as win32;
+
+// libc is statically linked into every Dart binary on POSIX, so we can
+// resolve kill(2) directly out of the process image - no shared-library
+// load. Used by [_isProcessAlive] to do a non-delivering liveness probe
+// (signal 0) without forking ps.
+final int Function(int pid, int sig) _libcKill = Platform.isWindows
+    ? (_, _) => throw UnsupportedError('libc kill is POSIX-only')
+    : DynamicLibrary.process()
+          .lookupFunction<Int32 Function(Int32, Int32), int Function(int, int)>(
+            'kill',
+          );
 
 /// Snapshot of a postmaster's identity at supervisor-start time.
 ///
@@ -214,20 +227,22 @@ SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
 
 bool _isProcessAlive(int pid) {
   if (Platform.isWindows) {
-    // tasklist with a filter is cross-Windows; for phase 4 we just say
-    // "alive if tasklist lists it" and refine in phase 9.
-    var result = Process.runSync(
-      'tasklist',
-      ['/FI', 'PID eq $pid', '/NH'],
+    // PROCESS_QUERY_LIMITED_INFORMATION gives a handle iff the PID is
+    // assigned, with no ACL grant required - same intent as kill(pid, 0).
+    var handle = win32.OpenProcess(
+      win32.PROCESS_QUERY_LIMITED_INFORMATION,
+      win32.FALSE,
+      pid,
     );
-    return result.exitCode == 0 && result.stdout.toString().contains('$pid');
+    if (handle == 0) return false;
+    win32.CloseHandle(handle);
+    return true;
   }
-  // POSIX: kill(pid, 0) returns 0 for alive (& signalable), -1 with EPERM
-  // for alive but not ours, -1 with ESRCH for not alive. Dart's
-  // Process.killPid maps to kill(2); a `false` return is unreliable for
-  // distinguishing the two errno cases, so we shell out to `ps` instead.
-  var result = Process.runSync('ps', ['-p', '$pid']);
-  return result.exitCode == 0;
+  // kill(pid, 0) is a non-delivering probe: 0 = alive and signalable,
+  // -1 with ESRCH = dead, -1 with EPERM = alive but cross-user. The
+  // EPERM case can only arise from cross-user PID recycling, which is
+  // a non-issue on a single-user dev box; treat it as dead.
+  return _libcKill(pid, 0) == 0;
 }
 
 /// Parent PID for [pid] (POSIX), or null if unavailable.

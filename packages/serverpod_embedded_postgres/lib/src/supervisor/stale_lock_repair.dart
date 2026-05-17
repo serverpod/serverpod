@@ -182,54 +182,40 @@ Set<int> _collectProcessTree(int rootPid) {
 }
 
 /// All PIDs under [root] (inclusive) via `/proc` parent links (Linux).
+/// Single /proc walk builds a ppid -> [pid] map; subtree is then a BFS over
+/// that map. Avoids the O(N x procs) re-scan of the prior implementation.
 Set<int> _linuxSubtreePids(int root) {
-  final all = <int>{};
-
-  void visit(int pid) {
-    if (!all.add(pid)) {
-      return;
-    }
-    for (final c in _linuxDirectChildren(pid)) {
-      visit(c);
-    }
-  }
-
-  visit(root);
-  return all;
-}
-
-List<int> _linuxDirectChildren(int ppid) {
-  final out = <int>[];
+  final childrenOf = <int, List<int>>{};
   final proc = Directory('/proc');
-  if (!proc.existsSync()) {
-    return out;
-  }
+  if (!proc.existsSync()) return {root};
 
-  Directory ent;
   for (final entity in proc.listSync(followLinks: false)) {
     if (entity is! Directory) continue;
-    ent = entity;
-    final name = p.basename(ent.path);
-    final pid = int.tryParse(name);
-    if (pid == null) {
-      continue;
-    }
+    final pid = int.tryParse(p.basename(entity.path));
+    if (pid == null) continue;
     try {
-      final status = File(p.join(ent.path, 'status')).readAsStringSync();
+      final status = File(p.join(entity.path, 'status')).readAsStringSync();
       for (final line in status.split('\n')) {
-        if (line.startsWith('PPid:')) {
-          final parent = int.tryParse(line.substring(5).trim());
-          if (parent == ppid) {
-            out.add(pid);
-          }
-          break;
+        if (!line.startsWith('PPid:')) continue;
+        final ppid = int.tryParse(line.substring(5).trim());
+        if (ppid != null) {
+          (childrenOf[ppid] ??= []).add(pid);
         }
+        break;
       }
     } on FileSystemException {
       // Process vanished; skip.
     }
   }
-  return out;
+
+  final all = <int>{};
+  final queue = <int>[root];
+  while (queue.isNotEmpty) {
+    final pid = queue.removeLast();
+    if (!all.add(pid)) continue;
+    queue.addAll(childrenOf[pid] ?? const []);
+  }
+  return all;
 }
 
 void _tryDelete(File file) {
