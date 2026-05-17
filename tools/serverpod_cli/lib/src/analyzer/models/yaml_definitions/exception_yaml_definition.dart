@@ -22,6 +22,17 @@ class ExceptionYamlDefinition {
         valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
+        Keyword.isSealed,
+        valueRestriction: BooleanValueRestriction().validate,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+      ),
+      ValidateNode(
+        Keyword.extendsClass,
+        valueRestriction: restrictions.validateExtendingClassName,
+      ),
+      ValidateNode(
         Keyword.serverOnly,
         valueRestriction: BooleanValueRestriction().validate,
       ),

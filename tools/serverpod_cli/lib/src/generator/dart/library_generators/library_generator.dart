@@ -2320,7 +2320,21 @@ extension on DatabaseDefinition {
 extension on ModelClassDefinition {
   /// Get all child classes and their children, ensuring children before parents.
   List<ModelClassDefinition> get sortedChildClasses => childClasses
-      .whereType<ResolvedInheritanceDefinition>()
+      .whereType<ResolvedInheritanceDefinition<ModelClassDefinition>>()
+      .map(
+        (e) => [
+          ...e.classDefinition.sortedChildClasses,
+          e.classDefinition,
+        ],
+      )
+      .expand((e) => e)
+      .toList();
+}
+
+extension on ExceptionClassDefinition {
+  /// Get all child classes and their children, ensuring children before parents.
+  List<ExceptionClassDefinition> get sortedChildClasses => childClasses
+      .whereType<ResolvedInheritanceDefinition<ExceptionClassDefinition>>()
       .map(
         (e) => [
           ...e.classDefinition.sortedChildClasses,
@@ -2338,6 +2352,12 @@ extension on List<SerializableModelDefinition> {
 
     for (var model in this) {
       if (model is ModelClassDefinition) {
+        for (var subClass in model.sortedChildClasses) {
+          if (contains(subClass) && !sorted.contains(subClass)) {
+            sorted.add(subClass);
+          }
+        }
+      } else if (model is ExceptionClassDefinition) {
         for (var subClass in model.sortedChildClasses) {
           if (contains(subClass) && !sorted.contains(subClass)) {
             sorted.add(subClass);

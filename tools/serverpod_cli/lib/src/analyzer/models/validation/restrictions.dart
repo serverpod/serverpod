@@ -453,11 +453,14 @@ class Restrictions {
     }
 
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
-        parentClass is ModelClassDefinition &&
+        parentClass is InheritanceClassDefinition &&
         parentClass.isSealed) {
+        final type = parentClass is ExceptionClassDefinition
+          ? 'exception'
+          : 'model';
       return [
         SourceSpanSeverityException(
-          'Can not extend a sealed model from another package.',
+          'Cannot extend a sealed $type from another package.',
           span,
         ),
       ];
@@ -469,6 +472,22 @@ class Restrictions {
 
     if (currentModel is ModelClassDefinition) {
       var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
+        currentModel,
+      );
+
+      if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
+        return [
+          SourceSpanSeverityException(
+            'Cannot extend a "serverOnly" class in the inheritance chain ("${ancestorServerOnlyClass.className}") unless class is marked as "serverOnly".',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (currentModel is ExceptionClassDefinition &&
+        parentClass is ExceptionClassDefinition) {
+      var ancestorServerOnlyClass = _findServerOnlyExceptionInParentClasses(
         currentModel,
       );
 
@@ -2663,12 +2682,12 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
+  T? _getParentClass<T extends InheritanceClassDefinition<T>>(T currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
 
-    return (currentClass.extendsClass as ResolvedInheritanceDefinition)
+    return (currentClass.extendsClass as ResolvedInheritanceDefinition<T>)
         .classDefinition;
   }
 
@@ -2681,17 +2700,17 @@ class Restrictions {
   ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
   /// );
   /// ```
-  T? _findInParentHierarchy<T>(
-    ModelClassDefinition currentModel,
-    T? Function(ModelClassDefinition) predicate,
+  R? _findInParentHierarchy<R, T extends InheritanceClassDefinition<T>>(
+    T currentModel,
+    R? Function(T) predicate,
   ) {
-    var parentModel = _getParentClass(currentModel);
+    var parentModel = _getParentClass<T>(currentModel);
 
     while (parentModel != null) {
       var result = predicate(parentModel);
       if (result != null) return result;
 
-      parentModel = _getParentClass(parentModel);
+      parentModel = _getParentClass<T>(parentModel);
     }
 
     return null;
@@ -2713,6 +2732,16 @@ class Restrictions {
     return _findInParentHierarchy(
       currentModel,
       (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+    );
+  }
+
+  ExceptionClassDefinition? _findServerOnlyExceptionInParentClasses(
+    ExceptionClassDefinition currentExceptionModel,
+  ) {
+    return _findInParentHierarchy(
+      currentExceptionModel,
+      (ExceptionClassDefinition ancestor) =>
+          ancestor.serverOnly ? ancestor : null,
     );
   }
 
