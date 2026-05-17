@@ -289,7 +289,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "table" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.',
+          'The "table" property is not allowed for exception type. Valid keys are {exception, sealed, extends, serverOnly, fields}.',
         );
       },
     );
@@ -449,7 +449,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "indexes" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.',
+          'The "indexes" property is not allowed for exception type. Valid keys are {exception, sealed, extends, serverOnly, fields}.',
         );
       },
     );

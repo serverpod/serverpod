@@ -470,6 +470,26 @@ class Restrictions {
       documentDefinition!.className,
     );
 
+    if (currentModel is ModelClassDefinition &&
+        parentClass is! ModelClassDefinition) {
+      return [
+        SourceSpanSeverityException(
+          'A class can only extend another class.',
+          span,
+        ),
+      ];
+    }
+
+    if (currentModel is ExceptionClassDefinition &&
+        parentClass is! ExceptionClassDefinition) {
+      return [
+        SourceSpanSeverityException(
+          'An exception can only extend another exception.',
+          span,
+        ),
+      ];
+    }
+
     if (currentModel is ModelClassDefinition) {
       var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
         currentModel,
