@@ -103,18 +103,23 @@ class PostgresPoolManager implements DatabasePoolManager {
   }
 
   Future<void> _bootstrap() async {
-    if (_pgPool != null) return;
     if (_databaseStopped) {
       throw StateError('Database stopped. Call `start()` again to restart.');
     }
 
+    EmbeddedPostgres? launched;
     try {
       final (embeddedPostgres, embeddedConfig) =
           await _launchEmbeddedPostgresIfNeeded();
+      launched = embeddedPostgres;
 
-      _embeddedPostgres = embeddedPostgres;
+      // stop() may have run while we were spawning the postmaster. Drop the
+      // freshly-launched handle rather than leak the supervised process.
+      if (_databaseStopped) {
+        throw StateError('Database stopped during start.');
+      }
+
       final effectiveConfig = embeddedConfig ?? config;
-
       _pgPool = pg.Pool.withEndpoints(
         [
           pg.Endpoint(
@@ -128,7 +133,10 @@ class PostgresPoolManager implements DatabasePoolManager {
         ],
         settings: _poolSettings,
       );
+      _embeddedPostgres = launched;
+      launched = null;
     } catch (e, st) {
+      await launched?.stop();
       await _embeddedPostgres?.stop();
       _embeddedPostgres = null;
       _startedFuture = null;
