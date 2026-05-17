@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:path/path.dart' as p;
 import 'package:postgres/postgres.dart' as pg;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'binary/binary_store.dart';

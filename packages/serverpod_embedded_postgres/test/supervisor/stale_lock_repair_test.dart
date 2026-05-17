@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_embedded_postgres/src/supervisor/process_identity.dart';
 import 'package:serverpod_embedded_postgres/src/supervisor/stale_lock_repair.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 /// PIDs in this range should not exist as real processes on CI / dev hosts.

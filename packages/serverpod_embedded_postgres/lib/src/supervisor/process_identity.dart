@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_shared/process_io.dart';
 
 /// Snapshot of a postmaster's identity at supervisor-start time.
 ///

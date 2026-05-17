@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_shared/process_io.dart';
 
 import 'process_identity.dart';
 
