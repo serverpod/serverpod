@@ -15,16 +15,14 @@ import 'process_identity.dart';
 ///   PID is not running.
 ///
 /// Async step (POSIX only; skipped on Windows): if both pidfiles still point
-/// at the same **live** postmaster and that postmaster has been reparented
-/// away from the recorded Dart supervisor, OR if only `postmaster.pid`
-/// remains and its live postmaster has already been reparented to an init-like
-/// process:
+/// at the same live postmaster and that postmaster has been reparented away
+/// from the recorded Dart supervisor:
 /// 1. Prefer [`pg_ctl stop`](https://www.postgresql.org/docs/current/app-pg-ctl.html)
-///    when [pgCtlExecutable] exists (same **Zonky** `bin/` as `postgres`) so
-///    backends exit and **SysV shared memory** is released.
-/// 2. Otherwise escalate signals on the **entire process subtree** (Linux:
-///    `/proc` - killing only the postmaster can leave children holding the
-///    cluster's shared memory block).
+///    when [pgCtlExecutable] exists (same Zonky `bin/` as `postgres`) so
+///    backends exit and SysV shared memory is released cleanly.
+/// 2. Fall back to SIGTERM/SIGKILL on the postmaster. PG's SIGTERM handler
+///    propagates to its backends; if both that and pg_ctl fail, orphan
+///    backends keep the shared-memory grip and the user has to clean up.
 Future<void> repairStaleEmbeddedPostgresLocks({
   required Directory pgDataDir,
   required File serverpodPidFile,
@@ -91,7 +89,7 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
     await _tryPgCtlStop(pgCtlExecutable, pgDataDir);
   }
   if (isProcessAlive(pid)) {
-    await _killPostgresClusterPosix(pid);
+    await _killPostmasterPosix(pid);
   }
 
   _tryDelete(serverpodPidFile);
@@ -139,23 +137,16 @@ Future<void> _tryPgCtlStop(File pgCtl, Directory pgDataDir) async {
   await Future<void>.delayed(const Duration(milliseconds: 80));
 }
 
-/// Stops [rootPid] and (on Linux) every descendant so no backend keeps the
-/// cluster's shared memory segment. Recovery-only: a checkpoint-graceful
-/// SIGINT is pure latency when the caller already decided this is an orphan.
-Future<void> _killPostgresClusterPosix(int rootPid) async {
-  final tree = _collectProcessTree(rootPid);
-
-  for (final pid in tree) {
-    _signalPid(pid, ProcessSignal.sigterm);
-  }
-  if (await _waitUntilAllNotLive(tree, const Duration(seconds: 3))) return;
-
-  for (final pid in tree) {
-    if (isProcessAlive(pid)) {
-      _signalPid(pid, ProcessSignal.sigkill);
-    }
-  }
-  await _waitUntilAllNotLive(tree, const Duration(seconds: 3));
+/// SIGTERM-then-SIGKILL the postmaster. PG's own SIGTERM handler propagates
+/// to its backends, so we do not walk the subtree ourselves. If pg_ctl ALSO
+/// failed and SIGTERM doesn't bring PG down within 3s, SIGKILL leaves orphan
+/// backends with the SysV shared-memory segment held; recoverable manually
+/// with `rm -rf .serverpod/pgdata` or a real `pg_ctl stop`.
+Future<void> _killPostmasterPosix(int pid) async {
+  _signalPid(pid, ProcessSignal.sigterm);
+  if (await _waitForPidExit(pid, const Duration(seconds: 3))) return;
+  _signalPid(pid, ProcessSignal.sigkill);
+  await _waitForPidExit(pid, const Duration(seconds: 3));
 }
 
 void _signalPid(int pid, ProcessSignal sig) {
@@ -164,59 +155,13 @@ void _signalPid(int pid, ProcessSignal sig) {
   } catch (_) {}
 }
 
-Future<bool> _waitUntilAllNotLive(Set<int> pids, Duration budget) async {
+Future<bool> _waitForPidExit(int pid, Duration budget) async {
   final deadline = DateTime.now().add(budget);
   while (DateTime.now().isBefore(deadline)) {
-    if (pids.every((p) => !isProcessAlive(p))) {
-      return true;
-    }
+    if (!isProcessAlive(pid)) return true;
     await Future<void>.delayed(const Duration(milliseconds: 80));
   }
-  return pids.every((p) => !isProcessAlive(p));
-}
-
-Set<int> _collectProcessTree(int rootPid) {
-  if (Platform.isLinux) {
-    return _linuxSubtreePids(rootPid);
-  }
-  return {rootPid};
-}
-
-/// All PIDs under [root] (inclusive) via `/proc` parent links (Linux).
-/// Single /proc walk builds a ppid -> [pid] map; subtree is then a BFS over
-/// that map. Avoids the O(N x procs) re-scan of the prior implementation.
-Set<int> _linuxSubtreePids(int root) {
-  final childrenOf = <int, List<int>>{};
-  final proc = Directory('/proc');
-  if (!proc.existsSync()) return {root};
-
-  for (final entity in proc.listSync(followLinks: false)) {
-    if (entity is! Directory) continue;
-    final pid = int.tryParse(p.basename(entity.path));
-    if (pid == null) continue;
-    try {
-      final status = File(p.join(entity.path, 'status')).readAsStringSync();
-      for (final line in status.split('\n')) {
-        if (!line.startsWith('PPid:')) continue;
-        final ppid = int.tryParse(line.substring(5).trim());
-        if (ppid != null) {
-          (childrenOf[ppid] ??= []).add(pid);
-        }
-        break;
-      }
-    } on FileSystemException {
-      // Process vanished; skip.
-    }
-  }
-
-  final all = <int>{};
-  final queue = <int>[root];
-  while (queue.isNotEmpty) {
-    final pid = queue.removeLast();
-    if (!all.add(pid)) continue;
-    queue.addAll(childrenOf[pid] ?? const []);
-  }
-  return all;
+  return !isProcessAlive(pid);
 }
 
 void _tryDelete(File file) {
