@@ -9,26 +9,24 @@ import 'package:test/test.dart';
 /// PIDs in this range should not exist as real processes on CI / dev hosts.
 const int _unlikelyLivePid = 999999999;
 
+/// Path to the Dart-based fake postmaster (sibling of this test file).
+final _fakePostmasterScript = p.join(
+  Directory.current.path,
+  'test',
+  'supervisor',
+  'fake_postmaster.dart',
+);
+
 void main() {
   late Directory root;
   late Directory pgData;
   late File serverpodPidFile;
-  late File fakePostgres;
   final spawnedPids = <int>{};
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('stale_lock_repair_');
     pgData = Directory(p.join(root.path, 'pgdata'))..createSync();
     serverpodPidFile = File(p.join(root.path, 'postgres.pid'));
-    fakePostgres = File(p.join(root.path, 'postgres'));
-    fakePostgres.writeAsStringSync(
-      '#!/bin/sh\n'
-      "trap 'exit 0' INT TERM\n"
-      'while true; do\n'
-      '  sleep 1\n'
-      'done\n',
-    );
-    Process.runSync('chmod', ['+x', fakePostgres.path]);
   });
 
   tearDown(() async {
@@ -126,14 +124,11 @@ void main() {
   );
 
   test(
-    'Given a live postmaster still parented by this Dart process, '
+    'Given a live postmaster whose recorded supervisor is this test process, '
     'when repairing embedded postgres locks, '
     'then the running postmaster and both pidfiles are left in place.',
     () async {
-      final postmaster = await Process.start(fakePostgres.path, [
-        '-D',
-        pgData.path,
-      ]);
+      final postmaster = await _spawnFakePostmaster(pgData);
       spawnedPids.add(postmaster.pid);
 
       _writeNativePidFile(pgData: pgData, postmasterPid: postmaster.pid);
@@ -141,7 +136,7 @@ void main() {
         serverpodPidFile,
         ProcessIdentity(
           pid: postmaster.pid,
-          executable: fakePostgres.path,
+          executable: Platform.resolvedExecutable,
           dataDir: p.absolute(pgData.path),
           startedAt: DateTime.utc(2026, 5, 14),
           supervisorPid: pid,
@@ -158,11 +153,6 @@ void main() {
       expect(serverpodPidFile.existsSync(), isTrue);
       expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isTrue);
     },
-    onPlatform: const {
-      'windows': Skip(
-        'fake postmaster is an sh script; Windows-equivalent fake is a follow-up - see PLATFORMS.md',
-      ),
-    },
   );
 
   test(
@@ -170,18 +160,15 @@ void main() {
     'when repairing embedded postgres locks, '
     'then the orphaned postmaster and both pidfiles are removed.',
     () async {
-      final orphanPid = _spawnOrphanedFakePostmaster(
-        executable: fakePostgres,
-        pgData: pgData,
-      );
-      spawnedPids.add(orphanPid);
+      final postmaster = await _spawnFakePostmaster(pgData);
+      spawnedPids.add(postmaster.pid);
 
-      _writeNativePidFile(pgData: pgData, postmasterPid: orphanPid);
+      _writeNativePidFile(pgData: pgData, postmasterPid: postmaster.pid);
       ProcessIdentity.writeAtomic(
         serverpodPidFile,
         ProcessIdentity(
-          pid: orphanPid,
-          executable: fakePostgres.path,
+          pid: postmaster.pid,
+          executable: Platform.resolvedExecutable,
           dataDir: p.absolute(pgData.path),
           startedAt: DateTime.utc(2026, 5, 14),
           supervisorPid: _unlikelyLivePid,
@@ -194,15 +181,10 @@ void main() {
         serverpodPidFile: serverpodPidFile,
       );
 
-      expect(await _waitForProcessToStop(orphanPid), isTrue);
+      expect(await _waitForProcessToStop(postmaster.pid), isTrue);
       expect(serverpodPidFile.existsSync(), isFalse);
       expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isFalse);
-      spawnedPids.remove(orphanPid);
-    },
-    onPlatform: const {
-      'windows': Skip(
-        'fake postmaster is an sh script; Windows-equivalent fake is a follow-up - see PLATFORMS.md',
-      ),
+      spawnedPids.remove(postmaster.pid);
     },
   );
 }
@@ -220,27 +202,14 @@ void _writeNativePidFile({
   );
 }
 
-int _spawnOrphanedFakePostmaster({
-  required File executable,
-  required Directory pgData,
-}) {
-  final result = Process.runSync('sh', [
-    '-c',
-    'nohup "\$1" -D "\$2" >/dev/null 2>&1 & echo \$!',
-    'sh',
-    executable.path,
-    pgData.path,
+/// Spawns the Dart fake postmaster so verifyIdentity sees this test's
+/// Dart binary at argv[0] (POSIX) or as the live process image (Windows).
+Future<Process> _spawnFakePostmaster(Directory pgData) {
+  return Process.start(Platform.resolvedExecutable, [
+    _fakePostmasterScript,
+    '-D',
+    p.absolute(pgData.path),
   ]);
-  expect(
-    result.exitCode,
-    0,
-    reason: 'failed to spawn orphaned fake postmaster',
-  );
-
-  final stdout = (result.stdout as String).trim();
-  final orphanPid = int.tryParse(stdout);
-  expect(orphanPid, isNotNull, reason: 'expected spawned PID from shell');
-  return orphanPid!;
 }
 
 Future<bool> _waitForProcessToStop(int processId) async {
