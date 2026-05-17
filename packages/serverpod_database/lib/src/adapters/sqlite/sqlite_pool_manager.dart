@@ -62,7 +62,13 @@ class SqlitePoolManager implements DatabasePoolManager {
   @override
   void start() {
     _databaseStopped = false;
-    if (_db != null) return;
+    _startedFuture ??= _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
     final db = SqliteDatabase(
       path: config.filePath,
       options: SqliteOptions(
@@ -71,17 +77,11 @@ class SqlitePoolManager implements DatabasePoolManager {
       ),
     );
     _db = db;
-    _startedFuture = db.execute('PRAGMA foreign_keys = ON');
+    await db.execute('PRAGMA foreign_keys = ON');
   }
 
   @override
-  Future<void> get started {
-    if (_databaseStopped) {
-      throw StateError('Database stopped. Call `start()` again to restart.');
-    }
-    start();
-    return _startedFuture!;
-  }
+  Future<void> get started => _startedFuture ??= _bootstrap();
 
   /// Closes the database.
   @override
