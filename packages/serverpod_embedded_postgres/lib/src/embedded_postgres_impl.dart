@@ -374,10 +374,10 @@ Future<int> _allocateEphemeralPort() async {
   }
 }
 
-/// Wraps [Supervisor.start] with a port-race retry. If [transport] is a
-/// TCP transport with an ephemerally-allocated port and PG fails to bind
-/// with EADDRINUSE (we read this from the captured log tail of the
-/// crashed postmaster), we re-allocate and retry up to 3 times.
+/// Wraps [Supervisor.start] with a single port-race retry. If [transport] is
+/// a TCP transport with an ephemerally-allocated port and PG fails to bind
+/// with EADDRINUSE (we read this from the captured log tail of the crashed
+/// postmaster), we re-allocate the port and try once more.
 ///
 /// [onResolveTransport] is invoked when we re-allocate a port so the
 /// caller can re-reconcile postgresql.conf with the new value.
@@ -392,36 +392,33 @@ Future<Supervisor> _startSupervisorWithPortRetry({
   required bool detach,
   required void Function(Transport newTransport) onResolveTransport,
 }) async {
-  var current = transport;
-  for (var attempt = 0; attempt < 3; attempt++) {
-    try {
-      return await Supervisor.start(
-        installDir: installDir,
-        dataDir: dataDir,
-        runDir: runDir,
-        transport: current,
-        startTimeout: startTimeout,
-        pidFile: pidFile,
-        logFile: logFile,
-        detach: detach,
-      );
-    } on CrashedException catch (e) {
-      var t = current;
-      if (t is! TcpTransport) rethrow;
-      var portRace = e.logTail.any(
-        (String line) =>
-            line.contains('Address already in use') ||
-            line.contains('could not bind'),
-      );
-      if (!portRace || attempt == 2) rethrow;
+  Future<Supervisor> attempt(Transport t) => Supervisor.start(
+    installDir: installDir,
+    dataDir: dataDir,
+    runDir: runDir,
+    transport: t,
+    startTimeout: startTimeout,
+    pidFile: pidFile,
+    logFile: logFile,
+    detach: detach,
+  );
 
-      var newPort = await _allocateEphemeralPort();
-      current = TcpTransport(port: newPort, password: t.password);
-      onResolveTransport(current);
-    }
+  try {
+    return await attempt(transport);
+  } on CrashedException catch (e) {
+    var t = transport;
+    if (t is! TcpTransport) rethrow;
+    var portRace = e.logTail.any(
+      (line) =>
+          line.contains('Address already in use') ||
+          line.contains('could not bind'),
+    );
+    if (!portRace) rethrow;
+    var newPort = await _allocateEphemeralPort();
+    var reallocated = TcpTransport(port: newPort, password: t.password);
+    onResolveTransport(reallocated);
+    return attempt(reallocated);
   }
-  // Unreachable: the loop either returns or rethrows.
-  throw StateError('unreachable');
 }
 
 /// Connects as superuser via the local socket / TCP and `CREATE DATABASE`s
