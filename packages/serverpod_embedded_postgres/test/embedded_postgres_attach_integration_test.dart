@@ -120,6 +120,48 @@ void main() {
       );
 
       test(
+        'when start is called on a dataDir that already has a live postmaster '
+        'then PostmasterLockBusyException is thrown with the existing PID.',
+        () async {
+          var pgDataDir = Directory(
+            p.join(tmpRoot.path, '.serverpod', 'pgdata'),
+          );
+
+          var started = await EmbeddedPostgres.start(
+            EmbeddedPostgresOptions(
+              dataDir: pgDataDir,
+              databaseName: 'projectname',
+              detach: true,
+            ),
+          );
+
+          try {
+            await expectLater(
+              EmbeddedPostgres.start(
+                EmbeddedPostgresOptions(
+                  dataDir: pgDataDir,
+                  databaseName: 'projectname',
+                  detach: true,
+                  repairStaleLocks: true,
+                ),
+              ),
+              throwsA(
+                isA<PostmasterLockBusyException>().having(
+                  (e) => e.existingPid,
+                  'existingPid',
+                  started.pid,
+                ),
+              ),
+            );
+          } finally {
+            var attached = await EmbeddedPostgres.attach(pgDataDir);
+            await attached.stop();
+          }
+        },
+        timeout: const Timeout(Duration(seconds: 180)),
+      );
+
+      test(
         'when detached TCP postmaster is reattached then the libpq URI '
         'still carries the persisted password and SELECT 1 works.',
         () async {
