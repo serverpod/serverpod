@@ -16,6 +16,10 @@ import 'package:test/test.dart';
 /// Skipped on Windows: process-identity verification needs FFI to
 /// QueryFullProcessImageName, which lands in a separate Windows-port
 /// commit. See PLATFORMS.md.
+final _windowsAttachSkip = Platform.isWindows
+    ? 'Windows attach() needs QFPIN FFI; see PLATFORMS.md'
+    : null;
+
 void main() {
   late Directory tmpRoot;
 
@@ -29,9 +33,7 @@ void main() {
 
   group(
     'Given a detached postmaster',
-    skip: Platform.isWindows
-        ? 'Windows attach() needs QFPIN FFI; see PLATFORMS.md'
-        : null,
+    skip: _windowsAttachSkip,
     () {
       test(
         'when start runs with detach: true, the original handle is dropped, and attach is called on the same dataDir '
@@ -100,21 +102,6 @@ void main() {
           );
         },
         timeout: const Timeout(Duration(seconds: 120)),
-      );
-
-      test(
-        'when attach is called on a dataDir that was never started '
-        'then an AttachException is thrown.',
-        () async {
-          var pgDataDir = Directory(
-            p.join(tmpRoot.path, '.serverpod', 'pgdata'),
-          );
-
-          await expectLater(
-            EmbeddedPostgres.attach(pgDataDir),
-            throwsA(isA<AttachException>()),
-          );
-        },
       );
 
       test(
@@ -197,6 +184,27 @@ void main() {
           await attached.stop();
         },
         timeout: const Timeout(Duration(seconds: 180)),
+      );
+    },
+  );
+
+  group(
+    'Given a dataDir that was never started',
+    skip: _windowsAttachSkip,
+    () {
+      test(
+        'when attach is called '
+        'then an AttachException is thrown.',
+        () async {
+          var pgDataDir = Directory(
+            p.join(tmpRoot.path, '.serverpod', 'pgdata'),
+          );
+
+          await expectLater(
+            EmbeddedPostgres.attach(pgDataDir),
+            throwsA(isA<AttachException>()),
+          );
+        },
       );
     },
   );

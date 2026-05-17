@@ -81,13 +81,17 @@ void main() {
   });
 
   group('Given an initialized cluster', () {
+    late ClusterStore cluster;
+
+    setUp(() async {
+      cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
+      await cluster.ensureInitialized(username: 'postgres');
+    });
+
     test(
       'when reconcilePostgresConf is called for UnixTransport '
       'then our managed block is present and unix_socket_directories is "../run".',
       () async {
-        var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
-        await cluster.ensureInitialized(username: 'postgres');
-
         cluster.reconcilePostgresConf(transport: const UnixTransport());
 
         var conf = File(
@@ -104,9 +108,6 @@ void main() {
       'when reconcilePostgresConf is called twice with different transports '
       'then the second call replaces the block (not duplicates it).',
       () async {
-        var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
-        await cluster.ensureInitialized(username: 'postgres');
-
         cluster.reconcilePostgresConf(transport: const UnixTransport());
         cluster.reconcilePostgresConf(
           transport: const TcpTransport(port: 5433),
@@ -130,9 +131,6 @@ void main() {
       'when requireMajorMatch is called with a different major '
       'then StaleClusterException is thrown.',
       () async {
-        var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
-        await cluster.ensureInitialized(username: 'postgres');
-
         expect(
           () => cluster.requireMajorMatch(15),
           throwsA(isA<StaleClusterException>()),
@@ -145,9 +143,6 @@ void main() {
       'when requireMajorMatch is called with a matching major '
       'then it returns without throwing.',
       () async {
-        var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
-        await cluster.ensureInitialized(username: 'postgres');
-
         expect(() => cluster.requireMajorMatch(16), returnsNormally);
       },
       timeout: const Timeout(Duration(seconds: 60)),

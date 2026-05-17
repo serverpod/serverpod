@@ -108,8 +108,8 @@ void main() {
       );
 
       test(
-        'when the postmaster is hard-killed (SIGKILL) and the dead pidfile is inspected '
-        'then verifyIdentity reports notRunning.',
+        'when verifyIdentity is called on the captured identity of a supervisor that has been cleanly stopped '
+        'then notRunning is returned (or foreign, if the kernel recycled the pid).',
         () async {
           var sup = await Supervisor.start(
             installDir: installDir,
