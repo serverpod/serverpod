@@ -455,7 +455,7 @@ class Restrictions {
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
         parentClass is InheritanceClassDefinition &&
         parentClass.isSealed) {
-        final type = parentClass is ExceptionClassDefinition
+      final type = parentClass is ExceptionClassDefinition
           ? 'exception'
           : 'model';
       return [

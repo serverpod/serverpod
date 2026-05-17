@@ -26,7 +26,7 @@ void main() {
       ]);
 
   var serverpodImportPath = 'package:serverpod/serverpod.dart';
-  
+
   group(
     'Given a hierarchy with a sealed parent exception and a normal child, when generating code',
     () {
@@ -370,7 +370,7 @@ void main() {
     },
   );
 
-    group(
+  group(
     'Given a hierarchy with a sealed parent with a nullable field and a child with no nullable fields when generating code',
     () {
       var parent = ExceptionClassDefinitionBuilder()

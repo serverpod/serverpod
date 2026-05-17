@@ -266,8 +266,8 @@ final class ModelClassDefinition extends ClassDefinition
 }
 
 /// A [ClassDefinition] specialization that represents an exception.
-final class ExceptionClassDefinition extends ClassDefinition 
-  with InheritanceClassDefinition<ExceptionClassDefinition> {
+final class ExceptionClassDefinition extends ClassDefinition
+    with InheritanceClassDefinition<ExceptionClassDefinition> {
   /// If set to true the class is sealed.
   @override
   final bool isSealed;
@@ -291,7 +291,7 @@ final class ExceptionClassDefinition extends ClassDefinition
     this.extendsClass = extendsClass;
   }
 
-    /// Returns a list of all fields in the parent class.
+  /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   /// Excludes the id field, as it is re-declared on child classes.
   List<SerializableModelFieldDefinition> get inheritedFields =>

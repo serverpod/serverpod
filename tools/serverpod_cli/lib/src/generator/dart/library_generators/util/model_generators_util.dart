@@ -91,7 +91,8 @@ class ModelAllocatorContext {
   }
 
   /// Returns all sealed top node classes.
-  static Iterable<T> _getSealedTopNodeClasses<T extends InheritanceClassDefinition<T>>(
+  static Iterable<T>
+  _getSealedTopNodeClasses<T extends InheritanceClassDefinition<T>>(
     List<SerializableModelDefinition> models,
   ) {
     return models.whereType<T>().where(
@@ -101,7 +102,8 @@ class ModelAllocatorContext {
 
   /// Returns a list of sealed hierarchies.
   /// Each hierarchy is represented by a list of classes.
-  static Iterable<Iterable<T>> _getSealedHierarchies<T extends InheritanceClassDefinition<T>>(
+  static Iterable<Iterable<T>>
+  _getSealedHierarchies<T extends InheritanceClassDefinition<T>>(
     List<SerializableModelDefinition> models,
   ) {
     var sealedClasses = _getSealedTopNodeClasses<T>(models);

@@ -94,10 +94,10 @@ class SerializableModelLibraryGenerator {
             definition,
             fields,
           ),
-                    // We need to generate the implementation class for the copyWith method
+          // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
-          if (_shouldCreateUndefinedClass(definition, fields)) 
+          if (_shouldCreateUndefinedClass(definition, fields))
             _buildUndefinedClass(),
           if (!definition.isParentClass)
             _buildModelImplClass(
