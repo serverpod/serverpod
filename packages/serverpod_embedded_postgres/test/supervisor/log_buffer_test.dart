@@ -14,8 +14,8 @@ void main() {
     });
 
     test(
-      'when more than capacity lines are added then the oldest are evicted '
-      'in FIFO order.',
+      'when more than capacity lines are added '
+      'then the oldest are evicted in FIFO order.',
       () {
         var buf = LogBuffer(capacity: 3);
 

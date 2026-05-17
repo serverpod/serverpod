@@ -62,8 +62,8 @@ void main() {
     skip: udsSkip,
     () {
       test(
-        'when Supervisor.start runs with UnixTransport then the postmaster '
-        'becomes ready, accepts a SELECT 1, and stops cleanly on stop().',
+        'when Supervisor.start runs with UnixTransport '
+        'then the postmaster becomes ready, accepts a SELECT 1, and stops cleanly on stop().',
         () async {
           var sup = await Supervisor.start(
             installDir: installDir,
@@ -108,8 +108,8 @@ void main() {
       );
 
       test(
-        'when the postmaster is hard-killed (SIGKILL) and the dead pidfile is '
-        'inspected then verifyIdentity reports notRunning.',
+        'when the postmaster is hard-killed (SIGKILL) and the dead pidfile is inspected '
+        'then verifyIdentity reports notRunning.',
         () async {
           var sup = await Supervisor.start(
             installDir: installDir,
@@ -148,9 +148,8 @@ void main() {
       );
 
       test(
-        'when Supervisor.start is given a 100ms timeout against a non-running '
-        'postmaster then StartupTimeoutException is thrown with logTail '
-        'attached.',
+        'when Supervisor.start is given a 100ms timeout against a non-running postmaster '
+        'then StartupTimeoutException is thrown with logTail attached.',
         () async {
           // Use an installDir that won't actually start fast - we just
           // bound the timeout very tight so even a normal start can't make it.

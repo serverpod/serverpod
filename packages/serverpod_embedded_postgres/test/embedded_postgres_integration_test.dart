@@ -32,9 +32,8 @@ void main() {
 
   group('Given a fresh project layout', skip: udsSkip, () {
     test(
-      'when EmbeddedPostgres.start runs with UnixTransport defaults then '
-      'endpoint connects, SELECT 1 returns 1, and stop() releases the '
-      'pidfile.',
+      'when EmbeddedPostgres.start runs with UnixTransport defaults '
+      'then endpoint connects, SELECT 1 returns 1, and stop() releases the pidfile.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 
@@ -74,9 +73,8 @@ void main() {
     );
 
     test(
-      'when start runs twice in a row (no-op data dir) then the second '
-      'start re-uses the same cluster (warm initdb skip) and reaches ready '
-      'in <5s.',
+      'when start runs twice in a row (no-op data dir) '
+      'then the second start re-uses the same cluster (warm initdb skip) and reaches ready in <5s.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 

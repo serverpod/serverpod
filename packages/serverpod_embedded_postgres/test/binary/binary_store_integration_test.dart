@@ -19,8 +19,8 @@ import 'package:test/test.dart';
 void main() {
   group('Given the production Maven server and the host platform', () {
     test(
-      'when ensure runs to completion then bin/postgres and bin/initdb '
-      'exist, are executable, and a meta.json sentinel records the install.',
+      'when ensure runs to completion '
+      'then bin/postgres and bin/initdb exist, are executable, and a meta.json sentinel records the install.',
       () async {
         var store = BinaryStore();
         var artifact = ZonkyArtifact.forCurrentPlatform(
@@ -64,8 +64,8 @@ void main() {
     );
 
     test(
-      'when ensure is called twice in a row then the second call is fast '
-      '(cache hit) and returns the same directory.',
+      'when ensure is called twice in a row '
+      'then the second call is fast (cache hit) and returns the same directory.',
       () async {
         var store = BinaryStore();
         var artifact = ZonkyArtifact.forCurrentPlatform(

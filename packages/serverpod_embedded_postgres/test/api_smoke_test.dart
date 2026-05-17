@@ -21,8 +21,8 @@ void main() {
     });
 
     test(
-      'when picking TcpTransport with port 0 then port and password defaults '
-      'are exposed as documented.',
+      'when picking TcpTransport with port 0 '
+      'then port and password defaults are exposed as documented.',
       () {
         var t = const TcpTransport();
 
@@ -44,8 +44,8 @@ void main() {
 
   group('Given the sealed exception hierarchy', () {
     test(
-      'when exhaustively switching over EmbeddedPostgresException then '
-      'all variants are reachable.',
+      'when exhaustively switching over EmbeddedPostgresException '
+      'then all variants are reachable.',
       () {
         EmbeddedPostgresException any = const InitdbException('x');
 
@@ -82,8 +82,8 @@ void main() {
 
   group('Given the EmbeddedPostgres static surface', () {
     test(
-      'when defaultBinaryCache is read then a non-empty path resolves '
-      '(platform-appropriate; full coverage in BinaryStore tests).',
+      'when defaultBinaryCache is read '
+      'then a non-empty path resolves (platform-appropriate; full coverage in BinaryStore tests).',
       () {
         var dir = EmbeddedPostgres.defaultBinaryCache();
 

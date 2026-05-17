@@ -40,8 +40,8 @@ void main() {
 
   group('Given a fresh data directory and a real PG install', () {
     test(
-      'when ensureInitialized runs then PG_VERSION is written and matches '
-      "the install's major.",
+      'when ensureInitialized runs '
+      "then PG_VERSION is written and matches the install's major.",
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
 
@@ -54,8 +54,8 @@ void main() {
     );
 
     test(
-      'when ensureInitialized runs twice then the second call is a no-op '
-      '(idempotent).',
+      'when ensureInitialized runs twice '
+      'then the second call is a no-op (idempotent).',
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
 
@@ -82,8 +82,8 @@ void main() {
 
   group('Given an initialized cluster', () {
     test(
-      'when reconcilePostgresConf is called for UnixTransport then our '
-      'managed block is present and unix_socket_directories is "../run".',
+      'when reconcilePostgresConf is called for UnixTransport '
+      'then our managed block is present and unix_socket_directories is "../run".',
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
         await cluster.ensureInitialized(username: 'postgres');
@@ -127,8 +127,8 @@ void main() {
     );
 
     test(
-      'when requireMajorMatch is called with a different major then '
-      'StaleClusterException is thrown.',
+      'when requireMajorMatch is called with a different major '
+      'then StaleClusterException is thrown.',
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
         await cluster.ensureInitialized(username: 'postgres');
@@ -142,8 +142,8 @@ void main() {
     );
 
     test(
-      'when requireMajorMatch is called with a matching major then it '
-      'returns without throwing.',
+      'when requireMajorMatch is called with a matching major '
+      'then it returns without throwing.',
       () async {
         var cluster = ClusterStore(installDir: installDir, dataDir: pgDataDir);
         await cluster.ensureInitialized(username: 'postgres');

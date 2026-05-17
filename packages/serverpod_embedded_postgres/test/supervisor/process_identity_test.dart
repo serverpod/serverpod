@@ -56,8 +56,8 @@ void main() {
     );
 
     test(
-      'when read on a JSON pidfile missing required fields then null is '
-      'returned.',
+      'when read on a JSON pidfile missing required fields '
+      'then null is returned.',
       () {
         pidFile.writeAsStringSync('{"pid": 1234}');
 
@@ -85,8 +85,8 @@ void main() {
     );
 
     test(
-      'when the recorded pid is alive but argv differs from our record then '
-      'foreign is returned.',
+      'when the recorded pid is alive but argv differs from our record '
+      'then foreign is returned.',
       () {
         // Use the current Dart process - it's alive but its argv won't
         // contain /fake/postgres or /fake/pgdata, so identity check fails.

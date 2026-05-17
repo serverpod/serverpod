@@ -32,8 +32,8 @@ void main() {
 
   group('Given installDirFor', () {
     test(
-      'when called for a (version, platform) tuple then the path layers '
-      'cache root / BOM / platform.',
+      'when called for a (version, platform) tuple '
+      'then the path layers cache root / BOM / platform.',
       () {
         var store = BinaryStore(cacheRoot: cache);
 
@@ -51,8 +51,8 @@ void main() {
 
   group('Given a populated cache', () {
     test(
-      'when ensure is called and meta.json exists then no HTTP requests '
-      'are issued and the install dir is returned.',
+      'when ensure is called and meta.json exists '
+      'then no HTTP requests are issued and the install dir is returned.',
       () async {
         var requests = 0;
         var store = BinaryStore(
@@ -82,8 +82,8 @@ void main() {
 
   group('Given a server delivering a JAR with a sha mismatch', () {
     test(
-      'when ensure runs then BinaryVerificationException is thrown and the '
-      'install dir is left absent (caller can retry).',
+      'when ensure runs '
+      'then BinaryVerificationException is thrown and the install dir is left absent (caller can retry).',
       () async {
         var jarBytes = _buildSyntheticJar();
         var bogusSha = 'a' * 64;
@@ -105,8 +105,8 @@ void main() {
 
   group('Given a malformed sha256 sidecar', () {
     test(
-      'when the body is not a 64-char hex string then BinaryFetchException '
-      'is thrown.',
+      'when the body is not a 64-char hex string '
+      'then BinaryFetchException is thrown.',
       () async {
         var jarBytes = _buildSyntheticJar();
         var store = BinaryStore(
@@ -130,8 +130,8 @@ void main() {
 
   group('Given an empty cache and 4 concurrent isolates', () {
     test(
-      'when each isolate calls ensure then exactly one fetches the JAR '
-      'and all four return the same install dir.',
+      'when each isolate calls ensure '
+      'then exactly one fetches the JAR and all four return the same install dir.',
       () async {
         var jarBytes = _buildSyntheticJar();
         var shaHex = sha256.convert(jarBytes).toString();
@@ -191,8 +191,8 @@ void main() {
 
   group('Given a stale claim file (mtime older than staleAfter)', () {
     test(
-      'when ensure runs then the claim is stolen and the extract proceeds '
-      'to write meta.',
+      'when ensure runs '
+      'then the claim is stolen and the extract proceeds to write meta.',
       () async {
         var jarBytes = _buildSyntheticJar();
         var shaHex = sha256.convert(jarBytes).toString();
@@ -232,8 +232,8 @@ void main() {
     'Given a fresh claim file (not yet stale) and a short hard timeout',
     () {
       test(
-        'when ensure runs then it throws BinaryFetchException citing the '
-        'claim, without fetching.',
+        'when ensure runs '
+        'then it throws BinaryFetchException citing the claim, without fetching.',
         () async {
           var requests = 0;
           var claim = File(
@@ -273,12 +273,11 @@ void main() {
   );
 
   group(
-    'Given an installDir from a prior winner that crashed before writing '
-    'meta',
+    'Given an installDir from a prior winner that crashed before writing meta',
     () {
       test(
-        'when ensure runs again then it re-extracts cleanly (installDir '
-        'is replaced, meta is written).',
+        'when ensure runs again '
+        'then it re-extracts cleanly (installDir is replaced, meta is written).',
         () async {
           var installDir = Directory(
             p.join(cache.path, artifact.bom, artifact.platform),

@@ -34,8 +34,8 @@ void main() {
     );
 
     test(
-      'when two .txz files exist at the JAR root then BinaryFetchException '
-      'is thrown.',
+      'when two .txz files exist at the JAR root '
+      'then BinaryFetchException is thrown.',
       () {
         var jar = _buildJar([
           ('postgres-a.txz', _trivialTxz()),
@@ -50,8 +50,8 @@ void main() {
     );
 
     test(
-      'when a .txz exists only inside a subdir then BinaryFetchException is '
-      'thrown (root-level matches required).',
+      'when a .txz exists only inside a subdir '
+      'then BinaryFetchException is thrown (root-level matches required).',
       () {
         var jar = _buildJar([
           ('META-INF/postgres.txz', _trivialTxz()),
@@ -72,8 +72,8 @@ void main() {
     // pass and exec-bit restoration. The spike proved both were necessary.
 
     test(
-      'when extracting a symlink entry then a real symlink is created '
-      '(NOT a 0-byte regular file).',
+      'when extracting a symlink entry '
+      'then a real symlink is created (NOT a 0-byte regular file).',
       () {
         var tar = _buildTar([
           _TarEntry.file('lib/libfoo.1.0.dylib', Uint8List.fromList([1, 2, 3])),
@@ -99,8 +99,8 @@ void main() {
     );
 
     test(
-      'when a file entry has mode 0o755 then the extracted file is '
-      'executable on POSIX.',
+      'when a file entry has mode 0o755 '
+      'then the extracted file is executable on POSIX.',
       () {
         var tar = _buildTar([
           _TarEntry.file(
@@ -146,8 +146,8 @@ void main() {
     );
 
     test(
-      'when a file entry name is an absolute path then BinaryFetchException '
-      'is thrown.',
+      'when a file entry name is an absolute path '
+      'then BinaryFetchException is thrown.',
       () {
         // POSIX absolute - on Windows package:path treats /etc/... as
         // root-relative-to-current-drive, which still won't be inside tmp.
@@ -163,8 +163,8 @@ void main() {
     );
 
     test(
-      'when a symlink target resolves outside the destination then '
-      'BinaryFetchException is thrown (symlink-traversal).',
+      'when a symlink target resolves outside the destination '
+      'then BinaryFetchException is thrown (symlink-traversal).',
       () {
         var tar = _buildTar([
           _TarEntry.file('lib/real.txt', Uint8List.fromList([1])),
@@ -188,8 +188,8 @@ void main() {
     );
 
     test(
-      'when a symlink target is an absolute path then '
-      'BinaryFetchException is thrown.',
+      'when a symlink target is an absolute path '
+      'then BinaryFetchException is thrown.',
       () {
         var tar = _buildTar([
           _TarEntry.symlink('boom', target: '/etc/passwd'),

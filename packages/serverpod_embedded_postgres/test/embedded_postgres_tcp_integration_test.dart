@@ -23,9 +23,8 @@ void main() {
 
   group('Given TcpTransport with port=0', () {
     test(
-      'when start runs then a non-zero ephemeral port is allocated, '
-      'connection.execute roundtrips via TCP, and the libpq URI carries '
-      'user:password.',
+      'when start runs '
+      'then a non-zero ephemeral port is allocated, connection.execute roundtrips via TCP, and the libpq URI carries user:password.',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 
@@ -70,9 +69,8 @@ void main() {
     );
 
     test(
-      'when start runs twice in a row then the persisted password is '
-      're-used (so the same Endpoint authenticates against the warm '
-      'cluster).',
+      'when start runs twice in a row '
+      'then the persisted password is re-used (so the same Endpoint authenticates against the warm cluster).',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
 
@@ -115,8 +113,8 @@ void main() {
     );
 
     test(
-      'when an explicit password is provided via TcpTransport then it is '
-      'used (and persisted).',
+      'when an explicit password is provided via TcpTransport '
+      'then it is used (and persisted).',
       () async {
         var pgDataDir = Directory(p.join(tmpRoot.path, '.serverpod', 'pgdata'));
         var explicit = 'super-secret-dev-pw';

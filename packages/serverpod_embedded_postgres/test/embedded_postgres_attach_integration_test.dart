@@ -34,10 +34,8 @@ void main() {
         : null,
     () {
       test(
-        'when start runs with detach: true, the original handle is dropped, '
-        'and attach is called on the same dataDir then the SELECT 1 round '
-        'trip works on the reattached handle and stop() releases the '
-        'pidfile.',
+        'when start runs with detach: true, the original handle is dropped, and attach is called on the same dataDir '
+        'then the SELECT 1 round trip works on the reattached handle and stop() releases the pidfile.',
         () async {
           var pgDataDir = Directory(
             p.join(tmpRoot.path, '.serverpod', 'pgdata'),
@@ -105,8 +103,8 @@ void main() {
       );
 
       test(
-        'when attach is called on a dataDir that was never started then an '
-        'AttachException is thrown.',
+        'when attach is called on a dataDir that was never started '
+        'then an AttachException is thrown.',
         () async {
           var pgDataDir = Directory(
             p.join(tmpRoot.path, '.serverpod', 'pgdata'),
@@ -162,8 +160,8 @@ void main() {
       );
 
       test(
-        'when detached TCP postmaster is reattached then the libpq URI '
-        'still carries the persisted password and SELECT 1 works.',
+        'when detached TCP postmaster is reattached '
+        'then the libpq URI still carries the persisted password and SELECT 1 works.',
         () async {
           var pgDataDir = Directory(
             p.join(tmpRoot.path, '.serverpod', 'pgdata'),

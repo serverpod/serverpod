@@ -19,8 +19,8 @@ void main() {
     );
 
     test(
-      'when called with an ABI Zonky does not publish then '
-      'UnsupportedPlatformException is thrown.',
+      'when called with an ABI Zonky does not publish '
+      'then UnsupportedPlatformException is thrown.',
       () {
         expect(
           () => platformSuffixForAbi(Abi.windowsArm64),
@@ -36,8 +36,8 @@ void main() {
 
   group('Given a ZonkyArtifact', () {
     test(
-      'when constructed for darwin-amd64 16.13.0 then BOM, artifact ID, and '
-      "JAR filename match Zonky's actual layout.",
+      'when constructed for darwin-amd64 16.13.0 '
+      "then BOM, artifact ID, and JAR filename match Zonky's actual layout.",
       () {
         var a = ZonkyArtifact(
           version: Version(16, 13, 0),
@@ -78,8 +78,8 @@ void main() {
     });
 
     test(
-      'when comparing two artifacts with the same version and platform then '
-      'they are equal.',
+      'when comparing two artifacts with the same version and platform '
+      'then they are equal.',
       () {
         var a = ZonkyArtifact(
           version: Version(16, 13, 0),
@@ -96,8 +96,8 @@ void main() {
     );
 
     test(
-      'when constructed via forCurrentPlatform then platform matches the '
-      'host ABI.',
+      'when constructed via forCurrentPlatform '
+      'then platform matches the host ABI.',
       () {
         var a = ZonkyArtifact.forCurrentPlatform(version: Version(16, 13, 0));
 
