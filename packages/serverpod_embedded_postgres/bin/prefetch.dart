@@ -13,32 +13,76 @@ library;
 
 import 'dart:io';
 
+import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_embedded_postgres/serverpod_embedded_postgres.dart';
 
-Future<void> main(List<String> args) async {
-  Version version = defaultPostgresVersion;
-  String? target;
+enum PrefetchOption<V> implements OptionDefinition<V> {
+  version(
+    StringOption(
+      argName: 'version',
+      helpText:
+          'PG version to fetch (semver). Defaults to $_defaultVersionLiteral.',
+    ),
+  ),
+  target(
+    StringOption(
+      argName: 'target',
+      helpText:
+          'Zonky platform suffix (e.g. linux-amd64, darwin-arm64v8, '
+          'windows-amd64). Defaults to the host platform.',
+    ),
+  ),
+  help(
+    FlagOption(
+      argName: 'help',
+      argAbbrev: 'h',
+      negatable: false,
+      defaultsTo: false,
+      helpText: 'Show this usage information.',
+    ),
+  )
+  ;
 
-  for (var i = 0; i < args.length; i++) {
-    var arg = args[i];
-    if (arg.startsWith('--version=')) {
-      version = _parseVersion(arg.substring('--version='.length));
-    } else if (arg == '--version' && i + 1 < args.length) {
-      version = _parseVersion(args[++i]);
-    } else if (arg.startsWith('--target=')) {
-      target = arg.substring('--target='.length);
-    } else if (arg == '--target' && i + 1 < args.length) {
-      target = args[++i];
-    } else if (arg == '--help' || arg == '-h') {
-      stdout.writeln(_helpText);
-      return;
-    } else {
-      stderr.writeln('Unknown argument: $arg');
-      stderr.writeln(_helpText);
-      exit(64); // EX_USAGE
-    }
+  const PrefetchOption(this.option);
+
+  @override
+  final ConfigOptionBase<V> option;
+}
+
+// Keep in sync with [defaultPostgresVersion]. Inlined as a literal so the
+// helpText (which must be const) can interpolate it.
+const _defaultVersionLiteral = '16.13.0';
+
+Future<void> main(List<String> args) async {
+  final Configuration<PrefetchOption> config;
+  try {
+    config = Configuration.resolve(
+      options: PrefetchOption.values,
+      args: args,
+      env: Platform.environment,
+    );
+  } on UsageException catch (e) {
+    stderr.writeln(e);
+    exit(64);
   }
+
+  if (config.value(PrefetchOption.help)) {
+    stdout.writeln(config.usage);
+    return;
+  }
+
+  var rawVersion = config.optionalValue(PrefetchOption.version);
+  Version version;
+  try {
+    version = rawVersion != null
+        ? Version.parse(rawVersion)
+        : defaultPostgresVersion;
+  } on FormatException catch (e) {
+    stderr.writeln('Invalid --version "$rawVersion": ${e.message}');
+    exit(64);
+  }
+  var target = config.optionalValue(PrefetchOption.target);
 
   stdout.writeln('Prefetching PG $version (${target ?? "host platform"})...');
   var sw = Stopwatch()..start();
@@ -46,38 +90,10 @@ Future<void> main(List<String> args) async {
     await EmbeddedPostgres.prefetch(version, target: target);
     sw.stop();
     stdout.writeln('Done in ${sw.elapsedMilliseconds}ms.');
-  } on Exception catch (e) {
-    stderr.writeln('Prefetch failed: $e');
+  } on Exception catch (e, st) {
+    stderr
+      ..writeln('Prefetch failed: $e')
+      ..writeln(st);
     exit(1);
-  }
-}
-
-const String _helpText =
-    '''
-Pre-populate the per-user binary cache for a given PG version.
-
-Usage:
-  dart run serverpod_embedded_postgres:prefetch [--version <semver>] [--target <platform>]
-
-Options:
-  --version <semver>   PG version to fetch (default: $defaultPostgresVersionLiteral).
-  --target <platform>  Zonky platform suffix (e.g., linux-amd64,
-                       darwin-arm64v8, windows-amd64). Defaults to the host
-                       platform via Abi.current().
-  -h, --help           Show this help text.
-''';
-
-const String _defaultPostgresVersionLiteral = '16.13.0';
-
-// Gives the help text a stable string for the default at compile time.
-// (Avoids interpolating defaultPostgresVersion at runtime in a const.)
-const String defaultPostgresVersionLiteral = _defaultPostgresVersionLiteral;
-
-Version _parseVersion(String s) {
-  try {
-    return Version.parse(s);
-  } on FormatException catch (e) {
-    stderr.writeln('Invalid --version "$s": ${e.message}');
-    exit(64);
   }
 }
