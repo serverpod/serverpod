@@ -22,7 +22,7 @@ import 'process_identity.dart';
 ///    when [pgCtlExecutable] exists (same **Zonky** `bin/` as `postgres`) so
 ///    backends exit and **SysV shared memory** is released.
 /// 2. Otherwise escalate signals on the **entire process subtree** (Linux:
-///    `/proc` — killing only the postmaster can leave children holding the
+///    `/proc` - killing only the postmaster can leave children holding the
 ///    cluster's shared memory block).
 Future<void> repairStaleEmbeddedPostgresLocks({
   required Directory pgDataDir,
@@ -56,7 +56,7 @@ void _repairNativePostmasterPidfileIfDeadPid(Directory pgDataDir) {
   final file = File(p.join(pgDataDir.path, 'postmaster.pid'));
   if (!file.existsSync()) return;
 
-  final pid = _readFirstLinePid(file);
+  final pid = readPostmasterPidFile(file);
   if (pid == null) return;
 
   if (!processPidIsLive(pid)) {
@@ -74,7 +74,7 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
   final file = File(p.join(pgDataDir.path, 'postmaster.pid'));
   if (!file.existsSync()) return;
 
-  var pid = _readFirstLinePid(file);
+  var pid = readPostmasterPidFile(file);
   if (pid == null || !processPidIsLive(pid)) return;
 
   final identity = ProcessIdentity.read(serverpodPidFile);
@@ -102,7 +102,7 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
       await _delayForIpcTeardown();
       return;
     }
-    pid = _readFirstLinePid(file);
+    pid = readPostmasterPidFile(file);
     if (pid == null) {
       if (identity != null) {
         _tryDelete(serverpodPidFile);
@@ -301,26 +301,6 @@ List<int> _depthDescendingKillOrder(Set<int> tree, int root) {
   final list = tree.toList()
     ..sort((a, b) => (depth[b] ?? 0).compareTo(depth[a] ?? 0));
   return list;
-}
-
-/// PostgreSQL writes the postmaster PID on the first line of `postmaster.pid`.
-int? _readFirstLinePid(File file) {
-  try {
-    final lines = file.readAsLinesSync();
-    if (lines.isEmpty) {
-      return null;
-    }
-    final first = lines.first.trim();
-    if (first.isEmpty) {
-      return null;
-    }
-    final token = first.split(RegExp(r'\s+')).first;
-    return int.tryParse(token);
-  } on FileSystemException {
-    return null;
-  } on FormatException {
-    return null;
-  }
 }
 
 bool _isLiveInitReparentedPostmasterForDataDir(int pid, Directory pgDataDir) {

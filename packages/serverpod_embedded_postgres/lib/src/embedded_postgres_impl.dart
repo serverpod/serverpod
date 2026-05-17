@@ -168,16 +168,15 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       );
     }
 
-    // Locale-independent precheck: if postmaster.pid still references a live
-    // PID after repair, a real postmaster is holding the cluster. Tell the
-    // caller via a typed exception instead of spawning and watching the
-    // child crash with a localised "lock file already exists" message.
-    var livePostmasterPid = _livePostmasterPid(pgDataDir);
-    if (livePostmasterPid != null) {
+    // Avoid spawning a child that would crash with PG's localised
+    // "lock file already exists" message.
+    var existingPid = readPostmasterPidFile(
+      File(p.join(pgDataDir.path, 'postmaster.pid')),
+    );
+    if (existingPid != null && processPidIsLive(existingPid)) {
       throw PostmasterLockBusyException(
-        'postmaster.pid in ${pgDataDir.path} is held by live PID '
-        '$livePostmasterPid',
-        existingPid: livePostmasterPid,
+        'postmaster.pid in ${pgDataDir.path} is held by live PID $existingPid',
+        existingPid: existingPid,
       );
     }
 
@@ -493,23 +492,6 @@ void _validateDatabaseName(String name) {
       'must match [A-Za-z_][A-Za-z0-9_\$]* (PG identifier rule)',
     );
   }
-}
-
-/// First-line PID of `postmaster.pid` if it exists AND that PID looks alive.
-/// Returns `null` if the file is missing, unparseable, or the PID is dead.
-int? _livePostmasterPid(Directory pgDataDir) {
-  var file = File(p.join(pgDataDir.path, 'postmaster.pid'));
-  if (!file.existsSync()) return null;
-  List<String> lines;
-  try {
-    lines = file.readAsLinesSync();
-  } on FileSystemException {
-    return null;
-  }
-  if (lines.isEmpty) return null;
-  var pid = int.tryParse(lines.first.trim().split(RegExp(r'\s+')).first);
-  if (pid == null) return null;
-  return processPidIsLive(pid) ? pid : null;
 }
 
 String _generatePassword() {

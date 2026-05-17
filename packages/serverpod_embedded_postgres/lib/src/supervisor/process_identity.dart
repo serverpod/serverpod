@@ -386,3 +386,17 @@ int? _readPosixParentPid(int pid) {
 }
 
 int _currentProcessPid() => pid;
+
+/// PostgreSQL writes the postmaster PID on the first whitespace-delimited
+/// token of [postmasterPidFile]'s first line. Returns null when the file is
+/// missing, empty, or unparseable.
+int? readPostmasterPidFile(File postmasterPidFile) {
+  List<String> lines;
+  try {
+    lines = postmasterPidFile.readAsLinesSync();
+  } on FileSystemException {
+    return null;
+  }
+  if (lines.isEmpty) return null;
+  return int.tryParse(lines.first.trim().split(RegExp(r'\s+')).first);
+}
