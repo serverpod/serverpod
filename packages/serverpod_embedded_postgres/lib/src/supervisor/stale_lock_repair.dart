@@ -75,11 +75,7 @@ Future<void> _terminateLiveOrphanPostmaster(
   final pid = readPostmasterPidFile(file);
   if (pid == null || !isProcessAlive(pid)) return;
   if (pid != identity.pid) return;
-  if (verifyIdentity(identity) != IdentityMatch.matchesOurs) return;
-  if (verifySupervisorRelationship(identity) !=
-      SupervisorRelationship.orphaned) {
-    return;
-  }
+  if (!isPostmasterOrphan(identity)) return;
 
   // Prefer pg_ctl so shared memory is released cleanly; fall back to
   // SIGTERM/SIGKILL on the postmaster.

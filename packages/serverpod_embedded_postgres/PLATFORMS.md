@@ -26,15 +26,7 @@ PID identity (also recorded) gives a second pin.
 
 [qfpin]: https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-queryfullprocessimagenamew
 
-### 2. Supervisor-relationship detection
-
-`verifySupervisorRelationship()` on Windows reports `orphaned` when the
-recorded supervisor PID is no longer alive; it does not read the
-postmaster's current parent PID (would need Toolhelp32 or NtQuery FFI).
-The failure mode is "leave an orphan alone when we could have killed
-it" - safe, and the recovery falls through to the user.
-
-### 3. AF_UNIX availability
+### 2. AF_UNIX availability
 
 PostgreSQL 13+ on Windows 10 1803+ supports AF_UNIX, and Zonky's
 `windows-amd64` artifact is built with that flag. Dart 3.11+ added

@@ -137,20 +137,6 @@ enum IdentityMatch {
   foreign,
 }
 
-/// Relationship between a recorded postmaster and the Dart supervisor that
-/// originally spawned it.
-enum SupervisorRelationship {
-  /// The postmaster is still parented by the recorded supervisor process.
-  attached,
-
-  /// The postmaster still matches our recorded identity, but its original
-  /// Dart supervisor is gone and it has been reparented.
-  orphaned,
-
-  /// There isn't enough trustworthy information to decide.
-  indeterminate,
-}
-
 /// Verifies the live process at [identity.pid] is the postmaster we
 /// originally started.
 ///
@@ -179,50 +165,17 @@ IdentityMatch verifyIdentity(ProcessIdentity identity) {
   return IdentityMatch.foreign;
 }
 
-/// Whether the live postmaster still belongs to the Dart supervisor that
-/// originally spawned it.
+/// Whether the live process at [identity.pid] is OUR postmaster AND its
+/// recorded supervisor is no longer alive (i.e. an orphan we may reclaim).
 ///
-/// POSIX: compares the postmaster's current parent PID against the recorded
-/// supervisor, falling back to argv-checking the recorded supervisor PID is
-/// still a live Dart process. Windows: orphaned iff the recorded supervisor
-/// PID is no longer alive (we cannot cheaply read PPID on Windows; the
-/// failure mode is leaving an orphan alone when we could have killed it).
-SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
-  if (verifyIdentity(identity) != IdentityMatch.matchesOurs) {
-    return SupervisorRelationship.indeterminate;
-  }
-
-  if (Platform.isWindows) {
-    return isProcessAlive(identity.supervisorPid)
-        ? SupervisorRelationship.indeterminate
-        : SupervisorRelationship.orphaned;
-  }
-
-  var parentPid = _readPosixParentPid(identity.pid);
-  if (parentPid == null) return SupervisorRelationship.indeterminate;
-  if (parentPid == identity.supervisorPid) {
-    return SupervisorRelationship.attached;
-  }
-
-  if (_isRecordedSupervisorStillAlive(
-    supervisorPid: identity.supervisorPid,
-    supervisorExecutable: identity.supervisorExecutable,
-  )) {
-    return SupervisorRelationship.indeterminate;
-  }
-
-  return SupervisorRelationship.orphaned;
-}
-
-bool _isRecordedSupervisorStillAlive({
-  required int supervisorPid,
-  required String supervisorExecutable,
-}) {
-  if (!isProcessAlive(supervisorPid)) return false;
-  return _livePosixProcessMatchesExecutable(
-    supervisorPid,
-    executable: supervisorExecutable,
-  );
+/// Conservative on the supervisor check: if [isProcessAlive] reports the
+/// supervisor PID as live - which on a long-running host may be because the
+/// PID was recycled to some foreign process - this returns `false` and the
+/// caller leaves the postmaster alone. Killing the wrong process is a much
+/// worse failure mode than leaving an orphan the user can manually clean.
+bool isPostmasterOrphan(ProcessIdentity identity) {
+  return verifyIdentity(identity) == IdentityMatch.matchesOurs &&
+      !isProcessAlive(identity.supervisorPid);
 }
 
 bool _livePosixProcessMatches(
@@ -234,15 +187,6 @@ bool _livePosixProcessMatches(
   if (argv == null || argv.isEmpty) return false;
   return _argvContainsExecutable(argv, executable) &&
       _argvContainsDataDir(argv, dataDir);
-}
-
-bool _livePosixProcessMatchesExecutable(
-  int pid, {
-  required String executable,
-}) {
-  var argv = _readPosixArgv(pid);
-  if (argv == null || argv.isEmpty) return false;
-  return _argvContainsExecutable(argv, executable);
 }
 
 bool _argvContainsExecutable(List<String> argv, String executable) {
@@ -281,26 +225,6 @@ List<String>? _readPosixArgv(int pid) {
   var out = (result.stdout as String).trim();
   if (out.isEmpty) return null;
   return out.split(RegExp(r'\s+'));
-}
-
-int? _readPosixParentPid(int pid) {
-  if (Platform.isLinux) {
-    var status = File('/proc/$pid/status');
-    if (!status.existsSync()) return null;
-    try {
-      for (var line in status.readAsLinesSync()) {
-        if (!line.startsWith('PPid:')) continue;
-        return int.tryParse(line.substring(5).trim());
-      }
-    } on FileSystemException {
-      return null;
-    }
-    return null;
-  }
-
-  var result = Process.runSync('ps', ['-p', '$pid', '-o', 'ppid=']);
-  if (result.exitCode != 0) return null;
-  return int.tryParse((result.stdout as String).trim());
 }
 
 int _currentProcessPid() => pid;
