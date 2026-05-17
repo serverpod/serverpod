@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'process_identity.dart';
 
@@ -59,7 +60,7 @@ void _repairNativePostmasterPidfileIfDeadPid(Directory pgDataDir) {
   final pid = readPostmasterPidFile(file);
   if (pid == null) return;
 
-  if (!processPidIsLive(pid)) {
+  if (!isProcessAlive(pid)) {
     _tryDelete(file);
   }
 }
@@ -76,7 +77,7 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
 
   final file = File(p.join(pgDataDir.path, 'postmaster.pid'));
   final pid = readPostmasterPidFile(file);
-  if (pid == null || !processPidIsLive(pid)) return;
+  if (pid == null || !isProcessAlive(pid)) return;
   if (pid != identity.pid) return;
   if (verifyIdentity(identity) != IdentityMatch.matchesOurs) return;
   if (verifySupervisorRelationship(identity) !=
@@ -89,7 +90,7 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
   if (pgCtlExecutable != null && pgCtlExecutable.existsSync()) {
     await _tryPgCtlStop(pgCtlExecutable, pgDataDir);
   }
-  if (processPidIsLive(pid)) {
+  if (isProcessAlive(pid)) {
     await _killPostgresClusterPosix(pid);
   }
 
@@ -150,7 +151,7 @@ Future<void> _killPostgresClusterPosix(int rootPid) async {
   if (await _waitUntilAllNotLive(tree, const Duration(seconds: 3))) return;
 
   for (final pid in tree) {
-    if (processPidIsLive(pid)) {
+    if (isProcessAlive(pid)) {
       _signalPid(pid, ProcessSignal.sigkill);
     }
   }
@@ -166,12 +167,12 @@ void _signalPid(int pid, ProcessSignal sig) {
 Future<bool> _waitUntilAllNotLive(Set<int> pids, Duration budget) async {
   final deadline = DateTime.now().add(budget);
   while (DateTime.now().isBefore(deadline)) {
-    if (pids.every((p) => !processPidIsLive(p))) {
+    if (pids.every((p) => !isProcessAlive(p))) {
       return true;
     }
     await Future<void>.delayed(const Duration(milliseconds: 80));
   }
-  return pids.every((p) => !processPidIsLive(p));
+  return pids.every((p) => !isProcessAlive(p));
 }
 
 Set<int> _collectProcessTree(int rootPid) {

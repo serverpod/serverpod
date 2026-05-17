@@ -1,20 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:win32/win32.dart' as win32;
-
-// libc is statically linked into every Dart binary on POSIX, so we can
-// resolve kill(2) directly out of the process image - no shared-library
-// load. Used by [_isProcessAlive] to do a non-delivering liveness probe
-// (signal 0) without forking ps.
-final int Function(int pid, int sig) _libcKill = Platform.isWindows
-    ? (_, _) => throw UnsupportedError('libc kill is POSIX-only')
-    : DynamicLibrary.process()
-          .lookupFunction<Int32 Function(Int32, Int32), int Function(int, int)>(
-            'kill',
-          );
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Snapshot of a postmaster's identity at supervisor-start time.
 ///
@@ -163,22 +151,15 @@ enum SupervisorRelationship {
   indeterminate,
 }
 
-/// Whether OS-level checks report [pid] as a running process.
-///
-/// Used by stale-lock repair and [verifyIdentity]. Semantics match
-/// `kill(pid, 0)` on POSIX via `ps`; see [_isProcessAlive] implementation.
-bool processPidIsLive(int pid) => _isProcessAlive(pid);
-
 /// Verifies the live process at [identity.pid] is the postmaster we
 /// originally started.
 ///
-/// On POSIX, `ps -p <pid> -o args=` is queried and matched against the
-/// expected `<executable> -D <dataDir>` argv. Windows is handled by
-/// [_isProcessAlive] returning `notRunning` when the process can't be
-/// signalled, plus a host-specific identity check in phase 9 (FFI to
+/// On POSIX, `/proc/<pid>/cmdline` (Linux) or `ps -p <pid>` (macOS) is
+/// matched against the expected `<executable> -D <dataDir>` argv. Windows
+/// returns `foreign` until phase 9 lands a host-specific check (FFI to
 /// `QueryFullProcessImageName`).
 IdentityMatch verifyIdentity(ProcessIdentity identity) {
-  if (!_isProcessAlive(identity.pid)) return IdentityMatch.notRunning;
+  if (!isProcessAlive(identity.pid)) return IdentityMatch.notRunning;
 
   if (Platform.isWindows) {
     // Phase 9 will replace this with QueryFullProcessImageName via FFI.
@@ -225,26 +206,6 @@ SupervisorRelationship verifySupervisorRelationship(ProcessIdentity identity) {
   return SupervisorRelationship.orphaned;
 }
 
-bool _isProcessAlive(int pid) {
-  if (Platform.isWindows) {
-    // PROCESS_QUERY_LIMITED_INFORMATION gives a handle iff the PID is
-    // assigned, with no ACL grant required - same intent as kill(pid, 0).
-    var handle = win32.OpenProcess(
-      win32.PROCESS_QUERY_LIMITED_INFORMATION,
-      win32.FALSE,
-      pid,
-    );
-    if (handle == 0) return false;
-    win32.CloseHandle(handle);
-    return true;
-  }
-  // kill(pid, 0) is a non-delivering probe: 0 = alive and signalable,
-  // -1 with ESRCH = dead, -1 with EPERM = alive but cross-user. The
-  // EPERM case can only arise from cross-user PID recycling, which is
-  // a non-issue on a single-user dev box; treat it as dead.
-  return _libcKill(pid, 0) == 0;
-}
-
 /// Parent PID for [pid] (POSIX), or null if unavailable.
 int? readPosixParentPid(int pid) => _readPosixParentPid(pid);
 
@@ -252,7 +213,7 @@ bool _isRecordedSupervisorStillAlive({
   required int supervisorPid,
   required String supervisorExecutable,
 }) {
-  if (!_isProcessAlive(supervisorPid)) return false;
+  if (!isProcessAlive(supervisorPid)) return false;
   return _livePosixProcessMatchesExecutable(
     supervisorPid,
     executable: supervisorExecutable,

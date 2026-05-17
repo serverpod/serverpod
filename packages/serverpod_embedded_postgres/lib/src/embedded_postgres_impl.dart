@@ -173,7 +173,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     var existingPid = readPostmasterPidFile(
       File(p.join(pgDataDir.path, 'postmaster.pid')),
     );
-    if (existingPid != null && processPidIsLive(existingPid)) {
+    if (existingPid != null && isProcessAlive(existingPid)) {
       throw PostmasterLockBusyException(
         'postmaster.pid in ${pgDataDir.path} is held by live PID $existingPid',
         existingPid: existingPid,

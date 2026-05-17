@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_embedded_postgres/src/supervisor/process_identity.dart';
 import 'package:serverpod_embedded_postgres/src/supervisor/stale_lock_repair.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 /// PIDs in this range should not exist as real processes on CI / dev hosts.
@@ -32,7 +33,7 @@ void main() {
 
   tearDown(() async {
     for (var trackedPid in spawnedPids) {
-      if (processPidIsLive(trackedPid)) {
+      if (isProcessAlive(trackedPid)) {
         Process.killPid(trackedPid, ProcessSignal.sigkill);
         await _waitForProcessToStop(trackedPid);
       }
@@ -153,7 +154,7 @@ void main() {
         serverpodPidFile: serverpodPidFile,
       );
 
-      expect(processPidIsLive(postmaster.pid), isTrue);
+      expect(isProcessAlive(postmaster.pid), isTrue);
       expect(serverpodPidFile.existsSync(), isTrue);
       expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isTrue);
     },
@@ -241,10 +242,10 @@ int _spawnOrphanedFakePostmaster({
 Future<bool> _waitForProcessToStop(int processId) async {
   final deadline = DateTime.now().add(const Duration(seconds: 5));
   while (DateTime.now().isBefore(deadline)) {
-    if (!processPidIsLive(processId)) {
+    if (!isProcessAlive(processId)) {
       return true;
     }
     await Future<void>.delayed(const Duration(milliseconds: 50));
   }
-  return !processPidIsLive(processId);
+  return !isProcessAlive(processId);
 }

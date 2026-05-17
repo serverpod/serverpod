@@ -86,7 +86,8 @@ List<ServerpodMcpSocketInfo> listServerpodMcpSockets() {
     final socketPid = int.parse(match.group(1)!);
     final project = match.group(2) ?? '';
 
-    if (_isProcessAlive(socketPid)) {
+    // Self-pid: skip the FFI call entirely (common during self-scans).
+    if (socketPid == pid || isProcessAlive(socketPid)) {
       results.add((pid: socketPid, project: project, path: entity.path));
     } else {
       stalePaths.add(entity.path);
@@ -102,28 +103,6 @@ List<ServerpodMcpSocketInfo> listServerpodMcpSockets() {
   }
 
   return results;
-}
-
-/// Returns `true` if a process with [checkPid] is currently alive.
-///
-/// Uses `kill -0` on POSIX (sends no signal, just checks). On Windows, falls
-/// back to `tasklist`. Short-circuits for the current process to avoid an
-/// unnecessary fork and insulate scans from any tasklist quirks on Windows
-/// CI runners.
-bool _isProcessAlive(int checkPid) {
-  if (checkPid == pid) return true;
-  if (Platform.isWindows) {
-    final result = Process.runSync('tasklist', [
-      '/FI',
-      'PID eq $checkPid',
-      '/NH',
-      '/FO',
-      'CSV',
-    ]);
-    if (result.exitCode != 0) return false;
-    return (result.stdout as String).contains('"$checkPid"');
-  }
-  return Process.runSync('kill', ['-0', '$checkPid']).exitCode == 0;
 }
 
 /// Wraps [socket] in a [StreamChannel<String>] using line-delimited messages.
