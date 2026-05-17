@@ -71,71 +71,31 @@ Future<void> _terminateLiveOrphanPostmasterIfVerifiedPosix(
 }) async {
   if (Platform.isWindows) return;
 
-  final file = File(p.join(pgDataDir.path, 'postmaster.pid'));
-  if (!file.existsSync()) return;
-
-  var pid = readPostmasterPidFile(file);
-  if (pid == null || !processPidIsLive(pid)) return;
-
   final identity = ProcessIdentity.read(serverpodPidFile);
-  var shouldTerminate = false;
+  if (identity == null) return;
 
-  if (identity != null) {
-    if (verifyIdentity(identity) != IdentityMatch.matchesOurs) return;
-    if (pid != identity.pid) return;
-    shouldTerminate =
-        verifySupervisorRelationship(identity) ==
-        SupervisorRelationship.orphaned;
-  } else {
-    shouldTerminate = _isLiveInitReparentedPostmasterForDataDir(pid, pgDataDir);
+  final file = File(p.join(pgDataDir.path, 'postmaster.pid'));
+  final pid = readPostmasterPidFile(file);
+  if (pid == null || !processPidIsLive(pid)) return;
+  if (pid != identity.pid) return;
+  if (verifyIdentity(identity) != IdentityMatch.matchesOurs) return;
+  if (verifySupervisorRelationship(identity) !=
+      SupervisorRelationship.orphaned) {
+    return;
   }
 
-  if (!shouldTerminate) return;
-
+  // Prefer pg_ctl so shared memory is released; fall back to subtree kill
+  // if PG hasn't exited.
   if (pgCtlExecutable != null && pgCtlExecutable.existsSync()) {
     await _tryPgCtlStop(pgCtlExecutable, pgDataDir);
-    _repairNativePostmasterPidfileIfDeadPid(pgDataDir);
-    if (!file.existsSync()) {
-      if (identity != null) {
-        _tryDelete(serverpodPidFile);
-      }
-      await _delayForIpcTeardown();
-      return;
-    }
-    pid = readPostmasterPidFile(file);
-    if (pid == null) {
-      if (identity != null) {
-        _tryDelete(serverpodPidFile);
-      }
-      return;
-    }
-    if (identity != null) {
-      if (pid != identity.pid) {
-        _tryDelete(serverpodPidFile);
-        return;
-      }
-      if (verifyIdentity(identity) != IdentityMatch.matchesOurs) {
-        _tryDelete(serverpodPidFile);
-        _repairNativePostmasterPidfileIfDeadPid(pgDataDir);
-        await _delayForIpcTeardown();
-        return;
-      }
-      if (verifySupervisorRelationship(identity) !=
-          SupervisorRelationship.orphaned) {
-        return;
-      }
-    } else if (!_isLiveInitReparentedPostmasterForDataDir(pid, pgDataDir)) {
-      return;
-    }
+  }
+  if (processPidIsLive(pid)) {
+    await _killPostgresClusterPosix(pid);
   }
 
-  if (await _terminatePostgresClusterPosix(pid)) {
-    if (identity != null) {
-      _tryDelete(serverpodPidFile);
-    }
-    _repairNativePostmasterPidfileIfDeadPid(pgDataDir);
-    await _delayForIpcTeardown();
-  }
+  _tryDelete(serverpodPidFile);
+  _repairNativePostmasterPidfileIfDeadPid(pgDataDir);
+  await _delayForIpcTeardown();
 }
 
 Future<void> _delayForIpcTeardown() async {
@@ -179,31 +139,22 @@ Future<void> _tryPgCtlStop(File pgCtl, Directory pgDataDir) async {
 }
 
 /// Stops [rootPid] and (on Linux) every descendant so no backend keeps the
-/// cluster's shared memory segment.
-Future<bool> _terminatePostgresClusterPosix(int rootPid) async {
+/// cluster's shared memory segment. Recovery-only: a checkpoint-graceful
+/// SIGINT is pure latency when the caller already decided this is an orphan.
+Future<void> _killPostgresClusterPosix(int rootPid) async {
   final tree = _collectProcessTree(rootPid);
-  final order = _depthDescendingKillOrder(tree, rootPid);
 
-  // SIGINT the postmaster first so PostgreSQL can attempt a coordinated
-  // shutdown when the tree is still intact.
-  _signalPid(rootPid, ProcessSignal.sigint);
-  if (await _waitUntilAllNotLive(tree, const Duration(seconds: 12))) {
-    return true;
-  }
-
-  for (final pid in order) {
+  for (final pid in tree) {
     _signalPid(pid, ProcessSignal.sigterm);
   }
-  if (await _waitUntilAllNotLive(tree, const Duration(seconds: 10))) {
-    return true;
-  }
+  if (await _waitUntilAllNotLive(tree, const Duration(seconds: 3))) return;
 
   for (final pid in tree) {
     if (processPidIsLive(pid)) {
       _signalPid(pid, ProcessSignal.sigkill);
     }
   }
-  return _waitUntilAllNotLive(tree, const Duration(seconds: 8));
+  await _waitUntilAllNotLive(tree, const Duration(seconds: 3));
 }
 
 void _signalPid(int pid, ProcessSignal sig) {
@@ -279,54 +230,6 @@ List<int> _linuxDirectChildren(int ppid) {
     }
   }
   return out;
-}
-
-/// Deepest descendants first so we do not kill the postmaster while workers
-/// still rely on IPC it owns (when signals are escalated cluster-wide).
-List<int> _depthDescendingKillOrder(Set<int> tree, int root) {
-  if (!Platform.isLinux || tree.length <= 1) {
-    return tree.toList();
-  }
-
-  final depth = <int, int>{};
-  void assignDepth(int pid, int d) {
-    depth[pid] = d;
-    for (final c in _linuxDirectChildren(pid)) {
-      if (tree.contains(c)) assignDepth(c, d + 1);
-    }
-  }
-
-  assignDepth(root, 0);
-
-  final list = tree.toList()
-    ..sort((a, b) => (depth[b] ?? 0).compareTo(depth[a] ?? 0));
-  return list;
-}
-
-bool _isLiveInitReparentedPostmasterForDataDir(int pid, Directory pgDataDir) {
-  if (!verifyPostmasterPidForDataDir(pid, pgDataDir.path)) {
-    return false;
-  }
-
-  final parentPid = readPosixParentPid(pid);
-  if (parentPid == null) return false;
-  return _isLikelyInitLikeProcess(parentPid);
-}
-
-bool _isLikelyInitLikeProcess(int pid) {
-  if (pid == 1) {
-    return true;
-  }
-
-  final cmdline = readPosixProcessCmdline(pid);
-  if (cmdline == null || cmdline.isEmpty) {
-    return false;
-  }
-
-  final executable = p.basename(cmdline.split(RegExp(r'\s+')).first);
-  return executable == 'init' ||
-      executable == 'systemd' ||
-      executable == 'launchd';
 }
 
 void _tryDelete(File file) {

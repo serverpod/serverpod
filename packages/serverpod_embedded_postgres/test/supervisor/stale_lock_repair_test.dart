@@ -200,33 +200,6 @@ void main() {
       'windows': Skip('POSIX parent-process verification only'),
     },
   );
-
-  test(
-    'Given a live postmaster reparented to init and no supervisor pidfile, '
-    'when repairing embedded postgres locks, '
-    'then the orphaned postmaster is removed from postmaster.pid alone.',
-    () async {
-      final orphanPid = _spawnOrphanedFakePostmaster(
-        executable: fakePostgres,
-        pgData: pgData,
-      );
-      spawnedPids.add(orphanPid);
-      _writeNativePidFile(pgData: pgData, postmasterPid: orphanPid);
-
-      await repairStaleEmbeddedPostgresLocks(
-        pgDataDir: pgData,
-        serverpodPidFile: serverpodPidFile,
-      );
-
-      expect(await _waitForProcessToStop(orphanPid), isTrue);
-      expect(serverpodPidFile.existsSync(), isFalse);
-      expect(File(p.join(pgData.path, 'postmaster.pid')).existsSync(), isFalse);
-      spawnedPids.remove(orphanPid);
-    },
-    onPlatform: const {
-      'windows': Skip('POSIX parent-process verification only'),
-    },
-  );
 }
 
 void _writeNativePidFile({

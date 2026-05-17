@@ -230,25 +230,8 @@ bool _isProcessAlive(int pid) {
   return result.exitCode == 0;
 }
 
-/// Argv for [pid] (POSIX), for stale-lock verification outside
-/// [verifyIdentity]. Null if unavailable.
-String? readPosixProcessCmdline(int pid) => _readPosixCmdline(pid);
-
 /// Parent PID for [pid] (POSIX), or null if unavailable.
 int? readPosixParentPid(int pid) => _readPosixParentPid(pid);
-
-/// Whether [pid] appears to be a `postgres -D <dataDir>` postmaster.
-///
-/// Used by stale-lock repair when only PostgreSQL's native pidfile is
-/// available.
-bool verifyPostmasterPidForDataDir(int pid, String dataDir) {
-  if (Platform.isWindows) return false;
-  return _livePosixProcessMatches(
-    pid,
-    executable: 'postgres',
-    dataDir: dataDir,
-  );
-}
 
 bool _isRecordedSupervisorStillAlive({
   required int supervisorPid,
@@ -355,14 +338,6 @@ List<String>? _readPosixArgv(int pid) {
   var out = (result.stdout as String).trim();
   if (out.isEmpty) return null;
   return out.split(RegExp(r'\s+'));
-}
-
-/// Returns the argv of [pid] as a single whitespace-joined string, or null
-/// if the process isn't accessible.
-String? _readPosixCmdline(int pid) {
-  var argv = _readPosixArgv(pid);
-  if (argv == null) return null;
-  return argv.join(' ');
 }
 
 int? _readPosixParentPid(int pid) {
