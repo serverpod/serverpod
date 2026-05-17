@@ -265,59 +265,21 @@ bool _livePosixProcessMatchesExecutable(
 }
 
 bool _argvContainsExecutable(List<String> argv, String executable) {
-  var expected = _normalizedPathForms(executable);
-  var expectedBasename = p.basename(executable);
-  for (var arg in argv) {
-    if (_normalizedPathForms(arg).intersection(expected).isNotEmpty) {
-      return true;
-    }
-    if (p.basename(arg) == expectedBasename) {
-      return true;
-    }
-  }
-  return false;
+  var basename = p.basename(executable);
+  return argv.any((arg) => arg == executable || p.basename(arg) == basename);
 }
 
 bool _argvContainsDataDir(List<String> argv, String dataDir) {
-  var expected = _normalizedPathForms(dataDir);
   for (var i = 0; i < argv.length; i++) {
     var arg = argv[i];
-    if (arg == '-D' && i + 1 < argv.length) {
-      if (_normalizedPathForms(argv[i + 1]).intersection(expected).isNotEmpty) {
-        return true;
-      }
-      continue;
+    if (arg == '-D' && i + 1 < argv.length && argv[i + 1] == dataDir) {
+      return true;
     }
-
-    if (!arg.startsWith('-D') || arg.length <= 2) continue;
-    if (_normalizedPathForms(
-      arg.substring(2),
-    ).intersection(expected).isNotEmpty) {
+    if (arg.startsWith('-D') && arg.length > 2 && arg.substring(2) == dataDir) {
       return true;
     }
   }
   return false;
-}
-
-Set<String> _normalizedPathForms(String path) {
-  var forms = <String>{};
-  var absolute = p.normalize(p.absolute(path));
-  forms.add(absolute);
-
-  try {
-    FileSystemEntity entity;
-    if (Directory(path).existsSync()) {
-      entity = Directory(path);
-    } else {
-      entity = File(path);
-    }
-    forms.add(p.normalize(entity.resolveSymbolicLinksSync()));
-  } on FileSystemException {
-    // Path may not exist or may not be readable; absolute normalized form is
-    // still useful.
-  }
-
-  return forms;
 }
 
 List<String>? _readPosixArgv(int pid) {
