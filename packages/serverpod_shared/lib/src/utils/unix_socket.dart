@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/util/file_ex.dart';
+
+import 'file_ex.dart';
 
 /// Throws a [SocketException] if the current platform does not support Unix
 /// domain sockets.
@@ -36,10 +37,24 @@ bool hasUnixSocketSupport() {
 /// Returns the shortest equivalent form of [path].
 ///
 /// Normalizes the path (removing `.`, `..`, duplicate separators), then
-/// returns the shorter of the absolute and relative forms.
+/// returns the shorter of the absolute and the relative-to-cwd forms.
 String shortestPath(String path) {
   final normalized = p.canonicalize(path);
   final relative = p.relative(normalized);
+  return relative.length < normalized.length ? relative : normalized;
+}
+
+/// Like [shortestPath], but the relative form is computed from [from] instead
+/// of [Directory.current].
+///
+/// Useful when the consumer of the path operates from a different working
+/// directory than the producer. For example, generating PostgreSQL's
+/// `unix_socket_directories` setting: PG `chdir`s to PGDATA before binding,
+/// so `from` should be the PGDATA path - not the cwd of the spawning Dart
+/// process.
+String shortestPathRelativeTo(String path, {required String from}) {
+  final normalized = p.canonicalize(path);
+  final relative = p.relative(normalized, from: p.canonicalize(from));
   return relative.length < normalized.length ? relative : normalized;
 }
 
@@ -87,7 +102,7 @@ Future<ServerSocket> bindUnixSocket(String path) async {
 /// Connects to a Unix domain socket at [path].
 ///
 /// Uses [shortestPath] to minimize the path length (Unix sockets are limited
-/// to 104–108 bytes).
+/// to 104-108 bytes).
 Future<Socket> connectUnixSocket(String path) async {
   requireUnixSocketSupport();
   requireUnixSocketPathFits(path);

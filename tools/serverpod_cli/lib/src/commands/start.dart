@@ -30,10 +30,10 @@ import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -62,9 +62,11 @@ enum StartOption<V> implements OptionDefinition<V> {
   docker(
     FlagOption(
       argName: 'docker',
-      defaultsTo: true,
+      defaultsTo: false,
       helpText:
-          'Start Docker Compose services if a docker-compose.yaml exists.',
+          'Start Docker Compose services if a docker-compose.yaml exists. '
+          'Default off; pass --docker to opt in to compose-managed services '
+          '(typically Redis when running PostgreSQL separately).',
     ),
   ),
   tui(
@@ -348,7 +350,17 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
 
-  // Start Docker Compose services if needed.
+  // If a server is already running, abort so the IDE can attach to the
+  // existing instance via the unchanged info file. Cheap local check; runs
+  // before Docker Compose provisioning so we don't pay compose-up just to
+  // discard it.
+  final existingUri = await _checkExistingServer(vmServiceInfoFile);
+  if (existingUri != null) {
+    log.info('Existing server found.');
+    log.info('VM service proxy listening on $existingUri');
+    return const WatchLoopAborted(0);
+  }
+
   var startedDocker = false;
   if (docker) {
     await log.progress('Starting Docker services', () async {
@@ -361,21 +373,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (startedDocker) await _stopDockerServices(serverDir);
   }
 
-  // If a server is already running, abort so the IDE can attach to the
-  // existing instance via the unchanged info file.
-  final existingUri = await _checkExistingServer(vmServiceInfoFile);
-  if (existingUri != null) {
-    log.info('Existing server found.');
-    log.info('VM service proxy listening on $existingUri');
+  Future<void> rollbackProvisioning() async {
     await stopDockerIfStarted();
-    return const WatchLoopAborted(0);
   }
 
   // Apply pending migrations from the CLI before booting the pod.
   try {
     serverArgs.value = _withApplyMigrations(serverArgs.value);
   } catch (_) {
-    await stopDockerIfStarted();
+    await rollbackProvisioning();
     rethrow;
   }
 
@@ -403,7 +409,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (!genResult.success) {
       log.error('Code generation failed.');
       await closeAnalyzers();
-      await stopDockerIfStarted();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
   }
@@ -432,7 +438,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     });
     if (!hooksOk) {
       await closeAnalyzers();
-      await stopDockerIfStarted();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
 
@@ -447,7 +453,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
       await closeAnalyzers();
-      await stopDockerIfStarted();
+      await rollbackProvisioning();
       return const WatchLoopAborted(1);
     }
 

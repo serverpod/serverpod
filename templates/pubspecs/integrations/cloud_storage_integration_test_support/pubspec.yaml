@@ -22,6 +22,8 @@ dependency_overrides:
     path: ../serverpod_cloud_storage_s3_compat
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_shared:

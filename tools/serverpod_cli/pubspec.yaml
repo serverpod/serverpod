@@ -11,7 +11,7 @@ environment:
 
 dependencies:
   analyzer: '>=8.1.0 <11.0.0'
-  archive: '>=3.3.7 <5.0.0'
+  archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0
   built_collection: ^5.1.1
@@ -20,7 +20,7 @@ dependencies:
   code_assets: ^1.0.0
   code_builder: ^4.5.0
   collection: ^1.18.0
-  config: ^0.8.3
+  config: ^0.8.4
   dart_mcp: '>=0.4.1 <0.6.0'
   # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
   # to 3.12 due to a bug on the formatter that was fixed in 3.1.6, but only
@@ -65,6 +65,7 @@ dependencies:
   yaml_edit: ^2.2.2
 
 dev_dependencies:
+  postgres: ^3.4.0
   serverpod_lints: 3.5.0-beta.7
   term_glyph: ^1.2.2
   test: ^1.25.5
@@ -75,6 +76,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

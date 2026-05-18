@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
-import 'package:serverpod_cli/src/util/platform_check.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+/// Convenience helpers added to every [FileSystemEntity] (files,
+/// directories, links).
 extension FileEx on FileSystemEntity {
   /// Deletes the file if it exists.
   Future<void> deleteIfExists({bool recursive = false}) async {
