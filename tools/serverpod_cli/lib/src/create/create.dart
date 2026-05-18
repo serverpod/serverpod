@@ -284,7 +284,13 @@ Future<String?> performCreate(
   }
 
   await log.progress('Configuring Serverpod MCP server', () async {
-    await _configureMcpServer(serverpodDirs.projectDir.path);
+    await _configureMcpServer(
+      serverpodDirs.projectDir.path,
+      serverDirRelative: p.relative(
+        serverpodDirs.serverDir.path,
+        from: serverpodDirs.projectDir.path,
+      ),
+    );
     return true;
   });
 
@@ -388,18 +394,25 @@ Future<void> _moveDirectoryContents(
   }
 }
 
-Future<void> _configureMcpServer(String projectDirPath) async {
+Future<void> _configureMcpServer(
+  String projectDirPath, {
+  required String serverDirRelative,
+}) async {
   const antigravityPath = '.gemini/antigravity/mcp_config.json';
   const cursorPath = '.cursor/mcp.json';
   const claudePath = '.mcp.json';
   const vscodePath = '.vscode/mcp.json';
   const codexPath = '.codex/config.toml';
 
-  const genericConfig = '''{
+  // Pin the bridge to this project's server dir so it doesn't have to walk
+  // up from cwd at startup. Also disambiguates if the same agent config is
+  // ever reused inside a workspace that contains multiple server projects.
+  final genericConfig =
+      '''{
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -409,9 +422,10 @@ Future<void> _configureMcpServer(String projectDirPath) async {
 }
 ''';
 
-  const codexConfig = '''[mcp_servers.serverpod]
+  final codexConfig =
+      '''[mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp"]
+args = ["mcp", "--server-dir", "$serverDirRelative"]
 
 [mcp_servers.dart_mcp]
 command = "dart"
