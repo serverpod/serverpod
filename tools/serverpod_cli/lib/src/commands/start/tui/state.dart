@@ -14,6 +14,9 @@ class ServerWatchState extends ServerpodState {
   @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
+  /// Raw stdout/stderr lines for the "Flutter output" tab.
+  final rawFlutterProcessLines = BoundedQueueList<String>(maxRawLines);
+
   /// Currently active tracked operations (keyed by ID).
   @override
   final Map<String, TrackedOperation> activeOperations = {};
@@ -26,6 +29,9 @@ class ServerWatchState extends ServerpodState {
 
   /// Whether the server is running and ready for actions.
   bool serverReady = false;
+
+  /// Whether to show the "Flutter output" tab.
+  bool showFlutterOutput = false;
 
   /// Whether to show the splash overlay. Starts true, set to false
   /// after 5 seconds or explicitly by the backend.

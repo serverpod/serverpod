@@ -36,6 +36,7 @@ class WatchLoopContext {
   final StreamSubscription<void>? fileChangeSub;
   final Future<void> Function() closeAnalyzers;
   final Future<void> Function()? stopDocker;
+  final Future<void> Function()? stopFlutterProcess;
   final String vmServiceInfoFile;
   bool _disposed = false;
 
@@ -46,6 +47,7 @@ class WatchLoopContext {
     required this.fileChangeSub,
     required this.closeAnalyzers,
     required this.stopDocker,
+    required this.stopFlutterProcess,
     required this.vmServiceInfoFile,
   });
 
@@ -62,5 +64,6 @@ class WatchLoopContext {
     await proxy?.close();
     await File(vmServiceInfoFile).deleteIfExists();
     await stopDocker?.call();
+    await stopFlutterProcess?.call();
   }
 }

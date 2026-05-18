@@ -16,6 +16,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
 
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
+  VoidCallback? _onHotRestart;
   VoidCallback? _onCreateMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
@@ -30,6 +31,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   void attach(ServerpodWatchAppState widgetState) {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
+    widgetState.onHotRestart = _onHotRestart;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
@@ -43,6 +45,11 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   set onHotReload(VoidCallback? cb) {
     _onHotReload = cb;
     _widgetState?.onHotReload = cb;
+  }
+
+  set onHotRestart(VoidCallback? cb) {
+    _onHotRestart = cb;
+    _widgetState?.onHotRestart = cb;
   }
 
   set onCreateMigration(VoidCallback? cb) {
@@ -82,6 +89,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
+  VoidCallback? onHotRestart;
   VoidCallback? onCreateMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
@@ -149,6 +157,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
           _rebuild();
         },
         onHotReload: onHotReload,
+        onHotRestart: onHotRestart,
         onCreateMigration: onCreateMigration,
         onApplyMigration: onApplyMigration,
         onQuit: onQuit,

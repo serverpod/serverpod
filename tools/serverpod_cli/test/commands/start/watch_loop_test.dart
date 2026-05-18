@@ -152,6 +152,7 @@ void main() {
     late _FakeMcpSocket mcp;
     late int closeAnalyzersCalls;
     late int stopDockerCalls;
+    late int stopFlutterProcessCalls;
     late int fileSubCancelCalls;
     late StreamSubscription<void> fileSub;
     late Directory tempDir;
@@ -164,6 +165,7 @@ void main() {
       mcp = _FakeMcpSocket();
       closeAnalyzersCalls = 0;
       stopDockerCalls = 0;
+      stopFlutterProcessCalls = 0;
       fileSubCancelCalls = 0;
 
       // A real StreamSubscription whose cancel we count via a wrapper
@@ -187,7 +189,10 @@ void main() {
       }
     });
 
-    WatchLoopContext build({bool startedDocker = false}) {
+    WatchLoopContext build({
+      bool startedDocker = false,
+      bool startedFlutterProcess = false,
+    }) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
         proxy: proxy,
@@ -201,6 +206,11 @@ void main() {
                 stopDockerCalls++;
               }
             : null,
+        stopFlutterProcess: startedFlutterProcess
+            ? () async {
+                stopFlutterProcessCalls++;
+              }
+            : null,
         vmServiceInfoFile: vmServiceInfoFile,
       );
     }
@@ -209,7 +219,7 @@ void main() {
       'when dispose is called once, '
       'then every member close is invoked',
       () async {
-        final ctx = build(startedDocker: true);
+        final ctx = build(startedDocker: true, startedFlutterProcess: true);
 
         await ctx.dispose();
 
@@ -221,6 +231,7 @@ void main() {
         expect(proxy.closeCalls, 1);
         expect(File(vmServiceInfoFile).existsSync(), isFalse);
         expect(stopDockerCalls, 1);
+        expect(stopFlutterProcessCalls, 1);
         expect(ctx.isDisposed, isTrue);
       },
     );
@@ -229,7 +240,7 @@ void main() {
       'when dispose is called twice, '
       'then the second call is a no-op',
       () async {
-        final ctx = build(startedDocker: true);
+        final ctx = build(startedDocker: true, startedFlutterProcess: true);
 
         await ctx.dispose();
         await ctx.dispose();
@@ -249,6 +260,7 @@ void main() {
         );
         expect(proxy.closeCalls, 1, reason: 'proxy.close');
         expect(stopDockerCalls, 1, reason: 'stopDocker');
+        expect(stopFlutterProcessCalls, 1, reason: 'stopFlutterProcess');
       },
     );
 
@@ -261,6 +273,21 @@ void main() {
         await ctx.dispose();
 
         expect(stopDockerCalls, 0);
+        // Other steps still run.
+        expect(closeAnalyzersCalls, 1);
+        expect(server.calls, contains('stop'));
+      },
+    );
+
+    test(
+      'when stopFlutterProcess is null, '
+      'then dispose skips the Flutter process step',
+      () async {
+        final ctx = build(startedFlutterProcess: false);
+
+        await ctx.dispose();
+
+        expect(stopFlutterProcessCalls, 0);
         // Other steps still run.
         expect(closeAnalyzersCalls, 1);
         expect(server.calls, contains('stop'));
@@ -290,6 +317,7 @@ void main() {
           closeAnalyzers: () async {
             closeAnalyzersCalls++;
           },
+          stopFlutterProcess: null,
           stopDocker: null,
           vmServiceInfoFile: vmServiceInfoFile,
         );

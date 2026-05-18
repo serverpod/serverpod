@@ -87,6 +87,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
+    required this.relativeFlutterPackagePathParts,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -127,6 +128,9 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The key is the package name, the value is the path parts to the package
   /// relative to the server package.
   final Map<String, List<String>> sharedModelsSourcePathsParts;
+
+  /// Path parts from the server package to the flutter package.
+  final List<String> relativeFlutterPackagePathParts;
 
   @override
   List<String> get libSourcePathParts => [
@@ -223,6 +227,12 @@ class GeneratorConfig implements ModelLoadConfig {
   List<String> get clientPackagePathParts => [
     ...serverPackageDirectoryPathParts,
     ..._relativeDartClientPackagePathParts,
+  ];
+
+  /// Path parts to the flutter package.
+  List<String> get flutterPackagePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeFlutterPackagePathParts,
   ];
 
   final List<String>? _relativeServerTestToolsPathParts;
@@ -355,6 +365,7 @@ class GeneratorConfig implements ModelLoadConfig {
         : YamlMap();
     var type = getPackageType(generatorConfig);
 
+    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
     var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
     if (generatorConfig['client_package_path'] != null) {
@@ -495,6 +506,7 @@ class GeneratorConfig implements ModelLoadConfig {
       enabledFeatures: enabledFeatures,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
+      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
     );
   }
 

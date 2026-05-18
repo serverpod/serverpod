@@ -90,6 +90,8 @@ class DartSharedCodeGenerator extends CodeGenerator {
           modules: [],
           databaseDialect: config.databaseDialect,
           experimentalFeatures: config.experimentalFeatures,
+          relativeFlutterPackagePathParts:
+              config.relativeFlutterPackagePathParts,
         ),
       );
 

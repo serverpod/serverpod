@@ -103,6 +103,11 @@ commands:
 
   - name: version
 
+  - name: start-debug-adapter
+    flags:
+      -p, --proxy-port=: "The port where the flutter debug adapter proxy server will listen."
+      -c, --control-port=: "The port where the flutter debug adapter control server will listen."
+
 
 ''';
 

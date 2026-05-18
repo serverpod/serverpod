@@ -1,4 +1,5 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_cli/src/commands/tui/bounded_queue_list.dart';
 import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
@@ -29,6 +30,7 @@ class MainScreen extends StatelessComponent {
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
+    this.onHotRestart,
     this.onCreateMigration,
     this.onApplyMigration,
     this.onQuit,
@@ -42,6 +44,7 @@ class MainScreen extends StatelessComponent {
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
+  final VoidCallback? onHotRestart;
   final VoidCallback? onCreateMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
@@ -86,17 +89,22 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabBar(ServerpodThemeData st) {
     return TabBar(
-      labels: const ['Log Messages', 'Raw server output'],
+      labels: [
+        'Log Messages',
+        'Raw server output',
+        if (state.showFlutterOutput) 'Flutter output',
+      ],
       selectedTab: state.selectedTab,
       onTabChanged: onTabChanged,
     );
   }
 
   Component _buildTabContent() {
-    if (state.selectedTab == 0) {
-      return _buildStructuredLogView();
-    }
-    return _buildRawOutputView();
+    return switch (state.selectedTab) {
+      1 => _buildRawOutputView(state.rawLines),
+      2 => _buildRawOutputView(state.rawFlutterProcessLines),
+      _ => _buildStructuredLogView(),
+    };
   }
 
   Component _buildStructuredLogView() {
@@ -135,9 +143,7 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildRawOutputView() {
-    final lines = state.rawLines;
-
+  Component _buildRawOutputView(BoundedQueueList<String> lines) {
     return SelectionArea(
       onSelectionCompleted: (text) {
         if (text.isNotEmpty) ClipboardManager.copy(text);
@@ -172,6 +178,15 @@ class MainScreen extends StatelessComponent {
             onHotReload?.call();
           },
           enabled: actionsEnabled && onHotReload != null,
+        ),
+        Button(
+          name: 'Hot Restart',
+          activationChar: 'S',
+          activationKeys: const [LogicalKey.keyS],
+          onActivate: (_) {
+            onHotRestart?.call();
+          },
+          enabled: actionsEnabled && onHotRestart != null,
         ),
         Button(
           name: 'Create Migration',
