@@ -525,26 +525,37 @@ final class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
+    _session.log(
+      '[Serverpod FileUpload] Creating upload description: '
+      'storageId=$storageId, path=$path, contentLength=$contentLength',
+    );
+
     final hasOptions = contentLength != null || preventOverwrite;
-    if (hasOptions && storage is CloudStorageWithOptions) {
-      return await storage.createDirectFileUploadDescriptionWithOptions(
-        session: _session,
-        path: path,
-        expirationDuration: expirationDuration,
-        maxFileSize: maxFileSize,
-        options: CloudStorageOptions(
-          contentLength: contentLength,
-          preventOverwrite: preventOverwrite,
-        ),
-      );
-    } else {
-      return await storage.createDirectFileUploadDescription(
-        session: _session,
-        path: path,
-        expirationDuration: expirationDuration,
-        maxFileSize: maxFileSize,
-      );
-    }
+    final description = hasOptions && storage is CloudStorageWithOptions
+        ? await storage.createDirectFileUploadDescriptionWithOptions(
+            session: _session,
+            path: path,
+            expirationDuration: expirationDuration,
+            maxFileSize: maxFileSize,
+            options: CloudStorageOptions(
+              contentLength: contentLength,
+              preventOverwrite: preventOverwrite,
+            ),
+          )
+        : await storage.createDirectFileUploadDescription(
+            session: _session,
+            path: path,
+            expirationDuration: expirationDuration,
+            maxFileSize: maxFileSize,
+          );
+
+    _session.log(
+      '[Serverpod FileUpload] Upload description created: '
+      'storageId=$storageId, path=$path, '
+      'hasDescription=${description != null}',
+    );
+
+    return description;
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -558,7 +569,21 @@ final class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.verifyDirectFileUpload(session: _session, path: path);
+    _session.log(
+      '[Serverpod FileUpload] Verifying upload: storageId=$storageId, path=$path',
+    );
+
+    final verified = await storage.verifyDirectFileUpload(
+      session: _session,
+      path: path,
+    );
+
+    _session.log(
+      '[Serverpod FileUpload] Upload verification result: '
+      'storageId=$storageId, path=$path, verified=$verified',
+    );
+
+    return verified;
   }
 }
 

@@ -46,6 +46,13 @@ class FileUploader {
     }
     _attemptedUpload = true;
 
+    print(
+      '[Serverpod FileUpload] Starting upload: '
+      'type=${_uploadDescription.type.name}, '
+      'url=${_uploadDescription.url}, '
+      'length=$length',
+    );
+
     try {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
@@ -65,7 +72,16 @@ class FileUploader {
             final buffered = await stream.toBytes();
             uploadStream = http.ByteStream.fromBytes(buffered);
             uploadLength = buffered.length;
+            print(
+              '[Serverpod FileUpload] Web binary upload: buffered stream '
+              '(${uploadLength} bytes) because length was not provided',
+            );
           }
+
+          print(
+            '[Serverpod FileUpload] Binary upload: method=$method, '
+            'contentLength=$uploadLength, isWeb=$isWeb',
+          );
 
           var request = http.StreamedRequest(method, _uploadDescription.url);
           request.headers.addAll(headers);
@@ -79,7 +95,13 @@ class FileUploader {
           await response.stream.drain();
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)
-          return response.statusCode == 200 || response.statusCode == 204;
+          final success =
+              response.statusCode == 200 || response.statusCode == 204;
+          print(
+            '[Serverpod FileUpload] Binary upload finished: '
+            'statusCode=${response.statusCode}, success=$success',
+          );
+          return success;
 
         case _UploadType.multipart:
           var multipartFile = switch (length) {
@@ -104,9 +126,15 @@ class FileUploader {
 
           var response = await request.send();
 
-          return response.statusCode == 204;
+          final success = response.statusCode == 204;
+          print(
+            '[Serverpod FileUpload] Multipart upload finished: '
+            'statusCode=${response.statusCode}, success=$success',
+          );
+          return success;
       }
     } catch (e) {
+      print('[Serverpod FileUpload] Upload failed with exception: $e');
       return false;
     }
   }

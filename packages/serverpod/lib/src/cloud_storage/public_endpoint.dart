@@ -53,6 +53,11 @@ class CloudStoragePublicEndpoint extends Endpoint {
     String path,
     String key,
   ) async {
+    session.log(
+      '[Serverpod FileUpload] Direct upload HTTP request received: '
+      'storageId=$storageId, path=$path',
+    );
+
     // Confirm that we are allowed to do the upload
     var uploadInfo = await session.db
         .findFirstRow<CloudStorageDirectUploadEntry>(
@@ -61,14 +66,32 @@ class CloudStoragePublicEndpoint extends Endpoint {
               CloudStorageDirectUploadEntry.t.path.equals(path),
         );
 
-    if (uploadInfo == null) return false;
+    if (uploadInfo == null) {
+      session.log(
+        '[Serverpod FileUpload] Direct upload rejected: no upload entry for path',
+        level: LogLevel.warning,
+      );
+      return false;
+    }
 
     await session.db.deleteRow(uploadInfo);
 
-    if (uploadInfo.authKey != key) return false;
+    if (uploadInfo.authKey != key) {
+      session.log(
+        '[Serverpod FileUpload] Direct upload rejected: invalid auth key',
+        level: LogLevel.warning,
+      );
+      return false;
+    }
 
     var body = await _readBinaryBody(session.request);
-    if (body == null) return false;
+    if (body == null) {
+      session.log(
+        '[Serverpod FileUpload] Direct upload rejected: body missing or too large',
+        level: LogLevel.warning,
+      );
+      return false;
+    }
 
     var byteData = ByteData.sublistView(body);
 
@@ -80,6 +103,11 @@ class CloudStoragePublicEndpoint extends Endpoint {
       path: path,
       byteData: byteData,
       verified: false,
+    );
+
+    session.log(
+      '[Serverpod FileUpload] Direct upload stored: '
+      'storageId=$storageId, path=$path, bytes=${byteData.lengthInBytes}',
     );
 
     return true;
