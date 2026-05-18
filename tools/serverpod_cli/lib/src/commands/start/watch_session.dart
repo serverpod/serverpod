@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_reloader.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -128,7 +128,7 @@ class WatchSession {
   final Set<String> _pendingPaths = {};
 
   ServerProcess _server;
-  final FlutterProcess? _flutterProcess;
+  final FlutterReloader? _flutterReloader;
 
   SessionState _state = SessionState.idle;
 
@@ -157,7 +157,7 @@ class WatchSession {
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
-    FlutterProcess? flutterProcess,
+    FlutterReloader? flutterReloader,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -166,7 +166,7 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
-       _flutterProcess = flutterProcess {
+       _flutterReloader = flutterReloader {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -407,11 +407,19 @@ class WatchSession {
     await _restartServer(dillPath);
   }
 
-  /// Hot reloads the Flutter process then runs [call].
-  Future<void> _runWithFlutterProcessReload(
+  /// Hot reloads the Flutter app then runs [call].
+  Future<void> _runWithFlutterReload(
     Future<void> Function() call,
   ) async {
-    _flutterProcess?.reload();
+    await _flutterReloader?.reload();
+    await call();
+  }
+
+  /// Hot restarts the Flutter app then runs [call].
+  Future<void> _runWithFlutterRestart(
+    Future<void> Function() call,
+  ) async {
+    await _flutterReloader?.restart();
     await call();
   }
 
@@ -425,10 +433,22 @@ class WatchSession {
       throw StateError('Session has been disposed.');
     }
     if (_compiler == null) {
-      return _chain(() => _runWithFlutterProcessReload(() => _reload(null)));
+      return _chain(() => _runWithFlutterReload(() => _reload(null)));
     }
     return _chain(
-      () => _runWithFlutterProcessReload(
+      () => _runWithFlutterReload(
+        () => _compileAndReload(
+          dartFiles: const {},
+          packageConfigChanged: false,
+          forceFullCompile: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> forceRestart() {
+    return _chain(
+      () => _runWithFlutterRestart(
         () => _compileAndReload(
           dartFiles: const {},
           packageConfigChanged: false,

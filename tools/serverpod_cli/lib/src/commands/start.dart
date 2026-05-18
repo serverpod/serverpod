@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_reloader.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
@@ -82,6 +83,22 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText: 'Launch the Flutter app.',
     ),
   ),
+  debugAdapterProxyPort(
+    IntOption(
+      argName: 'debug-adapter-proxy-port',
+      defaultsTo: 9000,
+      helpText:
+          'The port where the flutter debug adapter proxy server will listen.',
+    ),
+  ),
+  debugAdapterControlPort(
+    IntOption(
+      argName: 'debug-adapter-control-port',
+      defaultsTo: 4567,
+      helpText:
+          'The port where the flutter debug adapter control server will listen.',
+    ),
+  ),
   ;
 
   const StartOption(this.option);
@@ -126,6 +143,12 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final watch = commandConfig.value(StartOption.watch);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
     final launchFlutterApp = commandConfig.value(StartOption.flutter);
+    final debugAdapterProxyPort = commandConfig.value(
+      StartOption.debugAdapterProxyPort,
+    );
+    final debugAdapterControlPort = commandConfig.value(
+      StartOption.debugAdapterControlPort,
+    );
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
@@ -147,6 +170,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
         launchFlutterApp: launchFlutterApp,
         serverArgs: argResults?.rest ?? [],
         config: config,
+        debugAdapterProxyPort: debugAdapterProxyPort,
+        debugAdapterControlPort: debugAdapterControlPort,
       );
       if (exitCode != 0) throw ExitException(exitCode);
       return;
@@ -196,6 +221,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
         docker: docker,
         launchFlutterApp: launchFlutterApp,
         shutdown: shutdown,
+        debugAdapterProxyPort: debugAdapterProxyPort,
+        debugAdapterControlPort: debugAdapterControlPort,
       );
       switch (result) {
         case WatchLoopAborted(:final exitCode):
@@ -346,6 +373,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required bool docker,
   required bool launchFlutterApp,
   required _ShutdownSignal shutdown,
+  required int debugAdapterProxyPort,
+  required int debugAdapterControlPort,
   bool useTui = false,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
@@ -362,6 +391,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+
+  // The file is modified when start is called with an already running server.
+  // FlutterReloader watches this file to reconnect to the debug adapter.
+  final flutterAppInfoPath = p.join(serverpodToolDir, 'flutter-app-info');
+
+  final hasFlutterPackage = config.flutterPackagePathParts.isNotEmpty;
 
   // Start Docker Compose services if needed.
   var startedDocker = false;
@@ -383,6 +418,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     log.info('Existing server found.');
     log.info('VM service proxy listening on $existingUri');
     await stopDockerIfStarted();
+    if (hasFlutterPackage) {
+      // write to flutter info file to trigger
+      // possible reconnection to the debug adapter
+      final flutterAppInfoFile = File(flutterAppInfoPath);
+      await flutterAppInfoFile.create(recursive: true);
+      await flutterAppInfoFile.writeAsString(' ');
+    }
     return const WatchLoopAborted(0);
   }
 
@@ -504,21 +546,34 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  bool canCreateFlutterProcess =
-      launchFlutterApp && config.flutterPackagePathParts.isNotEmpty;
+  bool canCreateFlutterProcess = launchFlutterApp && hasFlutterPackage;
+
+  final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
 
   FlutterProcess? flutterProcess;
+  FlutterReloader? flutterReloader;
+
+  if (hasFlutterPackage) {
+    flutterReloader = FlutterReloader(
+      debugAdapterControlPort: debugAdapterControlPort,
+      flutterAppInfoPath: flutterAppInfoPath,
+    );
+  }
 
   if (canCreateFlutterProcess) {
     flutterProcess = FlutterProcess(
-      flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
-      spawnFromTui: useTui,
+      flutterPackageDir: flutterPackageDir,
+      args: serverArgs.value..remove('--apply-migrations'),
       stdoutSink: flutterStdoutSink,
       stderrSink: flutterStderrSink,
+      debugAdapterProxyPort: debugAdapterProxyPort,
+      debugAdapterControlPort: debugAdapterControlPort,
     );
 
     await flutterProcess.start();
   }
+
+  await flutterReloader?.start();
 
   // Construct the watch session.
   final runMode = runModeFromServerArgs(serverArgs.value);
@@ -536,7 +591,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     },
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
-    flutterProcess: flutterProcess,
+    flutterReloader: flutterReloader,
     generatedDirPaths: config.generatedDirPaths,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
@@ -599,12 +654,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (canCreateFlutterProcess) {
       final flutterWatcher = FileWatcher(
         watchPaths: {
+          p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
         },
       );
 
       flutterFileChangeSub = flutterWatcher.onFilesChanged
-          .asyncMapBuffer((events) async => flutterProcess?.reload())
+          .asyncMapBuffer((events) async => flutterReloader?.reload())
           .listen((_) {});
     }
   }
@@ -620,6 +676,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       stopFlutterProcess: () async {
         await flutterFileChangeSub?.cancel();
         await flutterProcess?.stop();
+        await flutterReloader?.stop();
       },
       vmServiceInfoFile: vmServiceInfoFile,
     ),
@@ -760,6 +817,8 @@ Future<int> _runWithTui({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
+  required int debugAdapterProxyPort,
+  required int debugAdapterControlPort,
 }) async {
   bool showFlutterOutput =
       launchFlutterApp && config.flutterPackagePathParts.isNotEmpty;
@@ -790,6 +849,8 @@ Future<int> _runWithTui({
           serverArgs: serverArgs,
           config: config,
           shutdown: shutdown,
+          debugAdapterProxyPort: debugAdapterProxyPort,
+          debugAdapterControlPort: debugAdapterControlPort,
         ).catchError((Object e, StackTrace st) {
           // Show the error in the TUI.
           // The TUI stays open until Ctrl-C / Quit completes shutdown.
@@ -824,6 +885,8 @@ Future<void> _runTuiBackend({
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
+  required int debugAdapterProxyPort,
+  required int debugAdapterControlPort,
 }) async {
   try {
     // Replace the CLI logger with a TUI-backed logger.
@@ -861,6 +924,8 @@ Future<void> _runTuiBackend({
       watch: watch,
       docker: docker,
       launchFlutterApp: launchFlutterApp,
+      debugAdapterProxyPort: debugAdapterProxyPort,
+      debugAdapterControlPort: debugAdapterControlPort,
       useTui: true,
       shutdown: shutdown,
       serverStdoutSink: serverStdoutSink,
@@ -886,6 +951,9 @@ Future<void> _runTuiBackend({
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
+        };
+        holder.onHotRestart = () {
+          runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
         };
         holder.onCreateMigration = () {
           runTrackedAction(

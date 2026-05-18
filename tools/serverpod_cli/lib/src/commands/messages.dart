@@ -10,5 +10,3 @@ const serverRunning = 'Server running.';
 // Watch command messages
 const serverReloaded = '✓ Server reloaded.';
 const serverRestarted = '✓ Server restarted.';
-const flutterAppReloaded = '✓ Flutter app reloaded.';
-const flutterAppRestarted = '✓ Flutter app restarted.';

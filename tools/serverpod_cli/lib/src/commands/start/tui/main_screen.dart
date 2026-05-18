@@ -30,6 +30,7 @@ class MainScreen extends StatelessComponent {
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
+    this.onHotRestart,
     this.onCreateMigration,
     this.onApplyMigration,
     this.onQuit,
@@ -43,6 +44,7 @@ class MainScreen extends StatelessComponent {
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
+  final VoidCallback? onHotRestart;
   final VoidCallback? onCreateMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
@@ -176,6 +178,15 @@ class MainScreen extends StatelessComponent {
             onHotReload?.call();
           },
           enabled: actionsEnabled && onHotReload != null,
+        ),
+        Button(
+          name: 'Hot Restart',
+          activationChar: 'S',
+          activationKeys: const [LogicalKey.keyS],
+          onActivate: (_) {
+            onHotRestart?.call();
+          },
+          enabled: actionsEnabled && onHotRestart != null,
         ),
         Button(
           name: 'Create Migration',

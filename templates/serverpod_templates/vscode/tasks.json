@@ -2,10 +2,38 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "serverpod_start_debug_adapter",
+      "type": "shell",
+      "command": "serverpod",
+      "args": [
+        "start-debug-adapter"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "serverpod",
+        "pattern": [
+          {
+            "regexp": ".",
+            "file": 1,
+            "line": 2,
+            "message": 1
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting flutter debug adapter",
+          "endsPattern": "Flutter debug adapter ready"
+        }
+      }
+    },
+    {
       "label": "serverpod_start",
       "type": "shell",
       "command": "serverpod",
-      "args": ["start"],
+      "args": [
+        "start",
+        "--no-flutter"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/projectname_server",
         // {{#postgres}}

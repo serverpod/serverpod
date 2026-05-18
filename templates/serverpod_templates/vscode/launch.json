@@ -6,7 +6,9 @@
       "cwd": "${workspaceFolder}/projectname_flutter",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "debugServer": 9000,
+      "preLaunchTask": "serverpod_start_debug_adapter"
     },
     {
       "name": "projectname_server",
@@ -20,7 +22,10 @@
   "compounds": [
     {
       "name": "projectname (full stack)",
-      "configurations": ["projectname_server", "projectname_flutter"],
+      "configurations": [
+        "projectname_server",
+        "projectname_flutter"
+      ],
       "presentation": {
         "order": 1
       }
