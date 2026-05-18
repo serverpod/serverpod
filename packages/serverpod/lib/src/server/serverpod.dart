@@ -808,7 +808,23 @@ class Serverpod {
     // Connect to Redis
     if (Features.enableRedis) {
       _internalLogVerbose('Connecting to Redis.');
-      await redisController?.start();
+      await redisController?.start(
+        // In local development, we want to fail fast if Redis is not available
+        // to avoid waiting for a potentially long connect timeout. This is
+        // specially important when running tests.
+        connectTimeout: runMode != ServerpodRunMode.production
+            ? const Duration(seconds: 1)
+            : null,
+        handleError: (e) {
+          if (runMode == ServerpodRunMode.production) return false;
+          log.warning(
+            'Failed to connect to Redis. Falling back to local cache.',
+          );
+          redisController = null;
+          _caches = Caches(serializationManager, config, serverId, null);
+          return true;
+        },
+      );
     } else {
       _internalLogVerbose('Redis is disabled, skipping.');
     }
