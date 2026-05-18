@@ -29,8 +29,9 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// ```dart
 /// // server.dart
-/// pod.configureFlutterWebAuth2CallbackRoute(
-///   host: 'example.com',
+/// pod.webServer.addRoute(
+///   FlutterWebAuth2CallbackRoute(),
+///   '/auth/callback',
 /// );
 ///
 /// // Flutter app
@@ -93,18 +94,4 @@ final class FlutterWebAuth2CallbackRoute extends Route {
 
   postAuthenticationMessage();
 </script>''';
-}
-
-/// Extension to register the [FlutterWebAuth2CallbackRoute] on the web server.
-extension FlutterWebAuth2ConfigureCallbackRoute on Serverpod {
-  /// {@macro flutter_web_auth2_callback_route}
-  void configureFlutterWebAuth2CallbackRoute({
-    final String path = '/auth/callback',
-    final String? host,
-  }) {
-    webServer.addRoute(
-      FlutterWebAuth2CallbackRoute(host: host),
-      path,
-    );
-  }
 }
