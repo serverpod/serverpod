@@ -13,12 +13,13 @@ void main() {
   withServerpod(
     'Given a large number of vectors with very similar distances',
     (sessionBuilder, _) {
-      final session = sessionBuilder.build();
+      late Session session;
       final queryVector = Vector(
         [0.5, 0.5] + List.filled(vectorDimension - 2, 0.0),
       );
 
       setUpAll(() async {
+        session = sessionBuilder.build();
         final random = math.Random(42);
         final zeroFilledVector = Vector(List.filled(vectorDimension, 0.0));
 

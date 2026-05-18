@@ -9,7 +9,8 @@ void main() {
   withServerpod(
     'Given no explicit rollbackDatabase configuration when having multiple test cases',
     (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       test(
         'then first test creates objects in the database that should be rolled back due to default rollbackDatabase.afterEach configuration',
@@ -45,8 +46,9 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
           setUpAll(() async {
+            session = sessionBuilder.build();
             await SimpleData.db.insert(
               session,
               [
@@ -79,7 +81,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test(
             'then the database is rolled back after the first withServerpod',
@@ -97,7 +100,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           setUp(() async {
             await SimpleData.db.insert(session, [
@@ -134,7 +138,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test(
             'then the database is rolled back after the first withServerpod',
@@ -151,10 +156,11 @@ void main() {
     withServerpod(
       'when creating a copy of the session builder and creating new objects in the database in setUp',
       (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
-        var newSessionBuilder = sessionBuilder.copyWith();
-        var newSession = newSessionBuilder.build();
+        late Session session;
+        late Session newSession;
         setUp(() async {
+          session = sessionBuilder.build();
+          newSession = sessionBuilder.copyWith().build();
           await SimpleData.db.insert(newSession, [
             SimpleData(num: 111),
             SimpleData(num: 222),
@@ -200,8 +206,9 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
           setUpAll(() async {
+            session = sessionBuilder.build();
             await SimpleData.db.insert(session, [
               SimpleData(num: 111),
               SimpleData(num: 222),
@@ -236,7 +243,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
           test(
             'then the database is rolled back after the first withServerpod',
             () async {
@@ -253,8 +261,9 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
           setUp(() async {
+            session = sessionBuilder.build();
             await SimpleData.db.insert(session, [
               SimpleData(num: 111),
               SimpleData(num: 222),
@@ -291,7 +300,8 @@ void main() {
       withServerpod(
         '',
         (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+          late Session session;
+          setUp(() => session = sessionBuilder.build());
 
           test(
             'then the database is rolled back after the first withServerpod',
@@ -311,7 +321,8 @@ void main() {
         withServerpod(
           '',
           (sessionBuilder, endpoints) {
-            var session = sessionBuilder.build();
+            late Session session;
+            setUp(() => session = sessionBuilder.build());
             test('then creates SimpleData in the first test', () async {
               await SimpleData.db.insert(session, [
                 SimpleData(num: 111),
@@ -336,7 +347,8 @@ void main() {
         withServerpod(
           '',
           (sessionBuilder, endpoints) {
-            var session = sessionBuilder.build();
+            late Session session;
+            setUp(() => session = sessionBuilder.build());
             test(
               'when fetching SimpleData after the first withServerpod then the database is rolled back',
               () async {
@@ -355,7 +367,8 @@ void main() {
     withServerpod(
       'when creating SimpleData in in one test and fetching it in the other',
       (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+        late Session session;
+        setUp(() => session = sessionBuilder.build());
         test('then creates SimpleData in the first test', () async {
           await SimpleData.db.insert(session, [
             SimpleData(num: 111),
@@ -381,7 +394,8 @@ void main() {
     withServerpod(
       'when fetching SimpleData after the first withServerpod',
       (sessionBuilder, endpoints) {
-        var session = sessionBuilder.build();
+        late Session session;
+        setUp(() => session = sessionBuilder.build());
 
         tearDownAll(() async {
           await SimpleData.db.deleteWhere(
