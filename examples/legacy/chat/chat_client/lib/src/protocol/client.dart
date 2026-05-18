@@ -15,7 +15,8 @@ import 'dart:async' as _i2;
 import 'package:chat_client/src/protocol/channel.dart' as _i3;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
 import 'package:serverpod_chat_client/serverpod_chat_client.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'package:http/http.dart' as _i6;
+import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
 class EndpointChannels extends _i1.EndpointRef {
@@ -61,9 +62,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i6.Client? httpClientOverride,
   }) : super(
          host,
-         _i6.Protocol(),
+         _i7.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -71,6 +73,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     channels = EndpointChannels(this);
     modules = Modules(this);

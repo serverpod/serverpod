@@ -22,7 +22,8 @@ import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i7;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i8;
-import 'protocol.dart' as _i9;
+import 'package:http/http.dart' as _i9;
+import 'protocol.dart' as _i10;
 
 /// Endpoint for Apple-based authentication.
 /// {@category Endpoint}
@@ -942,9 +943,10 @@ class Client extends _i2.ServerpodClientShared {
     onFailedCall,
     Function(_i2.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i9.Client? httpClientOverride,
   }) : super(
          host,
-         _i9.Protocol(),
+         _i10.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -952,6 +954,7 @@ class Client extends _i2.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     appleAccount = EndpointAppleAccount(this);
     authTest = EndpointAuthTest(this);

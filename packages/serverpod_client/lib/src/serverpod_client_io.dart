@@ -1,7 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
@@ -17,22 +17,32 @@ class ServerpodClientRequestDelegateImpl
   /// The serialization manager used to serialize and deserialize data.
   final SerializationManager serializationManager;
 
-  late HttpClient _httpClient;
+  late http.Client _httpClient;
 
   /// Creates a new ServerpodClientRequestDelegateImpl.
   ServerpodClientRequestDelegateImpl({
     required this.connectionTimeout,
     required this.serializationManager,
     dynamic securityContext,
+    http.Client? httpClientOverride,
   }) {
     assert(
       securityContext == null || securityContext is SecurityContext,
       'Context must be of type SecurityContext',
     );
+    assert(
+      httpClientOverride == null || securityContext == null,
+      'httpClientOverride and securityContext cannot both be set. '
+      'Configure the security context on the httpClientOverride directly.',
+    );
 
-    // Setup client
-    _httpClient = HttpClient(context: securityContext);
-    _httpClient.connectionTimeout = connectionTimeout;
+    if (httpClientOverride != null) {
+      _httpClient = httpClientOverride;
+    } else {
+      final inner = HttpClient(context: securityContext as SecurityContext?);
+      inner.connectionTimeout = connectionTimeout;
+      _httpClient = IOClient(inner);
+    }
   }
 
   @override
@@ -42,26 +52,18 @@ class ServerpodClientRequestDelegateImpl
     String? authenticationValue,
   }) async {
     try {
-      var request = await _httpClient.postUrl(url);
-      request.headers.contentType = ContentType(
-        'application',
-        'json',
-        charset: 'utf-8',
-      );
-      request.contentLength = utf8.encode(body).length;
-      if (authenticationValue != null) {
-        request.headers.add(
-          HttpHeaders.authorizationHeader,
-          authenticationValue,
-        );
-      }
-      request.write(body);
+      final response = await _httpClient
+          .post(
+            url,
+            body: body,
+            headers: {
+              HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+              HttpHeaders.authorizationHeader: ?authenticationValue,
+            },
+          )
+          .timeout(connectionTimeout);
 
-      await request.flush();
-
-      var response = await request.close().timeout(connectionTimeout);
-
-      var data = await _readResponse(response);
+      final data = response.body;
 
       if (response.statusCode != HttpStatus.ok) {
         throw getExceptionFrom(
@@ -74,25 +76,10 @@ class ServerpodClientRequestDelegateImpl
       return data;
     } on SocketException catch (e) {
       throw ServerpodClientException(e.toString(), -1);
+    } on http.ClientException catch (e) {
+      var message = 'Unknown server response code. ($e)';
+      throw ServerpodClientException(message, -1);
     }
-  }
-
-  Future<String> _readResponse(HttpClientResponse response) {
-    var completer = Completer<String>();
-    var contents = StringBuffer();
-    response
-        .transform(const Utf8Decoder())
-        .listen(
-          (String data) {
-            contents.write(data);
-          },
-          onDone:
-              () //
-              {
-                return completer.complete(contents.toString());
-              },
-        );
-    return completer.future;
   }
 
   @override

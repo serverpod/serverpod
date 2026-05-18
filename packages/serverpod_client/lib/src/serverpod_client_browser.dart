@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:http/http.dart' as http;
-
 import 'package:serverpod_client/serverpod_client.dart';
 
 import 'serverpod_client_shared_private.dart';
@@ -24,8 +21,9 @@ class ServerpodClientRequestDelegateImpl
     required this.connectionTimeout,
     required this.serializationManager,
     dynamic securityContext,
+    http.Client? httpClientOverride,
   }) {
-    _httpClient = http.Client();
+    _httpClient = httpClientOverride ?? http.Client();
   }
 
   @override

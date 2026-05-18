@@ -1087,6 +1087,17 @@ class LibraryGenerator {
                             ..isNullable = true,
                         ),
                     ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'httpClientOverride'
+                        ..named = true
+                        ..type = TypeReference(
+                          (t) => t
+                            ..symbol = 'Client'
+                            ..url = 'package:http/http.dart'
+                            ..isNullable = true,
+                        ),
+                    ),
                   ])
                   ..initializers.add(
                     refer('super')
@@ -1106,6 +1117,7 @@ class LibraryGenerator {
                             'disconnectStreamsOnLostInternetConnection': refer(
                               'disconnectStreamsOnLostInternetConnection',
                             ),
+                            'httpClientOverride': refer('httpClientOverride'),
                           },
                         )
                         .code,

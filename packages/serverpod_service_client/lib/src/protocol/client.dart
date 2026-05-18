@@ -30,7 +30,8 @@ import 'package:serverpod_database/src/generated/bulk_data.dart' as _i11;
 import 'package:serverpod_database/src/generated/filter/filter.dart' as _i12;
 import 'package:serverpod_database/src/generated/bulk_query_result.dart'
     as _i13;
-import 'protocol.dart' as _i14;
+import 'package:http/http.dart' as _i14;
+import 'protocol.dart' as _i15;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -244,9 +245,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i14.Client? httpClientOverride,
   }) : super(
          host,
-         _i14.Protocol(),
+         _i15.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -254,6 +256,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     insights = EndpointInsights(this);
   }
