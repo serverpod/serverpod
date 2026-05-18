@@ -26,6 +26,7 @@ import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -134,6 +135,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
         ),
       );
 
+      // Bail before the TUI takes over the terminal
+      if (await _detectExistingInstance(config)) return;
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
@@ -165,6 +169,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
       log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
+
+    if (await _detectExistingInstance(config)) return;
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
@@ -533,7 +539,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Start MCP socket server for AI agent integration. Exposes the proxy
   // URI (not the pod's) so MCP-initiated reloads flow through the same
   // interceptor that IDE attach uses.
-  McpSocketServer? mcpSocket = McpSocketServer(project: config.name);
+  McpSocketServer? mcpSocket = McpSocketServer(serverDir: serverDir);
   try {
     await mcpSocket.start();
     mcpSocket.connect(
@@ -675,6 +681,34 @@ class _ShutdownSignal {
     _sigintSub?.cancel();
     _sigtermSub?.cancel();
   }
+}
+
+/// Cheap pre-flight check for an existing `serverpod start` instance for
+/// [config]'s project, by probing the per-project MCP socket. Logs a
+/// message and returns `true` when another process is listening on it, so
+/// callers can bail before any further setup - in particular before the
+/// TUI takes over the terminal, where the message would otherwise be
+/// invisible.
+Future<bool> _detectExistingInstance(GeneratorConfig config) async {
+  final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+  final socketPath = serverpodMcpSocketPath(serverDir);
+  try {
+    final probe = await connectUnixSocket(
+      socketPath,
+      timeout: const Duration(seconds: 1),
+    );
+    probe.destroy();
+  } catch (_) {
+    // No live listener (or path doesn't fit / no support) - safe to take
+    // over. A stale file left behind by a crashed runner is unlinked by
+    // [bindUnixSocket] when we actually bind.
+    return false;
+  }
+  log.info(
+    'A serverpod instance for "${config.name}" is already running '
+    '(MCP socket: $socketPath).',
+  );
+  return true;
 }
 
 /// Checks if a server is already running by reading the VM service info file
