@@ -4,22 +4,27 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:dart_mcp/stdio.dart';
+import 'package:serverpod_cli/src/config/config.dart'
+    show ServerpodProjectNotFoundException;
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
-import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show hasUnixSocketSupport;
 
 /// Options for the `mcp` command.
 enum McpOption<V> implements OptionDefinition<V> {
-  directory(
+  serverDir(
     StringOption(
-      argName: 'directory',
-      argAbbrev: 'd',
-      defaultsTo: '',
+      argName: 'server-dir',
+      argAbbrev: 's',
       helpText:
-          'The server directory (defaults to auto-detect from current directory).',
+          'Path to the server project directory (the package that contains '
+          'a `serverpod` dependency). Auto-detected from the current '
+          'working directory if omitted. Pass this flag explicitly in '
+          'monorepos with multiple server projects.',
     ),
   ),
   ;
@@ -30,22 +35,22 @@ enum McpOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Long-lived stdio MCP server that bridges to running
-/// `serverpod start --watch` instances.
+/// Long-lived stdio MCP server that proxies to a single
+/// `serverpod start --watch` instance.
 ///
-/// Discovers instances via the shared socket directory, lets the client
-/// pick one with the `connect` tool, and forwards tool calls to it.
-/// Survives runner restarts - the client can `connect` again after the
-/// runner comes back up without restarting the bridge.
+/// The runner's MCP socket lives at `<serverDir>/.dart_tool/serverpod/mcp.sock`.
+/// The bridge auto-connects on the first tool/resource call and reconnects
+/// transparently if the runner restarts. There is no `connect`/`spawn`
+/// surface - one bridge per server project, configured per entry in the
+/// agent's MCP config.
 class McpCommand extends ServerpodCommand {
   @override
   final name = 'mcp';
 
   @override
   final description =
-      'Start an MCP bridge that discovers running '
-      '`serverpod start --watch` instances and forwards tool calls to one '
-      'at a time.';
+      'Start an MCP bridge to the `serverpod start --watch` runner of one '
+      'server project.';
 
   @override
   String get invocation => 'serverpod mcp';
@@ -61,16 +66,23 @@ class McpCommand extends ServerpodCommand {
       throw ExitException.error();
     }
 
-    final bridge = ServerpodMcpBridge();
-    await bridge.scan();
-    bridge.startWatching();
+    final explicit = commandConfig.optionalValue(McpOption.serverDir);
+    final Directory serverDir;
+    try {
+      serverDir = await ServerDirectoryFinder.findOrPrompt(
+        startDir: (explicit != null && explicit.isNotEmpty)
+            ? Directory(explicit)
+            : null,
+        interactive: false,
+      );
+    } on ServerpodProjectNotFoundException catch (e) {
+      log.error('${e.message}\nPass --server-dir <path> to point at one.');
+      throw ExitException.error();
+    }
 
+    final socketPath = serverpodMcpSocketPath(serverDir.path);
     final channel = stdioChannel(input: stdin, output: stdout);
-    final server = BridgeMcpServer(channel, bridge: bridge);
-
-    // Block until the MCP client (stdin) disconnects, then shut everything
-    // down cleanly.
+    final server = BridgeMcpServer(channel, socketPath: socketPath);
     await server.done;
-    await bridge.dispose();
   }
 }

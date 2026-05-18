@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dart_mcp/client.dart';
-import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/mcp/bridge_mcp_server.dart';
-import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
-/// End-to-end test for the bridge:
+/// End-to-end test for the thin-proxy bridge:
 ///
 ///   test client (in-memory channel)
 ///       ↕  MCP
@@ -18,79 +17,118 @@ import 'package:test/test.dart';
 ///       ↕  MCP over Unix socket (real)
 ///   McpSocketServer  (with apply_migrations callback)
 ///
-/// Verifies the bridge can `connect` to a discovered runner and forward
-/// `apply_migrations` to it.
+/// The bridge auto-connects on the first tool/resource call. The runner's
+/// static surface (apply_migrations, create_migration, hot_reload,
+/// tail_logs, serverpod://vm-service) is advertised upfront regardless of
+/// whether the runner is currently up.
 void main() {
   group(
-    'Given a BridgeMcpServer that has discovered a runner socket',
+    'Given a BridgeMcpServer wired to a running runner socket',
     skip: !hasUnixSocketSupport(),
     () {
+      late Directory tempServerDir;
       late McpSocketServer runner;
-      late ServerpodMcpBridge bridge;
-      late BridgeMcpServer bridgeServer;
-      late ServerConnection client;
-      late String project;
+      late _Pair pair;
+      late int applyMigrationCalls;
 
       setUp(() async {
-        // Short project name to stay under macOS Unix-socket path limits
-        // (~104 chars total; systemTemp can already eat ~50).
-        project = 'bt${DateTime.now().microsecondsSinceEpoch % 100000}';
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
 
-        runner = McpSocketServer(project: project);
+        runner = McpSocketServer(serverDir: tempServerDir.path);
         await runner.start();
 
-        bridge = ServerpodMcpBridge();
-        await bridge.scan();
-
-        // In-memory channel pair for the test client.
-        final clientToBridge = StreamController<String>();
-        final bridgeToClient = StreamController<String>();
-        final bridgeChannel = StreamChannel<String>(
-          clientToBridge.stream,
-          bridgeToClient.sink,
-        );
-        final clientChannel = StreamChannel<String>(
-          bridgeToClient.stream,
-          clientToBridge.sink,
+        applyMigrationCalls = 0;
+        runner.connect(
+          onApplyMigration: () async {
+            applyMigrationCalls++;
+          },
         );
 
-        bridgeServer = BridgeMcpServer(bridgeChannel, bridge: bridge);
-        client = MCPClient(
-          Implementation(name: 'bridge-test-client', version: '0.0.0'),
-        ).connectServer(clientChannel);
-
-        await client.initialize(
-          InitializeRequest(
-            protocolVersion: ProtocolVersion.latestSupported,
-            capabilities: ClientCapabilities(),
-            clientInfo: Implementation(
-              name: 'bridge-test-client',
-              version: '0.0.0',
-            ),
-          ),
-        );
+        pair = await _makeBridgePair(runner.socketPath);
       });
 
       tearDown(() async {
-        await client.shutdown();
-        await bridgeServer.shutdown();
-        await bridge.dispose();
+        await pair.dispose();
         await runner.close();
+        await _safeDelete(tempServerDir);
       });
 
       test(
-        'when listing tools before connect, '
-        'then both bridge-native tools and the runner static surface are exposed',
+        'when listing tools, '
+        'then the runner static surface is exposed (no connect/disconnect/spawn/stop)',
         () async {
-          final result = await client.listTools();
+          final result = await pair.client.listTools();
           final names = result.tools.map((t) => t.name).toSet();
           expect(
             names,
             containsAll(<String>{
-              'connect',
-              'disconnect',
-              'spawn',
-              'stop',
+              'apply_migrations',
+              'create_migration',
+              'hot_reload',
+              'tail_logs',
+            }),
+          );
+          expect(names, isNot(contains('connect')));
+          expect(names, isNot(contains('disconnect')));
+          expect(names, isNot(contains('spawn')));
+          expect(names, isNot(contains('stop')));
+        },
+      );
+
+      test(
+        'when listing resources, '
+        'then serverpod://vm-service is exposed and serverpod://instances is not',
+        () async {
+          final result = await pair.client.listResources();
+          final uris = result.resources.map((r) => r.uri).toSet();
+          expect(uris, contains('serverpod://vm-service'));
+          expect(uris, isNot(contains('serverpod://instances')));
+        },
+      );
+
+      test(
+        'when calling apply_migrations, '
+        'then the bridge auto-connects and the runner callback runs',
+        () async {
+          final result = await pair.client.callTool(
+            CallToolRequest(name: 'apply_migrations'),
+          );
+          expect(result.isError, anyOf(isNull, isFalse));
+          expect(applyMigrationCalls, 1);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a BridgeMcpServer wired to a socket with no runner listening',
+    skip: !hasUnixSocketSupport(),
+    () {
+      late Directory tempServerDir;
+      late _Pair pair;
+
+      setUp(() async {
+        tempServerDir = await Directory.systemTemp.createTemp('bt');
+        // No runner started: the socket file does not exist yet.
+        pair = await _makeBridgePair(
+          '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock',
+        );
+      });
+
+      tearDown(() async {
+        await pair.dispose();
+        await _safeDelete(tempServerDir);
+      });
+
+      test(
+        'when listing tools before the runner starts, '
+        'then the static runner surface is still advertised',
+        () async {
+          final result = await pair.client.listTools();
+          final names = result.tools.map((t) => t.name).toSet();
+          expect(
+            names,
+            containsAll(<String>{
               'apply_migrations',
               'create_migration',
               'hot_reload',
@@ -101,215 +139,126 @@ void main() {
       );
 
       test(
-        'when listing resources before connect, '
-        'then serverpod://vm-service is exposed alongside serverpod://instances',
+        'when calling apply_migrations with no runner, '
+        'then the result is a not-running error asking the user to start serverpod',
         () async {
-          final result = await client.listResources();
-          final uris = result.resources.map((r) => r.uri).toSet();
-          expect(
-            uris,
-            containsAll(<String>{
-              'serverpod://instances',
-              'serverpod://vm-service',
-            }),
-          );
-        },
-      );
-
-      test(
-        'when reading serverpod://instances, '
-        'then the runner socket appears in the list',
-        () async {
-          final result = await client.readResource(
-            ReadResourceRequest(uri: 'serverpod://instances'),
-          );
-          final text = (result.contents.first as TextResourceContents).text;
-          final instances = jsonDecode(text) as List;
-
-          final entry = instances.cast<Map<String, dynamic>>().firstWhere(
-            (e) => e['project'] == project,
-          );
-          expect(entry['socketPath'], runner.socketPath);
-          expect(entry['connected'], isFalse);
-        },
-      );
-
-      test(
-        'when calling apply_migrations before connect, '
-        'then the static forwarder returns a not-connected error',
-        () async {
-          final result = await client.callTool(
+          final result = await pair.client.callTool(
             CallToolRequest(name: 'apply_migrations'),
           );
           expect(result.isError, isTrue);
-          expect(
-            (result.content.first as TextContent).text,
-            contains('Not connected'),
-          );
+          final text = (result.content.first as TextContent).text;
+          expect(text, contains('not running'));
+          expect(text, contains('serverpod start --watch'));
         },
       );
 
       test(
-        'when reading serverpod://vm-service before connect, '
-        'then the static forwarder returns a not-connected payload',
+        'when reading serverpod://vm-service with no runner, '
+        'then the payload encodes a not-running error',
         () async {
-          final result = await client.readResource(
+          final result = await pair.client.readResource(
             ReadResourceRequest(uri: 'serverpod://vm-service'),
           );
           final text = (result.contents.first as TextResourceContents).text;
-          expect(text, contains('not-connected'));
+          final payload = jsonDecode(text) as Map<String, dynamic>;
+          expect(payload['error'], 'not-running');
         },
       );
-
-      test(
-        'when connect is called with an unknown instanceId, '
-        'then it returns an error listing available instances',
-        () async {
-          final result = await client.callTool(
-            CallToolRequest(
-              name: 'connect',
-              arguments: {'instanceId': 'no-such-project'},
-            ),
-          );
-          expect(result.isError, isTrue);
-          expect(
-            (result.content.first as TextContent).text,
-            allOf(contains('No instance found'), contains(project)),
-          );
-        },
-      );
-
-      group('Given the bridge is connected to the runner', () {
-        late int applyMigrationCalls;
-        late String? receivedTag;
-        late bool? receivedForce;
-
-        setUp(() async {
-          applyMigrationCalls = 0;
-          receivedTag = null;
-          receivedForce = null;
-
-          runner.connect(
-            onApplyMigration: () async {
-              applyMigrationCalls++;
-            },
-            onCreateMigration: ({String? tag, bool force = false}) async {
-              receivedTag = tag;
-              receivedForce = force;
-              return const CreateMigrationMcpResult(
-                message: 'Migration "v1" created at /tmp/v1.',
-              );
-            },
-          );
-
-          final result = await client.callTool(
-            CallToolRequest(
-              name: 'connect',
-              arguments: {'instanceId': project},
-            ),
-          );
-          expect(
-            result.isError,
-            anyOf(isNull, isFalse),
-            reason:
-                'connect should succeed: '
-                '${(result.content.first as TextContent).text}',
-          );
-        });
-
-        test(
-          'when listing tools, '
-          'then forwarded runner tools also appear alongside the bridge-native tools',
-          () async {
-            final result = await client.listTools();
-            final names = result.tools.map((t) => t.name).toSet();
-            expect(
-              names,
-              containsAll(<String>{
-                'connect',
-                'disconnect',
-                'spawn',
-                'stop',
-                'apply_migrations',
-                'create_migration',
-                'create_repair_migration',
-                'hot_reload',
-                'hot_restart',
-                'tail_logs',
-              }),
-            );
-          },
-        );
-
-        test(
-          'when calling apply_migrations, '
-          'then the runner-side callback is invoked',
-          () async {
-            final result = await client.callTool(
-              CallToolRequest(name: 'apply_migrations'),
-            );
-            expect(result.isError, anyOf(isNull, isFalse));
-            expect(applyMigrationCalls, 1);
-            expect(
-              (result.content.first as TextContent).text,
-              contains('Migrations applied'),
-            );
-          },
-        );
-
-        test(
-          'when calling create_migration with tag and force, '
-          'then the runner-side callback receives the arguments',
-          () async {
-            final result = await client.callTool(
-              CallToolRequest(
-                name: 'create_migration',
-                arguments: {'tag': 'add-users', 'force': true},
-              ),
-            );
-
-            expect(result.isError, anyOf(isNull, isFalse));
-            expect(receivedTag, 'add-users');
-            expect(receivedForce, isTrue);
-            expect(
-              (result.content.first as TextContent).text,
-              contains('Migration "v1" created'),
-            );
-          },
-        );
-
-        test(
-          'when calling apply_migrations after disconnect, '
-          'then the static forwarder is still registered but errors as not connected',
-          () async {
-            var result = await client.callTool(
-              CallToolRequest(name: 'disconnect'),
-            );
-            expect(
-              result.isError,
-              anyOf(isNull, isFalse),
-              reason: '(precondition)',
-            );
-
-            // Static forwarders remain registered across disconnect so
-            // agents that only listTools() once at startup keep seeing them.
-            final tools = await client.listTools();
-            expect(
-              tools.tools.map((t) => t.name),
-              contains('apply_migrations'),
-            );
-
-            result = await client.callTool(
-              CallToolRequest(name: 'apply_migrations'),
-            );
-            expect(result.isError, isTrue);
-            expect(
-              (result.content.first as TextContent).text,
-              contains('Not connected'),
-            );
-          },
-        );
-      });
     },
   );
+
+  group(
+    'Given a BridgeMcpServer that auto-connects after the runner appears',
+    skip: !hasUnixSocketSupport(),
+    () {
+      test(
+        'when the first call lands before the runner starts and the second after, '
+        'then the second call succeeds',
+        () async {
+          final tempServerDir = await Directory.systemTemp.createTemp('bt');
+          addTearDown(() => _safeDelete(tempServerDir));
+
+          final socketPath =
+              '${tempServerDir.path}/.dart_tool/serverpod/mcp.sock';
+          final pair = await _makeBridgePair(socketPath);
+          addTearDown(pair.dispose);
+
+          // First call: no runner -> not-running.
+          var result = await pair.client.callTool(
+            CallToolRequest(name: 'apply_migrations'),
+          );
+          expect(result.isError, isTrue);
+
+          // Bring the runner up.
+          final runner = McpSocketServer(serverDir: tempServerDir.path);
+          await runner.start();
+          addTearDown(runner.close);
+          var calls = 0;
+          runner.connect(
+            onApplyMigration: () async {
+              calls++;
+            },
+          );
+
+          // Second call: bridge transparently reconnects.
+          result = await pair.client.callTool(
+            CallToolRequest(name: 'apply_migrations'),
+          );
+          expect(result.isError, anyOf(isNull, isFalse));
+          expect(calls, 1);
+        },
+      );
+    },
+  );
+}
+
+class _Pair {
+  _Pair(this.bridge, this.client);
+
+  final BridgeMcpServer bridge;
+  final ServerConnection client;
+
+  Future<void> dispose() async {
+    await client.shutdown();
+    await bridge.shutdown();
+  }
+}
+
+Future<_Pair> _makeBridgePair(String socketPath) async {
+  final clientToBridge = StreamController<String>();
+  final bridgeToClient = StreamController<String>();
+  final bridgeChannel = StreamChannel<String>(
+    clientToBridge.stream,
+    bridgeToClient.sink,
+  );
+  final clientChannel = StreamChannel<String>(
+    bridgeToClient.stream,
+    clientToBridge.sink,
+  );
+
+  final bridge = BridgeMcpServer(bridgeChannel, socketPath: socketPath);
+  final client = MCPClient(
+    Implementation(name: 'bridge-test-client', version: '0.0.0'),
+  ).connectServer(clientChannel);
+
+  await client.initialize(
+    InitializeRequest(
+      protocolVersion: ProtocolVersion.latestSupported,
+      capabilities: ClientCapabilities(),
+      clientInfo: Implementation(
+        name: 'bridge-test-client',
+        version: '0.0.0',
+      ),
+    ),
+  );
+
+  return _Pair(bridge, client);
+}
+
+Future<void> _safeDelete(Directory dir) async {
+  try {
+    await dir.delete(recursive: true);
+  } on FileSystemException {
+    // Best effort.
+  }
 }
