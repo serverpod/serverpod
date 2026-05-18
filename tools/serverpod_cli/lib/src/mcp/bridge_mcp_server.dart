@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dart_mcp/client.dart';
 import 'package:dart_mcp/server.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_cli/src/mcp/serverpod_mcp_bridge.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 
@@ -13,11 +14,7 @@ import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 ///
 /// The bridge is long-lived: it survives runner restarts, and lets the
 /// client switch between running instances via the `connect`/`disconnect`
-/// tools. Tools and resources defined on the connected runner are
-/// auto-forwarded: on `connect` the bridge enumerates upstream tools and
-/// resources via `dart_mcp`'s client API, registers a thin forwarder for
-/// each, and unregisters them again on `disconnect`. The MCP capability
-/// `listChanged` propagates these registrations to the AI client.
+/// tools.
 base class BridgeMcpServer extends MCPServer
     with ToolsSupport, ResourcesSupport {
   final ServerpodMcpBridge bridge;
@@ -42,13 +39,16 @@ base class BridgeMcpServer extends MCPServer
   /// Resource URIs owned by the bridge itself; never forwarded.
   static const _bridgeNativeResourceUris = {'serverpod://instances'};
 
-  /// Forwarded tools registered on the current connection, by name.
-  /// Cleared and unregistered on disconnect.
+  /// Names of tools forwarded from the runner's static surface
+  final _staticForwardedToolNames = <String>{};
+
+  /// URIs of resources forwarded from the runner's static surface
+  final _staticForwardedResources = <String, Resource>{};
+
+  /// Names of tools forwarded dynamically from the connected runner
   final _forwardedToolNames = <String>{};
 
-  /// Forwarded resources registered on the current connection, by URI.
-  /// Stored as `Resource` (not just URI) so we can call `updateResource`
-  /// when the upstream emits a `notifications/resources/updated`.
+  /// Resources forwarded dynamically from the connected runner, by URI.
   final _forwardedResources = <String, Resource>{};
 
   static final _instancesResource = Resource(
@@ -71,9 +71,10 @@ base class BridgeMcpServer extends MCPServer
         instructions:
             'Bridge to a running `serverpod start --watch` instance. Read '
             'serverpod://instances to discover running instances, then call '
-            'the `connect` tool to attach to one. Tools and resources from '
-            'the connected instance are forwarded over its MCP socket and '
-            'appear here automatically.',
+            'the `connect` tool to attach to one. The runner\'s tools and '
+            'resources are advertised here even when no instance is '
+            'connected; calling them before `connect` returns a "not '
+            'connected" error.',
       ) {
     registerTool(_connectTool, _connect);
     registerTool(_disconnectTool, _disconnect);
@@ -81,6 +82,15 @@ base class BridgeMcpServer extends MCPServer
     registerTool(_stopTool, _stop);
 
     addResource(_instancesResource, _readInstances);
+
+    for (final tool in runnerStaticTools) {
+      registerTool(tool, _makeToolForwarder(tool.name));
+      _staticForwardedToolNames.add(tool.name);
+    }
+    for (final resource in runnerStaticResources) {
+      addResource(resource, _makeResourceReader(resource.uri));
+      _staticForwardedResources[resource.uri] = resource;
+    }
 
     bridge.onSocketsChanged = () {
       if (ready) updateResource(_instancesResource);
@@ -207,9 +217,11 @@ base class BridgeMcpServer extends MCPServer
       _connectedId = target.project.isEmpty ? '${target.pid}' : target.project;
       _connectedPid = target.pid;
 
-      // Relay resource-updated notifications for forwarded resources.
+      // Relay resource-updated notifications for both statically and
+      // dynamically forwarded resources.
       _resourceUpdatedSub = connection.resourceUpdated.listen((n) {
-        final res = _forwardedResources[n.uri];
+        final res =
+            _staticForwardedResources[n.uri] ?? _forwardedResources[n.uri];
         if (res != null && ready) updateResource(res);
       });
 
@@ -301,16 +313,14 @@ base class BridgeMcpServer extends MCPServer
     }
   }
 
-  /// Enumerate the connected runner's tools and resources, register a
-  /// forwarder for each, and subscribe to per-resource updates so they
-  /// surface as `notifications/resources/updated` upstream.
-  ///
-  /// Tools and resources whose name/URI matches a bridge-native item are
-  /// skipped to avoid clobbering the bridge's own surface.
+  /// Enumerate the connected runner's tools and resources and subscribe to
+  /// per-resource updates so they surface as
+  /// `notifications/resources/updated` upstream.
   Future<void> _registerForwardedItems(ServerConnection connection) async {
     final tools = await connection.listTools();
     for (final tool in tools.tools) {
       if (_bridgeNativeToolNames.contains(tool.name)) continue;
+      if (_staticForwardedToolNames.contains(tool.name)) continue;
       registerTool(tool, _makeToolForwarder(tool.name));
       _forwardedToolNames.add(tool.name);
     }
@@ -318,8 +328,11 @@ base class BridgeMcpServer extends MCPServer
     final resources = await connection.listResources();
     for (final resource in resources.resources) {
       if (_bridgeNativeResourceUris.contains(resource.uri)) continue;
-      addResource(resource, _makeResourceReader(resource.uri));
-      _forwardedResources[resource.uri] = resource;
+      final isStatic = _staticForwardedResources.containsKey(resource.uri);
+      if (!isStatic) {
+        addResource(resource, _makeResourceReader(resource.uri));
+        _forwardedResources[resource.uri] = resource;
+      }
       try {
         await connection.subscribeResource(
           SubscribeRequest(uri: resource.uri),
