@@ -79,20 +79,40 @@ void main() {
       });
 
       test(
-        'when listing tools, '
-        'then only the bridge-native tools are exposed',
+        'when listing tools before connect, '
+        'then both bridge-native tools and the runner static surface are exposed',
         () async {
           final result = await client.listTools();
           final names = result.tools.map((t) => t.name).toSet();
           expect(
             names,
-            containsAll(<String>{'connect', 'disconnect', 'spawn', 'stop'}),
+            containsAll(<String>{
+              'connect',
+              'disconnect',
+              'spawn',
+              'stop',
+              'apply_migrations',
+              'create_migration',
+              'hot_reload',
+              'tail_logs',
+            }),
           );
-          // Forwarded tools are not registered until connect.
-          expect(names, isNot(contains('apply_migrations')));
-          expect(names, isNot(contains('create_migration')));
-          expect(names, isNot(contains('hot_reload')));
-          expect(names, isNot(contains('tail_logs')));
+        },
+      );
+
+      test(
+        'when listing resources before connect, '
+        'then serverpod://vm-service is exposed alongside serverpod://instances',
+        () async {
+          final result = await client.listResources();
+          final uris = result.resources.map((r) => r.uri).toSet();
+          expect(
+            uris,
+            containsAll(<String>{
+              'serverpod://instances',
+              'serverpod://vm-service',
+            }),
+          );
         },
       );
 
@@ -116,12 +136,28 @@ void main() {
 
       test(
         'when calling apply_migrations before connect, '
-        'then it errors because the tool is not yet registered',
+        'then the static forwarder returns a not-connected error',
         () async {
           final result = await client.callTool(
             CallToolRequest(name: 'apply_migrations'),
           );
           expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Not connected'),
+          );
+        },
+      );
+
+      test(
+        'when reading serverpod://vm-service before connect, '
+        'then the static forwarder returns a not-connected payload',
+        () async {
+          final result = await client.readResource(
+            ReadResourceRequest(uri: 'serverpod://vm-service'),
+          );
+          final text = (result.contents.first as TextResourceContents).text;
+          expect(text, contains('not-connected'));
         },
       );
 
@@ -242,7 +278,7 @@ void main() {
 
         test(
           'when calling apply_migrations after disconnect, '
-          'then it errors because the forwarded tool has been unregistered',
+          'then the static forwarder is still registered but errors as not connected',
           () async {
             var result = await client.callTool(
               CallToolRequest(name: 'disconnect'),
@@ -253,10 +289,22 @@ void main() {
               reason: '(precondition)',
             );
 
+            // Static forwarders remain registered across disconnect so
+            // agents that only listTools() once at startup keep seeing them.
+            final tools = await client.listTools();
+            expect(
+              tools.tools.map((t) => t.name),
+              contains('apply_migrations'),
+            );
+
             result = await client.callTool(
               CallToolRequest(name: 'apply_migrations'),
             );
             expect(result.isError, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Not connected'),
+            );
           },
         );
       });
