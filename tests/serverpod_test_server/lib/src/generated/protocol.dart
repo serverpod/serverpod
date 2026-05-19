@@ -468,7 +468,7 @@ export 'upsert_test_model.dart';
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -8277,7 +8277,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           as T;
     }
     if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
+      return deserializeDynamicFieldValue(data) as T;
     }
     if (t == List<dynamic>) {
       return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
@@ -12439,18 +12439,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i219.UpsertTestModel():
         return 'UpsertTestModel';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod.$className';
-    }
-    className = _i3.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
-    className = _i4.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_test_module.$className';
-    }
     if (data is List<int>) {
       return 'List<int>';
     }
@@ -12509,6 +12497,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (data is List<(String, int)>?) {
       return 'List<(String,int)>?';
+    }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
+    className = _i221.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_shared.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_module.$className';
     }
     return null;
   }
@@ -13208,6 +13212,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_test_shared.')) {
+      data['className'] = dataClassName.substring(22);
+      return _i221.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
       return _i3.Protocol().deserializeByClassName(data);
@@ -13275,6 +13283,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return deserialize<List<(String, int)>?>(data['data']);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i3.Protocol().registerHostProtocol('serverpod_test', this);
+    _i4.Protocol().registerHostProtocol('serverpod_test', this);
+    _i221.Protocol().registerHostProtocol('serverpod_test', this);
   }
 
   @override

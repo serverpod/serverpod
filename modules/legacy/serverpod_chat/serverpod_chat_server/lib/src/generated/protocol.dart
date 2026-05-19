@@ -43,6 +43,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   static final Protocol _instance = Protocol._();
 
+  final Map<String, _i1.SerializationManager> _hostProtocols = {};
+
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     _i2.TableDefinition(
       name: 'serverpod_chat_message',
@@ -359,6 +361,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
+    for (final entry in _hostProtocols.entries) {
+      final hostClassName = entry.value.getClassNameForObject(data);
+      if (hostClassName != null) {
+        return '${entry.key}.$hostClassName';
+      }
+    }
+
     return null;
   }
 
@@ -411,7 +420,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       data['className'] = dataClassName.substring(15);
       return _i3.Protocol().deserializeByClassName(data);
     }
+    for (final entry in _hostProtocols.entries) {
+      if (dataClassName.startsWith('${entry.key}.')) {
+        data['className'] = dataClassName.substring(entry.key.length + 1);
+        return entry.value.deserializeByClassName(data);
+      }
+    }
+
     return super.deserializeByClassName(data);
+  }
+
+  @override
+  void registerHostProtocol(
+    String projectName,
+    _i1.SerializationManager protocol,
+  ) {
+    _hostProtocols[projectName] = protocol;
   }
 
   @override
