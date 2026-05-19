@@ -1,6 +1,6 @@
 ---
 name: serverpod-upgrading
-description: Upgrade Serverpod — minor/patch updates, major upgrade to v3. Use when upgrading Serverpod versions or updating dependencies.
+description: Upgrade Serverpod versions, add a database to a project created without one, or address breaking changes. Use when upgrading Serverpod, updating dependencies, or enabling database support on an existing project.
 ---
 
 # Serverpod minor/patch upgrade
@@ -41,4 +41,22 @@ After following the regular upgrade process, ensure that the following breaking 
 **Auth:** `session.authenticated` is now synchronous. `AuthenticationInfo.authId` non-nullable, `userIdentifier` is `String`. Client: `authenticationKeyManager` → `authKeyProvider`. Custom handlers receive unwrapped Bearer token.
 
 **Deprecated:** Legacy streaming endpoints; use streaming methods.
+
+# Adding a database to a project created without one
+
+Some Serverpod projects are created without a database. Add one by re-running the project creator (`serverpod create .`), which uses an interactive TUI. STOP and ask the user to run it; do not attempt to drive the TUI yourself.
+
+**Detect no-database state:** `config/development.yaml` lacks a `database:` block, or there is no `docker-compose.yaml` at the server package root.
+
+## Steps
+
+1. Ask the user to run `serverpod create .` from inside the server package directory (e.g. `cd my_project_server && serverpod create .`).
+2. Warn the user that the TUI does NOT remember previous project selections. They must re-pick the original options (Flutter, Redis, Auth, Web, Skills) PLUS choose `database: postgres` (or `sqlite`).
+3. After completion, verify it landed: `config/development.yaml` has a `database:` block, `docker-compose.yaml` exists at the server package root, `config/passwords.yaml` has a `database` entry, and a default migration exists under `migrations/`.
+4. Add `table: <table_name>` to any `.spy.yaml` model(s) the user wants persisted. See [Serverpod Models](../serverpod-models/SKILL.md).
+5. Regenerate code: use the MCP `generate` tool if connected, otherwise run `serverpod generate`.
+6. Create a migration: use the MCP if connected, otherwise run `serverpod create-migration`. See [Serverpod Migrations](../serverpod-migrations/SKILL.md).
+7. Ask the user to start the database with `docker compose up -d` (from the server package directory) and apply the migration.
+
+A `Dockerfile` is not added by this flow. It is a separate production deployment artifact, not required for local database support.
 
