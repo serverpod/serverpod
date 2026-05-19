@@ -100,6 +100,7 @@ class _HelpOverlayState extends State<HelpOverlay> {
             children: [
               ShrinkWrapScrollView(
                 controller: scrollController,
+                thumbVisibility: true,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
