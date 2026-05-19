@@ -1,0 +1,12 @@
+### Result of applying database migrations via the Insights endpoint.
+class: MigrationApplyResult
+fields:
+  ### Version name of the repair migration that was applied, or `null` if
+  ### `applyRepairMigration` was false, no repair migration file exists, or
+  ### the repair migration was already applied to this database.
+  repairMigrationApplied: String?
+
+  ### Versions of regular migrations that were applied, or `null` if
+  ### `applyMigrations` was false or the database was already at the latest
+  ### version.
+  migrationsApplied: List<String>?
