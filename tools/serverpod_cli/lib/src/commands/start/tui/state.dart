@@ -36,9 +36,7 @@ class ServerWatchState extends ServerpodState {
   /// Whether the Flutter app is running and the URL has been published.
   bool flutterReady = false;
 
-  /// Show the "Flutter output" tab in the TUI. Toggled true once a Flutter
-  /// process has been started (separately from [flutterReady], which gates
-  /// the URL display).
+  /// Show the "Flutter output" tab in the TUI.
   bool showFlutterOutput = false;
 
   /// HTTP URL the Flutter app is served at, surfaced in the TUI status
