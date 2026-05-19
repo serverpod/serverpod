@@ -104,33 +104,27 @@ class CreateConfigState extends ServerpodState {
     if (configState == null) return;
     configState._updateFocusedOption(delta);
     final focusedOptionIndex = configState.focusedOptionIndex;
-    final newSelection = config.options[focusedOptionIndex];
-
-    if (config.multiSelect) {
-      final selections = _stateValues[config];
-      if (selections?.contains(newSelection) == true) {
-        _stateValues[config] = selections!.difference({newSelection});
-      } else {
-        _stateValues[config] = {...?selections, newSelection};
-      }
-    } else {
-      _stateValues[config] = {newSelection};
-    }
+    final newOption = config.options[focusedOptionIndex];
+    _updateOptionFor(config, newOption);
     _evaluateRequirements();
     _updateState();
   }
 
-  void updateSelectedOption(ServerpodCreateConfig config, ConfigOption option) {
+  void _updateOptionFor(ServerpodCreateConfig config, ConfigOption option) {
     if (config.multiSelect) {
       final selections = _stateValues[config];
-      if (selections?.contains(option) == true) {
-        _stateValues[config] = selections!.difference({option});
+      if (selections != null && selections.contains(option)) {
+        _stateValues[config] = selections.difference({option});
       } else {
         _stateValues[config] = {...?selections, option};
       }
     } else {
       _stateValues[config] = {option};
     }
+  }
+
+  void updateSelectedOption(ServerpodCreateConfig config, ConfigOption option) {
+    _updateOptionFor(config, option);
     _focusedConfigIndex = configValues.indexOf(config);
     final configState = _optionStateValues[config];
     configState?._focusedOptionIndex = config.options.indexOf(option);
@@ -179,7 +173,7 @@ class CreateConfigState extends ServerpodState {
     ServerpodCreateConfig<T> config,
   ) {
     final value = _stateValues[config];
-    return value?.first as T?;
+    return value?.firstOrNull as T?;
   }
 
   /// Returns all selected [ConfigOption]s for [config].
@@ -196,7 +190,7 @@ class CreateConfigState extends ServerpodState {
     T option,
   ) {
     final value = _stateValues[config];
-    return value?.contains(option) == true;
+    return value?.contains(option) ?? false;
   }
 
   /// Converts this state to [TemplateContext].
