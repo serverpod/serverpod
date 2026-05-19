@@ -33,6 +33,21 @@ class LibraryGenerator {
     required this.config,
   });
 
+  /// Whether this package supports delegating serialization to a host protocol.
+  ///
+  /// Will be `true` modules and shared packages.
+  bool get _supportsHostProtocols =>
+      config.type == PackageType.module || sharedPackage;
+
+  /// Whether the host protocols should be registered for this package.
+  ///
+  /// Will be `true` for projects that have modules or shared models.
+  bool get _shouldRegisterHostProtocols =>
+      !sharedPackage &&
+      config.type != PackageType.module &&
+      (config.modules.isNotEmpty ||
+          config.sharedModelsSourcePathsParts.isNotEmpty);
+
   /// Generate the protocol library.
   Library generateProtocol() {
     var library = LibraryBuilder();
@@ -98,7 +113,11 @@ class LibraryGenerator {
       Constructor(
         (c) => c
           ..factory = true
-          ..body = refer('_instance').code,
+          ..body = _shouldRegisterHostProtocols
+              ? refer(
+                  '_instance',
+                ).cascade('_registerHostProtocols').call([]).code
+              : refer('_instance').code,
       ),
     ]);
 
@@ -116,6 +135,21 @@ class LibraryGenerator {
           ..modifier = FieldModifier.final$
           ..assignment = const Code('Protocol._()'),
       ),
+      if (_supportsHostProtocols)
+        Field(
+          (f) => f
+            ..name = '_hostProtocols'
+            ..type = TypeReference(
+              (t) => t
+                ..symbol = 'Map'
+                ..types.addAll([
+                  refer('String'),
+                  refer('SerializationManager', serverpodUrl(serverCode)),
+                ]),
+            )
+            ..modifier = FieldModifier.final$
+            ..assignment = literalMap({}).code,
+        ),
       if (serverCode || hasDatabaseTablesForCurrentSide)
         Field(
           (f) => f
@@ -422,6 +456,8 @@ class LibraryGenerator {
                 ),
                 const Code('}'),
               ]),
+            if (_supportsHostProtocols)
+              _buildGetClassNameForObjectHostDelegation(),
             const Code('return null;'),
           ]),
       ),
@@ -474,9 +510,13 @@ class LibraryGenerator {
               const Code('>(data[\'data\']);'),
               const Code('}'),
             ],
+            if (_supportsHostProtocols)
+              _buildDeserializeByClassNameHostDelegation(),
             const Code('return super.deserializeByClassName(data);'),
           ]),
       ),
+      if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
+      if (_shouldRegisterHostProtocols) _buildRegisterHostProtocolsMethod(),
       if (serverCode || hasDatabaseTablesForCurrentSide)
         Method(
           (m) => m
@@ -633,6 +673,77 @@ class LibraryGenerator {
       ),
       const Code('}'),
     ]);
+  }
+
+  Code _buildGetClassNameForObjectHostDelegation() {
+    return const Code('''
+for (final entry in _hostProtocols.entries) {
+  final hostClassName = entry.value.getClassNameForObject(data);
+  if (hostClassName != null) {
+    return '\${entry.key}.\$hostClassName';
+  }
+}
+''');
+  }
+
+  Code _buildDeserializeByClassNameHostDelegation() {
+    return const Code('''
+for (final entry in _hostProtocols.entries) {
+  if (dataClassName.startsWith('\${entry.key}.')) {
+    data['className'] = dataClassName.substring(entry.key.length + 1);
+    return entry.value.deserializeByClassName(data);
+  }
+}
+''');
+  }
+
+  List<Method> _buildModuleHostProtocolMethods() {
+    return [
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('void')
+          ..name = 'registerHostProtocol'
+          ..requiredParameters.addAll([
+            Parameter(
+              (p) => p
+                ..name = 'projectName'
+                ..type = refer('String'),
+            ),
+            Parameter(
+              (p) => p
+                ..name = 'protocol'
+                ..type = refer(
+                  'SerializationManager',
+                  serverpodUrl(serverCode),
+                ),
+            ),
+          ])
+          ..body = const Code('_hostProtocols[projectName] = protocol;'),
+      ),
+    ];
+  }
+
+  Method _buildRegisterHostProtocolsMethod() {
+    return Method(
+      (m) => m
+        ..name = '_registerHostProtocols'
+        ..returns = refer('void')
+        ..body = Block.of([
+          for (var module in config.modules)
+            Code.scope(
+              (a) =>
+                  '${a(refer('Protocol', module.dartImportUrl(serverCode)))}()'
+                  '.registerHostProtocol(\'${config.name}\', this);',
+            ),
+          for (var packageName in config.sharedModelsSourcePathsParts.keys)
+            Code.scope(
+              (a) =>
+                  '${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}()'
+                  '.registerHostProtocol(\'${config.name}\', this);',
+            ),
+        ]),
+    );
   }
 
   /// Generates the EndpointDispatch for the server side.

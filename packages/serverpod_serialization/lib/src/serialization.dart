@@ -46,6 +46,14 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
+  /// Registers a host project [protocol] for module dynamic field serialization.
+  ///
+  /// Module and shared package protocols override this method.
+  void registerHostProtocol(
+    String projectName,
+    SerializationManager protocol,
+  ) {}
+
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);

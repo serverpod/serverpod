@@ -5,6 +5,11 @@ import 'package:test/test.dart';
 void main() {
   final sharedProtocol = shared.Protocol();
 
+  // Registers this project as a host on shared protocols for dynamic fields.
+  // This will always be called for real projects, since the client protocol
+  // is used on the generated `Client` class.
+  client.Protocol();
+
   group(
     'Given a shared model with a dynamic field and a project model as data,',
     () {
