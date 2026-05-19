@@ -138,22 +138,26 @@ class FlutterProcess {
       await File(_vmServiceInfoFile).deleteIfExists();
     }
 
+    // Skip every wrapper layer (puro/fvm/asdf shim, the flutter shell
+    // script, even the AOT snapshot) and invoke flutter_tools.dart
+    // through dart directly. That way our `Process.start` child IS
+    // the dart process running flutter_tools - `process.kill` reaches
+    // the daemon, and the simple SIGINT -> SIGKILL chain in [stop] is
+    // sufficient. Falls back to the unresolved executable name when
+    // the direct paths can't be located (e.g. an SDK that hasn't been
+    // bootstrapped yet, where `pub get` on flutter_tools hasn't run).
+    final invocation = await _resolveFlutterInvocation(_flutterExecutable);
+
     Process process;
     try {
-      // `flutter` on Windows is a batch file; Process.start handles `.bat`
-      // resolution when invoking through the shell. Direct invocation
-      // works on POSIX and is the cheaper path. Caveat: with
-      // `runInShell: true`, `Process.kill(SIGINT)` targets the cmd.exe
-      // wrapper rather than the wrapped daemon - the 5s SIGKILL fallback
-      // in `stop()` covers the case where SIGINT doesn't propagate.
       process = await Process.start(
-        _flutterExecutable,
-        args,
+        invocation.executable,
+        [...invocation.baseArgs, ...args],
         workingDirectory: _flutterPackageDir,
       );
     } on ProcessException catch (e) {
       throw FlutterNotInstalledException(
-        'Failed to launch `$_flutterExecutable`: ${e.message}. '
+        'Failed to launch `${invocation.executable}`: ${e.message}. '
         'Install Flutter (https://flutter.dev) or pass `--no-flutter`.',
         e,
       );
@@ -278,15 +282,16 @@ class FlutterProcess {
     }
   }
 
-  /// Smart shutdown: SIGINT -> wait -> SIGKILL (mirrors ServerProcess).
-  /// Idempotent; safe to call from multiple paths (signal handler, exit
-  /// listener, watch-session dispose).
+  /// SIGINT -> wait -> SIGKILL. Works because [start] resolves the
+  /// real flutter binary path and spawns it directly (see
+  /// [_resolveFlutterBin]) - our child is the flutter_tools dart
+  /// process, not a wrapper, so signals reach the daemon.
   Future<int> stop({
     Duration timeout = const Duration(seconds: 5),
   }) async {
     final process = _process;
     if (process == null) {
-      log.debug('Flutter stop: no process (already stopped or never started).');
+      log.debug('Flutter stop: no process.');
       return 0;
     }
 
@@ -407,6 +412,78 @@ class FlutterProcess {
       }
     } finally {
       completer.complete();
+    }
+  }
+
+  /// Cached after first resolution.
+  static ({String executable, List<String> baseArgs})? _cachedInvocation;
+
+  /// Resolve a wrapper-free invocation of flutter_tools: probe
+  /// `flutter --version --machine` for `flutterRoot`, then construct
+  /// the direct `dart <flutter_tools.dart>` command. This cuts
+  /// through every layer (puro/fvm/asdf shim, the flutter shell
+  /// script, the AOT snapshot) so our spawned process IS the dart
+  /// process running flutter_tools - signals reach it directly.
+  ///
+  /// Cached after first call. Falls back to invoking
+  /// [flutterExecutable] verbatim if any of the direct paths is
+  /// missing (e.g. an SDK that hasn't been bootstrapped: the flutter
+  /// shell script normally runs `pub get` on flutter_tools the
+  /// first time, which is what creates the package_config.json).
+  static Future<({String executable, List<String> baseArgs})>
+  _resolveFlutterInvocation(String flutterExecutable) async {
+    final cached = _cachedInvocation;
+    if (cached != null) return cached;
+
+    // Fallback isn't cached: a failed probe in one context (e.g. a
+    // test with a fake executable) would otherwise poison the cache
+    // for later real callers.
+    final fallback = (executable: flutterExecutable, baseArgs: <String>[]);
+    try {
+      final result = await Process.run(
+        flutterExecutable,
+        ['--version', '--machine'],
+        runInShell: Platform.isWindows,
+      );
+      if (result.exitCode != 0) return fallback;
+      final decoded = jsonDecode(result.stdout as String);
+      if (decoded is! Map || decoded['flutterRoot'] is! String) {
+        return fallback;
+      }
+      final root = decoded['flutterRoot'] as String;
+      final dartBin = p.join(
+        root,
+        'bin',
+        'cache',
+        'dart-sdk',
+        'bin',
+        Platform.isWindows ? 'dart.exe' : 'dart',
+      );
+      final packages = p.join(
+        root,
+        'packages',
+        'flutter_tools',
+        '.dart_tool',
+        'package_config.json',
+      );
+      final entry = p.join(
+        root,
+        'packages',
+        'flutter_tools',
+        'bin',
+        'flutter_tools.dart',
+      );
+      if (!File(dartBin).existsSync() ||
+          !File(packages).existsSync() ||
+          !File(entry).existsSync()) {
+        return fallback;
+      }
+      return _cachedInvocation = (
+        executable: dartBin,
+        baseArgs: ['--disable-dart-dev', '--packages=$packages', entry],
+      );
+    } catch (_) {
+      return fallback;
     }
   }
 
