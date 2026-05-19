@@ -209,8 +209,8 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   }) {
     return ObjectWithDynamic(
       id: id is int? ? id : this.id,
-      payload: payload is! _Undefined ? payload : this.payload,
-      jsonbPayload: jsonbPayload is! _Undefined
+      payload: payload != _Undefined ? payload : this.payload,
+      jsonbPayload: jsonbPayload != _Undefined
           ? jsonbPayload
           : this.jsonbPayload,
       payloadList: payloadList ?? this.payloadList.map((e0) => e0).toList(),
