@@ -35,7 +35,7 @@ class TemplateContext {
   /// True if a database is enabled.
   bool get database => postgres || sqlite;
 
-  Map<String, bool> toJson() {
+  Map<String, bool> toMustacheMap() {
     return {
       'auth': auth & postgres, // auth requires postgres
       'redis': redis,
