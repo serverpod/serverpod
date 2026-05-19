@@ -70,16 +70,21 @@ class FlutterDaemonProtocol {
     final completer = Completer<Object?>();
     final id = _requestId++;
     _requestCompleters[id] = completer;
-    sendMessage({'id': id, 'method': method, 'params': params});
+    try {
+      _sendMessage({'id': id, 'method': method, 'params': params});
+    } catch (e) {
+      _requestCompleters.remove(id);
+      completer.completeError(
+        StateError('Failed to send to Flutter daemon: $e'),
+      );
+    }
     return completer.future;
   }
 
-  void sendMessage(Map<String, Object?> message) {
-    // Wire format: single-element JSON array per line. `writeln` may
-    // throw if the daemon already closed its stdin (shutdown race).
-    try {
-      _process.stdin.writeln('[${jsonEncode(message)}]');
-    } catch (_) {}
+  /// Wire format: single-element JSON array per line. Throws if the
+  /// daemon already closed its stdin.
+  void _sendMessage(Map<String, Object?> message) {
+    _process.stdin.writeln('[${jsonEncode(message)}]');
   }
 
   /// Returns true and resolves the matching completer if [envelope]
