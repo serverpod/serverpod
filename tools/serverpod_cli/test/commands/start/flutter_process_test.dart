@@ -75,7 +75,6 @@ void main() {
           flutterPackageDir: Directory.current.path,
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [_shimPath('never_publishes_uri.dart')],
-          startupTimeout: const Duration(milliseconds: 50),
         );
         await fp.start();
         expect(fp.start, throwsStateError);
@@ -84,26 +83,35 @@ void main() {
     );
 
     test(
-      'when the shim never publishes app.debugPort then connectToVmService '
-      'returns within the startup timeout and the vmServiceReady future stays '
-      'unresolved (matches "no reload available" semantics)',
+      'when the shim never publishes app.debugPort or app.webLaunchUrl '
+      'then launched and connectToVmService both pend until the process is stopped, '
+      'after which they resolve (matches "no reload available" semantics)',
       () async {
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [_shimPath('never_publishes_uri.dart')],
-          startupTimeout: const Duration(milliseconds: 200),
         );
         await fp.start();
 
-        // connectToVmService should resolve (return) within ~startup
-        // timeout + slack even though no URI was ever published.
-        await fp.connectToVmService().timeout(const Duration(seconds: 5));
+        // While the shim is alive and silent, neither future resolves.
+        var launchedResolved = false;
+        var connectResolved = false;
+        unawaited(fp.launched.then((_) => launchedResolved = true));
+        unawaited(
+          fp.connectToVmService().then((_) => connectResolved = true),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        expect(launchedResolved, isFalse);
+        expect(connectResolved, isFalse);
+
+        // Stopping the process completes _vmServiceUriCompleter with null
+        // and _launchedCompleter, so both futures resolve quickly.
+        await fp.stop(timeout: const Duration(seconds: 1));
+        await fp.launched.timeout(const Duration(seconds: 2));
 
         expect(fp.vmServiceUri, isNull);
         expect(fp.isVmServiceConnected, isFalse);
-
-        await fp.stop(timeout: const Duration(seconds: 1));
       },
     );
   });
@@ -125,7 +133,6 @@ void main() {
             '--ws=${fake.wsUri}',
             '--web-url=http://localhost:54321',
           ],
-          startupTimeout: const Duration(seconds: 5),
           onProgress: progressMessages.add,
         );
 
@@ -199,7 +206,6 @@ void main() {
             '--ws=${fake.wsUri}',
           ],
           vmServiceInfoFile: infoPath,
-          startupTimeout: const Duration(seconds: 5),
         );
 
         await fp.start();
@@ -342,6 +348,43 @@ void main() {
         );
         expect(fp.flutterAppUrl, 'http://localhost:8080');
         expect(progress, containsAllInOrder(['Compiling', 'ready']));
+      },
+    );
+
+    test(
+      'when app.webLaunchUrl arrives before app.debugPort '
+      'then launched completes immediately (web-server gate semantics)',
+      () async {
+        final fp = bareFp();
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.webLaunchUrl',
+              'params': {'url': 'http://localhost:54321'},
+            },
+          ]),
+        );
+        await fp.launched.timeout(const Duration(milliseconds: 100));
+        expect(fp.flutterAppUrl, 'http://localhost:54321');
+        expect(fp.vmServiceUri, isNull);
+      },
+    );
+
+    test(
+      'when app.debugPort arrives without app.webLaunchUrl '
+      'then launched completes immediately (mobile/desktop gate semantics)',
+      () async {
+        final fp = bareFp();
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.debugPort',
+              'params': {'wsUri': 'ws://127.0.0.1:1111/ws'},
+            },
+          ]),
+        );
+        await fp.launched.timeout(const Duration(milliseconds: 100));
+        expect(fp.flutterAppUrl, isNull);
       },
     );
 

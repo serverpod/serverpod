@@ -51,7 +51,6 @@ class FlutterProcess {
   final List<String> _extraArgs;
   final IOSink _stdout;
   final IOSink _stderr;
-  final Duration _startupTimeout;
 
   /// Path to write the VM service info JSON to once captured. Sibling of
   /// the pod's `vm-service-info.json` so a single `launch.json` directory
@@ -98,6 +97,13 @@ class FlutterProcess {
   final Completer<int> _exitCodeCompleter = Completer<int>();
   final Completer<void> _vmServiceReady = Completer<void>();
 
+  // Completes on the first of `app.debugPort` (mobile/desktop, and
+  // `-d chrome` on web) or `app.webLaunchUrl` (web devices). Also
+  // completes when the process exits, so awaiters wake up on failure
+  // - check [isRunning] / [flutterAppUrl] / [vmServiceUri] to see
+  // which signal fired. See [launched].
+  final Completer<void> _launchedCompleter = Completer<void>();
+
   Completer<void>? _cleanupCompleter;
 
   FlutterProcess({
@@ -106,7 +112,6 @@ class FlutterProcess {
     String device = 'web-server',
     List<String> extraArgs = const [],
     String? vmServiceInfoFile,
-    Duration startupTimeout = const Duration(seconds: 60),
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
@@ -116,7 +121,6 @@ class FlutterProcess {
        _device = device,
        _extraArgs = extraArgs,
        _vmServiceInfoFile = vmServiceInfoFile,
-       _startupTimeout = startupTimeout,
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
@@ -140,6 +144,24 @@ class FlutterProcess {
   /// id is known. Never completes if startup fails - pair with [exitCode]
   /// to detect crashes.
   Future<void> get vmServiceReady => _vmServiceReady.future;
+
+  /// Completes when Flutter has reported a usable state - the first of
+  /// `app.debugPort` (mobile/desktop, `-d chrome`) or `app.webLaunchUrl`
+  /// (web devices) - OR when the process exits.
+  ///
+  /// This is the right gate for "Flutter is up enough to surface to the
+  /// user." It is intentionally decoupled from [connectToVmService] /
+  /// [vmServiceReady]: on `-d web-server` the Flutter daemon withholds
+  /// `app.debugPort` until a browser actually attaches to the served
+  /// URL, so blocking on the VM service URI hides the web URL from the
+  /// user - they'd have nothing to open. Wait on [launched] to log /
+  /// surface the URL, then kick [connectToVmService] off in the
+  /// background.
+  ///
+  /// After this resolves, check [isRunning] (false if the process
+  /// exited before launch) and [flutterAppUrl] / [vmServiceUri] to see
+  /// which signal fired.
+  Future<void> get launched => _launchedCompleter.future;
 
   /// Exit code of the `flutter run` subprocess.
   Future<int> get exitCode => _exitCodeCompleter.future;
@@ -235,6 +257,9 @@ class FlutterProcess {
         if (!_vmServiceUriCompleter.isCompleted) {
           _vmServiceUriCompleter.complete(null);
         }
+        if (!_launchedCompleter.isCompleted) {
+          _launchedCompleter.complete();
+        }
         if (!_exitCodeCompleter.isCompleted) {
           _exitCodeCompleter.complete(code);
         }
@@ -246,20 +271,22 @@ class FlutterProcess {
   /// Wait for the `--machine` stream to publish the VM service URI, then
   /// open a `vm_service` connection. Resolves the Flutter isolate id and
   /// probes the `sN.hotReload` optimization. Best-effort - logs warnings
-  /// and returns when the URI never arrives or the connection fails.
+  /// when the connection itself fails; silent when the URI never arrives
+  /// (the process exits and the completer resolves to `null`).
+  ///
+  /// Returns immediately if already connected, so multiple background
+  /// callers don't race each other.
+  ///
+  /// Waits indefinitely for the URI. On `-d web-server` this may pend
+  /// until a browser connects, which is exactly the right behavior -
+  /// hot reload becomes available the moment DWDS reports a URI, even
+  /// if that's minutes after spawn. Run this unawaited from the caller
+  /// so launch progress isn't gated on it.
   Future<void> connectToVmService() async {
+    if (_vmService != null) return;
     _onProgress?.call('connecting');
 
-    final String? maybeUri;
-    try {
-      maybeUri = await _vmServiceUriCompleter.future.timeout(_startupTimeout);
-    } on TimeoutException {
-      log.warning(
-        'Flutter did not publish a VM service URI within '
-        '${_startupTimeout.inSeconds}s. Reload via VM service is unavailable.',
-      );
-      return;
-    }
+    final maybeUri = await _vmServiceUriCompleter.future;
     if (maybeUri == null) {
       // Process exited before publishing - silent return, the exit
       // listener has already wound things down.
@@ -424,10 +451,12 @@ class FlutterProcess {
             // scheme.
             _vmServiceUriCompleter.complete(httpFromWs(wsUri));
           }
+          if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
         case 'app.webLaunchUrl':
           final url = paramMap['url'];
           if (url is String) {
             _flutterAppUrl = url;
+            if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
           }
         case 'app.progress':
           final message = paramMap['message'];
