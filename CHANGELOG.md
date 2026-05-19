@@ -1,9 +1,10 @@
 ## 3.5.0-beta.7
 
-feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
-feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
-fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
-chore: Improves the UX of create and start TUIs.
+- feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+- feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
+- fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
+- fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
+- chore: Improves the UX of create and start TUIs.
 
 ## 3.5.0-beta.6
 
@@ -73,6 +74,11 @@ chore: Improves the UX of create and start TUIs.
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.8
+
+- fix: Fixes Postgres throwing when using row-lock on `find*` methods with `includes`.
+- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
 
 ## 3.4.7
 
