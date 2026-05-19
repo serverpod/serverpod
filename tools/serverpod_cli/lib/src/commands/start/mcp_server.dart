@@ -52,7 +52,7 @@ base class ServerpodMcpServer extends MCPServer
         ),
         instructions:
             'Manage a running Serverpod server process started by '
-            '`serverpod start --watch`.',
+            '`serverpod start`.',
       ) {
     registerTool(applyMigrationsTool, _applyMigrations);
     registerTool(createMigrationTool, _createMigration);
