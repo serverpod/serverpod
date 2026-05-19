@@ -125,7 +125,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       context: TemplateContext(
         sqlite: true,
         web: true,
-        ides: [TemplateIde.claude, TemplateIde.cursor],
+        ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
       ),
     );
 

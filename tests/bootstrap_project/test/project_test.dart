@@ -804,6 +804,17 @@ void main() async {
             expect(cursor.existsSync(), isTrue);
             expect(cursor.readAsStringSync(), genericConfig);
           });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
         });
       });
 
