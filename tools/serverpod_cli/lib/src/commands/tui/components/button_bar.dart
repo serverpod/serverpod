@@ -14,10 +14,15 @@ class ButtonBar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return Container(
-      color: Color.defaultColor,
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: Wrap(spacing: 2, children: buttons),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          width: constraints.maxWidth,
+          color: Color.defaultColor,
+          padding: const EdgeInsets.symmetric(horizontal: 1),
+          child: Wrap(spacing: 2, children: buttons),
+        );
+      },
     );
   }
 }

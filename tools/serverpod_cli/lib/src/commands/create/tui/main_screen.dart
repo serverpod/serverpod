@@ -352,6 +352,7 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
+        const Button.tip('Click to select'),
       ],
     );
   }
