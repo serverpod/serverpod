@@ -436,16 +436,6 @@ class LibraryGenerator {
                 ),
               const Code('}'),
             ],
-            if (config.name != 'serverpod' && serverCode)
-              _buildGetClassNameForObjectDelegation(
-                serverpodProtocolUrl(serverCode),
-                'serverpod',
-              ),
-            for (var module in config.modules)
-              _buildGetClassNameForObjectDelegation(
-                module.dartImportUrl(serverCode),
-                module.name,
-              ),
             for (var containerType in nonModelStreamTypes)
               Block.of([
                 const Code('if(data is '),
@@ -456,6 +446,25 @@ class LibraryGenerator {
                 ),
                 const Code('}'),
               ]),
+            if (config.name != 'serverpod' && serverCode)
+              _buildGetClassNameForObjectDelegation(
+                serverpodProtocolUrl(serverCode),
+                'serverpod',
+              ),
+            if (!sharedPackage)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                _buildGetClassNameForObjectDelegation(
+                  packageName == 'serverpod_database' &&
+                          config.name != 'serverpod'
+                      ? serverpodDatabaseUrl(serverCode)
+                      : 'package:$packageName/$packageName.dart',
+                  packageName,
+                ),
+            for (var module in config.modules)
+              _buildGetClassNameForObjectDelegation(
+                module.dartImportUrl(serverCode),
+                module.name,
+              ),
             if (_supportsHostProtocols)
               _buildGetClassNameForObjectHostDelegation(),
             const Code('return null;'),
@@ -496,6 +505,15 @@ class LibraryGenerator {
                 serverpodProtocolUrl(serverCode),
                 'serverpod',
               ),
+            if (!sharedPackage)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                _buildDeserializeByClassNameDelegation(
+                  packageName == 'serverpod_database' &&
+                          config.name != 'serverpod'
+                      ? serverpodDatabaseUrl(serverCode)
+                      : 'package:$packageName/$packageName.dart',
+                  packageName,
+                ),
             for (var module in config.modules)
               _buildDeserializeByClassNameDelegation(
                 module.dartImportUrl(serverCode),

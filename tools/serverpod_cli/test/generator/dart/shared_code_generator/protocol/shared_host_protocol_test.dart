@@ -116,6 +116,36 @@ void main() {
           contains('package:$_sharedPackageName/$_sharedPackageName.dart'),
         );
       });
+
+      test(
+        'then getClassNameForObject delegates to the shared protocol',
+        () {
+          expect(
+            protocolSource,
+            contains('.getClassNameForObject(data);'),
+          );
+          expect(
+            protocolSource,
+            contains("return '$_sharedPackageName.\$className'"),
+          );
+        },
+      );
+
+      test(
+        'then deserializeByClassName delegates to the shared protocol',
+        () {
+          expect(
+            protocolSource,
+            contains(
+              "if (dataClassName.startsWith('$_sharedPackageName.'))",
+            ),
+          );
+          expect(
+            protocolSource,
+            contains('.deserializeByClassName(data);'),
+          );
+        },
+      );
     },
   );
 }

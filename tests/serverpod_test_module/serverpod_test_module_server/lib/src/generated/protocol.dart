@@ -212,12 +212,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i10.ProjectStreamingClass():
         return 'ProjectStreamingClass';
     }
+    if (data is (int?, _i11.ModuleStreamingClass?)) {
+      return '(int?,ModuleStreamingClass?)';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
-    }
-    if (data is (int?, _i11.ModuleStreamingClass?)) {
-      return '(int?,ModuleStreamingClass?)';
     }
     for (final entry in _hostProtocols.entries) {
       final hostClassName = entry.value.getClassNameForObject(data);

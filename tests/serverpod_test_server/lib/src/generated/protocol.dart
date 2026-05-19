@@ -12439,18 +12439,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i219.UpsertTestModel():
         return 'UpsertTestModel';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod.$className';
-    }
-    className = _i3.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
-    className = _i4.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_test_module.$className';
-    }
     if (data is List<int>) {
       return 'List<int>';
     }
@@ -12509,6 +12497,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (data is List<(String, int)>?) {
       return 'List<(String,int)>?';
+    }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod.$className';
+    }
+    className = _i221.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_shared.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_module.$className';
     }
     return null;
   }
@@ -13207,6 +13211,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_test_shared.')) {
+      data['className'] = dataClassName.substring(22);
+      return _i221.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
