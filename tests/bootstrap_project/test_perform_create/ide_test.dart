@@ -68,7 +68,7 @@ void main() {
       });
 
       group(
-        'then the created project has Serverpod and Dart MCP servers configured',
+        'then the created project',
         () {
           final genericConfig = '''
 {
@@ -85,18 +85,21 @@ void main() {
 }
 ''';
 
-          test('for Antigravity', () {
-            final config = File(
-              p.join(projectName, '.gemini/antigravity/mcp_config.json'),
-            );
-            expect(config.existsSync(), isTrue);
-            expect(
-              config.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
+          test(
+            'has Serverpod and Dart MCP servers configured for Antigravity',
+            () {
+              final config = File(
+                p.join(projectName, '.gemini/antigravity/mcp_config.json'),
+              );
+              expect(config.existsSync(), isTrue);
+              expect(
+                config.readAsStringSync(),
+                genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
+              );
+            },
+          );
 
-          test('for Codex', () {
+          test('has Serverpod and Dart MCP servers configured for Codex', () {
             final config = File(p.join(projectName, '.codex/config.toml'));
             expect(config.existsSync(), isTrue);
             expect(
@@ -113,24 +116,28 @@ args = ["mcp-server", "--force-roots-fallback"]
             );
           });
 
-          test('for Claude', () {
+          test('has Serverpod and Dart MCP servers configured for Claude', () {
             final config = File(p.join(projectName, '.mcp.json'));
             expect(config.existsSync(), isTrue);
             expect(config.readAsStringSync(), genericConfig);
           });
 
-          test('for Cursor', () {
+          test('has Serverpod and Dart MCP servers configured for Cursor', () {
             final config = File(p.join(projectName, '.cursor/mcp.json'));
             expect(config.existsSync(), isTrue);
             expect(config.readAsStringSync(), genericConfig);
           });
 
-          test('for OpenCode', () {
-            final config = File(p.join(projectName, '.opencode/opencode.json'));
-            expect(config.existsSync(), isTrue);
-            expect(
-              config.readAsStringSync(),
-              '''{
+          test(
+            'has Serverpod and Dart MCP servers configured for OpenCode',
+            () {
+              final config = File(
+                p.join(projectName, '.opencode/opencode.json'),
+              );
+              expect(config.existsSync(), isTrue);
+              expect(
+                config.readAsStringSync(),
+                '''{
   "\$schema": "https://opencode.ai/config.json",
   "mcp": {
     "serverpod": {
@@ -150,10 +157,11 @@ args = ["mcp-server", "--force-roots-fallback"]
   }
 }
 ''',
-            );
-          });
+              );
+            },
+          );
 
-          test('for VSCode', () {
+          test('has Serverpod and Dart MCP servers configured for VSCode', () {
             final config = File(p.join(projectName, '.vscode/mcp.json'));
             expect(config.existsSync(), isTrue);
             expect(
