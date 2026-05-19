@@ -28,6 +28,7 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
+import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -540,7 +541,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       onApplyMigration: session.applyMigration,
       onCreateMigration: ({String? tag, bool force = false}) =>
           _createMigrationForMcp(config, tag: tag, force: force),
+      onCreateRepairMigration:
+          ({
+            String? tag,
+            bool force = false,
+            String? targetMigrationVersion,
+          }) => _createRepairMigrationForMcp(
+            config,
+            tag: tag,
+            force: force,
+            targetMigrationVersion: targetMigrationVersion,
+          ),
       onHotReload: session.forceReload,
+      onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       vmServiceUriChanges: session.vmServiceUriChanges,
@@ -817,11 +830,23 @@ Future<void> _runTuiBackend({
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
-        holder.onCreateMigration = () {
+        holder.onHotRestart = () {
+          runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+        };
+        holder.onCreateMigration = ({bool force = false}) {
           runTrackedAction(
             holder,
-            'Creating migration',
-            () => _runCreateMigrationForTui(config),
+            force ? 'Force-creating migration' : 'Creating migration',
+            () => _runCreateMigrationForTui(config, force: force),
+          );
+        };
+        holder.onCreateRepairMigration = ({bool force = false}) {
+          runTrackedAction(
+            holder,
+            force
+                ? 'Force-creating repair migration'
+                : 'Creating repair migration',
+            () => _runCreateRepairMigrationForTui(config, force: force),
           );
         };
         holder.onApplyMigration = () {
@@ -908,8 +933,11 @@ Future<void> _runTuiBackend({
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
-Future<void> _runCreateMigrationForTui(GeneratorConfig config) async {
-  final outcome = await createMigrationAction(config: config);
+Future<void> _runCreateMigrationForTui(
+  GeneratorConfig config, {
+  bool force = false,
+}) async {
+  final outcome = await createMigrationAction(config: config, force: force);
   final result = _describeCreateMigration(
     outcome,
     forceHint: 'Run `serverpod create-migration --force` to create it anyway.',
@@ -940,5 +968,72 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
   return CreateMigrationMcpResult(
     message: result.message + followUp,
     isError: result.isError,
+  );
+}
+
+/// Runs `create-repair-migration` for the TUI's Repair Migration button.
+///
+/// Logs the outcome; throws on failure so [runTrackedAction] marks the
+/// operation red.
+Future<void> _runCreateRepairMigrationForTui(
+  GeneratorConfig config, {
+  bool force = false,
+}) async {
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(config: config, force: force);
+  } on MigrationAbortedException {
+    log.info(
+      'Run `serverpod create-repair-migration --force` to create it anyway.',
+    );
+    rethrow;
+  }
+
+  if (file == null) {
+    log.info('Repair migration skipped. No schema drift detected.');
+    return;
+  }
+  final versionName = p.basenameWithoutExtension(file.path);
+  log.info('Repair migration "$versionName" created at ${file.path}.');
+}
+
+/// Runs `create-repair-migration` for the MCP `create_repair_migration` tool.
+/// Returns a structured result so the MCP server can flag errors.
+Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
+  GeneratorConfig config, {
+  String? tag,
+  bool force = false,
+  String? targetMigrationVersion,
+}) async {
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(
+      config: config,
+      tag: tag,
+      force: force,
+      targetMigrationVersion: targetMigrationVersion,
+    );
+  } on MigrationAbortedException {
+    return const CreateMigrationMcpResult(
+      message:
+          'Repair migration aborted due to warnings. '
+          'Call again with `force: true` to create it anyway.',
+      isError: true,
+    );
+  } on Exception catch (e) {
+    return CreateMigrationMcpResult(message: '$e', isError: true);
+  }
+
+  if (file == null) {
+    return const CreateMigrationMcpResult(
+      message: 'Repair migration skipped. No schema drift detected.',
+    );
+  }
+
+  final versionName = p.basenameWithoutExtension(file.path);
+  return CreateMigrationMcpResult(
+    message:
+        'Repair migration "$versionName" created at ${file.path}. '
+        'Call `apply_migrations` to run it against the database.',
   );
 }

@@ -101,10 +101,8 @@ Future<CreateMigrationOutcome> createMigrationAction({
   MigrationGenerationContext generationContext;
   try {
     generationContext = await MigrationGenerationContext.load(config);
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
+  } on GenerateMigrationDatabaseDefinitionException catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
   final hasClientMigrations = generationContext.hasClientDatabaseTables;
@@ -169,23 +167,10 @@ Future<CreateMigrationOutcome> _createMigration({
       context: context,
       precomputedVersion: precomputedVersion,
     );
-  } on MigrationVersionLoadException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to determine latest database definition due to a corrupted '
-      'migration. Please re-create or remove the migration version and try '
-      'again. Migration version: "${e.versionName}".\n${e.exception}',
-    );
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
-  } on MigrationVersionAlreadyExistsException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to create migration. A directory with the same name already '
-      'exists: "${e.directoryPath}".',
-    );
   } on MigrationAbortedException {
     return const CreateMigrationAborted();
+  } on Exception catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
   if (migration == null) {

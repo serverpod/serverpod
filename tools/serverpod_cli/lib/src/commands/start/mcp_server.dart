@@ -32,8 +32,21 @@ base class ServerpodMcpServer extends MCPServer
   Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
   onCreateMigration;
 
+  /// Callback to create a repair migration that brings the database in line
+  /// with a target migration version.
+  Future<CreateMigrationMcpResult> Function({
+    String? tag,
+    bool force,
+    String? targetMigrationVersion,
+  })?
+  onCreateRepairMigration;
+
   /// Callback to recompile and hot-reload the running server isolate.
   Future<void> Function()? onHotReload;
+
+  /// Callback to perform a full server process restart, clearing in-memory
+  /// state. Boots from the current compiled kernel; does not recompile.
+  Future<void> Function()? onHotRestart;
 
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
@@ -55,7 +68,9 @@ base class ServerpodMcpServer extends MCPServer
       ) {
     registerTool(_applyMigrationsTool, _applyMigrations);
     registerTool(_createMigrationTool, _createMigration);
+    registerTool(_createRepairMigrationTool, _createRepairMigration);
     registerTool(_hotReloadTool, _hotReload);
+    registerTool(_hotRestartTool, _hotRestart);
     registerTool(_tailLogsTool, _tailLogs);
 
     addResource(_vmServiceResource, _readVmService);
@@ -90,10 +105,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _applyMigrations(CallToolRequest request) async {
     final callback = onApplyMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
     try {
@@ -139,16 +151,11 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _createMigration(CallToolRequest request) async {
     final callback = onCreateMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
-    final tagArg = request.arguments?['tag'];
-    final forceArg = request.arguments?['force'];
-    final tag = tagArg is String && tagArg.isNotEmpty ? tagArg : null;
-    final force = forceArg is bool ? forceArg : false;
+    final tag = _stringArg(request, 'tag');
+    final force = _boolArg(request, 'force');
 
     try {
       final result = await callback(tag: tag, force: force);
@@ -159,6 +166,59 @@ base class ServerpodMcpServer extends MCPServer
     } catch (e) {
       return CallToolResult(
         content: [TextContent(text: 'Failed to create migration: $e')],
+        isError: true,
+      );
+    }
+  }
+
+  static final _createRepairMigrationTool = Tool(
+    name: 'create_repair_migration',
+    description:
+        'Create a repair migration that brings the live database in line '
+        'with the target migration version (default: latest). Connects to '
+        'the running server to read the live schema, diffs it against the '
+        'target, and writes a `.sql` repair file. Use when a migration was '
+        'partially applied or the database drifted out of sync. Does not '
+        'apply the migration; follow up with `apply_migrations`.',
+    inputSchema: Schema.object(
+      properties: {
+        'tag': Schema.string(
+          description:
+              'Optional tag appended to the repair migration version name.',
+        ),
+        'force': Schema.bool(
+          description:
+              'Create the repair migration even when warnings are present '
+              'or when no schema drift is detected (data may be destroyed).',
+        ),
+        'version': Schema.string(
+          description:
+              'Optional target migration version to repair against. '
+              'Defaults to the latest migration version.',
+        ),
+      },
+    ),
+  );
+
+  Future<CallToolResult> _createRepairMigration(CallToolRequest request) async {
+    final callback = onCreateRepairMigration;
+    if (callback == null) {
+      return _notConnectedError();
+    }
+
+    try {
+      final result = await callback(
+        tag: _stringArg(request, 'tag'),
+        force: _boolArg(request, 'force'),
+        targetMigrationVersion: _stringArg(request, 'version'),
+      );
+      return CallToolResult(
+        content: [TextContent(text: result.message)],
+        isError: result.isError ? true : null,
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Failed to create repair migration: $e')],
         isError: true,
       );
     }
@@ -197,10 +257,7 @@ base class ServerpodMcpServer extends MCPServer
   Future<CallToolResult> _hotReload(CallToolRequest request) async {
     final callback = onHotReload;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
     try {
       await callback();
@@ -210,6 +267,34 @@ base class ServerpodMcpServer extends MCPServer
     } catch (e) {
       return CallToolResult(
         content: [TextContent(text: 'Hot reload failed: $e')],
+        isError: true,
+      );
+    }
+  }
+
+  static final _hotRestartTool = Tool(
+    name: 'hot_restart',
+    description:
+        'Recompile from scratch and restart the server process. Clears all '
+        'in-memory state (singletons, connection pools, caches). Use when '
+        'hot_reload is not enough - for example, to reset state that '
+        'survives source reloads.',
+    inputSchema: Schema.object(),
+  );
+
+  Future<CallToolResult> _hotRestart(CallToolRequest request) async {
+    final callback = onHotRestart;
+    if (callback == null) {
+      return _notConnectedError();
+    }
+    try {
+      await callback();
+      return CallToolResult(
+        content: [TextContent(text: 'Hot restart completed.')],
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Hot restart failed: $e')],
         isError: true,
       );
     }
@@ -255,6 +340,30 @@ base class ServerpodMcpServer extends MCPServer
       ],
     );
   }
+}
+
+/// Returns the standard error response for tools whose callback is unset
+/// because the watch session has not yet attached.
+CallToolResult _notConnectedError() => CallToolResult(
+  content: [TextContent(text: 'Watch session not connected.')],
+  isError: true,
+);
+
+/// Reads a string argument; treats missing, non-string, and empty values as
+/// `null`.
+String? _stringArg(CallToolRequest request, String name) {
+  final v = request.arguments?[name];
+  return v is String && v.isNotEmpty ? v : null;
+}
+
+/// Reads a bool argument; treats missing or non-bool values as [defaultValue].
+bool _boolArg(
+  CallToolRequest request,
+  String name, {
+  bool defaultValue = false,
+}) {
+  final v = request.arguments?[name];
+  return v is bool ? v : defaultValue;
 }
 
 Map<String, Object?> _encodeLogHistoryItem(Object item) {

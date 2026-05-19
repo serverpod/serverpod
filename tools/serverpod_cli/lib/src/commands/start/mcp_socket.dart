@@ -29,7 +29,14 @@ class McpSocketServer {
   Future<void> Function()? _onApplyMigration;
   Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
   _onCreateMigration;
+  Future<CreateMigrationMcpResult> Function({
+    String? tag,
+    bool force,
+    String? targetMigrationVersion,
+  })?
+  _onCreateRepairMigration;
   Future<void> Function()? _onHotReload;
+  Future<void> Function()? _onHotRestart;
   List<Object> Function()? _getLogHistory;
   String? Function()? _getVmServiceUri;
   Stream<void>? _vmServiceUriChanges;
@@ -54,14 +61,23 @@ class McpSocketServer {
     required Future<void> Function() onApplyMigration,
     Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
     onCreateMigration,
+    Future<CreateMigrationMcpResult> Function({
+      String? tag,
+      bool force,
+      String? targetMigrationVersion,
+    })?
+    onCreateRepairMigration,
     Future<void> Function()? onHotReload,
+    Future<void> Function()? onHotRestart,
     List<Object> Function()? getLogHistory,
     String? Function()? getVmServiceUri,
     Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
     _onCreateMigration = onCreateMigration;
+    _onCreateRepairMigration = onCreateRepairMigration;
     _onHotReload = onHotReload;
+    _onHotRestart = onHotRestart;
     _getLogHistory = getLogHistory;
     _getVmServiceUri = getVmServiceUri;
     _vmServiceUriChanges = vmServiceUriChanges;
@@ -69,7 +85,9 @@ class McpSocketServer {
     if (server != null) {
       server.onApplyMigration = onApplyMigration;
       server.onCreateMigration = onCreateMigration;
+      server.onCreateRepairMigration = onCreateRepairMigration;
       server.onHotReload = onHotReload;
+      server.onHotRestart = onHotRestart;
       server.getLogHistory = getLogHistory;
       server.getVmServiceUri = getVmServiceUri;
       server.vmServiceUriChanges = vmServiceUriChanges;
@@ -124,7 +142,9 @@ class McpSocketServer {
     // Wire callbacks if already connected.
     server.onApplyMigration = _onApplyMigration;
     server.onCreateMigration = _onCreateMigration;
+    server.onCreateRepairMigration = _onCreateRepairMigration;
     server.onHotReload = _onHotReload;
+    server.onHotRestart = _onHotRestart;
     server.getLogHistory = _getLogHistory;
     server.getVmServiceUri = _getVmServiceUri;
     server.vmServiceUriChanges = _vmServiceUriChanges;
