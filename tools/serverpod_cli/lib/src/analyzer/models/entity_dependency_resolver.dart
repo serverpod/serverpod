@@ -18,6 +18,15 @@ class ModelDependencyResolver {
       _resolveInheritance(classDefinition, modelDefinitions);
     });
 
+    modelDefinitions.whereType<ExceptionClassDefinition>().forEach((
+      classDefinition,
+    ) {
+      _resolveInheritance(
+        classDefinition,
+        modelDefinitions,
+      );
+    });
+
     // Then resolve inherited id fields or create default id fields.
     modelDefinitions.whereType<ModelClassDefinition>().forEach((
       classDefinition,
@@ -27,7 +36,7 @@ class ModelDependencyResolver {
 
     // Then resolve everything else, including relations on inherited ids.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      var fields = classDefinition is ModelClassDefinition
+      var fields = classDefinition is InheritanceClassDefinition
           ? classDefinition.fieldsIncludingInherited
           : classDefinition.fields;
 
@@ -52,8 +61,8 @@ class ModelDependencyResolver {
     });
   }
 
-  static void _resolveInheritance(
-    ModelClassDefinition classDefinition,
+  static void _resolveInheritance<T extends InheritanceClassDefinition<T>>(
+    T classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var extendedClass = classDefinition.extendsClass;
@@ -63,7 +72,7 @@ class ModelDependencyResolver {
     var parentClassName = extendedClass.className;
 
     var parentClass = modelDefinitions
-        .whereType<ModelClassDefinition>()
+        .whereType<T>()
         .where((element) => element.className == parentClassName)
         .firstOrNull;
 
