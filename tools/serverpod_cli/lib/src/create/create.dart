@@ -898,7 +898,7 @@ Future<void> _copyServerUpgrade(
         slotName: 'REDIS_TEST_PASSWORD',
         replacement: redisTestPassword,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'CLI_VERSION',
         replacement: templateVersion,
       ),
@@ -1014,7 +1014,7 @@ void _copyServerTemplates(
     dstDir: serverpodDirs.projectDir,
     replacements: [
       // Replace 'name: projectname' with 'name: _' BEFORE general projectname replacement
-      Replacement(
+      const Replacement(
         slotName: 'name: projectname',
         replacement: 'name: _',
       ),
@@ -1029,7 +1029,7 @@ void _copyServerTemplates(
         ),
     ],
     fileNameReplacements: [
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1060,7 +1060,7 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1090,7 +1090,7 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1120,7 +1120,7 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1161,7 +1161,7 @@ void _copyModuleTemplates(
     dstDir: serverpodDirs.projectDir,
     replacements: [
       // Replace 'name: modulename' with 'name: _' BEFORE general modulename replacement
-      Replacement(
+      const Replacement(
         slotName: 'name: modulename',
         replacement: 'name: _',
       ),
@@ -1176,7 +1176,7 @@ void _copyModuleTemplates(
         ),
     ],
     fileNameReplacements: [
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1207,7 +1207,7 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
@@ -1237,7 +1237,7 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
+      const Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
