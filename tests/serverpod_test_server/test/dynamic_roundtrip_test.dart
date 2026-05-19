@@ -22,11 +22,11 @@ void main() {
         () {
           expect(
             serialized['payload'],
-            '{"className":"int","data":42}',
+            {'className': 'int', 'data': 42},
           );
           expect(
             serialized['jsonbPayload'],
-            '{"className":"double","data":10.23}',
+            {'className': 'double', 'data': 10.23},
           );
         },
       );
@@ -35,16 +35,19 @@ void main() {
         'then the list and set fields are encoded with their type.',
         () {
           expect(serialized['payloadList'], [
-            '{"className":"int","data":1}',
-            '{"className":"String","data":"b"}',
-            '{"className":"SimpleData","data":{"__className__":"SimpleData","num":7}}',
+            {'className': 'int', 'data': 1},
+            {'className': 'String', 'data': 'b'},
+            {
+              'className': 'SimpleData',
+              'data': {'__className__': 'SimpleData', 'num': 7},
+            },
           ]);
 
           expect(serialized['payloadSet'], {
-            '{"className":"int","data":1}',
-            '{"className":"int","data":2}',
-            '{"className":"int","data":3}',
-            '{"className":"String","data":"d"}',
+            {'className': 'int', 'data': 1},
+            {'className': 'int', 'data': 2},
+            {'className': 'int', 'data': 3},
+            {'className': 'String', 'data': 'd'},
           });
         },
       );
@@ -54,13 +57,15 @@ void main() {
         () {
           expect(serialized['payloadMapWithDynamicKeys'], [
             {
-              'k': '{"className":"String","data":"a"}',
-              'v': '{"className":"int","data":1}',
+              'k': {'className': 'String', 'data': 'a'},
+              'v': {'className': 'int', 'data': 1},
             },
             {
-              'k': '{"className":"int","data":2}',
-              'v':
-                  '{"className":"SimpleData","data":{"__className__":"SimpleData","num":1}}',
+              'k': {'className': 'int', 'data': 2},
+              'v': {
+                'className': 'SimpleData',
+                'data': {'__className__': 'SimpleData', 'num': 1},
+              },
             },
           ]);
         },
