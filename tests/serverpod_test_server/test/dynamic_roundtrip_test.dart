@@ -74,6 +74,157 @@ void main() {
   );
 
   test(
+    'Given a model with a dynamic field having nested container objects, '
+    'when serializing the model, '
+    'then all nested container objects are encoded with their type.',
+    () {
+      var newObject = object.copyWith(
+        payload: [
+          1,
+          2,
+          3,
+          {'a': 1, 'b': 2, 'c': SimpleData(num: 3)},
+          {'a': 1, 2: SimpleData(num: 2)},
+        ],
+        payloadList: [
+          1,
+          'b',
+          SimpleData(num: 7),
+          [1, 2, 3],
+          {'a': 1, 'b': 2},
+          {'a': 1, 2: SimpleData(num: 2)},
+        ],
+        payloadMap: {
+          'a': 1,
+          'b': 2,
+          'c': SimpleData(num: 3),
+          'd': [1, 2, 3],
+          'e': {'a': 1, 'b': 2},
+          'f': {'a': 1, 2: SimpleData(num: 2)},
+        },
+      );
+
+      final serialized = newObject.toJson();
+
+      expect(serialized['payload'], {
+        'className': 'List',
+        'data': [
+          {'className': 'int', 'data': 1},
+          {'className': 'int', 'data': 2},
+          {'className': 'int', 'data': 3},
+          {
+            'className': 'Map',
+            'data': {
+              'a': {'className': 'int', 'data': 1},
+              'b': {'className': 'int', 'data': 2},
+              'c': {
+                'className': 'SimpleData',
+                'data': {'__className__': 'SimpleData', 'num': 3},
+              },
+            },
+          },
+          {
+            'className': 'Map',
+            'data': [
+              {
+                'k': {'className': 'String', 'data': 'a'},
+                'v': {'className': 'int', 'data': 1},
+              },
+              {
+                'k': {'className': 'int', 'data': 2},
+                'v': {
+                  'className': 'SimpleData',
+                  'data': {'__className__': 'SimpleData', 'num': 2},
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      expect(serialized['payloadList'], [
+        {'className': 'int', 'data': 1},
+        {'className': 'String', 'data': 'b'},
+        {
+          'className': 'SimpleData',
+          'data': {'__className__': 'SimpleData', 'num': 7},
+        },
+        {
+          'className': 'List',
+          'data': [
+            {'className': 'int', 'data': 1},
+            {'className': 'int', 'data': 2},
+            {'className': 'int', 'data': 3},
+          ],
+        },
+        {
+          'className': 'Map',
+          'data': {
+            'a': {'className': 'int', 'data': 1},
+            'b': {'className': 'int', 'data': 2},
+          },
+        },
+        {
+          'className': 'Map',
+          'data': [
+            {
+              'k': {'className': 'String', 'data': 'a'},
+              'v': {'className': 'int', 'data': 1},
+            },
+            {
+              'k': {'className': 'int', 'data': 2},
+              'v': {
+                'className': 'SimpleData',
+                'data': {'__className__': 'SimpleData', 'num': 2},
+              },
+            },
+          ],
+        },
+      ]);
+
+      expect(serialized['payloadMap'], {
+        'a': {'className': 'int', 'data': 1},
+        'b': {'className': 'int', 'data': 2},
+        'c': {
+          'className': 'SimpleData',
+          'data': {'__className__': 'SimpleData', 'num': 3},
+        },
+        'd': {
+          'className': 'List',
+          'data': [
+            {'className': 'int', 'data': 1},
+            {'className': 'int', 'data': 2},
+            {'className': 'int', 'data': 3},
+          ],
+        },
+        'e': {
+          'className': 'Map',
+          'data': {
+            'a': {'className': 'int', 'data': 1},
+            'b': {'className': 'int', 'data': 2},
+          },
+        },
+        'f': {
+          'className': 'Map',
+          'data': [
+            {
+              'k': {'className': 'String', 'data': 'a'},
+              'v': {'className': 'int', 'data': 1},
+            },
+            {
+              'k': {'className': 'int', 'data': 2},
+              'v': {
+                'className': 'SimpleData',
+                'data': {'__className__': 'SimpleData', 'num': 2},
+              },
+            },
+          ],
+        },
+      });
+    },
+  );
+
+  test(
     'Given a model with a dynamic field, '
     'when round-tripping the model, '
     'then the value roundtrips correctly.',
