@@ -582,7 +582,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           'Launching Flutter app (first run may take 30-60s)',
           () async {
             await flutterProcess!.start();
-            await flutterProcess.connectToVmService();
+            // Gate on `launched`, not on VM service connect: on
+            // `-d web-server` the daemon withholds `app.debugPort`
+            // until a browser attaches, so awaiting the VM service
+            // here would hide the served URL behind a 60s+ timeout -
+            // the user can't open the browser they need to open to
+            // unblock the URI publication. Whichever of
+            // `app.webLaunchUrl` / `app.debugPort` arrives first
+            // completes the gate.
+            await flutterProcess.launched;
             return true;
           },
         );
@@ -591,6 +599,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           log.info('Flutter app running at $url');
           onFlutterReady?.call(url);
         }
+        // Connect to the VM service in the background. May pend
+        // indefinitely on `-d web-server` until a browser attaches;
+        // that's expected. Reload is unavailable until it resolves
+        // (FlutterProcess.reload returns false silently).
+        unawaited(flutterProcess.connectToVmService());
       } on FlutterNotInstalledException catch (e) {
         log.warning(e.message);
         flutterProcess = null;
