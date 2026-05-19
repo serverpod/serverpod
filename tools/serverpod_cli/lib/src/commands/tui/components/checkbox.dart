@@ -15,7 +15,7 @@ class Checkbox extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    final indicator = value ? '☒' : '☐';
+    final indicator = value ? '■' : '□';
 
     return Text(
       '$indicator $label',
