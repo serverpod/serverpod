@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dart_mcp/server.dart';
 import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_shared/log.dart';
 
 /// Result of a `create_migration` MCP call. [message] is returned to the
@@ -51,14 +52,14 @@ base class ServerpodMcpServer extends MCPServer
         ),
         instructions:
             'Manage a running Serverpod server process started by '
-            '`serverpod start --watch`.',
+            '`serverpod start`.',
       ) {
-    registerTool(_applyMigrationsTool, _applyMigrations);
-    registerTool(_createMigrationTool, _createMigration);
-    registerTool(_hotReloadTool, _hotReload);
-    registerTool(_tailLogsTool, _tailLogs);
+    registerTool(applyMigrationsTool, _applyMigrations);
+    registerTool(createMigrationTool, _createMigration);
+    registerTool(hotReloadTool, _hotReload);
+    registerTool(tailLogsTool, _tailLogs);
 
-    addResource(_vmServiceResource, _readVmService);
+    addResource(vmServiceResource, _readVmService);
   }
 
   /// Wires a stream whose events signal that the VM service URI has changed.
@@ -67,7 +68,7 @@ base class ServerpodMcpServer extends MCPServer
   set vmServiceUriChanges(Stream<void>? stream) {
     _vmServiceUriSub?.cancel();
     _vmServiceUriSub = stream?.listen((_) {
-      if (ready) updateResource(_vmServiceResource);
+      if (ready) updateResource(vmServiceResource);
     });
   }
 
@@ -77,15 +78,6 @@ base class ServerpodMcpServer extends MCPServer
     _vmServiceUriSub = null;
     await super.shutdown();
   }
-
-  static final _applyMigrationsTool = Tool(
-    name: 'apply_migrations',
-    description:
-        'Apply pending database migrations. The server restarts with '
-        '`--apply-migrations`. Call after `create_migration` (or '
-        '`serverpod create-migration`) has written the migration files.',
-    inputSchema: Schema.object(),
-  );
 
   Future<CallToolResult> _applyMigrations(CallToolRequest request) async {
     final callback = onApplyMigration;
@@ -115,27 +107,6 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _createMigrationTool = Tool(
-    name: 'create_migration',
-    description:
-        'Create a new database migration from the current model definitions. '
-        'Writes the migration files to disk; does not restart the server or '
-        'apply the migration. Follow up with `apply_migrations` to run it '
-        'against the database.',
-    inputSchema: Schema.object(
-      properties: {
-        'tag': Schema.string(
-          description: 'Optional tag appended to the migration version name.',
-        ),
-        'force': Schema.bool(
-          description:
-              'Create the migration even if warnings are present (data may '
-              'be destroyed).',
-        ),
-      },
-    ),
-  );
-
   Future<CallToolResult> _createMigration(CallToolRequest request) async {
     final callback = onCreateMigration;
     if (callback == null) {
@@ -164,16 +135,6 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _vmServiceResource = Resource(
-    uri: 'serverpod://vm-service',
-    name: 'VM service',
-    description:
-        'Dart VM service HTTP URI for the running server isolate. Stable '
-        'across hot reloads; changes on restart (apply_migrations, crash '
-        'recovery). Subscribe to be notified when the URI changes.',
-    mimeType: 'application/json',
-  );
-
   ReadResourceResult _readVmService(ReadResourceRequest request) {
     final uri = getVmServiceUri?.call();
     return ReadResourceResult(
@@ -185,14 +146,6 @@ base class ServerpodMcpServer extends MCPServer
       ],
     );
   }
-
-  static final _hotReloadTool = Tool(
-    name: 'hot_reload',
-    description:
-        'Recompile the server kernel and hot-reload the running isolate. '
-        'Falls back to a full restart if reload is not possible.',
-    inputSchema: Schema.object(),
-  );
 
   Future<CallToolResult> _hotReload(CallToolRequest request) async {
     final callback = onHotReload;
@@ -214,22 +167,6 @@ base class ServerpodMcpServer extends MCPServer
       );
     }
   }
-
-  static final _tailLogsTool = Tool(
-    name: 'tail_logs',
-    description:
-        'Return recent log entries from the running watch session '
-        '(structured log entries plus completed operations). Newest last.',
-    inputSchema: Schema.object(
-      properties: {
-        'limit': Schema.int(
-          description: 'Max entries to return (default 200, max 10000).',
-          minimum: 1,
-          maximum: 10000,
-        ),
-      },
-    ),
-  );
 
   Future<CallToolResult> _tailLogs(CallToolRequest request) async {
     final get = getLogHistory;

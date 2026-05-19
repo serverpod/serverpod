@@ -102,13 +102,15 @@ Future<ServerSocket> bindUnixSocket(String path) async {
 /// Connects to a Unix domain socket at [path].
 ///
 /// Uses [shortestPath] to minimize the path length (Unix sockets are limited
-/// to 104-108 bytes).
-Future<Socket> connectUnixSocket(String path) async {
+/// to 104-108 bytes). If [timeout] is provided, the connect attempt is
+/// abandoned with a [SocketException] after that duration.
+Future<Socket> connectUnixSocket(String path, {Duration? timeout}) async {
   requireUnixSocketSupport();
   requireUnixSocketPathFits(path);
 
   return Socket.connect(
     InternetAddress(shortestPath(path), type: InternetAddressType.unix),
     0,
+    timeout: timeout,
   );
 }
