@@ -1,9 +1,11 @@
+import 'package:serverpod_cli/src/create/copier.dart';
+
 enum TemplateIde {
   antigravity(
     filePath: '.gemini/antigravity/mcp_config.json',
     config: _genericConfig,
     replacements: [
-      IdeConfigReplacement(from: '"dart":', to: '"dart-mcp-server":'),
+      Replacement(slotName: '"dart":', replacement: '"dart-mcp-server":'),
     ],
   ),
   codex(filePath: '.codex/config.toml', config: _codexConfig),
@@ -14,7 +16,7 @@ enum TemplateIde {
     filePath: '.vscode/mcp.json',
     config: _genericConfig,
     replacements: [
-      IdeConfigReplacement(from: '"mcpServers":', to: '"servers":'),
+      Replacement(slotName: '"mcpServers":', replacement: '"servers":'),
     ],
   )
   ;
@@ -33,22 +35,14 @@ enum TemplateIde {
   final String config;
 
   /// Optional replacements to be applied to the config content before writing.
-  final List<IdeConfigReplacement> replacements;
-}
-
-/// A replacement to be applied to the IDE config content.
-class IdeConfigReplacement {
-  const IdeConfigReplacement({required this.from, required this.to});
-
-  final String from;
-  final String to;
+  final List<Replacement> replacements;
 }
 
 extension TemplateIdeExtension on TemplateIde {
   String get effectiveConfig {
     String result = config;
     for (final replacement in replacements) {
-      result = result.replaceAll(replacement.from, replacement.to);
+      result = result.replaceAll(replacement.slotName, replacement.replacement);
     }
     return result;
   }
