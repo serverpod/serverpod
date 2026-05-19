@@ -1625,8 +1625,8 @@ class SerializableModelLibraryGenerator {
     );
     if (fieldType.className == 'dynamic') {
       var encodeMethod = methodName == _toJsonForProtocolMethodName
-          ? 'encodeWithTypeForProtocol'
-          : 'encodeWithType';
+          ? 'dynamicFieldToJsonForProtocol'
+          : 'dynamicFieldToJson';
       return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
     }
     if (fieldType.isRecordType) {

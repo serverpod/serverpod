@@ -57,19 +57,6 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
-  /// Decodes a value for a `dynamic` model field from protocol or database
-  /// shapes: a JSON [String] from [encodeWithType], or a [Map] when JSON was
-  /// parsed before deserialization.
-  dynamic decodeDynamicFieldValue(Object? value) {
-    if (value == null) return null;
-    if (value is String) return decodeWithType(value);
-    if (value is Map<String, dynamic>) return deserializeByClassName(value);
-    throw FormatException(
-      'Dynamic fields are encoded as a Map with the type, but got '
-      '${value.runtimeType} instead.',
-    );
-  }
-
   bool _isType<T1, T2>(Type t) => t == T1 || t == T2;
 
   bool _isNullableType<T>(Type t) => _isType<T, T?>(t);
@@ -164,39 +151,66 @@ abstract class SerializationManager {
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
+    var raw = data['data'];
     switch (className) {
       case 'null':
         return null;
       case 'int':
-        return deserialize<int>(data['data']);
+        return deserialize<int>(raw);
       case 'double':
-        return deserialize<double>(data['data']);
+        return deserialize<double>(raw);
       case 'String':
-        return deserialize<String>(data['data']);
+        return deserialize<String>(raw);
       case 'bool':
-        return deserialize<bool>(data['data']);
+        return deserialize<bool>(raw);
       case 'DateTime':
-        return deserialize<DateTime>(data['data']);
+        return deserialize<DateTime>(raw);
       case 'ByteData':
-        return deserialize<ByteData>(data['data']);
+        return deserialize<ByteData>(raw);
       case 'Duration':
-        return deserialize<Duration>(data['data']);
+        return deserialize<Duration>(raw);
       case 'UuidValue':
-        return deserialize<UuidValue>(data['data']);
+        return deserialize<UuidValue>(raw);
       case 'Uri':
-        return deserialize<Uri>(data['data']);
+        return deserialize<Uri>(raw);
       case 'BigInt':
-        return deserialize<BigInt>(data['data']);
+        return deserialize<BigInt>(raw);
       case 'Vector':
-        return deserialize<Vector>(data['data']);
+        return deserialize<Vector>(raw);
       case 'HalfVector':
-        return deserialize<HalfVector>(data['data']);
+        return deserialize<HalfVector>(raw);
       case 'SparseVector':
-        return deserialize<SparseVector>(data['data']);
+        return deserialize<SparseVector>(raw);
       case 'Bit':
-        return deserialize<Bit>(data['data']);
+        return deserialize<Bit>(raw);
+      case 'List' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toList();
+      case 'Set' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toSet();
+      case 'Map' when raw is Map<String, dynamic>:
+        return raw.map((k, v) => MapEntry(k, deserializeDynamicFieldValue(v)));
+      case 'Map' when raw is List<Map<String, dynamic>>:
+        return Map<dynamic, dynamic>.fromEntries(
+          raw.map(
+            (e) => MapEntry(
+              deserializeDynamicFieldValue(e['k']),
+              deserializeDynamicFieldValue(e['v']),
+            ),
+          ),
+        );
     }
     throw FormatException('No deserialization found for type named $className');
+  }
+
+  /// Decodes a value for a `dynamic` model field: a JSON object ([Map]) with
+  /// `className` and `data` (see [dynamicFieldToJson]).
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return deserializeByClassName(value);
+    throw FormatException(
+      'Dynamic fields are encoded as a Map with className and data, but got '
+      '${value.runtimeType} instead.',
+    );
   }
 
   /// Wraps serialized data with its class name so that it can be deserialized
@@ -326,6 +340,57 @@ abstract class SerializationManager {
       formatted: formatted,
       encodeForProtocol: true,
     );
+  }
+
+  /// Returns a JSON-encodable structure for a `dynamic` model field.
+  Object? dynamicFieldToJson(Object? object) =>
+      _dynamicFieldValueToJson(object, false);
+
+  /// Same as [dynamicFieldToJson] but uses protocol encoding for nested
+  /// [ProtocolSerialization] values.
+  Object? dynamicFieldToJsonForProtocol(Object? object) =>
+      _dynamicFieldValueToJson(object, true);
+
+  /// Recursively encodes values inside `dynamic` fields so that [List], [Set],
+  /// and [Map] children keep per-element type information.
+  ///
+  /// Does not use [wrapWithClassName] for container types so that
+  /// [getClassNameForObject] is not required to name raw collections.
+  Object? _dynamicFieldValueToJson(Object? object, bool encodeForProtocol) {
+    return switch (object) {
+      List() => {
+        'className': 'List',
+        'data': [
+          for (final e in object)
+            _dynamicFieldValueToJson(e, encodeForProtocol),
+        ],
+      },
+      Set() => {
+        'className': 'Set',
+        'data': [
+          for (final e in object)
+            _dynamicFieldValueToJson(e, encodeForProtocol),
+        ],
+      },
+      Map() when object.keys.every((k) => k is String) => {
+        'className': 'Map',
+        'data': {
+          for (final e in Map<String, dynamic>.from(object).entries)
+            e.key: _dynamicFieldValueToJson(e.value, encodeForProtocol),
+        },
+      },
+      Map() => {
+        'className': 'Map',
+        'data': [
+          for (final e in object.entries)
+            {
+              'k': _dynamicFieldValueToJson(e.key, encodeForProtocol),
+              'v': _dynamicFieldValueToJson(e.value, encodeForProtocol),
+            },
+        ],
+      },
+      _ => _toEncodable(wrapWithClassName(object), encodeForProtocol),
+    };
   }
 }
 
