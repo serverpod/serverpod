@@ -24,6 +24,7 @@ import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
+import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -33,6 +34,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -305,26 +307,49 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
   return ['--apply-migrations', ...serverArgs];
 }
 
-/// Watch-session [ApplyMigrationsAction] that wraps [applyPendingMigrations]
-/// with the same FFI-resolver fallback policy as the boot path
+/// Builds a service client targeting the running pod's Insights server.
+/// Chdirs into [serverDir] briefly because [ConfigInfo] reads `config/` and
+/// `passwords.yaml` relative to the working directory.
+Client _buildServiceClient({
+  required String serverDir,
+  required String runMode,
+}) {
+  final originalCwd = Directory.current;
+  Directory.current = Directory(serverDir);
+  try {
+    return ConfigInfo(runMode).createServiceClient();
+  } finally {
+    Directory.current = originalCwd;
+  }
+}
+
+/// Watch-session [ApplyMigrationsAction] that applies pending migrations
+/// by calling the running pod's `applyMigrations` endpoint. The pod itself
+/// runs the migration in-process; the CLI only triggers it.
+///
+/// If the endpoint call fails (e.g. the pod is unreachable), defers to a
+/// pod restart with `--apply-migrations`, which applies pending migrations
+/// during boot.
 Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
-  required String moduleName,
   required void Function() onDeferToPod,
 }) async {
+  Client? client;
   try {
-    final applied = await applyPendingMigrations(
-      serverDir: serverDir,
-      runMode: runMode,
-      moduleName: moduleName,
+    client = _buildServiceClient(serverDir: serverDir, runMode: runMode);
+    final result = await client.insights.applyMigrations(
+      applyRepairMigration: false,
+      applyMigrations: true,
     );
-    log.info(formatAppliedMigrations(applied));
+    log.info(formatAppliedMigrations(result.migrationsApplied ?? const []));
     return const MigrationsApplied();
   } catch (e) {
-    if (!isMissingNativeAssetError(e)) rethrow;
+    log.warning('Failed to apply migrations through the running pod: $e');
     onDeferToPod();
     return const MigrationsRequirePodRestart();
+  } finally {
+    client?.close();
   }
 }
 
@@ -515,7 +540,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
-      moduleName: config.name,
       onDeferToPod: () {
         log.warning(
           'Cannot apply migrations from the CLI.\n'
