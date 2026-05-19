@@ -134,14 +134,14 @@ class MainScreen extends StatelessComponent {
             ),
             Row(
               children: [
-                for (final option in config.options.indexed) ...[
+                for (final option in config.options) ...[
                   _buildConfigurationOption(
                     theme,
-                    option.$2,
-                    selected: selectedOption == option.$2,
+                    option,
+                    selected: selectedOption == option,
                     style: const TextStyle(color: Color.defaultColor),
                     onTap: () {
-                      state.updateSelectedOption(config, option.$2);
+                      state.updateSelectedOption(config, option);
                       holder.markDirty();
                     },
                   ),
@@ -181,14 +181,14 @@ class MainScreen extends StatelessComponent {
             Wrap(
               spacing: 2,
               children: [
-                for (final option in config.options.indexed)
+                for (final option in config.options)
                   _buildMultiSelectOption(
                     theme,
-                    option.$2,
-                    selected: selectedOptions.contains(option.$2),
+                    option,
+                    selected: selectedOptions.contains(option),
                     style: const TextStyle(color: Color.defaultColor),
                     onTap: () {
-                      state.updateSelectedOption(config, option.$2);
+                      state.updateSelectedOption(config, option);
                       holder.markDirty();
                     },
                   ),
