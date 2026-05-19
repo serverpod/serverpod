@@ -34,8 +34,19 @@ final Tool createMigrationTool = Tool(
 final Tool hotReloadTool = Tool(
   name: 'hot_reload',
   description:
-      'Recompile the server kernel and hot-reload the running isolate. '
-      'Falls back to a full restart if reload is not possible.',
+      'Hot-reload the running server isolate, preserving in-memory state. '
+      'Falls back to a restart if reload is not possible. In `--watch` '
+      'mode the runner auto-reloads on file changes, so this is mainly '
+      'useful with `--no-watch`.',
+  inputSchema: Schema.object(),
+);
+
+final Tool hotRestartTool = Tool(
+  name: 'hot_restart',
+  description:
+      'Restart the running server process, dropping all in-memory state. '
+      'Use when reload would not suffice (e.g. `main()` changes) or to '
+      'recover a stuck isolate.',
   inputSchema: Schema.object(),
 );
 
@@ -60,8 +71,8 @@ final Resource vmServiceResource = Resource(
   name: 'VM service',
   description:
       'Dart VM service HTTP URI for the running server isolate. Stable '
-      'across hot reloads; changes on restart (e.g. after crash recovery). '
-      'Subscribe to be notified when the URI changes.',
+      'across hot reloads; changes on restart (e.g. `hot_restart` or '
+      'crash recovery). Subscribe to be notified when the URI changes.',
   mimeType: 'application/json',
 );
 
@@ -69,6 +80,7 @@ final List<Tool> runnerStaticTools = [
   applyMigrationsTool,
   createMigrationTool,
   hotReloadTool,
+  hotRestartTool,
   tailLogsTool,
 ];
 

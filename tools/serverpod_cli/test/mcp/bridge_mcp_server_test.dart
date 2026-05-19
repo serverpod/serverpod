@@ -19,8 +19,8 @@ import 'package:test/test.dart';
 ///
 /// The bridge auto-connects on the first tool/resource call. The runner's
 /// static surface (apply_migrations, create_migration, hot_reload,
-/// tail_logs, serverpod://vm-service) is advertised upfront regardless of
-/// whether the runner is currently up.
+/// hot_restart, tail_logs, serverpod://vm-service) is advertised upfront
+/// regardless of whether the runner is currently up.
 void main() {
   group(
     'Given a BridgeMcpServer wired to a running runner socket',
@@ -65,6 +65,7 @@ void main() {
               'apply_migrations',
               'create_migration',
               'hot_reload',
+              'hot_restart',
               'tail_logs',
             }),
           );
@@ -132,6 +133,7 @@ void main() {
               'apply_migrations',
               'create_migration',
               'hot_reload',
+              'hot_restart',
               'tail_logs',
             }),
           );
