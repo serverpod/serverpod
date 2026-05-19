@@ -75,8 +75,8 @@ class FlutterProcess {
 
   FlutterProcess({
     required String flutterPackageDir,
+    required String device,
     String flutterExecutable = 'flutter',
-    String device = 'web-server',
     List<String> extraArgs = const [],
     String? vmServiceInfoFile,
     void Function(String stage)? onProgress,
