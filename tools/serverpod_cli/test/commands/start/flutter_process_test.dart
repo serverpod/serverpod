@@ -69,8 +69,8 @@ void main() {
       'then the second call throws StateError instead of spawning a duplicate process',
       () async {
         // Use a long-running shim so the first process is still alive when
-        // we attempt the second start; exit_immediately would clear
-        // _process before the second call.
+        // we attempt the second start - a shim that exits immediately
+        // would clear _process before the second call.
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
           flutterExecutable: _dartExecutable(),
@@ -387,34 +387,5 @@ void main() {
         expect(fp.flutterAppUrl, isNull);
       },
     );
-
-    test('first app.debugPort wins; later wsUri events are ignored', () {
-      final fp = bareFp();
-      fp.handleMachineLine(
-        jsonEncode([
-          {
-            'event': 'app.debugPort',
-            'params': {'wsUri': 'ws://127.0.0.1:1111/ws'},
-          },
-        ]),
-      );
-      fp.handleMachineLine(
-        jsonEncode([
-          {
-            'event': 'app.debugPort',
-            'params': {'wsUri': 'ws://127.0.0.1:2222/ws'},
-          },
-        ]),
-      );
-      // The captured URI is only readable once connectToVmService runs;
-      // assert that calling that with an extremely short timeout finds
-      // the first URI in the completer and gives up after the connect
-      // retries.
-      // (We can't connect to a real VM at port 1111 - the connect loop
-      // will exhaust its retries and `connectToVmService` returns with
-      // _vmServiceUri populated from the first wsUri.)
-      // The behavioral check that matters here: the parser didn't
-      // throw and accepted both lines without crashing.
-    });
   });
 }
