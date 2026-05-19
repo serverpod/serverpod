@@ -150,7 +150,7 @@ void main() {
       );
 
       group(
-        'given an ide option is selected',
+        'when an ide option is selected',
         () {
           setUp(() {
             state.updateSelectedOption(
@@ -220,7 +220,7 @@ void main() {
       );
 
       group(
-        'given multiple ide options are selected, ',
+        'when multiple ide options are selected, ',
         () {
           setUp(() {
             state.updateSelectedOption(
@@ -484,7 +484,7 @@ void main() {
       );
 
       group(
-        'Given a non-postgres database config option is selected',
+        'when a non-postgres database config option is selected',
         () {
           setUp(() {
             // Move to database config
