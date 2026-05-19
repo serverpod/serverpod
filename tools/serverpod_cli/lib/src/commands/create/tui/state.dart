@@ -97,12 +97,29 @@ class CreateConfigState extends ServerpodState {
     return getSelectedOptionFor(req.requiredConfig) != req.requiredConfigOption;
   }
 
+  /// Updates the focused [ConfigOption] for the focused [ServerpodCreateConfig].
+  void updateFocusedConfigOption(int delta) {
+    final config = configValues[_focusedConfigIndex];
+    final configState = _optionStateValues[config];
+    configState?._updateFocusedOption(delta);
+  }
+
   /// Updates the selected [ConfigOption] for the focused [ServerpodCreateConfig].
-  void selectConfigOption(int delta) {
+  void selectConfigOption() {
     final config = configValues[_focusedConfigIndex];
     final configState = _optionStateValues[config];
     if (configState == null) return;
-    configState._updateFocusedOption(delta);
+
+    // Invert the focused option for config with boolean options
+    // to select correct option since the UI only displays 'Enabled' option
+    if (config.isBoolean) {
+      final selectedOption = getSelectedOptionFor(config);
+      final unselectedOptionIndex = config.options.indexWhere(
+        (e) => e != selectedOption,
+      );
+      configState._focusedOptionIndex = unselectedOptionIndex;
+    }
+
     final focusedOptionIndex = configState.focusedOptionIndex;
     final newOption = config.options[focusedOptionIndex];
     _updateOptionFor(config, newOption);
@@ -225,7 +242,7 @@ class ServerpodCreateConfigState<T extends ServerpodCreateConfig> {
   final T config;
   final int _maxIndex;
 
-  late int _focusedOptionIndex = config.multiSelect ? -1 : 0;
+  late int _focusedOptionIndex = 0;
   int get focusedOptionIndex => _focusedOptionIndex;
 
   void _updateFocusedOption(int delta) {

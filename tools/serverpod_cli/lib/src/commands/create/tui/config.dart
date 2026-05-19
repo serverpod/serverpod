@@ -43,10 +43,11 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
     ],
   ),
   ide<IdeOption>(
-    label: 'IDEs (click to select)',
+    label: 'IDEs',
     options: IdeOption.values,
     templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
     multiSelect: true,
+    defaultOptions: <IdeOption>{},
   )
   ;
 
@@ -54,7 +55,7 @@ enum ServerpodCreateConfig<T extends ConfigOption> {
     required this.label,
     required this.options,
     required this.templates,
-    this.defaultOptions = const {},
+    required this.defaultOptions,
     this.requirements = const [],
     this.multiSelect = false,
   });
@@ -186,4 +187,8 @@ extension IdeOptionsExtension on Set<IdeOption> {
       };
     }).toList();
   }
+}
+
+extension ServerpodCreateConfigExtension on ServerpodCreateConfig {
+  bool get isBoolean => defaultOptions is Set<BoolConfigOption>;
 }
