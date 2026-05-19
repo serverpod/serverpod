@@ -444,7 +444,7 @@ export 'client.dart';
 class Protocol extends _i1.SerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -7260,6 +7260,12 @@ class Protocol extends _i1.SerializationManager {
       return deserialize<List<(String, int)>?>(data['data']);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i210.Protocol().registerHostProtocol('serverpod_test', this);
+    _i205.Protocol().registerHostProtocol('serverpod_test', this);
+    _i207.Protocol().registerHostProtocol('serverpod_test', this);
   }
 
   /// Wraps serialized data with its class name so that it can be deserialized

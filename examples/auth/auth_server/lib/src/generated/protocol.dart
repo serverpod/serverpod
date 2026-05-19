@@ -23,7 +23,7 @@ export 'greeting.dart';
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -144,6 +144,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return _i4.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i3.Protocol().registerHostProtocol('auth', this);
+    _i4.Protocol().registerHostProtocol('auth', this);
   }
 
   @override

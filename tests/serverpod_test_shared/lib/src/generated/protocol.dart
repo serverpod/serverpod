@@ -33,6 +33,8 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._();
 
+  final Map<String, _i1.SerializationManager> _hostProtocols = {};
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -149,6 +151,13 @@ class Protocol extends _i1.SerializationManager {
       case _i8.SharedSealedChild():
         return 'SharedSealedChild';
     }
+    for (final entry in _hostProtocols.entries) {
+      final hostClassName = entry.value.getClassNameForObject(data);
+      if (hostClassName != null) {
+        return '${entry.key}.$hostClassName';
+      }
+    }
+
     return null;
   }
 
@@ -179,7 +188,22 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SharedSealedChild') {
       return deserialize<_i8.SharedSealedChild>(data['data']);
     }
+    for (final entry in _hostProtocols.entries) {
+      if (dataClassName.startsWith('${entry.key}.')) {
+        data['className'] = dataClassName.substring(entry.key.length + 1);
+        return entry.value.deserializeByClassName(data);
+      }
+    }
+
     return super.deserializeByClassName(data);
+  }
+
+  @override
+  void registerHostProtocol(
+    String projectName,
+    _i1.SerializationManager protocol,
+  ) {
+    _hostProtocols[projectName] = protocol;
   }
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation

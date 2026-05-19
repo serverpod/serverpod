@@ -23,7 +23,7 @@ export 'client.dart';
 class Protocol extends _i1.SerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -127,6 +127,11 @@ class Protocol extends _i1.SerializationManager {
       return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i4.Protocol().registerHostProtocol('auth', this);
+    _i5.Protocol().registerHostProtocol('auth', this);
   }
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
