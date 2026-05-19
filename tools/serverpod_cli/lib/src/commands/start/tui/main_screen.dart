@@ -169,7 +169,7 @@ class MainScreen extends StatelessComponent {
     return ButtonBar(
       buttons: [
         Button(
-          name: 'Reload',
+          name: 'Hot reload / restart',
           activationChar: 'R',
           activationKeys: const [LogicalKey.keyR],
           onActivate: (_) => onHotReload?.call(),
@@ -177,7 +177,7 @@ class MainScreen extends StatelessComponent {
           enabled: actionsEnabled && onHotReload != null,
         ),
         Button(
-          name: 'Migrate',
+          name: 'Create migration',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
           onActivate: (_) => onCreateMigration?.call(),
@@ -185,7 +185,7 @@ class MainScreen extends StatelessComponent {
           enabled: actionsEnabled && onCreateMigration != null,
         ),
         Button(
-          name: 'Repair',
+          name: 'Repair migration',
           activationChar: 'P',
           activationKeys: const [LogicalKey.keyP],
           onActivate: (_) => onCreateRepairMigration?.call(),
@@ -193,7 +193,7 @@ class MainScreen extends StatelessComponent {
           enabled: actionsEnabled && onCreateRepairMigration != null,
         ),
         Button(
-          name: 'Apply',
+          name: 'Apply migrations',
           activationChar: 'A',
           activationKeys: const [LogicalKey.keyA],
           onActivate: (_) => onApplyMigration?.call(),
