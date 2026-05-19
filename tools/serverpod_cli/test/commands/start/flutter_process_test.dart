@@ -54,6 +54,7 @@ void main() {
       () async {
         final fp = FlutterProcess(
           flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
           flutterExecutable: '/definitely/not/a/real/binary',
         );
 
@@ -73,6 +74,7 @@ void main() {
         // would clear _process before the second call.
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
+          device: 'web-server',
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [_shimPath('never_publishes_uri.dart')],
         );
@@ -89,6 +91,7 @@ void main() {
       () async {
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
+          device: 'web-server',
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [_shimPath('never_publishes_uri.dart')],
         );
@@ -127,6 +130,7 @@ void main() {
 
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
+          device: 'web-server',
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [
             _shimPath('emits_machine_events.dart'),
@@ -171,6 +175,7 @@ void main() {
       () async {
         final fp = FlutterProcess(
           flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
         );
         expect(await fp.reload(), isFalse);
       },
@@ -182,6 +187,7 @@ void main() {
       () async {
         final fp = FlutterProcess(
           flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
         );
         expect(await fp.stop(), 0);
         expect(await fp.stop(), 0);
@@ -200,6 +206,7 @@ void main() {
 
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
+          device: 'web-server',
           flutterExecutable: _dartExecutable(),
           argsOverrideForTesting: [
             _shimPath('emits_machine_events.dart'),
@@ -285,6 +292,7 @@ void main() {
     FlutterProcess bareFp({void Function(String)? onProgress}) =>
         FlutterProcess(
           flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
           onProgress: onProgress,
         );
 
