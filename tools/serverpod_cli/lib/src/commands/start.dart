@@ -599,11 +599,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           log.info('Flutter app running at $url');
           onFlutterReady?.call(url);
         }
-        // Connect to the VM service in the background. May pend
-        // indefinitely on `-d web-server` until a browser attaches;
-        // that's expected. Reload is unavailable until it resolves
+        // Connect to the VM service in the background as its own
+        // tracked operation so the TUI shows a parallel spinner: on
+        // `-d web-server` the VM service URI doesn't arrive until a
+        // browser attaches, so this can pend for an arbitrary time
+        // after launch completes - making that visible matters.
+        // Reload is unavailable until this resolves
         // (FlutterProcess.reload returns false silently).
-        unawaited(flutterProcess.connectToVmService());
+        unawaited(
+          log.progress(
+            'Connecting to Flutter VM service',
+            () async {
+              await flutterProcess!.connectToVmService();
+              return flutterProcess.isVmServiceConnected;
+            },
+          ),
+        );
       } on FlutterNotInstalledException catch (e) {
         log.warning(e.message);
         flutterProcess = null;
