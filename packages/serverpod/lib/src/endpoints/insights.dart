@@ -10,6 +10,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../serverpod.dart' hide Cache;
 import '../cache/cache.dart';
 import '../generated/protocol.dart';
+import '../server/apply_migrations.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -233,36 +234,26 @@ class InsightsEndpoint extends Endpoint {
 
   /// Applies pending database migrations to the running pod, mirroring the
   /// boot-time path triggered by `--apply-migrations` and
-  /// `--apply-repair-migration`. Unlike that path, this method intentionally
-  /// does NOT call [MigrationManager.verifyDatabaseIntegrity] — the database
-  /// is allowed to be in an inconsistent state until the pod's next start,
-  /// at which point integrity is re-checked.
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
   ///
   /// Used by `serverpod start`'s watch loop to apply newly generated
   /// migrations without restarting the pod.
-  Future<MigrationApplyResult> applyMigrations(
+  Future<MigrationsApplyResult> applyMigrations(
     Session session, {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    final migrationManager = MigrationManager.fromDirectory(
-      Directory.current,
+    return applyMigrationsAndVerify(
+      session: session,
+      projectDirectory: Directory.current,
       runMode: session.serverpod.runMode,
-    );
-    String? repairMigrationApplied;
-    if (applyRepairMigration) {
-      repairMigrationApplied = await migrationManager.applyRepairMigration(
-        session,
-      );
-    }
-
-    List<String>? migrationsApplied;
-    if (applyMigrations) {
-      migrationsApplied = await migrationManager.migrateToLatest(session);
-    }
-    return MigrationApplyResult(
-      repairMigrationApplied: repairMigrationApplied,
-      migrationsApplied: migrationsApplied,
+      applyRepairMigration: applyRepairMigration,
+      applyMigrations: applyMigrations,
     );
   }
 

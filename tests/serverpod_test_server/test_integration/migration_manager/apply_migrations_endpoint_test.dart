@@ -14,7 +14,7 @@ void main() {
 
       test(
         'when applyMigrations is called requesting regular migrations, '
-        'then no migrations are reported as applied',
+        'then no migrations are reported as applied and integrity verification passes',
         () async {
           final session = sessionBuilder.build();
           final result = await endpoint.applyMigrations(
@@ -25,12 +25,13 @@ void main() {
 
           expect(result.migrationsApplied, isNull);
           expect(result.repairMigrationApplied, isNull);
+          expect(result.databaseMatchesTargetState, isTrue);
         },
       );
 
       test(
         'when applyMigrations is called with no work requested, '
-        'then both result fields are null',
+        'then no migrations are reported as applied and integrity verification passes',
         () async {
           final session = sessionBuilder.build();
           final result = await endpoint.applyMigrations(
@@ -41,6 +42,7 @@ void main() {
 
           expect(result.migrationsApplied, isNull);
           expect(result.repairMigrationApplied, isNull);
+          expect(result.databaseMatchesTargetState, isTrue);
         },
       );
     },

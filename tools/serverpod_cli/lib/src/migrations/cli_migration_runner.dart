@@ -139,12 +139,12 @@ DatabaseConfig _resolveDbConfigPaths(
 ServerpodConfig _loadServerpodConfig({
   required String serverDir,
   required String runMode,
-}) => _withServerDir(
+}) => withServerDir(
   serverDir: serverDir,
   action: () => ConfigInfo(runMode).config,
 );
 
-T _withServerDir<T>({
+T withServerDir<T>({
   required String serverDir,
   required T Function() action,
 }) {

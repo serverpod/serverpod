@@ -31,7 +31,7 @@ import 'log_settings.dart' as _i18;
 import 'log_settings_override.dart' as _i19;
 import 'message_log_entry.dart' as _i20;
 import 'method_info.dart' as _i21;
-import 'migration_apply_result.dart' as _i22;
+import 'migrations_apply_result.dart' as _i22;
 import 'query_log_entry.dart' as _i23;
 import 'readwrite_test.dart' as _i24;
 import 'runtime_settings.dart' as _i25;
@@ -65,7 +65,7 @@ export 'log_settings.dart';
 export 'log_settings_override.dart';
 export 'message_log_entry.dart';
 export 'method_info.dart';
-export 'migration_apply_result.dart';
+export 'migrations_apply_result.dart';
 export 'query_log_entry.dart';
 export 'readwrite_test.dart';
 export 'runtime_settings.dart';
@@ -178,8 +178,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i21.MethodInfo) {
       return _i21.MethodInfo.fromJson(data) as T;
     }
-    if (t == _i22.MigrationApplyResult) {
-      return _i22.MigrationApplyResult.fromJson(data) as T;
+    if (t == _i22.MigrationsApplyResult) {
+      return _i22.MigrationsApplyResult.fromJson(data) as T;
     }
     if (t == _i23.QueryLogEntry) {
       return _i23.QueryLogEntry.fromJson(data) as T;
@@ -290,8 +290,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i21.MethodInfo?>()) {
       return (data != null ? _i21.MethodInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.MigrationApplyResult?>()) {
-      return (data != null ? _i22.MigrationApplyResult.fromJson(data) : null)
+    if (t == _i1.getType<_i22.MigrationsApplyResult?>()) {
+      return (data != null ? _i22.MigrationsApplyResult.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i23.QueryLogEntry?>()) {
@@ -451,7 +451,7 @@ class Protocol extends _i1.SerializationManager {
       _i19.LogSettingsOverride => 'LogSettingsOverride',
       _i20.MessageLogEntry => 'MessageLogEntry',
       _i21.MethodInfo => 'MethodInfo',
-      _i22.MigrationApplyResult => 'MigrationApplyResult',
+      _i22.MigrationsApplyResult => 'MigrationsApplyResult',
       _i23.QueryLogEntry => 'QueryLogEntry',
       _i24.ReadWriteTestEntry => 'ReadWriteTestEntry',
       _i25.RuntimeSettings => 'RuntimeSettings',
@@ -519,8 +519,8 @@ class Protocol extends _i1.SerializationManager {
         return 'MessageLogEntry';
       case _i21.MethodInfo():
         return 'MethodInfo';
-      case _i22.MigrationApplyResult():
-        return 'MigrationApplyResult';
+      case _i22.MigrationsApplyResult():
+        return 'MigrationsApplyResult';
       case _i23.QueryLogEntry():
         return 'QueryLogEntry';
       case _i24.ReadWriteTestEntry():
@@ -616,8 +616,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'MethodInfo') {
       return deserialize<_i21.MethodInfo>(data['data']);
     }
-    if (dataClassName == 'MigrationApplyResult') {
-      return deserialize<_i22.MigrationApplyResult>(data['data']);
+    if (dataClassName == 'MigrationsApplyResult') {
+      return deserialize<_i22.MigrationsApplyResult>(data['data']);
     }
     if (dataClassName == 'QueryLogEntry') {
       return deserialize<_i23.QueryLogEntry>(data['data']);

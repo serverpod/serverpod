@@ -34,7 +34,6 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -307,49 +306,26 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
   return ['--apply-migrations', ...serverArgs];
 }
 
-/// Builds a service client targeting the running pod's Insights server.
-/// Chdirs into [serverDir] briefly because [ConfigInfo] reads `config/` and
-/// `passwords.yaml` relative to the working directory.
-Client _buildServiceClient({
-  required String serverDir,
-  required String runMode,
-}) {
-  final originalCwd = Directory.current;
-  Directory.current = Directory(serverDir);
-  try {
-    return ConfigInfo(runMode).createServiceClient();
-  } finally {
-    Directory.current = originalCwd;
-  }
-}
-
-/// Watch-session [ApplyMigrationsAction] that applies pending migrations
-/// by calling the running pod's `applyMigrations` endpoint. The pod itself
-/// runs the migration in-process; the CLI only triggers it.
-///
-/// If the endpoint call fails (e.g. the pod is unreachable), defers to a
-/// pod restart with `--apply-migrations`, which applies pending migrations
-/// during boot.
+/// Watch-session [ApplyMigrationsAction] that applies pending and repair
+/// migrations by calling the running pod's `applyMigrations` endpoint. The
+/// pod itself runs the migration in-process; the CLI only triggers it.
 Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
-  required void Function() onDeferToPod,
 }) async {
-  Client? client;
+  final client = withServerDir(
+    serverDir: serverDir,
+    action: () => ConfigInfo(runMode).createServiceClient(),
+  );
   try {
-    client = _buildServiceClient(serverDir: serverDir, runMode: runMode);
     final result = await client.insights.applyMigrations(
-      applyRepairMigration: false,
+      applyRepairMigration: true,
       applyMigrations: true,
     );
     log.info(formatAppliedMigrations(result.migrationsApplied ?? const []));
     return const MigrationsApplied();
-  } on SocketException catch (e) {
-    log.warning('Could not reach the pod to apply migrations: $e');
-    onDeferToPod();
-    return const MigrationsRequirePodRestart();
   } finally {
-    client?.close();
+    client.close();
   }
 }
 
@@ -540,13 +516,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
-      onDeferToPod: () {
-        log.warning(
-          'Cannot apply migrations from the CLI.\n'
-          'Falling back to restarting the pod with --apply-migrations.',
-        );
-        serverArgs.value = _withApplyMigrations(serverArgs.value);
-      },
     ),
   );
 

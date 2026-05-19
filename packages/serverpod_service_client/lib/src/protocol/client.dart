@@ -24,7 +24,7 @@ import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
 import 'package:serverpod_database/src/generated/table_definition.dart' as _i8;
 import 'package:serverpod_database/src/generated/database_definition.dart'
     as _i9;
-import 'package:serverpod_service_client/src/protocol/migration_apply_result.dart'
+import 'package:serverpod_service_client/src/protocol/migrations_apply_result.dart'
     as _i10;
 import 'package:serverpod_database/src/generated/database_definitions.dart'
     as _i11;
@@ -168,17 +168,19 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Applies pending database migrations to the running pod, mirroring the
   /// boot-time path triggered by `--apply-migrations` and
-  /// `--apply-repair-migration`. Unlike that path, this method intentionally
-  /// does NOT call [MigrationManager.verifyDatabaseIntegrity] — the database
-  /// is allowed to be in an inconsistent state until the pod's next start,
-  /// at which point integrity is re-checked.
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
   ///
   /// Used by `serverpod start`'s watch loop to apply newly generated
   /// migrations without restarting the pod.
-  _i2.Future<_i10.MigrationApplyResult> applyMigrations({
+  _i2.Future<_i10.MigrationsApplyResult> applyMigrations({
     required bool applyRepairMigration,
     required bool applyMigrations,
-  }) => caller.callServerEndpoint<_i10.MigrationApplyResult>(
+  }) => caller.callServerEndpoint<_i10.MigrationsApplyResult>(
     'insights',
     'applyMigrations',
     {
