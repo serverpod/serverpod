@@ -394,11 +394,15 @@ class FlutterProcess {
     Duration timeout = const Duration(seconds: 5),
   }) async {
     final process = _process;
-    if (process == null) return 0;
+    if (process == null) {
+      log.debug('Flutter stop: no process (already stopped or never started).');
+      return 0;
+    }
 
     await _sigtermSub?.cancel();
     _sigtermSub = null;
 
+    log.debug('Flutter stop: sending SIGINT to PID ${process.pid}');
     process.kill(ProcessSignal.sigint);
 
     final exitCode = await process.exitCode.timeout(
@@ -411,6 +415,7 @@ class FlutterProcess {
         return process.exitCode;
       },
     );
+    log.debug('Flutter stop: PID ${process.pid} exited with $exitCode');
 
     await _cleanup();
     return exitCode;
@@ -441,6 +446,13 @@ class FlutterProcess {
 
       final params = entry['params'];
       final paramMap = params is Map ? params : const {};
+
+      // Trace every machine event at debug level - the daemon's actual
+      // event ordering on web is opaque (e.g. `app.webLaunchUrl` fires
+      // after the cold compile, not when the dev server binds), and
+      // surprises here are easier to diagnose with a timeline than by
+      // guessing. Cheap: only enabled at debug log level.
+      log.debug('flutter[--machine] $event ${jsonEncode(paramMap)}');
 
       switch (event) {
         case 'app.debugPort':
