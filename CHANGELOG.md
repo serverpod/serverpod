@@ -1,3 +1,20 @@
+## 3.5.0-beta.8
+
+- feat: Launches the Flutter app from `serverpod start` with integrated hot reload/restart.
+- feat: Introduces the `dataPath` parameter on `database` config to run PostgreSQL in embedded mode.
+- feat: Exposes `hot_restart` and `create_repair_migration` commands on both TUI and MCP.
+- feat: Makes the `global` cache fallback to local in development/testing.
+- feat: Allows selecting the IDEs to configure skills and MCPs when running `serverpod create`.
+- feat: Adds `FlutterWebAuth2RedirectRoute` for OAuth2 PKCE web sign-in flow.
+- feat: Exposes the parameter `httpClientOverride` on the generated `Client` for HTTP client override.
+- feat: Exposes health endpoints on the webserver.
+- fix: Makes the `serverpod start` MCP tied to the current project server.
+- fix: Fixes `copyWith` method on `dynamic` fields overriding unchanged fields.
+- fix: Fixes `dynamic` fields being serialized as an encoded `String` instead of the `Map` (breaking change since last beta version).
+- fix: Allows OWASP special characters in password field ([@realmeylisdev](https://github.com/realmeylisdev))
+- chore: Replaces `SQLite` by `PostgreSQL` as the default database on `quickstart` command.
+- chore: Improves the skills to better guide agents on the new `serverpod start` experience.
+
 ## 3.5.0-beta.7
 
 - feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
