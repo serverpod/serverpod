@@ -344,8 +344,8 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
     );
     log.info(formatAppliedMigrations(result.migrationsApplied ?? const []));
     return const MigrationsApplied();
-  } catch (e) {
-    log.warning('Failed to apply migrations through the running pod: $e');
+  } on SocketException catch (e) {
+    log.warning('Could not reach the pod to apply migrations: $e');
     onDeferToPod();
     return const MigrationsRequirePodRestart();
   } finally {

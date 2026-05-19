@@ -159,9 +159,7 @@ T _withServerDir<T>({
 
 /// Minimal [DatabaseSerializationManager] stub. The CLI doesn't have
 /// access to the project's generated serialization manager, but the
-/// migration code path only needs the module-name check. Integrity
-/// verification runs later using target table definitions loaded over
-/// the insights endpoint.
+/// migration code path only needs the module-name check.
 class _CliSerializationManager extends DatabaseSerializationManager {
   _CliSerializationManager(this._moduleName);
 
