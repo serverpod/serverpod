@@ -38,11 +38,10 @@ base class BridgeMcpServer extends MCPServer
     : super.fromStreamChannel(
         implementation: _bridgeImplementation,
         instructions:
-            'Bridge to the `serverpod start --watch` runner for this '
+            'Bridge to the server running with `serverpod start` for this '
             'project. Tools and resources auto-connect to the runner on '
-            'demand. If the runner is not currently running, calls return '
-            'a message asking the user to start it with '
-            '`serverpod start --watch`.',
+            'demand. If the runner is not currently available, ask the '
+            'user to start it with `serverpod start`.',
       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -58,9 +57,8 @@ base class BridgeMcpServer extends MCPServer
     content: [
       TextContent(
         text:
-            'The `serverpod start --watch` runner for this project is not '
-            'running. Please ask the user to run `serverpod start --watch` '
-            'in the project directory.',
+            'The server is not running with `serverpod start` for this project. '
+            'Ask the user to run `serverpod start` in the project directory.',
       ),
     ],
     isError: true,

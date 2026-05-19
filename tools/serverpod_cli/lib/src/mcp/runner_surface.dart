@@ -1,4 +1,4 @@
-/// MCP tools and resources exposed by `serverpod start --watch`.
+/// MCP tools and resources exposed by `serverpod start`.
 library;
 
 import 'package:dart_mcp/server.dart';
@@ -6,9 +6,8 @@ import 'package:dart_mcp/server.dart';
 final Tool applyMigrationsTool = Tool(
   name: 'apply_migrations',
   description:
-      'Apply pending database migrations. The server restarts with '
-      '`--apply-migrations`. Call after `create_migration` (or '
-      '`serverpod create-migration`) has written the migration files.',
+      'Apply pending database migrations without restarting the server. '
+      'Call after creating a migration.',
   inputSchema: Schema.object(),
 );
 
@@ -16,9 +15,8 @@ final Tool createMigrationTool = Tool(
   name: 'create_migration',
   description:
       'Create a new database migration from the current model definitions. '
-      'Writes the migration files to disk; does not restart the server or '
-      'apply the migration. Follow up with `apply_migrations` to run it '
-      'against the database.',
+      'Only writes the migration files to disk, without applying to the '
+      'database. Follow up with `apply_migrations` to apply the changes.',
   inputSchema: Schema.object(
     properties: {
       'tag': Schema.string(
@@ -27,7 +25,7 @@ final Tool createMigrationTool = Tool(
       'force': Schema.bool(
         description:
             'Create the migration even if warnings are present (data may '
-            'be destroyed).',
+            'be destroyed). Required for destructive migrations.',
       ),
     },
   ),
@@ -44,7 +42,7 @@ final Tool hotReloadTool = Tool(
 final Tool tailLogsTool = Tool(
   name: 'tail_logs',
   description:
-      'Return recent log entries from the running watch session '
+      'Return recent log entries from the running server '
       '(structured log entries plus completed operations). Newest last.',
   inputSchema: Schema.object(
     properties: {
@@ -62,8 +60,8 @@ final Resource vmServiceResource = Resource(
   name: 'VM service',
   description:
       'Dart VM service HTTP URI for the running server isolate. Stable '
-      'across hot reloads; changes on restart (apply_migrations, crash '
-      'recovery). Subscribe to be notified when the URI changes.',
+      'across hot reloads; changes on restart (e.g. after crash recovery). '
+      'Subscribe to be notified when the URI changes.',
   mimeType: 'application/json',
 );
 

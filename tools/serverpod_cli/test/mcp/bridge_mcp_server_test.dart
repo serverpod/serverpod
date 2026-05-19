@@ -148,7 +148,7 @@ void main() {
           expect(result.isError, isTrue);
           final text = (result.content.first as TextContent).text;
           expect(text, contains('not running'));
-          expect(text, contains('serverpod start --watch'));
+          expect(text, contains('serverpod start'));
         },
       );
 

@@ -49,7 +49,7 @@ class McpCommand extends ServerpodCommand {
 
   @override
   final description =
-      'Start an MCP bridge to the `serverpod start --watch` runner of one '
+      'Start an MCP bridge to the `serverpod start` runner of one '
       'server project.';
 
   @override
