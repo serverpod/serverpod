@@ -959,12 +959,12 @@ Future<void> _runTuiBackend({
       onFlutterProgress: (stage) {
         // Show Flutter startup progress in the TUI status area.
         holder.state.flutterStartupStage = stage;
+        holder.state.showFlutterOutput = true;
         holder.markDirty();
       },
       onFlutterReady: (url) {
         holder.state.flutterUrl = url;
         holder.state.flutterReady = true;
-        holder.state.showFlutterOutput = true;
         holder.markDirty();
       },
       onServerStart: (server) async {
