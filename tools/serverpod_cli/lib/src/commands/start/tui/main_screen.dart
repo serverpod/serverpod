@@ -136,9 +136,9 @@ class MainScreen extends StatelessComponent {
   Component _buildTabBar(ServerpodThemeData st) {
     return TabBar(
       labels: [
-        'Log Messages',
-        'Raw server output',
-        if (state.showFlutterOutput) 'Flutter output',
+        'Server logs',
+        if (state.showFlutterOutput) 'Flutter logs',
+        'Raw server logs',
       ],
       selectedTab: state.selectedTab,
       onTabChanged: onTabChanged,
@@ -147,11 +147,11 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabContent() {
     return switch (state.selectedTab) {
-      1 => _buildRawOutputView(state.rawLines, rawScrollController),
-      2 => _buildRawOutputView(
+      1 => _buildRawOutputView(
         state.rawFlutterLines,
         flutterRawScrollController,
       ),
+      2 => _buildRawOutputView(state.rawLines, rawScrollController),
       _ => _buildStructuredLogView(),
     };
   }
