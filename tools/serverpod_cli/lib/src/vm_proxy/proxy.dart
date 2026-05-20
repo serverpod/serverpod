@@ -78,7 +78,11 @@ class VmServiceProxy {
       _waitingClients.clear();
       for (final wc in waiting) {
         wc.timer?.cancel();
-        await _attachUpstream(wc.ws, upstreamWs);
+        await _attachUpstream(
+          wc.ws,
+          upstreamWs,
+          existingDownSub: wc.sub,
+        );
       }
     }
   }
@@ -135,29 +139,36 @@ class VmServiceProxy {
   void _enqueueWaitingClient(WebSocket downstream) {
     final wc = _WaitingClient(downstream);
     _waitingClients.add(wc);
-    wc.timer = Timer(_waitingClientTimeout, () {
+    wc.sub = downstream.listen(
+      (_) {},
+      onDone: () {
+        if (_waitingClients.remove(wc)) wc.timer?.cancel();
+      },
+      onError: (_) {},
+    );
+    wc.timer = Timer(_waitingClientTimeout, () async {
       if (_waitingClients.remove(wc)) {
-        downstream.close(
-          WebSocketStatus.normalClosure,
-          'no upstream available',
+        await wc.sub?.cancel();
+        unawaited(
+          downstream.close(
+            WebSocketStatus.normalClosure,
+            'no upstream available',
+          ),
         );
       }
     });
-    // ws.done completes when the WS closes from either side. We use it
-    // (instead of ws.listen) so the client's frame buffer isn't consumed
-    // - the _Pair attaches its own listener when we pair up later.
-    unawaited(
-      downstream.done.whenComplete(() {
-        if (_waitingClients.remove(wc)) wc.timer?.cancel();
-      }),
-    );
   }
 
-  Future<void> _attachUpstream(WebSocket downstream, Uri upstreamWs) async {
+  Future<void> _attachUpstream(
+    WebSocket downstream,
+    Uri upstreamWs, {
+    StreamSubscription<dynamic>? existingDownSub,
+  }) async {
     WebSocket upstream;
     try {
       upstream = await WebSocket.connect(upstreamWs.toString());
     } catch (_) {
+      await existingDownSub?.cancel();
       await downstream.close(WebSocketStatus.internalServerError);
       return;
     }
@@ -166,6 +177,7 @@ class VmServiceProxy {
       upstream,
       () => _interceptor,
       _interceptDirections,
+      existingDownSub: existingDownSub,
     );
     _pairs.add(pair);
     unawaited(pair.done.whenComplete(() => _pairs.remove(pair)));
@@ -180,6 +192,7 @@ class VmServiceProxy {
     _waitingClients.clear();
     for (final wc in waiting) {
       wc.timer?.cancel();
+      await wc.sub?.cancel();
       unawaited(
         wc.ws.close(WebSocketStatus.normalClosure, 'proxy shutting down'),
       );
@@ -208,18 +221,29 @@ class _Pair {
     this._down,
     this._up,
     this._resolveInterceptor,
-    this._interceptDirections,
-  );
+    this._interceptDirections, {
+    StreamSubscription<dynamic>? existingDownSub,
+  }) : _downSub = existingDownSub;
 
   Future<void> get done => _done.future;
 
   void start() {
-    _downSub = _down.listen(
-      (data) => _onFrame(Direction.clientToServer, data),
-      onDone: _close,
-      onError: (_) => _close(),
-      cancelOnError: false,
-    );
+    final existing = _downSub;
+    if (existing != null) {
+      // Re-aim the handlers on the pre-existing subscription from the
+      // waiting-client phase. WebSocket is single-subscription so we
+      // can't listen again.
+      existing.onData((data) => _onFrame(Direction.clientToServer, data));
+      existing.onDone(_close);
+      existing.onError((_) => _close());
+    } else {
+      _downSub = _down.listen(
+        (data) => _onFrame(Direction.clientToServer, data),
+        onDone: _close,
+        onError: (_) => _close(),
+        cancelOnError: false,
+      );
+    }
     _upSub = _up.listen(
       (data) => _onFrame(Direction.serverToClient, data),
       onDone: _close,
@@ -284,9 +308,16 @@ class _Pair {
   }
 }
 
-/// A client socket waiting for an upstream to become available.
+/// A client socket waiting for an upstream to become available. We
+/// hold an active subscription during the wait so dart:io's WebSocket
+/// can process control frames (close, ping) - otherwise our own
+/// timeout-close never completes the handshake. On pair-up, the
+/// subscription's handlers are re-aimed by [_Pair] via the
+/// `onData` / `onDone` / `onError` setters; the underlying single-
+/// subscription stream is never re-listened.
 class _WaitingClient {
   _WaitingClient(this.ws);
   final WebSocket ws;
+  StreamSubscription<dynamic>? sub;
   Timer? timer;
 }

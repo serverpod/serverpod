@@ -235,6 +235,111 @@ void main() {
       },
     );
   });
+
+  group('Given a VmServiceProxy bound with no upstream', () {
+    late VmServiceProxy proxy;
+
+    setUp(() async {
+      proxy = VmServiceProxy(
+        upstreamWs: null,
+        waitingClientTimeout: const Duration(seconds: 2),
+      );
+      await proxy.bind();
+    });
+
+    tearDown(() async {
+      await proxy.close();
+    });
+
+    test(
+      'when a client connects '
+      'then the WS upgrade succeeds and the socket stays open '
+      'until an upstream is set',
+      () async {
+        final client = await _connectClient(proxy);
+        addTearDown(client.close);
+        // The socket should be open; ws.readyState reflects that.
+        expect(client.readyState, WebSocket.open);
+      },
+    );
+
+    test(
+      'when an upstream is set after a client is already waiting '
+      'then a round-trip flows through the just-paired upstream',
+      () async {
+        final upstream = await _FakeUpstream.start();
+        addTearDown(upstream.close);
+
+        final client = await _connectClient(proxy);
+        addTearDown(client.close);
+        final responses = StreamController<Map<String, Object?>>();
+        client.listen(
+          (data) =>
+              responses.add(jsonDecode(data as String) as Map<String, Object?>),
+          onDone: responses.close,
+        );
+
+        await proxy.setUpstream(upstream.wsUri);
+        await upstream.connectionAttached;
+
+        client.add(
+          jsonEncode({
+            'jsonrpc': '2.0',
+            'id': 11,
+            'method': 'getVersion',
+            'params': <String, Object?>{},
+          }),
+        );
+
+        final response = await responses.stream.first;
+        expect(response['id'], 11);
+        expect((response['result'] as Map)['method'], 'getVersion');
+      },
+    );
+
+    test(
+      'when a client waits past the timeout with no upstream ever set '
+      'then the WS is closed cleanly so the IDE attach surfaces an error '
+      'instead of hanging forever',
+      () async {
+        final client = await _connectClient(proxy);
+        final closed = Completer<void>();
+        client.listen((_) {}, onDone: closed.complete);
+        await closed.future.timeout(const Duration(seconds: 5));
+        expect(client.readyState, WebSocket.closed);
+      },
+      timeout: const Timeout(Duration(seconds: 10)),
+    );
+
+    test(
+      'when setUpstream(null) is called while pairs are active '
+      'then existing client sockets are closed and new connections wait',
+      () async {
+        final upstream = await _FakeUpstream.start();
+        addTearDown(upstream.close);
+
+        await proxy.setUpstream(upstream.wsUri);
+
+        final client1 = await _connectClient(proxy);
+        final closed = Completer<void>();
+        client1.listen((_) {}, onDone: closed.complete);
+        await upstream.connectionAttached;
+
+        // Ensure pair is registered before we clear the upstream.
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+
+        // Clear the upstream; the active client's WS should close.
+        await proxy.setUpstream(null);
+        await closed.future.timeout(const Duration(seconds: 5));
+        expect(client1.readyState, WebSocket.closed);
+
+        // A fresh client now waits rather than failing.
+        final client2 = await _connectClient(proxy);
+        addTearDown(client2.close);
+        expect(client2.readyState, WebSocket.open);
+      },
+    );
+  });
 }
 
 Future<WebSocket> _connectClient(VmServiceProxy proxy) async {
