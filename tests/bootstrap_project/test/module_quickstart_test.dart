@@ -182,20 +182,28 @@ void main() {
             );
           });
 
-          test('does not have docker compose file', () {
-            final dockerComposeFile = File(
-              path.join(tempPath, serverDir, 'docker-compose.yaml'),
-            );
-            expect(dockerComposeFile.existsSync(), isFalse);
-          });
+          test(
+            'has docker compose file with project name replaced',
+            () {
+              final dockerComposeFile = File(
+                path.join(tempPath, serverDir, 'docker-compose.yaml'),
+              );
+              expect(dockerComposeFile.existsSync(), isTrue);
+              expect(
+                dockerComposeFile.readAsStringSync(),
+                contains('${projectName}_test'),
+              );
+            },
+          );
 
           test(
-            'does not have passwords config file',
+            'has passwords config file with postgres configurations',
             () {
               final config = File(
                 path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
               );
-              expect(config.existsSync(), isFalse);
+              expect(config.existsSync(), isTrue);
+              expect(config.readAsStringSync(), contains('database:'));
             },
           );
 
