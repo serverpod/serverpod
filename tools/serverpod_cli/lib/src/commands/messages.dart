@@ -11,6 +11,7 @@ const serverRunning = 'Server running.';
 const serverReloaded = '✓ Server reloaded.';
 const serverRestarted = '✓ Server restarted.';
 const flutterAppReloaded = '✓ Flutter app reloaded.';
+const flutterAppRestarted = '✓ Flutter app restarted.';
 const flutterPackageNotFound =
     'No Flutter package found; skipping --flutter. '
     'Pass --no-flutter to silence this notice.';

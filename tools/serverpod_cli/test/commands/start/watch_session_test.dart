@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
@@ -111,6 +112,35 @@ class _FakeServer extends Fake implements ServerProcess {
   }
 }
 
+class _FakeFlutter extends Fake implements FlutterProcess {
+  final List<String> calls = [];
+
+  bool _vmServiceConnected = true;
+  bool restartSuccess = true;
+
+  @override
+  bool get isVmServiceConnected => _vmServiceConnected;
+  set isVmServiceConnected(bool value) => _vmServiceConnected = value;
+
+  @override
+  Future<bool> reload() async {
+    calls.add('reload');
+    return true;
+  }
+
+  @override
+  Future<bool> restart() async {
+    calls.add('restart');
+    return restartSuccess;
+  }
+
+  @override
+  Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async {
+    calls.add('stop');
+    return 0;
+  }
+}
+
 void main() {
   setUpAll(() {
     initializeLogger();
@@ -136,6 +166,7 @@ void main() {
     GenerateAction? generate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
+    FlutterProcess? flutterProcess,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -160,6 +191,7 @@ void main() {
           applyMigrationsAction ?? () async => const MigrationsApplied(),
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
+      flutterProcess: flutterProcess,
     );
   }
 
@@ -878,6 +910,116 @@ void main() {
       },
     );
   });
+
+  group('Given a Flutter process with a connected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+    });
+
+    test(
+      'when force restarting, '
+      'then the Flutter app is hot-restarted after the server restarts.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(flutter.calls, ['restart']);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter process with a connected VM service and a next compile that fails,',
+    () {
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+        );
+
+        compiler.nextCompileResult = _failResult();
+      });
+
+      test(
+        'when force restarting, '
+        'then the Flutter app is not hot-restarted.',
+        () async {
+          await session.forceRestart();
+
+          expect(server.calls, isNot(contains('stop')));
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group('Given a Flutter process with a disconnected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+
+      flutter.isVmServiceConnected = false;
+    });
+
+    test(
+      'when force restarting, '
+      'then the Flutter app is not hot-restarted.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(flutter.calls, isEmpty);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter process with a connected VM service and a hot restart that fails,',
+    () {
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+        );
+
+        flutter.restartSuccess = false;
+      });
+
+      test(
+        'when force restarting, '
+        'then the server restart still completes.',
+        () async {
+          await session.forceRestart();
+
+          expect(server.calls, contains('stop'));
+          expect(factoryCalls, ['createServer:/out.dill']);
+          expect(flutter.calls, ['restart']);
+        },
+      );
+    },
+  );
 
   group('Given dispose is called', () {
     test(

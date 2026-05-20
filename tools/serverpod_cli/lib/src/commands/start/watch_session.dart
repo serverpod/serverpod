@@ -384,7 +384,10 @@ class WatchSession {
   ///
   /// The full compile is required because the FES `outputDill` after accepted
   /// increments is not generally bootable.
-  Future<void> _fullCompileAndRestart() async {
+  ///
+  /// Returns `true` if the server was restarted, `false` if compile failed or
+  /// the session was disposed before restart.
+  Future<bool> _fullCompileAndRestart() async {
     String? dillPath;
     final compiler = _compiler;
     if (compiler != null) {
@@ -395,15 +398,16 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-      if (fullResult == null) return;
+      if (fullResult == null) return false;
       compiler.accept();
       dillPath = fullResult.dillOutput!;
     }
 
     // dispose() isn't queued onto [_chain], so it can race the compile above.
-    if (_state == SessionState.disposed) return;
+    if (_state == SessionState.disposed) return false;
 
     await _restartServer(dillPath);
+    return true;
   }
 
   /// Forces a hot reload.
@@ -441,7 +445,11 @@ class WatchSession {
     if (_createServer == null) {
       throw StateError('Restart is not supported in this session.');
     }
-    return _chain(_fullCompileAndRestart);
+    return _chain(() async {
+      if (await _fullCompileAndRestart()) {
+        await _restartFlutter();
+      }
+    });
   }
 
   /// Applies pending database migrations.
@@ -541,6 +549,22 @@ class WatchSession {
       log.info(flutterAppReloaded);
     } else {
       log.warning('Flutter reload failed.');
+    }
+  }
+
+  /// Hot-restarts the Flutter app and logs the outcome. Never throws.
+  Future<void> _restartFlutter() async {
+    final flutter = _flutterProcess;
+    if (flutter == null) return;
+    if (!flutter.isVmServiceConnected) {
+      log.debug('Flutter not ready; skipping restart.');
+      return;
+    }
+    final ok = await flutter.restart();
+    if (ok) {
+      log.info(flutterAppRestarted);
+    } else {
+      log.warning('Flutter restart failed.');
     }
   }
 
