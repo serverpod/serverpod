@@ -67,12 +67,14 @@ void main() {
       group(
         'then the created project',
         () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -104,7 +106,7 @@ void main() {
               '''
 [mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp"]
+args = ["mcp", "--server-dir", "$serverDirRelative"]
 
 [mcp_servers.dart_mcp]
 command = "dart"
@@ -139,7 +141,7 @@ args = ["mcp-server", "--force-roots-fallback"]
   "mcp": {
     "serverpod": {
       "type": "local",
-      "command": ["serverpod","mcp"],
+      "command": ["serverpod", "mcp", "--server-dir", "$serverDirRelative"],
       "enabled": true
     },
     "dart-mcp-server": {
