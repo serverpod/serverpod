@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import '../lib/src/util.dart';
-import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 
 const tempDirName = 'temp';
 
@@ -191,20 +190,15 @@ void main() {
       });
 
       test(
-        'then the server projects has docker compose file with project name replaced',
+        'then the server docker-compose file is not created',
         () {
           final dockerComposeFile = File(
             path.join(tempPath, serverDir, 'docker-compose.yaml'),
           );
           expect(
             dockerComposeFile.existsSync(),
-            isTrue,
-            reason: 'Server docker compose file does not exist.',
-          );
-          expect(
-            dockerComposeFile.readAsStringSync(),
-            containsCount('${projectName}_test', 3),
-            reason: 'Server docker compose data volume name does not match.',
+            isFalse,
+            reason: 'Server docker-compose file should not exist.',
           );
         },
       );
@@ -462,7 +456,7 @@ void main() {
   });
 
   group(
-    'Given a created module project and a running docker environment',
+    'Given a created module project',
     () {
       final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -486,26 +480,10 @@ void main() {
           },
         );
         assert((await createProcess.exitCode) == 0);
-
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        assert((await docker.exitCode) == 0);
       });
 
       tearDown(() async {
         createProcess.kill();
-
-        await runProcess(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-          skipBatExtentionOnWindows: true,
-        );
 
         while (!await isNetworkPortAvailable(8090)) ;
       });
@@ -515,7 +493,8 @@ void main() {
         () async {
           var testProcess = await startProcess(
             'dart',
-            ['test'],
+            // Tests will use the embedded postgres, so concurrency must be 1.
+            ['test', '--concurrency=1'],
             workingDirectory: path.join(
               tempPath,
               projectName,
