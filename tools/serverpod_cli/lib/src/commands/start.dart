@@ -584,41 +584,36 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         },
       );
       try {
-        await log.progress(
-          'Launching Flutter app (first run may take 30-60s)',
-          () async {
-            await flutterProcess!.start();
-            // `launched` (not VM service connect): on `-d web-server`
-            // the URI doesn't arrive until a browser attaches, which
-            // the user can't do without seeing the URL first.
-            await flutterProcess.launched;
-            return true;
-          },
-        );
-        final url = flutterProcess.flutterAppUrl;
-        if (url != null) {
-          log.info('Flutter app running at $url');
-          onFlutterReady?.call(url);
-        }
-        // Background tracked op so the TUI shows a parallel spinner.
-        // On `-d web-server` this pends until a browser attaches;
-        // reload is unavailable until it resolves.
-        unawaited(
-          log.progress(
-            'Connecting to Flutter VM service',
-            () async {
-              await flutterProcess!.connectToVmService();
-              if (flutterProcess.isVmServiceConnected &&
-                  onFlutterStart != null) {
-                await onFlutterStart(flutterProcess);
-              }
-              return flutterProcess.isVmServiceConnected;
-            },
-          ),
-        );
+        await flutterProcess.start();
       } on FlutterNotInstalledException catch (e) {
         log.warning(e.message);
         flutterProcess = null;
+      }
+      final fp = flutterProcess;
+      if (fp != null) {
+        // Background: Server-running shouldn't wait on Flutter launch.
+        // On `-d web-server` `launched` pends until a browser attaches.
+        unawaited(() async {
+          await log.progress(
+            'Launching Flutter app (first run may take 30-60s)',
+            () async {
+              await fp.launched;
+              return true;
+            },
+          );
+          final url = fp.flutterAppUrl;
+          if (url != null) {
+            log.info('Flutter app running at $url');
+            onFlutterReady?.call(url);
+          }
+          await log.progress('Connecting to Flutter VM service', () async {
+            await fp.connectToVmService();
+            if (fp.isVmServiceConnected && onFlutterStart != null) {
+              await onFlutterStart(fp);
+            }
+            return fp.isVmServiceConnected;
+          });
+        }());
       }
     }
   }
