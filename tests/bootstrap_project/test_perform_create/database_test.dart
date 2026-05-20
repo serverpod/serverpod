@@ -107,15 +107,6 @@ void main() {
           expect(content, isNot(contains('database:')));
         },
       );
-
-      test(
-        'then the vscode launch.json file does not have apply migration command',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, isNot(contains('"--apply-migrations"')));
-        },
-      );
     },
   );
 

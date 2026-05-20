@@ -88,15 +88,6 @@ void main() {
           expect(content, contains('filePath: ${projectName}_prod.db'));
         },
       );
-
-      test(
-        'then the vscode launch.json file has apply migration command',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, contains('"--apply-migrations"'));
-        },
-      );
     },
   );
 

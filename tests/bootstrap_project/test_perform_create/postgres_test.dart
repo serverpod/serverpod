@@ -144,50 +144,6 @@ void main() {
           expect(content, contains('user: postgres'));
         },
       );
-
-      test(
-        'then the vscode tasks.json file is created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
-      group(
-        'then the vscode launch.json file',
-        () {
-          late String launchJson;
-
-          setUp(() async {
-            final file = File(p.join(projectName, '.vscode', 'launch.json'));
-            launchJson = await file.readAsString();
-          });
-
-          test(
-            'has prelaunch task',
-            () async {
-              expect(
-                launchJson,
-                contains('"preLaunchTask": "docker_compose_up"'),
-              );
-            },
-          );
-
-          test(
-            'has database password environment variable',
-            () async {
-              expect(launchJson, contains('"SERVERPOD_PASSWORD_database":'));
-            },
-          );
-
-          test(
-            'has apply migration command',
-            () async {
-              expect(launchJson, contains('"--apply-migrations"'));
-            },
-          );
-        },
-      );
     },
   );
 

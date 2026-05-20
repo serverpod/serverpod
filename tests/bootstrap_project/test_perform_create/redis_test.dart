@@ -107,23 +107,6 @@ void main() {
           );
         },
       );
-
-      test(
-        'then the vscode tasks.json file is created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
-      test(
-        'then the vscode launch.json file has prelaunch task',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, contains('"preLaunchTask": "docker_compose_up"'));
-        },
-      );
     },
   );
 

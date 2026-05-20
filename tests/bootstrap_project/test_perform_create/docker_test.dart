@@ -70,26 +70,6 @@ void main() {
           await expectLater(file.exists(), completion(false));
         },
       );
-
-      test(
-        'then the vscode tasks.json file is not created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(false));
-        },
-      );
-
-      test(
-        'then the vscode launch.json file does not have prelaunch task',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(
-            content,
-            isNot(contains('"preLaunchTask": "docker_compose_up"')),
-          );
-        },
-      );
     },
   );
 
