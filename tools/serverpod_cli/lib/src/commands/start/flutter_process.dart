@@ -174,18 +174,15 @@ class FlutterProcess {
       );
     }
 
-    // process.stdout is single-subscription, so fan out from one listen:
-    // forward raw bytes to the configured sink (TUI Flutter tab keeps
-    // full output) AND feed line-wise UTF-8 through the --machine JSON
-    // parser.
+    // Route `[`-prefixed lines to the machine parser; forward everything
+    // else (including app.log content re-emitted by the parser) as raw
+    // text to _stdout. Keeps the configured sink JSON-noise-free.
     final stdoutLines = StreamController<String>();
     const lineSplitter = LineSplitter();
     final lineBuffer = StringBuffer();
     _stdoutBytesSub = process.stdout.listen(
       (data) {
-        _stdout.add(data);
         lineBuffer.write(utf8.decode(data, allowMalformed: true));
-        // Drain only complete lines; keep the tail in the buffer.
         final bufferStr = lineBuffer.toString();
         final lastNewline = bufferStr.lastIndexOf('\n');
         if (lastNewline == -1) return;
@@ -193,13 +190,21 @@ class FlutterProcess {
         lineBuffer.clear();
         lineBuffer.write(bufferStr.substring(lastNewline + 1));
         for (final line in lineSplitter.convert(ready)) {
-          stdoutLines.add(line);
+          if (line.startsWith('[')) {
+            stdoutLines.add(line);
+          } else if (line.isNotEmpty) {
+            _stdout.writeln(line);
+          }
         }
       },
       onDone: () {
         if (lineBuffer.isNotEmpty) {
           for (final line in lineSplitter.convert(lineBuffer.toString())) {
-            stdoutLines.add(line);
+            if (line.startsWith('[')) {
+              stdoutLines.add(line);
+            } else if (line.isNotEmpty) {
+              _stdout.writeln(line);
+            }
           }
           lineBuffer.clear();
         }
@@ -383,6 +388,14 @@ class FlutterProcess {
           }
         case 'app.started':
           _onProgress?.call('ready');
+        case 'app.log':
+          final logText = paramMap['log'];
+          if (logText is! String || logText.isEmpty) break;
+          final sink = paramMap['error'] == true ? _stderr : _stdout;
+          sink.writeln(logText);
+        case 'daemon.logMessage':
+          final message = paramMap['message'];
+          if (message is String) log.debug('flutter[daemon] $message');
       }
     }
   }
