@@ -828,54 +828,71 @@ void main() {
     );
   });
 
-  group('Given forceRestart is called', () {
-    test(
-      'when invoked, '
-      'then it resets the compiler, produces a fresh full dill, and '
-      'spawns a new server with that dill',
-      () async {
+  group(
+    'Given a watch session with a compiler with no errors,'
+    'when force restart is called,',
+    () {
+      setUp(() async {
         await session.forceRestart();
+      });
 
+      test('then it resets the compiler.', () {
         expect(compiler.calls, ['reset', 'compile', 'accept']);
+      });
+
+      test('then it stops the server.', () {
         expect(server.calls, contains('stop'));
+      });
+
+      test('then it creates a new server with the fresh full dill.', () {
         expect(factoryCalls, ['createServer:/out.dill']);
-      },
-    );
+      });
+    },
+  );
+
+  test(
+    'Given a watch session with a compiler that fails,'
+    'when force restart is called,'
+    'then it does not stop the server or spawn a new one.',
+    () async {
+      compiler.nextCompileResult = _failResult();
+
+      await session.forceRestart();
+
+      expect(server.calls, isNot(contains('stop')));
+      expect(factoryCalls, isEmpty);
+    },
+  );
+
+  test(
+    'Given a watch session that is disposed,'
+    'when force restart is called, '
+    'then it throws a StateError.',
+    () async {
+      await session.dispose();
+
+      expect(() => session.forceRestart(), throwsStateError);
+    },
+  );
+
+  group('Given a watch session with an in-flight forceReload,', () {
+    late List<String> order;
+    late Future<void> reload;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // Both calls return immediately; we just verify ordering.
+      reload = session.forceReload().then((_) => order.add('reload'));
+    });
 
     test(
-      'when the full compile fails, '
-      'then it does not stop the server or spawn a new one',
-      () async {
-        compiler.nextCompileResult = _failResult();
-
-        await session.forceRestart();
-
-        expect(server.calls, isNot(contains('stop')));
-        expect(factoryCalls, isEmpty);
-      },
-    );
-
-    test(
-      'when invoked after dispose, '
-      'then it throws a StateError',
-      () async {
-        await session.dispose();
-
-        expect(() => session.forceRestart(), throwsStateError);
-      },
-    );
-
-    test(
-      'when invoked while a forceReload is in flight, '
+      'when force restart is called, '
       'then it runs after the reload completes',
       () async {
-        final order = <String>[];
-        compiler.calls.clear();
-        server.calls.clear();
-        factoryCalls.clear();
-
-        // Both calls return immediately; we just verify ordering.
-        final reload = session.forceReload().then((_) => order.add('reload'));
         final restart = session.forceRestart().then(
           (_) => order.add('restart'),
         );
@@ -885,21 +902,27 @@ void main() {
         expect(order, ['reload', 'restart']);
       },
     );
+  });
+
+  group('Given a watch session with an in-flight applyMigration,', () {
+    late List<String> order;
+    late Future<void> apply;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // applyMigration also queues onto [_chain], so a forceRestart issued
+      // before it returns must wait for it.
+      apply = session.applyMigration().then((_) => order.add('apply'));
+    });
 
     test(
-      'when invoked while an applyMigration is in flight, '
-      'then it runs after the migration completes',
+      'when force restart is called, '
+      'then it runs after the applyMigration completes.',
       () async {
-        final order = <String>[];
-        compiler.calls.clear();
-        server.calls.clear();
-        factoryCalls.clear();
-
-        // applyMigration also queues onto [_chain], so a forceRestart issued
-        // before it returns must wait for it.
-        final apply = session.applyMigration().then(
-          (_) => order.add('apply'),
-        );
         final restart = session.forceRestart().then(
           (_) => order.add('restart'),
         );
@@ -924,7 +947,7 @@ void main() {
     });
 
     test(
-      'when force restarting, '
+      'when force restart is called, '
       'then the Flutter app is hot-restarted after the server restarts.',
       () async {
         await session.forceRestart();
@@ -953,7 +976,7 @@ void main() {
       });
 
       test(
-        'when force restarting, '
+        'when force restart is called, '
         'then the Flutter app is not hot-restarted.',
         () async {
           await session.forceRestart();
@@ -980,7 +1003,7 @@ void main() {
     });
 
     test(
-      'when force restarting, '
+      'when force restart is called, '
       'then the Flutter app is not hot-restarted.',
       () async {
         await session.forceRestart();
@@ -1008,7 +1031,7 @@ void main() {
       });
 
       test(
-        'when force restarting, '
+        'when force restart is called, '
         'then the server restart still completes.',
         () async {
           await session.forceRestart();

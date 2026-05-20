@@ -56,8 +56,7 @@ void main() {
 
     test(
       'when listing tools, '
-      'then apply_migrations, create_migration, create_repair_migration, '
-      'hot_reload, hot_restart, and tail_logs are available',
+      'then all tools that operate on the running server are available',
       () async {
         final result = await connection.listTools();
 
@@ -75,7 +74,7 @@ void main() {
       },
     );
 
-    group('Given no connected callback', () {
+    group('with no connected callback', () {
       test(
         'when calling apply_migrations, '
         'then it returns an error',
@@ -141,7 +140,7 @@ void main() {
       );
     });
 
-    group('Given a connected callback', () {
+    group('with a connected callback', () {
       test(
         'when calling apply_migrations, '
         'then it invokes the callback and returns success',
