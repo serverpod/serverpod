@@ -35,6 +35,16 @@ typedef LinkCompletionTokenCallback<T> =
       required Transaction? transaction,
     });
 
+/// Callback called when a request is consumed after successful verification.
+///
+/// Returns `true` if the request was consumed, `false` if it was already gone.
+typedef ConsumeChallengeRequestCallback<T> =
+    Future<bool> Function(
+      Session session,
+      T request, {
+      required Transaction transaction,
+    });
+
 /// Configuration for challenge verification with all protection mechanisms.
 ///
 /// This class provides callbacks for workflow-specific logic while keeping the
@@ -134,6 +144,51 @@ class SecretChallengeCompletionConfig<T> {
   });
 }
 
+/// Configuration for one-step challenge verification and consumption.
+///
+/// This class is for flows that should consume the request immediately after
+/// verifying the challenge instead of creating a completion token.
+class SecretChallengeConsumptionConfig<T> {
+  /// Retrieves the request by ID.
+  ///
+  /// Should include the challenge relation in the query.
+  /// Returns `null` if the request is not found.
+  final GetRequestCallback<T> getRequest;
+
+  /// Extracts the challenge from the request.
+  ///
+  /// Returns `null` if the request was loaded without its challenge relation.
+  final SecretChallenge? Function(T request) getChallenge;
+
+  /// Checks if the request has expired.
+  final bool Function(T request) isExpired;
+
+  /// Called when the request has expired.
+  ///
+  /// Should delete the request outside of the transaction so it's not rolled
+  /// back.
+  final OnExpiredCallback<T> onExpired;
+
+  /// Consumes the request after successful verification.
+  final ConsumeChallengeRequestCallback<T> consumeRequest;
+
+  /// Optional rate limiting for verification attempts.
+  ///
+  /// If provided, rate limiting will be handled internally by [SecretChallengeUtil].
+  /// If not provided, no rate limiting will be applied.
+  final RateLimitedRequestAttemptUtil<UuidValue>? rateLimiter;
+
+  /// Creates a new [SecretChallengeConsumptionConfig].
+  SecretChallengeConsumptionConfig({
+    required this.getRequest,
+    required this.getChallenge,
+    required this.isExpired,
+    required this.onExpired,
+    required this.consumeRequest,
+    this.rateLimiter,
+  });
+}
+
 /// Extension methods for [SecretChallengeVerificationConfig].
 extension SecretChallengeVerificationConfigExtension<T>
     on SecretChallengeVerificationConfig<T> {
@@ -158,6 +213,27 @@ extension SecretChallengeVerificationConfigExtension<T>
 /// Extension methods for [SecretChallengeCompletionConfig].
 extension SecretChallengeCompletionConfigExtension<T>
     on SecretChallengeCompletionConfig<T> {
+  /// Records an attempts and checks if the request has too many attempts.
+  ///
+  /// Returns `true` if the request has too many attempts, `false` otherwise.
+  /// If no rate limiter is provided, returns `false`.
+  Future<bool> hasTooManyAttempts(
+    final Session session, {
+    required final UuidValue nonce,
+    final Map<String, String>? extraData,
+  }) async {
+    return await rateLimiter?.hasTooManyAttempts(
+          session,
+          nonce: nonce,
+          extraData: extraData,
+        ) ??
+        false;
+  }
+}
+
+/// Extension methods for [SecretChallengeConsumptionConfig].
+extension SecretChallengeConsumptionConfigExtension<T>
+    on SecretChallengeConsumptionConfig<T> {
   /// Records an attempts and checks if the request has too many attempts.
   ///
   /// Returns `true` if the request has too many attempts, `false` otherwise.

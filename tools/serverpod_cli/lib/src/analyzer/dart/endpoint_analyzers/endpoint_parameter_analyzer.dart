@@ -24,6 +24,7 @@ abstract class EndpointParameterAnalyzer {
         name: parameter.name!,
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
+        defaultValue: parameter.defaultValueCode,
         annotations: parameter.endpointAnnotations,
       );
 
@@ -128,6 +129,10 @@ abstract class EndpointParameterAnalyzer {
 
     if (parameter.isRequiredNamed) {
       return true;
+    }
+
+    if (parameter.defaultValueCode != null) {
+      return false;
     }
 
     if (parameter.isNamed &&

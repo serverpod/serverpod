@@ -853,6 +853,9 @@ class LibraryGenerator {
                         (p) => p
                           ..named = false
                           ..name = parameterDef.name
+                          ..defaultTo = parameterDef.defaultValue != null
+                              ? Code(parameterDef.defaultValue!)
+                              : null
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
@@ -867,6 +870,9 @@ class LibraryGenerator {
                           ..named = true
                           ..required = parameterDef.required
                           ..name = parameterDef.name
+                          ..defaultTo = parameterDef.defaultValue != null
+                              ? Code(parameterDef.defaultValue!)
+                              : null
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,

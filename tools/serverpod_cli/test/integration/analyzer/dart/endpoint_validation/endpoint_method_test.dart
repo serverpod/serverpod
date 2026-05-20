@@ -78,6 +78,55 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
+    'Given an endpoint method with a named parameter default value when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, {String handleType = 'default'}) async {
+    return handleType;
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      test('then the named parameter keeps its default value.', () {
+        var parameter = endpointDefinitions
+            .firstOrNull
+            ?.methods
+            .firstOrNull
+            ?.parametersNamed
+            .firstOrNull;
+        expect(parameter?.name, 'handleType');
+        expect(parameter?.required, isFalse);
+        expect(parameter?.defaultValue, "'default'");
+      });
+    },
+  );
+
+  group(
     'Given a valid endpoint method with a first positional nullable `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
