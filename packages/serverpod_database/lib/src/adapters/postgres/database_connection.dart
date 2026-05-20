@@ -135,11 +135,14 @@ class PostgresDatabaseConnection
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'lockRows');
 
-    var query = SelectQueryBuilder(table: table)
-        .withSelectFields([table.id])
-        .withWhere(where)
-        .withLockMode(lockMode, lockBehavior)
-        .build();
+    var query =
+        SelectQueryBuilder(
+              table: table,
+            )
+            .withSelectFields([table.id])
+            .withWhere(where)
+            .withLockMode(lockMode, lockBehavior)
+            .build();
 
     await _query(
       session,
@@ -452,13 +455,16 @@ class PostgresDatabaseConnection
 
     if (requiresFilteredSubquery) {
       var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
-      var subquery = SelectQueryBuilder(table: table)
-          .withSelectFields([table.id])
-          .withWhere(where)
-          .withOrderBy(orders)
-          .withLimit(limit)
-          .withOffset(offset)
-          .build();
+      var subquery =
+          SelectQueryBuilder(
+                table: table,
+              )
+              .withSelectFields([table.id])
+              .withWhere(where)
+              .withOrderBy(orders)
+              .withLimit(limit)
+              .withOffset(offset)
+              .build();
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
@@ -556,11 +562,14 @@ class PostgresDatabaseConnection
     var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
-    var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.all)
-        .withWhere(where)
-        .withOrderBy(orderByCols)
-        .build();
+    var query =
+        DeleteQueryBuilder(
+              table: table,
+            )
+            .withReturn(Returning.all)
+            .withWhere(where)
+            .withOrderBy(orderByCols)
+            .build();
 
     return await _deserializedMappedQuery(
       session,
@@ -1031,6 +1040,14 @@ class PostgresDatabaseConnection
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    if (column is ColumnGeographyPoint) return 'geography(Point,4326)';
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LineString,4326)';
+    }
+    if (column is ColumnGeographyPolygon) return 'geography(Polygon,4326)';
+    if (column is ColumnGeographyGeometryCollection) {
+      return 'geography(GeometryCollection,4326)';
+    }
     if (column is ColumnStructured) return 'jsonb';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {

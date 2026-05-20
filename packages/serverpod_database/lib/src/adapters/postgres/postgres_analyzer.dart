@@ -19,11 +19,22 @@ class PostgresDatabaseAnalyzer extends DatabaseAnalyzer {
   @override
   Future<List<TableDefinition>> getTableDefinitions() async {
     var tableSchemas = await database.unsafeQuery(
-      // Get list of all tables and the schema they are in.
+      // Get list of all tables and the schema they are in, excluding
+      // tables that are owned by an extension (e.g. PostGIS spatial_ref_sys).
       '''
-SELECT schemaname, tablename
-FROM pg_catalog.pg_tables
-WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
+SELECT t.schemaname, t.tablename
+FROM pg_catalog.pg_tables t
+WHERE t.schemaname != 'pg_catalog' AND t.schemaname != 'information_schema'
+AND NOT EXISTS (
+  SELECT 1
+  FROM pg_depend d
+  JOIN pg_class c ON c.oid = d.objid
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE d.deptype = 'e'
+    AND d.classid = 'pg_class'::regclass
+    AND c.relname = t.tablename
+    AND n.nspname = t.schemaname
+);
 ''',
     );
 
@@ -71,7 +82,19 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
       // Get the columns of this table and sort them based on their position.
       '''
 SELECT column_name, column_default, is_nullable,
-       CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
+       CASE
+         WHEN (data_type = 'USER-DEFINED' AND udt_name = 'geography') THEN (
+           CASE substring(format_type(a.atttypid, a.atttypmod) FROM '^geography\\(([^,)]+)')
+             WHEN 'Point' THEN 'geography'
+             WHEN 'LineString' THEN 'geography line string'
+             WHEN 'Polygon' THEN 'geography polygon'
+             WHEN 'GeometryCollection' THEN 'geography geometry collection'
+             ELSE 'geography'
+           END
+         )
+         WHEN (data_type = 'USER-DEFINED') THEN udt_name
+         ELSE data_type
+       END as data_type,
        CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name

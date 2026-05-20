@@ -3,6 +3,11 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 import 'pgvector.dart';
+import 'postgis/geography_geometry_collection.dart'
+    show GeographyGeometryCollection;
+import 'postgis/geography_line_string.dart' show GeographyLineString;
+import 'postgis/geography_point.dart' show GeographyPoint;
+import 'postgis/geography_polygon.dart' show GeographyPolygon;
 
 /// Adds clone method that create a deep copy of a ByteData.
 extension CloneByteData on ByteData {
@@ -78,4 +83,8 @@ const _nonMutableTypes = [
   UuidValue,
   Uri,
   BigInt,
+  GeographyPoint,
+  GeographyLineString,
+  GeographyPolygon,
+  GeographyGeometryCollection,
 ];
