@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -216,4 +217,69 @@ class ItemEndpoint extends Endpoint {
       });
     });
   });
+
+  group(
+    'Given a model that is removed from disk when analyzers are updated incrementally',
+    () {
+      late Directory projectDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+      late String modelPath;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, _) = await _buildProject();
+        config = _buildTestConfig(projectDir);
+        analyzers = await Analyzers.createAndUpdate(config);
+
+        modelPath = p.join(
+          projectDir.path,
+          'lib',
+          'src',
+          'models',
+          'removed_model.spy.yaml',
+        );
+        File(modelPath)
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class: RemovedModel
+fields:
+  name: String
+''');
+
+        await analyzers.update(
+          config: config,
+          affectedPaths: {modelPath},
+        );
+        await analyzers.performGenerate(config: config);
+      });
+
+      test(
+        'when the model is deleted '
+        'then it is no longer included in generated files',
+        () async {
+          File(modelPath).deleteSync();
+
+          await analyzers.update(
+            config: config,
+            affectedPaths: {p.absolute(modelPath)},
+            requirements: GenerationRequirements.full,
+          );
+
+          final result = await analyzers.performGenerate(
+            config: config,
+            requirements: GenerationRequirements.full,
+            affectedPaths: {p.absolute(modelPath)},
+          );
+
+          expect(result.success, isTrue);
+          expect(
+            result.generatedFiles.any((f) => f.contains('removed_model')),
+            isFalse,
+          );
+        },
+      );
+    },
+  );
 }

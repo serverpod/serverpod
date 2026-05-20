@@ -115,7 +115,7 @@ class Analyzers {
               ),
             );
           } else {
-            _models.removeYamlModel(Uri.parse(p.absolute(path)));
+            _models.removeYamlModel(Uri.file(p.absolute(path)));
           }
         }
       }
