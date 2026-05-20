@@ -19,9 +19,8 @@ final _bridgeImplementation = Implementation(
 /// MCP server that bridges a single MCP client to the runner
 /// (`serverpod start` process) for a single server project.
 ///
-/// The bridge is long-lived: it survives runner restarts, and lets the
-/// client switch between running instances via the `connect`/`disconnect`
-/// tools.
+/// The bridge is long-lived: it survives runner restarts, reconnecting to
+/// the runner socket on demand.
 base class BridgeMcpServer extends MCPServer
     with ToolsSupport, ResourcesSupport {
   /// Absolute path of the runner's MCP socket
