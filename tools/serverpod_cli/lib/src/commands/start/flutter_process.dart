@@ -64,6 +64,7 @@ class FlutterProcess {
   StreamSubscription<List<int>>? _stdoutBytesSub;
   StreamSubscription<List<int>>? _stderrBytesSub;
   StreamSubscription<String>? _machineLinesSub;
+  StreamSubscription<Event>? _loggingSub;
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -262,6 +263,7 @@ class FlutterProcess {
     for (var attempt = 0; attempt < 5; attempt++) {
       try {
         _vmService = await vmServiceConnectUri(wsUri);
+        await _subscribeToLogging(_vmService!);
         return;
       } on Exception {
         if (attempt == 4) {
@@ -271,6 +273,28 @@ class FlutterProcess {
         await Future<void>.delayed(const Duration(milliseconds: 200));
       }
     }
+  }
+
+  /// Subscribe to the Flutter VM's `Logging` stream so `dart:developer.log()`
+  /// calls land in the user-visible output (TUI: Flutter output tab,
+  /// non-TUI: terminal). `--machine` only wraps `print` / stderr into
+  /// `app.log` events; `Logging` is a separate VM-service channel.
+  Future<void> _subscribeToLogging(VmService vmService) async {
+    try {
+      await vmService.streamListen('Logging');
+    } on RPCError catch (e) {
+      log.debug('Could not subscribe to Flutter Logging stream: $e');
+      return;
+    }
+    _loggingSub = vmService.onLoggingEvent.listen((event) {
+      final record = event.logRecord;
+      final message = record?.message?.valueAsString;
+      if (message == null || message.isEmpty) return;
+      final name = record?.loggerName?.valueAsString ?? '';
+      final line = name.isEmpty ? message : '[$name] $message';
+      final level = record?.level ?? 0;
+      (level >= 1000 ? _stderr : _stdout).writeln(line);
+    });
   }
 
   /// Hot-reload the Flutter app. Returns `true` on daemon-reported
@@ -438,6 +462,8 @@ class FlutterProcess {
       _machineLinesSub = null;
       _sigtermSub = null;
 
+      await _loggingSub?.cancel();
+      _loggingSub = null;
       await _vmService?.dispose();
       _vmService = null;
 
