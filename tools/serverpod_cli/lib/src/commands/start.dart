@@ -159,6 +159,17 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final flutterExtraArgs = List<String>.from(
       commandConfig.value(StartOption.flutterOption) as Iterable,
     );
+    // Flutter's --verbose output arrives as daemon.logMessage events,
+    // which we route to log.debug - so this stays quiet unless the user
+    // also asked serverpod for verbose output.
+    final verbose =
+        serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.verbose,
+        ) ??
+        false;
+    if (verbose && !flutterExtraArgs.contains('--verbose')) {
+      flutterExtraArgs.insert(0, '--verbose');
+    }
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
