@@ -277,14 +277,20 @@ class FlutterProcess {
       log.warning('Flutter $op: daemon not running yet.');
       return false;
     }
+    const requestTimeout = Duration(seconds: 30);
     try {
-      await daemon.sendRequest('app.restart', <String, Object?>{
-        'appId': appId,
-        'fullRestart': fullRestart,
-        'pause': false,
-        'debounce': true,
-      });
+      await daemon
+          .sendRequest('app.restart', <String, Object?>{
+            'appId': appId,
+            'fullRestart': fullRestart,
+            'pause': false,
+            'debounce': true,
+          })
+          .timeout(requestTimeout);
       return true;
+    } on TimeoutException {
+      log.warning('Flutter $op timed out after ${requestTimeout.inSeconds}s.');
+      return false;
     } on FlutterDaemonException catch (e) {
       log.warning('Flutter $op failed: ${e.error}');
       return false;

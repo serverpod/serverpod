@@ -524,6 +524,10 @@ class WatchSession {
   Future<void> _reloadFlutter() async {
     final flutter = _flutterProcess;
     if (flutter == null) return;
+    if (!flutter.isVmServiceConnected) {
+      log.debug('Flutter not ready; skipping reload.');
+      return;
+    }
     final ok = await flutter.reload();
     if (ok) {
       log.info(flutterAppReloaded);
