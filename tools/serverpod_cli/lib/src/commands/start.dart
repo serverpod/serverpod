@@ -159,9 +159,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final flutterExtraArgs = List<String>.from(
       commandConfig.value(StartOption.flutterOption) as Iterable,
     );
-    // Flutter's --verbose output arrives as daemon.logMessage events,
-    // which we route to log.debug - so this stays quiet unless the user
-    // also asked serverpod for verbose output.
+    // Flutter --verbose -> daemon.logMessage -> log.debug; stays quiet
+    // unless serverpod itself is verbose.
     final verbose =
         serverpodRunner.globalConfiguration.optionalValue(
           GlobalOption.verbose,

@@ -275,10 +275,7 @@ class FlutterProcess {
     }
   }
 
-  /// Subscribe to the Flutter VM's `Logging` stream so `dart:developer.log()`
-  /// calls land in the user-visible output (TUI: Flutter output tab,
-  /// non-TUI: terminal). `--machine` only wraps `print` / stderr into
-  /// `app.log` events; `Logging` is a separate VM-service channel.
+  /// `--machine` doesn't forward `dart:developer.log()`; `Logging` does.
   Future<void> _subscribeToLogging(VmService vmService) async {
     try {
       await vmService.streamListen('Logging');
@@ -286,14 +283,15 @@ class FlutterProcess {
       log.debug('Could not subscribe to Flutter Logging stream: $e');
       return;
     }
+    const severeLevel = 1000;
     _loggingSub = vmService.onLoggingEvent.listen((event) {
       final record = event.logRecord;
       final message = record?.message?.valueAsString;
       if (message == null || message.isEmpty) return;
       final name = record?.loggerName?.valueAsString ?? '';
       final line = name.isEmpty ? message : '[$name] $message';
-      final level = record?.level ?? 0;
-      (level >= 1000 ? _stderr : _stdout).writeln(line);
+      final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
+      sink.writeln(line);
     });
   }
 
@@ -457,13 +455,13 @@ class FlutterProcess {
       await _stderrBytesSub?.cancel();
       await _machineLinesSub?.cancel();
       await _sigtermSub?.cancel();
+      await _loggingSub?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
-
-      await _loggingSub?.cancel();
       _loggingSub = null;
+
       await _vmService?.dispose();
       _vmService = null;
 
