@@ -48,17 +48,6 @@ void main() {
         expect(activated, LogicalKey.keyR);
       },
     );
-
-    test(
-      'when rendered, '
-      'then the name has no ⇧ glyph',
-      () async {
-        tester = await _pumpButton(name: 'Reload', onActivate: (_) {});
-
-        expect(tester.terminalState, containsText('Reload'));
-        expect(tester.terminalState, isNot(containsText('⇧')));
-      },
-    );
   });
 
   group('Given a Button with onShiftActivate', () {
@@ -95,20 +84,6 @@ void main() {
 
         expect(shiftActivated, LogicalKey.keyR);
         expect(activateFired, isFalse);
-      },
-    );
-
-    test(
-      'when rendered, '
-      'then the name carries a trailing ⇧ glyph',
-      () async {
-        tester = await _pumpButton(
-          name: 'Reload',
-          onActivate: (_) {},
-          onShiftActivate: (_) {},
-        );
-
-        expect(tester.terminalState, containsText('Reload⇧'));
       },
     );
   });

@@ -4,9 +4,7 @@ import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 /// A keyboard-activated button with a highlighted activation character.
 ///
 /// When [onShiftActivate] is non-null, the button also dispatches `Shift+key`
-/// to that callback and appends a `⇧` glyph to [name] as a discoverability
-/// cue (terminals can't tell us when Shift is pressed without a key, so the
-/// hint is shown statically). Help (`H`) lists what each `⇧` does.
+/// to that callback.
 class Button extends StatelessComponent {
   const Button({
     super.key,
@@ -68,7 +66,7 @@ class Button extends StatelessComponent {
             ),
             const Text(' '),
             Text(
-              hasShiftVariant ? '$name⇧' : name,
+              name,
               style: TextStyle(
                 fontWeight: enabled ? FontWeight.normal : FontWeight.dim,
               ),
