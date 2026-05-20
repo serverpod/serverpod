@@ -1,8 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
 const _serverpodBlue = Color.fromRGB(147, 197, 253);
-const _highlightDark = Color(0xff3b3937);
-const _highlightLight = Color(0xffedeae6);
 
 /// Serverpod-specific TUI theme colors layered on top of [TuiThemeData].
 class ServerpodThemeData {
@@ -18,7 +16,6 @@ class ServerpodThemeData {
     required this.failure,
     required this.subtleDivider,
     required this.brightText,
-    required this.highlight,
   });
 
   ServerpodThemeData copyWith({
@@ -33,7 +30,6 @@ class ServerpodThemeData {
     Color? failure,
     Color? subtleDivider,
     Color? brightText,
-    Color? highlight,
   }) {
     return ServerpodThemeData(
       primary: primary ?? this.primary,
@@ -47,7 +43,6 @@ class ServerpodThemeData {
       failure: failure ?? this.failure,
       subtleDivider: subtleDivider ?? this.subtleDivider,
       brightText: brightText ?? this.brightText,
-      highlight: highlight ?? this.highlight,
     );
   }
 
@@ -76,9 +71,6 @@ class ServerpodThemeData {
   /// Color for bright texts.
   final Color brightText;
 
-  /// Color for highlighted elements.
-  final Color highlight;
-
   /// Derives a [ServerpodThemeData] from a nocterm [TuiThemeData].
   ///
   /// Semantic slots map to the closest [TuiThemeData] role:
@@ -100,7 +92,6 @@ class ServerpodThemeData {
       failure: theme.error,
       subtleDivider: theme.outlineVariant,
       brightText: darkThemed ? Colors.brightWhite : Colors.brightBlack,
-      highlight: darkThemed ? _highlightDark : _highlightLight,
     );
   }
 
@@ -117,7 +108,6 @@ class ServerpodThemeData {
     failure: Colors.red,
     subtleDivider: Colors.gray,
     brightText: Colors.brightWhite,
-    highlight: _highlightDark,
   );
 }
 

@@ -4,8 +4,10 @@ import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
+import 'package:serverpod_cli/src/commands/tui/components/checkbox.dart';
 import 'package:serverpod_cli/src/commands/tui/components/log_viewer.dart';
 import 'package:serverpod_cli/src/commands/tui/components/radio_button.dart';
+import 'package:serverpod_cli/src/commands/tui/components/wrap.dart';
 import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
 
 class MainScreen extends StatelessComponent {
@@ -33,6 +35,7 @@ class MainScreen extends StatelessComponent {
     final creatingProject = state.creatingProject;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: BorderedBox(
@@ -104,45 +107,137 @@ class MainScreen extends StatelessComponent {
   Component _buildConfiguration(
     ServerpodThemeData theme,
     ServerpodCreateConfig config,
-    bool focused,
+    bool isConfigFocused,
   ) {
     final state = holder.state;
+
+    if (config.multiSelect) {
+      return _buildMultiSelectConfiguration(theme, config, isConfigFocused);
+    }
+
+    if (config.isBoolean) {
+      return _buildBooleanConfiguration(theme, config, isConfigFocused);
+    }
+
     final selectedOption = state.getSelectedOptionFor(config);
+    final configState = state.getStateFor(config);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 1),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 1),
-        color: focused ? theme.highlight : null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              config.label,
-              style: const TextStyle(
-                color: Color.defaultColor,
-                fontWeight: FontWeight.bold,
-              ),
+      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            config.label,
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.bold,
             ),
-            Row(
-              children: [
-                for (final option in config.options.indexed) ...[
-                  _buildConfigurationOption(
-                    theme,
-                    option.$2,
-                    selected: selectedOption == option.$2,
-                    style: const TextStyle(color: Color.defaultColor),
-                    onTap: () {
-                      state.updateSelectedOption(config, option.$2);
-                      holder.markDirty();
-                    },
-                  ),
-                  const SizedBox(width: 2),
-                ],
+          ),
+          Row(
+            children: [
+              for (final option in config.options.indexed) ...[
+                _buildConfigurationOption(
+                  theme,
+                  option.$2,
+                  focused:
+                      isConfigFocused &&
+                      configState?.focusedOptionIndex == option.$1,
+                  selected: selectedOption == option.$2,
+                  onTap: () {
+                    state.updateSelectedOption(config, option.$2);
+                    holder.markDirty();
+                  },
+                ),
+                const SizedBox(width: 2),
               ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Component _buildBooleanConfiguration(
+    ServerpodThemeData theme,
+    ServerpodCreateConfig config,
+    bool isConfigFocused,
+  ) {
+    final state = holder.state;
+    final selectedOption =
+        state.getSelectedOptionFor(config) as BoolConfigOption?;
+    const defaultOption = BoolConfigOption.enabled;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            config.label,
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+          _buildMultiSelectOption(
+            theme,
+            BoolConfigOption.enabled,
+            focused: isConfigFocused,
+            selected: selectedOption == defaultOption,
+            onTap: () {
+              BoolConfigOption newOption = selectedOption == .enabled
+                  ? .disabled
+                  : .enabled;
+              state.updateSelectedOption(config, newOption);
+              holder.markDirty();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Component _buildMultiSelectConfiguration(
+    ServerpodThemeData theme,
+    ServerpodCreateConfig config,
+    bool isConfigFocused,
+  ) {
+    final state = holder.state;
+    final selectedOptions = state.getSelectedOptionsFor(config) ?? {};
+    final configState = state.getStateFor(config);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            config.label,
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Wrap(
+            spacing: 2,
+            children: [
+              for (final option in config.options.indexed)
+                _buildMultiSelectOption(
+                  theme,
+                  option.$2,
+                  focused:
+                      isConfigFocused &&
+                      configState?.focusedOptionIndex == option.$1,
+                  selected: selectedOptions.contains(option.$2),
+                  onTap: () {
+                    state.updateSelectedOption(config, option.$2);
+                    holder.markDirty();
+                  },
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -150,8 +245,8 @@ class MainScreen extends StatelessComponent {
   Component _buildConfigurationOption(
     ServerpodThemeData theme,
     ConfigOption option, {
+    required bool focused,
     required bool selected,
-    required TextStyle style,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -159,7 +254,24 @@ class MainScreen extends StatelessComponent {
       child: RadioButton(
         label: option.label,
         value: selected,
-        style: style,
+        focused: focused,
+      ),
+    );
+  }
+
+  Component _buildMultiSelectOption(
+    ServerpodThemeData theme,
+    ConfigOption option, {
+    required bool focused,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Checkbox(
+        label: option.label,
+        value: selected,
+        focused: focused,
       ),
     );
   }
@@ -182,11 +294,22 @@ class MainScreen extends StatelessComponent {
         ),
         Button(
           name: 'Navigate',
-          activationChar: '↑↓',
+          activationChar: '←↑↓→',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowUp, LogicalKey.arrowDown],
+          activationKeys: const [
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
+            LogicalKey.arrowLeft,
+            LogicalKey.arrowRight,
+          ],
           onActivate: (key) {
             switch (key) {
+              case LogicalKey.arrowLeft:
+                state.updateFocusedConfigOption(-1);
+                break;
+              case LogicalKey.arrowRight:
+                state.updateFocusedConfigOption(1);
+                break;
               case LogicalKey.arrowUp:
                 state.updateFocusedConfig(-1);
                 if (state.focusedConfigIndex == state.maxFocusedConfigIndex) {
@@ -209,16 +332,13 @@ class MainScreen extends StatelessComponent {
         ),
         Button(
           name: 'Select',
-          activationChar: '←→',
+          activationChar: 'Space',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowLeft, LogicalKey.arrowRight],
+          activationKeys: const [LogicalKey.space],
           onActivate: (key) {
             switch (key) {
-              case LogicalKey.arrowLeft:
-                state.selectConfigOption(-1);
-                break;
-              case LogicalKey.arrowRight:
-                state.selectConfigOption(1);
+              case LogicalKey.space:
+                state.selectConfigOption();
                 break;
             }
             holder.markDirty();
@@ -232,6 +352,7 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
+        const Button.tip('Click to select'),
       ],
     );
   }

@@ -54,11 +54,11 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
+        const Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
         ),
-        Replacement(
+        const Replacement(
           slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
           replacement: '',
         ),
@@ -74,7 +74,7 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
+        const Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',
         ),

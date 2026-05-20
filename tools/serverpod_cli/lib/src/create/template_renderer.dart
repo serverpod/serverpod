@@ -66,7 +66,7 @@ class TemplateRenderer {
     try {
       var template = Template(content, lenient: true);
       return template.renderString(
-        context.toJson(),
+        context.toMustacheMap(),
         onMissingVariable: (name, context) {
           return '{{$name}}';
         },

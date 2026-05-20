@@ -38,10 +38,10 @@ abstract class ObjectWithDynamic
   factory ObjectWithDynamic.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDynamic(
       id: jsonSerialization['id'] as int?,
-      payload: _i2.Protocol().decodeDynamicFieldValue(
+      payload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['payload'],
       ),
-      jsonbPayload: _i2.Protocol().decodeDynamicFieldValue(
+      jsonbPayload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['jsonbPayload'],
       ),
       payloadList: _i2.Protocol().deserialize<List<dynamic>>(
@@ -99,20 +99,20 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().encodeWithType(payload),
-      'jsonbPayload': _i2.Protocol().encodeWithType(jsonbPayload),
+      'payload': _i2.Protocol().dynamicFieldToJson(payload),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(jsonbPayload),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().encodeWithType(k),
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(k),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
     };
   }
@@ -122,20 +122,22 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().encodeWithTypeForProtocol(payload),
-      'jsonbPayload': _i2.Protocol().encodeWithTypeForProtocol(jsonbPayload),
+      'payload': _i2.Protocol().dynamicFieldToJsonForProtocol(payload),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJsonForProtocol(
+        jsonbPayload,
+      ),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().encodeWithTypeForProtocol(k),
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJsonForProtocol(k),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
       ),
     };
   }
@@ -208,8 +210,8 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   }) {
     return ObjectWithDynamic(
       id: id is int? ? id : this.id,
-      payload: payload is! _Undefined ? payload : this.payload,
-      jsonbPayload: jsonbPayload is! _Undefined
+      payload: payload != _Undefined ? payload : this.payload,
+      jsonbPayload: jsonbPayload != _Undefined
           ? jsonbPayload
           : this.jsonbPayload,
       payloadList: payloadList ?? this.payloadList.map((e0) => e0).toList(),

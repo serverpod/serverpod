@@ -944,7 +944,7 @@ class SerializableModelLibraryGenerator {
         // Since `dynamic` also covers `_Undefined`, the check for `param`
         // must be inverted to explicitly not be `_Undefined`.
         valueDefinition = refer(field.name)
-            .isNotA(refer('_Undefined'))
+            .notEqualTo(refer('_Undefined'))
             .conditional(
               refer(field.name),
               assignment,
@@ -1625,8 +1625,8 @@ class SerializableModelLibraryGenerator {
     );
     if (fieldType.className == 'dynamic') {
       var encodeMethod = methodName == _toJsonForProtocolMethodName
-          ? 'encodeWithTypeForProtocol'
-          : 'encodeWithType';
+          ? 'dynamicFieldToJsonForProtocol'
+          : 'dynamicFieldToJson';
       return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
     }
     if (fieldType.isRecordType) {

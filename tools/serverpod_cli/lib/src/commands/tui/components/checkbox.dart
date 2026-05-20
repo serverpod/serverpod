@@ -1,20 +1,21 @@
 import 'package:nocterm/nocterm.dart';
 
-/// A radio button component.
-class RadioButton extends StatelessComponent {
-  const RadioButton({
+/// A check box component
+class Checkbox extends StatelessComponent {
+  const Checkbox({
+    super.key,
     required this.label,
     required this.value,
     this.focused = false,
   });
 
-  final bool value;
   final String label;
+  final bool value;
   final bool focused;
 
   @override
   Component build(BuildContext context) {
-    final indicator = value ? '◉' : '○';
+    final indicator = value ? '■' : '□';
 
     return Text(
       '$indicator $label',
