@@ -18,8 +18,6 @@ class Button extends StatelessComponent {
     this.enabled = true,
   }) : assert(activationKeys.length > 0, 'activationKeys can not be empty');
 
-  const factory Button.tip(String tip) = _TipButton;
-
   final String name;
   final String activationChar;
   final List<LogicalKey> activationKeys;
@@ -82,9 +80,8 @@ class Button extends StatelessComponent {
   }
 }
 
-class _TipButton extends Button {
-  const _TipButton(this.tip)
-    : super(name: '', activationChar: '', activationKeys: const []);
+class Tip extends StatelessComponent {
+  const Tip(this.tip);
 
   final String tip;
 
