@@ -198,7 +198,7 @@ void main() {
         await upstream.connectionAttached;
 
         final preRetargetHttpUri = proxy.httpUri;
-        await proxy.retarget(upstream2.wsUri);
+        await proxy.setUpstream(upstream2.wsUri);
 
         // The proxy's published URI is stable across retarget so consumers
         // can simply reconnect without re-reading vm-service-info.json.

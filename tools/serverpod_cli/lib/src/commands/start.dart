@@ -760,7 +760,7 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   final podWs = Uri.parse(vmServiceWsUri(podHttp));
 
   if (existing != null) {
-    await existing.retarget(podWs);
+    await existing.setUpstream(podWs);
     return existing;
   }
 
