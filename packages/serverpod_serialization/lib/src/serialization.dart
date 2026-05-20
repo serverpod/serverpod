@@ -372,13 +372,19 @@ abstract class SerializationManager {
             _dynamicFieldValueToJson(e, encodeForProtocol),
         ],
       },
-      Map() when object.keys.every((k) => k is String) => {
-        'className': 'Map',
-        'data': {
-          for (final e in Map<String, dynamic>.from(object).entries)
-            e.key: _dynamicFieldValueToJson(e.value, encodeForProtocol),
+      Map()
+          when object is Map<String, dynamic> ||
+              object.keys.every((k) => k is String) =>
+        {
+          'className': 'Map',
+          'data': {
+            for (final e in object.entries)
+              e.key as String: _dynamicFieldValueToJson(
+                e.value,
+                encodeForProtocol,
+              ),
+          },
         },
-      },
       Map() => {
         'className': 'Map',
         'data': [
