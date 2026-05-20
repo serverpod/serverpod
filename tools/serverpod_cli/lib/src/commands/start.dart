@@ -369,12 +369,11 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   required void Function() onDeferToPod,
 }) async {
   try {
-    final applied = await applyPendingMigrations(
+    await applyPendingMigrations(
       serverDir: serverDir,
       runMode: runMode,
       moduleName: moduleName,
     );
-    log.info(formatAppliedMigrations(applied));
     return const MigrationsApplied();
   } catch (e) {
     if (!isMissingNativeAssetError(e)) rethrow;
