@@ -15,11 +15,14 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 /// [MigrationManager]. Returns the list of versions applied (empty if
 /// the database was already up to date).
 ///
-/// [moduleName] is used as the value the migration manager checks
-/// against the migration definition to detect mismatched protocol
-/// classes; the CLI does not have access to a real serialization
-/// manager so it passes the project name and surfaces a warning if it
-/// disagrees.
+/// Does not require a running pod — the database can be migrated
+/// while the pod is offline. The resulting database may be
+/// inconsistent with the project's protocol; the pod verifies
+/// integrity on its next start.
+///
+/// [moduleName] is passed through to the migration manager as the
+/// expected module name; if the migration definition's module name
+/// disagrees, the manager logs a warning.
 Future<List<String>> applyPendingMigrations({
   required String serverDir,
   required String runMode,
@@ -34,25 +37,7 @@ Future<List<String>> applyPendingMigrations({
     throw StateError('No database configured for run mode "$runMode".');
   }
 
-  late List<TableDefinition> targetTableDefinitions;
-  try {
-    targetTableDefinitions = await _loadTargetTableDefinitions(
-      serverDir: serverDir,
-      runMode: runMode,
-    );
-  } catch (error, _) {
-    log.error(
-      'Failed to load target table definitions from the insights endpoint. '
-      'Ensure the insights endpoint is reachable to run migrations from the CLI.\n'
-      '$error',
-    );
-    throw ExitException.error();
-  }
-
-  final serializationManager = _CliSerializationManager(
-    moduleName,
-    targetTableDefinitions,
-  );
+  final serializationManager = _CliSerializationManager(moduleName);
 
   // Resolve relative SQLite paths against [serverDir] so the CLI opens
   // the same file the pod will
@@ -82,13 +67,6 @@ Future<List<String>> applyPendingMigrations({
     );
     final applied = await manager.migrateToLatest(session);
 
-    var verified = await MigrationManager.verifyDatabaseIntegrity(session);
-    if (!verified) {
-      if (runMode == 'development') {
-        throw ExitException.error();
-      }
-    }
-
     if (applied != null) {
       log.info(
         formatAppliedMigrations(applied),
@@ -107,17 +85,6 @@ String formatAppliedMigrations(List<String> applied) {
   if (applied.isEmpty) return 'Database is already up to date.';
   final plural = applied.length == 1 ? '' : 's';
   return 'Applied ${applied.length} migration$plural: ${applied.join(", ")}';
-}
-
-/// Whether [error] is a FFI resolver failure
-///
-/// The CLI may be installed as a `pub global activate` snapshot, that doesn't
-/// run build hooks for transitive deps.
-bool isMissingNativeAssetError(Object error) {
-  if (error is! ArgumentError) return false;
-  final s = error.toString();
-  return s.contains("Couldn't resolve native function") ||
-      s.contains('No available native assets');
 }
 
 /// Extracts `--mode` / `-m` from [serverArgs] (the passthrough args
@@ -161,22 +128,6 @@ DatabaseConfig _resolveDbConfigPaths(
   );
 }
 
-Future<List<TableDefinition>> _loadTargetTableDefinitions({
-  required String serverDir,
-  required String runMode,
-}) async {
-  final client = _withServerDir(
-    serverDir: serverDir,
-    action: () => ConfigInfo(runMode).createServiceClient(),
-  );
-
-  try {
-    return await client.insights.getTargetTableDefinition();
-  } finally {
-    client.close();
-  }
-}
-
 /// Wraps [ConfigInfo] with a chdir into [serverDir] so it picks up
 /// `config/<runMode>.yaml` + `config/passwords.yaml` from the project
 /// regardless of the caller's cwd.
@@ -188,12 +139,12 @@ Future<List<TableDefinition>> _loadTargetTableDefinitions({
 ServerpodConfig _loadServerpodConfig({
   required String serverDir,
   required String runMode,
-}) => _withServerDir(
+}) => withServerDir(
   serverDir: serverDir,
   action: () => ConfigInfo(runMode).config,
 );
 
-T _withServerDir<T>({
+T withServerDir<T>({
   required String serverDir,
   required T Function() action,
 }) {
@@ -208,17 +159,11 @@ T _withServerDir<T>({
 
 /// Minimal [DatabaseSerializationManager] stub. The CLI doesn't have
 /// access to the project's generated serialization manager, but the
-/// migration code path only needs the module-name check. Integrity
-/// verification runs later using target table definitions loaded over
-/// the insights endpoint.
+/// migration code path only needs the module-name check.
 class _CliSerializationManager extends DatabaseSerializationManager {
-  _CliSerializationManager(
-    this._moduleName,
-    List<TableDefinition> targetTableDefinitions,
-  ) : _targetTableDefinitions = List.unmodifiable(targetTableDefinitions);
+  _CliSerializationManager(this._moduleName);
 
   final String _moduleName;
-  final List<TableDefinition> _targetTableDefinitions;
 
   @override
   String getModuleName() => _moduleName;
@@ -227,7 +172,7 @@ class _CliSerializationManager extends DatabaseSerializationManager {
   Table? getTableForType(Type t) => null;
 
   @override
-  List<TableDefinition> getTargetTableDefinitions() => _targetTableDefinitions;
+  List<TableDefinition> getTargetTableDefinitions() => const [];
 }
 
 /// Minimal [DatabaseSession] for CLI-driven SQL execution. No

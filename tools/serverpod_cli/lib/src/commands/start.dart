@@ -24,6 +24,7 @@ import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
 import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
+import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -305,26 +306,26 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
   return ['--apply-migrations', ...serverArgs];
 }
 
-/// Watch-session [ApplyMigrationsAction] that wraps [applyPendingMigrations]
-/// with the same FFI-resolver fallback policy as the boot path
+/// Watch-session [ApplyMigrationsAction] that applies pending and repair
+/// migrations by calling the running pod's `applyMigrations` endpoint. The
+/// pod itself runs the migration in-process; the CLI only triggers it.
 Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
-  required String moduleName,
-  required void Function() onDeferToPod,
 }) async {
+  final client = withServerDir(
+    serverDir: serverDir,
+    action: () => ConfigInfo(runMode).createServiceClient(),
+  );
   try {
-    final applied = await applyPendingMigrations(
-      serverDir: serverDir,
-      runMode: runMode,
-      moduleName: moduleName,
+    final result = await client.insights.applyMigrations(
+      applyRepairMigration: true,
+      applyMigrations: true,
     );
-    log.info(formatAppliedMigrations(applied));
+    log.info(formatAppliedMigrations(result.migrationsApplied ?? const []));
     return const MigrationsApplied();
-  } catch (e) {
-    if (!isMissingNativeAssetError(e)) rethrow;
-    onDeferToPod();
-    return const MigrationsRequirePodRestart();
+  } finally {
+    client.close();
   }
 }
 
@@ -515,14 +516,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
-      moduleName: config.name,
-      onDeferToPod: () {
-        log.warning(
-          'Cannot apply migrations from the CLI.\n'
-          'Falling back to restarting the pod with --apply-migrations.',
-        );
-        serverArgs.value = _withApplyMigrations(serverArgs.value);
-      },
     ),
   );
 

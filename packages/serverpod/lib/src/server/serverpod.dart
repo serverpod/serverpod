@@ -24,6 +24,7 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
+import 'apply_migrations.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler =
@@ -919,34 +920,33 @@ class Serverpod {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    bool verified;
+    internal.MigrationsApplyResult? result;
 
     try {
-      _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = MigrationManager.fromDirectory(
-        Directory.current,
+      _internalLogVerbose(
+        'Applying migrations and verifying database integrity.',
+      );
+      result = await applyMigrationsAndVerify(
+        session: internalSession,
+        projectDirectory: Directory.current,
         runMode: runMode,
+        applyRepairMigration: applyRepairMigration,
+        applyMigrations: applyMigrations,
       );
 
       if (applyRepairMigration) {
-        _internalLogVerbose('Applying database repair migration');
-        var appliedRepairMigration = await migrationManager
-            .applyRepairMigration(internalSession);
-        if (appliedRepairMigration == null) {
+        final repairMigrationApplied = result.repairMigrationApplied;
+        if (repairMigrationApplied == null) {
           log.error('Failed to apply database repair migration.');
         } else {
           _writeLifecycleMessage(
-            'Database repair migration "$appliedRepairMigration" applied.',
+            'Database repair migration "$repairMigrationApplied" applied.',
           );
         }
       }
 
       if (applyMigrations) {
-        _internalLogVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(
-          internalSession,
-        );
-
+        final migrationsApplied = result.migrationsApplied;
         if (migrationsApplied == null) {
           _writeLifecycleMessage('Latest database migration already applied.');
         } else {
@@ -958,17 +958,12 @@ class Serverpod {
           }
         }
       }
-
-      _internalLogVerbose('Verifying database integrity.');
-      verified = await MigrationManager.verifyDatabaseIntegrity(
-        internalSession,
-      );
     } catch (e, stackTrace) {
-      verified = false;
-
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
+
+    final verified = result?.databaseMatchesTargetState ?? false;
 
     if (!verified) {
       _internalLogVerbose('Database integrity verification failed.');

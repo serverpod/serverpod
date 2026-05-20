@@ -105,7 +105,7 @@ void main() {
 
     test(
       'when applying migrations from the CLI '
-      'then schema drift warnings are logged.',
+      'then the CLI completes without verifying integrity.',
       () async {
         final testWriter = TestLogWriter();
         logWriter.add(testWriter);
@@ -117,16 +117,12 @@ void main() {
         );
 
         expect(result, isEmpty);
-        expect(testWriter.entries, hasLength(1));
-
-        final warning = testWriter.entries.first;
-        expect(warning.level, LogLevel.warning);
         expect(
-          warning.message,
-          startsWith(
-            'The database does not match the target database:\n'
-            ' - Table "simple_data" is missing.',
-          ),
+          testWriter.entries,
+          isEmpty,
+          reason:
+              'The CLI no longer verifies database integrity; verification '
+              "is deferred to the pod's next start.",
         );
       },
     );
