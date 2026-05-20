@@ -126,5 +126,25 @@ void main() {
         );
       },
     );
+
+    test(
+      'when calling the applyMigrations endpoint with verify-only flags '
+      'then the result reports drift.',
+      () async {
+        final result = await serviceClient.insights.applyMigrations(
+          applyRepairMigration: false,
+          applyMigrations: false,
+        );
+
+        expect(result.migrationsApplied, isNull);
+        expect(result.repairMigrationApplied, isNull);
+        expect(
+          result.databaseMatchesTargetState,
+          isFalse,
+          reason:
+              'The endpoint should detect the renamed table as schema drift.',
+        );
+      },
+    );
   });
 }

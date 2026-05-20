@@ -947,7 +947,7 @@ class Serverpod {
 
       if (applyMigrations) {
         final migrationsApplied = result.migrationsApplied;
-        if (migrationsApplied == null) {
+        if (migrationsApplied == null || migrationsApplied.isEmpty) {
           _writeLifecycleMessage('Latest database migration already applied.');
         } else {
           _writeLifecycleMessage(
@@ -1225,6 +1225,40 @@ class Serverpod {
       enableLogging: enableLogging,
     );
     return session;
+  }
+
+  /// Stops accepting new requests on the user-facing servers (the API
+  /// server and, if enabled, the web server), waits for in-flight requests
+  /// to settle, runs [action], then resumes request handling.
+  ///
+  /// Used during runtime operations that require the pod to be quiescent —
+  /// e.g. applying migrations through
+  /// [InsightsEndpoint.applyMigrations] — to provide the same safety
+  /// guarantees as a pod restart.
+  ///
+  /// The operator-facing Insights server is not paused, so the call that
+  /// invoked [action] can complete and return its result.
+  Future<T> pauseRequestHandlingDuring<T>(
+    Future<T> Function() action,
+  ) async {
+    await server.shutdown();
+    final webServerWasRunning =
+        _webServer != null && Features.enableWebServer(_webServer);
+    if (webServerWasRunning) {
+      await _webServer!.stop();
+    }
+
+    try {
+      return await action();
+    } finally {
+      await server.start(
+        authenticationHandler:
+            authenticationHandler ?? defaultAuthenticationHandler,
+      );
+      if (webServerWasRunning) {
+        await _webServer!.start();
+      }
+    }
   }
 
   /// Shuts down the Serverpod and all associated servers.

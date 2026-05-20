@@ -248,13 +248,15 @@ class InsightsEndpoint extends Endpoint {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    return applyMigrationsAndVerify(
-      session: session,
-      projectDirectory: Directory.current,
-      runMode: session.serverpod.runMode,
-      applyRepairMigration: applyRepairMigration,
-      applyMigrations: applyMigrations,
-    );
+    return session.serverpod.pauseRequestHandlingDuring(() {
+      return applyMigrationsAndVerify(
+        session: session,
+        projectDirectory: Directory.current,
+        runMode: session.serverpod.runMode,
+        applyRepairMigration: applyRepairMigration,
+        applyMigrations: applyMigrations,
+      );
+    });
   }
 
   /// Returns the target and live database definitions. See

@@ -44,9 +44,10 @@ abstract class MigrationsApplyResult implements _i1.SerializableModel {
     );
   }
 
-  /// Versions of regular migrations that were applied, or `null` if
-  /// `applyMigrations` was false or the database was already at the latest
-  /// version.
+  /// Versions of regular migrations that were applied. An empty list means
+  /// `applyMigrations` was true but the database was already at the latest
+  /// version. `null` means `applyMigrations` was false — no attempt was
+  /// made to apply regular migrations.
   List<String>? migrationsApplied;
 
   /// Version name of the repair migration that was applied, or `null` if

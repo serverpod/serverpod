@@ -28,10 +28,10 @@ Future<List<String>> applyPendingMigrations({
   required String runMode,
   required String moduleName,
 }) async {
-  final config = _loadServerpodConfig(
+  final config = ConfigInfo.fromDir(
     serverDir: serverDir,
     runMode: runMode,
-  );
+  ).config;
   final dbConfig = config.database;
   if (dbConfig == null) {
     throw StateError('No database configured for run mode "$runMode".');
@@ -126,35 +126,6 @@ DatabaseConfig _resolveDbConfigPaths(
     filePath: p.normalize(p.join(serverDir, dbConfig.filePath)),
     maxConnectionCount: dbConfig.maxConnectionCount,
   );
-}
-
-/// Wraps [ConfigInfo] with a chdir into [serverDir] so it picks up
-/// `config/<runMode>.yaml` + `config/passwords.yaml` from the project
-/// regardless of the caller's cwd.
-///
-/// TODO: replace this with a base-directory parameter on
-/// [ServerpodConfig.load] / [PasswordManager]. Mutating
-/// [Directory.current] is racy with anything else in the isolate that
-/// reads cwd while this call is in flight.
-ServerpodConfig _loadServerpodConfig({
-  required String serverDir,
-  required String runMode,
-}) => withServerDir(
-  serverDir: serverDir,
-  action: () => ConfigInfo(runMode).config,
-);
-
-T withServerDir<T>({
-  required String serverDir,
-  required T Function() action,
-}) {
-  final originalCwd = Directory.current;
-  Directory.current = Directory(serverDir);
-  try {
-    return action();
-  } finally {
-    Directory.current = originalCwd;
-  }
 }
 
 /// Minimal [DatabaseSerializationManager] stub. The CLI doesn't have

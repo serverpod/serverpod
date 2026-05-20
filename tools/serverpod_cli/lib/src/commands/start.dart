@@ -374,16 +374,28 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
 }) async {
-  final client = withServerDir(
+  final client = ConfigInfo.fromDir(
     serverDir: serverDir,
-    action: () => ConfigInfo(runMode).createServiceClient(),
-  );
+    runMode: runMode,
+  ).createServiceClient();
   try {
     final result = await client.insights.applyMigrations(
       applyRepairMigration: true,
       applyMigrations: true,
     );
-    log.info(formatAppliedMigrations(result.migrationsApplied ?? const []));
+    if (result.repairMigrationApplied != null) {
+      log.info('Applied repair migration: ${result.repairMigrationApplied}');
+    }
+    final applied = result.migrationsApplied;
+    if (applied != null && applied.isNotEmpty) {
+      log.info(formatAppliedMigrations(applied));
+    }
+    if (!result.databaseMatchesTargetState) {
+      log.warning(
+        'Failed to apply existing migrations — database does not match '
+        'target state.',
+      );
+    }
     return const MigrationsApplied();
   } finally {
     client.close();

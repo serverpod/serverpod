@@ -6,6 +6,10 @@ import '../generated/protocol.dart';
 
 /// Applies pending and/or repair migrations and verifies database integrity.
 ///
+/// Integrity is always verified, regardless of [applyMigrations] and
+/// [applyRepairMigration]. Passing both flags as `false` performs a pure
+/// verify with no migration application.
+///
 /// Shared by [Serverpod]'s boot-time `--apply-migrations` path and the
 /// `InsightsEndpoint.applyMigrations` endpoint. Both paths perform the same
 /// operations; they only differ in how they react to the result (boot may
@@ -35,7 +39,7 @@ Future<MigrationsApplyResult> applyMigrationsAndVerify({
 
   List<String>? migrationsApplied;
   if (applyMigrations) {
-    migrationsApplied = await manager.migrateToLatest(session);
+    migrationsApplied = await manager.migrateToLatest(session) ?? const [];
   }
 
   final databaseMatchesTargetState =
