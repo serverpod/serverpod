@@ -119,7 +119,9 @@ class WatchSession {
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
   final ApplyMigrationsAction _applyMigrationsAction;
-  final FlutterProcess? _flutterProcess;
+
+  final FlutterProcess? Function() _flutterProcessProvider;
+  FlutterProcess? get _flutterProcess => _flutterProcessProvider();
 
   final Completer<int> _done = Completer<int>();
 
@@ -157,7 +159,7 @@ class WatchSession {
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
-    FlutterProcess? flutterProcess,
+    FlutterProcess? Function()? flutterProcessProvider,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -166,7 +168,7 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
-       _flutterProcess = flutterProcess {
+       _flutterProcessProvider = flutterProcessProvider ?? (() => null) {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',

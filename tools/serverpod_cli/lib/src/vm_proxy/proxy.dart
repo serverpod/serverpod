@@ -47,17 +47,27 @@ class VmServiceProxy {
   final Set<_Pair> _pairs = {};
   final Set<_WaitingClient> _waitingClients = {};
 
+  /// Fired the first time a client lands in the waiting queue while no
+  /// upstream is bound. Callers use it to demand-start whatever process
+  /// would provide that upstream (e.g. a Flutter app spawn triggered by
+  /// IDE attach). Fires again if the waiting queue drains to empty and
+  /// a new client arrives, so a second IDE attach after a Flutter exit
+  /// can re-spawn. Never fires while an upstream is bound.
+  final FutureOr<void> Function()? _onWaitingClientArrived;
+
   VmServiceProxy({
     Uri? upstreamWs,
     RpcInterceptor? interceptor,
     Set<Direction> interceptDirections = const {Direction.clientToServer},
     String? token,
     Duration waitingClientTimeout = const Duration(minutes: 2),
+    FutureOr<void> Function()? onWaitingClientArrived,
   }) : _upstreamWs = upstreamWs,
        _interceptor = interceptor ?? passthroughInterceptor,
        _interceptDirections = interceptDirections,
        _token = token ?? _mintToken(),
-       _waitingClientTimeout = waitingClientTimeout;
+       _waitingClientTimeout = waitingClientTimeout,
+       _onWaitingClientArrived = onWaitingClientArrived;
 
   /// Replace the live interceptor. The next frame uses the new hook.
   @visibleForTesting
@@ -66,9 +76,10 @@ class VmServiceProxy {
   /// The current upstream URI, or `null` if no upstream is bound.
   Uri? get upstreamWs => _upstreamWs;
 
-  /// Point future client connections at [upstreamWs]
-  /// (or unbind by passing `null`)
+  /// Point future client connections at [upstreamWs] (or unbind by passing `null`).
+  /// A re-bind to the same URI is a no-op.
   Future<void> setUpstream(Uri? upstreamWs) async {
+    if (_upstreamWs == upstreamWs) return;
     _upstreamWs = upstreamWs;
     final live = List.of(_pairs);
     _pairs.clear();
@@ -78,12 +89,11 @@ class VmServiceProxy {
       _waitingClients.clear();
       for (final wc in waiting) {
         wc.timer?.cancel();
-        await _attachUpstream(
-          wc.ws,
-          upstreamWs,
-          existingDownSub: wc.sub,
-        );
       }
+      await [
+        for (final wc in waiting)
+          _attachUpstream(wc.ws, upstreamWs, existingDownSub: wc.sub),
+      ].wait;
     }
   }
 
@@ -137,8 +147,19 @@ class VmServiceProxy {
   /// is called with a non-null upstream, the client disconnects, or
   /// [_waitingClientTimeout] elapses.
   void _enqueueWaitingClient(WebSocket downstream) {
+    final wasEmpty = _waitingClients.isEmpty;
     final wc = _WaitingClient(downstream);
     _waitingClients.add(wc);
+    final cb = _onWaitingClientArrived;
+    if (wasEmpty && cb != null) {
+      // Fire-and-forget: don't block the handler on the callback's
+      // future (which may include a Flutter spawn taking 30+ seconds).
+      // The proxy keeps holding the WS; pairing happens when the
+      // callback eventually calls setUpstream. Errors are swallowed
+      // here so a failing spawn can't crash the proxy listener; the
+      // callback owns its own error reporting.
+      unawaited(Future(cb).catchError((Object _, StackTrace _) {}));
+    }
     wc.sub = downstream.listen(
       (_) {},
       onDone: () {
@@ -149,11 +170,9 @@ class VmServiceProxy {
     wc.timer = Timer(_waitingClientTimeout, () async {
       if (_waitingClients.remove(wc)) {
         await wc.sub?.cancel();
-        unawaited(
-          downstream.close(
-            WebSocketStatus.normalClosure,
-            'no upstream available',
-          ),
+        await downstream.close(
+          WebSocketStatus.normalClosure,
+          'no upstream available',
         );
       }
     });
@@ -192,14 +211,14 @@ class VmServiceProxy {
     _waitingClients.clear();
     for (final wc in waiting) {
       wc.timer?.cancel();
-      await wc.sub?.cancel();
-      unawaited(
-        wc.ws.close(WebSocketStatus.normalClosure, 'proxy shutting down'),
-      );
     }
     await [
+      for (final wc in waiting) ...[
+        ?wc.sub?.cancel(),
+        wc.ws.close(WebSocketStatus.normalClosure, 'proxy shutting down'),
+      ],
       ?liveServer?.close(force: true),
-      ...[for (final p in List.of(_pairs)) p.close()],
+      for (final p in List.of(_pairs)) p.close(),
     ].wait;
   }
 

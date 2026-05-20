@@ -340,6 +340,55 @@ void main() {
       },
     );
   });
+
+  group('Given a VmServiceProxy with onWaitingClientArrived', () {
+    test(
+      'when the first client connects with no upstream '
+      'then the callback fires exactly once '
+      'and again only after the waiting queue drains and refills',
+      () async {
+        var fired = 0;
+        final proxy = VmServiceProxy(
+          upstreamWs: null,
+          onWaitingClientArrived: () => fired++,
+          waitingClientTimeout: const Duration(seconds: 2),
+        );
+        await proxy.bind();
+        addTearDown(proxy.close);
+
+        // First connect: fires.
+        final client1 = await _connectClient(proxy);
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        expect(fired, 1);
+
+        // Second concurrent connect while queue still has client1:
+        // does NOT re-fire (we don't want to re-spawn for every tab).
+        final client2 = await _connectClient(proxy);
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        expect(fired, 1);
+
+        // Pair both up with an upstream; queue empties.
+        final upstream = await _FakeUpstream.start();
+        addTearDown(upstream.close);
+        await proxy.setUpstream(upstream.wsUri);
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        expect(fired, 1, reason: 'set-upstream must not fire the callback');
+
+        // Clear upstream (existing pairs close). A fresh client arrives
+        // and finds an empty queue + no upstream: fires again.
+        await proxy.setUpstream(null);
+        await client1.close();
+        await client2.close();
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+
+        final client3 = await _connectClient(proxy);
+        addTearDown(client3.close);
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        expect(fired, 2);
+      },
+      timeout: const Timeout(Duration(seconds: 10)),
+    );
+  });
 }
 
 Future<WebSocket> _connectClient(VmServiceProxy proxy) async {

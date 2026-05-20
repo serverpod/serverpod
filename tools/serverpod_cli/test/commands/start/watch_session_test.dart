@@ -191,7 +191,7 @@ void main() {
           applyMigrationsAction ?? () async => const MigrationsApplied(),
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
-      flutterProcess: flutterProcess,
+      flutterProcessProvider: () => flutterProcess,
     );
   }
 
