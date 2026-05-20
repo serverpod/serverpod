@@ -189,9 +189,9 @@ abstract class SerializationManager {
         return raw.map(deserializeDynamicFieldValue).toSet();
       case 'Map' when raw is Map<String, dynamic>:
         return raw.map((k, v) => MapEntry(k, deserializeDynamicFieldValue(v)));
-      case 'Map' when raw is List<Map<String, dynamic>>:
+      case 'Map' when raw is List:
         return Map<dynamic, dynamic>.fromEntries(
-          raw.map(
+          raw.cast<Map<String, dynamic>>().map(
             (e) => MapEntry(
               deserializeDynamicFieldValue(e['k']),
               deserializeDynamicFieldValue(e['v']),
