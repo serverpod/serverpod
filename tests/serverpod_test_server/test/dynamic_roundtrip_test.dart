@@ -226,13 +226,39 @@ void main() {
 
   test(
     'Given a model with a dynamic field, '
-    'when round-tripping the model, '
+    'when round-tripping the model through toJson/fromJson, '
     'then the value roundtrips correctly.',
     () {
       final serialized = object.toJson();
       final deserialized = ObjectWithDynamic.fromJson(serialized);
 
       expect(deserialized, isA<ObjectWithDynamic>());
+      expect(deserialized.payload, object.payload);
+      expect(deserialized.jsonbPayload, object.jsonbPayload);
+      expect(deserialized.payloadList.first, 1);
+      expect(deserialized.payloadList[1], 'b');
+      expect(deserialized.payloadList.last, isA<SimpleData>());
+      expect(deserialized.payloadMap['a'], 1);
+      expect(deserialized.payloadMap['b'], 2);
+      expect(deserialized.payloadMap['c'], isA<SimpleData>());
+      expect((deserialized.payloadMap['c'] as SimpleData).num, 3);
+      expect(deserialized.payloadSet, object.payloadSet);
+      expect(deserialized.payloadMapWithDynamicKeys['a'], 1);
+      expect(deserialized.payloadMapWithDynamicKeys[2], isA<SimpleData>());
+      expect((deserialized.payloadMapWithDynamicKeys[2] as SimpleData).num, 1);
+    },
+  );
+
+  test(
+    'Given a model with a dynamic field, '
+    'when round-tripping the model through complete encode/decode cycle, '
+    'then the value roundtrips correctly.',
+    () {
+      final jsonDecoded = Protocol().encodeWithType(object);
+      final deserialized = Protocol().decodeWithType(jsonDecoded);
+
+      expect(deserialized, isA<ObjectWithDynamic>());
+      deserialized as ObjectWithDynamic;
       expect(deserialized.payload, object.payload);
       expect(deserialized.jsonbPayload, object.jsonbPayload);
       expect(deserialized.payloadList.first, 1);
