@@ -178,8 +178,13 @@ class MigrationGenerator {
   /// If [targetMigrationVersion] is not specified, the latest migration version
   /// will be used.
   ///
-  /// Returns the repair migration file, or null if no migration was
-  /// created.
+  /// Returns the repair migration file, or `null` when no schema drift is
+  /// detected between the live database and the target version (callers can
+  /// override with [force]).
+  ///
+  /// Throws [MigrationAbortedException] when warnings are present and [force]
+  /// is false. Other typed exceptions surface specific failure modes; see the
+  /// `MigrationRepair*Exception` types.
   Future<File?> repairMigration({
     String? tag,
     required bool force,
@@ -230,16 +235,12 @@ class MigrationGenerator {
     _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      log.info('Migration aborted. Use --force to ignore warnings.');
-      return null;
+      throw const MigrationAbortedException();
     }
 
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
-      log.info(
-        'No changes detected. Use --force to create an empty repair migration.',
-      );
       return null;
     }
 

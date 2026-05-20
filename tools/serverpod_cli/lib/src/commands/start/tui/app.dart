@@ -16,7 +16,9 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
 
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
-  VoidCallback? _onCreateMigration;
+  VoidCallback? _onHotRestart;
+  void Function({bool force})? _onCreateMigration;
+  void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
 
@@ -30,7 +32,9 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   void attach(ServerpodWatchAppState widgetState) {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
+    widgetState.onHotRestart = _onHotRestart;
     widgetState.onCreateMigration = _onCreateMigration;
+    widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
   }
@@ -45,9 +49,19 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
     _widgetState?.onHotReload = cb;
   }
 
-  set onCreateMigration(VoidCallback? cb) {
+  set onHotRestart(VoidCallback? cb) {
+    _onHotRestart = cb;
+    _widgetState?.onHotRestart = cb;
+  }
+
+  set onCreateMigration(void Function({bool force})? cb) {
     _onCreateMigration = cb;
     _widgetState?.onCreateMigration = cb;
+  }
+
+  set onCreateRepairMigration(void Function({bool force})? cb) {
+    _onCreateRepairMigration = cb;
+    _widgetState?.onCreateRepairMigration = cb;
   }
 
   set onApplyMigration(VoidCallback? cb) {
@@ -83,7 +97,9 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
-  VoidCallback? onCreateMigration;
+  VoidCallback? onHotRestart;
+  void Function({bool force})? onCreateMigration;
+  void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
 
@@ -151,7 +167,9 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
           _rebuild();
         },
         onHotReload: onHotReload,
+        onHotRestart: onHotRestart,
         onCreateMigration: onCreateMigration,
+        onCreateRepairMigration: onCreateRepairMigration,
         onApplyMigration: onApplyMigration,
         onQuit: onQuit,
       ),

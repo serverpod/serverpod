@@ -375,40 +375,39 @@ class WatchSession {
   }
 
   /// Attempts hot reload; falls back to a server restart if reload fails.
-  ///
-  /// With a [KernelCompiler], the fallback resets the compiler and produces a
-  /// fresh full dill to boot the new pod. Without one, the new pod is spawned
-  /// via `dart run` and the VM's kernel service compiles on the next reload.
   Future<void> _reloadOrRestart(CompileResult? result) async {
     if (await _reload(result?.dillOutput)) return;
+    await _fullCompileAndRestart();
+  }
 
-    // Fall back to restart. With a compiler, produce a full dill (incremental
-    // dills only contain deltas, so they can't boot a new process). Without
-    // one, restart via `dart run` and let the VM's kernel service take over.
+  /// Resets the compiler, produces a fresh full dill, and restarts the server.
+  ///
+  /// The full compile is required because the FES `outputDill` after accepted
+  /// increments is not generally bootable.
+  ///
+  /// Returns `true` if the server was restarted, `false` if compile failed or
+  /// the session was disposed before restart.
+  Future<bool> _fullCompileAndRestart() async {
     String? dillPath;
     final compiler = _compiler;
     if (compiler != null) {
+      _pendingPaths.clear();
       await compiler.reset();
       final fullResult = await compileWithProgress(
         'Compiling server',
         compiler,
         rejectOnFailure: true,
       );
-      if (fullResult == null) return;
+      if (fullResult == null) return false;
       compiler.accept();
       dillPath = fullResult.dillOutput!;
     }
 
-    switch (_state) {
-      case SessionState.idle:
-        break; // proceed
-      case SessionState.restarting:
-      case SessionState.applyingMigration:
-      case SessionState.disposed:
-        return;
-    }
+    // dispose() isn't queued onto [_chain], so it can race the compile above.
+    if (_state == SessionState.disposed) return false;
 
     await _restartServer(dillPath);
+    return true;
   }
 
   /// Forces a hot reload.
@@ -433,6 +432,23 @@ class WatchSession {
         );
       }
       await _reloadFlutter();
+    });
+  }
+
+  /// Forces a full server process restart (clears singletons, pools, and
+  /// caches that survive a hot reload). More expensive than [forceReload];
+  /// recompiles from scratch.
+  Future<void> forceRestart() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    if (_createServer == null) {
+      throw StateError('Restart is not supported in this session.');
+    }
+    return _chain(() async {
+      if (await _fullCompileAndRestart()) {
+        await _restartFlutter();
+      }
     });
   }
 
@@ -533,6 +549,22 @@ class WatchSession {
       log.info(flutterAppReloaded);
     } else {
       log.warning('Flutter reload failed.');
+    }
+  }
+
+  /// Hot-restarts the Flutter app and logs the outcome. Never throws.
+  Future<void> _restartFlutter() async {
+    final flutter = _flutterProcess;
+    if (flutter == null) return;
+    if (!flutter.isVmServiceConnected) {
+      log.debug('Flutter not ready; skipping restart.');
+      return;
+    }
+    final ok = await flutter.restart();
+    if (ok) {
+      log.info(flutterAppRestarted);
+    } else {
+      log.warning('Flutter restart failed.');
     }
   }
 

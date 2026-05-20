@@ -4,13 +4,13 @@ import 'package:serverpod_cli/src/commands/tui/components/wrap.dart';
 
 /// A horizontal bar of [Button] widgets with consistent spacing.
 ///
-/// Renders buttons with a 1-column left margin, 2-column gaps between
-/// adjacent buttons, and a 1-column right margin, matching the standard
+/// Renders buttons or tips with a 1-column left margin, 2-column gaps between
+/// adjacent components, and a 1-column right margin, matching the standard
 /// TUI button bar layout.
 class ButtonBar extends StatelessComponent {
   const ButtonBar({super.key, required this.buttons});
 
-  final List<Button> buttons;
+  final List<Component> buttons;
 
   @override
   Component build(BuildContext context) {

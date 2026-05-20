@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
@@ -111,6 +112,35 @@ class _FakeServer extends Fake implements ServerProcess {
   }
 }
 
+class _FakeFlutter extends Fake implements FlutterProcess {
+  final List<String> calls = [];
+
+  bool _vmServiceConnected = true;
+  bool restartSuccess = true;
+
+  @override
+  bool get isVmServiceConnected => _vmServiceConnected;
+  set isVmServiceConnected(bool value) => _vmServiceConnected = value;
+
+  @override
+  Future<bool> reload() async {
+    calls.add('reload');
+    return true;
+  }
+
+  @override
+  Future<bool> restart() async {
+    calls.add('restart');
+    return restartSuccess;
+  }
+
+  @override
+  Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async {
+    calls.add('stop');
+    return 0;
+  }
+}
+
 void main() {
   setUpAll(() {
     initializeLogger();
@@ -136,6 +166,7 @@ void main() {
     GenerateAction? generate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
+    FlutterProcess? flutterProcess,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -160,6 +191,7 @@ void main() {
           applyMigrationsAction ?? () async => const MigrationsApplied(),
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
+      flutterProcess: flutterProcess,
     );
   }
 
@@ -796,6 +828,222 @@ void main() {
     );
   });
 
+  group(
+    'Given a watch session with a compiler with no errors,'
+    'when force restart is called,',
+    () {
+      setUp(() async {
+        await session.forceRestart();
+      });
+
+      test('then it resets the compiler.', () {
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+      });
+
+      test('then it stops the server.', () {
+        expect(server.calls, contains('stop'));
+      });
+
+      test('then it creates a new server with the fresh full dill.', () {
+        expect(factoryCalls, ['createServer:/out.dill']);
+      });
+    },
+  );
+
+  test(
+    'Given a watch session with a compiler that fails,'
+    'when force restart is called,'
+    'then it does not stop the server or spawn a new one.',
+    () async {
+      compiler.nextCompileResult = _failResult();
+
+      await session.forceRestart();
+
+      expect(server.calls, isNot(contains('stop')));
+      expect(factoryCalls, isEmpty);
+    },
+  );
+
+  test(
+    'Given a watch session that is disposed,'
+    'when force restart is called, '
+    'then it throws a StateError.',
+    () async {
+      await session.dispose();
+
+      expect(() => session.forceRestart(), throwsStateError);
+    },
+  );
+
+  group('Given a watch session with an in-flight forceReload,', () {
+    late List<String> order;
+    late Future<void> reload;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // Both calls return immediately; we just verify ordering.
+      reload = session.forceReload().then((_) => order.add('reload'));
+    });
+
+    test(
+      'when force restart is called, '
+      'then it runs after the reload completes',
+      () async {
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
+        );
+
+        await Future.wait([reload, restart]);
+
+        expect(order, ['reload', 'restart']);
+      },
+    );
+  });
+
+  group('Given a watch session with an in-flight applyMigration,', () {
+    late List<String> order;
+    late Future<void> apply;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // applyMigration also queues onto [_chain], so a forceRestart issued
+      // before it returns must wait for it.
+      apply = session.applyMigration().then((_) => order.add('apply'));
+    });
+
+    test(
+      'when force restart is called, '
+      'then it runs after the applyMigration completes.',
+      () async {
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
+        );
+
+        await Future.wait([apply, restart]);
+
+        expect(order, ['apply', 'restart']);
+      },
+    );
+  });
+
+  group('Given a Flutter process with a connected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+    });
+
+    test(
+      'when force restart is called, '
+      'then the Flutter app is hot-restarted after the server restarts.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(flutter.calls, ['restart']);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter process with a connected VM service and a next compile that fails,',
+    () {
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+        );
+
+        compiler.nextCompileResult = _failResult();
+      });
+
+      test(
+        'when force restart is called, '
+        'then the Flutter app is not hot-restarted.',
+        () async {
+          await session.forceRestart();
+
+          expect(server.calls, isNot(contains('stop')));
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group('Given a Flutter process with a disconnected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+
+      flutter.isVmServiceConnected = false;
+    });
+
+    test(
+      'when force restart is called, '
+      'then the Flutter app is not hot-restarted.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(flutter.calls, isEmpty);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter process with a connected VM service and a hot restart that fails,',
+    () {
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+        );
+
+        flutter.restartSuccess = false;
+      });
+
+      test(
+        'when force restart is called, '
+        'then the server restart still completes.',
+        () async {
+          await session.forceRestart();
+
+          expect(server.calls, contains('stop'));
+          expect(factoryCalls, ['createServer:/out.dill']);
+          expect(flutter.calls, ['restart']);
+        },
+      );
+    },
+  );
+
   group('Given dispose is called', () {
     test(
       'when disposing, '
@@ -1128,6 +1376,17 @@ class Counter {
     );
 
     test(
+      'when forceRestart is called, '
+      'then it stops the server and spawns a new one with null dill',
+      () async {
+        await noCompilerSession.forceRestart();
+
+        expect(noCompilerServer.calls, contains('stop'));
+        expect(noCompilerFactoryCalls, ['createServer:null']);
+      },
+    );
+
+    test(
       'when dispose is called, '
       'then it stops the server (no compiler to dispose)',
       () async {
@@ -1160,6 +1419,14 @@ class Counter {
         await noFactorySession.forceReload();
 
         expect(noFactoryServer.calls, ['reload:null']);
+      },
+    );
+
+    test(
+      'when forceRestart is called, '
+      'then it throws a StateError',
+      () {
+        expect(() => noFactorySession.forceRestart(), throwsStateError);
       },
     );
   });

@@ -31,7 +31,9 @@ class MainScreen extends StatelessComponent {
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
+    this.onHotRestart,
     this.onCreateMigration,
+    this.onCreateRepairMigration,
     this.onApplyMigration,
     this.onQuit,
   });
@@ -45,7 +47,9 @@ class MainScreen extends StatelessComponent {
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
-  final VoidCallback? onCreateMigration;
+  final VoidCallback? onHotRestart;
+  final void Function({bool force})? onCreateMigration;
+  final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
 
@@ -66,11 +70,7 @@ class MainScreen extends StatelessComponent {
                       padding: const EdgeInsets.only(left: 1),
                       child: _buildTabBar(st),
                     ),
-                    if (_flutterStatusLine() case final line?)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 1),
-                        child: Text(line),
-                      ),
+                    ?_buildFlutterStatusLine(st),
                     Expanded(child: _buildTabContent()),
                     // Pinned active operations
                     if (state.activeOperations.isNotEmpty) ...[
@@ -93,24 +93,52 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// URL when ready, startup stage while compiling, `null` when no
-  /// Flutter app is attached.
-  String? _flutterStatusLine() {
+  /// Breadcrumb when a Flutter app is attached: horizontal rules, muted
+  /// label, vertical divider, and value.
+  ///
+  /// Returns `null` when no Flutter app is running or starting.
+  Component? _buildFlutterStatusLine(ServerpodThemeData st) {
+    final mutedText = TextStyle(
+      color: st.debugLevel,
+      fontWeight: FontWeight.dim,
+    );
+    final separatorStyle = TextStyle(
+      color: st.subtleDivider,
+      fontWeight: FontWeight.dim,
+    );
+
+    String? value;
     if (state.flutterReady) {
-      final url = state.flutterUrl;
-      return url == null ? 'Flutter: ready' : 'Flutter: $url';
+      value = state.flutterUrl ?? 'ready';
+    } else {
+      value = state.flutterStartupStage;
     }
-    final stage = state.flutterStartupStage;
-    if (stage != null) return 'Flutter: $stage';
-    return null;
+    if (value == null) return null;
+
+    return Column(
+      children: [
+        Divider(color: st.subtleDivider),
+        Padding(
+          padding: const EdgeInsets.only(left: 1),
+          child: Row(
+            children: [
+              Text('Flutter app', style: mutedText),
+              Text(' │ ', style: separatorStyle),
+              Text(value, style: mutedText),
+            ],
+          ),
+        ),
+        Divider(color: st.subtleDivider),
+      ],
+    );
   }
 
   Component _buildTabBar(ServerpodThemeData st) {
     return TabBar(
       labels: [
-        'Log Messages',
-        'Raw server output',
-        if (state.showFlutterOutput) 'Flutter output',
+        'Server logs',
+        if (state.showFlutterOutput) 'Flutter logs',
+        'Raw server logs',
       ],
       selectedTab: state.selectedTab,
       onTabChanged: onTabChanged,
@@ -119,11 +147,11 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabContent() {
     return switch (state.selectedTab) {
-      1 => _buildRawOutputView(state.rawLines, rawScrollController),
-      2 => _buildRawOutputView(
+      1 => _buildRawOutputView(
         state.rawFlutterLines,
         flutterRawScrollController,
       ),
+      2 => _buildRawOutputView(state.rawLines, rawScrollController),
       _ => _buildStructuredLogView(),
     };
   }
@@ -195,39 +223,41 @@ class MainScreen extends StatelessComponent {
     return ButtonBar(
       buttons: [
         Button(
-          name: 'Hot Reload',
+          name: 'Hot reload / restart',
           activationChar: 'R',
           activationKeys: const [LogicalKey.keyR],
-          onActivate: (_) {
-            onHotReload?.call();
-          },
+          onActivate: (_) => onHotReload?.call(),
+          onShiftActivate: (_) => onHotRestart?.call(),
           enabled: actionsEnabled && onHotReload != null,
         ),
         Button(
-          name: 'Create Migration',
+          name: 'Create migration',
           activationChar: 'M',
           activationKeys: const [LogicalKey.keyM],
-          onActivate: (_) {
-            onCreateMigration?.call();
-          },
+          onActivate: (_) => onCreateMigration?.call(),
+          onShiftActivate: (_) => onCreateMigration?.call(force: true),
           enabled: actionsEnabled && onCreateMigration != null,
         ),
         Button(
-          name: 'Apply Migration',
+          name: 'Repair migration',
+          activationChar: 'P',
+          activationKeys: const [LogicalKey.keyP],
+          onActivate: (_) => onCreateRepairMigration?.call(),
+          onShiftActivate: (_) => onCreateRepairMigration?.call(force: true),
+          enabled: actionsEnabled && onCreateRepairMigration != null,
+        ),
+        Button(
+          name: 'Apply migrations',
           activationChar: 'A',
           activationKeys: const [LogicalKey.keyA],
-          onActivate: (_) {
-            onApplyMigration?.call();
-          },
+          onActivate: (_) => onApplyMigration?.call(),
           enabled: actionsEnabled && onApplyMigration != null,
         ),
         Button(
           name: 'Help',
           activationChar: 'H',
           activationKeys: const [LogicalKey.keyH],
-          onActivate: (_) {
-            onToggleHelp?.call();
-          },
+          onActivate: (_) => onToggleHelp?.call(),
           enabled: onToggleHelp != null,
         ),
         Button(

@@ -4,10 +4,9 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
@@ -84,78 +83,36 @@ class CreateRepairMigrationCommand
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
-      log.error(
-        'The database feature is not enabled in this project. '
-        'This command cannot be used.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var serverDirectory = Directory(
-      path.joinAll(config.serverPackageDirectoryPathParts),
-    );
-
-    var projectName = await getProjectName(serverDirectory);
-    if (projectName == null) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var generator = MigrationGenerator(
-      directory: serverDirectory,
-      projectName: projectName,
-    );
-
     File? repairMigration;
-    await log.progress('Creating repair migration', () async {
-      try {
-        repairMigration = await generator.repairMigration(
+    try {
+      await log.progress('Creating repair migration', () async {
+        repairMigration = await createRepairMigrationAction(
+          config: config,
           tag: tag,
           force: force,
           runMode: mode,
-          dialect: config.databaseDialect,
           targetMigrationVersion: targetVersion,
         );
-      } on MigrationRepairTargetNotFoundException catch (e) {
-        if (e.versionsFound.isEmpty) {
-          log.error('Unable to find any migration versions.');
-        } else {
-          log.error(
-            'Unable to find the specified target migration "${e.targetName}".'
-            'Please select on of the available versions: ${e.versionsFound}.',
-          );
-        }
-      } on MigrationVersionLoadException catch (e) {
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}" for module '
-          '"${e.moduleName}".',
-        );
-        log.error(e.exception);
-      } on MigrationLiveDatabaseDefinitionException catch (e) {
-        log.error(
-          'Unable to fetch live database schema from server. '
-          'Make sure the server is running and is connected to the '
-          'database.',
-        );
-        log.error(e.exception);
-      } on MigrationRepairWriteException catch (e) {
-        log.error('Unable to write repair migration.');
-        log.error(e.exception);
-      }
+        return repairMigration != null;
+      });
+    } on MigrationAbortedException {
+      log.info('Migration aborted. Use --force to ignore warnings.');
+      throw ExitException.error();
+    } on Exception catch (e) {
+      log.error('$e');
+      throw ExitException.error();
+    }
 
-      return repairMigration != null;
-    });
-
-    var repairMigrationPath = repairMigration?.path;
-    if (repairMigration == null || repairMigrationPath == null) {
+    if (repairMigration == null) {
+      log.info(
+        'No changes detected. Use --force to create an empty repair migration.',
+      );
       throw ExitException.error();
     }
 
     log.info(
       'Repair migration created: ${path.relative(
-        repairMigrationPath,
+        repairMigration!.path,
         from: Directory.current.path,
       )}',
       type: TextLogType.bullet,
