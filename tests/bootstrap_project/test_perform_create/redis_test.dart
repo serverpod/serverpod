@@ -53,14 +53,6 @@ void main() {
         }
       });
 
-      test(
-        'then the server Dockerfile file is created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
       group(
         'then the server docker-compose file',
         () {

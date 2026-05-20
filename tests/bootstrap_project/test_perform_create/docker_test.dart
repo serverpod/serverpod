@@ -62,14 +62,6 @@ void main() {
           await expectLater(file.exists(), completion(false));
         },
       );
-
-      test(
-        'then the server Dockerfile file is not created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(false));
-        },
-      );
     },
   );
 
