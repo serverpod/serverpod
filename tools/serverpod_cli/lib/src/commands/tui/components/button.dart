@@ -8,14 +8,16 @@ class Button extends StatelessComponent {
     required this.name,
     required this.activationChar,
     required this.activationKeys,
-    required this.onActivate,
+    this.onActivate,
     this.enabled = true,
-  }) : assert(activationKeys == const [], 'activationKeys can not be empty');
+  });
+
+  const factory Button.tip(String tip) = _TipButton;
 
   final String name;
   final String activationChar;
   final List<LogicalKey> activationKeys;
-  final void Function(LogicalKey) onActivate;
+  final void Function(LogicalKey)? onActivate;
   final bool enabled;
 
   @override
@@ -26,7 +28,7 @@ class Button extends StatelessComponent {
       focused: enabled,
       onKeyEvent: (event) {
         if (activationKeys.contains(event.logicalKey)) {
-          onActivate(event.logicalKey);
+          onActivate?.call(event.logicalKey);
           return true;
         }
         return false;
@@ -34,7 +36,7 @@ class Button extends StatelessComponent {
       child: GestureDetector(
         onTap: () {
           if (enabled && activationKeys.length == 1) {
-            onActivate(activationKeys.first);
+            onActivate?.call(activationKeys.first);
           }
         },
         child: Row(
@@ -58,5 +60,18 @@ class Button extends StatelessComponent {
         ),
       ),
     );
+  }
+}
+
+class _TipButton extends Button {
+  const _TipButton(this.tip)
+    : super(name: '', activationChar: '', activationKeys: const []);
+
+  final String tip;
+
+  @override
+  Component build(BuildContext context) {
+    final theme = ServerpodTheme.of(context);
+    return Text('💡 Tip: $tip', style: TextStyle(color: theme.brightText));
   }
 }

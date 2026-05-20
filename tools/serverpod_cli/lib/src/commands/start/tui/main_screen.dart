@@ -53,6 +53,7 @@ class MainScreen extends StatelessComponent {
     return Stack(
       children: [
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: BorderedBox(

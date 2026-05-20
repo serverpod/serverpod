@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -19,9 +20,10 @@ void main() {
         expect(
           state.configValues,
           containsAll([
+            ServerpodCreateConfig.template,
             ServerpodCreateConfig.database,
             ServerpodCreateConfig.redis,
-            ServerpodCreateConfig.skills,
+            ServerpodCreateConfig.ide,
           ]),
         );
         expect(
@@ -43,7 +45,6 @@ void main() {
           expect(context.postgres, isTrue);
           expect(context.sqlite, isFalse);
           expect(context.web, isFalse);
-          expect(context.skills, isTrue);
         },
       );
 
@@ -90,9 +91,15 @@ void main() {
           0,
         );
         expect(
-          state.getStateFor(ServerpodCreateConfig.skills)?.focusedOptionIndex,
+          state.getStateFor(ServerpodCreateConfig.ide)?.focusedOptionIndex,
           0,
         );
+
+        final selectedIdes = state.getSelectedOptionsFor<IdeOption>(
+          ServerpodCreateConfig.ide,
+        );
+
+        expect(selectedIdes, isEmpty);
       });
 
       test(
@@ -117,7 +124,7 @@ void main() {
               ServerpodCreateConfig.redis,
               ServerpodCreateConfig.web,
               ServerpodCreateConfig.auth,
-              ServerpodCreateConfig.skills,
+              ServerpodCreateConfig.ide,
             ]),
           );
         },
@@ -127,7 +134,8 @@ void main() {
         'when the template option is changed to module, '
         'then the config values are correct',
         () {
-          state.selectConfigOption(1);
+          state.updateFocusedConfigOption(1);
+          state.selectConfigOption();
 
           expect(
             state.configValues,
@@ -135,24 +143,116 @@ void main() {
               ServerpodCreateConfig.template,
               ServerpodCreateConfig.database,
               ServerpodCreateConfig.redis,
-              ServerpodCreateConfig.skills,
+              ServerpodCreateConfig.ide,
             ]),
           );
         },
       );
 
-      test(
-        'when the template option is changed to mini, '
-        'then the config values are correct',
+      group(
+        'when an ide option is selected',
         () {
-          state.selectConfigOption(2);
+          setUp(() {
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.vsCode,
+            );
+          });
 
-          expect(
-            state.configValues,
-            containsAllInOrder([
-              ServerpodCreateConfig.template,
-              ServerpodCreateConfig.skills,
-            ]),
+          test(
+            'then getSelectedOptionsFor returns the selected ide',
+            () {
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                contains(IdeOption.vsCode),
+              );
+            },
+          );
+
+          test(
+            'then getStatus returns true for selected option',
+            () {
+              final status = state.getStatus(
+                ServerpodCreateConfig.ide,
+                IdeOption.vsCode,
+              );
+
+              expect(status, isTrue);
+            },
+          );
+
+          test(
+            'then getStatus returns false for unselected option',
+            () {
+              final status = state.getStatus(
+                ServerpodCreateConfig.ide,
+                IdeOption.cursor,
+              );
+
+              expect(status, isFalse);
+            },
+          );
+
+          test(
+            'when selecting the same ide option again, '
+            'then it is deselected',
+            () {
+              state.updateSelectedOption(
+                ServerpodCreateConfig.ide,
+                IdeOption.vsCode,
+              );
+
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                isEmpty,
+              );
+            },
+          );
+
+          test(
+            'then toTemplateContext has the correct TemplateIde values',
+            () {
+              final context = state.toTemplateContext();
+              expect(context.ides, [TemplateIde.vscode]);
+            },
+          );
+        },
+      );
+
+      group(
+        'when multiple ide options are selected, ',
+        () {
+          setUp(() {
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.vsCode,
+            );
+            state.updateSelectedOption(
+              ServerpodCreateConfig.ide,
+              IdeOption.cursor,
+            );
+          });
+
+          test(
+            'when calling getSelectedOptionsFor, '
+            'then all selected options are returned',
+            () {
+              expect(
+                state.getSelectedOptionsFor(ServerpodCreateConfig.ide),
+                containsAll([IdeOption.vsCode, IdeOption.cursor]),
+              );
+            },
+          );
+
+          test(
+            'then toTemplateContext has the correct TemplateIde values',
+            () {
+              final context = state.toTemplateContext();
+              expect(
+                context.ides,
+                containsAll([TemplateIde.vscode, TemplateIde.cursor]),
+              );
+            },
           );
         },
       );
@@ -166,7 +266,7 @@ void main() {
           expect(context.postgres, isTrue);
           expect(context.sqlite, isFalse);
           expect(context.web, isTrue);
-          expect(context.skills, true);
+          expect(context.ides, isEmpty);
         },
       );
 
@@ -226,7 +326,8 @@ void main() {
                 configState = state.getStateFor(config);
 
                 initialFocusedOptionIndex = configState!.focusedOptionIndex;
-                state.selectConfigOption(1);
+                state.updateFocusedConfigOption(1);
+                state.selectConfigOption();
               });
 
               test('is incremented', () {
@@ -256,7 +357,8 @@ void main() {
               final optionsCount = config.options.length;
 
               for (var i = 0; i < optionsCount; i++) {
-                state.selectConfigOption(1);
+                state.updateFocusedConfigOption(1);
+                state.selectConfigOption();
               }
 
               final configState = state.getStateFor(config);
@@ -278,10 +380,12 @@ void main() {
 
               setUp(() {
                 config = state.configValues[state.focusedConfigIndex];
-                state.selectConfigOption(1);
+                state.updateFocusedConfigOption(1);
+                state.selectConfigOption();
                 configState = state.getStateFor(config);
                 indexAfterPositive = configState!.focusedOptionIndex;
-                state.selectConfigOption(-1);
+                state.updateFocusedConfigOption(-1);
+                state.selectConfigOption();
                 configState = state.getStateFor(config);
               });
 
@@ -312,7 +416,8 @@ void main() {
             () {
               final config = state.configValues[state.focusedConfigIndex];
               final configState = state.getStateFor(config);
-              state.selectConfigOption(-1);
+              state.updateFocusedConfigOption(-1);
+              state.selectConfigOption();
               expect(
                 configState!.focusedOptionIndex,
                 config.options.length - 1,
@@ -368,8 +473,8 @@ void main() {
           expect(authSelection, BoolConfigOption.enabled);
 
           // Select DatabaseConfigOption.none
-          state.selectConfigOption(1);
-          state.selectConfigOption(1);
+          state.updateFocusedConfigOption(2);
+          state.selectConfigOption();
 
           authSelection = state.getSelectedOptionFor<BoolConfigOption>(
             ServerpodCreateConfig.auth,
@@ -379,15 +484,15 @@ void main() {
       );
 
       group(
-        'Given a non-postgres database config option is selected',
+        'when a non-postgres database config option is selected',
         () {
           setUp(() {
             // Move to database config
             state.updateFocusedConfig(1);
 
             // Select DatabaseConfigOption.none
-            state.selectConfigOption(1);
-            state.selectConfigOption(1);
+            state.updateFocusedConfigOption(2);
+            state.selectConfigOption();
           });
 
           test(
@@ -410,7 +515,8 @@ void main() {
             // Move to database config
             state.updateFocusedConfig(1);
             // Select DatabaseConfigOption.sqlite config option
-            state.selectConfigOption(1);
+            state.updateFocusedConfigOption(1);
+            state.selectConfigOption();
 
             final context = state.toTemplateContext();
             expect(context.postgres, isFalse);
@@ -425,7 +531,8 @@ void main() {
             // Move to database config
             state.updateFocusedConfig(1);
             // Select DatabaseConfigOption.none config option
-            state.selectConfigOption(2);
+            state.updateFocusedConfigOption(2);
+            state.selectConfigOption();
 
             final context = state.toTemplateContext();
             expect(context.postgres, isFalse);
@@ -440,7 +547,8 @@ void main() {
             // Move focus to redis config
             state.updateFocusedConfig(2);
             // Select disabled config option
-            state.selectConfigOption(1);
+            state.updateFocusedConfigOption(1);
+            state.selectConfigOption();
 
             final context = state.toTemplateContext();
             expect(context.redis, isFalse);
@@ -451,7 +559,8 @@ void main() {
           // Move focus to web config
           state.updateFocusedConfig(3);
           // Select disabled config option
-          state.selectConfigOption(1);
+          state.updateFocusedConfigOption(1);
+          state.selectConfigOption();
 
           final context = state.toTemplateContext();
           expect(context.web, isFalse);
@@ -468,14 +577,16 @@ void main() {
             // Move to database config
             state.updateFocusedConfig(1);
             // Select DatabaseConfigOption.sqlite config option
-            state.selectConfigOption(1);
+            state.updateFocusedConfigOption(1);
+            state.selectConfigOption();
 
             context = state.toTemplateContext();
             // False for sqlite
             expect(context.auth, isFalse);
 
             // Select DatabaseConfigOption.postgres config option
-            state.selectConfigOption(-1);
+            state.updateFocusedConfigOption(-1);
+            state.selectConfigOption();
 
             context = state.toTemplateContext();
             expect(context.auth, isTrue);

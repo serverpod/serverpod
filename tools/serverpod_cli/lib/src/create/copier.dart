@@ -122,10 +122,10 @@ class Copier {
 }
 
 class Replacement {
-  String slotName;
-  String replacement;
+  final String slotName;
+  final String replacement;
 
-  Replacement({
+  const Replacement({
     required this.slotName,
     required this.replacement,
   });
