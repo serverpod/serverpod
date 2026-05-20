@@ -671,6 +671,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
             String? targetMigrationVersion,
           }) => _createRepairMigrationForMcp(
             config,
+            runMode: runMode,
             tag: tag,
             force: force,
             targetMigrationVersion: targetMigrationVersion,
@@ -1012,7 +1013,11 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () => _runCreateRepairMigrationForTui(config, force: force),
+            () => _runCreateRepairMigrationForTui(
+              config,
+              runMode: runModeFromServerArgs(serverArgs),
+              force: force,
+            ),
           );
         };
         holder.onApplyMigration = () {
@@ -1143,11 +1148,16 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
 /// operation red.
 Future<void> _runCreateRepairMigrationForTui(
   GeneratorConfig config, {
+  required String runMode,
   bool force = false,
 }) async {
   final File? file;
   try {
-    file = await createRepairMigrationAction(config: config, force: force);
+    file = await createRepairMigrationAction(
+      config: config,
+      runMode: runMode,
+      force: force,
+    );
   } on MigrationAbortedException {
     log.info(
       'Run `serverpod create-repair-migration --force` to create it anyway.',
@@ -1167,6 +1177,7 @@ Future<void> _runCreateRepairMigrationForTui(
 /// Returns a structured result so the MCP server can flag errors.
 Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
   GeneratorConfig config, {
+  required String runMode,
   String? tag,
   bool force = false,
   String? targetMigrationVersion,
@@ -1176,6 +1187,7 @@ Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
     file = await createRepairMigrationAction(
       config: config,
       tag: tag,
+      runMode: runMode,
       force: force,
       targetMigrationVersion: targetMigrationVersion,
     );

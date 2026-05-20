@@ -38,9 +38,9 @@ class RepairMigrationException implements Exception {
 ///   message, so callers can display them with `'$e'`.
 Future<File?> createRepairMigrationAction({
   required GeneratorConfig config,
+  required String runMode,
   String? tag,
   bool force = false,
-  String runMode = 'development',
   String? targetMigrationVersion,
 }) async {
   if (!config.isFeatureEnabled(ServerpodFeature.database)) {
