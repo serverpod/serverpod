@@ -70,11 +70,7 @@ class MainScreen extends StatelessComponent {
                       padding: const EdgeInsets.only(left: 1),
                       child: _buildTabBar(st),
                     ),
-                    if (_flutterStatusLine() case final line?)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 1),
-                        child: Text(line),
-                      ),
+                    ?_buildFlutterStatusLine(st),
                     Expanded(child: _buildTabContent()),
                     // Pinned active operations
                     if (state.activeOperations.isNotEmpty) ...[
@@ -97,16 +93,44 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// URL when ready, startup stage while compiling, `null` when no
-  /// Flutter app is attached.
-  String? _flutterStatusLine() {
+  /// Breadcrumb when a Flutter app is attached: horizontal rules, muted
+  /// label, vertical divider, and value.
+  ///
+  /// Returns `null` when no Flutter app is running or starting.
+  Component? _buildFlutterStatusLine(ServerpodThemeData st) {
+    final mutedText = TextStyle(
+      color: st.debugLevel,
+      fontWeight: FontWeight.dim,
+    );
+    final separatorStyle = TextStyle(
+      color: st.subtleDivider,
+      fontWeight: FontWeight.dim,
+    );
+
+    String? value;
     if (state.flutterReady) {
-      final url = state.flutterUrl;
-      return url == null ? 'Flutter: ready' : 'Flutter: $url';
+      value = state.flutterUrl ?? 'ready';
+    } else {
+      value = state.flutterStartupStage;
     }
-    final stage = state.flutterStartupStage;
-    if (stage != null) return 'Flutter: $stage';
-    return null;
+    if (value == null) return null;
+
+    return Column(
+      children: [
+        Divider(color: st.subtleDivider),
+        Padding(
+          padding: const EdgeInsets.only(left: 1),
+          child: Row(
+            children: [
+              Text('Flutter app', style: mutedText),
+              Text(' │ ', style: separatorStyle),
+              Text(value, style: mutedText),
+            ],
+          ),
+        ),
+        Divider(color: st.subtleDivider),
+      ],
+    );
   }
 
   Component _buildTabBar(ServerpodThemeData st) {
