@@ -6,9 +6,11 @@ import 'package:serverpod_cli/src/create/template_context.dart';
 
 /// Central state for [ServerpodCreateApp] rendered by nocterm.
 class CreateConfigState extends ServerpodState {
-  CreateConfigState(ServerpodTemplateType template) {
-    _resetState(template);
+  CreateConfigState(this.startingTemplate) {
+    _resetState(startingTemplate);
   }
+
+  final ServerpodTemplateType startingTemplate;
 
   late final List<ServerpodCreateConfig> configValues = [];
 
@@ -35,10 +37,11 @@ class CreateConfigState extends ServerpodState {
   @override
   final Map<String, TrackedOperation> activeOperations = {};
 
-  ServerpodTemplateType? get template =>
+  ServerpodTemplateType get template =>
       getSelectedOptionFor<TemplateTypeOption>(
         ServerpodCreateConfig.template,
-      )?.toTemplate;
+      )?.toTemplate ??
+      startingTemplate;
 
   /// Updates internal state and restores the state for template config
   /// based on provided [template].
@@ -215,6 +218,7 @@ class CreateConfigState extends ServerpodState {
     final selectedIdes = getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
     return TemplateContext(
+      template: template,
       auth: getStatus(ServerpodCreateConfig.auth, BoolConfigOption.enabled),
       redis: getStatus(
         ServerpodCreateConfig.redis,

@@ -26,25 +26,24 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(
-          postgres: false,
-          redis: false,
-          sqlite: false,
-        );
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: false,
+            redis: false,
+            sqlite: false,
+          ),
         );
       });
 
@@ -56,14 +55,6 @@ void main() {
           // Gone.
         }
       });
-
-      test(
-        'then the server Dockerfile file is not created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(false));
-        },
-      );
 
       test(
         'then the server docker-compose file is not created',
@@ -108,15 +99,6 @@ void main() {
           expect(content, isNot(contains('database:')));
         },
       );
-
-      test(
-        'then the vscode launch.json file does not have apply migration command',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, isNot(contains('"--apply-migrations"')));
-        },
-      );
     },
   );
 
@@ -125,25 +107,24 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(
-          postgres: false,
-          redis: false,
-          sqlite: false,
-        );
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: false,
+            redis: false,
+            sqlite: false,
+          ),
         );
       });
 

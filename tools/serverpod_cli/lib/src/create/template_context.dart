@@ -1,8 +1,10 @@
+import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 
 /// Context containing values for rendering templates.
 class TemplateContext {
   TemplateContext({
+    this.template = ServerpodTemplateType.server,
     this.auth = false,
     this.redis = false,
     this.postgres = false,
@@ -10,6 +12,9 @@ class TemplateContext {
     this.web = false,
     this.ides = const [],
   });
+
+  /// The template type.
+  final ServerpodTemplateType template;
 
   /// True if auth is enabled.
   final bool auth;
@@ -37,7 +42,7 @@ class TemplateContext {
 
   Map<String, bool> toMustacheMap() {
     return {
-      'auth': auth & postgres, // auth requires postgres
+      'auth': auth && postgres, // auth requires postgres
       'redis': redis,
       'postgres': postgres,
       'sqlite': sqlite,

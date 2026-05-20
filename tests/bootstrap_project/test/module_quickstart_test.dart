@@ -182,25 +182,33 @@ void main() {
             );
           });
 
-          test('does not have docker compose file', () {
-            final dockerComposeFile = File(
-              path.join(tempPath, serverDir, 'docker-compose.yaml'),
-            );
-            expect(dockerComposeFile.existsSync(), isFalse);
-          });
-
           test(
-            'does not have passwords config file',
+            'has docker compose file with project name replaced',
             () {
-              final config = File(
-                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              final dockerComposeFile = File(
+                path.join(tempPath, serverDir, 'docker-compose.yaml'),
               );
-              expect(config.existsSync(), isFalse);
+              expect(dockerComposeFile.existsSync(), isTrue);
+              expect(
+                dockerComposeFile.readAsStringSync(),
+                contains('${projectName}_test'),
+              );
             },
           );
 
           test(
-            'has test configuration with sqlite',
+            'has passwords config file with postgres configurations',
+            () {
+              final config = File(
+                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              );
+              expect(config.existsSync(), isTrue);
+              expect(config.readAsStringSync(), contains('database:'));
+            },
+          );
+
+          test(
+            'has embedded postgres configuration on test run mode',
             () {
               final testConfigFile = File(
                 path.join(tempPath, serverDir, 'config', 'test.yaml'),
@@ -208,7 +216,7 @@ void main() {
 
               expect(
                 testConfigFile.readAsStringSync(),
-                contains('filePath: ${projectName}_test.db'),
+                contains('dataPath: .serverpod/test/pgdata'),
               );
             },
           );

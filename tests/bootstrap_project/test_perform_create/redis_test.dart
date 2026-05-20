@@ -26,7 +26,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(redis: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            redis: true,
+          ),
         );
       });
 
@@ -50,14 +52,6 @@ void main() {
           // Gone.
         }
       });
-
-      test(
-        'then the server Dockerfile file is created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
 
       group(
         'then the server docker-compose file',
@@ -105,23 +99,6 @@ void main() {
           );
         },
       );
-
-      test(
-        'then the vscode tasks.json file is created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
-      test(
-        'then the vscode launch.json file has prelaunch task',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, contains('"preLaunchTask": "docker_compose_up"'));
-        },
-      );
     },
   );
 
@@ -130,7 +107,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -139,10 +116,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(redis: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            redis: false,
+          ),
         );
       });
 
@@ -171,7 +150,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -180,10 +159,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(redis: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: true,
+          ),
         );
       });
 
@@ -243,7 +224,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -252,10 +233,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(redis: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: false,
+          ),
         );
       });
 

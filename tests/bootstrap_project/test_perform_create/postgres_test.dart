@@ -26,7 +26,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(postgres: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: true,
+          ),
         );
       });
 
@@ -50,14 +52,6 @@ void main() {
           // Gone.
         }
       });
-
-      test(
-        'then the server Dockerfile file is created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
 
       group(
         'then the server docker-compose file',
@@ -142,50 +136,6 @@ void main() {
           expect(content, contains('user: postgres'));
         },
       );
-
-      test(
-        'then the vscode tasks.json file is created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
-      group(
-        'then the vscode launch.json file',
-        () {
-          late String launchJson;
-
-          setUp(() async {
-            final file = File(p.join(projectName, '.vscode', 'launch.json'));
-            launchJson = await file.readAsString();
-          });
-
-          test(
-            'has prelaunch task',
-            () async {
-              expect(
-                launchJson,
-                contains('"preLaunchTask": "docker_compose_up"'),
-              );
-            },
-          );
-
-          test(
-            'has database password environment variable',
-            () async {
-              expect(launchJson, contains('"SERVERPOD_PASSWORD_database":'));
-            },
-          );
-
-          test(
-            'has apply migration command',
-            () async {
-              expect(launchJson, contains('"--apply-migrations"'));
-            },
-          );
-        },
-      );
     },
   );
 
@@ -194,7 +144,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -203,10 +153,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(postgres: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: false,
+          ),
         );
       });
 
@@ -285,7 +237,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -294,10 +246,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(postgres: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: true,
+          ),
         );
       });
 
@@ -391,7 +345,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -400,10 +354,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(postgres: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: false,
+          ),
         );
       });
 

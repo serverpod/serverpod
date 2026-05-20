@@ -27,19 +27,16 @@ void main() {
     'when calling performCreate with a context containing all supported IDEs',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
       setUpAll(() async {
         setupForPerformCreateTest();
 
-        final context = TemplateContext(ides: TemplateIde.values);
-
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(ides: TemplateIde.values),
         );
       });
 

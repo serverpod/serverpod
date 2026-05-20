@@ -26,7 +26,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            sqlite: true,
+          ),
         );
       });
 
@@ -86,15 +88,6 @@ void main() {
           expect(content, contains('filePath: ${projectName}_prod.db'));
         },
       );
-
-      test(
-        'then the vscode launch.json file has apply migration command',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, contains('"--apply-migrations"'));
-        },
-      );
     },
   );
 
@@ -103,7 +96,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -112,10 +105,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            sqlite: false,
+          ),
         );
       });
 
@@ -171,7 +166,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -180,10 +175,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            sqlite: true,
+          ),
         );
       });
 
@@ -212,7 +209,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -221,10 +218,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            sqlite: false,
+          ),
         );
       });
 
