@@ -4,12 +4,8 @@ import 'dart:io';
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 
-/// An [IOSink] implementation that captures stdout/stderr output and
-/// appends each line to [addLine].
-///
-/// Generalised so the same sink can route to either the "Raw server output"
-/// or "Flutter output" tab: pass `state.rawLines.add` for the server side,
-/// `state.rawFlutterLines.add` for the Flutter side.
+/// [IOSink] that splits captured stdout/stderr into lines and forwards
+/// each to [addLine] (e.g. `state.rawLines.add`).
 class TuiLogSink implements IOSink {
   TuiLogSink(this._holder, {required this.addLine});
 

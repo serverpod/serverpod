@@ -154,13 +154,11 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
     final launchFlutterApp = commandConfig.value(StartOption.flutter);
     final flutterDevice = commandConfig.value(StartOption.flutterDevice);
-    // `MultiOption.value()` is typed as `List<dynamic>`; narrow once here so
-    // the rest of the wiring deals in `List<String>`.
+    // Narrow once: MultiOption.value() returns List<dynamic>.
     final flutterExtraArgs = List<String>.from(
       commandConfig.value(StartOption.flutterOption) as Iterable,
     );
-    // Flutter --verbose -> daemon.logMessage -> log.debug; stays quiet
-    // unless serverpod itself is verbose.
+    // Mirror serverpod -v into flutter; output flows via log.debug.
     final verbose =
         serverpodRunner.globalConfiguration.optionalValue(
           GlobalOption.verbose,
@@ -559,25 +557,18 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Resolved here so the Flutter spawn can gate on dev mode before
-  // bringing up `flutter run`; WatchSession needs it for the migration
-  // action below.
+  // Needed for the Flutter dev-mode gate and the migration action.
   final runMode = runModeFromServerArgs(serverArgs.value);
 
-  // Start the Flutter app (when requested and the project has one).
-  // hasFlutterPackage gates module/server-only projects so --flutter is
-  // a silent no-op there; FlutterNotInstalledException covers users who
-  // pass --flutter without Flutter on PATH; the runMode gate keeps
-  // production/staging boots from spawning a dev Flutter process.
+  // Production/staging boots skip the dev Flutter spawn. Missing
+  // package = silent no-op; missing Flutter SDK = warning.
   FlutterProcess? flutterProcess;
   if (launchFlutterApp && runMode == 'development') {
     if (!config.hasFlutterPackage) {
       log.info(flutterPackageNotFound);
     } else {
-      // Non-TUI callers don't get a sub-stage spinner from log.progress
-      // (it shows one message). Forward `app.progress` events from the
-      // daemon as `log.info` so users see "Building..." / "Hot
-      // reload..." while the cold compile chews through 30-60s.
+      // Non-TUI: surface daemon progress as log.info during the 30-60s
+      // cold compile; log.progress shows only one line.
       flutterProcess = FlutterProcess(
         flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
         device: flutterDevice,
@@ -597,14 +588,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           'Launching Flutter app (first run may take 30-60s)',
           () async {
             await flutterProcess!.start();
-            // Gate on `launched`, not on VM service connect: on
-            // `-d web-server` the daemon withholds `app.debugPort`
-            // until a browser attaches, so awaiting the VM service
-            // here would hide the served URL behind a 60s+ timeout -
-            // the user can't open the browser they need to open to
-            // unblock the URI publication. Whichever of
-            // `app.webLaunchUrl` / `app.debugPort` arrives first
-            // completes the gate.
+            // `launched` (not VM service connect): on `-d web-server`
+            // the URI doesn't arrive until a browser attaches, which
+            // the user can't do without seeing the URL first.
             await flutterProcess.launched;
             return true;
           },
@@ -614,13 +600,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           log.info('Flutter app running at $url');
           onFlutterReady?.call(url);
         }
-        // Connect to the VM service in the background as its own
-        // tracked operation so the TUI shows a parallel spinner: on
-        // `-d web-server` the VM service URI doesn't arrive until a
-        // browser attaches, so this can pend for an arbitrary time
-        // after launch completes - making that visible matters.
-        // Reload is unavailable until this resolves
-        // (FlutterProcess.reload returns false silently).
+        // Background tracked op so the TUI shows a parallel spinner.
+        // On `-d web-server` this pends until a browser attaches;
+        // reload is unavailable until it resolves.
         unawaited(
           log.progress(
             'Connecting to Flutter VM service',
@@ -697,11 +679,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
-  // File watcher (watch mode only). One watcher covers server lib, shared
-  // models, client lib, web, and - when Flutter is attached - the Flutter
-  // package's lib/. All changes flow through session.handleFileChange so
-  // codegen + server reload + Flutter reload serialize via WatchSession's
-  // _chain. No parallel watcher.
+  // Single watcher across server/shared/client/web/flutter. Changes
+  // serialize through session.handleFileChange via WatchSession._chain.
   StreamSubscription<void>? fileChangeSub;
   if (watch) {
     final watcher = FileWatcher(
@@ -972,7 +951,6 @@ Future<void> _runTuiBackend({
       flutterStdoutSink: flutterStdoutSink,
       flutterStderrSink: flutterStderrSink,
       onFlutterProgress: (stage) {
-        // Show Flutter startup progress in the TUI status area.
         holder.state.flutterStartupStage = stage;
         holder.state.showFlutterOutput = true;
         holder.markDirty();

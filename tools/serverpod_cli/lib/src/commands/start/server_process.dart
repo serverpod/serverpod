@@ -29,23 +29,10 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Path to write the VM service info JSON file to. When set, the file
-  /// is passed to the child via `--write-service-info` and the URI is read
-  /// from the file instead of parsing stdout. IDEs can use this path in
-  /// their `vmServiceInfoFile` launch configuration to auto-attach.
-  ///
-  /// VS Code `launch.json`:
-  /// ```jsonc
-  /// {
-  ///   "name": "Attach to server (serverpod start)",
-  ///   "type": "dart",
-  ///   "request": "attach",
-  ///   "vmServiceInfoFile":
-  ///     "${workspaceFolder}/.dart_tool/serverpod/vm-service-info.json"
-  /// }
-  /// ```
-  /// The companion Flutter-side file lives at `flutter-vm-service-info.json`
-  /// in the same directory (see `FlutterProcess`).
+  /// Path to write the VM service info JSON file to. When set, passed
+  /// to the child via `--write-service-info` and the URI is read from
+  /// the file instead of parsing stdout. IDEs use this path in their
+  /// `vmServiceInfoFile` launch configuration to auto-attach.
   final String? _vmServiceInfoFile;
 
   Process? _process;

@@ -93,11 +93,8 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// Single-line Flutter status surfaced under the tab bar. Returns the
-  /// URL once the app is ready, the current startup stage while it's
-  /// compiling, or null when no Flutter app is attached. The user
-  /// requested this be visible without digging into the Flutter output
-  /// tab.
+  /// URL when ready, startup stage while compiling, `null` when no
+  /// Flutter app is attached.
   String? _flutterStatusLine() {
     if (state.flutterReady) {
       final url = state.flutterUrl;

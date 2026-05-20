@@ -6,8 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:test/test.dart';
 
-/// Resolve a Dart shim path relative to this test file. Tests spawn the
-/// shim via the Dart SDK so they don't need Flutter installed.
+/// Path of a Dart shim under `test/commands/start/flutter_shims/`.
 String _shimPath(String name) => p.join(
   Directory.current.path,
   'test',
@@ -18,25 +17,16 @@ String _shimPath(String name) => p.join(
 );
 
 String _dartExecutable() {
-  // sdkRoot ≈ /usr/local/dart-sdk or similar; Platform.resolvedExecutable
-  // is the dart binary on POSIX and the .exe on Windows.
   return Platform.resolvedExecutable;
 }
 
-/// Bind a throw-away WebSocket server that resembles a VM service well
-/// enough for the connect-and-look-around path. Closes after the first
-/// connection. Returns the `ws://...` URL the shim should advertise.
+/// Minimal WebSocket server that accepts a connect and ignores any RPC.
+/// Enough to populate `vmServiceUri`; do not use for getVM-style calls.
 Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen((socket) async {
     socket.listen(
-      (data) {
-        // We don't simulate a real VM service - the connect step is
-        // enough to populate vmServiceUri / kick the retry loop. Any
-        // RPC the resolver tries (getVM, getSupportedProtocols) will
-        // hang here, so tests that need those features should not rely
-        // on this fake.
-      },
+      (data) {},
       onDone: () => socket.close(),
     );
   });
@@ -69,9 +59,8 @@ void main() {
       'when start is called twice while still running '
       'then the second call throws StateError instead of spawning a duplicate process',
       () async {
-        // Use a long-running shim so the first process is still alive when
-        // we attempt the second start - a shim that exits immediately
-        // would clear _process before the second call.
+        // Long-running shim so the first process is still alive when
+        // the second start is attempted.
         final fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
           device: 'web-server',
@@ -108,8 +97,7 @@ void main() {
         expect(launchedResolved, isFalse);
         expect(connectResolved, isFalse);
 
-        // Stopping the process completes _vmServiceUriCompleter with null
-        // and _launchedCompleter, so both futures resolve quickly.
+        // Stop resolves both completers; the futures unblock.
         await fp.stop(timeout: const Duration(seconds: 1));
         await fp.launched.timeout(const Duration(seconds: 2));
 
@@ -141,10 +129,7 @@ void main() {
         );
 
         await fp.start();
-        // Race against the connect-retry loop: we only need
-        // vmServiceUri (parsed from app.debugPort) to be set; the
-        // actual VM-service ready future will never complete against
-        // our minimal fake.
+        // We only need vmServiceUri set; the fake never replies.
         unawaited(fp.connectToVmService());
 
         // Wait until the URI shows up (the shim emits it ~immediately).
@@ -218,9 +203,8 @@ void main() {
         await fp.start();
         unawaited(fp.connectToVmService());
 
-        // Poll for the file's *contents*, not just existence: writeAsString
-        // creates the inode before flushing, so reading right after
-        // existsSync() can catch the empty intermediate state.
+        // Poll on contents: writeAsString creates the inode before
+        // flushing, so existsSync can catch an empty intermediate.
         final deadline = DateTime.now().add(const Duration(seconds: 5));
         var contents = '';
         while (contents.isEmpty && DateTime.now().isBefore(deadline)) {
@@ -239,8 +223,7 @@ void main() {
 
         await fp.stop(timeout: const Duration(seconds: 1));
 
-        // Cleanup deletes the info file so a subsequent run doesn't read
-        // a stale URI. Poll briefly because the exit listener runs async.
+        // Cleanup runs async via the exit listener; poll briefly.
         final cleanupDeadline = DateTime.now().add(const Duration(seconds: 2));
         while (File(infoPath).existsSync() &&
             DateTime.now().isBefore(cleanupDeadline)) {
@@ -268,8 +251,7 @@ void main() {
     );
 
     test('when the scheme is wss then it swaps to https', () {
-      // Note: Uri.toString() strips the port when it matches the scheme's
-      // default, so 443/https collapses to no explicit port.
+      // Uri.toString() strips the port when it matches the scheme default.
       expect(
         FlutterProcess.httpFromWs('wss://example.com:9443/ws'),
         'https://example.com:9443',
@@ -285,10 +267,8 @@ void main() {
   });
 
   group('Given handleMachineLine', () {
-    /// Probe the parser indirectly: connect a FlutterProcess to a never-
-    /// started state, push synthetic --machine lines through the public
-    /// @visibleForTesting `handleMachineLine`, and assert the visible
-    /// side effects on the FlutterProcess instance.
+    /// FlutterProcess wired only enough to push synthetic lines through
+    /// `handleMachineLine` and assert side effects.
     FlutterProcess bareFp({void Function(String)? onProgress}) =>
         FlutterProcess(
           flutterPackageDir: Directory.systemTemp.path,
