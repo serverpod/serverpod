@@ -16,7 +16,7 @@ Serverpod has a migration system that generates SQL for changes to models with `
 - Changed relation fields that alter generated foreign keys.
 - Added, removed, or changed indexes.
 
-Migrations are not needed when the project has no database configured (e.g. `config/<runMode>.yaml` with no `database` section).
+Migrations are not needed when the project has no database configured (e.g. `config/<runMode>.yaml` with no `database` section). See [Serverpod Upgrading](../serverpod-upgrading/SKILL.md) to add a database to an existing project.
 
 ## Standard flow
 

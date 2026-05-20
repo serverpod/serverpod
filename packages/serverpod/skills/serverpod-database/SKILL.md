@@ -5,7 +5,7 @@ description: Serverpod ORM with PostgreSQL or SQLite — CRUD, filters, sorting,
 
 # Serverpod Database
 
-Serverpod generates ORM code for models with `table` in `.spy.yaml`. PostgreSQL is the default production database; SQLite is also supported for projects/tests that configure the database on `config/<runMode>.yaml` with `database.filePath: <path>`.
+Serverpod generates ORM code for models with `table` in `.spy.yaml`. PostgreSQL is the default production database; SQLite is also supported for projects/tests that configure the database on `config/<runMode>.yaml` with `database.filePath: <path>`. If the project has no database configured, see [Serverpod Upgrading](../serverpod-upgrading/SKILL.md) for how to add one.
 
 ## CRUD
 
