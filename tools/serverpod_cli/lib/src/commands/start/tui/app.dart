@@ -173,8 +173,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Tab cycling: Tab and Right cycle forward, Left cycles back. The
-    // Flutter output tab is appended when a Flutter app is attached.
+    // Tab cycling. Flutter tab is appended when attached.
     final tabCount = state.showFlutterOutput ? 3 : 2;
     if (event.logicalKey == LogicalKey.tab ||
         event.logicalKey == LogicalKey.arrowRight) {

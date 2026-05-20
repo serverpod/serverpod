@@ -278,10 +278,8 @@ class WatchSession {
       dartFiles: allDartChanges,
       packageConfigChanged: event.packageConfigChanged,
     );
-    // Run Flutter reload after the server step regardless of whether the
-    // compile path was a no-op (flutter/lib-only changes hit
-    // _compileAndReload's empty-paths short-circuit) - the Flutter side
-    // still needs to refresh in that case.
+    // Always reload Flutter: flutter/lib-only changes short-circuit
+    // the server compile but still need a Flutter refresh.
     await _reloadFlutter();
   }
 
@@ -424,11 +422,8 @@ class WatchSession {
     }
     return _chain(() async {
       if (_compiler == null) {
-        // Preserve the historical contract: forceReload with no compiler
-        // tries hot reload on the existing pod and surfaces the result
-        // without falling through to a restart. The file-change path
-        // _does_ fall through (via _reloadOrRestart) - those are
-        // different intents.
+        // forceReload doesn't fall through to restart; the file-change
+        // path does (via _reloadOrRestart). Different intents.
         await _reload(null);
       } else {
         await _compileAndReload(
@@ -468,8 +463,7 @@ class WatchSession {
           case MigrationsRequirePodRestart():
             await _restartServer(_compiler?.outputDill);
         }
-        // Schema changes from migrations affect the generated client lib.
-        // Reload Flutter so it picks up the new client surface.
+        // Migrations regen the client lib; refresh Flutter.
         await _reloadFlutter();
       } finally {
         if (_state == SessionState.applyingMigration) {
@@ -514,22 +508,19 @@ class WatchSession {
     }
   }
 
-  /// Disposes the session: stops server and Flutter app, disposes compiler.
-  /// After this returns, [done] is guaranteed to be completed.
+  /// Stops server + Flutter, disposes compiler. Completes [done].
   Future<void> dispose() async {
     _state = SessionState.disposed;
     await _vmServiceUriChangesController.close();
     final code = await _server.stop();
-    // Stop Flutter after the server so any in-flight Flutter reload that's
-    // racing the server's exit doesn't see a half-shut-down VM service.
+    // Stop Flutter after the server: an in-flight Flutter reload
+    // mustn't see a half-shut-down server VM service.
     await _flutterProcess?.stop();
     await _compiler?.dispose();
     if (!_done.isCompleted) _done.complete(code);
   }
 
-  /// Reloads the Flutter app (when one is attached) and logs the outcome.
-  /// Never throws - any RPC error becomes a warning so the surrounding
-  /// chain isn't broken by Flutter-side issues.
+  /// Reloads the Flutter app and logs the outcome. Never throws.
   Future<void> _reloadFlutter() async {
     final flutter = _flutterProcess;
     if (flutter == null) return;

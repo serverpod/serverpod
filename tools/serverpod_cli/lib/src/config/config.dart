@@ -227,21 +227,16 @@ class GeneratorConfig implements ModelLoadConfig {
     ..._relativeDartClientPackagePathParts,
   ];
 
-  /// Path parts from the server package to the Flutter package (when the
-  /// project has one). Defaults to `['..', '${name}_flutter']`.
   final List<String> _relativeFlutterPackagePathParts;
 
-  /// Absolute path parts to the Flutter package. Does not check existence;
-  /// use [hasFlutterPackage] before resolving against the filesystem.
+  /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
+  /// before resolving against the filesystem.
   List<String> get flutterPackagePathParts => [
     ...serverPackageDirectoryPathParts,
     ..._relativeFlutterPackagePathParts,
   ];
 
-  /// True when [flutterPackagePathParts] resolves to a directory that looks
-  /// like a Flutter project (directory exists AND contains a `pubspec.yaml`).
-  /// The pubspec check guards against unrelated directories that happen to
-  /// match the `<name>_flutter` naming convention (e.g. in module projects).
+  /// True when [flutterPackagePathParts] is a directory with `pubspec.yaml`.
   bool get hasFlutterPackage {
     final dirPath = p.joinAll(flutterPackagePathParts);
     if (!Directory(dirPath).existsSync()) return false;

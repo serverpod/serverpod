@@ -51,9 +51,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-/// Request/response correlator for the `flutter run --machine` daemon
-/// protocol. Create one per [Process]; feed parsed stdout envelopes
-/// through [tryHandleResponse] so matching pending futures resolve.
+/// Request/response correlator for `flutter run --machine`. Feed
+/// stdout envelopes through [tryHandleResponse] to resolve requests.
 class FlutterDaemonProtocol {
   FlutterDaemonProtocol(this._process);
 
@@ -61,8 +60,8 @@ class FlutterDaemonProtocol {
   int _requestId = 0;
   final Map<int, Completer<Object?>> _requestCompleters = {};
 
-  /// Resolves to the response's `result` body, or throws
-  /// [FlutterDaemonException] / [StateError] (process exited).
+  /// Resolves to the response's `result`, or throws
+  /// [FlutterDaemonException] / [StateError].
   Future<Object?> sendRequest(
     String method, [
     Map<String, Object?>? params,
@@ -81,18 +80,17 @@ class FlutterDaemonProtocol {
     return completer.future;
   }
 
-  /// Wire format: single-element JSON array per line. Throws if the
-  /// daemon already closed its stdin.
+  /// Wire format: one JSON array per line. Throws if stdin is closed.
   void _sendMessage(Map<String, Object?> message) {
     _process.stdin.writeln('[${jsonEncode(message)}]');
   }
 
-  /// Returns true and resolves the matching completer if [envelope]
-  /// is a response we're waiting for; false otherwise (caller falls
-  /// through to event dispatch).
+  /// Resolves the matching completer if [envelope] is a response we
+  /// issued; returns `false` otherwise so the caller can event-dispatch.
   bool tryHandleResponse(Map<String, Object?> envelope) {
     final id = envelope['id'];
     if (id is! int) return false;
+    // Reject ids we never issued, in case stray output JSON-decoded.
     if (id < 0 || id >= _requestId) return false;
     final completer = _requestCompleters.remove(id);
     if (completer == null) return false;

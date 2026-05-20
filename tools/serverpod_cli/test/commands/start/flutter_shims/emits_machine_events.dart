@@ -1,11 +1,5 @@
-// Test shim for [FlutterProcess]: emits a sequence of `--machine`
-// JSON events (progress, webLaunchUrl, debugPort, started) over stdout,
-// then waits for SIGINT/SIGTERM so the lifecycle methods can be
-// exercised.
-//
-// The `--ws=<uri>` CLI arg controls the `wsUri` reported in
-// `app.debugPort`; tests provide a URL that points at their fake VM
-// service WebSocket server.
+// Test shim: emits a fixed `--machine` event sequence, then waits for
+// SIGINT/SIGTERM. `--ws=<uri>` overrides the wsUri in app.debugPort.
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -47,8 +41,6 @@ Future<void> main(List<String> args) async {
 
   final stopper = Completer<void>();
 
-  // Handle SIGINT (and SIGTERM where supported) cleanly so the shim
-  // exits when [FlutterProcess.stop] sends a signal.
   ProcessSignal.sigint.watch().listen((_) {
     if (!stopper.isCompleted) stopper.complete();
   });

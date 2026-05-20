@@ -10,10 +10,8 @@
       "internalConsoleOptions": "neverOpen"
     },
     {
-      // Attaches to the Flutter app that `serverpod start` spawns via
-      // its `--flutter` flag (default on when a Flutter package is
-      // present). Don't launch a second Flutter instance from VS Code -
-      // that would race the spawn for the same web-server port.
+      // Attaches to the Flutter app `serverpod start` spawns. Don't
+      // launch a second instance here - it would race for the port.
       "name": "projectname_flutter",
       "type": "dart",
       "request": "attach",
@@ -26,8 +24,7 @@
     {
       "name": "projectname (full stack)",
       "configurations": ["projectname_server", "projectname_flutter"],
-      // Stop both debug sessions when the user stops one. Without this
-      // the orphan keeps running and the next launch fails to re-attach.
+      // Stopping one session stops both; the orphan blocks re-attach.
       "stopAll": true,
       "presentation": {
         "order": 1
