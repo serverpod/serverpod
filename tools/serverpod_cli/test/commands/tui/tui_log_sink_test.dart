@@ -13,7 +13,7 @@ void main() {
   setUp(() {
     state = ServerWatchState();
     holder = StartAppStateHolder(state);
-    sink = TuiLogSink(holder);
+    sink = TuiLogSink(holder, addLine: state.rawLines.add);
   });
 
   group('Given a TuiLogSink', () {
