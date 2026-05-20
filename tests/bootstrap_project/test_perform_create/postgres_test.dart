@@ -26,7 +26,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -196,7 +196,7 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -289,7 +289,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -397,7 +397,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );

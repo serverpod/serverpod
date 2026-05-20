@@ -59,7 +59,7 @@ void main() {
           late Directory projectDir;
           String? result;
           final projectName =
-              'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+              'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
           setUp(() async {
             projectDir = Directory(projectName);

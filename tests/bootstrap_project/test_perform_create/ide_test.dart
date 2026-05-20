@@ -27,7 +27,7 @@ void main() {
     'when calling performCreate with a context containing all supported IDEs',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
       setUpAll(() async {
         setupForPerformCreateTest();
