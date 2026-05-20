@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -118,6 +119,7 @@ class WatchSession {
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
   final ApplyMigrationsAction _applyMigrationsAction;
+  final FlutterProcess? _flutterProcess;
 
   final Completer<int> _done = Completer<int>();
 
@@ -155,6 +157,7 @@ class WatchSession {
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
+    FlutterProcess? flutterProcess,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -162,7 +165,8 @@ class WatchSession {
        _server = initialServer,
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
-       _applyMigrationsAction = applyMigrationsAction {
+       _applyMigrationsAction = applyMigrationsAction,
+       _flutterProcess = flutterProcess {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -258,6 +262,7 @@ class WatchSession {
     // service instead of the FES pipeline.
     if (_compiler == null) {
       await _reloadOrRestart(null);
+      await _reloadFlutter();
       return;
     }
 
@@ -273,6 +278,9 @@ class WatchSession {
       dartFiles: allDartChanges,
       packageConfigChanged: event.packageConfigChanged,
     );
+    // Always reload Flutter: flutter/lib-only changes short-circuit
+    // the server compile but still need a Flutter refresh.
+    await _reloadFlutter();
   }
 
   /// Returns `true` if [path] is inside a generated directory.
@@ -412,16 +420,20 @@ class WatchSession {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
     }
-    if (_compiler == null) {
-      return _chain(() => _reload(null));
-    }
-    return _chain(
-      () => _compileAndReload(
-        dartFiles: const {},
-        packageConfigChanged: false,
-        forceFullCompile: true,
-      ),
-    );
+    return _chain(() async {
+      if (_compiler == null) {
+        // forceReload doesn't fall through to restart; the file-change
+        // path does (via _reloadOrRestart). Different intents.
+        await _reload(null);
+      } else {
+        await _compileAndReload(
+          dartFiles: const {},
+          packageConfigChanged: false,
+          forceFullCompile: true,
+        );
+      }
+      await _reloadFlutter();
+    });
   }
 
   /// Applies pending database migrations.
@@ -451,6 +463,8 @@ class WatchSession {
           case MigrationsRequirePodRestart():
             await _restartServer(_compiler?.outputDill);
         }
+        // Migrations regen the client lib; refresh Flutter.
+        await _reloadFlutter();
       } finally {
         if (_state == SessionState.applyingMigration) {
           _state = SessionState.idle;
@@ -494,14 +508,32 @@ class WatchSession {
     }
   }
 
-  /// Disposes the session: stops server and disposes compiler. After
-  /// this returns, [done] is guaranteed to be completed.
+  /// Stops server + Flutter, disposes compiler. Completes [done].
   Future<void> dispose() async {
     _state = SessionState.disposed;
     await _vmServiceUriChangesController.close();
     final code = await _server.stop();
+    // Stop Flutter after the server: an in-flight Flutter reload
+    // mustn't see a half-shut-down server VM service.
+    await _flutterProcess?.stop();
     await _compiler?.dispose();
     if (!_done.isCompleted) _done.complete(code);
+  }
+
+  /// Reloads the Flutter app and logs the outcome. Never throws.
+  Future<void> _reloadFlutter() async {
+    final flutter = _flutterProcess;
+    if (flutter == null) return;
+    if (!flutter.isVmServiceConnected) {
+      log.debug('Flutter not ready; skipping reload.');
+      return;
+    }
+    final ok = await flutter.reload();
+    if (ok) {
+      log.info(flutterAppReloaded);
+    } else {
+      log.warning('Flutter reload failed.');
+    }
   }
 
   void _monitorExit(ServerProcess server) {

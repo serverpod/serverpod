@@ -10,6 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
@@ -76,6 +77,38 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText: 'Show interactive terminal UI.',
     ),
   ),
+  flutter(
+    FlagOption(
+      argName: 'flutter',
+      defaultsTo: true,
+      helpText:
+          'Launch the project\'s Flutter app alongside the server when a '
+          'companion Flutter package is present. Silently skipped for '
+          'projects without one. Use --no-flutter to disable.',
+    ),
+  ),
+  flutterDevice(
+    StringOption(
+      argName: 'flutter-device',
+      defaultsTo: 'chrome',
+      helpText:
+          'Target device for `flutter run -d`. Defaults to chrome '
+          '(web-server is headless and triggers a known DWDS hot-reload '
+          'bug: dart-lang/sdk#60289). Pass --flutter-device=web-server '
+          'for CI / headless / remote-attach workflows.',
+    ),
+  ),
+  flutterOption(
+    MultiOption(
+      argName: 'flutter-option',
+      multiParser: MultiParser(StringParser()),
+      helpText:
+          'Extra argument forwarded to `flutter run`. Repeatable, e.g. '
+          '--flutter-option=--web-hostname=0.0.0.0 '
+          '--flutter-option=--web-port=8090.',
+      defaultsTo: [],
+    ),
+  ),
   ;
 
   const StartOption(this.option);
@@ -119,6 +152,21 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final watch = commandConfig.value(StartOption.watch);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
+    final launchFlutterApp = commandConfig.value(StartOption.flutter);
+    final flutterDevice = commandConfig.value(StartOption.flutterDevice);
+    // Narrow once: MultiOption.value() returns List<dynamic>.
+    final flutterExtraArgs = List<String>.from(
+      commandConfig.value(StartOption.flutterOption) as Iterable,
+    );
+    // Mirror serverpod -v into flutter; output flows via log.debug.
+    final verbose =
+        serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.verbose,
+        ) ??
+        false;
+    if (verbose && !flutterExtraArgs.contains('--verbose')) {
+      flutterExtraArgs.insert(0, '--verbose');
+    }
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
@@ -137,6 +185,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
+        launchFlutterApp: launchFlutterApp,
+        flutterDevice: flutterDevice,
+        flutterExtraArgs: flutterExtraArgs,
         serverArgs: argResults?.rest ?? [],
         config: config,
       );
@@ -186,6 +237,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
         serverArgs: serverArgs,
         watch: watch,
         docker: docker,
+        launchFlutterApp: launchFlutterApp,
+        flutterDevice: flutterDevice,
+        flutterExtraArgs: flutterExtraArgs,
         shutdown: shutdown,
       );
       switch (result) {
@@ -335,10 +389,18 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required ServerArgsRef serverArgs,
   required bool watch,
   required bool docker,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
+  IOSink? flutterStdoutSink,
+  IOSink? flutterStderrSink,
+  void Function(String stage)? onFlutterProgress,
+  void Function(String url)? onFlutterReady,
   Future<void> Function(ServerProcess server)? onServerStart,
+  Future<void> Function(FlutterProcess flutter)? onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
@@ -495,8 +557,68 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Construct the watch session.
+  // Needed for the Flutter dev-mode gate and the migration action.
   final runMode = runModeFromServerArgs(serverArgs.value);
+
+  // Production/staging boots skip the dev Flutter spawn. Missing
+  // package = silent no-op; missing Flutter SDK = warning.
+  FlutterProcess? flutterProcess;
+  if (launchFlutterApp && runMode == 'development') {
+    if (!config.hasFlutterPackage) {
+      log.info(flutterPackageNotFound);
+    } else {
+      // Non-TUI: surface daemon progress as log.info during the 30-60s
+      // cold compile; log.progress shows only one line.
+      flutterProcess = FlutterProcess(
+        flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
+        device: flutterDevice,
+        extraArgs: flutterExtraArgs,
+        vmServiceInfoFile: defaultFlutterVmServiceInfoFile(serverpodToolDir),
+        stdoutSink: flutterStdoutSink,
+        stderrSink: flutterStderrSink,
+        onProgress: (stage) {
+          onFlutterProgress?.call(stage);
+          if (onFlutterProgress == null) {
+            log.info('  Flutter: $stage');
+          }
+        },
+      );
+      try {
+        await flutterProcess.start();
+      } on FlutterNotInstalledException catch (e) {
+        log.warning(e.message);
+        flutterProcess = null;
+      }
+      final fp = flutterProcess;
+      if (fp != null) {
+        // Background: Server-running shouldn't wait on Flutter launch.
+        // On `-d web-server` `launched` pends until a browser attaches.
+        unawaited(() async {
+          await log.progress(
+            'Launching Flutter app (first run may take 30-60s)',
+            () async {
+              await fp.launched;
+              return true;
+            },
+          );
+          final url = fp.flutterAppUrl;
+          if (url != null) {
+            log.info('Flutter app running at $url');
+            onFlutterReady?.call(url);
+          }
+          await log.progress('Connecting to Flutter VM service', () async {
+            await fp.connectToVmService();
+            if (fp.isVmServiceConnected && onFlutterStart != null) {
+              await onFlutterStart(fp);
+            }
+            return fp.isVmServiceConnected;
+          });
+        }());
+      }
+    }
+  }
+
+  // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
@@ -512,6 +634,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
+    flutterProcess: flutterProcess,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -551,7 +674,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
-  // File watcher (watch mode only).
+  // Single watcher across server/shared/client/web/flutter. Changes
+  // serialize through session.handleFileChange via WatchSession._chain.
   StreamSubscription<void>? fileChangeSub;
   if (watch) {
     final watcher = FileWatcher(
@@ -562,6 +686,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
+        if (flutterProcess != null)
+          p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -713,6 +839,9 @@ Future<String?> _checkExistingServer(String infoPath) async {
 Future<int> _runWithTui({
   required Configuration<StartOption> commandConfig,
   required bool watch,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
@@ -737,6 +866,9 @@ Future<int> _runWithTui({
           holder: h,
           commandConfig: commandConfig,
           watch: watch,
+          launchFlutterApp: launchFlutterApp,
+          flutterDevice: flutterDevice,
+          flutterExtraArgs: flutterExtraArgs,
           serverArgs: serverArgs,
           config: config,
           shutdown: shutdown,
@@ -770,6 +902,9 @@ Future<void> _runTuiBackend({
   required StartAppStateHolder holder,
   required Configuration<StartOption> commandConfig,
   required bool watch,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
@@ -785,8 +920,16 @@ Future<void> _runTuiBackend({
 
     final argsRef = ServerArgsRef(serverArgs);
 
-    final stdoutSink = TuiLogSink(holder);
-    final stderrSink = TuiLogSink(holder);
+    final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final flutterStdoutSink = TuiLogSink(
+      holder,
+      addLine: holder.state.rawFlutterLines.add,
+    );
+    final flutterStderrSink = TuiLogSink(
+      holder,
+      addLine: holder.state.rawFlutterLines.add,
+    );
 
     final result = await _setupWatchLoop(
       config: config,
@@ -794,11 +937,34 @@ Future<void> _runTuiBackend({
       serverArgs: argsRef,
       watch: watch,
       docker: docker,
+      launchFlutterApp: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      flutterExtraArgs: flutterExtraArgs,
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
+      flutterStdoutSink: flutterStdoutSink,
+      flutterStderrSink: flutterStderrSink,
+      onFlutterProgress: (stage) {
+        holder.state.flutterStartupStage = stage;
+        holder.state.showFlutterOutput = true;
+        holder.markDirty();
+      },
+      onFlutterReady: (url) {
+        holder.state.flutterUrl = url;
+        holder.state.flutterReady = true;
+        holder.markDirty();
+      },
       onServerStart: (server) async {
         final vmService = server.vmService;
+        if (vmService == null) return;
+        await vmService.streamListen('Extension');
+        vmService.onExtensionEvent.listen(
+          (event) => handleServerLogEvent(holder, event),
+        );
+      },
+      onFlutterStart: (flutter) async {
+        final vmService = flutter.vmService;
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(

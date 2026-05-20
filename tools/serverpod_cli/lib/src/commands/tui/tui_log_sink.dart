@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 
-/// An [IOSink] implementation that captures server stdout/stderr output
-/// and routes it to the TUI's "Raw server output" tab.
+/// [IOSink] that splits captured stdout/stderr into lines and forwards
+/// each to [addLine] (e.g. `state.rawLines.add`).
 class TuiLogSink implements IOSink {
-  TuiLogSink(this._holder);
+  TuiLogSink(this._holder, {required this.addLine});
 
   final ServerpodAppStateHolder _holder;
+  final void Function(String) addLine;
   final StringBuffer _lineBuffer = StringBuffer();
 
   @override
@@ -18,7 +19,7 @@ class TuiLogSink implements IOSink {
     for (var i = 0; i < text.length; i++) {
       final char = text[i];
       if (char == '\n') {
-        _holder.state.rawLines.add(stripAnsi(_lineBuffer.toString()));
+        addLine(stripAnsi(_lineBuffer.toString()));
         _lineBuffer.clear();
         _holder.markDirty();
       } else if (char != '\r') {
@@ -42,9 +43,9 @@ class TuiLogSink implements IOSink {
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    _holder.state.rawLines.add(stripAnsi('ERROR: $error'));
+    addLine(stripAnsi('ERROR: $error'));
     if (stackTrace != null) {
-      _holder.state.rawLines.add(stripAnsi('$stackTrace'));
+      addLine(stripAnsi('$stackTrace'));
     }
     _holder.markDirty();
   }
@@ -58,7 +59,7 @@ class TuiLogSink implements IOSink {
   @override
   Future close() async {
     if (_lineBuffer.isNotEmpty) {
-      _holder.state.rawLines.add(stripAnsi(_lineBuffer.toString()));
+      addLine(stripAnsi(_lineBuffer.toString()));
       _lineBuffer.clear();
       _holder.markDirty();
     }

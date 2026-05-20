@@ -1,4 +1,5 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_cli/src/commands/tui/bounded_queue_list.dart';
 import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button.dart';
 import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
@@ -26,6 +27,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.logScrollController,
     required this.rawScrollController,
+    required this.flutterRawScrollController,
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
@@ -39,6 +41,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController logScrollController;
   final ScrollController rawScrollController;
+  final ScrollController flutterRawScrollController;
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
@@ -63,6 +66,11 @@ class MainScreen extends StatelessComponent {
                       padding: const EdgeInsets.only(left: 1),
                       child: _buildTabBar(st),
                     ),
+                    if (_flutterStatusLine() case final line?)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 1),
+                        child: Text(line),
+                      ),
                     Expanded(child: _buildTabContent()),
                     // Pinned active operations
                     if (state.activeOperations.isNotEmpty) ...[
@@ -85,19 +93,39 @@ class MainScreen extends StatelessComponent {
     );
   }
 
+  /// URL when ready, startup stage while compiling, `null` when no
+  /// Flutter app is attached.
+  String? _flutterStatusLine() {
+    if (state.flutterReady) {
+      final url = state.flutterUrl;
+      return url == null ? 'Flutter: ready' : 'Flutter: $url';
+    }
+    final stage = state.flutterStartupStage;
+    if (stage != null) return 'Flutter: $stage';
+    return null;
+  }
+
   Component _buildTabBar(ServerpodThemeData st) {
     return TabBar(
-      labels: const ['Log Messages', 'Raw server output'],
+      labels: [
+        'Log Messages',
+        'Raw server output',
+        if (state.showFlutterOutput) 'Flutter output',
+      ],
       selectedTab: state.selectedTab,
       onTabChanged: onTabChanged,
     );
   }
 
   Component _buildTabContent() {
-    if (state.selectedTab == 0) {
-      return _buildStructuredLogView();
-    }
-    return _buildRawOutputView();
+    return switch (state.selectedTab) {
+      1 => _buildRawOutputView(state.rawLines, rawScrollController),
+      2 => _buildRawOutputView(
+        state.rawFlutterLines,
+        flutterRawScrollController,
+      ),
+      _ => _buildStructuredLogView(),
+    };
   }
 
   Component _buildStructuredLogView() {
@@ -136,18 +164,19 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildRawOutputView() {
-    final lines = state.rawLines;
-
+  Component _buildRawOutputView(
+    BoundedQueueList<String> lines,
+    ScrollController controller,
+  ) {
     return SelectionArea(
       onSelectionCompleted: (text) {
         if (text.isNotEmpty) ClipboardManager.copy(text);
       },
       child: Scrollbar(
-        controller: rawScrollController,
+        controller: controller,
         thumbVisibility: true,
         child: ListView.builder(
-          controller: rawScrollController,
+          controller: controller,
           reverse: true,
           keyboardScrollable: false,
           itemCount: lines.length,
