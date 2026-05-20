@@ -4,9 +4,13 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/start/server_process.dart'
+    show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:vm_service/vm_service.dart';
+import 'package:vm_service/vm_service_io.dart';
 
 /// Thrown by [FlutterProcess.start] when the `flutter` binary cannot be
 /// launched (typically because Flutter is not installed or not on `PATH`).
@@ -65,6 +69,7 @@ class FlutterProcess {
   FlutterDaemonProtocol? _daemon;
   String? _vmServiceUri;
   String? _flutterAppUrl;
+  VmService? _vmService;
 
   // `null` result means the process exited before publishing a URI.
   final Completer<String?> _vmServiceUriCompleter = Completer<String?>();
@@ -96,16 +101,18 @@ class FlutterProcess {
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
 
-  /// True once the Flutter daemon has published the VM service URI
-  /// (after which [_vmServiceInfoFile] has been written for IDE attach).
-  bool get isVmServiceConnected => _vmServiceUri != null;
+  /// True once [connectToVmService] resolved the upstream VM service.
+  bool get isVmServiceConnected => _vmService != null;
 
   /// HTTP VM service URI, or `null` before [connectToVmService] resolves.
   String? get vmServiceUri => _vmServiceUri;
 
-  /// HTTP URL the Flutter app is served at (e.g.
-  /// `http://localhost:54321`), or `null` before `--machine` emitted
-  /// `app.webLaunchUrl`.
+  /// Connected `vm_service` client, or `null` before
+  /// [connectToVmService] resolves and after [stop].
+  VmService? get vmService => _vmService;
+
+  /// HTTP URL the Flutter app is served at, or `null` before
+  /// `--machine` emitted `app.webLaunchUrl`.
   String? get flutterAppUrl => _flutterAppUrl;
 
   /// Completes on the first of `app.debugPort`, `app.webLaunchUrl`, or
@@ -180,6 +187,14 @@ class FlutterProcess {
     final stdoutLines = StreamController<String>();
     const lineSplitter = LineSplitter();
     final lineBuffer = StringBuffer();
+    void routeLine(String line) {
+      if (line.startsWith('[')) {
+        stdoutLines.add(line);
+      } else if (line.isNotEmpty) {
+        _stdout.writeln(line);
+      }
+    }
+
     _stdoutBytesSub = process.stdout.listen(
       (data) {
         lineBuffer.write(utf8.decode(data, allowMalformed: true));
@@ -189,23 +204,11 @@ class FlutterProcess {
         final ready = bufferStr.substring(0, lastNewline);
         lineBuffer.clear();
         lineBuffer.write(bufferStr.substring(lastNewline + 1));
-        for (final line in lineSplitter.convert(ready)) {
-          if (line.startsWith('[')) {
-            stdoutLines.add(line);
-          } else if (line.isNotEmpty) {
-            _stdout.writeln(line);
-          }
-        }
+        lineSplitter.convert(ready).forEach(routeLine);
       },
       onDone: () {
         if (lineBuffer.isNotEmpty) {
-          for (final line in lineSplitter.convert(lineBuffer.toString())) {
-            if (line.startsWith('[')) {
-              stdoutLines.add(line);
-            } else if (line.isNotEmpty) {
-              _stdout.writeln(line);
-            }
-          }
+          lineSplitter.convert(lineBuffer.toString()).forEach(routeLine);
           lineBuffer.clear();
         }
         stdoutLines.close();
@@ -233,11 +236,12 @@ class FlutterProcess {
     );
   }
 
-  /// Wait for the VM service URI from `app.debugPort`, then write it
-  /// to [_vmServiceInfoFile] so IDEs can attach. On `-d web-server`
-  /// this pends until a browser attaches.
+  /// Wait for the VM service URI from `app.debugPort`, write it to
+  /// [_vmServiceInfoFile] for IDE attach, then open a `vm_service`
+  /// client. Best-effort. On `-d web-server` this pends until a
+  /// browser attaches.
   Future<void> connectToVmService() async {
-    if (_vmServiceUri != null) return;
+    if (_vmService != null) return;
     _onProgress?.call('connecting');
 
     final maybeUri = await _vmServiceUriCompleter.future;
@@ -251,6 +255,20 @@ class FlutterProcess {
         ).writeAsString(jsonEncode({'uri': maybeUri}));
       } on FileSystemException catch (e) {
         log.warning('Could not write Flutter VM service info file: $e');
+      }
+    }
+
+    final wsUri = vmServiceWsUri(maybeUri);
+    for (var attempt = 0; attempt < 5; attempt++) {
+      try {
+        _vmService = await vmServiceConnectUri(wsUri);
+        return;
+      } on Exception {
+        if (attempt == 4) {
+          log.warning('Could not connect to Flutter VM service at $wsUri');
+          return;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 200));
       }
     }
   }
@@ -419,6 +437,9 @@ class FlutterProcess {
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
+
+      await _vmService?.dispose();
+      _vmService = null;
 
       if (_vmServiceInfoFile != null) {
         await File(_vmServiceInfoFile).deleteIfExists();
