@@ -1111,7 +1111,7 @@ Future<void> _runCreateMigrationForTui(
   final outcome = await createMigrationAction(config: config, force: force);
   final result = _describeCreateMigration(
     outcome,
-    forceHint: 'Run `serverpod create-migration --force` to create it anyway.',
+    forceHint: 'Use ⇧+M to force-create it anyway.',
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
@@ -1159,9 +1159,7 @@ Future<void> _runCreateRepairMigrationForTui(
       force: force,
     );
   } on MigrationAbortedException {
-    log.info(
-      'Run `serverpod create-repair-migration --force` to create it anyway.',
-    );
+    log.info('Use ⇧+P to force-create it anyway.');
     rethrow;
   }
 
