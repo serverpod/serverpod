@@ -46,17 +46,17 @@ After following the regular upgrade process, ensure that the following breaking 
 
 Some Serverpod projects are created without a database. Add one by re-running the project creator (`serverpod create .`), which uses an interactive TUI. STOP and ask the user to run it; do not attempt to drive the TUI yourself.
 
-**Detect no-database state:** `config/development.yaml` lacks a `database:` block, or there is no `docker-compose.yaml` at the server package root.
+**Detect no-database state:** `config/development.yaml` lacks a `database:` block.
 
 ## Steps
 
 1. Ask the user to run `serverpod create .` from inside the server package directory (e.g. `cd my_project_server && serverpod create .`).
-2. Warn the user that the TUI does NOT remember previous project selections. They must re-pick the original options (Flutter, Redis, Auth, Web, Skills) PLUS choose `database: postgres` (or `sqlite`).
-3. After completion, verify it landed: `config/development.yaml` has a `database:` block, `docker-compose.yaml` exists at the server package root, `config/passwords.yaml` has a `database` entry, and a default migration exists under `migrations/`.
+2. Tell the user to choose `database: postgres` (or `sqlite`) in the TUI, along with any other features (Flutter, Redis, Auth, Web, Skills) that match their existing project.
+3. After completion, verify it landed: `config/development.yaml` has a `database:` block and a default migration exists under `migrations/`. For Postgres, also verify `docker-compose.yaml` exists at the server package root and `config/passwords.yaml` has a `database` entry. SQLite does not require either.
 4. Add `table: <table_name>` to any `.spy.yaml` model(s) the user wants persisted. See [Serverpod Models](../serverpod-models/SKILL.md).
 5. Regenerate code: use the MCP `generate` tool if connected, otherwise run `serverpod generate`.
 6. Create a migration: use the MCP if connected, otherwise run `serverpod create-migration`. See [Serverpod Migrations](../serverpod-migrations/SKILL.md).
-7. Ask the user to start the database with `docker compose up -d` (from the server package directory) and apply the migration.
+7. If the user chose Postgres, ask them to start the database with `docker compose up -d` from the server package directory. SQLite does not need Docker. For either, apply the migration using the workflow in [Serverpod Migrations](../serverpod-migrations/SKILL.md).
 
 A `Dockerfile` is not added by this flow. It is a separate production deployment artifact, not required for local database support.
 
