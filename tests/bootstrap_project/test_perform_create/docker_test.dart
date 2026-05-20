@@ -26,21 +26,23 @@ void main() {
     'when performCreate is called with the context and a server template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(redis: false, postgres: false);
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            redis: false,
+            postgres: false,
+          ),
         );
       });
 
@@ -60,34 +62,6 @@ void main() {
           await expectLater(file.exists(), completion(false));
         },
       );
-
-      test(
-        'then the server Dockerfile file is not created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(false));
-        },
-      );
-
-      test(
-        'then the vscode tasks.json file is not created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(false));
-        },
-      );
-
-      test(
-        'then the vscode launch.json file does not have prelaunch task',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(
-            content,
-            isNot(contains('"preLaunchTask": "docker_compose_up"')),
-          );
-        },
-      );
     },
   );
 
@@ -96,21 +70,23 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(redis: false, postgres: false);
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: false,
+            postgres: false,
+          ),
         );
       });
 
@@ -130,6 +106,50 @@ void main() {
           await expectLater(file.exists(), completion(false));
         },
       );
+
+      test(
+        'then the server docker-compose file is not created',
+        () async {
+          final file = File(p.join(serverDir, 'docker-compose.yaml'));
+          await expectLater(file.exists(), completion(false));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a TemplateContext with postgres and redis enabled, '
+    'when performCreate is called with the context and a module template type',
+    () {
+      final projectName =
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
+        projectName,
+      );
+
+      setUpAll(() async {
+        setupForPerformCreateTest();
+
+        await performCreate(
+          projectName,
+          false,
+          interactive: false,
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: true,
+            postgres: true,
+          ),
+        );
+      });
+
+      tearDownAll(() {
+        final dir = Directory(projectName);
+        try {
+          dir.delete(recursive: true);
+        } on FileSystemException {
+          // Gone.
+        }
+      });
 
       test(
         'then the server docker-compose file is not created',

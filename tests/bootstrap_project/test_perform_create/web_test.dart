@@ -28,7 +28,7 @@ void main() {
       late Directory webDir;
 
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -37,10 +37,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(web: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            web: true,
+          ),
         );
 
         webDir = Directory(p.join(serverDir, 'web'));
@@ -151,7 +153,7 @@ void main() {
       late Directory webDir;
 
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -160,10 +162,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(web: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            web: false,
+          ),
         );
 
         webDir = Directory(p.join(serverDir, 'web'));
@@ -263,7 +267,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -272,10 +276,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(web: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            web: true,
+          ),
         );
       });
 
@@ -303,7 +309,7 @@ void main() {
     'when performCreate is called with the context and a module template type',
     () {
       final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
         projectName,
       );
@@ -312,10 +318,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(web: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            web: false,
+          ),
         );
       });
 

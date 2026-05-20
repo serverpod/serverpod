@@ -239,7 +239,26 @@ void main() async {
               );
 
               test(
-                'has sqlite configurations',
+                'has embedded postgres configuration on test run mode',
+                () {
+                  final testConfigFile = File(
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'test.yaml',
+                    ),
+                  );
+
+                  expect(
+                    testConfigFile.readAsStringSync(),
+                    contains('dataPath: .serverpod/test/pgdata'),
+                  );
+                },
+              );
+
+              test(
+                'has embedded postgres configuration on development run mode',
                 () {
                   final devConfigFile = File(
                     path.join(
@@ -252,35 +271,48 @@ void main() async {
 
                   expect(
                     devConfigFile.readAsStringSync(),
-                    contains('filePath:'),
+                    contains('dataPath: .serverpod/dev/pgdata'),
                   );
+                },
+              );
 
-                  final prodConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'production.yaml'),
-                  );
-
-                  expect(
-                    prodConfigFile.readAsStringSync(),
-                    contains('filePath:'),
-                  );
-
+              test(
+                'has normal postgres configuration on staging run mode',
+                () {
                   final stagingConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'staging.yaml'),
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'staging.yaml',
+                    ),
                   );
 
-                  expect(
-                    stagingConfigFile.readAsStringSync(),
-                    contains('filePath:'),
+                  final content = stagingConfigFile.readAsStringSync();
+                  expect(content, contains('host:'));
+                  expect(content, contains('port:'));
+                  expect(content, contains('user:'));
+                  expect(content, isNot(contains('dataPath:')));
+                },
+              );
+
+              test(
+                'has normal postgres configuration on production run mode',
+                () {
+                  final prodConfigFile = File(
+                    path.join(
+                      tempPath,
+                      serverDir,
+                      'config',
+                      'production.yaml',
+                    ),
                   );
 
-                  final testConfigFile = File(
-                    path.join(tempPath, serverDir, 'config', 'test.yaml'),
-                  );
-
-                  expect(
-                    testConfigFile.readAsStringSync(),
-                    contains('filePath:'),
-                  );
+                  final content = prodConfigFile.readAsStringSync();
+                  expect(content, contains('host:'));
+                  expect(content, contains('port:'));
+                  expect(content, contains('user:'));
+                  expect(content, isNot(contains('dataPath:')));
                 },
               );
             },
@@ -594,23 +626,6 @@ void main() async {
                       contains('"${projectName} (full stack)"'),
                     );
                   });
-
-                  test('does not have preLaunchTask', () {
-                    expect(
-                      launchJson,
-                      isNot(contains('"preLaunchTask": "docker_compose_up"')),
-                    );
-                  });
-
-                  test(
-                    'does not have SERVERPOD_PASSWORD_database environment variable',
-                    () {
-                      expect(
-                        launchJson,
-                        isNot(contains('"SERVERPOD_PASSWORD_database":')),
-                      );
-                    },
-                  );
                 },
               );
             },
