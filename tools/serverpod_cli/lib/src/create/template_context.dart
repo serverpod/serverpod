@@ -34,15 +34,15 @@ class TemplateContext {
   /// The configured IDEs.
   final List<TemplateIde> ides;
 
-  /// True if docker is enabled.
-  bool get docker => postgres || redis;
+  /// True if docker is enabled on a server template.
+  bool get docker => (postgres || redis) && template.isServer;
 
   /// True if a database is enabled.
   bool get database => postgres || sqlite;
 
   Map<String, bool> toMustacheMap() {
     return {
-      'auth': auth & postgres, // auth requires postgres
+      'auth': auth && postgres, // auth requires postgres
       'redis': redis,
       'postgres': postgres,
       'sqlite': sqlite,

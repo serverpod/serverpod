@@ -123,7 +123,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       interactive: interactive,
       context: TemplateContext(
         template: template,
-        sqlite: true,
+        postgres: true,
         web: true,
         ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
       ),

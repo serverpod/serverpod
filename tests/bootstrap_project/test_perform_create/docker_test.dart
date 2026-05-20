@@ -116,4 +116,48 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a TemplateContext with postgres and redis enabled, '
+    'when performCreate is called with the context and a module template type',
+    () {
+      final projectName =
+          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
+        projectName,
+      );
+
+      setUpAll(() async {
+        setupForPerformCreateTest();
+
+        await performCreate(
+          projectName,
+          false,
+          interactive: false,
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: true,
+            postgres: true,
+          ),
+        );
+      });
+
+      tearDownAll(() {
+        final dir = Directory(projectName);
+        try {
+          dir.delete(recursive: true);
+        } on FileSystemException {
+          // Gone.
+        }
+      });
+
+      test(
+        'then the server docker-compose file is not created',
+        () async {
+          final file = File(p.join(serverDir, 'docker-compose.yaml'));
+          await expectLater(file.exists(), completion(false));
+        },
+      );
+    },
+  );
 }
