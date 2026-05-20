@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(redis: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            redis: true,
+          ),
         );
       });
 
@@ -139,10 +141,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(redis: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            redis: false,
+          ),
         );
       });
 
@@ -180,10 +184,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(redis: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: true,
+          ),
         );
       });
 
@@ -252,10 +258,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(redis: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            redis: false,
+          ),
         );
       });
 

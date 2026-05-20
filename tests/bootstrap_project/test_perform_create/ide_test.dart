@@ -32,14 +32,11 @@ void main() {
       setUpAll(() async {
         setupForPerformCreateTest();
 
-        final context = TemplateContext(ides: TemplateIde.values);
-
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(ides: TemplateIde.values),
         );
       });
 

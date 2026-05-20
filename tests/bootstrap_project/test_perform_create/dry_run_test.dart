@@ -19,7 +19,6 @@ void main() {
           setUp(() async {
             result = await performCreate(
               projectName,
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,
@@ -41,7 +40,6 @@ void main() {
           setUp(() async {
             result = await performCreate(
               '1test',
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,
@@ -72,7 +70,6 @@ void main() {
 
             result = await performCreate(
               projectName,
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,

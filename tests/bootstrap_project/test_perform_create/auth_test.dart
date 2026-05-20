@@ -36,14 +36,15 @@ void main() {
       setUpAll(() async {
         setupForPerformCreateTest();
 
-        final context = TemplateContext(auth: true, postgres: true);
-
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            auth: true,
+            postgres: true,
+          ),
         );
 
         serverFile = File(
@@ -153,10 +154,12 @@ void main() {
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           true,
           interactive: false,
-          context: TemplateContext(auth: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            auth: false,
+          ),
         );
 
         serverFile = File(p.join(serverDir, 'lib', 'server.dart'));
@@ -250,14 +253,16 @@ void main() {
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(auth: false, postgres: true);
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           true,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            auth: false,
+            postgres: true,
+          ),
         );
       });
 

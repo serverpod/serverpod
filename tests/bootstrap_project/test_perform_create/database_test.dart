@@ -33,18 +33,17 @@ void main() {
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(
-          postgres: false,
-          redis: false,
-          sqlite: false,
-        );
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: false,
+            redis: false,
+            sqlite: false,
+          ),
         );
       });
 
@@ -132,18 +131,17 @@ void main() {
 
       setUpAll(() async {
         setupForPerformCreateTest();
-        final context = TemplateContext(
-          postgres: false,
-          redis: false,
-          sqlite: false,
-        );
 
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: context,
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: false,
+            redis: false,
+            sqlite: false,
+          ),
         );
       });
 

@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(postgres: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: true,
+          ),
         );
       });
 
@@ -203,10 +205,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(postgres: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            postgres: false,
+          ),
         );
       });
 
@@ -294,10 +298,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(postgres: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: true,
+          ),
         );
       });
 
@@ -400,10 +406,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(postgres: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            postgres: false,
+          ),
         );
       });
 

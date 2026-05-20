@@ -139,6 +139,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     }
 
     final context = TemplateContext(
+      template: template,
       auth: true,
       redis: true,
       postgres: true,
@@ -152,7 +153,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       // Dry run to collect early errors and exit if needed.
       final dryRunProjectPath = await performCreate(
         name,
-        template,
         force,
         dryRun: true,
         interactive: interactive,
@@ -174,7 +174,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     final projectPath = await performCreate(
       name,
-      template,
       force,
       interactive: interactive,
       context: context,
@@ -237,7 +236,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     final backend = ServerpodTerminalBackend(
       preExit: () => _preExit(
-        template: state.template ?? template,
+        template: state.template,
         projectPath: projectPath,
       ),
     );
@@ -248,14 +247,12 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
         name: name,
         holder: holder,
         onCreate: () async {
-          final context = state.toTemplateContext();
           projectPath = await performCreate(
             name,
-            state.template ?? template,
             force,
             flutterBuildCompleter: flutterBuildCompleter,
             interactive: interactive,
-            context: context,
+            context: state.toTemplateContext(),
           );
 
           final success = projectPath != null;

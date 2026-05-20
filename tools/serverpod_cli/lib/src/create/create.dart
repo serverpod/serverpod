@@ -90,12 +90,11 @@ void flushPerformCreateErrors() {
   _errorBuffer.clear();
 }
 
-/// Creates a project for the provided [template].
+/// Creates a project for the provided [context].
 /// If successful, a future that resolves to the project directory path
 /// is returned. Otherwise, a future that resolves to null is returned.
 Future<String?> performCreate(
   String name,
-  ServerpodTemplateType template,
   bool force, {
   Completer<int>? flutterBuildCompleter,
   bool dryRun = false,
@@ -108,7 +107,6 @@ Future<String?> performCreate(
   if (name == '.') {
     if (findServerDirectory(Directory.current) != null) {
       return await _performUpgrade(
-        template,
         dryRun: dryRun,
         interactive: interactive,
         context: context,
@@ -142,6 +140,7 @@ Future<String?> performCreate(
 
   if (dryRun) return p.basename(serverpodDirs.projectDir.path);
 
+  final template = context.template;
   if (template == ServerpodTemplateType.module) {
     log.info(
       'Creating Serverpod module "$name".',
@@ -429,13 +428,12 @@ Future<void> _createFileAndWrite(String path, String content) async {
 /// Upgrades a server project.
 /// If successful, a future that resolves to the project directory path
 /// is returned. Otherwise, a future that resolves to null is returned.
-Future<String?> _performUpgrade(
-  ServerpodTemplateType template, {
+Future<String?> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
 }) async {
-  if (template != ServerpodTemplateType.server) {
+  if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
     return null;
   }

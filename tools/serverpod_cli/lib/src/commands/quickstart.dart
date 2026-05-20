@@ -119,10 +119,10 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
 
     final projectPath = await performCreate(
       name,
-      template,
       force,
       interactive: interactive,
       context: TemplateContext(
+        template: template,
         sqlite: true,
         web: true,
         ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],

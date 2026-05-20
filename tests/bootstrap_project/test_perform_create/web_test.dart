@@ -37,10 +37,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(web: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            web: true,
+          ),
         );
 
         webDir = Directory(p.join(serverDir, 'web'));
@@ -160,10 +162,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(web: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            web: false,
+          ),
         );
 
         webDir = Directory(p.join(serverDir, 'web'));
@@ -272,10 +276,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(web: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            web: true,
+          ),
         );
       });
 
@@ -312,10 +318,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(web: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            web: false,
+          ),
         );
       });
 

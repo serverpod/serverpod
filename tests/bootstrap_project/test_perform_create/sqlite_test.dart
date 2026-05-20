@@ -35,10 +35,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            sqlite: true,
+          ),
         );
       });
 
@@ -112,10 +114,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.server,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.server,
+            sqlite: false,
+          ),
         );
       });
 
@@ -180,10 +184,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: true),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            sqlite: true,
+          ),
         );
       });
 
@@ -221,10 +227,12 @@ void main() {
         setupForPerformCreateTest();
         await performCreate(
           projectName,
-          ServerpodTemplateType.module,
           false,
           interactive: false,
-          context: TemplateContext(sqlite: false),
+          context: TemplateContext(
+            template: ServerpodTemplateType.module,
+            sqlite: false,
+          ),
         );
       });
 
