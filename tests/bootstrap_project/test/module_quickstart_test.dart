@@ -200,7 +200,7 @@ void main() {
           );
 
           test(
-            'has test configuration with sqlite',
+            'has embedded postgres configuration on test run mode',
             () {
               final testConfigFile = File(
                 path.join(tempPath, serverDir, 'config', 'test.yaml'),
@@ -208,7 +208,7 @@ void main() {
 
               expect(
                 testConfigFile.readAsStringSync(),
-                contains('filePath: ${projectName}_test.db'),
+                contains('dataPath: .serverpod/test/pgdata'),
               );
             },
           );
