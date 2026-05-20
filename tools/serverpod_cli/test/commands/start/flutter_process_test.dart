@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:test/test.dart';
 
 /// Path of a Dart shim under `test/commands/start/flutter_shims/`.
@@ -230,17 +231,18 @@ void main() {
     );
   });
 
-  group('Given a FlutterProcess with a vmServiceInfoFile configured', () {
+  group('Given a FlutterProcess wired to a VmServiceProxy', () {
     late FlutterProcess fp;
     late ({HttpServer server, String wsUri}) fake;
-    late Directory tmp;
-    late String infoPath;
+    late VmServiceProxy proxy;
 
     setUp(() async {
       fake = await _startFakeVmService();
-      tmp = Directory.systemTemp.createTempSync('flutter_proc_test_');
-      infoPath = p.join(tmp.path, 'flutter-vm-service-info.json');
-
+      proxy = VmServiceProxy(
+        upstreamWs: null,
+        waitingClientTimeout: const Duration(seconds: 10),
+      );
+      await proxy.bind();
       fp = FlutterProcess(
         flutterPackageDir: Directory.current.path,
         device: 'web-server',
@@ -249,7 +251,7 @@ void main() {
           _shimPath('emits_machine_events.dart'),
           '--ws=${fake.wsUri}',
         ],
-        vmServiceInfoFile: infoPath,
+        flutterProxy: proxy,
       );
 
       await fp.start();
@@ -258,45 +260,35 @@ void main() {
 
     tearDown(() async {
       await fp.stop();
+      await proxy.close();
       await fake.server.close(force: true);
-      try {
-        tmp.deleteSync(recursive: true);
-      } on FileSystemException {
-        // Already gone.
-      }
     });
 
     test(
       'when the shim publishes a URI '
-      'then the file is written with the http URI, then cleaned up on stop',
+      'then the proxy upstream becomes the WS form of that URI, '
+      'and is cleared on stop',
       () async {
-        // Poll on contents: writeAsString creates the inode before
-        // flushing, so existsSync can catch an empty intermediate.
+        // Poll until the proxy observes the upstream bind.
         final deadline = DateTime.now().add(const Duration(seconds: 5));
-        var contents = '';
-        while (contents.isEmpty && DateTime.now().isBefore(deadline)) {
-          if (File(infoPath).existsSync()) {
-            contents = File(infoPath).readAsStringSync();
-          }
-          if (contents.isEmpty) {
-            await Future<void>.delayed(const Duration(milliseconds: 20));
-          }
+        while (proxy.upstreamWs == null && DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(milliseconds: 20));
         }
 
         expect(
-          contents,
-          contains('http://127.0.0.1:${fake.server.port}'),
+          proxy.upstreamWs?.toString(),
+          equals(fake.wsUri),
         );
 
         await fp.stop(timeout: const Duration(seconds: 1));
 
-        // Cleanup runs async via the exit listener; poll briefly.
-        final cleanupDeadline = DateTime.now().add(const Duration(seconds: 2));
-        while (File(infoPath).existsSync() &&
-            DateTime.now().isBefore(cleanupDeadline)) {
+        // Cleanup runs async via the exit listener.
+        final clearDeadline = DateTime.now().add(const Duration(seconds: 2));
+        while (proxy.upstreamWs != null &&
+            DateTime.now().isBefore(clearDeadline)) {
           await Future<void>.delayed(const Duration(milliseconds: 20));
         }
-        expect(File(infoPath).existsSync(), isFalse);
+        expect(proxy.upstreamWs, isNull);
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );

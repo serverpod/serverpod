@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -27,7 +27,8 @@ class FlutterNotInstalledException implements Exception {
 }
 
 /// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
-/// VM service URI is written to [vmServiceInfoFile] for IDE attach;
+/// IDE attach flows through [flutterProxy] (which owns the stable
+/// vm-service URI and the `flutter-vm-service-info.json` file);
 /// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
   final String _flutterPackageDir;
@@ -37,9 +38,11 @@ class FlutterProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Sibling of the pod's `vm-service-info.json` so one launch.json
-  /// directory reference covers both.
-  final String? _vmServiceInfoFile;
+  /// IDE-facing proxy. When non-null, the process binds upstream on
+  /// VM-service connect and unbinds on shutdown so the IDE sees a
+  /// stable attach point regardless of whether the Flutter app is
+  /// currently running.
+  final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
   /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
@@ -75,7 +78,7 @@ class FlutterProcess {
     required String device,
     String flutterExecutable = 'flutter',
     List<String> extraArgs = const [],
-    String? vmServiceInfoFile,
+    VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
@@ -84,7 +87,7 @@ class FlutterProcess {
        _flutterExecutable = flutterExecutable,
        _device = device,
        _extraArgs = extraArgs,
-       _vmServiceInfoFile = vmServiceInfoFile,
+       _flutterProxy = flutterProxy,
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
@@ -122,11 +125,6 @@ class FlutterProcess {
     final args =
         _argsOverrideForTesting ??
         <String>['run', '--machine', '-d', _device, ..._extraArgs];
-
-    if (_vmServiceInfoFile != null) {
-      // A stale info file would mislead IDE attach.
-      await File(_vmServiceInfoFile).deleteIfExists();
-    }
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
 
@@ -207,8 +205,9 @@ class FlutterProcess {
     );
   }
 
-  /// Wait for `app.debugPort`, write the info file, open a `vm_service`
-  /// client. Best-effort. On `-d web-server` pends until a browser attaches.
+  /// Wait for `app.debugPort`, bind [flutterProxy] upstream so IDE
+  /// clients can attach, open a `vm_service` client. Best-effort.
+  /// On `-d web-server` pends until a browser attaches.
   Future<void> connectToVmService() async {
     if (_vmService != null) return;
     _onProgress?.call('connecting');
@@ -217,17 +216,9 @@ class FlutterProcess {
     if (maybeUri == null) return;
     _vmServiceUri = maybeUri;
 
-    if (_vmServiceInfoFile != null) {
-      try {
-        await File(
-          _vmServiceInfoFile,
-        ).writeAsString(jsonEncode({'uri': maybeUri}));
-      } on FileSystemException catch (e) {
-        log.warning('Could not write Flutter VM service info file: $e');
-      }
-    }
-
     final wsUri = vmServiceWsUri(maybeUri);
+    await _flutterProxy?.setUpstream(Uri.parse(wsUri));
+
     for (var attempt = 0; attempt < 5; attempt++) {
       try {
         _vmService = await vmServiceConnectUri(wsUri);
@@ -423,9 +414,9 @@ class FlutterProcess {
       await _vmService?.dispose();
       _vmService = null;
 
-      if (_vmServiceInfoFile != null) {
-        await File(_vmServiceInfoFile).deleteIfExists();
-      }
+      // Unbind upstream so the IDE side sees a disconnect rather than
+      // forwarding requests at a dead VM service.
+      await _flutterProxy?.setUpstream(null);
     } finally {
       completer.complete();
     }
@@ -503,7 +494,3 @@ class FlutterProcess {
     return uri.replace(scheme: scheme, path: path).toString();
   }
 }
-
-/// Default Flutter VM-service info file, sibling of the pod's info file.
-String defaultFlutterVmServiceInfoFile(String serverpodToolDir) =>
-    p.join(serverpodToolDir, 'flutter-vm-service-info.json');

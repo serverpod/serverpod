@@ -417,6 +417,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+  final flutterVmServiceInfoFile = p.join(
+    serverpodToolDir,
+    'flutter-vm-service-info.json',
+  );
 
   // If a server is already running, abort so the IDE can attach to the
   // existing instance via the unchanged info file. Cheap local check; runs
@@ -530,6 +534,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     dartExecutable = localCompiler.dartExecutable;
   }
 
+  // IDE-facing Flutter VM-service proxy. Bound now so the info file
+  // exists at session start regardless of whether `--flutter` was
+  // passed; the upstream is set later when FlutterProcess connects.
+  final flutterProxy = await _bindFlutterProxy(
+    infoFile: flutterVmServiceInfoFile,
+  );
+
   // Server process factory. Invoked for the initial start and for each
   // subsequent restart driven by the WatchSession
   late final WatchSession session;
@@ -579,7 +590,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
         device: flutterDevice,
         extraArgs: flutterExtraArgs,
-        vmServiceInfoFile: defaultFlutterVmServiceInfoFile(serverpodToolDir),
+        flutterProxy: flutterProxy,
         stdoutSink: flutterStdoutSink,
         stderrSink: flutterStderrSink,
         onProgress: (stage) {
@@ -718,11 +729,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     WatchLoopContext(
       session: session,
       proxy: proxy,
+      flutterProxy: flutterProxy,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
+      flutterVmServiceInfoFile: flutterVmServiceInfoFile,
     ),
   );
 }
@@ -742,6 +755,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 /// Returns the (possibly retargeted) proxy on success, or [existing] when
 /// the pod hasn't published a VM service URI - the watch session keeps
 /// running without an attachable proxy in that case.
+/// Binds a `VmServiceProxy` that the Flutter app's vm-service will be
+/// attached to once it comes up, and writes [infoFile] with the proxy's
+/// stable URI so launch.json's `vmServiceInfoFile` reference resolves
+/// immediately. The proxy starts upstream-less so it works for
+/// `--no-flutter` (IDE attach holds in a waiting queue rather than
+/// hanging on a never-published info file).
+Future<VmServiceProxy> _bindFlutterProxy({required String infoFile}) async {
+  final proxy = VmServiceProxy(upstreamWs: null);
+  await proxy.bind();
+  await File(infoFile).writeAsString(
+    jsonEncode({'uri': proxy.httpUri.toString()}),
+  );
+  log.info('Flutter VM service proxy listening on ${proxy.httpUri}');
+  return proxy;
+}
+
 Future<VmServiceProxy?> _mountOrRetargetProxy({
   required ServerProcess serverProcess,
   required VmServiceProxy? existing,
