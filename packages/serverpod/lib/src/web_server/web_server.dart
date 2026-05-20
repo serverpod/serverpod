@@ -29,19 +29,14 @@ class WebServer {
 
   RelicApp? _appOrNull;
 
-  RelicApp get _app {
-    final existing = _appOrNull;
-    if (existing != null) return existing;
-    final healthRoutes = HealthRoutes(serverpod);
-    return _appOrNull = RelicApp(useHostWhenRouting: true)
-      // Returns the static change counter in dev mode
-      ..get('*/__dev/version', _devStaticChangeCount)
-      // Mirrors the probes [Server] exposes on the API/insights ports
-      ..injectAt('*/', healthRoutes)
-      ..use('*/', _devHtmlInjection)
-      ..inject(_ReportExceptionMiddleware(this))
-      ..inject(_SessionMiddleware(serverpod.server));
-  }
+  RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
+    // Returns the static change counter in dev mode
+    ..get('*/__dev/version', _devStaticChangeCount)
+    // Mirrors the probes [Server] exposes on the API/insights ports
+    ..injectAt('*/', HealthRoutes(serverpod))
+    ..use('*/', _devHtmlInjection)
+    ..inject(_ReportExceptionMiddleware(this))
+    ..inject(_SessionMiddleware(serverpod.server));
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
