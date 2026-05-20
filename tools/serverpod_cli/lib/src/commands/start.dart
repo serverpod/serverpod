@@ -392,6 +392,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   void Function(String stage)? onFlutterProgress,
   void Function(String url)? onFlutterReady,
   Future<void> Function(ServerProcess server)? onServerStart,
+  Future<void> Function(FlutterProcess flutter)? onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
@@ -615,6 +616,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
             'Connecting to Flutter VM service',
             () async {
               await flutterProcess!.connectToVmService();
+              if (flutterProcess.isVmServiceConnected &&
+                  onFlutterStart != null) {
+                await onFlutterStart(flutterProcess);
+              }
               return flutterProcess.isVmServiceConnected;
             },
           ),
@@ -969,6 +974,14 @@ Future<void> _runTuiBackend({
       },
       onServerStart: (server) async {
         final vmService = server.vmService;
+        if (vmService == null) return;
+        await vmService.streamListen('Extension');
+        vmService.onExtensionEvent.listen(
+          (event) => handleServerLogEvent(holder, event),
+        );
+      },
+      onFlutterStart: (flutter) async {
+        final vmService = flutter.vmService;
         if (vmService == null) return;
         await vmService.streamListen('Extension');
         vmService.onExtensionEvent.listen(
