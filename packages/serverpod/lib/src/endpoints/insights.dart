@@ -10,7 +10,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../serverpod.dart' hide Cache;
 import '../cache/cache.dart';
 import '../generated/protocol.dart';
-import '../server/apply_migrations.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.

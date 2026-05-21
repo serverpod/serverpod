@@ -24,7 +24,6 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'apply_migrations.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler =
@@ -920,7 +919,7 @@ class Serverpod {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    internal.MigrationsApplyResult? result;
+    MigrationsApplyResult? result;
 
     try {
       _internalLogVerbose(

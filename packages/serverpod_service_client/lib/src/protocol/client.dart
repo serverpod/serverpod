@@ -24,7 +24,7 @@ import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
 import 'package:serverpod_database/src/generated/table_definition.dart' as _i8;
 import 'package:serverpod_database/src/generated/database_definition.dart'
     as _i9;
-import 'package:serverpod_service_client/src/protocol/migrations_apply_result.dart'
+import 'package:serverpod_database/src/generated/migrations_apply_result.dart'
     as _i10;
 import 'package:serverpod_database/src/generated/database_definitions.dart'
     as _i11;

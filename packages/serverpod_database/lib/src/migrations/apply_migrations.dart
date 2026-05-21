@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod_database/serverpod_database.dart';
-
-import '../generated/protocol.dart';
+import '../../serverpod_database.dart';
 
 /// Applies pending and/or repair migrations and verifies database integrity.
 ///
@@ -10,16 +8,9 @@ import '../generated/protocol.dart';
 /// [applyRepairMigration]. Passing both flags as `false` performs a pure
 /// verify with no migration application.
 ///
-/// Shared by [Serverpod]'s boot-time `--apply-migrations` path and the
-/// `InsightsEndpoint.applyMigrations` endpoint. Both paths perform the same
-/// operations; they only differ in how they react to the result (boot may
-/// exit on failure in development mode; the endpoint returns the result
-/// over the wire).
-///
 /// Throws if applying a migration fails (e.g. bad SQL, locking issues).
-/// Verification failure is reported via
-/// [MigrationsApplyResult.databaseMatchesTargetState] rather than thrown —
-/// callers decide policy.
+/// The [MigrationsApplyResult.databaseMatchesTargetState] indicates whether
+/// verification was successful and the database matches the target state.
 Future<MigrationsApplyResult> applyMigrationsAndVerify({
   required DatabaseSession session,
   required Directory projectDirectory,
