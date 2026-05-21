@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import '../../serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
 
-import '../generated/protocol.dart';
+import '../../serverpod_database.dart';
 
 /// Applies pending and/or repair migrations and verifies database integrity.
 ///
