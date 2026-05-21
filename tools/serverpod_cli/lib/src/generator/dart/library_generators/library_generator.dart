@@ -780,7 +780,9 @@ for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
 }
 if (className.contains('.')) {
   for (final protocol in _hostProtocols.values) {
-    return protocol.deserializeByClassName(value);
+    try {
+      return protocol.deserializeByClassName(value);
+    } on FormatException catch (_) {}
   }
 }
 return deserializeByClassName(value);
