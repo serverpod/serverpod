@@ -221,7 +221,10 @@ class MigrationGenerator {
       logWarnings: log.warning,
     );
 
-    var client = ConfigInfo(runMode).createServiceClient();
+    var client = ConfigInfo(
+      runMode,
+      serverDir: directory.path,
+    ).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
       liveDatabase = normalizeDefinitionToV2(

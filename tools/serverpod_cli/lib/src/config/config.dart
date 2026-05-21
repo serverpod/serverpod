@@ -363,6 +363,10 @@ class GeneratorConfig implements ModelLoadConfig {
       serverRootDir = serverDir.path;
     }
 
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    serverRootDir = p.normalize(p.absolute(serverRootDir));
+
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
