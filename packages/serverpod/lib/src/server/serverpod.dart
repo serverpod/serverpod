@@ -920,6 +920,10 @@ class Serverpod {
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
       );
+
+      if (applyRepairMigration && result.repairMigrationApplied == null) {
+        log.error('Failed to apply database repair migration.');
+      }
     } catch (e, stackTrace) {
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);

@@ -28,9 +28,7 @@ Future<MigrationsApplyResult> applyMigrationsAndVerify({
   String? repairMigrationApplied;
   if (applyRepairMigration) {
     repairMigrationApplied = await manager.applyRepairMigration(session);
-    if (repairMigrationApplied == null) {
-      log.error('Failed to apply database repair migration.');
-    } else {
+    if (repairMigrationApplied != null) {
       log.info(
         'Database repair migration "$repairMigrationApplied" applied.',
       );
@@ -44,11 +42,11 @@ Future<MigrationsApplyResult> applyMigrationsAndVerify({
       log.info('Latest database migration already applied.');
     } else {
       log.info(
-        'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
+        [
+          'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
+          ...migrationsApplied.map((m) => ' - $m'),
+        ].join('\n'),
       );
-      for (final migration in migrationsApplied) {
-        log.info(' - $migration');
-      }
     }
   }
 
