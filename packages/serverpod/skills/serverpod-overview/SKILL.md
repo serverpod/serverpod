@@ -21,10 +21,11 @@ Serverpod projects use a Postgres database for persistence and include an ORM, c
 
 Most likely the server is already running with hot reload and `serverpod generate --watch`. NEVER attempt to start the server. The user is running the server with the `serverpod start` command (as an agent do NOT run this command, instead prompt the user to run `serverpod start`, if neccessary). Hot reload will update the generated code and quickly restart the server when files are changed.
 
-ALWAYS try to connect to the MCP server with the `connect` tool (the `Instances` resource contains a list of available projects and PIDs). Connecting exposes more MCP tools. After connecting, use the `serverpod` MCP to:
+ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 
-- Create and apply database migrations (after you change data models).
-- Read the logs from the server.
+- `create_migration` and `apply_migrations` for database (after you change data models).
+- `tail_logs` to read logs from the server.
+- `hot_restart` will reload the server and the Flutter app. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
 
 ## Working on the project with no running instance
 
@@ -41,3 +42,10 @@ serverpod create-migration [--force] [--tag <tag>]
 ```
 
 See the [Serverpod Migrations](../serverpod-migrations/SKILL.md) skill for more details.
+
+Checklist after doing changes:
+
+1. `dart analyze` (`dart` MCP server)
+2. `dart format` (`dart` MCP server)
+3. Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically). Will also hot restart Flutter app
+4. Check `serverpod` MCP `tails_logs` for any issues
