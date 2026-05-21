@@ -27,8 +27,11 @@ dart run bin/main.dart -m production -r maintenance --apply-migrations
 
 # Activate the serverpod CLI so tests that spawn it as a subprocess
 # (e.g. MigrationTestUtils.createMigrationFromProtocols) can find it on PATH.
+# CI=true skips the CLI's flutter-on-PATH check (we don't need flutter in
+# this image just to run create-migration).
 echo "### Installing CLI tools"
 export PATH="$PATH":"$HOME/.pub-cache/bin"
+export CI=true
 (
   cd /app/tools/serverpod_cli
   dart pub global activate -s path .
