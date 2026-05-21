@@ -4,6 +4,11 @@ import 'package:serverpod_test_shared/serverpod_test_shared.dart' as shared;
 import 'package:test/test.dart';
 
 void main() {
+  // Registers this project as a host on shared protocols for dynamic fields.
+  // This will always be called for real projects, since the client protocol
+  // is used on the generated `Client` class.
+  client.Protocol();
+
   group('Given a project model with a shared model in payload,', () {
     final sharedModel = shared.SharedModel(name: 'test', data: 42);
     final object = client.ObjectWithDynamic(
