@@ -831,19 +831,7 @@ class Serverpod {
             true;
       }
 
-      // Main API server.
-      serversStarted &= await server.start(
-        authenticationHandler:
-            authenticationHandler ?? defaultAuthenticationHandler,
-      );
-
-      /// Web server.
-      if (Features.enableWebServer(_webServer)) {
-        _internalLogVerbose('Starting web server.');
-        serversStarted &= await webServer.start();
-      } else {
-        _internalLogVerbose('Web server not configured, skipping.');
-      }
+      serversStarted &= await _startUserFacingServers();
 
       if (!serversStarted) {
         throw ExitException(
@@ -932,43 +920,14 @@ class Serverpod {
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
       );
-
-      if (applyRepairMigration) {
-        final repairMigrationApplied = result.repairMigrationApplied;
-        if (repairMigrationApplied == null) {
-          log.error('Failed to apply database repair migration.');
-        } else {
-          _writeLifecycleMessage(
-            'Database repair migration "$repairMigrationApplied" applied.',
-          );
-        }
-      }
-
-      if (applyMigrations) {
-        final migrationsApplied = result.migrationsApplied;
-        if (migrationsApplied == null || migrationsApplied.isEmpty) {
-          _writeLifecycleMessage('Latest database migration already applied.');
-        } else {
-          _writeLifecycleMessage(
-            'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
-          );
-          for (var migration in migrationsApplied) {
-            _writeLifecycleMessage(' - $migration');
-          }
-        }
-      }
     } catch (e, stackTrace) {
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
 
     final verified = result?.databaseMatchesTargetState ?? false;
-
-    if (!verified) {
-      _internalLogVerbose('Database integrity verification failed.');
-      if (config.runMode == ServerpodRunMode.development) {
-        throw ExitException(1);
-      }
+    if (!verified && config.runMode == ServerpodRunMode.development) {
+      throw ExitException(1);
     }
   }
 
@@ -1237,27 +1196,35 @@ class Serverpod {
   ///
   /// The operator-facing Insights server is not paused, so the call that
   /// invoked [action] can complete and return its result.
-  Future<T> pauseRequestHandlingDuring<T>(
+  Future<T> withPausedRequestHandling<T>(
     Future<T> Function() action,
   ) async {
     await server.shutdown();
-    final webServerWasRunning =
-        _webServer != null && Features.enableWebServer(_webServer);
-    if (webServerWasRunning) {
-      await _webServer!.stop();
-    }
-
+    await _webServer?.stop();
     try {
       return await action();
     } finally {
-      await server.start(
-        authenticationHandler:
-            authenticationHandler ?? defaultAuthenticationHandler,
-      );
-      if (webServerWasRunning) {
-        await _webServer!.start();
-      }
+      await _startUserFacingServers();
     }
+  }
+
+  /// Starts the API server and, if configured, the web server.
+  ///
+  /// The Insights server is intentionally not included — it's started
+  /// once during pod boot and stays up across pause/resume cycles
+  /// initiated through its own endpoints (e.g. applyMigrations).
+  Future<bool> _startUserFacingServers() async {
+    var ok = await server.start(
+      authenticationHandler:
+          authenticationHandler ?? defaultAuthenticationHandler,
+    );
+    if (Features.enableWebServer(_webServer)) {
+      _internalLogVerbose('Starting web server.');
+      ok &= await webServer.start();
+    } else {
+      _internalLogVerbose('Web server not configured, skipping.');
+    }
+    return ok;
   }
 
   /// Shuts down the Serverpod and all associated servers.

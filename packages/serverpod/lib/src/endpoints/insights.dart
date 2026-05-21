@@ -247,7 +247,7 @@ class InsightsEndpoint extends Endpoint {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    return session.serverpod.pauseRequestHandlingDuring(() {
+    return session.serverpod.withPausedRequestHandling(() {
       return applyMigrationsAndVerify(
         session: session,
         projectDirectory: Directory.current,

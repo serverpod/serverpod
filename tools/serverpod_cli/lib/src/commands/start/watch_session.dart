@@ -82,8 +82,8 @@ sealed class ApplyMigrationsOutcome {
   const ApplyMigrationsOutcome();
 }
 
-/// Migrations were applied in-process. The action is responsible for
-/// any user-facing logging (e.g. via [formatAppliedMigrations]).
+/// Migrations were applied in-process. Logging is emitted by the pod side
+/// (the shared `applyMigrationsAndVerify` utility).
 class MigrationsApplied extends ApplyMigrationsOutcome {
   const MigrationsApplied();
 }

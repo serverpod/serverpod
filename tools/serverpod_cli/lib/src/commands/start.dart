@@ -379,23 +379,10 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
     runMode: runMode,
   ).createServiceClient();
   try {
-    final result = await client.insights.applyMigrations(
+    await client.insights.applyMigrations(
       applyRepairMigration: true,
       applyMigrations: true,
     );
-    if (result.repairMigrationApplied != null) {
-      log.info('Applied repair migration: ${result.repairMigrationApplied}');
-    }
-    final applied = result.migrationsApplied;
-    if (applied != null && applied.isNotEmpty) {
-      log.info(formatAppliedMigrations(applied));
-    }
-    if (!result.databaseMatchesTargetState) {
-      log.warning(
-        'Failed to apply existing migrations — database does not match '
-        'target state.',
-      );
-    }
     return const MigrationsApplied();
   } finally {
     client.close();
