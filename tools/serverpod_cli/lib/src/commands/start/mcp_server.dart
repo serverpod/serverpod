@@ -69,9 +69,9 @@ base class ServerpodMcpServer extends MCPServer
       ) {
     registerTool(applyMigrationsTool, _applyMigrations);
     registerTool(createMigrationTool, _createMigration);
-    registerTool(_createRepairMigrationTool, _createRepairMigration);
+    registerTool(createRepairMigrationTool, _createRepairMigration);
     registerTool(hotReloadTool, _hotReload);
-    registerTool(_hotRestartTool, _hotRestart);
+    registerTool(hotRestartTool, _hotRestart);
     registerTool(tailLogsTool, _tailLogs);
 
     addResource(vmServiceResource, _readVmService);
@@ -142,35 +142,6 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _createRepairMigrationTool = Tool(
-    name: 'create_repair_migration',
-    description:
-        'Create a repair migration that brings the live database in line '
-        'with the target migration version (default: latest). Connects to '
-        'the running server to read the live schema, diffs it against the '
-        'target, and writes a `.sql` repair file. Use when a migration was '
-        'partially applied or the database drifted out of sync. Does not '
-        'apply the migration; follow up with `apply_migrations`.',
-    inputSchema: Schema.object(
-      properties: {
-        'tag': Schema.string(
-          description:
-              'Optional tag appended to the repair migration version name.',
-        ),
-        'force': Schema.bool(
-          description:
-              'Create the repair migration even when warnings are present '
-              'or when no schema drift is detected (data may be destroyed).',
-        ),
-        'version': Schema.string(
-          description:
-              'Optional target migration version to repair against. '
-              'Defaults to the latest migration version.',
-        ),
-      },
-    ),
-  );
-
   Future<CallToolResult> _createRepairMigration(CallToolRequest request) async {
     final callback = onCreateRepairMigration;
     if (callback == null) {
@@ -224,16 +195,6 @@ base class ServerpodMcpServer extends MCPServer
       );
     }
   }
-
-  static final _hotRestartTool = Tool(
-    name: 'hot_restart',
-    description:
-        'Recompile from scratch and restart the server process. Clears all '
-        'in-memory state (singletons, connection pools, caches). Use when '
-        'hot_reload is not enough - for example, to reset state that '
-        'survives source reloads.',
-    inputSchema: Schema.object(),
-  );
 
   Future<CallToolResult> _hotRestart(CallToolRequest request) async {
     final callback = onHotRestart;

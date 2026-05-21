@@ -31,6 +31,35 @@ final Tool createMigrationTool = Tool(
   ),
 );
 
+final Tool createRepairMigrationTool = Tool(
+  name: 'create_repair_migration',
+  description:
+      'Create a repair migration that brings the live database in line '
+      'with the target migration version (default: latest). Connects to '
+      'the running server to read the live schema, diffs it against the '
+      'target, and writes a `.sql` repair file. Use when a migration was '
+      'partially applied or the database drifted out of sync. Does not '
+      'apply the migration; follow up with `apply_migrations`.',
+  inputSchema: Schema.object(
+    properties: {
+      'tag': Schema.string(
+        description:
+            'Optional tag appended to the repair migration version name.',
+      ),
+      'force': Schema.bool(
+        description:
+            'Create the repair migration even when warnings are present '
+            'or when no schema drift is detected (data may be destroyed).',
+      ),
+      'version': Schema.string(
+        description:
+            'Optional target migration version to repair against. '
+            'Defaults to the latest migration version.',
+      ),
+    },
+  ),
+);
+
 final Tool hotReloadTool = Tool(
   name: 'hot_reload',
   description:
@@ -79,6 +108,7 @@ final Resource vmServiceResource = Resource(
 final List<Tool> runnerStaticTools = [
   applyMigrationsTool,
   createMigrationTool,
+  createRepairMigrationTool,
   hotReloadTool,
   hotRestartTool,
   tailLogsTool,
