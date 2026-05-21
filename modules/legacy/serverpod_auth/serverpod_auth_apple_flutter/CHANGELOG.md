@@ -1,9 +1,27 @@
+## 3.5.0-beta.8
+
+- feat: Launches the Flutter app from `serverpod start` with integrated hot reload/restart.
+- feat: Introduces the `dataPath` parameter on `database` config to run PostgreSQL in embedded mode.
+- feat: Exposes `hot_restart` and `create_repair_migration` commands on both TUI and MCP.
+- feat: Makes the `global` cache fallback to local in development/testing.
+- feat: Allows selecting the IDEs to configure skills and MCPs when running `serverpod create`.
+- feat: Adds `FlutterWebAuth2RedirectRoute` for OAuth2 PKCE web sign-in flow.
+- feat: Exposes the parameter `httpClientOverride` on the generated `Client` for HTTP client override.
+- feat: Exposes health endpoints on the webserver.
+- fix: Makes the `serverpod start` MCP tied to the current project server.
+- fix: Fixes `copyWith` method on `dynamic` fields overriding unchanged fields.
+- fix: Fixes `dynamic` fields being serialized as an encoded `String` instead of the `Map` (breaking change since last beta version).
+- fix: Allows OWASP special characters in password field ([@realmeylisdev](https://github.com/realmeylisdev))
+- chore: Replaces `SQLite` by `PostgreSQL` as the default database on `quickstart` command.
+- chore: Improves the skills to better guide agents on the new `serverpod start` experience.
+
 ## 3.5.0-beta.7
 
-feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
-feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
-fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
-chore: Improves the UX of create and start TUIs.
+- feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+- feat: Introduces new `upsert` and `upsertRow` methods on the ORM ([@sedobrengocce](https://github.com/sedobrengocce))
+- fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
+- fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
+- chore: Improves the UX of create and start TUIs.
 
 ## 3.5.0-beta.6
 
@@ -73,6 +91,11 @@ chore: Improves the UX of create and start TUIs.
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.8
+
+- fix: Fixes Postgres throwing when using row-lock on `find*` methods with `includes`.
+- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
 
 ## 3.4.7
 
