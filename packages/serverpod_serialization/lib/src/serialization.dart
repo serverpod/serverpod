@@ -343,33 +343,32 @@ abstract class SerializationManager {
   }
 
   /// Returns a JSON-encodable structure for a `dynamic` model field.
-  Object? dynamicFieldToJson(Object? object) =>
-      _dynamicFieldValueToJson(object, false);
-
-  /// Same as [dynamicFieldToJson] but uses protocol encoding for nested
-  /// [ProtocolSerialization] values.
-  Object? dynamicFieldToJsonForProtocol(Object? object) =>
-      _dynamicFieldValueToJson(object, true);
-
-  /// Recursively encodes values inside `dynamic` fields so that [List], [Set],
-  /// and [Map] children keep per-element type information.
   ///
-  /// Does not use [wrapWithClassName] for container types so that
-  /// [getClassNameForObject] is not required to name raw collections.
-  Object? _dynamicFieldValueToJson(Object? object, bool encodeForProtocol) {
+  /// Recursively encodes [List], [Set], and [Map] children so each element
+  /// keeps type information via `className` / `data` wrappers.
+  ///
+  /// When [forProtocol] is true, nested [ProtocolSerialization] values use
+  /// [ProtocolSerialization.toJsonForProtocol].
+  ///
+  /// Module and shared package protocols override this method to resolve host
+  /// project types via registered host protocols.
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
     return switch (object) {
       List() => {
         'className': 'List',
         'data': [
           for (final e in object)
-            _dynamicFieldValueToJson(e, encodeForProtocol),
+            dynamicFieldToJson(e, forProtocol: forProtocol),
         ],
       },
       Set() => {
         'className': 'Set',
         'data': [
           for (final e in object)
-            _dynamicFieldValueToJson(e, encodeForProtocol),
+            dynamicFieldToJson(e, forProtocol: forProtocol),
         ],
       },
       Map()
@@ -379,9 +378,9 @@ abstract class SerializationManager {
           'className': 'Map',
           'data': {
             for (final e in object.entries)
-              e.key as String: _dynamicFieldValueToJson(
+              e.key as String: dynamicFieldToJson(
                 e.value,
-                encodeForProtocol,
+                forProtocol: forProtocol,
               ),
           },
         },
@@ -390,12 +389,12 @@ abstract class SerializationManager {
         'data': [
           for (final e in object.entries)
             {
-              'k': _dynamicFieldValueToJson(e.key, encodeForProtocol),
-              'v': _dynamicFieldValueToJson(e.value, encodeForProtocol),
+              'k': dynamicFieldToJson(e.key, forProtocol: forProtocol),
+              'v': dynamicFieldToJson(e.value, forProtocol: forProtocol),
             },
         ],
       },
-      _ => _toEncodable(wrapWithClassName(object), encodeForProtocol),
+      _ => _toEncodable(wrapWithClassName(object), forProtocol),
     };
   }
 }
