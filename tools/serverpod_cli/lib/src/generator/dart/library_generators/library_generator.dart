@@ -113,11 +113,7 @@ class LibraryGenerator {
       Constructor(
         (c) => c
           ..factory = true
-          ..body = _shouldRegisterHostProtocols
-              ? refer(
-                  '_instance',
-                ).cascade('_registerHostProtocols').call([]).code
-              : refer('_instance').code,
+          ..body = refer('_instance').code,
       ),
     ]);
 
@@ -133,7 +129,9 @@ class LibraryGenerator {
           ..static = true
           ..type = refer('Protocol')
           ..modifier = FieldModifier.final$
-          ..assignment = const Code('Protocol._()'),
+          ..assignment = _shouldRegisterHostProtocols
+              ? const Code('Protocol._().._registerHostProtocols()')
+              : const Code('Protocol._()'),
       ),
       if (serverCode || hasDatabaseTablesForCurrentSide)
         Field(

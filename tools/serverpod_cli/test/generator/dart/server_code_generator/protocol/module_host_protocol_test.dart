@@ -114,18 +114,21 @@ void main() {
             'protocol.dart',
           )]!;
 
-      test('then Protocol() registers the project as a module host', () {
-        expect(
-          protocolSource,
-          contains(
-            'factory Protocol() => _instance.._registerHostProtocols();',
-          ),
-        );
-        expect(
-          protocolSource,
-          contains("registerHostProtocol('$_projectName', this)"),
-        );
-      });
+      test(
+        'then Protocol() registers the project as a module host on the singleton instance',
+        () {
+          expect(
+            protocolSource,
+            contains(
+              'static final Protocol _instance = Protocol._().._registerHostProtocols();',
+            ),
+          );
+          expect(
+            protocolSource,
+            contains("registerHostProtocol('$_projectName', this)"),
+          );
+        },
+      );
 
       test('then it does not override dynamicFieldToJson', () {
         expect(protocolSource, isNot(contains('dynamicFieldToJson')));
