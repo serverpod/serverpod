@@ -64,7 +64,12 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i33;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i34;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i35;
-import 'dart:typed_data' as _i36;
+import 'providers/passwordless/models/exceptions/passwordless_login_exception.dart'
+    as _i36;
+import 'providers/passwordless/models/exceptions/passwordless_login_exception_reason.dart'
+    as _i37;
+import 'providers/passwordless/models/passwordless_login_request.dart' as _i38;
+import 'dart:typed_data' as _i39;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -97,6 +102,9 @@ export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
 export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
+export 'providers/passwordless/models/exceptions/passwordless_login_exception.dart';
+export 'providers/passwordless/models/exceptions/passwordless_login_exception_reason.dart';
+export 'providers/passwordless/models/passwordless_login_request.dart';
 
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
@@ -954,6 +962,79 @@ class Protocol extends _i1.DatabaseSerializationManager {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_auth_idp_passwordless_login_request',
+      dartName: 'PasswordlessLoginRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'random_v7',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
+        _i2.ColumnDefinition(
+          name: 'handle',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'handleType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'default\'',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_passwordless_login_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_passwordless_login_request_handle',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'handle',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'handleType',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_auth_idp_rate_limited_request_attempt',
       dartName: 'RateLimitedRequestAttempt',
       schema: 'public',
@@ -1186,6 +1267,15 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i35.PasskeyRegistrationRequest) {
       return _i35.PasskeyRegistrationRequest.fromJson(data) as T;
     }
+    if (t == _i36.PasswordlessLoginException) {
+      return _i36.PasswordlessLoginException.fromJson(data) as T;
+    }
+    if (t == _i37.PasswordlessLoginExceptionReason) {
+      return _i37.PasswordlessLoginExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i38.PasswordlessLoginRequest) {
+      return _i38.PasswordlessLoginRequest.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
               ? _i4.RateLimitedRequestAttempt.fromJson(data)
@@ -1341,6 +1431,24 @@ class Protocol extends _i1.DatabaseSerializationManager {
               : null)
           as T;
     }
+    if (t == _i1.getType<_i36.PasswordlessLoginException?>()) {
+      return (data != null
+              ? _i36.PasswordlessLoginException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i37.PasswordlessLoginExceptionReason?>()) {
+      return (data != null
+              ? _i37.PasswordlessLoginExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i38.PasswordlessLoginRequest?>()) {
+      return (data != null
+              ? _i38.PasswordlessLoginRequest.fromJson(data)
+              : null)
+          as T;
+    }
     if (t == Map<String, String>) {
       return (data as Map).map(
             (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
@@ -1356,9 +1464,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i36.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i39.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i36.ByteData>(
+            challenge: deserialize<_i39.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1423,6 +1531,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i34.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
       _i35.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i36.PasswordlessLoginException => 'PasswordlessLoginException',
+      _i37.PasswordlessLoginExceptionReason =>
+        'PasswordlessLoginExceptionReason',
+      _i38.PasswordlessLoginRequest => 'PasswordlessLoginRequest',
       _ => null,
     };
   }
@@ -1504,6 +1616,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'PasskeyPublicKeyNotFoundException';
       case _i35.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
+      case _i36.PasswordlessLoginException():
+        return 'PasswordlessLoginException';
+      case _i37.PasswordlessLoginExceptionReason():
+        return 'PasswordlessLoginExceptionReason';
+      case _i38.PasswordlessLoginRequest():
+        return 'PasswordlessLoginRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -1630,6 +1748,15 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_i35.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName == 'PasswordlessLoginException') {
+      return deserialize<_i36.PasswordlessLoginException>(data['data']);
+    }
+    if (dataClassName == 'PasswordlessLoginExceptionReason') {
+      return deserialize<_i37.PasswordlessLoginExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'PasswordlessLoginRequest') {
+      return deserialize<_i38.PasswordlessLoginRequest>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -1684,6 +1811,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i29.PasskeyAccount.t;
       case _i30.PasskeyChallenge:
         return _i30.PasskeyChallenge.t;
+      case _i38.PasswordlessLoginRequest:
+        return _i38.PasswordlessLoginRequest.t;
     }
     return null;
   }
@@ -1704,7 +1833,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i36.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i39.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),

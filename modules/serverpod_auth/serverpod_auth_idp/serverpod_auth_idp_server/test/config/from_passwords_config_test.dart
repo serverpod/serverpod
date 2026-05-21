@@ -9,6 +9,7 @@ import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
+import 'package:serverpod_auth_idp_server/providers/passwordless.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -203,6 +204,101 @@ test:
         () {
           final config = EmailIdpConfigFromPasswords();
           expect(config, isA<EmailIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given passwordlessSecretHashPepper password is present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
+
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  passwordlessSecretHashPepper: 'pL8#nQ2\$wX5!rT9@yU3%iO7&aS1*dF4'
+''',
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
+
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
+      });
+
+      test(
+        'when constructing PasswordlessIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = PasswordlessIdpConfigFromPasswords(
+            resolveAuthUserId:
+                (
+                  final session, {
+                  required final String handle,
+                  required final String handleType,
+                  required final transaction,
+                }) async => throw UnimplementedError(),
+          );
+          expect(config, isA<PasswordlessIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given missing passwordlessSecretHashPepper password',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
+
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file('passwords.yaml', 'test:\n  database: "test"'),
+        ]).create();
+        Directory.current = d.sandbox;
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
+
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
+      });
+
+      test(
+        'when constructing PasswordlessIdpConfigFromPasswords then throws.',
+        () {
+          expect(
+            () => PasswordlessIdpConfigFromPasswords(
+              resolveAuthUserId:
+                  (
+                    final session, {
+                    required final String handle,
+                    required final String handleType,
+                    required final transaction,
+                  }) async => throw UnimplementedError(),
+            ),
+            throwsA(isA<PasswordNotFoundException>()),
+          );
         },
       );
     },

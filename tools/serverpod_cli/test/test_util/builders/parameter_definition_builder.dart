@@ -9,6 +9,7 @@ class ParameterDefinitionBuilder {
       .withClassName('String')
       .build();
   bool _required = false;
+  String? _defaultValue;
   List<AnnotationDefinition> _annotations = const [];
 
   ParameterDefinitionBuilder withName(String name) {
@@ -26,6 +27,11 @@ class ParameterDefinitionBuilder {
     return this;
   }
 
+  ParameterDefinitionBuilder withDefaultValue(String defaultValue) {
+    _defaultValue = defaultValue;
+    return this;
+  }
+
   ParameterDefinitionBuilder withAnnotations(
     List<AnnotationDefinition> annotations,
   ) {
@@ -38,6 +44,7 @@ class ParameterDefinitionBuilder {
       name: _name,
       type: _type,
       required: _required,
+      defaultValue: _defaultValue,
       annotations: _annotations,
     );
   }
