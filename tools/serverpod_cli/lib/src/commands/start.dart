@@ -537,7 +537,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // IDE-facing Flutter VM-service proxy. Bound now so the info file
   // exists at session start regardless of whether `--flutter` was
   // passed; the upstream is set later when FlutterProcess connects.
-  late final Future<void> Function() spawnFlutterAppIfNeeded;
+  Future<void> Function() spawnFlutterAppIfNeeded = () async {};
   final flutterProxy = await _bindFlutterProxy(
     infoFile: flutterVmServiceInfoFile,
     onWaitingClientArrived: () => spawnFlutterAppIfNeeded(),

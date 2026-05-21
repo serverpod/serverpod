@@ -169,7 +169,6 @@ class VmServiceProxy {
     );
     wc.timer = Timer(_waitingClientTimeout, () async {
       if (_waitingClients.remove(wc)) {
-        await wc.sub?.cancel();
         await downstream.close(
           WebSocketStatus.normalClosure,
           'no upstream available',
@@ -212,11 +211,11 @@ class VmServiceProxy {
     for (final wc in waiting) {
       wc.timer?.cancel();
     }
+    // Don't cancel waiting subs explicitly.
+    // Their onDone handlers run when ws.close completes and cleans up.
     await [
-      for (final wc in waiting) ...[
-        ?wc.sub?.cancel(),
+      for (final wc in waiting)
         wc.ws.close(WebSocketStatus.normalClosure, 'proxy shutting down'),
-      ],
       ?liveServer?.close(force: true),
       for (final p in List.of(_pairs)) p.close(),
     ].wait;
