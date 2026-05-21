@@ -370,7 +370,7 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
 /// Watch-session [ApplyMigrationsAction] that applies pending and repair
 /// migrations by calling the running pod's `applyMigrations` endpoint. The
 /// pod itself runs the migration in-process; the CLI only triggers it.
-Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
+Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
 }) async {
@@ -383,7 +383,6 @@ Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
       applyRepairMigration: true,
       applyMigrations: true,
     );
-    return const MigrationsApplied();
   } finally {
     client.close();
   }
