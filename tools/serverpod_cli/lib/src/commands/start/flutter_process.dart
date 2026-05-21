@@ -59,6 +59,7 @@ class FlutterProcess {
   StreamSubscription<List<int>>? _stderrBytesSub;
   StreamSubscription<String>? _machineLinesSub;
   StreamSubscription<Event>? _loggingSub;
+  Timer? _vmServiceHeartbeat;
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -221,8 +222,10 @@ class FlutterProcess {
 
     for (var attempt = 0; attempt < 5; attempt++) {
       try {
-        _vmService = await vmServiceConnectUri(wsUri);
-        await _subscribeToLogging(_vmService!);
+        final vm = await vmServiceConnectUri(wsUri);
+        _vmService = vm;
+        await _subscribeToLogging(vm);
+        _startVmServiceHeartbeat(vm);
         return;
       } on Exception {
         if (attempt == 4) {
@@ -232,6 +235,47 @@ class FlutterProcess {
         await Future<void>.delayed(const Duration(milliseconds: 200));
       }
     }
+  }
+
+  /// Periodic `getVM()` against the [vm].
+  ///
+  /// Belt-and-suspenders companion to the daemon `app.stop` event
+  /// (missing on flutter web).
+  void _startVmServiceHeartbeat(VmService vm) {
+    _vmServiceHeartbeat?.cancel();
+    // Tight loop because DWDS won't tell us when a browser tab
+    // detaches (its keep-alive is hardcoded to ~3000 days). 2s
+    // interval + 1s timeout lets us notice within ~3s.
+    //
+    // Hot restart briefly empties the isolate list - require two
+    // consecutive empty reads (~4s window at 2s interval) so we
+    // don't race-kill a healthy restart.
+    var emptyReads = 0;
+    _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
+      timer,
+    ) async {
+      if (_vmService != vm) {
+        timer.cancel();
+        return;
+      }
+      try {
+        final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        if (vmInfo.isolates?.isEmpty ?? true) {
+          emptyReads++;
+          if (emptyReads >= 2) {
+            timer.cancel();
+            log.info('Flutter heartbeat: no isolates; tearing down.');
+            await _onAppStop();
+          }
+        } else {
+          emptyReads = 0;
+        }
+      } catch (e) {
+        timer.cancel();
+        log.info('Flutter heartbeat failed ($e); tearing down.');
+        await _onAppStop();
+      }
+    });
   }
 
   /// `--machine` doesn't forward `dart:developer.log()`; `Logging` does.
@@ -378,6 +422,9 @@ class FlutterProcess {
           }
         case 'app.started':
           _onProgress?.call('ready');
+        case 'app.stop':
+          log.debug('Flutter daemon emitted app.stop; tearing down.');
+          unawaited(_onAppStop());
         case 'app.log':
           final logText = paramMap['log'];
           if (logText is! String || logText.isEmpty) break;
@@ -388,6 +435,26 @@ class FlutterProcess {
           if (message is String) log.debug('flutter[daemon] $message');
       }
     }
+  }
+
+  bool _appStopHandled = false;
+  Future<void> _onAppStop() async {
+    if (_appStopHandled) return;
+    _appStopHandled = true;
+    log.debug('Flutter teardown begin.');
+    await _flutterProxy?.setUpstream(null);
+    final process = _process;
+    if (process == null) return;
+    process.kill(ProcessSignal.sigint);
+    await process.exitCode.timeout(
+      const Duration(seconds: 3),
+      onTimeout: () {
+        log.debug('Flutter did not exit on SIGINT; sending SIGKILL.');
+        process.kill(ProcessSignal.sigkill);
+        return process.exitCode;
+      },
+    );
+    log.debug('Flutter teardown end.');
   }
 
   Future<void> _cleanup() async {
@@ -405,17 +472,18 @@ class FlutterProcess {
       await _machineLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
+      _vmServiceHeartbeat?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
+      _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();
       _vmService = null;
+      _vmServiceUri = null;
 
-      // Unbind upstream so the IDE side sees a disconnect rather than
-      // forwarding requests at a dead VM service.
       await _flutterProxy?.setUpstream(null);
     } finally {
       completer.complete();
