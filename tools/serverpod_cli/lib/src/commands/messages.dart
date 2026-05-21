@@ -15,3 +15,6 @@ const flutterAppRestarted = '✓ Flutter app restarted.';
 const flutterPackageNotFound =
     'No Flutter package found; skipping --flutter. '
     'Pass --no-flutter to silence this notice.';
+
+// Flutter process messages
+const flutterAppLaunching = 'Launching Flutter app...';

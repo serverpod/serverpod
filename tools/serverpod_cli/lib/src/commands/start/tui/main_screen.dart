@@ -117,12 +117,11 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Divider(color: st.subtleDivider),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: Row(
             children: [
-              Text('Flutter app', style: mutedText),
+              Text(' Flutter app', style: mutedText),
               Text(' │ ', style: separatorStyle),
               Text(value, style: mutedText),
             ],
