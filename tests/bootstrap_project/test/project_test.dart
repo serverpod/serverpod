@@ -771,6 +771,12 @@ void main() async {
             ).existsSync(),
             isTrue,
           );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
         });
 
         group('has Serverpod and Dart MCP servers configured', () {

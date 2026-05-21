@@ -65,6 +65,7 @@ extension TemplateIdeExtension on List<TemplateIde> {
     return map((templateIde) {
       return switch (templateIde) {
         TemplateIde.claude => Ide.claude,
+        TemplateIde.cursor => Ide.cursor,
         TemplateIde.openCode => Ide.opencode,
         _ => Ide.generic,
       };
@@ -342,15 +343,17 @@ Future<String?> performCreate(
         final agentDir = Directory(
           p.join(serverpodDirs.projectDir.path, '.agent'),
         );
-        final agentsDir = Directory(
-          p.join(serverpodDirs.projectDir.path, '.agents'),
-        );
+        if (await agentDir.exists()) {
+          final agentsDir = Directory(
+            p.join(serverpodDirs.projectDir.path, '.agents'),
+          );
 
-        try {
-          await _moveDirectoryContents(agentDir, agentsDir);
-          await agentDir.delete();
-        } on FileSystemException {
-          //
+          try {
+            await _moveDirectoryContents(agentDir, agentsDir);
+            await agentDir.delete();
+          } on FileSystemException {
+            //
+          }
         }
       } catch (_) {
         _logError('Failed to install agent skills');
