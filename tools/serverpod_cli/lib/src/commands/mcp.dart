@@ -43,7 +43,7 @@ enum McpOption<V> implements OptionDefinition<V> {
 /// transparently if the runner restarts. There is no `connect`/`spawn`
 /// surface - one bridge per server project, configured per entry in the
 /// agent's MCP config.
-class McpCommand extends ServerpodCommand {
+class McpCommand extends ServerpodCommand<McpOption> {
   @override
   final name = 'mcp';
 
@@ -55,8 +55,10 @@ class McpCommand extends ServerpodCommand {
   @override
   String get invocation => 'serverpod mcp';
 
+  McpCommand() : super(options: McpOption.values);
+
   @override
-  Future<void> runWithConfig(Configuration commandConfig) async {
+  Future<void> runWithConfig(Configuration<McpOption> commandConfig) async {
     if (!hasUnixSocketSupport()) {
       log.error(
         'The serverpod MCP bridge requires Unix domain socket support, '
