@@ -39,8 +39,14 @@ enum TemplateIde {
 }
 
 extension TemplateIdeExtension on TemplateIde {
-  String get effectiveConfig {
-    String result = config;
+  // Pinning the bridge to this project's server dir avoids walking up from cwd
+  // at startup and disambiguates workspaces that contain multiple server
+  // projects sharing one agent config.
+  String effectiveConfig({required String serverDirRelative}) {
+    String result = config.replaceAll(
+      _serverDirRelativeSlot,
+      serverDirRelative,
+    );
     for (final replacement in replacements) {
       result = result.replaceAll(replacement.slotName, replacement.replacement);
     }
@@ -48,12 +54,14 @@ extension TemplateIdeExtension on TemplateIde {
   }
 }
 
+const _serverDirRelativeSlot = '{serverDirRelative}';
+
 /// Generic MCP server config for IDEs.
 const _genericConfig = '''{
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp", "--server-dir", "{serverDirRelative}"]
     },
     "dart": {
       "command": "dart",
@@ -69,7 +77,7 @@ const _openCodeConfig = '''{
   "mcp": {
     "serverpod": {
       "type": "local",
-      "command": ["serverpod","mcp"],
+      "command": ["serverpod", "mcp", "--server-dir", "{serverDirRelative}"],
       "enabled": true
     },
     "dart-mcp-server": {
@@ -88,7 +96,7 @@ const _openCodeConfig = '''{
 /// MCP server config for Codex.
 const _codexConfig = '''[mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp"]
+args = ["mcp", "--server-dir", "{serverDirRelative}"]
 
 [mcp_servers.dart_mcp]
 command = "dart"

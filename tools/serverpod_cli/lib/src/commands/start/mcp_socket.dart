@@ -9,13 +9,12 @@ import 'mcp_server.dart';
 /// Manages a Unix socket that accepts MCP client connections.
 ///
 /// Each `serverpod start --watch` process listens on
-/// `<systemTemp>/serverpod/serverpod-<pid>-<project>.sock`. Clients connect
-/// to interact with the running dev environment via JSON-RPC (MCP protocol).
-/// Only one client connection is active at a time.
+/// `<serverDir>/.dart_tool/serverpod/mcp.sock`. There is at most one socket
+/// per server project; a stale file left behind by a crashed previous run
+/// is unlinked before binding. Clients connect to interact with the running
+/// dev environment via JSON-RPC (MCP protocol). Only one client connection
+/// is active at a time.
 class McpSocketServer {
-  /// Sanitized project name embedded in the socket filename.
-  final String project;
-
   /// Absolute path to this server's socket file.
   final String socketPath;
 
@@ -41,16 +40,14 @@ class McpSocketServer {
   String? Function()? _getVmServiceUri;
   Stream<void>? _vmServiceUriChanges;
 
-  McpSocketServer({required String project})
-    : project = sanitizeProjectName(project),
-      socketPath = serverpodMcpSocketPath(
-        pid: pid,
-        project: project,
-      );
+  McpSocketServer({required String serverDir})
+    : socketPath = serverpodMcpSocketPath(serverDir);
 
-  /// Start listening for connections.
+  /// Start listening for connections. Creates the parent directory if
+  /// missing; [bindUnixSocket] takes care of unlinking any stale socket
+  /// file left by a crashed previous run.
   Future<void> start() async {
-    ensureServerpodMcpSocketDir();
+    File(socketPath).parent.createSync(recursive: true);
     _serverSocket = await bindUnixSocket(socketPath);
     _serverSocket!.listen(_handleConnection);
   }

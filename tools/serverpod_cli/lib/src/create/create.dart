@@ -297,7 +297,14 @@ Future<String?> performCreate(
 
   if (context.ides.isNotEmpty) {
     await log.progress('Configuring Serverpod MCP server', () async {
-      await _configureMcpServer(serverpodDirs.projectDir.path, context.ides);
+      await _configureMcpServer(
+        serverpodDirs.projectDir.path,
+        context.ides,
+        serverDirRelative: p.relative(
+          serverpodDirs.serverDir.path,
+          from: serverpodDirs.projectDir.path,
+        ),
+      );
       return true;
     });
 
@@ -402,14 +409,15 @@ Future<void> _moveDirectoryContents(
 
 Future<void> _configureMcpServer(
   String projectDirPath,
-  List<TemplateIde> ides,
-) {
+  List<TemplateIde> ides, {
+  required String serverDirRelative,
+}) {
   return Future.forEach(
     ides,
     (ide) async {
       await _createFileAndWrite(
         p.join(projectDirPath, ide.filePath),
-        ide.effectiveConfig,
+        ide.effectiveConfig(serverDirRelative: serverDirRelative),
       );
     },
   );

@@ -1365,6 +1365,17 @@ class Counter {
     );
 
     test(
+      'when forceRestart is called, '
+      'then it skips reload and spawns a fresh server via the factory',
+      () async {
+        await noCompilerSession.forceRestart();
+
+        expect(noCompilerServer.calls, ['stop']);
+        expect(noCompilerFactoryCalls, ['createServer:null']);
+      },
+    );
+
+    test(
       'when applyMigration is called, '
       'then it runs the in-place action and leaves the pod alone',
       () async {

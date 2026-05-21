@@ -348,12 +348,14 @@ void main() async {
         });
 
         group('has Serverpod and Dart MCP servers configured', () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
