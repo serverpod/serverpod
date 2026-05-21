@@ -14,7 +14,6 @@ class TemplateRenderer {
     '.git',
     '.dart_tool',
     '.idea',
-    '.vscode',
     '.github',
     'node_modules',
     'Pods',
