@@ -59,6 +59,10 @@ void main() {
           isTrue,
         );
         expect(
+          Directory(p.join(projectName, '.cursor', 'skills')).existsSync(),
+          isTrue,
+        );
+        expect(
           Directory(p.join(projectName, '.opencode', 'skills')).existsSync(),
           isTrue,
         );
