@@ -86,7 +86,7 @@ export 'session_log_result.dart';
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -1671,6 +1671,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i36.SessionLogResult():
         return 'SessionLogResult';
     }
+    className = _i38.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_database.$className';
+    }
     return null;
   }
 
@@ -1785,7 +1791,15 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'SessionLogResult') {
       return deserialize<_i36.SessionLogResult>(data['data']);
     }
+    if (dataClassName.startsWith('serverpod_database.')) {
+      data['className'] = dataClassName.substring(19);
+      return _i38.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i38.Protocol().registerHostProtocol('serverpod', this);
   }
 
   @override

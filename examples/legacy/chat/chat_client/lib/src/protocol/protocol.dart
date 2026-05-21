@@ -21,7 +21,7 @@ export 'client.dart';
 class Protocol extends _i1.SerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -93,11 +93,11 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return className.contains('.') ? className : 'serverpod_auth.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_chat.$className';
+      return className.contains('.') ? className : 'serverpod_chat.$className';
     }
     return null;
   }
@@ -120,6 +120,11 @@ class Protocol extends _i1.SerializationManager {
       return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i4.Protocol().registerHostProtocol('chat', this);
+    _i5.Protocol().registerHostProtocol('chat', this);
   }
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation

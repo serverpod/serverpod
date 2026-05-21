@@ -60,7 +60,10 @@ abstract class DynamicOnModule
     return {
       '__className__': 'serverpod_test_module.DynamicOnModule',
       'name': name,
-      'data': _i2.Protocol().dynamicFieldToJsonForProtocol(data),
+      'data': _i2.Protocol().dynamicFieldToJson(
+        data,
+        forProtocol: true,
+      ),
     };
   }
 

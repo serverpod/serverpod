@@ -444,7 +444,7 @@ export 'client.dart';
 class Protocol extends _i1.SerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance;
+  factory Protocol() => _instance.._registerHostProtocols();
 
   static final Protocol _instance = Protocol._();
 
@@ -6470,14 +6470,6 @@ class Protocol extends _i1.SerializationManager {
       case _i204.UpsertTestModel():
         return 'UpsertTestModel';
     }
-    className = _i210.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth.$className';
-    }
-    className = _i205.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_test_module.$className';
-    }
     if (data is List<int>) {
       return 'List<int>';
     }
@@ -6536,6 +6528,22 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data is List<(String, int)>?) {
       return 'List<(String,int)>?';
+    }
+    className = _i210.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.') ? className : 'serverpod_auth.$className';
+    }
+    className = _i205.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_test_module.$className';
+    }
+    className = _i207.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_test_shared.$className';
     }
     return null;
   }
@@ -7201,6 +7209,10 @@ class Protocol extends _i1.SerializationManager {
       data['className'] = dataClassName.substring(22);
       return _i205.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_test_shared.')) {
+      data['className'] = dataClassName.substring(22);
+      return _i207.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName == 'List<int>') {
       return deserialize<List<int>>(data['data']);
     }
@@ -7260,6 +7272,12 @@ class Protocol extends _i1.SerializationManager {
       return deserialize<List<(String, int)>?>(data['data']);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i210.Protocol().registerHostProtocol('serverpod_test', this);
+    _i205.Protocol().registerHostProtocol('serverpod_test', this);
+    _i207.Protocol().registerHostProtocol('serverpod_test', this);
   }
 
   /// Wraps serialized data with its class name so that it can be deserialized

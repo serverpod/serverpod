@@ -122,22 +122,41 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().dynamicFieldToJsonForProtocol(payload),
-      'jsonbPayload': _i2.Protocol().dynamicFieldToJsonForProtocol(
+      'payload': _i2.Protocol().dynamicFieldToJson(
+        payload,
+        forProtocol: true,
+      ),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(
         jsonbPayload,
+        forProtocol: true,
       ),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().dynamicFieldToJsonForProtocol(k),
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJsonForProtocol(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(
+          k,
+          forProtocol: true,
+        ),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
     };
   }
