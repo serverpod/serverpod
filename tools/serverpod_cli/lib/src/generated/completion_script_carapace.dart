@@ -75,6 +75,8 @@ commands:
       - [stdio, no-stdio]
 
   - name: mcp
+    flags:
+      -s, --server-dir=: "Path to the server project directory (the package that contains a `serverpod` dependency). Auto-detected from the current working directory if omitted. Pass this flag explicitly in monorepos with multiple server projects."
 
   - name: create-migration
     flags:
