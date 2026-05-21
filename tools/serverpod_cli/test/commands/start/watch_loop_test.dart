@@ -93,7 +93,7 @@ WatchSession _buildSession(_FakeCompiler compiler, _FakeServer server) {
     createServer: (_) async => server,
     initialServer: server,
     generatedDirPaths: const {},
-    applyMigrationsAction: () async => const MigrationsApplied(),
+    applyMigrationsAction: () async {},
   );
 }
 

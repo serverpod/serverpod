@@ -101,6 +101,7 @@ class MigrationManager {
   Future<String?> applyRepairMigration(DatabaseSession session) async {
     var repairMigration = await _artifactStore.readRepairMigration();
     if (repairMigration == null) {
+      log.info('No repair migration to apply.');
       return null;
     }
 
@@ -113,6 +114,9 @@ class MigrationManager {
 
       if (appliedRepairMigration != null &&
           appliedRepairMigration.version == repairMigration.version) {
+        log.info(
+          'Repair migration "${repairMigration.version}" already applied.',
+        );
         appliedVersion = null;
         return;
       }

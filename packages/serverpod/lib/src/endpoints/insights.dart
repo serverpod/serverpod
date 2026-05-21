@@ -231,6 +231,33 @@ class InsightsEndpoint extends Endpoint {
     return databaseDefinition;
   }
 
+  /// Applies pending database migrations to the running pod, mirroring the
+  /// boot-time path triggered by `--apply-migrations` and
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
+  ///
+  /// Used by `serverpod start`'s watch loop to apply newly generated
+  /// migrations without restarting the pod.
+  Future<MigrationsApplyResult> applyMigrations(
+    Session session, {
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) async {
+    return session.serverpod.withPausedRequestHandling(() {
+      return applyMigrationsAndVerify(
+        session: session,
+        projectDirectory: Directory.current,
+        runMode: session.serverpod.runMode,
+        applyRepairMigration: applyRepairMigration,
+        applyMigrations: applyMigrations,
+      );
+    });
+  }
+
   /// Returns the target and live database definitions. See
   /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.

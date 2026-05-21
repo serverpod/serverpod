@@ -187,8 +187,7 @@ void main() {
           },
       initialServer: initialServer,
       generatedDirPaths: {'/generated'},
-      applyMigrationsAction:
-          applyMigrationsAction ?? () async => const MigrationsApplied(),
+      applyMigrationsAction: applyMigrationsAction ?? () async {},
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterProcessProvider: () => flutterProcess,
@@ -695,13 +694,13 @@ void main() {
   });
 
   group('Given applyMigration is called with an in-place action', () {
-    late ApplyMigrationsOutcome Function() outcomeBuilder;
+    late void Function() migrationRunner;
     late int actionCalls;
-    late Completer<ApplyMigrationsOutcome>? gate;
+    late Completer<void>? gate;
     late WatchSession inPlaceSession;
 
     setUp(() {
-      outcomeBuilder = () => const MigrationsApplied();
+      migrationRunner = () {};
       actionCalls = 0;
       gate = null;
 
@@ -712,14 +711,14 @@ void main() {
           actionCalls++;
           final localGate = gate;
           if (localGate != null) return localGate.future;
-          return outcomeBuilder();
+          return migrationRunner();
         },
       );
     });
 
     test(
       'when the action returns versions, '
-      'then it runs the action and leaves the pod alone',
+      'then it runs the action',
       () async {
         await inPlaceSession.applyMigration();
 
@@ -734,7 +733,7 @@ void main() {
       'when the action returns an empty list, '
       'then it succeeds (already up to date)',
       () async {
-        outcomeBuilder = () => const MigrationsApplied();
+        migrationRunner = () {};
 
         await inPlaceSession.applyMigration();
 
@@ -748,7 +747,7 @@ void main() {
       'when the action throws, '
       'then the error propagates and state returns to idle',
       () async {
-        outcomeBuilder = () => throw StateError('boom');
+        migrationRunner = () => throw StateError('boom');
 
         await expectLater(
           inPlaceSession.applyMigration(),
@@ -759,7 +758,7 @@ void main() {
 
         // Same session: a follow-up call must reach the action rather
         // than hit the in-flight latch.
-        outcomeBuilder = () => const MigrationsApplied();
+        migrationRunner = () {};
         await inPlaceSession.applyMigration();
         expect(actionCalls, 2);
       },
@@ -789,7 +788,7 @@ void main() {
       'when applyMigration is called twice, '
       'then the calls serialize via _pending',
       () async {
-        gate = Completer<ApplyMigrationsOutcome>();
+        gate = Completer<void>();
 
         final firstCall = inPlaceSession.applyMigration();
         // Second call queues behind the first.
@@ -799,31 +798,11 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(actionCalls, 1, reason: 'second call must wait for first');
 
-        gate!.complete(const MigrationsApplied());
+        gate!.complete();
         await firstCall;
         await secondCall;
 
         expect(actionCalls, 2);
-      },
-    );
-  });
-
-  group('Given the action returns MigrationsRequirePodRestart', () {
-    test(
-      'when applyMigration completes, '
-      'then the pod is restarted via the factory with the compiler dill',
-      () async {
-        final fallbackSession = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          applyMigrationsAction: () async =>
-              const MigrationsRequirePodRestart(),
-        );
-
-        await fallbackSession.applyMigration();
-
-        expect(server.calls, contains('stop'));
-        expect(factoryCalls, ['createServer:/tmp/fake.dill']);
       },
     );
   });
@@ -1295,7 +1274,7 @@ class Counter {
         },
         initialServer: noCompilerServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied(),
+        applyMigrationsAction: () async {},
       );
     });
 
@@ -1419,7 +1398,7 @@ class Counter {
             (success: true, generatedFiles: <String>{}),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied(),
+        applyMigrationsAction: () async {},
       );
     });
 

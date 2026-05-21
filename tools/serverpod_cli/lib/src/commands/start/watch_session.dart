@@ -77,24 +77,8 @@ final _endpointOrFutureCallRegex = RegExp(
   r'\bextends\s+(?:\w*Endpoint|FutureCall)\b',
 );
 
-/// Outcome of an [ApplyMigrationsAction].
-sealed class ApplyMigrationsOutcome {
-  const ApplyMigrationsOutcome();
-}
-
-/// Migrations were applied in-process. The action is responsible for
-/// any user-facing logging (e.g. via [formatAppliedMigrations]).
-class MigrationsApplied extends ApplyMigrationsOutcome {
-  const MigrationsApplied();
-}
-
-/// In-process apply was skipped. Session must restart pod to apply migrations.
-class MigrationsRequirePodRestart extends ApplyMigrationsOutcome {
-  const MigrationsRequirePodRestart();
-}
-
 /// Action invoked by [WatchSession.applyMigration].
-typedef ApplyMigrationsAction = Future<ApplyMigrationsOutcome> Function();
+typedef ApplyMigrationsAction = Future<void> Function();
 
 /// Orchestrates the watch-mode reload cycle.
 ///
@@ -474,13 +458,7 @@ class WatchSession {
       }
       _state = SessionState.applyingMigration;
       try {
-        final outcome = await _applyMigrationsAction();
-        switch (outcome) {
-          case MigrationsApplied():
-            break;
-          case MigrationsRequirePodRestart():
-            await _restartServer(_compiler?.outputDill);
-        }
+        await _applyMigrationsAction();
         // Migrations regen the client lib; refresh Flutter.
         await _reloadFlutter();
       } finally {

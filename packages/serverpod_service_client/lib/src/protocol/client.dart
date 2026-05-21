@@ -24,14 +24,16 @@ import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
 import 'package:serverpod_database/src/generated/table_definition.dart' as _i8;
 import 'package:serverpod_database/src/generated/database_definition.dart'
     as _i9;
-import 'package:serverpod_database/src/generated/database_definitions.dart'
+import 'package:serverpod_database/src/generated/migrations_apply_result.dart'
     as _i10;
-import 'package:serverpod_database/src/generated/bulk_data.dart' as _i11;
-import 'package:serverpod_database/src/generated/filter/filter.dart' as _i12;
+import 'package:serverpod_database/src/generated/database_definitions.dart'
+    as _i11;
+import 'package:serverpod_database/src/generated/bulk_data.dart' as _i12;
+import 'package:serverpod_database/src/generated/filter/filter.dart' as _i13;
 import 'package:serverpod_database/src/generated/bulk_query_result.dart'
-    as _i13;
-import 'package:http/http.dart' as _i14;
-import 'protocol.dart' as _i15;
+    as _i14;
+import 'package:http/http.dart' as _i15;
+import 'protocol.dart' as _i16;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -164,23 +166,46 @@ class EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
+  /// Applies pending database migrations to the running pod, mirroring the
+  /// boot-time path triggered by `--apply-migrations` and
+  /// `--apply-repair-migration`. Verifies database integrity after applying.
+  ///
+  /// Expects pending and/or repair migrations to be available in the
+  /// project's `migrations/` folder. The pod's serialization manager
+  /// (which reflects the latest hot-reloaded code) is used as the source
+  /// of truth for the target schema during verification.
+  ///
+  /// Used by `serverpod start`'s watch loop to apply newly generated
+  /// migrations without restarting the pod.
+  _i2.Future<_i10.MigrationsApplyResult> applyMigrations({
+    required bool applyRepairMigration,
+    required bool applyMigrations,
+  }) => caller.callServerEndpoint<_i10.MigrationsApplyResult>(
+    'insights',
+    'applyMigrations',
+    {
+      'applyRepairMigration': applyRepairMigration,
+      'applyMigrations': applyMigrations,
+    },
+  );
+
   /// Returns the target and live database definitions. See
   /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
-  _i2.Future<_i10.DatabaseDefinitions> getDatabaseDefinitions() =>
-      caller.callServerEndpoint<_i10.DatabaseDefinitions>(
+  _i2.Future<_i11.DatabaseDefinitions> getDatabaseDefinitions() =>
+      caller.callServerEndpoint<_i11.DatabaseDefinitions>(
         'insights',
         'getDatabaseDefinitions',
         {},
       );
 
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i11.BulkData> fetchDatabaseBulkData({
+  _i2.Future<_i12.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
-    _i12.Filter? filter,
-  }) => caller.callServerEndpoint<_i11.BulkData>(
+    _i13.Filter? filter,
+  }) => caller.callServerEndpoint<_i12.BulkData>(
     'insights',
     'fetchDatabaseBulkData',
     {
@@ -193,8 +218,8 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
-  _i2.Future<_i13.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i13.BulkQueryResult>(
+  _i2.Future<_i14.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_i14.BulkQueryResult>(
         'insights',
         'runQueries',
         {'queries': queries},
@@ -245,10 +270,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i14.Client? httpClientOverride,
+    _i15.Client? httpClientOverride,
   }) : super(
          host,
-         _i15.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
