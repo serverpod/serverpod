@@ -30,7 +30,7 @@ class Protocol extends _i1.SerializationManager {
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -120,23 +120,31 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_bridge.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_bridge.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_core.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_idp.$className';
     }
     className = _i7.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_migration.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_migration.$className';
     }
     className = _i8.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return className.contains('.') ? className : 'serverpod_auth.$className';
     }
     return null;
   }
@@ -171,6 +179,14 @@ class Protocol extends _i1.SerializationManager {
       return _i8.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i4.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i5.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i6.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i7.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i8.Protocol().registerHostProtocol('serverpod_auth_test', this);
   }
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation

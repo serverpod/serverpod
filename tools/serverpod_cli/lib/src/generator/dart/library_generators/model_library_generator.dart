@@ -1624,10 +1624,10 @@ class SerializableModelLibraryGenerator {
       currentSharedPackageName: currentSharedPackageName,
     );
     if (fieldType.className == 'dynamic') {
-      var encodeMethod = methodName == _toJsonForProtocolMethodName
-          ? 'dynamicFieldToJsonForProtocol'
-          : 'dynamicFieldToJson';
-      return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
+      final methodToJson = protocolRef.call([]).property('dynamicFieldToJson');
+      return (methodName == _toJsonForProtocolMethodName)
+          ? methodToJson.call([fieldRef], {'forProtocol': literal(true)})
+          : methodToJson.call([fieldRef]);
     }
     if (fieldType.isRecordType) {
       return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
