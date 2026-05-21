@@ -25,6 +25,17 @@ echo "### Apply migrations"
 pwd
 dart run bin/main.dart -m production -r maintenance --apply-migrations
 
+# Activate the serverpod CLI so tests that spawn it as a subprocess
+# (e.g. MigrationTestUtils.createMigrationFromProtocols) can find it on PATH.
+echo "### Installing CLI tools"
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+(
+  cd /app/tools/serverpod_cli
+  dart pub global activate -s path .
+  serverpod version
+  dart pub global activate -s path .
+)
+
 # Run tests
 echo "### Running tests"
 dart test test_integration -x integration --concurrency=1 --reporter=failures-only
