@@ -20,8 +20,11 @@ void _captureTerminalState() {
 /// Safe to call multiple times.
 void _restoreServerpodTerminal() {
   if (!_terminalStateCaptured || _terminalStateRestored) return;
-  stdin.echoMode = _originalEchoMode;
+  // On Windows, ENABLE_ECHO_INPUT requires ENABLE_LINE_INPUT to be set, or
+  // SetConsoleMode rejects with ERROR_INVALID_PARAMETER. Restore lineMode
+  // first so echoMode is allowed to follow.
   stdin.lineMode = _originalLineMode;
+  stdin.echoMode = _originalEchoMode;
   _terminalStateRestored = true;
 }
 
