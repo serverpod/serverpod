@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -27,7 +27,8 @@ class FlutterNotInstalledException implements Exception {
 }
 
 /// Manages a `flutter run --machine` subprocess. Mirrors [ServerProcess].
-/// VM service URI is written to [vmServiceInfoFile] for IDE attach;
+/// IDE attach flows through [flutterProxy] (which owns the stable
+/// vm-service URI and the `flutter-vm-service-info.json` file);
 /// reload/restart go via [FlutterDaemonProtocol] over daemon stdin.
 class FlutterProcess {
   final String _flutterPackageDir;
@@ -37,9 +38,11 @@ class FlutterProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Sibling of the pod's `vm-service-info.json` so one launch.json
-  /// directory reference covers both.
-  final String? _vmServiceInfoFile;
+  /// IDE-facing proxy. When non-null, the process binds upstream on
+  /// VM-service connect and unbinds on shutdown so the IDE sees a
+  /// stable attach point regardless of whether the Flutter app is
+  /// currently running.
+  final VmServiceProxy? _flutterProxy;
 
   /// Fires `'launching'` on spawn, `'connecting'` before VM-service
   /// connect, `'ready'` on `app.started`, plus verbatim `app.progress`
@@ -56,6 +59,7 @@ class FlutterProcess {
   StreamSubscription<List<int>>? _stderrBytesSub;
   StreamSubscription<String>? _machineLinesSub;
   StreamSubscription<Event>? _loggingSub;
+  Timer? _vmServiceHeartbeat;
 
   String? _appId;
   FlutterDaemonProtocol? _daemon;
@@ -75,7 +79,7 @@ class FlutterProcess {
     required String device,
     String flutterExecutable = 'flutter',
     List<String> extraArgs = const [],
-    String? vmServiceInfoFile,
+    VmServiceProxy? flutterProxy,
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
@@ -84,7 +88,7 @@ class FlutterProcess {
        _flutterExecutable = flutterExecutable,
        _device = device,
        _extraArgs = extraArgs,
-       _vmServiceInfoFile = vmServiceInfoFile,
+       _flutterProxy = flutterProxy,
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
@@ -122,11 +126,6 @@ class FlutterProcess {
     final args =
         _argsOverrideForTesting ??
         <String>['run', '--machine', '-d', _device, ..._extraArgs];
-
-    if (_vmServiceInfoFile != null) {
-      // A stale info file would mislead IDE attach.
-      await File(_vmServiceInfoFile).deleteIfExists();
-    }
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
 
@@ -207,8 +206,9 @@ class FlutterProcess {
     );
   }
 
-  /// Wait for `app.debugPort`, write the info file, open a `vm_service`
-  /// client. Best-effort. On `-d web-server` pends until a browser attaches.
+  /// Wait for `app.debugPort`, bind [flutterProxy] upstream so IDE
+  /// clients can attach, open a `vm_service` client. Best-effort.
+  /// On `-d web-server` pends until a browser attaches.
   Future<void> connectToVmService() async {
     if (_vmService != null) return;
     _onProgress?.call('connecting');
@@ -217,21 +217,15 @@ class FlutterProcess {
     if (maybeUri == null) return;
     _vmServiceUri = maybeUri;
 
-    if (_vmServiceInfoFile != null) {
-      try {
-        await File(
-          _vmServiceInfoFile,
-        ).writeAsString(jsonEncode({'uri': maybeUri}));
-      } on FileSystemException catch (e) {
-        log.warning('Could not write Flutter VM service info file: $e');
-      }
-    }
-
     final wsUri = vmServiceWsUri(maybeUri);
+    await _flutterProxy?.setUpstream(Uri.parse(wsUri));
+
     for (var attempt = 0; attempt < 5; attempt++) {
       try {
-        _vmService = await vmServiceConnectUri(wsUri);
-        await _subscribeToLogging(_vmService!);
+        final vm = await vmServiceConnectUri(wsUri);
+        _vmService = vm;
+        await _subscribeToLogging(vm);
+        _startVmServiceHeartbeat(vm);
         return;
       } on Exception {
         if (attempt == 4) {
@@ -241,6 +235,47 @@ class FlutterProcess {
         await Future<void>.delayed(const Duration(milliseconds: 200));
       }
     }
+  }
+
+  /// Periodic `getVM()` against the [vm].
+  ///
+  /// Belt-and-suspenders companion to the daemon `app.stop` event
+  /// (missing on flutter web).
+  void _startVmServiceHeartbeat(VmService vm) {
+    _vmServiceHeartbeat?.cancel();
+    // Tight loop because DWDS won't tell us when a browser tab
+    // detaches (its keep-alive is hardcoded to ~3000 days). 2s
+    // interval + 1s timeout lets us notice within ~3s.
+    //
+    // Hot restart briefly empties the isolate list - require two
+    // consecutive empty reads (~4s window at 2s interval) so we
+    // don't race-kill a healthy restart.
+    var emptyReads = 0;
+    _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
+      timer,
+    ) async {
+      if (_vmService != vm) {
+        timer.cancel();
+        return;
+      }
+      try {
+        final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        if (vmInfo.isolates?.isEmpty ?? true) {
+          emptyReads++;
+          if (emptyReads >= 2) {
+            timer.cancel();
+            log.info('Flutter heartbeat: no isolates; tearing down.');
+            await _onAppStop();
+          }
+        } else {
+          emptyReads = 0;
+        }
+      } catch (e) {
+        timer.cancel();
+        log.info('Flutter heartbeat failed ($e); tearing down.');
+        await _onAppStop();
+      }
+    });
   }
 
   /// `--machine` doesn't forward `dart:developer.log()`; `Logging` does.
@@ -387,6 +422,9 @@ class FlutterProcess {
           }
         case 'app.started':
           _onProgress?.call('ready');
+        case 'app.stop':
+          log.debug('Flutter daemon emitted app.stop; tearing down.');
+          unawaited(_onAppStop());
         case 'app.log':
           final logText = paramMap['log'];
           if (logText is! String || logText.isEmpty) break;
@@ -397,6 +435,26 @@ class FlutterProcess {
           if (message is String) log.debug('flutter[daemon] $message');
       }
     }
+  }
+
+  bool _appStopHandled = false;
+  Future<void> _onAppStop() async {
+    if (_appStopHandled) return;
+    _appStopHandled = true;
+    log.debug('Flutter teardown begin.');
+    await _flutterProxy?.setUpstream(null);
+    final process = _process;
+    if (process == null) return;
+    process.kill(ProcessSignal.sigint);
+    await process.exitCode.timeout(
+      const Duration(seconds: 3),
+      onTimeout: () {
+        log.debug('Flutter did not exit on SIGINT; sending SIGKILL.');
+        process.kill(ProcessSignal.sigkill);
+        return process.exitCode;
+      },
+    );
+    log.debug('Flutter teardown end.');
   }
 
   Future<void> _cleanup() async {
@@ -414,18 +472,19 @@ class FlutterProcess {
       await _machineLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
+      _vmServiceHeartbeat?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
+      _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();
       _vmService = null;
+      _vmServiceUri = null;
 
-      if (_vmServiceInfoFile != null) {
-        await File(_vmServiceInfoFile).deleteIfExists();
-      }
+      await _flutterProxy?.setUpstream(null);
     } finally {
       completer.complete();
     }
@@ -503,7 +562,3 @@ class FlutterProcess {
     return uri.replace(scheme: scheme, path: path).toString();
   }
 }
-
-/// Default Flutter VM-service info file, sibling of the pod's info file.
-String defaultFlutterVmServiceInfoFile(String serverpodToolDir) =>
-    p.join(serverpodToolDir, 'flutter-vm-service-info.json');

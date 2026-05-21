@@ -417,6 +417,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+  final flutterVmServiceInfoFile = p.join(
+    serverpodToolDir,
+    'flutter-vm-service-info.json',
+  );
 
   // If a server is already running, abort so the IDE can attach to the
   // existing instance via the unchanged info file. Cheap local check; runs
@@ -530,6 +534,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     dartExecutable = localCompiler.dartExecutable;
   }
 
+  // IDE-facing Flutter VM-service proxy. Bound now so the info file
+  // exists at session start regardless of whether `--flutter` was
+  // passed; the upstream is set later when FlutterProcess connects.
+  Future<void> Function() spawnFlutterAppIfNeeded = () async {};
+  final flutterProxy = await _bindFlutterProxy(
+    infoFile: flutterVmServiceInfoFile,
+    onWaitingClientArrived: () => spawnFlutterAppIfNeeded(),
+  );
+
   // Server process factory. Invoked for the initial start and for each
   // subsequent restart driven by the WatchSession
   late final WatchSession session;
@@ -566,62 +579,76 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Needed for the Flutter dev-mode gate and the migration action.
   final runMode = runModeFromServerArgs(serverArgs.value);
 
-  // Production/staging boots skip the dev Flutter spawn. Missing
-  // package = silent no-op; missing Flutter SDK = warning.
+  // Spawn the Flutter app subprocess.
+  //
+  // Calling while previous instance is still running is a no-op.
   FlutterProcess? flutterProcess;
-  if (launchFlutterApp && runMode == 'development') {
+  var spawnInFlight = false;
+  spawnFlutterAppIfNeeded = () async {
+    if (runMode != 'development') return;
     if (!config.hasFlutterPackage) {
       log.info(flutterPackageNotFound);
-    } else {
-      // Non-TUI: surface daemon progress as log.info during the 30-60s
-      // cold compile; log.progress shows only one line.
-      flutterProcess = FlutterProcess(
-        flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
-        device: flutterDevice,
-        extraArgs: flutterExtraArgs,
-        vmServiceInfoFile: defaultFlutterVmServiceInfoFile(serverpodToolDir),
-        stdoutSink: flutterStdoutSink,
-        stderrSink: flutterStderrSink,
-        onProgress: (stage) {
-          onFlutterProgress?.call(stage);
-          if (onFlutterProgress == null) {
-            log.info('  Flutter: $stage');
-          }
+      return;
+    }
+    final existing = flutterProcess;
+    if (existing != null && existing.isRunning) return;
+    if (spawnInFlight) return;
+    spawnInFlight = true;
+
+    final fp = FlutterProcess(
+      flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
+      device: flutterDevice,
+      extraArgs: flutterExtraArgs,
+      flutterProxy: flutterProxy,
+      stdoutSink: flutterStdoutSink,
+      stderrSink: flutterStderrSink,
+      onProgress: (stage) {
+        onFlutterProgress?.call(stage);
+        if (onFlutterProgress == null) {
+          log.info('  Flutter: $stage');
+        }
+      },
+    );
+    try {
+      await fp.start();
+    } on FlutterNotInstalledException catch (e) {
+      log.warning(e.message);
+      spawnInFlight = false;
+      return;
+    } catch (_) {
+      spawnInFlight = false;
+      rethrow;
+    }
+    flutterProcess = fp;
+    spawnInFlight = false;
+
+    // Background: Server-running shouldn't wait on Flutter launch.
+    // On `-d web-server` `launched` pends until a browser attaches.
+    unawaited(() async {
+      await log.progress(
+        'Launching Flutter app (first run may take 30-60s)',
+        () async {
+          await fp.launched;
+          return true;
         },
       );
-      try {
-        await flutterProcess.start();
-      } on FlutterNotInstalledException catch (e) {
-        log.warning(e.message);
-        flutterProcess = null;
+      final url = fp.flutterAppUrl;
+      if (url != null) {
+        log.info('Flutter app running at $url');
+        onFlutterReady?.call(url);
       }
-      final fp = flutterProcess;
-      if (fp != null) {
-        // Background: Server-running shouldn't wait on Flutter launch.
-        // On `-d web-server` `launched` pends until a browser attaches.
-        unawaited(() async {
-          await log.progress(
-            'Launching Flutter app (first run may take 30-60s)',
-            () async {
-              await fp.launched;
-              return true;
-            },
-          );
-          final url = fp.flutterAppUrl;
-          if (url != null) {
-            log.info('Flutter app running at $url');
-            onFlutterReady?.call(url);
-          }
-          await log.progress('Connecting to Flutter VM service', () async {
-            await fp.connectToVmService();
-            if (fp.isVmServiceConnected && onFlutterStart != null) {
-              await onFlutterStart(fp);
-            }
-            return fp.isVmServiceConnected;
-          });
-        }());
-      }
-    }
+      await log.progress('Connecting to Flutter VM service', () async {
+        await fp.connectToVmService();
+        if (fp.isVmServiceConnected && onFlutterStart != null) {
+          await onFlutterStart(fp);
+        }
+        return fp.isVmServiceConnected;
+      });
+    }());
+  };
+
+  if (launchFlutterApp) {
+    await spawnFlutterAppIfNeeded();
   }
 
   // Construct the watch session.
@@ -640,7 +667,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
-    flutterProcess: flutterProcess,
+    flutterProcessProvider: () => flutterProcess,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -705,7 +732,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
-        if (flutterProcess != null)
+        if (config.hasFlutterPackage)
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
       },
     );
@@ -718,13 +745,38 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     WatchLoopContext(
       session: session,
       proxy: proxy,
+      flutterProxy: flutterProxy,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
+      flutterVmServiceInfoFile: flutterVmServiceInfoFile,
     ),
   );
+}
+
+/// Binds a [VmServiceProxy] that the Flutter app's vm-service will be
+/// attached to once it comes up.
+///
+/// Writes [infoFile] with the proxy's stable URI.
+///
+/// [onWaitingClientArrived] fires the first time a client connects
+/// while no upstream is bound.
+Future<VmServiceProxy> _bindFlutterProxy({
+  required String infoFile,
+  FutureOr<void> Function()? onWaitingClientArrived,
+}) async {
+  final proxy = VmServiceProxy(
+    upstreamWs: null,
+    onWaitingClientArrived: onWaitingClientArrived,
+  );
+  await proxy.bind();
+  await File(infoFile).writeAsString(
+    jsonEncode({'uri': proxy.httpUri.toString()}),
+  );
+  log.info('Flutter VM service proxy listening on ${proxy.httpUri}');
+  return proxy;
 }
 
 /// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
@@ -760,7 +812,7 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   final podWs = Uri.parse(vmServiceWsUri(podHttp));
 
   if (existing != null) {
-    await existing.retarget(podWs);
+    await existing.setUpstream(podWs);
     return existing;
   }
 
