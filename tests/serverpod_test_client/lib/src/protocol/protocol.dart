@@ -444,9 +444,9 @@ export 'client.dart';
 class Protocol extends _i1.SerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance.._registerHostProtocols();
+  factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;

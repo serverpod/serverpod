@@ -468,9 +468,9 @@ export 'upsert_test_model.dart';
 class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
-  factory Protocol() => _instance.._registerHostProtocols();
+  factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     _i2.TableDefinition(

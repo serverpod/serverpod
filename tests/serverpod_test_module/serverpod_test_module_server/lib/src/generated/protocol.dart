@@ -318,7 +318,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (className.contains('.')) {
       for (final protocol in _hostProtocols.values) {
-        return protocol.deserializeByClassName(value);
+        try {
+          return protocol.deserializeByClassName(value);
+        } on FormatException catch (_) {}
       }
     }
     return deserializeByClassName(value);
