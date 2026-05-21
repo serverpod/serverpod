@@ -6,24 +6,27 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:whiskers/whiskers.dart';
 
-/// Responsible for rendering template files in a directory using provided context.
-/// It processes both file contents and directory names,
-/// allowing for dynamic project structures.
+/// Renders Mustache `{{...}}` directives in a known set of file paths
+/// (typically the files [Copier] just wrote) and their ancestor
+/// directory names.
+///
+/// Operating on an explicit path list - rather than walking the project
+/// tree - guarantees the renderer never reads or rewrites a file the
+/// caller didn't ask for, sidestepping any question of "should we have
+/// entered `.dart_tool` / `build` / `.git`".
 class TemplateRenderer {
-  static const Set<String> _defaultExcludedDirNames = <String>{
-    '.git',
-    '.dart_tool',
-    '.idea',
-    '.github',
-    'node_modules',
-    'Pods',
-    // Dart/Flutter build output.
-    'build',
-    '.symlinks',
-    // Serverpod runtime artefacts.
-    'sqlite_data',
-    'migrations',
-    '.serverpod',
+  /// File extensions whose contents the renderer is allowed to read and
+  /// rewrite. Serverpod templates only produce text files in this set;
+  /// anything else is left untouched as a defensive sanity guard.
+  static const Set<String> _renderableExtensions = <String>{
+    '.dart',
+    '.yaml',
+    '.yml',
+    '.json',
+    '.html',
+    '.css',
+    '.md',
+    '.svg',
   };
 
   static final DartFormatter _dartFormatter = DartFormatter(
@@ -32,93 +35,135 @@ class TemplateRenderer {
     trailingCommas: TrailingCommas.preserve,
   );
 
-  /// Creates a [TemplateRenderer].
+  const TemplateRenderer();
+
+  /// Renders [paths] under [context]:
   ///
-  /// [excludedDirNames] may be passed to override the default set of
-  /// directory basenames that are skipped during traversal.
-  TemplateRenderer({
-    required this.dir,
-    Set<String>? excludedDirNames,
-  }) : excludedDirNames = excludedDirNames ?? _defaultExcludedDirNames;
-
-  /// The target directory containing the template files to be rendered.
-  final Directory dir;
-
-  /// Directory basenames to skip while recursing.
-  final Set<String> excludedDirNames;
-
-  /// Renders the templates in the target directory using [context].
-  Future<void> render(TemplateContext context) async {
-    try {
-      await _renderDirectory(dir, context);
-    } on FileSystemException {
-      // Directory gone.
+  /// 1. Each ancestor directory whose basename contains a Mustache
+  ///    directive is renamed (deepest first). A directive that renders
+  ///    to empty deletes the directory recursively. A pre-existing
+  ///    target directory triggers a recursive merge instead of a
+  ///    rename, so a second upgrade run doesn't leave literal `{{...}}`
+  ///    directories behind on disk.
+  /// 2. Each surviving file's basename is rendered (renaming or
+  ///    deleting the file).
+  /// 3. Each surviving file's contents are rendered, and reformatted
+  ///    in-process via [DartFormatter] when the extension is `.dart`.
+  Future<void> renderPaths(
+    Iterable<String> paths,
+    TemplateContext context,
+  ) async {
+    final pathList = paths.toList();
+    await _renameAncestors(pathList, context);
+    for (final original in pathList) {
+      final current = _translateDirSegments(original, context);
+      if (current == null) continue;
+      final file = File(current);
+      if (!await file.exists()) continue;
+      await _renderFile(file, context);
     }
   }
 
-  /// Recursively renders all files and directories within the specified directory.
-  Future<void> _renderDirectory(
-    Directory dir,
+  /// Renames every ancestor directory of any path in [paths] whose
+  /// basename carries a Mustache directive. Deduplicated, deepest first
+  /// so each rename sees its parents under their original names.
+  Future<void> _renameAncestors(
+    List<String> paths,
     TemplateContext context,
   ) async {
-    await for (final entity in dir.list(recursive: false, followLinks: false)) {
-      if (entity is File) {
-        await _renderFile(entity, context);
-      } else if (entity is Directory) {
-        final basename = p.basename(entity.path);
-        if (excludedDirNames.contains(basename)) continue;
-        await _handleDirectoryRendering(entity, context);
+    final byDepth = <int, Set<String>>{};
+    for (final filePath in paths) {
+      var dir = p.dirname(filePath);
+      // `p.dirname` of a filesystem root returns itself.
+      while (dir != p.dirname(dir)) {
+        if (_hasTemplateMarker(p.basename(dir))) {
+          byDepth.putIfAbsent(p.split(dir).length, () => {}).add(dir);
+        }
+        dir = p.dirname(dir);
+      }
+    }
+    final depths = byDepth.keys.toList()..sort((a, b) => b.compareTo(a));
+    for (final depth in depths) {
+      for (final dirPath in byDepth[depth]!) {
+        await _renameAncestor(dirPath, context);
       }
     }
   }
 
-  Future<void> _handleDirectoryRendering(
-    Directory directory,
+  Future<void> _renameAncestor(
+    String dirPath,
     TemplateContext context,
   ) async {
+    final source = Directory(dirPath);
+    if (!await source.exists()) return;
+    final renderedName = _renderFileSystemEntityName(
+      p.basename(dirPath),
+      context,
+    );
     try {
-      final basename = p.basename(directory.path);
-
-      // Fast path! directory names without template directives can't be renamed,
-      // so just recurse without invoking the Mustache parser.
-      if (!_hasTemplateMarker(basename)) {
-        await _renderDirectory(directory, context);
+      if (renderedName.isEmpty) {
+        await source.delete(recursive: true);
         return;
       }
-
-      final renderedName = _renderFileSystemEntityName(basename, context);
-      final newPath = p.join(p.dirname(directory.path), renderedName);
-
-      if (renderedName.isEmpty) {
-        await directory.delete(recursive: true);
-      } else if (newPath != directory.path) {
-        await directory.rename(newPath);
-        await _renderDirectory(Directory(newPath), context);
+      final destPath = p.join(p.dirname(dirPath), renderedName);
+      if (destPath == dirPath) return;
+      final dest = Directory(destPath);
+      if (await dest.exists()) {
+        await _mergeIntoDirectory(source, dest);
       } else {
-        await _renderDirectory(directory, context);
+        await source.rename(destPath);
       }
     } on FileSystemException {
-      // Directory gone.
+      // Source vanished mid-flight (e.g. an outer rename already moved
+      // it). Best-effort: skip.
     }
   }
 
-  String _renderTemplate(String content, TemplateContext context) {
-    try {
-      var template = Template(content, lenient: true);
-      return template.renderString(
-        context.toMustacheMap(),
-        onMissingVariable: (name, context) {
-          return '{{$name}}';
-        },
-      );
-    } catch (_) {
-      return content;
+  /// Computes [original]'s path after [_renameAncestors] has run, by
+  /// re-rendering every *directory* segment. Returns `null` if any
+  /// ancestor segment renders to empty (the file's parent was deleted).
+  /// The file basename is preserved verbatim - [_renderFileName]
+  /// handles that separately once we open the file.
+  String? _translateDirSegments(String original, TemplateContext context) {
+    final segments = p.split(original);
+    final out = <String>[];
+    for (var i = 0; i < segments.length; i++) {
+      final seg = segments[i];
+      final isFileBasename = i == segments.length - 1;
+      if (!isFileBasename && _hasTemplateMarker(seg)) {
+        final rendered = _renderFileSystemEntityName(seg, context);
+        if (rendered.isEmpty) return null;
+        out.add(rendered);
+      } else {
+        out.add(seg);
+      }
     }
+    return p.joinAll(out);
   }
 
-  /// Renders template directives in [file]'s base name and content.
-  /// Rewrites [file] with the rendering result.
-  /// If the [file] name or its content is empty after rendering, the [file] is deleted.
+  /// Recursively moves [source]'s contents into [destination],
+  /// overwriting on file collision and merging on directory collision.
+  /// [source] is deleted once empty.
+  Future<void> _mergeIntoDirectory(
+    Directory source,
+    Directory destination,
+  ) async {
+    await for (final entity in source.list(followLinks: false)) {
+      final destPath = p.join(destination.path, p.basename(entity.path));
+      if (entity is File) {
+        await entity.rename(destPath);
+      } else if (entity is Directory) {
+        final destDir = Directory(destPath);
+        if (await destDir.exists()) {
+          await _mergeIntoDirectory(entity, destDir);
+        } else {
+          await entity.rename(destPath);
+        }
+      }
+    }
+    await source.delete();
+  }
+
   Future<void> _renderFile(File file, TemplateContext context) async {
     try {
       final renderedFile = await _renderFileName(file, context);
@@ -126,16 +171,15 @@ class TemplateRenderer {
     } on FileSystemException {
       // File gone.
     } on FormatException {
-      // Non-UTF8 content (binary asset?). Skip silently!
+      // Non-UTF8 content. The extension allowlist already filters known
+      // binary types; this is defence-in-depth for malformed text files.
     }
   }
 
-  /// Renders template directives in [file]'s base name.
-  /// If rendering results in an empty file name (excluding extension), the file is deleted.
+  /// Renames [file] if its basename carries a Mustache directive.
+  /// Deletes the file if the directive renders to empty.
   Future<File?> _renderFileName(File file, TemplateContext context) async {
     final fileName = p.basename(file.path);
-
-    // Fast path! File names without template directives can't be renamed.
     if (!_hasTemplateMarker(fileName)) return file;
 
     final renderedFileName = _renderFileSystemEntityName(fileName, context);
@@ -156,12 +200,11 @@ class TemplateRenderer {
     return await file.rename(p.join(p.dirname(file.path), renderedFileName));
   }
 
-  /// Renders template directives in [file]'s content.
-  /// If rendering results in a file with empty content, the file is deleted.
   Future<void> _renderFileContent(File file, TemplateContext context) async {
-    final content = await file.readAsString();
+    final extension = p.extension(file.path);
+    if (!_renderableExtensions.contains(extension.toLowerCase())) return;
 
-    // Fast path! Bail before invoking expensive regex preprocessor and Mustache parser.
+    final content = await file.readAsString();
     if (!_hasTemplateMarker(content)) return;
 
     final processedContent = _preprocessContent(content);
@@ -173,42 +216,52 @@ class TemplateRenderer {
     }
     if (renderedContent == content) return;
 
-    var toWrite = renderedContent;
-    if (p.extension(file.path) == '.dart') {
+    String toWrite;
+    if (extension == '.dart') {
       try {
         toWrite = _dartFormatter.format(renderedContent);
       } on FormatterException {
-        // Rendered output isn't valid Dart!
-        // Write the unformatted content rather than failing the render.
+        // Rendered output isn't valid Dart - leave the file untouched
+        // rather than persisting a broken intermediate (which would
+        // also touch the file's mtime).
+        return;
       }
+    } else {
+      toWrite = renderedContent;
     }
     await file.writeAsString(toWrite);
   }
 
-  /// Cheap test for the presence of a Mustache opening delimiter.
   static bool _hasTemplateMarker(String s) => s.contains('{{');
 
-  /// Preprocesses the content by removing comment markers from template directives.
-  /// The comment markers allow template directives to be included in the source
-  /// files without affecting the syntax of the code.
-  /// For example, `// {{#enableAuth}}` will be transformed to `{{#enableAuth}}`.
+  String _renderTemplate(String content, TemplateContext context) {
+    try {
+      var template = Template(content, lenient: true);
+      return template.renderString(
+        context.toMustacheMap(),
+        onMissingVariable: (name, context) => '{{$name}}',
+      );
+    } catch (_) {
+      return content;
+    }
+  }
+
+  /// Preprocesses [content] by stripping `// ` / `# ` comment prefixes
+  /// from Mustache directives, so that templates can embed directives
+  /// inside otherwise-valid source files.
   String _preprocessContent(String content) {
     var result = content;
-
     result = result.replaceAllMapped(
       RegExp(r'//\s*(\{\{[^}]+\}\})'),
       (match) => match.group(1)!,
     );
-
     result = result.replaceAllMapped(
       RegExp(r'#\s*(\{\{[^}]+\}\})'),
       (match) => match.group(1)!,
     );
-
     return result;
   }
 
-  /// Formats the file/directory name as a template and returns the rendered name.
   String _renderFileSystemEntityName(String name, TemplateContext context) {
     return _renderTemplate(
       name.replaceAll(r'{{!', '{{/'),
