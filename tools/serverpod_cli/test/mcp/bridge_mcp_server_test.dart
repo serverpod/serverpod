@@ -64,6 +64,7 @@ void main() {
             containsAll(<String>{
               'apply_migrations',
               'create_migration',
+              'create_repair_migration',
               'hot_reload',
               'hot_restart',
               'tail_logs',
@@ -132,6 +133,7 @@ void main() {
             containsAll(<String>{
               'apply_migrations',
               'create_migration',
+              'create_repair_migration',
               'hot_reload',
               'hot_restart',
               'tail_logs',
