@@ -162,7 +162,8 @@ fields:
 
       // Endpoint that imports protocol.dart and uses the generated model.
       // With no generated files on disk, a temporary protocol.dart (model
-      // exports only) is written before analysis so the import resolves.
+      // exports and a stub Protocol class) is written before analysis so the
+      // import resolves.
       var endpointFile = File(
         path.join(
           projectDir.path,

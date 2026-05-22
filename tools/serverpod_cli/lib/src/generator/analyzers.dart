@@ -301,11 +301,13 @@ class Analyzers {
   }
 }
 
-/// Writes a temporary protocol.dart that exports all model classes.
+/// Writes a temporary protocol.dart that exports all model classes and a stub
+/// [Protocol] class.
 ///
 /// This allows endpoint and future call files to resolve their
-/// `import 'protocol.dart'` during analysis. The full protocol (with the
-/// Protocol class, endpoint dispatch, etc.) overwrites this later via
+/// `import 'protocol.dart'` during analysis, and lets generated model files
+/// that call `Protocol()` compile before the full protocol exists. The full
+/// protocol (with endpoint dispatch, etc.) overwrites this later via
 /// [ServerpodCodeGenerator.generateProtocolDefinition].
 Future<String> _writeTemporaryProtocol({
   required List<SerializableModelDefinition> models,
