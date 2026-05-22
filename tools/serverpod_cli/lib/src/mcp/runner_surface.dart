@@ -111,6 +111,15 @@ final Tool tailFlutterLogsTool = Tool(
   ),
 );
 
+final Tool getFlutterAppDtdTool = Tool(
+  name: 'get_flutter_app_dtd',
+  description:
+      'Return the Dart Tooling Daemon (DTD) URI for the Flutter app started '
+      'from `serverpod start`. The URI is null until the app has published '
+      'its DTD endpoint.',
+  inputSchema: Schema.object(),
+);
+
 final Resource vmServiceResource = Resource(
   uri: 'serverpod://vm-service',
   name: 'VM service',
@@ -129,6 +138,7 @@ final List<Tool> runnerStaticTools = [
   hotRestartTool,
   tailLogsTool,
   tailFlutterLogsTool,
+  getFlutterAppDtdTool,
 ];
 
 final List<Resource> runnerStaticResources = [vmServiceResource];
