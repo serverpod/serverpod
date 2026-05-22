@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
@@ -398,6 +399,16 @@ class Serverpod {
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
 
+  /// Directory the server package lives in. Resolved against this when
+  /// loading `config/<runMode>.yaml`, `config/passwords.yaml`, and
+  /// `migrations/<module>/...`. Captured at construction time from the
+  /// `serverDirectory` parameter, falling back to [Directory.current].
+  ///
+  /// Pass this explicitly when boot-time cwd is not the server package root
+  /// (e.g. test isolates, MCP-triggered actions, or any process whose cwd
+  /// was inherited from a parent shell).
+  final Directory serverDirectory;
+
   /// Runtime parameters builder to apply to all sessions of the connection pool.
   ///
   /// Use the callback function to discover runtime parameters:
@@ -419,6 +430,7 @@ class Serverpod {
     List<String> args,
     this.serializationManager,
     this.endpoints, {
+    Directory? serverDirectory,
     ServerpodConfig? config,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
     this.authenticationHandler,
@@ -429,7 +441,8 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  }) : httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
+  }) : serverDirectory = serverDirectory ?? Directory.current,
+       httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _configOverride = configOverride,
@@ -508,7 +521,9 @@ class Serverpod {
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
-    _passwords = _passwordManager.loadPasswords();
+    _passwords = _passwordManager.loadPasswords(
+      p.join(serverDirectory.path, 'config', 'passwords.yaml'),
+    );
 
     // Because `.copyWith` is not a real copyWith method (`null` is not a valid
     // value for any of the fields), this works due to CommandLineArgs.toMap()
@@ -533,6 +548,7 @@ class Serverpod {
             serverId,
             _passwords,
             commandLineArgs: _commandLineArgs.toMap(),
+            serverDir: serverDirectory.path,
           );
     } on ArgumentError catch (e) {
       throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
@@ -915,7 +931,7 @@ class Serverpod {
       );
       result = await applyMigrationsAndVerify(
         session: internalSession,
-        projectDirectory: Directory.current,
+        projectDirectory: serverDirectory,
         runMode: runMode,
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
@@ -1189,9 +1205,9 @@ class Serverpod {
   /// server and, if enabled, the web server), waits for in-flight requests
   /// to settle, runs [action], then resumes request handling.
   ///
-  /// Used during runtime operations that require the pod to be quiescent —
+  /// Used during runtime operations that require the pod to be quiescent -
   /// e.g. applying migrations through
-  /// [InsightsEndpoint.applyMigrations] — to provide the same safety
+  /// [InsightsEndpoint.applyMigrations] - to provide the same safety
   /// guarantees as a pod restart.
   ///
   /// The operator-facing Insights server is not paused, so the call that
@@ -1210,7 +1226,7 @@ class Serverpod {
 
   /// Starts the API server and, if configured, the web server.
   ///
-  /// The Insights server is intentionally not included — it's started
+  /// The Insights server is intentionally not included - it's started
   /// once during pod boot and stays up across pause/resume cycles
   /// initiated through its own endpoints (e.g. applyMigrations).
   Future<bool> _startUserFacingServers() async {
