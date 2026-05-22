@@ -39,6 +39,7 @@ class McpSocketServer {
   List<Object> Function()? _getLogHistory;
   List<String> Function()? _getFlutterLogHistory;
   String? Function()? _getVmServiceUri;
+  String? Function()? _getFlutterDtdUri;
   Stream<void>? _vmServiceUriChanges;
 
   McpSocketServer({required String serverDir})
@@ -70,6 +71,7 @@ class McpSocketServer {
     List<Object> Function()? getLogHistory,
     List<String> Function()? getFlutterLogHistory,
     String? Function()? getVmServiceUri,
+    String? Function()? getFlutterDtdUri,
     Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
@@ -80,6 +82,7 @@ class McpSocketServer {
     _getLogHistory = getLogHistory;
     _getFlutterLogHistory = getFlutterLogHistory;
     _getVmServiceUri = getVmServiceUri;
+    _getFlutterDtdUri = getFlutterDtdUri;
     _vmServiceUriChanges = vmServiceUriChanges;
     final server = _mcpServer;
     if (server != null) {
@@ -91,6 +94,7 @@ class McpSocketServer {
       server.getLogHistory = getLogHistory;
       server.getFlutterLogHistory = getFlutterLogHistory;
       server.getVmServiceUri = getVmServiceUri;
+      server.getFlutterDtdUri = getFlutterDtdUri;
       server.vmServiceUriChanges = vmServiceUriChanges;
     }
   }
@@ -149,6 +153,7 @@ class McpSocketServer {
     server.getLogHistory = _getLogHistory;
     server.getFlutterLogHistory = _getFlutterLogHistory;
     server.getVmServiceUri = _getVmServiceUri;
+    server.getFlutterDtdUri = _getFlutterDtdUri;
     server.vmServiceUriChanges = _vmServiceUriChanges;
 
     // Clean up on disconnect.

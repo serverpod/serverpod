@@ -66,6 +66,7 @@ class FlutterProcess {
   FlutterDaemonProtocol? _daemon;
   String? _vmServiceUri;
   String? _flutterAppUrl;
+  String? _dtdUri;
   VmService? _vmService;
 
   // `null` result means the process exited before publishing a URI.
@@ -109,6 +110,9 @@ class FlutterProcess {
 
   /// HTTP URL the Flutter app is served at (web targets only).
   String? get flutterAppUrl => _flutterAppUrl;
+
+  /// DTD URI from the daemon's `app.dtd` event.
+  String? get dtdUri => _dtdUri;
 
   /// First of `app.debugPort`, `app.webLaunchUrl`, or process exit.
   /// Decoupled from [connectToVmService]: on `-d web-server` the
@@ -416,6 +420,11 @@ class FlutterProcess {
             _flutterAppUrl = url;
             if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
           }
+        case 'app.dtd':
+          final uri = paramMap['uri'];
+          if (uri is String && uri.isNotEmpty) {
+            _dtdUri = uri;
+          }
         case 'app.progress':
           final message = paramMap['message'];
           if (message is String && message.isNotEmpty) {
@@ -484,6 +493,7 @@ class FlutterProcess {
       await _vmService?.dispose();
       _vmService = null;
       _vmServiceUri = null;
+      _dtdUri = null;
 
       await _flutterProxy?.setUpstream(null);
     } finally {
