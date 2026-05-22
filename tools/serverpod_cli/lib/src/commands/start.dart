@@ -408,6 +408,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   Future<void> Function(ServerProcess server)? onServerStart,
   Future<void> Function(FlutterProcess flutter)? onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
+  List<String> Function()? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
@@ -711,6 +712,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       onHotReload: session.forceReload,
       onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
+      getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
@@ -1071,6 +1073,7 @@ Future<void> _runTuiBackend({
         );
       },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
+      mcpGetFlutterLogHistory: () => holder.state.rawFlutterLines.toList(),
     );
 
     switch (result) {

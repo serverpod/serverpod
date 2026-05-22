@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dart_mcp/client.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -69,6 +70,7 @@ void main() {
             'hot_reload',
             'hot_restart',
             'tail_logs',
+            'tail_flutter_logs',
           ]),
         );
       },
@@ -135,6 +137,21 @@ void main() {
           expect(
             (result.content.first as TextContent).text,
             contains('not connected'),
+          );
+        },
+      );
+      test(
+        'when calling tail_flutter_logs without a callback, '
+        'then it returns an error',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'tail_flutter_logs'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Flutter log history not available'),
           );
         },
       );
@@ -442,6 +459,32 @@ void main() {
             (result.content.first as TextContent).text,
             contains('live db unreachable'),
           );
+        },
+      );
+      test(
+        'when calling tail_flutter_logs with a callback, '
+        'then it returns the most recent lines as JSON',
+        () async {
+          server.getFlutterLogHistory = () => [
+            'line 1',
+            'line 2',
+            'line 3',
+          ];
+
+          final result = await connection.callTool(
+            CallToolRequest(
+              name: 'tail_flutter_logs',
+              arguments: {'limit': 2},
+            ),
+          );
+
+          expect(result.isError, isNull);
+          final lines =
+              jsonDecode(
+                    (result.content.first as TextContent).text,
+                  )
+                  as List<dynamic>;
+          expect(lines, ['line 2', 'line 3']);
         },
       );
     });

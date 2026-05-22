@@ -52,6 +52,9 @@ base class ServerpodMcpServer extends MCPServer
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
+  /// Returns the current Flutter raw log line snapshot.
+  List<String> Function()? getFlutterLogHistory;
+
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
 
@@ -73,6 +76,7 @@ base class ServerpodMcpServer extends MCPServer
     registerTool(hotReloadTool, _hotReload);
     registerTool(hotRestartTool, _hotRestart);
     registerTool(tailLogsTool, _tailLogs);
+    registerTool(tailFlutterLogsTool, _tailFlutterLogs);
 
     addResource(vmServiceResource, _readVmService);
   }
@@ -222,11 +226,7 @@ base class ServerpodMcpServer extends MCPServer
         isError: true,
       );
     }
-    final limitArg = request.arguments?['limit'];
-    final limit = switch (limitArg) {
-      int v => v.clamp(1, 10000),
-      _ => 200,
-    };
+    final limit = _tailLimit(request);
     final all = get();
     final tail = all.length <= limit ? all : all.sublist(all.length - limit);
     final encoded = tail.map(_encodeLogHistoryItem).toList();
@@ -238,6 +238,30 @@ base class ServerpodMcpServer extends MCPServer
       ],
     );
   }
+
+  Future<CallToolResult> _tailFlutterLogs(CallToolRequest request) async {
+    final get = getFlutterLogHistory;
+    if (get == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Flutter log history not available.')],
+        isError: true,
+      );
+    }
+    final limit = _tailLimit(request);
+    final all = get();
+    final tail = all.length <= limit ? all : all.sublist(all.length - limit);
+    return CallToolResult(
+      content: [TextContent(text: jsonEncode(tail))],
+    );
+  }
+}
+
+int _tailLimit(CallToolRequest request) {
+  final limitArg = request.arguments?['limit'];
+  return switch (limitArg) {
+    int v => v.clamp(1, 10000),
+    _ => 200,
+  };
 }
 
 /// Returns the standard error response for tools whose callback is unset

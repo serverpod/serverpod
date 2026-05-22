@@ -95,6 +95,23 @@ final Tool tailLogsTool = Tool(
   ),
 );
 
+final Tool tailFlutterLogsTool = Tool(
+  name: 'tail_flutter_logs',
+  description:
+      'Return recent raw stdout/stderr lines from the running Flutter app. '
+      'Newest last. Only available when Flutter was launched by '
+      '`serverpod start`.',
+  inputSchema: Schema.object(
+    properties: {
+      'limit': Schema.int(
+        description: 'Max lines to return (default 200, max 10000).',
+        minimum: 1,
+        maximum: 10000,
+      ),
+    },
+  ),
+);
+
 final Resource vmServiceResource = Resource(
   uri: 'serverpod://vm-service',
   name: 'VM service',
@@ -112,6 +129,7 @@ final List<Tool> runnerStaticTools = [
   hotReloadTool,
   hotRestartTool,
   tailLogsTool,
+  tailFlutterLogsTool,
 ];
 
 final List<Resource> runnerStaticResources = [vmServiceResource];
