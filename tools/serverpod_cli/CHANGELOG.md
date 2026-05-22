@@ -1,3 +1,19 @@
+## 3.5.0-beta.9
+
+- feat: Allows attaching a Flutter app on demand with a running `serverpod start`.
+- feat: Adds split-screen layout to the `serverpod start` TUI on wide terminals.
+- feat: Adds `tail_flutter_logs` MCP command for agents to read the Flutter app logs.
+- feat: Exposes the Flutter process DTD on a `get_flutter_app_dtd` MCP tool.
+- fix: Fixes MCP command not initializing properly when running `serverpod start`.
+- fix: Executes repair migrations when calling `apply_migrations` from the TUI and MCP.
+- fix: Fixes serialization/deserialization of project models on `dynamic` fields of module models.
+- fix: Improves the TUI to have more screen for logs and use clearer checkboxes.
+- fix: Fixes pressing `Q` on Windows not canceling the new TUI.
+- fix: Generates skills for Cursor under `.cursor` instead of `.agents` directory.
+- refactor: Renames `tail_logs` MCP command to `tail_server_logs` for clarity.
+- perf: Speeds up applying resource options when creating projects.
+- chore: Adjusts the agent skills for the new version.
+
 ## 3.5.0-beta.8
 
 - feat: Launches the Flutter app from `serverpod start` with integrated hot reload/restart.
