@@ -141,7 +141,15 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   void _rebuild() {
     if (!mounted) return;
     _tryDismissSplash();
+    _normalizeSelectedTab();
     setState(() {});
+  }
+
+  void _normalizeSelectedTab() {
+    final state = component.holder.state;
+    if (state.useSideBySideLayout && state.selectedTab == 1) {
+      state.selectedTab = 0;
+    }
   }
 
   @override
@@ -191,16 +199,27 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Tab cycling. Flutter tab is appended when attached.
-    final tabCount = state.showFlutterOutput ? 3 : 2;
+    final sideBySide = state.useSideBySideLayout;
+
+    // Tab cycling. In side-by-side mode, only server tabs are selectable.
     if (event.logicalKey == LogicalKey.tab ||
         event.logicalKey == LogicalKey.arrowRight) {
-      state.selectedTab = (state.selectedTab + 1) % tabCount;
+      if (sideBySide) {
+        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
+      } else {
+        final tabCount = state.showFlutterOutput ? 3 : 2;
+        state.selectedTab = (state.selectedTab + 1) % tabCount;
+      }
       _rebuild();
       return true;
     }
     if (event.logicalKey == LogicalKey.arrowLeft) {
-      state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
+      if (sideBySide) {
+        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
+      } else {
+        final tabCount = state.showFlutterOutput ? 3 : 2;
+        state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
+      }
       _rebuild();
       return true;
     }
@@ -210,11 +229,13 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       return true;
     }
     if (event.logicalKey == LogicalKey.digit2) {
-      state.selectedTab = 1;
+      state.selectedTab = sideBySide ? 2 : 1;
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit3 && state.showFlutterOutput) {
+    if (event.logicalKey == LogicalKey.digit3 &&
+        !sideBySide &&
+        state.showFlutterOutput) {
       state.selectedTab = 2;
       _rebuild();
       return true;
@@ -222,8 +243,8 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
     final c = switch (state.selectedTab) {
       0 => logScrollController,
-      1 => rawScrollController,
-      _ => flutterRawScrollController,
+      1 => flutterRawScrollController,
+      _ => rawScrollController,
     };
     return _handleScrollKey(c, event);
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:test/test.dart';
@@ -186,7 +187,7 @@ void main() {
             equals('http://127.0.0.1:${fake.server.port}'),
           );
           expect(fp.flutterAppUrl, equals('http://localhost:54321'));
-          expect(progressMessages, contains('launching'));
+          expect(progressMessages, contains(flutterAppLaunching));
           expect(progressMessages, contains('Launching ...'));
           expect(progressMessages, contains('ready'));
 

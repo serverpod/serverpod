@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:nocterm/nocterm.dart';
 
 /// A check box component
@@ -13,10 +15,15 @@ class Checkbox extends StatelessComponent {
   final bool value;
   final bool focused;
 
+  String get indicator {
+    if (Platform.isWindows || Platform.isLinux) {
+      return value ? '🞕' : '🞎';
+    }
+    return value ? '■' : '□';
+  }
+
   @override
   Component build(BuildContext context) {
-    final indicator = value ? '■' : '□';
-
     return Text(
       '$indicator $label',
       style: TextStyle(color: Color.defaultColor, reverse: focused),

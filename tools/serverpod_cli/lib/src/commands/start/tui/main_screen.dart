@@ -64,23 +64,68 @@ class MainScreen extends StatelessComponent {
           children: [
             Expanded(
               child: BorderedBox(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 1),
-                      child: _buildTabBar(st),
-                    ),
-                    ?_buildFlutterStatusLine(st),
-                    Expanded(child: _buildTabContent()),
-                    // Pinned active operations
-                    if (state.activeOperations.isNotEmpty) ...[
-                      for (final op in state.activeOperations.values)
-                        TrackedOperationWidget(
-                          key: ValueKey(op.id),
-                          operation: op,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    state.contentWidth = constraints.maxWidth;
+                    final showSideBySide = state.useSideBySideLayout;
+
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 1),
+                          child: _buildTabBar(st, showSideBySide),
                         ),
-                    ],
-                  ],
+                        if (!showSideBySide) ?_buildFlutterStatusLine(st),
+                        Expanded(
+                          child: !showSideBySide
+                              ? _buildTabContent(state.selectedTab)
+                              : Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: _buildTabContent(
+                                              state.selectedTab,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    VerticalDivider(
+                                      color: st.subtleDivider,
+                                      width: 1,
+                                      thickness: 1,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          ?_buildFlutterStatusLine(
+                                            st,
+                                            withTitle: false,
+                                          ),
+                                          Expanded(
+                                            child: _buildTabContent(1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+
+                        if (state.activeOperations.isNotEmpty)
+                          ...state.activeOperations.values.map(
+                            (op) => TrackedOperationWidget(
+                              key: ValueKey(op.id),
+                              operation: op,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -97,7 +142,10 @@ class MainScreen extends StatelessComponent {
   /// label, vertical divider, and value.
   ///
   /// Returns `null` when no Flutter app is running or starting.
-  Component? _buildFlutterStatusLine(ServerpodThemeData st) {
+  Component? _buildFlutterStatusLine(
+    ServerpodThemeData st, {
+    bool withTitle = true,
+  }) {
     final mutedText = TextStyle(
       color: st.debugLevel,
       fontWeight: FontWeight.dim,
@@ -117,13 +165,14 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Divider(color: st.subtleDivider),
         Padding(
           padding: const EdgeInsets.only(left: 1),
           child: Row(
             children: [
-              Text('Flutter app', style: mutedText),
-              Text(' │ ', style: separatorStyle),
+              if (withTitle) ...[
+                Text(' Flutter app', style: mutedText),
+                Text(' │ ', style: separatorStyle),
+              ],
               Text(value, style: mutedText),
             ],
           ),
@@ -133,20 +182,43 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildTabBar(ServerpodThemeData st) {
-    return TabBar(
-      labels: [
-        'Server logs',
-        if (state.showFlutterOutput) 'Flutter logs',
-        'Raw server logs',
-      ],
-      selectedTab: state.selectedTab,
-      onTabChanged: onTabChanged,
-    );
+  Component _buildTabBar(ServerpodThemeData st, bool sideBySide) {
+    const serverLogs = 'Server logs';
+    const rawServerLogs = 'Raw server logs';
+    const flutterLogs = 'Flutter logs';
+
+    return !sideBySide
+        ? TabBar(
+            labels: [
+              serverLogs,
+              if (state.showFlutterOutput) flutterLogs,
+              rawServerLogs,
+            ],
+            selectedTab: state.selectedTab,
+            onTabChanged: onTabChanged,
+          )
+        : Row(
+            children: [
+              Expanded(
+                child: TabBar(
+                  labels: const [serverLogs, rawServerLogs],
+                  selectedTab: state.selectedTab == 2 ? 1 : 0,
+                  onTabChanged: (index) => onTabChanged(index == 0 ? 0 : 2),
+                ),
+              ),
+              Expanded(
+                child: TabBar(
+                  labels: const [flutterLogs],
+                  selectedTab: 0,
+                  onTabChanged: (_) {},
+                ),
+              ),
+            ],
+          );
   }
 
-  Component _buildTabContent() {
-    return switch (state.selectedTab) {
+  Component _buildTabContent(int index) {
+    return switch (index) {
       1 => _buildRawOutputView(
         state.rawFlutterLines,
         flutterRawScrollController,

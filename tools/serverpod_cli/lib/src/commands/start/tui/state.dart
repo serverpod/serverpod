@@ -21,8 +21,22 @@ class ServerWatchState extends ServerpodState {
   @override
   final Map<String, TrackedOperation> activeOperations = {};
 
-  /// Currently selected tab index. 0 = Log, 1 = Raw, 2 = Flutter (if shown).
+  /// Currently selected tab index.
+  ///
+  /// - 0 = structured server logs
+  /// - 1 = Flutter logs (narrow layout only)
+  /// - 2 = raw server logs
   int selectedTab = 0;
+
+  /// Latest measured content width from the main log area.
+  double? contentWidth;
+
+  /// Minimum width for showing server and Flutter logs side by side.
+  final sideBySideMinWidth = 160.0;
+
+  /// Whether the main log area should use a side-by-side layout.
+  bool get useSideBySideLayout =>
+      showFlutterOutput && (contentWidth ?? 0) >= sideBySideMinWidth;
 
   /// Whether a tracked action (hot reload, migration) is in progress.
   bool actionBusy = false;
