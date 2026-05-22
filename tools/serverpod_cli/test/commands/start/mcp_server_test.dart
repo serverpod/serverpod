@@ -71,6 +71,7 @@ void main() {
             'hot_restart',
             'tail_server_logs',
             'tail_flutter_logs',
+            'get_flutter_app_dtd',
           ]),
         );
       },
@@ -152,6 +153,22 @@ void main() {
           expect(
             (result.content.first as TextContent).text,
             contains('Flutter log history not available'),
+          );
+        },
+      );
+
+      test(
+        'when calling get_flutter_app_dtd without a callback, '
+        'then it returns an error',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'get_flutter_app_dtd'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Flutter DTD not available'),
           );
         },
       );
@@ -485,6 +502,42 @@ void main() {
                   )
                   as List<dynamic>;
           expect(lines, ['line 2', 'line 3']);
+        },
+      );
+
+      test(
+        'when calling get_flutter_app_dtd with a callback, '
+        'then it returns the URI as JSON',
+        () async {
+          server.getFlutterDtdUri = () => 'ws://127.0.0.1:9100/ws';
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'get_flutter_app_dtd'),
+          );
+
+          expect(result.isError, isNull);
+          expect(
+            jsonDecode((result.content.first as TextContent).text),
+            {'uri': 'ws://127.0.0.1:9100/ws'},
+          );
+        },
+      );
+
+      test(
+        'when calling get_flutter_app_dtd before the app publishes DTD, '
+        'then it returns a null URI',
+        () async {
+          server.getFlutterDtdUri = () => null;
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'get_flutter_app_dtd'),
+          );
+
+          expect(result.isError, isNull);
+          expect(
+            jsonDecode((result.content.first as TextContent).text),
+            {'uri': null},
+          );
         },
       );
     });

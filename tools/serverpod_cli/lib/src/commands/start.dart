@@ -706,6 +706,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       getLogHistory: mcpGetLogHistory,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
+      getFlutterDtdUri: () => flutterProcess?.dtdUri,
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
     log.info('MCP server listening on ${mcpSocket.socketPath}');

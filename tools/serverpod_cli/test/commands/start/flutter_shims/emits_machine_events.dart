@@ -35,6 +35,10 @@ Future<void> main(List<String> args) async {
     'params': {'wsUri': wsUri, 'port': Uri.parse(wsUri).port},
   });
   emit({
+    'event': 'app.dtd',
+    'params': {'uri': 'ws://127.0.0.1:9100/ws'},
+  });
+  emit({
     'event': 'app.started',
     'params': {},
   });

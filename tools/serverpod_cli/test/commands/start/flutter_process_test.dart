@@ -173,8 +173,8 @@ void main() {
       });
 
       test(
-        'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.started '
-        'then onProgress fires, flutterAppUrl is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
+        'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started '
+        'then onProgress fires, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
         () async {
           // Wait until the URI shows up (the shim emits it ~immediately).
           final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -187,6 +187,7 @@ void main() {
             equals('http://127.0.0.1:${fake.server.port}'),
           );
           expect(fp.flutterAppUrl, equals('http://localhost:54321'));
+          expect(fp.dtdUri, equals('ws://127.0.0.1:9100/ws'));
           expect(progressMessages, contains(flutterAppLaunching));
           expect(progressMessages, contains('Launching ...'));
           expect(progressMessages, contains('ready'));
@@ -397,6 +398,22 @@ void main() {
         );
         expect(fp.flutterAppUrl, 'http://localhost:8080');
         expect(progressMessages, containsAllInOrder(['Compiling', 'ready']));
+      },
+    );
+
+    test(
+      'when given app.dtd then dtdUri is captured',
+      () {
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.dtd',
+              'params': {'uri': 'ws://127.0.0.1:9100/ws'},
+            },
+          ]),
+        );
+
+        expect(fp.dtdUri, 'ws://127.0.0.1:9100/ws');
       },
     );
 
