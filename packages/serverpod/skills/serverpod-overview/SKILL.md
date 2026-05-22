@@ -24,7 +24,7 @@ Most likely the server is already running with hot reload and `serverpod generat
 ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 
 - `create_migration` and `apply_migrations` for database (after you change data models).
-- `tail_logs` to read logs from the server.
+- `tail_server_logs` to read logs from the server.
 - `tail_flutter_logs` to read raw stdout/stderr from the Flutter app.
 - `hot_restart` will reload the server and the Flutter app. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
 

@@ -80,7 +80,7 @@ final Tool hotRestartTool = Tool(
 );
 
 final Tool tailLogsTool = Tool(
-  name: 'tail_logs',
+  name: 'tail_server_logs',
   description:
       'Return recent log entries from the running server '
       '(structured log entries plus completed operations). Newest last.',
@@ -98,9 +98,8 @@ final Tool tailLogsTool = Tool(
 final Tool tailFlutterLogsTool = Tool(
   name: 'tail_flutter_logs',
   description:
-      'Return recent raw stdout/stderr lines from the running Flutter app. '
-      'Newest last. Only available when Flutter was launched by '
-      '`serverpod start`.',
+      'Return recent raw stdout/stderr lines from the running Flutter app '
+      'started from `serverpod start`. Newest last.',
   inputSchema: Schema.object(
     properties: {
       'limit': Schema.int(

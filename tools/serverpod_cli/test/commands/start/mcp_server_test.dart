@@ -69,7 +69,7 @@ void main() {
             'create_repair_migration',
             'hot_reload',
             'hot_restart',
-            'tail_logs',
+            'tail_server_logs',
             'tail_flutter_logs',
           ]),
         );
