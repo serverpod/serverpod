@@ -37,6 +37,7 @@ class McpSocketServer {
   Future<void> Function()? _onHotReload;
   Future<void> Function()? _onHotRestart;
   List<Object> Function()? _getLogHistory;
+  List<String> Function()? _getFlutterLogHistory;
   String? Function()? _getVmServiceUri;
   Stream<void>? _vmServiceUriChanges;
 
@@ -67,6 +68,7 @@ class McpSocketServer {
     Future<void> Function()? onHotReload,
     Future<void> Function()? onHotRestart,
     List<Object> Function()? getLogHistory,
+    List<String> Function()? getFlutterLogHistory,
     String? Function()? getVmServiceUri,
     Stream<void>? vmServiceUriChanges,
   }) {
@@ -76,6 +78,7 @@ class McpSocketServer {
     _onHotReload = onHotReload;
     _onHotRestart = onHotRestart;
     _getLogHistory = getLogHistory;
+    _getFlutterLogHistory = getFlutterLogHistory;
     _getVmServiceUri = getVmServiceUri;
     _vmServiceUriChanges = vmServiceUriChanges;
     final server = _mcpServer;
@@ -86,6 +89,7 @@ class McpSocketServer {
       server.onHotReload = onHotReload;
       server.onHotRestart = onHotRestart;
       server.getLogHistory = getLogHistory;
+      server.getFlutterLogHistory = getFlutterLogHistory;
       server.getVmServiceUri = getVmServiceUri;
       server.vmServiceUriChanges = vmServiceUriChanges;
     }
@@ -143,6 +147,7 @@ class McpSocketServer {
     server.onHotReload = _onHotReload;
     server.onHotRestart = _onHotRestart;
     server.getLogHistory = _getLogHistory;
+    server.getFlutterLogHistory = _getFlutterLogHistory;
     server.getVmServiceUri = _getVmServiceUri;
     server.vmServiceUriChanges = _vmServiceUriChanges;
 

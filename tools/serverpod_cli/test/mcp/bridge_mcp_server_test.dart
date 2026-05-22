@@ -18,9 +18,9 @@ import 'package:test/test.dart';
 ///   McpSocketServer  (with apply_migrations callback)
 ///
 /// The bridge auto-connects on the first tool/resource call. The runner's
-/// static surface (apply_migrations, create_migration, hot_reload,
-/// hot_restart, tail_logs, serverpod://vm-service) is advertised upfront
-/// regardless of whether the runner is currently up.
+/// static surface (apply_migrations, create_migration, hot_reload, hot_restart,
+/// tail_server_logs, tail_flutter_logs, serverpod://vm-service) is advertised
+/// upfront regardless of whether the runner is currently up.
 void main() {
   group(
     'Given a BridgeMcpServer wired to a running runner socket',
@@ -67,7 +67,8 @@ void main() {
               'create_repair_migration',
               'hot_reload',
               'hot_restart',
-              'tail_logs',
+              'tail_server_logs',
+              'tail_flutter_logs',
             }),
           );
           expect(names, isNot(contains('connect')));
@@ -136,7 +137,8 @@ void main() {
               'create_repair_migration',
               'hot_reload',
               'hot_restart',
-              'tail_logs',
+              'tail_server_logs',
+              'tail_flutter_logs',
             }),
           );
         },
