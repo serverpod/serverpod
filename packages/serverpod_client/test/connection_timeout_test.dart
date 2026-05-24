@@ -1,7 +1,10 @@
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
 
-class TestSerializationManager extends SerializationManager {}
+class TestSerializationManager extends SerializationManager {
+  @override
+  String get moduleName => 'test';
+}
 
 class TestServerpodClient extends ServerpodClientShared {
   TestServerpodClient({

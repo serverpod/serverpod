@@ -4,9 +4,15 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/serverpod_client_shared_private.dart';
 import 'package:test/test.dart';
 
-class TestSerialization extends SerializationManager {}
+class TestSerialization extends SerializationManager {
+  @override
+  String get moduleName => 'test';
+}
 
 class TestSerializationImpl extends SerializationManager {
+  @override
+  String get moduleName => 'test';
+
   @override
   Object? decodeWithType(String data) {
     var json = jsonDecode(data);

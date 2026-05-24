@@ -288,4 +288,7 @@ class _TestClient extends ServerpodClientShared {
   }
 }
 
-class _TestSerializationManager extends SerializationManager {}
+class _TestSerializationManager extends SerializationManager {
+  @override
+  String get moduleName => 'test';
+}

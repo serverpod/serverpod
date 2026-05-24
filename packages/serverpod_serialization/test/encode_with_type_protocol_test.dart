@@ -28,6 +28,9 @@ class _User implements SerializableModel, ProtocolSerialization {
 
 class _TestProtocol extends SerializationManager {
   @override
+  String get moduleName => 'test';
+
+  @override
   String? getClassNameForObject(Object? data) {
     if (data is _User) return '_User';
     return super.getClassNameForObject(data);

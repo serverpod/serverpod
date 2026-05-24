@@ -1,7 +1,10 @@
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Test serialization manager used in tests.
-class TestSerializationManager extends SerializationManager {}
+class TestSerializationManager extends SerializationManager {
+  @override
+  String get moduleName => 'test';
+}
 
 /// Test Serverpod client for unit tests.
 class TestServerpodClient extends ServerpodClientShared {
