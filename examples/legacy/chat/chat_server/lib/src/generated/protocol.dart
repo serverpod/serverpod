@@ -206,7 +206,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'chat';
+  String get moduleName => 'chat';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

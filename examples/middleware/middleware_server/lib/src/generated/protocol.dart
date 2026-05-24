@@ -124,7 +124,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'middleware';
+  String get moduleName => 'middleware';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

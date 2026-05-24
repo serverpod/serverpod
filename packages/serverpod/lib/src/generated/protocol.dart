@@ -1842,7 +1842,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'serverpod';
+  String get moduleName => 'serverpod';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

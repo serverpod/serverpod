@@ -13595,7 +13595,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'serverpod_test';
+  String get moduleName => 'serverpod_test';
 
   /// Wraps serialized data with its class name so that it can be deserialized
   /// with [deserializeByClassName].
