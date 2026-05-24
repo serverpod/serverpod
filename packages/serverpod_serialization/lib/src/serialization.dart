@@ -47,7 +47,7 @@ Type getType<T>() => T;
 /// extended by generated code.
 abstract class SerializationManager {
   /// The name of the module that defines the serialization.
-  String getModuleName();
+  String get moduleName;
 
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {

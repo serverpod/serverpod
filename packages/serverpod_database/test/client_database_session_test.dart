@@ -95,7 +95,7 @@ void main() {
 
 class _TestSerializationManager extends DatabaseSerializationManager {
   @override
-  String getModuleName() => 'test';
+  String get moduleName => 'test';
 
   @override
   Table? getTableForType(Type t) => Table(tableName: 'example');

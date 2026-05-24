@@ -154,7 +154,7 @@ class MigrationManager {
       await _updateState(session, transaction);
       var latestVersion = _getLatestVersion();
 
-      var moduleName = session.db.serializationManager.getModuleName();
+      var moduleName = session.db.serializationManager.moduleName;
 
       var definitionModuleName = await _loadLatestDefinitionModuleName();
       if (definitionModuleName != null && definitionModuleName != moduleName) {
