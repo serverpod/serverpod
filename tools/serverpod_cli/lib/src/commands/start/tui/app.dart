@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/tui/app.dart';
-import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'main_screen.dart';
 
 import 'state.dart';
 
 /// State holder for [ServerpodWatchApp].
-class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
+class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   StartAppStateHolder(this._state);
 
   final ServerWatchState _state;
@@ -26,7 +25,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   ServerWatchState get state => _state;
 
   @override
-  ServerpodAppState? get widgetState => _widgetState;
+  TuiAppState? get widgetState => _widgetState;
 
   @override
   void attach(ServerpodWatchAppState widgetState) {
@@ -76,7 +75,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
 }
 
 /// Root TUI component for `serverpod start`.
-class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
+class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
   const ServerpodWatchApp({
     super.key,
     required super.holder,
@@ -86,10 +85,10 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
   final void Function(StartAppStateHolder holder) onReady;
 
   @override
-  ServerpodAppState createState() => ServerpodWatchAppState();
+  TuiAppState createState() => ServerpodWatchAppState();
 }
 
-class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
+class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
   final flutterRawScrollController = ScrollController();

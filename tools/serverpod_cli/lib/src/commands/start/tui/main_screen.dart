@@ -1,16 +1,7 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
-import 'package:serverpod_cli/src/commands/tui/bounded_queue_list.dart';
-import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
-import 'package:serverpod_cli/src/commands/tui/components/log_operation.dart';
-import 'package:serverpod_cli/src/commands/tui/components/tab_bar.dart';
-import 'package:serverpod_cli/src/commands/tui/run_app.dart';
-import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
-import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
-import '../../tui/components/help_overlay.dart';
 import 'loading_screen.dart';
 import 'state.dart';
 
@@ -52,6 +43,43 @@ class MainScreen extends StatelessComponent {
   final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onQuit;
+
+  static const _helpBindings = [
+    (
+      'Navigation',
+      [
+        ('↑ / k', 'Scroll up'),
+        ('↓ / j / Enter', 'Scroll down'),
+        ('Shift+↑', 'Scroll up ¼ screen'),
+        ('Shift+↓', 'Scroll down ¼ screen'),
+        ('u / Ctrl+u', 'Scroll up ½ screen'),
+        ('d / Ctrl+d', 'Scroll down ½ screen'),
+        ('PgUp / b / Backspace', 'Scroll up one screen'),
+        ('PgDn / Space / f', 'Scroll down one screen'),
+        ('Home / g', 'Go to start'),
+        ('End / G', 'Go to end'),
+      ],
+    ),
+    (
+      'Tabs',
+      [
+        ('Tab / →', 'Next tab'),
+        ('←', 'Previous tab'),
+        ('1', 'Log Messages'),
+        ('2', 'Raw server output'),
+      ],
+    ),
+    (
+      'Actions',
+      [
+        ('R / Shift+R', 'Hot reload / restart'),
+        ('M / Shift+M', 'Create migration (⇧ = force)'),
+        ('P / Shift+P', 'Repair migration (⇧ = force)'),
+        ('A', 'Apply migrations'),
+        ('Q', 'Quit'),
+      ],
+    ),
+  ];
 
   @override
   Component build(BuildContext context) {
@@ -133,7 +161,11 @@ class MainScreen extends StatelessComponent {
           ],
         ),
         LoadingScreen(visible: showSplash),
-        if (state.showHelp) HelpOverlay(controller: helpScrollController),
+        if (state.showHelp)
+          HelpOverlay(
+            bindings: _helpBindings,
+            controller: helpScrollController,
+          ),
       ],
     );
   }
@@ -341,7 +373,7 @@ class MainScreen extends StatelessComponent {
               onQuit?.call();
             } else {
               // Boot path: [onQuit] is wired only after [WatchLoopReady].
-              shutdownServerpodApp(0);
+              shutdownTuiApp(0);
             }
           },
         ),

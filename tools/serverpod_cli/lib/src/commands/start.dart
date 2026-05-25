@@ -21,9 +21,6 @@ import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/commands/tui/run_app.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -38,6 +35,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -977,11 +975,11 @@ Future<int> _runWithTui({
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
-      shutdownServerpodApp(code);
+      shutdownTuiApp(code);
     }),
   );
 
-  await runServerpodApp(
+  await runTuiApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
     onShutdownSignal: () => shutdown.complete(0),
   );
