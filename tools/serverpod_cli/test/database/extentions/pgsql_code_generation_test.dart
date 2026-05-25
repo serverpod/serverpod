@@ -911,15 +911,21 @@ END
       [],
     );
 
-    test('when toPgSql is called then PostGIS extension creation code is included.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains(createPostgisExtension));
-    });
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
 
-    test('when toPgSql is called then the column uses geography(Point,4326) type.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains('"location" geography(Point,4326) NOT NULL'));
-    });
+    test(
+      'when toPgSql is called then the column uses geography(Point,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"location" geography(Point,4326) NOT NULL'));
+      },
+    );
   });
 
   group('Given a table definition with a GeographyLineString field', () {
@@ -939,15 +945,21 @@ END
       [],
     );
 
-    test('when toPgSql is called then PostGIS extension creation code is included.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains(createPostgisExtension));
-    });
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
 
-    test('when toPgSql is called then the column uses geography(LineString,4326) type.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains('"route" geography(LineString,4326) NOT NULL'));
-    });
+    test(
+      'when toPgSql is called then the column uses geography(LineString,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"route" geography(LineString,4326) NOT NULL'));
+      },
+    );
   });
 
   group('Given a table definition with a GeographyPolygon field', () {
@@ -967,15 +979,21 @@ END
       [],
     );
 
-    test('when toPgSql is called then PostGIS extension creation code is included.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains(createPostgisExtension));
-    });
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
 
-    test('when toPgSql is called then the column uses geography(Polygon,4326) type.', () {
-      var pgsql = databaseDefinition.toPgSql(installedModules: []);
-      expect(pgsql, contains('"region" geography(Polygon,4326) NOT NULL'));
-    });
+    test(
+      'when toPgSql is called then the column uses geography(Polygon,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"region" geography(Polygon,4326) NOT NULL'));
+      },
+    );
   });
 
   group(
@@ -997,18 +1015,24 @@ END
         [],
       );
 
-      test('when toPgSql is called then PostGIS extension creation code is included.', () {
-        var pgsql = databaseDefinition.toPgSql(installedModules: []);
-        expect(pgsql, contains(createPostgisExtension));
-      });
+      test(
+        'when toPgSql is called then PostGIS extension creation code is included.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+          expect(pgsql, contains(createPostgisExtension));
+        },
+      );
 
-      test('when toPgSql is called then the column uses geography(GeometryCollection,4326) type.', () {
-        var pgsql = databaseDefinition.toPgSql(installedModules: []);
-        expect(
-          pgsql,
-          contains('"shapes" geography(GeometryCollection,4326) NOT NULL'),
-        );
-      });
+      test(
+        'when toPgSql is called then the column uses geography(GeometryCollection,4326) type.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+          expect(
+            pgsql,
+            contains('"shapes" geography(GeometryCollection,4326) NOT NULL'),
+          );
+        },
+      );
     },
   );
 }

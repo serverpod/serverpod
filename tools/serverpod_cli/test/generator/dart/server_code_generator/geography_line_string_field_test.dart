@@ -204,7 +204,8 @@ void main() {
               type: 'GeographyLineString?',
             ),
             isTrue,
-            reason: 'Missing nullable GeographyLineString? field declaration for route',
+            reason:
+                'Missing nullable GeographyLineString? field declaration for route',
           );
         },
       );

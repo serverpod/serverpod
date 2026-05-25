@@ -8,11 +8,14 @@ const paris = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
 
 void main() {
   group('GeographyLineString construction', () {
-    test('when constructed with points then points and default SRID 4326 are stored.', () {
-      const ls = GeographyLineString(points: [london, paris]);
-      expect(ls.points, [london, paris]);
-      expect(ls.srid, 4326);
-    });
+    test(
+      'when constructed with points then points and default SRID 4326 are stored.',
+      () {
+        const ls = GeographyLineString(points: [london, paris]);
+        expect(ls.points, [london, paris]);
+        expect(ls.srid, 4326);
+      },
+    );
 
     test('when constructed with custom SRID then that SRID is stored.', () {
       const ls = GeographyLineString(points: [london], srid: 3857);
@@ -122,57 +125,81 @@ void main() {
       expect(ls.points[1].latitude, 2.0);
     });
 
-    test('given an unsupported type when fromJson is called then throws ArgumentError.', () {
-      expect(
-        () => GeographyLineStringJsonExtension.fromJson(42),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+    test(
+      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      () {
+        expect(
+          () => GeographyLineStringJsonExtension.fromJson(42),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 
   group('GeographyLineString round-trip', () {
-    test('when serialized to JSON and deserialized then all values are preserved.', () {
-      const original = GeographyLineString(points: [london, paris]);
-      final restored = GeographyLineStringJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored, equals(original));
-    });
+    test(
+      'when serialized to JSON and deserialized then all values are preserved.',
+      () {
+        const original = GeographyLineString(points: [london, paris]);
+        final restored = GeographyLineStringJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored, equals(original));
+      },
+    );
 
-    test('when serialized with custom SRID and deserialized then that SRID is preserved.', () {
-      const original = GeographyLineString(points: [london, paris], srid: 3857);
-      final restored = GeographyLineStringJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.srid, 3857);
-    });
+    test(
+      'when serialized with custom SRID and deserialized then that SRID is preserved.',
+      () {
+        const original = GeographyLineString(
+          points: [london, paris],
+          srid: 3857,
+        );
+        final restored = GeographyLineStringJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.srid, 3857);
+      },
+    );
   });
 
   group('GeographyLineString equality', () {
-    test('when two line strings have the same points and SRID then they are equal.', () {
-      const a = GeographyLineString(points: [london, paris]);
-      const b = GeographyLineString(points: [london, paris]);
-      expect(a, equals(b));
-    });
+    test(
+      'when two line strings have the same points and SRID then they are equal.',
+      () {
+        const a = GeographyLineString(points: [london, paris]);
+        const b = GeographyLineString(points: [london, paris]);
+        expect(a, equals(b));
+      },
+    );
 
-    test('when two line strings have different points then they are not equal.', () {
-      const a = GeographyLineString(points: [london, paris]);
-      const b = GeographyLineString(
-        points: [london, GeographyPoint(longitude: 0.0, latitude: 0.0)],
-      );
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two line strings have different points then they are not equal.',
+      () {
+        const a = GeographyLineString(points: [london, paris]);
+        const b = GeographyLineString(
+          points: [london, GeographyPoint(longitude: 0.0, latitude: 0.0)],
+        );
+        expect(a, isNot(equals(b)));
+      },
+    );
 
-    test('when two line strings have different SRIDs then they are not equal.', () {
-      const a = GeographyLineString(points: [london], srid: 4326);
-      const b = GeographyLineString(points: [london], srid: 3857);
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two line strings have different SRIDs then they are not equal.',
+      () {
+        const a = GeographyLineString(points: [london], srid: 4326);
+        const b = GeographyLineString(points: [london], srid: 3857);
+        expect(a, isNot(equals(b)));
+      },
+    );
 
-    test('when two line strings are equal then they have the same hashCode.', () {
-      const a = GeographyLineString(points: [london, paris]);
-      const b = GeographyLineString(points: [london, paris]);
-      expect(a.hashCode, b.hashCode);
-    });
+    test(
+      'when two line strings are equal then they have the same hashCode.',
+      () {
+        const a = GeographyLineString(points: [london, paris]);
+        const b = GeographyLineString(points: [london, paris]);
+        expect(a.hashCode, b.hashCode);
+      },
+    );
   });
 }

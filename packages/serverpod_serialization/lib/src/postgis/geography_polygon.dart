@@ -50,7 +50,9 @@ class GeographyPolygon implements Geography {
       for (var i = 0; i < numPoints; i++) {
         final longitude = buf.getFloat64(offset, endian);
         final latitude = buf.getFloat64(offset + 8, endian);
-        ring.add(GeographyPoint(longitude: longitude, latitude: latitude, srid: srid));
+        ring.add(
+          GeographyPoint(longitude: longitude, latitude: latitude, srid: srid),
+        );
         offset += 16;
       }
       rings.add(ring);

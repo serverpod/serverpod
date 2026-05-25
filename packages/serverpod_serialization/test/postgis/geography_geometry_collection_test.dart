@@ -19,13 +19,16 @@ const squarePolygon = GeographyPolygon(
 
 void main() {
   group('GeographyGeometryCollection construction', () {
-    test('when constructed with geometries then they and default SRID 4326 are stored.', () {
-      const col = GeographyGeometryCollection(
-        geometries: [london, routeLP],
-      );
-      expect(col.geometries.length, 2);
-      expect(col.srid, 4326);
-    });
+    test(
+      'when constructed with geometries then they and default SRID 4326 are stored.',
+      () {
+        const col = GeographyGeometryCollection(
+          geometries: [london, routeLP],
+        );
+        expect(col.geometries.length, 2);
+        expect(col.srid, 4326);
+      },
+    );
 
     test('when constructed with custom SRID then that SRID is stored.', () {
       const col = GeographyGeometryCollection(
@@ -42,19 +45,25 @@ void main() {
   });
 
   group('GeographyGeometryCollection.toEwkt', () {
-    test('when called then returns EWKT starting with SRID and GEOMETRYCOLLECTION.', () {
-      const col = GeographyGeometryCollection(
-        geometries: [london, paris],
-      );
-      expect(col.toEwkt(), startsWith('SRID=4326;GEOMETRYCOLLECTION('));
-      expect(col.toEwkt(), contains('POINT(-0.1278 51.5074)'));
-      expect(col.toEwkt(), contains('POINT(2.3522 48.8566)'));
-    });
+    test(
+      'when called then returns EWKT starting with SRID and GEOMETRYCOLLECTION.',
+      () {
+        const col = GeographyGeometryCollection(
+          geometries: [london, paris],
+        );
+        expect(col.toEwkt(), startsWith('SRID=4326;GEOMETRYCOLLECTION('));
+        expect(col.toEwkt(), contains('POINT(-0.1278 51.5074)'));
+        expect(col.toEwkt(), contains('POINT(2.3522 48.8566)'));
+      },
+    );
 
-    test('when called then sub-geometries are emitted without their SRID prefix.', () {
-      const col = GeographyGeometryCollection(geometries: [london]);
-      expect(col.toEwkt(), isNot(contains('SRID=4326;POINT')));
-    });
+    test(
+      'when called then sub-geometries are emitted without their SRID prefix.',
+      () {
+        const col = GeographyGeometryCollection(geometries: [london]);
+        expect(col.toEwkt(), isNot(contains('SRID=4326;POINT')));
+      },
+    );
 
     test('when toString is called then returns same as toEwkt.', () {
       const col = GeographyGeometryCollection(geometries: [london]);
@@ -156,75 +165,99 @@ void main() {
       expect(pt.latitude, 2.0);
     });
 
-    test('given an unsupported type when fromJson is called then throws ArgumentError.', () {
-      expect(
-        () => GeographyGeometryCollectionJsonExtension.fromJson(42),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+    test(
+      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      () {
+        expect(
+          () => GeographyGeometryCollectionJsonExtension.fromJson(42),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 
   group('GeographyGeometryCollection round-trip', () {
-    test('when serialized to JSON and deserialized then point sub-geometries are preserved.', () {
-      const original = GeographyGeometryCollection(
-        geometries: [london, paris],
-      );
-      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.geometries.length, 2);
-      expect(restored.geometries[0], isA<GeographyPoint>());
-      expect(restored.geometries[0], equals(london));
-    });
+    test(
+      'when serialized to JSON and deserialized then point sub-geometries are preserved.',
+      () {
+        const original = GeographyGeometryCollection(
+          geometries: [london, paris],
+        );
+        final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.geometries.length, 2);
+        expect(restored.geometries[0], isA<GeographyPoint>());
+        expect(restored.geometries[0], equals(london));
+      },
+    );
 
-    test('when serialized with mixed types and deserialized then all sub-geometry types are preserved.', () {
-      const original = GeographyGeometryCollection(
-        geometries: [london, routeLP, squarePolygon],
-      );
-      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.geometries.length, 3);
-      expect(restored.geometries[0], isA<GeographyPoint>());
-      expect(restored.geometries[1], isA<GeographyLineString>());
-      expect(restored.geometries[2], isA<GeographyPolygon>());
-    });
+    test(
+      'when serialized with mixed types and deserialized then all sub-geometry types are preserved.',
+      () {
+        const original = GeographyGeometryCollection(
+          geometries: [london, routeLP, squarePolygon],
+        );
+        final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.geometries.length, 3);
+        expect(restored.geometries[0], isA<GeographyPoint>());
+        expect(restored.geometries[1], isA<GeographyLineString>());
+        expect(restored.geometries[2], isA<GeographyPolygon>());
+      },
+    );
 
-    test('when serialized with custom SRID and deserialized then that SRID is preserved.', () {
-      const original = GeographyGeometryCollection(
-        geometries: [london],
-        srid: 3857,
-      );
-      final restored = GeographyGeometryCollectionJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.srid, 3857);
-    });
+    test(
+      'when serialized with custom SRID and deserialized then that SRID is preserved.',
+      () {
+        const original = GeographyGeometryCollection(
+          geometries: [london],
+          srid: 3857,
+        );
+        final restored = GeographyGeometryCollectionJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.srid, 3857);
+      },
+    );
   });
 
   group('GeographyGeometryCollection equality', () {
-    test('when two collections have the same geometries and SRID then they are equal.', () {
-      const a = GeographyGeometryCollection(geometries: [london, paris]);
-      const b = GeographyGeometryCollection(geometries: [london, paris]);
-      expect(a, equals(b));
-    });
+    test(
+      'when two collections have the same geometries and SRID then they are equal.',
+      () {
+        const a = GeographyGeometryCollection(geometries: [london, paris]);
+        const b = GeographyGeometryCollection(geometries: [london, paris]);
+        expect(a, equals(b));
+      },
+    );
 
-    test('when two collections have different geometries then they are not equal.', () {
-      const a = GeographyGeometryCollection(geometries: [london]);
-      const b = GeographyGeometryCollection(geometries: [paris]);
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two collections have different geometries then they are not equal.',
+      () {
+        const a = GeographyGeometryCollection(geometries: [london]);
+        const b = GeographyGeometryCollection(geometries: [paris]);
+        expect(a, isNot(equals(b)));
+      },
+    );
 
-    test('when two collections have different SRIDs then they are not equal.', () {
-      const a = GeographyGeometryCollection(geometries: [london], srid: 4326);
-      const b = GeographyGeometryCollection(geometries: [london], srid: 3857);
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two collections have different SRIDs then they are not equal.',
+      () {
+        const a = GeographyGeometryCollection(geometries: [london], srid: 4326);
+        const b = GeographyGeometryCollection(geometries: [london], srid: 3857);
+        expect(a, isNot(equals(b)));
+      },
+    );
 
-    test('when two collections are equal then they have the same hashCode.', () {
-      const a = GeographyGeometryCollection(geometries: [london, paris]);
-      const b = GeographyGeometryCollection(geometries: [london, paris]);
-      expect(a.hashCode, b.hashCode);
-    });
+    test(
+      'when two collections are equal then they have the same hashCode.',
+      () {
+        const a = GeographyGeometryCollection(geometries: [london, paris]);
+        const b = GeographyGeometryCollection(geometries: [london, paris]);
+        expect(a.hashCode, b.hashCode);
+      },
+    );
   });
 }

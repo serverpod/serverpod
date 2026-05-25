@@ -204,7 +204,8 @@ void main() {
               type: 'GeographyPoint?',
             ),
             isTrue,
-            reason: 'Missing nullable GeographyPoint? field declaration for location',
+            reason:
+                'Missing nullable GeographyPoint? field declaration for location',
           );
         },
       );

@@ -121,30 +121,43 @@ void main() {
       expect(p.srid, 4326);
     });
 
-    test('given an unsupported type when fromJson is called then throws ArgumentError.', () {
-      expect(
-        () => GeographyPointJsonExtension.fromJson(42),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+    test(
+      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      () {
+        expect(
+          () => GeographyPointJsonExtension.fromJson(42),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 
   group('GeographyPoint round-trip', () {
-    test('when serialized to JSON and deserialized then all values are preserved.', () {
-      const original = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
-      final restored = GeographyPointJsonExtension.fromJson(original.toJson());
-      expect(restored, equals(original));
-    });
+    test(
+      'when serialized to JSON and deserialized then all values are preserved.',
+      () {
+        const original = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
+        final restored = GeographyPointJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored, equals(original));
+      },
+    );
 
-    test('when serialized with custom SRID and deserialized then that SRID is preserved.', () {
-      const original = GeographyPoint(
-        longitude: 0.0,
-        latitude: 0.0,
-        srid: 3857,
-      );
-      final restored = GeographyPointJsonExtension.fromJson(original.toJson());
-      expect(restored.srid, 3857);
-    });
+    test(
+      'when serialized with custom SRID and deserialized then that SRID is preserved.',
+      () {
+        const original = GeographyPoint(
+          longitude: 0.0,
+          latitude: 0.0,
+          srid: 3857,
+        );
+        final restored = GeographyPointJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.srid, 3857);
+      },
+    );
   });
 
   group('GeographyPoint equality', () {
@@ -154,17 +167,23 @@ void main() {
       expect(a, equals(b));
     });
 
-    test('when two points have different latitude then they are not equal.', () {
-      const a = GeographyPoint(longitude: 1.0, latitude: 2.0);
-      const b = GeographyPoint(longitude: 1.0, latitude: 3.0);
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two points have different latitude then they are not equal.',
+      () {
+        const a = GeographyPoint(longitude: 1.0, latitude: 2.0);
+        const b = GeographyPoint(longitude: 1.0, latitude: 3.0);
+        expect(a, isNot(equals(b)));
+      },
+    );
 
-    test('when two points have different longitude then they are not equal.', () {
-      const a = GeographyPoint(longitude: 1.0, latitude: 2.0);
-      const b = GeographyPoint(longitude: 2.0, latitude: 2.0);
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when two points have different longitude then they are not equal.',
+      () {
+        const a = GeographyPoint(longitude: 1.0, latitude: 2.0);
+        const b = GeographyPoint(longitude: 2.0, latitude: 2.0);
+        expect(a, isNot(equals(b)));
+      },
+    );
 
     test('when two points have different SRID then they are not equal.', () {
       const a = GeographyPoint(longitude: 1.0, latitude: 2.0, srid: 4326);

@@ -23,12 +23,15 @@ const holeRing = [
 
 void main() {
   group('GeographyPolygon construction', () {
-    test('when constructed with exterior ring then ring, empty holes, and default SRID 4326 are stored.', () {
-      const poly = GeographyPolygon(exteriorRing: squareRing);
-      expect(poly.exteriorRing, squareRing);
-      expect(poly.holes, isEmpty);
-      expect(poly.srid, 4326);
-    });
+    test(
+      'when constructed with exterior ring then ring, empty holes, and default SRID 4326 are stored.',
+      () {
+        const poly = GeographyPolygon(exteriorRing: squareRing);
+        expect(poly.exteriorRing, squareRing);
+        expect(poly.holes, isEmpty);
+        expect(poly.srid, 4326);
+      },
+    );
 
     test('when constructed with holes then holes are stored.', () {
       const poly = GeographyPolygon(
@@ -45,13 +48,16 @@ void main() {
   });
 
   group('GeographyPolygon.toEwkt', () {
-    test('when called on a simple polygon then returns EWKT with SRID=4326.', () {
-      const poly = GeographyPolygon(exteriorRing: squareRing);
-      final ewkt = poly.toEwkt();
-      expect(ewkt, startsWith('SRID=4326;POLYGON('));
-      expect(ewkt, contains('0.0 0.0'));
-      expect(ewkt, contains('1.0 0.0'));
-    });
+    test(
+      'when called on a simple polygon then returns EWKT with SRID=4326.',
+      () {
+        const poly = GeographyPolygon(exteriorRing: squareRing);
+        final ewkt = poly.toEwkt();
+        expect(ewkt, startsWith('SRID=4326;POLYGON('));
+        expect(ewkt, contains('0.0 0.0'));
+        expect(ewkt, contains('1.0 0.0'));
+      },
+    );
 
     test('when polygon has a hole then EWKT contains interior ring.', () {
       const poly = GeographyPolygon(
@@ -163,60 +169,78 @@ void main() {
       expect(poly.exteriorRing[1].longitude, 1.0);
     });
 
-    test('given an unsupported type when fromJson is called then throws ArgumentError.', () {
-      expect(
-        () => GeographyPolygonJsonExtension.fromJson(42),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+    test(
+      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      () {
+        expect(
+          () => GeographyPolygonJsonExtension.fromJson(42),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 
   group('GeographyPolygon round-trip', () {
-    test('when serialized to JSON and deserialized then exterior ring and SRID are preserved.', () {
-      const original = GeographyPolygon(exteriorRing: squareRing);
-      final restored = GeographyPolygonJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.exteriorRing.length, original.exteriorRing.length);
-      expect(restored.srid, original.srid);
-    });
+    test(
+      'when serialized to JSON and deserialized then exterior ring and SRID are preserved.',
+      () {
+        const original = GeographyPolygon(exteriorRing: squareRing);
+        final restored = GeographyPolygonJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.exteriorRing.length, original.exteriorRing.length);
+        expect(restored.srid, original.srid);
+      },
+    );
 
-    test('when serialized with holes and deserialized then holes are preserved.', () {
-      const original = GeographyPolygon(
-        exteriorRing: squareRing,
-        holes: [holeRing],
-      );
-      final restored = GeographyPolygonJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.holes.length, 1);
-      expect(restored.holes[0].length, holeRing.length);
-    });
+    test(
+      'when serialized with holes and deserialized then holes are preserved.',
+      () {
+        const original = GeographyPolygon(
+          exteriorRing: squareRing,
+          holes: [holeRing],
+        );
+        final restored = GeographyPolygonJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.holes.length, 1);
+        expect(restored.holes[0].length, holeRing.length);
+      },
+    );
 
-    test('when serialized with custom SRID and deserialized then that SRID is preserved.', () {
-      const original = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
-      final restored = GeographyPolygonJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored.srid, 3857);
-    });
+    test(
+      'when serialized with custom SRID and deserialized then that SRID is preserved.',
+      () {
+        const original = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
+        final restored = GeographyPolygonJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored.srid, 3857);
+      },
+    );
   });
 
   group('GeographyPolygon equality', () {
-    test('when two polygons have the same exterior ring and SRID then they are equal.', () {
-      const a = GeographyPolygon(exteriorRing: squareRing);
-      const b = GeographyPolygon(exteriorRing: squareRing);
-      expect(a, equals(b));
-    });
+    test(
+      'when two polygons have the same exterior ring and SRID then they are equal.',
+      () {
+        const a = GeographyPolygon(exteriorRing: squareRing);
+        const b = GeographyPolygon(exteriorRing: squareRing);
+        expect(a, equals(b));
+      },
+    );
 
-    test('when a polygon has a hole and the other does not then they are not equal.', () {
-      const a = GeographyPolygon(exteriorRing: squareRing);
-      const b = GeographyPolygon(
-        exteriorRing: squareRing,
-        holes: [holeRing],
-      );
-      expect(a, isNot(equals(b)));
-    });
+    test(
+      'when a polygon has a hole and the other does not then they are not equal.',
+      () {
+        const a = GeographyPolygon(exteriorRing: squareRing);
+        const b = GeographyPolygon(
+          exteriorRing: squareRing,
+          holes: [holeRing],
+        );
+        expect(a, isNot(equals(b)));
+      },
+    );
 
     test('when two polygons have different SRIDs then they are not equal.', () {
       const a = GeographyPolygon(exteriorRing: squareRing, srid: 4326);
