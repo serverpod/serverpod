@@ -12685,7 +12685,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           ? className
           : 'serverpod_test_module.$className';
     }
-    className = _i221.Protocol().getClassNameForObject(data);
+    className = _i225.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
@@ -13413,7 +13413,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (dataClassName.startsWith('serverpod_test_shared.')) {
       data['className'] = dataClassName.substring(22);
-      return _i221.Protocol().deserializeByClassName(data);
+      return _i225.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -13483,7 +13483,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   void _registerHostProtocols() {
     _i3.Protocol().registerHostProtocol('serverpod_test', this);
     _i4.Protocol().registerHostProtocol('serverpod_test', this);
-    _i221.Protocol().registerHostProtocol('serverpod_test', this);
+    _i225.Protocol().registerHostProtocol('serverpod_test', this);
   }
 
   @override
