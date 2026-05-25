@@ -472,13 +472,13 @@ mixin _GeographySpatialOperations<T> on Column<T> {
   /// Returns an [Expression] that is true when this column's geometry
   /// intersects [other] — wraps `ST_Intersects`.
   Expression intersects(Geography other) => Expression(
-    'ST_Intersects($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}))',
+    'ST_Intersects($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}))',
   );
 
   /// Returns an [Expression] that is true when this column's geometry is
   /// within [distanceMeters] metres of [other] — wraps `ST_DWithin`.
   Expression dwithin(Geography other, double distanceMeters) => Expression(
-    'ST_DWithin($this, ST_GeomFromEWKT(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
+    'ST_DWithin($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
   );
 
   /// Returns a [ColumnGeographyDistance] suitable for use in `orderBy` —
@@ -584,7 +584,7 @@ class ColumnGeographyDistance extends ColumnDouble {
   /// Creates a distance column from [column] and a target [geometry].
   ColumnGeographyDistance(Column column, Geography geometry)
     : _sql =
-          'ST_Distance($column, ST_GeomFromEWKT(${EscapedExpression(geometry.toEwkt())}))',
+          'ST_Distance($column, ST_GeogFromText(${EscapedExpression(geometry.toEwkt())}))',
       super(column.columnName, column.table, fieldName: column.fieldName);
 
   @override

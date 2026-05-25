@@ -688,7 +688,7 @@ String _sqlCreatePostgisExtension() {
       "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN"
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';"
       '\n  ELSE'
-      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS.\';'
+      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'

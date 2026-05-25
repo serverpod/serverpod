@@ -201,9 +201,10 @@ void main() {
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeMainClass!,
               name: 'location',
+              type: 'GeographyPoint?',
             ),
             isTrue,
-            reason: 'Missing field declaration for nullable location',
+            reason: 'Missing nullable GeographyPoint? field declaration for location',
           );
         },
       );

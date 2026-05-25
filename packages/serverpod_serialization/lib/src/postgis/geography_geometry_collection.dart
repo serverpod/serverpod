@@ -39,7 +39,7 @@ class GeographyGeometryCollection implements Geography {
     // Sub-geometries are written without their SRID prefix (the collection
     // carries the single SRID).
     final inner = geometries
-        .map((g) => g.toEwkt().replaceFirst('SRID=$srid;', ''))
+        .map((g) => g.toEwkt().replaceFirst(RegExp(r'SRID=\d+;'), ''))
         .join(', ');
     return 'SRID=$srid;GEOMETRYCOLLECTION($inner)';
   }
@@ -206,12 +206,12 @@ class _WkbParser {
     return GeographyPoint(longitude: lon, latitude: lat, srid: srid);
   }
 
-  Geography readGeometry() {
+  Geography readGeometry([int parentSrid = 4326]) {
     final e = _readByteOrder();
     final rawType = _readUint32(e);
     final geomType = rawType & 0xFF;
     final hasSrid = (rawType & 0x20000000) != 0;
-    var srid = 4326;
+    var srid = parentSrid;
     if (hasSrid) srid = _readInt32(e);
 
     switch (geomType) {
@@ -237,7 +237,7 @@ class _WkbParser {
 
       case 7: // GeometryCollection
         final numGeoms = _readUint32(e);
-        final geoms = List.generate(numGeoms, (_) => readGeometry());
+        final geoms = List.generate(numGeoms, (_) => readGeometry(srid));
         return GeographyGeometryCollection(geometries: geoms, srid: srid);
 
       default:

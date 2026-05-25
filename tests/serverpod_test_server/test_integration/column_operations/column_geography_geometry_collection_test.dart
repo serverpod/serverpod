@@ -164,5 +164,23 @@ void main() async {
         expect(updated.collectionNullable, isNull);
       },
     );
+
+    test(
+      'when filtering by equality then only the matching row is returned.',
+      () async {
+        await ObjectWithGeographyGeometryCollection.db.insert(session, [
+          ObjectWithGeographyGeometryCollection(collection: _pointsOnly),
+          ObjectWithGeographyGeometryCollection(collection: _mixedCollection),
+        ]);
+
+        var result = await ObjectWithGeographyGeometryCollection.db.find(
+          session,
+          where: (t) => t.collection.equals(_pointsOnly),
+        );
+
+        expect(result.length, 1);
+        expect(result.first.collection, equals(_pointsOnly));
+      },
+    );
   });
 }

@@ -23,14 +23,14 @@ const holeRing = [
 
 void main() {
   group('GeographyPolygon construction', () {
-    test('stores exterior ring, empty holes, and default SRID.', () {
+    test('when constructed with exterior ring then ring, empty holes, and default SRID 4326 are stored.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(poly.exteriorRing, squareRing);
       expect(poly.holes, isEmpty);
       expect(poly.srid, 4326);
     });
 
-    test('stores holes when provided.', () {
+    test('when constructed with holes then holes are stored.', () {
       const poly = GeographyPolygon(
         exteriorRing: squareRing,
         holes: [holeRing],
@@ -38,14 +38,14 @@ void main() {
       expect(poly.holes.length, 1);
     });
 
-    test('accepts custom SRID.', () {
+    test('when constructed with custom SRID then that SRID is stored.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
       expect(poly.srid, 3857);
     });
   });
 
   group('GeographyPolygon.toEwkt', () {
-    test('returns EWKT for a simple polygon (no holes).', () {
+    test('when called on a simple polygon then returns EWKT with SRID=4326.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       final ewkt = poly.toEwkt();
       expect(ewkt, startsWith('SRID=4326;POLYGON('));
@@ -53,7 +53,7 @@ void main() {
       expect(ewkt, contains('1.0 0.0'));
     });
 
-    test('EWKT contains interior ring when polygon has a hole.', () {
+    test('when polygon has a hole then EWKT contains interior ring.', () {
       const poly = GeographyPolygon(
         exteriorRing: squareRing,
         holes: [holeRing],
@@ -63,19 +63,19 @@ void main() {
       expect(rings.length, 2, reason: 'EWKT should contain two rings');
     });
 
-    test('toString returns same as toEwkt.', () {
+    test('when toString is called then returns same as toEwkt.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(poly.toString(), poly.toEwkt());
     });
   });
 
   group('GeographyPolygonJsonExtension.toJson', () {
-    test('returns a String.', () {
+    test('when called then returns a String.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(poly.toJson(), isA<String>());
     });
 
-    test('returns EWKT matching toEwkt.', () {
+    test('when called then returns EWKT matching toEwkt.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(poly.toJson(), poly.toEwkt());
     });
@@ -163,7 +163,7 @@ void main() {
       expect(poly.exteriorRing[1].longitude, 1.0);
     });
 
-    test('given unsupported type throws ArgumentError.', () {
+    test('given an unsupported type when fromJson is called then throws ArgumentError.', () {
       expect(
         () => GeographyPolygonJsonExtension.fromJson(42),
         throwsA(isA<ArgumentError>()),
@@ -172,7 +172,7 @@ void main() {
   });
 
   group('GeographyPolygon round-trip', () {
-    test('toJson then fromJson preserves exterior ring.', () {
+    test('when serialized to JSON and deserialized then exterior ring and SRID are preserved.', () {
       const original = GeographyPolygon(exteriorRing: squareRing);
       final restored = GeographyPolygonJsonExtension.fromJson(
         original.toJson(),
@@ -181,7 +181,7 @@ void main() {
       expect(restored.srid, original.srid);
     });
 
-    test('toJson then fromJson preserves holes.', () {
+    test('when serialized with holes and deserialized then holes are preserved.', () {
       const original = GeographyPolygon(
         exteriorRing: squareRing,
         holes: [holeRing],
@@ -193,7 +193,7 @@ void main() {
       expect(restored.holes[0].length, holeRing.length);
     });
 
-    test('round-trip preserves custom SRID.', () {
+    test('when serialized with custom SRID and deserialized then that SRID is preserved.', () {
       const original = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
       final restored = GeographyPolygonJsonExtension.fromJson(
         original.toJson(),
@@ -203,13 +203,13 @@ void main() {
   });
 
   group('GeographyPolygon equality', () {
-    test('two polygons with same exterior ring and SRID are equal.', () {
+    test('when two polygons have the same exterior ring and SRID then they are equal.', () {
       const a = GeographyPolygon(exteriorRing: squareRing);
       const b = GeographyPolygon(exteriorRing: squareRing);
       expect(a, equals(b));
     });
 
-    test('polygon with hole is not equal to polygon without hole.', () {
+    test('when a polygon has a hole and the other does not then they are not equal.', () {
       const a = GeographyPolygon(exteriorRing: squareRing);
       const b = GeographyPolygon(
         exteriorRing: squareRing,
@@ -218,13 +218,13 @@ void main() {
       expect(a, isNot(equals(b)));
     });
 
-    test('two polygons with different SRIDs are not equal.', () {
+    test('when two polygons have different SRIDs then they are not equal.', () {
       const a = GeographyPolygon(exteriorRing: squareRing, srid: 4326);
       const b = GeographyPolygon(exteriorRing: squareRing, srid: 3857);
       expect(a, isNot(equals(b)));
     });
 
-    test('equal polygons have the same hashCode.', () {
+    test('when two polygons are equal then they have the same hashCode.', () {
       const a = GeographyPolygon(exteriorRing: squareRing);
       const b = GeographyPolygon(exteriorRing: squareRing);
       expect(a.hashCode, b.hashCode);

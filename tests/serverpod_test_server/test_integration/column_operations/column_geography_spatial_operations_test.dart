@@ -25,6 +25,10 @@ Future<void> _deleteAll(Session session) async {
     session,
     where: (_) => Constant.bool(true),
   );
+  await ObjectWithGeographyPolygon.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 }
 
 void main() async {
@@ -122,22 +126,27 @@ void main() async {
     test(
       'contains: when polygon column contains the given point then row is returned.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(session, [
-          ObjectWithGeographyPoint(location: _london),
-          ObjectWithGeographyPoint(location: _tokyo),
+        // Use ObjectWithGeographyPolygon so the column is a polygon, making
+        // ST_Covers(polygon_column, point) meaningful.
+        await ObjectWithGeographyPolygon.db.insert(session, [
+          ObjectWithGeographyPolygon(polygon: _westernEuropeBbox),
         ]);
 
-        // _london is inside the Western Europe bbox; _tokyo is not.
-        // contains(bbox) asks: "does this point contain the bbox?" — which is
-        // never true for a single point vs a polygon (ST_Contains is asymmetric).
-        // Instead test intersects for simple point-in-polygon semantics.
-        var result = await ObjectWithGeographyPoint.db.find(
+        // _london is inside the Western Europe bbox polygon.
+        var result = await ObjectWithGeographyPolygon.db.find(
           session,
-          where: (t) => t.location.intersects(_westernEuropeBbox),
+          where: (t) => t.polygon.contains(_london),
         );
 
         expect(result.length, 1);
-        expect(result.first.location, equals(_london));
+
+        // Tokyo is outside — no row should match.
+        var resultTokyo = await ObjectWithGeographyPolygon.db.find(
+          session,
+          where: (t) => t.polygon.contains(_tokyo),
+        );
+
+        expect(resultTokyo, isEmpty);
       },
     );
 

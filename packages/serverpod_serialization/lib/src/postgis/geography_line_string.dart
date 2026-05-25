@@ -39,7 +39,7 @@ class GeographyLineString implements Geography {
     for (var i = 0; i < numPoints; i++) {
       final longitude = buf.getFloat64(offset, endian);
       final latitude = buf.getFloat64(offset + 8, endian);
-      points.add(GeographyPoint(longitude: longitude, latitude: latitude));
+      points.add(GeographyPoint(longitude: longitude, latitude: latitude, srid: srid));
       offset += 16;
     }
 
@@ -90,6 +90,7 @@ extension GeographyLineStringJsonExtension on GeographyLineString {
         return GeographyPoint(
           longitude: (m['longitude'] as num).toDouble(),
           latitude: (m['latitude'] as num).toDouble(),
+          srid: srid,
         );
       }).toList();
       return GeographyLineString(points: points, srid: srid);
@@ -117,6 +118,7 @@ extension GeographyLineStringJsonExtension on GeographyLineString {
             return GeographyPoint(
               longitude: double.parse(xy[0]),
               latitude: double.parse(xy[1]),
+              srid: srid,
             );
           }).toList();
     return GeographyLineString(points: points, srid: srid);

@@ -191,6 +191,25 @@ void main() {
       });
 
       test(
+        'then the main class has a nullable GeographyLineString field.',
+        () {
+          final maybeMainClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+          expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeMainClass!,
+              name: 'route',
+              type: 'GeographyLineString?',
+            ),
+            isTrue,
+            reason: 'Missing nullable GeographyLineString? field declaration for route',
+          );
+        },
+      );
+
+      test(
         'then the table class constructor initializes route as ColumnGeographyLineString.',
         () {
           final constructor =

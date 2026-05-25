@@ -50,7 +50,7 @@ class GeographyPolygon implements Geography {
       for (var i = 0; i < numPoints; i++) {
         final longitude = buf.getFloat64(offset, endian);
         final latitude = buf.getFloat64(offset + 8, endian);
-        ring.add(GeographyPoint(longitude: longitude, latitude: latitude));
+        ring.add(GeographyPoint(longitude: longitude, latitude: latitude, srid: srid));
         offset += 16;
       }
       rings.add(ring);
@@ -84,7 +84,16 @@ class GeographyPolygon implements Geography {
         exteriorRing.length,
         (i) => exteriorRing[i] == other.exteriorRing[i],
       ).every((v) => v) &&
-      other.holes.length == holes.length;
+      other.holes.length == holes.length &&
+      List.generate(
+        holes.length,
+        (hi) =>
+            holes[hi].length == other.holes[hi].length &&
+            List.generate(
+              holes[hi].length,
+              (pi) => holes[hi][pi] == other.holes[hi][pi],
+            ).every((v) => v),
+      ).every((v) => v);
 
   @override
   int get hashCode => Object.hash(
@@ -114,6 +123,7 @@ extension GeographyPolygonJsonExtension on GeographyPolygon {
         return GeographyPoint(
           longitude: (m['longitude'] as num).toDouble(),
           latitude: (m['latitude'] as num).toDouble(),
+          srid: srid,
         );
       }).toList();
       final exterior = parseRing(value['exteriorRing'] as List);
@@ -157,6 +167,7 @@ extension GeographyPolygonJsonExtension on GeographyPolygon {
             return GeographyPoint(
               longitude: double.parse(xy[0]),
               latitude: double.parse(xy[1]),
+              srid: srid,
             );
           }).toList();
           rings.add(points);
