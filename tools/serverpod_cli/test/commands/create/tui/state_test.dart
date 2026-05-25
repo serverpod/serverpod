@@ -17,6 +17,22 @@ void main() {
       });
 
       test(
+        'then TemplateContext has correct value for template',
+        () {
+          var context = state.toTemplateContext();
+          expect(context.template, ServerpodTemplateType.server);
+
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.template,
+            TemplateTypeOption.module,
+          );
+
+          context = state.toTemplateContext();
+          expect(context.template, ServerpodTemplateType.module);
+        },
+      );
+
+      test(
         'and database is postgres (default) then TemplateContext has correct value for postgres',
         () {
           final context = state.toTemplateContext();

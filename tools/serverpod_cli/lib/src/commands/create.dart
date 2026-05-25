@@ -223,7 +223,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     required bool? interactive,
   }) async {
     final flutterBuildCompleter = Completer<int>();
-    final state = CreateConfigState();
+    final state = CreateConfigState(template);
     final holder = CreateAppStateHolder(state);
 
     final tuiWriter = TuiLogWriter();

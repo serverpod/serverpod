@@ -5,7 +5,12 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Central state for [ServerpodCreateApp] rendered by nocterm.
 class CreateConfigState extends TuiState {
-  CreateConfigState(this.startingTemplate);
+  CreateConfigState(this.startingTemplate) {
+    form.updateSelectedOption(
+      ServerpodCreateConfig.template,
+      startingTemplate.toConfigOption,
+    );
+  }
 
   final ServerpodTemplateType startingTemplate;
 
