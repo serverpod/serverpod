@@ -197,15 +197,19 @@ void main() {
             compilationUnit,
             name: testClassName,
           );
+          final field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            maybeMainClass!,
+            name: 'route',
+          );
           expect(
-            CompilationUnitHelpers.hasFieldDeclaration(
-              maybeMainClass!,
-              name: 'route',
-              type: 'GeographyLineString?',
-            ),
-            isTrue,
-            reason:
-                'Missing nullable GeographyLineString? field declaration for route',
+            field,
+            isNotNull,
+            reason: 'Missing route field in $testClassName',
+          );
+          expect(
+            field!.fields.type?.toString(),
+            contains('GeographyLineString?'),
+            reason: 'route field should be nullable (GeographyLineString?)',
           );
         },
       );

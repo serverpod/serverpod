@@ -197,15 +197,19 @@ void main() {
       test(
         'then the main class has a nullable GeographyPoint field.',
         () {
+          final field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            maybeMainClass!,
+            name: 'location',
+          );
           expect(
-            CompilationUnitHelpers.hasFieldDeclaration(
-              maybeMainClass!,
-              name: 'location',
-              type: 'GeographyPoint?',
-            ),
-            isTrue,
-            reason:
-                'Missing nullable GeographyPoint? field declaration for location',
+            field,
+            isNotNull,
+            reason: 'Missing location field in $testClassName',
+          );
+          expect(
+            field!.fields.type?.toString(),
+            contains('GeographyPoint?'),
+            reason: 'location field should be nullable (GeographyPoint?)',
           );
         },
       );
