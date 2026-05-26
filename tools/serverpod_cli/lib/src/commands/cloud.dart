@@ -76,8 +76,8 @@ class CloudCommand extends ServerpodCommand {
 
     try {
       await Future.wait([
-        stdout.addStream(process.stdout),
-        stderr.addStream(process.stderr),
+        stdout.addStream(_replaceScloudInOutput(process.stdout)),
+        stderr.addStream(_replaceScloudInOutput(process.stderr)),
       ]);
     } finally {
       await stdinSubscription.cancel();
@@ -128,6 +128,14 @@ Future<void> _installScloud() async {
     log.error('Failed to install Serverpod Cloud CLI.');
     throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
   }
+}
+
+/// Rewrites [scloud] branding in child process output for the parent CLI.
+Stream<List<int>> _replaceScloudInOutput(Stream<List<int>> stream) {
+  return stream
+      .transform(utf8.decoder)
+      .map((text) => text.replaceAll('scloud', 'serverpod cloud'))
+      .transform(utf8.encoder);
 }
 
 Future<void> _closeProcessStdin(IOSink sink) async {
