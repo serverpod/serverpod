@@ -1,6 +1,6 @@
-# Design: CLI lifecycle telemetry (PostHog)
+# Design: CLI lifecycle analytics (PostHog)
 
-This document describes four rich analytics events for the Serverpod CLI, layered on top of the existing `cli_tools` analytics pipeline. The goal is to understand how developers use Serverpod (project creation choices, code generation patterns, migration cadence, and dev-session setup) without collecting project identifiers, paths, or user-generated names.
+This document describes four rich analytics events for the Serverpod CLI. The goal is to understand how developers use Serverpod (project creation choices, code generation patterns, migration cadence, and dev-session setup) without collecting project identifiers, paths, or user-generated names.
 
 Related: [GitHub issue #1274](https://github.com/serverpod/serverpod/issues/1274) (generate debouncing).
 
@@ -15,9 +15,9 @@ These four lifecycle events add structured, privacy-safe properties at meaningfu
 **Not implemented.** The plumbing below is a design target. Today:
 
 - `PostHogAnalytics` and `MixPanelAnalytics` are wired in `tools/serverpod_cli/bin/serverpod_cli.dart` via `CompoundAnalytics`.
-- `BetterCommandRunner` emits one event per invocation (command name, or `help` / `invalid`) with masked `full_command` and `flag_*` / `option_*` properties.
+- `BetterCommandRunner` emits one event per invocation (command name, or `help` / `invalid`) with masked `full_command` and `flag_*` / `option_*` properties. Those coarse events continue to both backends unchanged.
 - Opt-out is available globally via `--no-analytics`.
-- User identity uses a UUID persisted at `~/.serverpod/uuid` (`ResourceManager.uniqueUserId`), sent as PostHog `distinct_id`.
+- User identity uses a UUID persisted at `~/.serverpod/uuid` (`ResourceManager.uniqueUserId`), sent as PostHog `distinct_id` for all events.
 - `PostHogAnalytics` already attaches `$lib`, `$lib_version`, `platform`, `dart_version`, and `is_ci` to every event.
 
 ## Architecture
@@ -26,39 +26,52 @@ These four lifecycle events add structured, privacy-safe properties at meaningfu
 Command handler (create / generate / …)
         │
         ▼
-CliTelemetry.capture(event, serverDir, properties)
-        │  1. read/update .dart_tool/serverpod/telemetry.json
-        │  2. build allowlisted payload (TelemetryPayloadBuilder)
-        │  3. serverpodRunner.sendAnalyticsEvent(...)
+CliAnalytics.capture(event, serverDir, properties)
+        │  1. read/update .dart_tool/serverpod/metadata.json
+        │  2. build allowlisted payload (AnalyticsPayloadBuilder)
+        │  3. postHogAnalytics.track(...)   ← cli.* events only
         ▼
-CompoundAnalytics → PostHogAnalytics (+ MixPanelAnalytics)
+PostHogAnalytics
+
+(BetterCommandRunner coarse events still go to CompoundAnalytics → PostHog + MixPanel)
 ```
+
+### Backend split
+
+| Event type | MixPanel | PostHog |
+|---|---|---|
+| Coarse command events (`generate`, `start`, `help`, …) | yes (unchanged) | yes (unchanged) |
+| Rich lifecycle events (`cli.*`) | **no** | **yes** |
+
+Implement by holding a dedicated `PostHogAnalytics` reference for `CliAnalytics` (alongside the existing `CompoundAnalytics` used by `BetterCommandRunner`). Do **not** route `cli.*` events through `CompoundAnalytics`.
 
 ### What stays the same
 
 - Keep `PostHogAnalytics` from `cli_tools`; do **not** add a second PostHog client or SDK.
-- Keep the existing UUID-based `distinct_id`. Do **not** hash project paths into `$device_id` — project paths must never leave the machine.
-- Keep generic command events (`generate`, `start`, …) from `BetterCommandRunner.runCommand`. Rich events use the `cli.*` namespace to avoid collisions.
+- Keep the machine-level UUID (`~/.serverpod/uuid`) as PostHog `distinct_id`. Do **not** hash project paths into identity fields — paths must never leave the machine.
+- Keep generic command events from `BetterCommandRunner.runCommand`. Rich events use the `cli.*` namespace to avoid collisions.
 
 ### New code (proposed)
 
 | Component | Location (proposed) | Role |
 |---|---|---|
-| `CliTelemetry` | `tools/serverpod_cli/lib/src/telemetry/cli_telemetry.dart` | Metadata I/O, counter updates, dispatches events |
-| `TelemetryMetadata` | `…/telemetry/metadata.dart` | JSON schema for `.dart_tool/serverpod/telemetry.json` |
-| `TelemetryPayloadBuilder` | `…/telemetry/payload_builder.dart` | Runtime allowlist; strips or rejects unsafe strings |
-| `ProtocolFeatureAnalyzer` | `…/telemetry/protocol_feature_analyzer.dart` | Derives `features` + `counts` from `ProtocolDefinition` / `GeneratorConfig` |
-| `GenerateTracker` | `…/telemetry/generate_tracker.dart` | In-memory debounce for watch-mode bursts |
-| `MigrationMetrics` | `…/telemetry/migration_metrics.dart` | Scans server `migrations/` directory |
+| `CliAnalytics` | `tools/serverpod_cli/lib/src/analytics/cli_analytics.dart` | Metadata I/O, counter updates, PostHog dispatch for `cli.*` |
+| `ProjectMetadata` | `…/analytics/project_metadata.dart` | JSON schema for `.dart_tool/serverpod/metadata.json` |
+| `ProjectMetadataStore` | `…/analytics/project_metadata_store.dart` | Atomic read/write, `project_id` / date resolution |
+| `AnalyticsPayloadBuilder` | `…/analytics/payload_builder.dart` | Runtime allowlist; strips or rejects unsafe strings |
+| `ProtocolFeatureAnalyzer` | `…/analytics/protocol_feature_analyzer.dart` | Derives `features`, `counts`, and `serverpod_modules` |
+| `GenerateTracker` | `…/analytics/generate_tracker.dart` | In-memory debounce for watch-mode bursts |
+| `MigrationMetrics` | `…/analytics/migration_metrics.dart` | Scans server `migrations/` directory |
 
-Commands reach telemetry via `serverpodRunner.sendAnalyticsEvent`, gated by `serverpodRunner.analyticsEnabled()`.
+Rich events are gated by `serverpodRunner.analyticsEnabled()` (`--no-analytics`).
 
 ### Local metadata file
 
-Path: `<serverDir>/.dart_tool/serverpod/telemetry.json` (same directory tree as `generation.stamp` and MCP sockets).
+Path: `<serverDir>/.dart_tool/serverpod/metadata.json` (same directory tree as `generation.stamp` and MCP sockets).
 
 ```json
 {
+  "project_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "project_created_at": "2026-05-20T14:32:00.000Z",
   "generate_call_count": 47,
   "command_invocations": {
@@ -70,27 +83,45 @@ Path: `<serverDir>/.dart_tool/serverpod/telemetry.json` (same directory tree as 
 }
 ```
 
-- Created on first tracked command inside a project (not on `serverpod create`, which runs before the project exists).
-- Updated atomically (write temp file, rename) after each tracked command.
-- Contains timestamps and integers only — no paths, names, or package identifiers.
-- `command_invocations` is incremented in `ServerpodCommandRunner.runCommand` for every executed subcommand (including commands that do not emit rich events), so `cli.session_start` can report cumulative usage.
+| Field | Purpose |
+|---|---|
+| `project_id` | Random UUID v4, generated once per project on first metadata write. Used locally and sent to PostHog as an anonymous project correlation key (`$groups.project` or equivalent). Never derived from path, name, or repo identity. |
+| `project_created_at` | ISO-8601 UTC; see resolution rules below |
+| `generate_call_count` | Monotonic counter for `cli.generate` |
+| `command_invocations` | Per-command histogram for `cli.session_start` |
 
-`project_created_at` for existing projects without metadata: set to the timestamp of the first metadata write (typically first `generate`), not backfilled from git or filesystem.
+**Write rules:**
+
+- Created on the first tracked command inside a project.
+- Updated atomically (write temp file, rename) after each tracked command.
+- Contains UUIDs, timestamps, and integers only — no paths, package names, or user-chosen identifiers.
+
+`command_invocations` is incremented in `ServerpodCommandRunner.runCommand` for every executed subcommand (including commands that do not emit rich events).
+
+#### `project_created_at` resolution
+
+1. **Set explicitly** on successful `cli.project_created` (written to metadata when the scaffold finishes).
+2. **Already in metadata** — use stored value.
+3. **Fallback for older projects** — derive from the creation timestamp (`FileStat.changed`, UTC) of a stable scaffold file:
+   - Primary: `<serverDir>/config/generator.yaml`
+   - Fallback: `<serverDir>/pubspec.yaml` if generator config is missing
+
+Do not use git history, `.dart_tool/` artifacts (regenerated), or migration directories (appear later). Once inferred, persist the value in metadata so later reads are stable.
 
 ## Privacy
 
-`TelemetryPayloadBuilder` enforces a runtime allowlist:
+`AnalyticsPayloadBuilder` enforces a runtime allowlist:
 
-- **Allowed:** integers, doubles, booleans, enums (serialized by name), and lists of canonical feature tag strings from a fixed vocabulary.
+- **Allowed:** integers, doubles, booleans, enums (serialized by name), UUIDs from metadata (`project_id`), and lists of canonical tag strings from fixed vocabularies (`features`, `serverpod_modules`).
 - **Rejected:** free-form strings (class names, paths, package names, migration tags, device names beyond a coarse category), nested maps with dynamic keys, and any property not declared for an event.
 
-Feature tags must come from a closed set maintained in code (e.g. `auth`, `redis`, `streaming_endpoint`, `future_call`, `object_relation`). Never emit raw `EndpointDefinition.name`, model class names, or migration directory names.
+Feature and module tags must come from closed sets maintained in code. Never emit raw `EndpointDefinition.name`, model class names, custom module nicknames, or migration directory names.
 
-PostHog receives only allowlisted payloads. The `projectPath` / `serverDir` argument to `CliTelemetry` is used locally for metadata lookup and must never appear in event properties.
+PostHog receives only allowlisted payloads. The `serverDir` argument to `CliAnalytics` is used locally for metadata lookup and must never appear in event properties.
 
 ## Shared event properties
 
-These are attached automatically by `PostHogAnalytics` and should **not** be duplicated in event schemas below:
+Attached automatically by `PostHogAnalytics` — do **not** duplicate in event schemas below:
 
 | Property | Source |
 |---|---|
@@ -100,7 +131,7 @@ These are attached automatically by `PostHogAnalytics` and should **not** be dup
 | `dart_version` | `Platform.version` |
 | `is_ci` | `ci.isCI` |
 
-Rich events may add `$process_person_profile: false` when we want strictly anonymous session profiles (optional; UUID distinct_id already avoids email/name collection).
+Rich events should include `$groups: { "project": "<project_id>" }` (or PostHog's current group syntax) so project-scoped funnels work without sending directory paths.
 
 ---
 
@@ -120,12 +151,14 @@ Rich events may add `$process_person_profile: false` when we want strictly anony
 | `with_database` | `bool` | `TemplateContext.database` |
 | `force` | `bool` | `--force` flag |
 
+**Side effect:** write `project_id` (if new) and `project_created_at` (`DateTime.now().toUtc()`) to `metadata.json` in the new project's server directory.
+
 **Hook points:**
 
 - `CreateCommand`: after `performCreate` returns a non-null path (both TUI and non-TUI paths).
 - `QuickstartCommand`: after `performCreate` returns a non-null path.
 
-Implementation note: centralize in `performCreate` success exit so TUI and non-TUI paths share one call.
+Centralize in `performCreate` success exit so all paths share one call.
 
 ---
 
@@ -137,13 +170,27 @@ Also emitted from internal generation inside `serverpod start --watch` (via shar
 
 | Property | Type | Source |
 |---|---|---|
-| `features` | `List<String>` | `ProtocolFeatureAnalyzer` (see below) |
+| `features` | `List<String>` | `ProtocolFeatureAnalyzer` — protocol/config capability tags |
+| `serverpod_modules` | `List<String>` | Official Serverpod modules detected in the project (see below) |
 | `counts` | `Map<String, int>` | See counts table |
-| `num_generate_calls` | `int` | `telemetry.json` → `generate_call_count` (incremented before send) |
-| `project_age_days` | `int` | days since `project_created_at` in metadata |
+| `num_generate_calls` | `int` | `metadata.json` → `generate_call_count` (incremented before send) |
+| `project_age_days` | `int` | days since resolved `project_created_at` |
 | `is_watch_mode` | `bool` | `generate --watch`, or implicit watch inside `start --watch` |
 | `generation_succeeded` | `bool` | pipeline result |
-| `duration_ms` | `int` | wall time for the tracked generation unit |
+| `oneshot_duration_ms` | `int?` | wall time for a one-shot run (`is_watch_mode == false`); omit otherwise |
+| `incremental_avg_duration_ms` | `int?` | mean wall time per incremental run in a watch burst (`is_watch_mode == true`); omit otherwise |
+| `incremental_run_count` | `int?` | number of incremental runs coalesced into this event (watch mode only); omit otherwise |
+
+### `serverpod_modules`
+
+List which **official Serverpod modules** are present, using canonical identifiers from a fixed allowlist maintained in code (e.g. `serverpod_auth`, `serverpod_auth_core`, `serverpod_auth_idp`, `serverpod_chat`).
+
+Detection sources (union):
+
+- Entries under `modules:` in `config/generator.yaml` (match by module `name` against allowlist).
+- Transitive `*_server` / `serverpod` dependencies from `GeneratorConfig.modules` / `loadModuleConfigs`.
+
+Emit only allowlisted module ids. Custom or third-party modules are counted in `counts.module_count` but omitted from `serverpod_modules`.
 
 ### `counts` keys
 
@@ -154,18 +201,18 @@ Also emitted from internal generation inside `serverpod start --watch` (via shar
 | `enum_count` | models that are enum definitions |
 | `relation_count` | model fields with a `RelationDefinition` |
 | `future_call_count` | `protocolDefinition.futureCalls.length` |
-| `module_count` | `GeneratorConfig.modules.length` |
+| `module_count` | `GeneratorConfig.modulesDependent.length` (all modules, including custom) |
 
 ### `ProtocolFeatureAnalyzer`
 
 Input: `ProtocolDefinition`, `GeneratorConfig`, and enabled `ServerpodFeature` / experimental flags.
 
-Output: sorted list of canonical tags, e.g.:
+Output: sorted list of canonical capability tags, e.g.:
 
-- Config: `postgres`, `sqlite`, `redis`, `future_calls` (feature flag), …
+- Config: `postgres`, `postgres_embedded`, `sqlite`, `redis`, `future_calls` (feature flag), …
 - Protocol: `streaming_endpoint`, `login_required_endpoint`, `sealed_model`, `list_relation`, `object_relation`, …
 
-No endpoint, model, or module **names** — only capability tags from a fixed vocabulary.
+No endpoint, model, or module **names** in `features` — only capability tags from a fixed vocabulary (separate from `serverpod_modules`).
 
 ### Watch-mode debounce
 
@@ -173,13 +220,13 @@ Maintain an in-memory `GenerateTracker` keyed by absolute server directory path.
 
 On each filesystem-triggered generation (`generate --watch`, or `start --watch` → `analyzeAndGenerate`):
 
-1. Increment pending call count and merge the latest feature snapshot.
+1. Increment pending call count and merge the latest feature / module snapshot.
 2. Reset a timer (default **30 s**, configurable constant).
-3. When the timer fires, emit one `cli.generate` with accumulated `num_generate_calls` delta applied to metadata, latest `features` / `counts`, and total debounced `duration_ms`.
+3. When the timer fires, emit one `cli.generate` with accumulated metadata updates, latest `features` / `serverpod_modules` / `counts`, `incremental_run_count`, and `incremental_avg_duration_ms` (sum of per-run durations in the burst ÷ run count).
 
-This collapses save bursts into one telemetry entry ([#1274](https://github.com/serverpod/serverpod/issues/1274)).
+This collapses save bursts into one analytics entry while preserving per-run timing signal via the average.
 
-One-shot `serverpod generate` bypasses debounce: emit immediately.
+One-shot `serverpod generate` bypasses debounce: emit immediately with `oneshot_duration_ms` set to the full command wall time. Do **not** send incremental timing fields on one-shot events, or vice versa — the two duration properties are mutually exclusive so PostHog aggregates stay comparable within each mode.
 
 **Hook points:**
 
@@ -191,23 +238,36 @@ One-shot `serverpod generate` bypasses debounce: emit immediately.
 
 ## 3. `cli.migration_created`
 
-**When:** A new migration directory is written to disk.
+**When:** A new migration is written to disk.
 
 **Do not emit** for `CreateMigrationNoChanges`, `CreateMigrationAborted`, or failed runs.
 
 | Property | Type | Source |
 |---|---|---|
-| `migration_count` | `int` | subdirectories under `<serverDir>/migrations/` after write |
-| `days_since_first_migration` | `int` | days from earliest migration version timestamp |
-| `average_interval_days` | `double?` | `(days_since_first) / (migration_count - 1)` when `migration_count >= 2`, else omit |
+| `server_migration_created` | `bool` | `true` when a server-side migration directory was written in this command |
+| `client_migration_created` | `bool` | `true` when a client-side migration artifact was written in this command |
+| `server_migration_count` | `int` | subdirectories under `<serverDir>/migrations/` after write |
+| `client_migration_count` | `int` | subdirectories under `<clientDir>/lib/migrations/` after write |
+| `days_since_first_migration` | `int` | days from earliest **server** migration version timestamp |
+| `average_interval_days` | `double?` | `(days_since_first) / (server_migration_count - 1)` when `server_migration_count >= 2`, else omit |
 | `is_repair_migration` | `bool` | `true` for `create-repair-migration`, else `false` |
-| `had_client_migration` | `bool` | `true` when `CreateMigrationServerClientCreated` wrote a client artifact |
 
-Migration version timestamps are parsed from directory names (Serverpod's `YYYYMMDDHHMMSS…` prefix). No migration names, tags, or SQL content are sent.
+At least one of `server_migration_created` / `client_migration_created` is `true` on every emitted event. Typical combinations:
+
+| Outcome | `server_migration_created` | `client_migration_created` |
+|---|---|---|
+| Server-only `CreateMigrationCreated` | `true` | `false` |
+| Client-only migration | `false` | `true` |
+| `CreateMigrationServerClientCreated` (both written) | `true` | `true` |
+| Repair migration | `true` | `false` |
+
+Migration version timestamps are parsed from directory names (Serverpod's `YYYYMMDDHHMMSS…` prefix). Server counts scan `<serverDir>/migrations/`; client counts scan `<clientDir>/lib/migrations/` (via `GeneratorConfig.clientPackagePathParts`). No migration names, tags, or SQL content are sent.
+
+`days_since_first_migration` and `average_interval_days` remain server-scoped for now (repair migrations and schema cadence are server-driven). Client count is included for adoption tracking only.
 
 **Hook points:**
 
-- `CreateMigrationCommand.runWithConfig`: on `CreateMigrationCreated` / successful leaf of `CreateMigrationServerClientCreated`.
+- `CreateMigrationCommand.runWithConfig`: map `CreateMigrationOutcome` to flags + metrics.
 - `CreateRepairMigrationCommand.runWithConfig`: on successful repair write.
 - Optional later: MCP `create_migration` / `create_repair_migration` tools in `start --watch` (same helper).
 
@@ -224,7 +284,7 @@ Covers `serverpod start` (including `--watch` / `--no-watch`). Does **not** cove
 | `watch_mode` | `bool` | `StartOption.watch` (default `true`) |
 | `tui_enabled` | `bool` | `StartOption.tui` |
 | `flutter_enabled` | `bool` | `StartOption.flutter` |
-| `flutter_device_category` | `String?` | coarse bucket from `--flutter-device`, not raw device id (e.g. `chrome`, `web-server`, `mobile`, `desktop`, `headless`) |
+| `flutter_device_category` | `String?` | coarse bucket from `--flutter-device` (e.g. `chrome`, `web-server`, `mobile`, `desktop`, `headless`) |
 | `docker_flag` | `bool` | user passed `--docker` |
 | `docker_compose_present` | `bool` | `docker-compose.yaml` exists in server dir |
 | `docker_services_running` | `bool` | `docker compose ps --status running` returned containers (same probe as `_ensureDockerServices`) |
@@ -233,7 +293,7 @@ Covers `serverpod start` (including `--watch` / `--no-watch`). Does **not** cove
 
 Do **not** probe `localhost:8090` — that port is the default Flutter **web** port, not Redis or Postgres.
 
-Session duration is derived in PostHog from event timestamps (`cli.session_start` vs later events or session end if added later). Do not send `session_start_time` as a separate property.
+Session duration is derived in PostHog from event timestamps. Do not send a separate start-time property.
 
 **Hook point:** `StartCommand.runWithConfig` after config load, before `_runStartSession` / watch session setup (`start.dart`).
 
@@ -241,18 +301,20 @@ Session duration is derived in PostHog from event timestamps (`cli.session_start
 
 ## Implementation order
 
-1. **Metadata + command counter hook** — `telemetry.json` read/write; increment `command_invocations` from `ServerpodCommandRunner.runCommand`.
-2. **`TelemetryPayloadBuilder` + tests** — allowlist enforcement before any network send.
-3. **`cli.project_created`** — smallest payload; validates end-to-end pipeline.
-4. **`cli.generate`** — `ProtocolFeatureAnalyzer`, timing, and `GenerateTracker` debounce.
-5. **`cli.migration_created`** — `MigrationMetrics` directory scan.
-6. **`cli.session_start`** — start-option snapshot + Docker compose probe.
-7. **PostHog dashboards** — funnels and trends using the schemas above; validate property types in PostHog live events before building charts.
+1. **`ProjectMetadataStore` + command counter hook** — `metadata.json` read/write (`project_id`, date resolution); increment `command_invocations` from `ServerpodCommandRunner.runCommand`.
+2. **`CliAnalytics` + dedicated `PostHogAnalytics` ref** — ensure `cli.*` events never reach MixPanel.
+3. **`AnalyticsPayloadBuilder` + tests** — allowlist enforcement before any PostHog send.
+4. **`cli.project_created`** — smallest payload; validates end-to-end pipeline.
+5. **`cli.generate`** — `ProtocolFeatureAnalyzer` (features + `serverpod_modules`), timing, and `GenerateTracker` debounce.
+6. **`cli.migration_created`** — `MigrationMetrics` + server/client flag mapping.
+7. **`cli.session_start`** — start-option snapshot + Docker compose probe.
+8. **PostHog dashboards** — funnels and trends using the schemas above; validate property types in live events before building charts.
 
 ## Testing
 
-- Unit tests for `TelemetryPayloadBuilder` (rejects raw strings, accepts allowlisted shapes).
-- Unit tests for `ProtocolFeatureAnalyzer` with fixture `ProtocolDefinition` instances.
+- Unit tests for `AnalyticsPayloadBuilder` (rejects raw strings, accepts allowlisted shapes).
+- Unit tests for `ProjectMetadataStore` (`project_id` generation, date fallback from `config/generator.yaml` stat).
+- Unit tests for `ProtocolFeatureAnalyzer` and `serverpod_modules` allowlist matching.
 - Unit tests for `GenerateTracker` timer coalescing (fake async).
-- Unit tests for `MigrationMetrics` with temp migration directories.
-- Integration tests with `MockAnalytics`: verify hook points fire expected `cli.*` events and respect `--no-analytics`.
+- Unit tests for `MigrationMetrics` and server/client flag outcome mapping.
+- Integration tests: `cli.*` events hit PostHog mock only (not MixPanel mock); coarse command events still hit both; `--no-analytics` disables rich events.
