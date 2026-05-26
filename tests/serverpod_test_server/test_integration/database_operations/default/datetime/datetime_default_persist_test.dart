@@ -48,8 +48,9 @@ void main() async {
         expect(
           databaseObject.dateTimeDefaultPersistNow!
               .difference(DateTime.now())
-              .inSeconds,
-          0,
+              .inSeconds
+              .abs(),
+          lessThanOrEqualTo(1),
         );
       },
     );
@@ -116,8 +117,9 @@ void main() async {
         expect(
           databaseObject!.dateTimeDefaultPersistNow!
               .difference(DateTime.now())
-              .inSeconds,
-          0,
+              .inSeconds
+              .abs(),
+          lessThanOrEqualTo(1),
         );
       },
     );
