@@ -152,6 +152,17 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
     }
   }
 
+  void _cycleTab(int delta) {
+    final state = component.holder.state;
+    if (state.useSideBySideLayout) {
+      state.selectedTab = state.selectedTab == 0 ? 2 : 0;
+    } else {
+      final tabCount = state.showFlutterOutput ? 3 : 2;
+      state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
+    }
+    _rebuild();
+  }
+
   @override
   Component buildApp(BuildContext context) {
     final state = component.holder.state;
@@ -202,25 +213,14 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
     final sideBySide = state.useSideBySideLayout;
 
     // Tab cycling. In side-by-side mode, only server tabs are selectable.
-    if (event.logicalKey == LogicalKey.tab ||
+    if (event.matches(LogicalKey.tab, shift: false) ||
         event.logicalKey == LogicalKey.arrowRight) {
-      if (sideBySide) {
-        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-      } else {
-        final tabCount = state.showFlutterOutput ? 3 : 2;
-        state.selectedTab = (state.selectedTab + 1) % tabCount;
-      }
-      _rebuild();
+      _cycleTab(1);
       return true;
     }
-    if (event.logicalKey == LogicalKey.arrowLeft) {
-      if (sideBySide) {
-        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-      } else {
-        final tabCount = state.showFlutterOutput ? 3 : 2;
-        state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
-      }
-      _rebuild();
+    if (event.matches(LogicalKey.tab, shift: true) ||
+        event.logicalKey == LogicalKey.arrowLeft) {
+      _cycleTab(-1);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit1) {
