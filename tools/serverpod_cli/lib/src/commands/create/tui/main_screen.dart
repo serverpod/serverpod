@@ -49,8 +49,19 @@ class MainScreen extends StatelessComponent {
             ),
           ),
         ),
+        if (state.ctrlCHint case final hint?) _buildHintLine(theme, hint),
         _buildButtonBar(theme),
       ],
+    );
+  }
+
+  Component _buildHintLine(ServerpodThemeData theme, String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Text(
+        hint,
+        style: TextStyle(color: theme.brightText, fontWeight: FontWeight.bold),
+      ),
     );
   }
 

@@ -52,4 +52,14 @@ abstract class ServerpodState {
 
   /// Whether the help overlay is visible.
   bool showHelp = false;
+
+  /// The text currently highlighted in a log view, or empty when there is no
+  /// selection. Updated as the user drags a selection and read when Ctrl-C is
+  /// pressed so the selection can be copied to the clipboard.
+  String selectedText = '';
+
+  /// Transient message shown above the button bar, e.g. "Copied to clipboard"
+  /// after a copy or "Press Ctrl-C again to exit" while exit is armed. Null
+  /// when nothing should be shown.
+  String? ctrlCHint;
 }

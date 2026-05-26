@@ -243,6 +243,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     await runServerpodApp(
       backend: backend,
+      routeSigintThroughApp: true,
       ServerpodCreateApp(
         name: name,
         holder: holder,

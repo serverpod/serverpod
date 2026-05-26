@@ -129,6 +129,7 @@ class MainScreen extends StatelessComponent {
                 ),
               ),
             ),
+            if (state.ctrlCHint case final hint?) _buildHintLine(st, hint),
             _buildButtonBar(),
           ],
         ),
@@ -232,9 +233,7 @@ class MainScreen extends StatelessComponent {
     final items = state.logHistory;
 
     return SelectionArea(
-      onSelectionCompleted: (text) {
-        if (text.isNotEmpty) ClipboardManager.copy(text);
-      },
+      onSelectionChanged: (text) => state.selectedText = text,
       child: Scrollbar(
         controller: logScrollController,
         thumbVisibility: true,
@@ -269,9 +268,7 @@ class MainScreen extends StatelessComponent {
     ScrollController controller,
   ) {
     return SelectionArea(
-      onSelectionCompleted: (text) {
-        if (text.isNotEmpty) ClipboardManager.copy(text);
-      },
+      onSelectionChanged: (text) => state.selectedText = text,
       child: Scrollbar(
         controller: controller,
         thumbVisibility: true,
@@ -285,6 +282,16 @@ class MainScreen extends StatelessComponent {
             return Text(line, key: ValueKey(index));
           },
         ),
+      ),
+    );
+  }
+
+  Component _buildHintLine(ServerpodThemeData st, String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Text(
+        hint,
+        style: TextStyle(color: st.brightText, fontWeight: FontWeight.bold),
       ),
     );
   }

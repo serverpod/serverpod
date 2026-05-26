@@ -52,6 +52,7 @@ class _HelpOverlayState extends State<HelpOverlay> {
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
+        ('Ctrl+C', 'Copy selection, or quit'),
         ('Q', 'Quit'),
       ],
     ),

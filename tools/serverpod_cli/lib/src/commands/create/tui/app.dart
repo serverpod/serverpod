@@ -23,16 +23,21 @@ class ServerpodCreateApp extends ServerpodApp<CreateAppStateHolder> {
   ServerpodAppState createState() => ServerpodCreateAppState();
 }
 
-class ServerpodCreateAppState extends ServerpodAppState<ServerpodCreateApp> {
+class ServerpodCreateAppState extends ServerpodAppState<ServerpodCreateApp>
+    with CtrlCExitHandler<ServerpodCreateApp> {
   final _scrollController = ScrollController();
   final _logScrollController = ScrollController();
 
   @override
   void dispose() {
+    disposeCtrlC();
     _scrollController.dispose();
     _logScrollController.dispose();
     super.dispose();
   }
+
+  @override
+  void onCtrlCQuit() => component.onQuit();
 
   @override
   Component buildApp(BuildContext context) {
@@ -51,6 +56,8 @@ class ServerpodCreateAppState extends ServerpodAppState<ServerpodCreateApp> {
   }
 
   bool _handleKeyEvent(KeyboardEvent event) {
+    if (handleCtrlC(event)) return true;
+
     if (event.logicalKey == LogicalKey.keyS) {
       component.onSkipFlutterBuild();
       return true;

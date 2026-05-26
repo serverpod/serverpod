@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/tui/app.dart';
 import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_cli/src/commands/tui/run_app.dart';
 
 import 'main_screen.dart';
 
@@ -89,7 +90,8 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
   ServerpodAppState createState() => ServerpodWatchAppState();
 }
 
-class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
+class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp>
+    with CtrlCExitHandler<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
   final flutterRawScrollController = ScrollController();
@@ -121,6 +123,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
   @override
   void dispose() {
+    disposeCtrlC();
     component.holder.detach(this);
     super.dispose();
   }
@@ -172,6 +175,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         },
         onTabChanged: (index) {
           state.selectedTab = index;
+          state.selectedText = '';
           _rebuild();
         },
         onHotReload: onHotReload,
@@ -184,8 +188,19 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
     );
   }
 
+  @override
+  void onCtrlCQuit() {
+    if (onQuit != null) {
+      onQuit!.call();
+    } else {
+      shutdownServerpodApp(0);
+    }
+  }
+
   bool _handleKeyEvent(KeyboardEvent event) {
     final state = component.holder.state;
+
+    if (handleCtrlC(event)) return true;
 
     if (state.showHelp) {
       if (event.logicalKey == LogicalKey.escape) {

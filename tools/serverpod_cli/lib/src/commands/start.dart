@@ -984,6 +984,7 @@ Future<int> _runWithTui({
   await runServerpodApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
     onShutdownSignal: () => shutdown.complete(0),
+    routeSigintThroughApp: true,
   );
 
   // runServerpodApp returned, so shutdownServerpodApp ran, so the listener fired,

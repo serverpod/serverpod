@@ -37,11 +37,17 @@ void _restoreServerpodTerminal() {
 /// When [onShutdownSignal] is provided, signals invoke that callback instead.
 /// The caller is then responsible for running cleanup and eventually calling
 /// `shutdownServerpodApp(...)` to tear down the nocterm renderer.
+///
+/// When [routeSigintThroughApp] is true, SIGINT is not handled here. The
+/// nocterm backend converts it into a Ctrl-C keyboard event routed through the
+/// component tree, letting the app intercept it (e.g. to copy a selection or
+/// require a second press before exiting). SIGTERM is still handled here.
 Future<void> runServerpodApp(
   Component app, {
   bool enableHotReload = true,
   TerminalBackend? backend,
   void Function()? onShutdownSignal,
+  bool routeSigintThroughApp = false,
 }) async {
   _captureTerminalState();
 
@@ -58,7 +64,9 @@ Future<void> runServerpodApp(
       ? onShutDownSignalDefault
       : onShutDownSignalDelegated;
 
-  ProcessSignal.sigint.watch().listen(handler);
+  if (!routeSigintThroughApp) {
+    ProcessSignal.sigint.watch().listen(handler);
+  }
   if (!Platform.isWindows) {
     ProcessSignal.sigterm.watch().listen(handler);
   }

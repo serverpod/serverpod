@@ -29,9 +29,7 @@ class LogViewerWidget extends StatelessComponent {
           children: [
             Expanded(
               child: SelectionArea(
-                onSelectionCompleted: (text) {
-                  if (text.isNotEmpty) ClipboardManager.copy(text);
-                },
+                onSelectionChanged: (text) => state.selectedText = text,
                 child: Scrollbar(
                   controller: scrollController,
                   thumbVisibility: true,
