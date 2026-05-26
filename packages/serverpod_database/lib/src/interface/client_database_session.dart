@@ -42,7 +42,7 @@ class ClientDatabaseSession implements DatabaseSession {
     final session = ClientDatabaseSession._(poolManager);
     if (runMigrations) {
       await session._runMigrations(
-        moduleName: serializationManager.moduleName,
+        moduleName: serializationManager.getModuleName(),
         clientMigrations: clientMigrations,
         isDebugMode: isDebugMode,
       );

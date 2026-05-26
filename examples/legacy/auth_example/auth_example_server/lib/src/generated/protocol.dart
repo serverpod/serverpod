@@ -150,7 +150,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String get moduleName => 'auth_example';
+  String getModuleName() => 'auth_example';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

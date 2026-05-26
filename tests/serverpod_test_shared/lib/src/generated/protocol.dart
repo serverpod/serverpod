@@ -203,7 +203,7 @@ class Protocol extends _i1.SerializationManager {
     for (final protocol in _hostProtocols) {
       final className = protocol.getClassNameForObject(object);
       if (className == null) continue;
-      final host = protocol.moduleName;
+      final host = protocol.getModuleName();
       final wrapped = {
         'className': className.contains('.') ? className : '$host.$className',
         'data': object,
@@ -226,7 +226,7 @@ class Protocol extends _i1.SerializationManager {
     }
     final className = value['className'] as String;
     for (final protocol in _hostProtocols) {
-      final host = protocol.moduleName;
+      final host = protocol.getModuleName();
       final hostPrefix = '$host.';
       if (className.startsWith(hostPrefix)) {
         final strippedClassName = className.substring(hostPrefix.length);
@@ -251,7 +251,7 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String get moduleName => 'serverpod_test';
+  String getModuleName() => 'serverpod_test';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

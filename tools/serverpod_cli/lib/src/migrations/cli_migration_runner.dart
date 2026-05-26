@@ -137,7 +137,7 @@ class _CliSerializationManager extends DatabaseSerializationManager {
   final String _moduleName;
 
   @override
-  String get moduleName => _moduleName;
+  String getModuleName() => _moduleName;
 
   @override
   Table? getTableForType(Type t) => null;

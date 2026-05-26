@@ -47,7 +47,11 @@ Type getType<T>() => T;
 /// extended by generated code.
 abstract class SerializationManager {
   /// The name of the module that defines the serialization.
-  String get moduleName;
+  ///
+  /// This method will be implemented by the generated code.
+  String getModuleName() {
+    throw UnimplementedError('This protocol does not have a module name.');
+  }
 
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {

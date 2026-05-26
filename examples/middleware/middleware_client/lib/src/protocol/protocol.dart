@@ -94,7 +94,7 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String get moduleName => 'middleware';
+  String getModuleName() => 'middleware';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

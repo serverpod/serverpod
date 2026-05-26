@@ -4,10 +4,6 @@ import 'package:test/test.dart';
 
 class _TestSerializationManager extends SerializationManager {
   _TestSerializationManager();
-
-  @override
-  String get moduleName => 'test';
-
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'] == '_SimpleData') {

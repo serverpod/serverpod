@@ -151,7 +151,4 @@ void main() {
   );
 }
 
-class _TestProtocol extends SerializationManager {
-  @override
-  String get moduleName => 'test';
-}
+class _TestProtocol extends SerializationManager {}

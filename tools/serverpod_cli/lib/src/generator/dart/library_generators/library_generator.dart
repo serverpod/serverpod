@@ -607,8 +607,7 @@ class LibraryGenerator {
         ),
       Method(
         (m) => m
-          ..name = 'moduleName'
-          ..type = MethodType.getter
+          ..name = 'getModuleName'
           ..annotations.add(refer('override'))
           ..returns = TypeReference((t) => t..symbol = 'String')
           ..body = literalString(config.name).code,
@@ -727,7 +726,7 @@ if ((object is List || object is Set || object is Map) ||
 for (final protocol in _hostProtocols) {
   final className = protocol.getClassNameForObject(object);
   if (className == null) continue;
-  final host = protocol.moduleName;
+  final host = protocol.getModuleName();
   final wrapped = {
     'className': className.contains('.') ? className : '\$host.\$className',
     'data': object,
@@ -763,7 +762,7 @@ if (value is! Map<String, dynamic> || value['className'] is! String) {
 }
 final className = value['className'] as String;
 for (final protocol in _hostProtocols) {
-  final host = protocol.moduleName;
+  final host = protocol.getModuleName();
   final hostPrefix = '\$host.';
   if (className.startsWith(hostPrefix)) {
     final strippedClassName = className.substring(hostPrefix.length);

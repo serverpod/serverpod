@@ -1,10 +1,7 @@
 import 'package:serverpod_serialization/src/serialization.dart';
 import 'package:test/test.dart';
 
-class _TestProtocol extends SerializationManager {
-  @override
-  String get moduleName => 'test';
-}
+class _TestProtocol extends SerializationManager {}
 
 void main() {
   var protocol = _TestProtocol();

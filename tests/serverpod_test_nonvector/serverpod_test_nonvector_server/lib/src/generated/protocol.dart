@@ -167,7 +167,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String get moduleName => 'serverpod_test_nonvector';
+  String getModuleName() => 'serverpod_test_nonvector';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

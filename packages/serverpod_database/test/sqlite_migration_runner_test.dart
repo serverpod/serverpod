@@ -148,7 +148,7 @@ Future<void> _createParentChildTables(
 
 class _TestSerializationManager extends DatabaseSerializationManager {
   @override
-  String get moduleName => 'test';
+  String getModuleName() => 'test';
 
   @override
   Table? getTableForType(Type t) => null;

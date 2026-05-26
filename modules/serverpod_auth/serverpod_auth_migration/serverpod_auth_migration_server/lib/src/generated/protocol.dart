@@ -234,7 +234,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     for (final protocol in _hostProtocols) {
       final className = protocol.getClassNameForObject(object);
       if (className == null) continue;
-      final host = protocol.moduleName;
+      final host = protocol.getModuleName();
       final wrapped = {
         'className': className.contains('.') ? className : '$host.$className',
         'data': object,
@@ -257,7 +257,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     final className = value['className'] as String;
     for (final protocol in _hostProtocols) {
-      final host = protocol.moduleName;
+      final host = protocol.getModuleName();
       final hostPrefix = '$host.';
       if (className.startsWith(hostPrefix)) {
         final strippedClassName = className.substring(hostPrefix.length);
@@ -325,7 +325,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String get moduleName => 'serverpod_auth_migration';
+  String getModuleName() => 'serverpod_auth_migration';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

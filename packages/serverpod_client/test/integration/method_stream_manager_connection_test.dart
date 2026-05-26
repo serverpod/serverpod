@@ -15,10 +15,7 @@ import 'websocket_extensions.dart';
 import '../test_utils/method_stream_connection_details_builder.dart';
 import '../test_utils/test_web_socket_server.dart';
 
-class TestSerializationManager extends SerializationManager {
-  @override
-  String get moduleName => 'test';
-}
+class TestSerializationManager extends SerializationManager {}
 
 void main() async {
   test(

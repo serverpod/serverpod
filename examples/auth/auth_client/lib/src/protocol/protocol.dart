@@ -139,7 +139,7 @@ class Protocol extends _i1.SerializationManager {
   }
 
   @override
-  String get moduleName => 'auth';
+  String getModuleName() => 'auth';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
