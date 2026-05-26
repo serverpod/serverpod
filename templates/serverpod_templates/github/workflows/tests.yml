@@ -26,11 +26,9 @@ jobs:
         run: docker compose up --quiet-pull --build -d
 
       - name: Install dependencies
-        working-directory: projectname_server
         run: flutter pub get
 
       - name: Install Serverpod CLI
-        working-directory: projectname_server
         run: dart install serverpod_cli $VERSION
 
       - name: Run Serverpod generator

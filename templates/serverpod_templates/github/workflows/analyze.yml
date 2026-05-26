@@ -18,7 +18,6 @@ jobs:
           flutter-version: '3.38.4'
 
       - name: Install dependencies
-        working-directory: projectname_server
         run: flutter pub get
 
       - name: Analyze
