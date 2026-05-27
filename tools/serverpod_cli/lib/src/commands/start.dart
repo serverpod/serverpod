@@ -93,12 +93,10 @@ enum StartOption<V> implements OptionDefinition<V> {
   flutterDevice(
     StringOption(
       argName: 'flutter-device',
-      defaultsTo: 'chrome',
+      defaultsTo: flutterDeviceWebServerWithBrowser,
       helpText:
-          'Target device for `flutter run -d`. Defaults to chrome '
-          '(web-server is headless and triggers a known DWDS hot-reload '
-          'bug: dart-lang/sdk#60289). Pass --flutter-device=web-server '
-          'for CI / headless / remote-attach workflows.',
+          'Target device for `flutter run -d`. Defaults to "web-server" '
+          'and launches the default browser as soon as the app is ready.',
     ),
   ),
   flutterOption(
