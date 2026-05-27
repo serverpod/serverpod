@@ -138,151 +138,176 @@ class Analyzers {
     Set<String>? affectedPaths,
   }) async {
     bool success = true;
+    String? protocolBackup;
+    var wroteTempProtocol = false;
+    var wroteFullProtocol = false;
+    final protocolPath = p.joinAll(config.generatedServerProtocolFilePathParts);
 
-    log.debug('Analyzing serializable models in the protocol directory.');
+    try {
+      log.debug('Analyzing serializable models in the protocol directory.');
 
-    final models = _models.validateAll(
-      reportIssuesForPaths: affectedPaths,
-    );
-    success &= !_models.hasSevereErrors;
+      final models = _models.validateAll(
+        reportIssuesForPaths: affectedPaths,
+      );
+      success &= !_models.hasSevereErrors;
 
-    List<String> generatedModelFiles = [];
+      List<String> generatedModelFiles = [];
 
-    // Generate model files and a temporary protocol.dart before analyzing
-    // future calls and endpoints. The temp protocol exports model classes so
-    // that endpoint and future call files can resolve `import protocol.dart`.
-    // The full protocol (with Protocol class, endpoint dispatch, etc.) is
-    // generated later by ServerpodCodeGenerator.generateProtocolDefinition.
-    if (requirements.generateModels) {
-      log.debug('Generating files for serializable models.');
+      // Generate model files and a temporary protocol.dart before analyzing
+      // future calls and endpoints. The temp protocol exports model classes so
+      // that endpoint and future call files can resolve `import protocol.dart`.
+      // The full protocol (with Protocol class, endpoint dispatch, etc.) is
+      // generated later by ServerpodCodeGenerator.generateProtocolDefinition.
+      if (requirements.generateModels) {
+        log.debug('Generating files for serializable models.');
 
-      var tempProtocolPath = await _writeTemporaryProtocol(
-        models: models,
+        final protocolFile = File(protocolPath);
+        if (protocolFile.existsSync()) {
+          protocolBackup = await protocolFile.readAsString();
+        }
+
+        var tempProtocolPath = await _writeTemporaryProtocol(
+          models: models,
+          config: config,
+        );
+        wroteTempProtocol = true;
+
+        generatedModelFiles =
+            await ServerpodCodeGenerator.generateSerializableModels(
+              models: models,
+              config: config,
+            );
+
+        await refreshAnalysisContext(
+          _futureCalls.collection,
+          [...generatedModelFiles, tempProtocolPath],
+        );
+      }
+
+      log.debug('Analyzing the future calls models.');
+
+      var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
+
+      final futureCallModels = await _futureCalls.analyzeModels(
+        futureCallsModelsAnalyzerCollector,
+        models,
+      );
+
+      success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
+      futureCallsModelsAnalyzerCollector.printErrors();
+
+      final allModels = <SerializableModelDefinition>[
+        ...models,
+        ...futureCallModels,
+      ];
+
+      // Regenerate model files if future calls introduced parameter models.
+      if (requirements.generateModels && futureCallModels.isNotEmpty) {
+        log.debug(
+          'Regenerating model files with future call parameter models.',
+        );
+        generatedModelFiles =
+            await ServerpodCodeGenerator.generateSerializableModels(
+              models: allModels,
+              config: config,
+            );
+      }
+
+      if (!requirements.generateProtocol) {
+        return (success: success, generatedFiles: generatedModelFiles.toSet());
+      }
+
+      final changedFiles = requirements.generateModels
+          ? {...?affectedPaths, ...generatedModelFiles}
+          : {...?affectedPaths};
+
+      log.debug('Analyzing the endpoints.');
+      final endpointAnalyzerCollector = CodeGenerationCollector();
+      final endpoints = await _endpoints.analyze(
+        collector: endpointAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !endpointAnalyzerCollector.hasSevereErrors;
+      endpointAnalyzerCollector.printErrors();
+
+      log.debug('Analyzing the future calls.');
+      var futureCallsAnalyzerCollector = CodeGenerationCollector();
+      var futureCalls = await _futureCalls.analyze(
+        collector: futureCallsAnalyzerCollector,
+        changedFiles: changedFiles,
+      );
+
+      success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+      futureCallsAnalyzerCollector.printErrors();
+
+      log.debug('Generating the protocol.');
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: allModels,
+        futureCalls: futureCalls,
+      );
+
+      var generatedProtocolFiles =
+          await ServerpodCodeGenerator.generateProtocolDefinition(
+            protocolDefinition: protocolDefinition,
+            config: config,
+          );
+      wroteFullProtocol = true;
+
+      log.debug('Cleaning old files.');
+      final allGeneratedFiles = <String>{
+        ...generatedModelFiles,
+        ...generatedProtocolFiles,
+      };
+
+      // When doing protocol-only generation, we need to preserve existing model
+      // files from the generation stamp so they don't get cleaned up.
+      if (!requirements.generateModels) {
+        final previouslyGeneratedModelsDirs = [
+          p.joinAll(config.generatedServeModelPathParts),
+          p.joinAll(config.generatedDartClientModelPathParts),
+          ...config.generatedSharedModelsPaths,
+        ];
+
+        // Keep previous model files so they don't get deleted.
+        final previousFiles = readGenerationStamp(config);
+        final previousModelFiles = previousFiles.where(
+          (f) => previouslyGeneratedModelsDirs.any((dir) => p.isWithin(dir, f)),
+        );
+
+        allGeneratedFiles.addAll(previousModelFiles);
+        log.debug(
+          'Preserving ${previousModelFiles.length} existing model files from stamp.',
+        );
+      }
+
+      await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
+        generatedFiles: allGeneratedFiles,
+        protocolDefinition: protocolDefinition,
         config: config,
       );
 
-      generatedModelFiles =
-          await ServerpodCodeGenerator.generateSerializableModels(
-            models: models,
-            config: config,
-          );
-
-      await refreshAnalysisContext(
-        _futureCalls.collection,
-        [...generatedModelFiles, tempProtocolPath],
-      );
+      return (success: success, generatedFiles: allGeneratedFiles);
+    } finally {
+      // If model generation overwrote protocol.dart with a temporary stub but
+      // the full protocol was never written (interrupted run, models-only
+      // generation, or an exception), restore the previous protocol.dart so
+      // generated model files that call Protocol() can still compile.
+      if (wroteTempProtocol && !wroteFullProtocol && protocolBackup != null) {
+        await File(protocolPath).writeAsString(protocolBackup, flush: true);
+      }
     }
-
-    log.debug('Analyzing the future calls models.');
-
-    var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
-
-    final futureCallModels = await _futureCalls.analyzeModels(
-      futureCallsModelsAnalyzerCollector,
-      models,
-    );
-
-    success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
-    futureCallsModelsAnalyzerCollector.printErrors();
-
-    final allModels = <SerializableModelDefinition>[
-      ...models,
-      ...futureCallModels,
-    ];
-
-    // Regenerate model files if future calls introduced parameter models.
-    if (requirements.generateModels && futureCallModels.isNotEmpty) {
-      log.debug('Regenerating model files with future call parameter models.');
-      generatedModelFiles =
-          await ServerpodCodeGenerator.generateSerializableModels(
-            models: allModels,
-            config: config,
-          );
-    }
-
-    if (!requirements.generateProtocol) {
-      return (success: success, generatedFiles: generatedModelFiles.toSet());
-    }
-
-    final changedFiles = requirements.generateModels
-        ? {...?affectedPaths, ...generatedModelFiles}
-        : {...?affectedPaths};
-
-    log.debug('Analyzing the endpoints.');
-    final endpointAnalyzerCollector = CodeGenerationCollector();
-    final endpoints = await _endpoints.analyze(
-      collector: endpointAnalyzerCollector,
-      changedFiles: changedFiles,
-    );
-
-    success &= !endpointAnalyzerCollector.hasSevereErrors;
-    endpointAnalyzerCollector.printErrors();
-
-    log.debug('Analyzing the future calls.');
-    var futureCallsAnalyzerCollector = CodeGenerationCollector();
-    var futureCalls = await _futureCalls.analyze(
-      collector: futureCallsAnalyzerCollector,
-      changedFiles: changedFiles,
-    );
-
-    success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-    futureCallsAnalyzerCollector.printErrors();
-
-    log.debug('Generating the protocol.');
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: endpoints,
-      models: allModels,
-      futureCalls: futureCalls,
-    );
-
-    var generatedProtocolFiles =
-        await ServerpodCodeGenerator.generateProtocolDefinition(
-          protocolDefinition: protocolDefinition,
-          config: config,
-        );
-
-    log.debug('Cleaning old files.');
-    final allGeneratedFiles = <String>{
-      ...generatedModelFiles,
-      ...generatedProtocolFiles,
-    };
-
-    // When doing protocol-only generation, we need to preserve existing model
-    // files from the generation stamp so they don't get cleaned up.
-    if (!requirements.generateModels) {
-      final previouslyGeneratedModelsDirs = [
-        p.joinAll(config.generatedServeModelPathParts),
-        p.joinAll(config.generatedDartClientModelPathParts),
-        ...config.generatedSharedModelsPaths,
-      ];
-
-      // Keep previous model files so they don't get deleted.
-      final previousFiles = readGenerationStamp(config);
-      final previousModelFiles = previousFiles.where(
-        (f) => previouslyGeneratedModelsDirs.any((dir) => p.isWithin(dir, f)),
-      );
-
-      allGeneratedFiles.addAll(previousModelFiles);
-      log.debug(
-        'Preserving ${previousModelFiles.length} existing model files from stamp.',
-      );
-    }
-
-    await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-      generatedFiles: allGeneratedFiles,
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    return (success: success, generatedFiles: allGeneratedFiles);
   }
 }
 
-/// Writes a temporary protocol.dart that exports all model classes.
+/// Writes a temporary protocol.dart that exports all model classes and a stub
+/// [Protocol] class.
 ///
 /// This allows endpoint and future call files to resolve their
-/// `import 'protocol.dart'` during analysis. The full protocol (with the
-/// Protocol class, endpoint dispatch, etc.) overwrites this later via
+/// `import 'protocol.dart'` during analysis, and lets generated model files
+/// that call `Protocol()` compile before the full protocol exists. The full
+/// protocol (with endpoint dispatch, etc.) overwrites this later via
 /// [ServerpodCodeGenerator.generateProtocolDefinition].
 Future<String> _writeTemporaryProtocol({
   required List<SerializableModelDefinition> models,
