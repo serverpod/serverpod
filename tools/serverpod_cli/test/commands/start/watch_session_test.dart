@@ -842,6 +842,10 @@ void main() {
       test('then it creates a new server with the fresh full dill.', () {
         expect(factoryCalls, ['createServer:/out.dill']);
       });
+
+      test('then it refreshes the browser on the new server.', () {
+        expect(factoryServer.calls, contains('notifyStaticChange'));
+      });
     },
   );
 
