@@ -185,7 +185,10 @@ void main() {
           contains('sessionId'),
           containsPair('userAuthInfo', null),
           contains('remoteInfo'),
-          containsPair('uri', 'http://localhost:8080/exceptionTest'),
+          containsPair(
+            'uri',
+            'http://localhost:8080/exceptionTest/throwNormalException',
+          ),
           containsPair('endpoint', 'exceptionTest'),
           containsPair('methodName', 'throwNormalException'),
         ]),
