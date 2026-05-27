@@ -185,8 +185,7 @@ class WatchSession {
         event.modelFiles.isNotEmpty ||
         event.packageConfigChanged;
 
-    // Static-only changes (HTML, JS, CSS, templates): no compilation needed,
-    // just refresh the browser.
+    // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
     if (!hasDartChanges) {
       log.debug('Static files changed.');
       await _notifyBrowserRefresh();
