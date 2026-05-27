@@ -131,13 +131,13 @@ Future<void> _installScloud() async {
   final success = await log.progress(
     'Installing Serverpod Cloud CLI...',
     () async {
-  final installProcess = await Process.start(dartExecutable, [
-    'install',
-    'serverpod_cloud_cli',
-  ]);
+      final installProcess = await Process.start(dartExecutable, [
+        'install',
+        'serverpod_cloud_cli',
+      ]);
 
-  installProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
-  installProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
+      installProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
+      installProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
 
       return (await installProcess.exitCode) == 0;
     },
@@ -150,11 +150,34 @@ Future<void> _installScloud() async {
 }
 
 /// Rewrites [scloud] branding in child process output for the parent CLI.
-Stream<List<int>> _replaceScloudInOutput(Stream<List<int>> stream) {
-  return stream
-      .transform(utf8.decoder)
-      .map((text) => text.replaceAll('scloud', 'serverpod cloud'))
-      .transform(utf8.encoder);
+Stream<List<int>> _replaceScloudInOutput(Stream<List<int>> stream) async* {
+  var pending = '';
+
+  await for (final chunk in stream.transform(const Utf8Decoder())) {
+    pending += chunk;
+
+    final lastSpace = pending.lastIndexOf(' ');
+    if (lastSpace == -1) {
+      continue;
+    }
+
+    final emit = pending.substring(0, lastSpace + 1);
+    pending = pending.substring(lastSpace + 1);
+    yield _encodeReplacingScloudInText(emit);
+  }
+
+  if (pending.isNotEmpty) {
+    yield _encodeReplacingScloudInText(pending);
+  }
+}
+
+List<int> _encodeReplacingScloudInText(String text) {
+  return utf8.encode(
+    text.replaceAllMapped(
+      RegExp(r'''(["' ])scloud(["' ])?'''),
+      (match) => '${match.group(1)}serverpod cloud${match.group(2) ?? ''}',
+    ),
+  );
 }
 
 Future<void> _closeProcessStdin(IOSink sink) async {
