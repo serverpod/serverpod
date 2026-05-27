@@ -20,6 +20,7 @@ dependencies:
   code_builder: ^4.5.0
   collection: ^1.18.0
   config: ^0.8.4
+  dart_data_home: ^0.1.0
   dart_mcp: '>=0.4.1 <0.6.0'
   # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
   # to 3.12 due to a bug on the formatter that was fixed in 3.1.6, but only
