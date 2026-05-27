@@ -128,14 +128,22 @@ Future<Process> _startScloudProcess(
 
 Future<void> _installScloud() async {
   final dartExecutable = p.join(getSdkPath(), 'bin', 'dart');
-  log.info('Installing Serverpod Cloud CLI...');
+  final success = await log.progress(
+    'Installing Serverpod Cloud CLI...',
+    () async {
   final installProcess = await Process.start(dartExecutable, [
     'install',
     'serverpod_cloud_cli',
   ]);
+
   installProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
   installProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
-  if (await installProcess.exitCode != 0) {
+
+      return (await installProcess.exitCode) == 0;
+    },
+  );
+
+  if (!success) {
     log.error('Failed to install Serverpod Cloud CLI.');
     throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
   }
