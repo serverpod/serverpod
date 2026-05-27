@@ -41,7 +41,6 @@ dependencies:
   lsp_server: ^0.4.0
   meta: ^1.15.0
   nocterm: ^0.6.0
-  serverpod_tui: ^0.1.0-rc.3
   package_config: ^2.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
@@ -52,6 +51,7 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
+  serverpod_tui: ^0.1.0-rc.4
   skills: ^0.3.0
   source_span: ^1.10.0
   stream_channel: ^2.1.1

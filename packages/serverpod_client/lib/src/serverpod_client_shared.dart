@@ -558,8 +558,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
       var authenticationValue = authenticated
           ? await authKeyProvider?.authHeaderValue
           : null;
-      var body = formatArgs(args, method);
-      var url = Uri.parse('$host$endpoint');
+      var body = formatArgs(args);
+      var url = method.isEmpty
+          ? Uri.parse('$host$endpoint')
+          : Uri.parse('$host$endpoint/$method');
 
       var data = await _requestDelegate.serverRequest(
         url,

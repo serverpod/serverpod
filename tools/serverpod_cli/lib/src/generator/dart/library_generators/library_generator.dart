@@ -194,14 +194,13 @@ class LibraryGenerator {
             ..name = '_hostProtocols'
             ..type = TypeReference(
               (t) => t
-                ..symbol = 'Map'
-                ..types.addAll([
-                  refer('String'),
+                ..symbol = 'Set'
+                ..types.add(
                   refer('SerializationManager', serverpodUrl(serverCode)),
-                ]),
+                ),
             )
             ..modifier = FieldModifier.final$
-            ..assignment = literalMap({}).code,
+            ..assignment = literalSet({}).code,
         ),
     ]);
 
@@ -606,14 +605,13 @@ class LibraryGenerator {
             )
             ..body = refer('targetTableDefinitions').code,
         ),
-      if (serverCode || hasDatabaseTablesForCurrentSide)
-        Method(
-          (m) => m
-            ..name = 'getModuleName'
-            ..annotations.add(refer('override'))
-            ..returns = TypeReference((t) => t..symbol = 'String')
-            ..body = literalString(config.name).code,
-        ),
+      Method(
+        (m) => m
+          ..name = 'getModuleName'
+          ..annotations.add(refer('override'))
+          ..returns = TypeReference((t) => t..symbol = 'String')
+          ..body = literalString(config.name).code,
+      ),
       if (protocolDefinition.usesRecordsInStreams)
         Method(
           (m) => m
@@ -725,9 +723,10 @@ if ((object is List || object is Set || object is Map) ||
     getClassNameForObject(object) != null) {
   return super.dynamicFieldToJson(object, forProtocol: forProtocol);
 }
-for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
+for (final protocol in _hostProtocols) {
   final className = protocol.getClassNameForObject(object);
   if (className == null) continue;
+  final host = protocol.getModuleName();
   final wrapped = {
     'className': className.contains('.') ? className : '\$host.\$className',
     'data': object,
@@ -762,7 +761,8 @@ if (value is! Map<String, dynamic> || value['className'] is! String) {
   );
 }
 final className = value['className'] as String;
-for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
+for (final protocol in _hostProtocols) {
+  final host = protocol.getModuleName();
   final hostPrefix = '\$host.';
   if (className.startsWith(hostPrefix)) {
     final strippedClassName = className.substring(hostPrefix.length);
@@ -777,7 +777,7 @@ for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
   }
 }
 if (className.contains('.')) {
-  for (final protocol in _hostProtocols.values) {
+  for (final protocol in _hostProtocols) {
     try {
       return protocol.deserializeByClassName(value);
     } on FormatException catch (_) {}
@@ -810,7 +810,7 @@ return deserializeByClassName(value);
                 ),
             ),
           ])
-          ..body = const Code('_hostProtocols[projectName] = protocol;'),
+          ..body = const Code('_hostProtocols.add(protocol);'),
       ),
     ];
   }

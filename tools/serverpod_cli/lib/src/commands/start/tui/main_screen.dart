@@ -64,7 +64,7 @@ class MainScreen extends StatelessComponent {
       'Tabs',
       [
         ('Tab / →', 'Next tab'),
-        ('←', 'Previous tab'),
+        ('Shift+Tab / ←', 'Previous tab'),
         ('1', 'Log Messages'),
         ('2', 'Raw server output'),
       ],

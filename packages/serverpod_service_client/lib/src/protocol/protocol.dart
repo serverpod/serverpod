@@ -654,6 +654,9 @@ class Protocol extends _i1.SerializationManager {
     _i34.Protocol().registerHostProtocol('serverpod', this);
   }
 
+  @override
+  String getModuleName() => 'serverpod';
+
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
   /// Throws in case the record type is not known.

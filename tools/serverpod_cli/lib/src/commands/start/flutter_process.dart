@@ -60,6 +60,8 @@ class FlutterProcess {
   StreamSubscription<List<int>>? _stderrBytesSub;
   StreamSubscription<String>? _machineLinesSub;
   StreamSubscription<Event>? _loggingSub;
+  StreamSubscription<Event>? _stdoutEventSub;
+  StreamSubscription<Event>? _stderrEventSub;
   Timer? _vmServiceHeartbeat;
 
   String? _appId;
@@ -229,7 +231,7 @@ class FlutterProcess {
       try {
         final vm = await vmServiceConnectUri(wsUri);
         _vmService = vm;
-        await _subscribeToLogging(vm);
+        await _subscribeToVmStreams(vm);
         _startVmServiceHeartbeat(vm);
         return;
       } on Exception {
@@ -283,24 +285,62 @@ class FlutterProcess {
     });
   }
 
-  /// `--machine` doesn't forward `dart:developer.log()`; `Logging` does.
-  Future<void> _subscribeToLogging(VmService vmService) async {
-    try {
-      await vmService.streamListen('Logging');
-    } on RPCError catch (e) {
-      log.debug('Could not subscribe to Flutter Logging stream: $e');
+  /// Subscribes to a named [vmService] stream.
+  /// - 'Logging' for _dart:developer.log()_,
+  /// - 'Stdout' for [stdout] (includes [print])
+  /// - 'Stderr' for [stderr]
+  Future<void> _subscribeToVmStreams(VmService vmService) async {
+    Future<bool> tryListen(String stream) async {
+      try {
+        await vmService.streamListen(stream);
+        return true;
+      } on RPCError catch (e) {
+        log.warning('Could not subscribe to Flutter $stream stream: $e');
+        return false;
+      }
+    }
+
+    if (await tryListen('Logging')) {
+      const severeLevel = 1000;
+      _loggingSub = vmService.onLoggingEvent.listen((event) {
+        final record = event.logRecord;
+        final message = record?.message?.valueAsString;
+        if (message == null || message.isEmpty) return;
+        final name = record?.loggerName?.valueAsString ?? '';
+        final line = name.isEmpty ? message : '[$name] $message';
+        final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
+        sink.writeln(line);
+      });
+    }
+
+    if (await tryListen('Stdout')) {
+      _stdoutEventSub = vmService.onStdoutEvent.listen(
+        (e) => _writeVmStreamEvent(_stdout, e),
+      );
+    }
+    if (await tryListen('Stderr')) {
+      _stderrEventSub = vmService.onStderrEvent.listen(
+        (e) => _writeVmStreamEvent(_stderr, e),
+      );
+    }
+  }
+
+  /// Decodes a VM service [event] and writes its text to [sink]
+  static void _writeVmStreamEvent(IOSink sink, Event event) {
+    final bytes = event.bytes;
+    String text;
+    if (bytes != null) {
+      try {
+        text = utf8.decode(base64.decode(bytes), allowMalformed: true);
+      } catch (_) {
+        return;
+      }
+    } else {
+      // No bytes payload on this VM build
       return;
     }
-    const severeLevel = 1000;
-    _loggingSub = vmService.onLoggingEvent.listen((event) {
-      final record = event.logRecord;
-      final message = record?.message?.valueAsString;
-      if (message == null || message.isEmpty) return;
-      final name = record?.loggerName?.valueAsString ?? '';
-      final line = name.isEmpty ? message : '[$name] $message';
-      final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
-      sink.writeln(line);
-    });
+    if (text.isEmpty) return;
+    sink.write(text);
   }
 
   /// Hot reload. Daemon-reported success; never throws.
@@ -435,11 +475,6 @@ class FlutterProcess {
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());
-        case 'app.log':
-          final logText = paramMap['log'];
-          if (logText is! String || logText.isEmpty) break;
-          final sink = paramMap['error'] == true ? _stderr : _stdout;
-          sink.writeln(logText);
         case 'daemon.logMessage':
           final message = paramMap['message'];
           if (message is String) log.debug('flutter[daemon] $message');
@@ -482,12 +517,16 @@ class FlutterProcess {
       await _machineLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
+      await _stdoutEventSub?.cancel();
+      await _stderrEventSub?.cancel();
       _vmServiceHeartbeat?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
+      _stdoutEventSub = null;
+      _stderrEventSub = null;
       _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();
