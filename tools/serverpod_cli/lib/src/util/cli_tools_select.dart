@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:serverpod_cli/src/util/windows_console_input.dart';
 
 export 'package:cli_tools/cli_tools.dart' show Option;
 
@@ -33,15 +34,23 @@ Future<Option> select(
 
   bool? originalEchoMode;
   bool? originalLineMode;
+  int? originalWindowsConsoleMode;
   if (hasTerminalInput) {
     originalEchoMode = stdin.echoMode;
     originalLineMode = stdin.lineMode;
     stdin.echoMode = false;
     stdin.lineMode = false;
+    if (Platform.isWindows) {
+      // Windows Terminal/ConPTY delivers arrow keys as character-less key
+      // events that readByteSync drops, so the ESC [ A / ESC [ B parsing below
+      // never sees them. Enabling virtual-terminal input makes the cursor keys
+      // arrive as those escape sequences, exactly as on POSIX terminals.
+      originalWindowsConsoleMode = enableWindowsVirtualTerminalInput();
+    }
   }
 
   try {
-    _renderState(
+    await _renderState(
       selectedIndex: selectedIndex,
       options: options,
       promptMessage: prompt,
@@ -71,44 +80,58 @@ Future<Option> select(
         throw ExitException.error();
       }
 
-      if (keyCode == _KeyCodes.escapeSequenceStart) {
-        var nextByte = stdin.readByteSync();
-        if (nextByte == _KeyCodes.controlSequenceIntroducer) {
-          nextByte = stdin.readByteSync();
-          if (nextByte == _KeyCodes.arrowUp) {
-            selectedIndex =
-                (selectedIndex - 1 + options.length) % options.length;
-          } else if (nextByte == _KeyCodes.arrowDown) {
-            selectedIndex = (selectedIndex + 1) % options.length;
-          } else {
-            continue;
+      // Navigation: arrow keys, plus j/k (vim-style) as aliases. The aliases
+      // matter on terminals/sessions where the cursor keys don't reach stdin
+      // as escape sequences. mason_logger uses the same j/k convention.
+      int? step;
+      if (keyCode == _KeyCodes.k) {
+        step = -1;
+      } else if (keyCode == _KeyCodes.j) {
+        step = 1;
+      } else if (keyCode == _KeyCodes.escapeSequenceStart) {
+        if (stdin.readByteSync() == _KeyCodes.controlSequenceIntroducer) {
+          final arrow = stdin.readByteSync();
+          if (arrow == _KeyCodes.arrowUp) {
+            step = -1;
+          } else if (arrow == _KeyCodes.arrowDown) {
+            step = 1;
           }
-
-          _renderState(
-            selectedIndex: selectedIndex,
-            options: options,
-            promptMessage: prompt,
-            lineCount: lineCount,
-            redraw: true,
-          );
         }
       }
+
+      if (step == null) continue;
+
+      selectedIndex = (selectedIndex + step + options.length) % options.length;
+      await _renderState(
+        selectedIndex: selectedIndex,
+        options: options,
+        promptMessage: prompt,
+        lineCount: lineCount,
+        redraw: true,
+      );
     }
   } finally {
     if (hasTerminalInput) {
-      stdin.echoMode = originalEchoMode!;
+      if (originalWindowsConsoleMode != null) {
+        restoreWindowsConsoleInputMode(originalWindowsConsoleMode);
+      }
+      // Restore lineMode before echoMode: on Windows ENABLE_ECHO_INPUT is only
+      // valid while ENABLE_LINE_INPUT is set, so re-enabling echo while line
+      // mode is still off throws "Error setting terminal echo mode ... errno =
+      // 87". Line-without-echo is a valid intermediate state on every platform.
       stdin.lineMode = originalLineMode!;
+      stdin.echoMode = originalEchoMode!;
     }
   }
 }
 
-void _renderState({
+Future<void> _renderState({
   required int selectedIndex,
   required List<Option> options,
   required String promptMessage,
   required int lineCount,
   required bool redraw,
-}) {
+}) async {
   if (redraw) {
     stdout.write('\x1B[${lineCount}A\x1B[0J');
   }
@@ -124,6 +147,14 @@ void _renderState({
 
   stdout.writeln();
   stdout.writeln('Press [Enter] to confirm.');
+
+  // Drain stdout to the terminal before the caller blocks on
+  // stdin.readByteSync(). A synchronous read parks the isolate without
+  // running the event loop, so anything still buffered in stdout never
+  // reaches a Windows console — the menu renders blank even though key
+  // input keeps working. The previous cli_tools-based path avoided this
+  // by writing from the IsolatedLogWriter's still-spinning isolate.
+  await stdout.flush();
 }
 
 abstract final class _KeyCodes {
@@ -134,6 +165,8 @@ abstract final class _KeyCodes {
   static const enterCR = 13;
   static const enterLF = 10;
   static const q = 113;
+  static const j = 106;
+  static const k = 107;
 }
 
 String _underline(final String text) => '\x1B[4m$text\x1B[0m';

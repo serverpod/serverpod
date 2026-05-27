@@ -28,6 +28,7 @@ dependencies:
   # details, see: https://github.com/dart-lang/dart_style/issues/1785
   dart_style: 3.1.5
   data_assets: '>=0.19.0 <0.20.0'
+  ffi: ^2.1.4
   file: ^7.0.1
   hooks: ^1.0.0
   hooks_runner: ^1.2.1
