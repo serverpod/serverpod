@@ -436,6 +436,58 @@ void main() {
     );
 
     test(
+      'when device is "web-server-launch-browser" and app.webLaunchUrl arrives '
+      'then the browser launcher is invoked with that URL',
+      () async {
+        Uri? openedUrl;
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.systemTemp.path,
+          device: flutterDeviceWebServerWithBrowser,
+          openBrowserForTesting: (url) async {
+            openedUrl = url;
+            return true;
+          },
+        );
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.webLaunchUrl',
+              'params': {'url': 'http://localhost:54321'},
+            },
+          ]),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(openedUrl, Uri.parse('http://localhost:54321'));
+      },
+    );
+
+    test(
+      'when device is "web-server" and app.webLaunchUrl arrives '
+      'then the browser launcher is not invoked',
+      () async {
+        var browserLaunchCount = 0;
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
+          openBrowserForTesting: (_) async {
+            browserLaunchCount++;
+            return true;
+          },
+        );
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.webLaunchUrl',
+              'params': {'url': 'http://localhost:54321'},
+            },
+          ]),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(browserLaunchCount, 0);
+      },
+    );
+
+    test(
       'when app.debugPort arrives without app.webLaunchUrl '
       'then launched completes immediately (mobile/desktop gate semantics)',
       () async {

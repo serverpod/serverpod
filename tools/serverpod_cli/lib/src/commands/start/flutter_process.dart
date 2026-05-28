@@ -7,11 +7,14 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
+import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
+
+const flutterDeviceWebServerWithBrowser = 'web-server-launch-browser';
 
 /// Thrown by [FlutterProcess.start] when `flutter` cannot be launched.
 class FlutterNotInstalledException implements Exception {
@@ -50,9 +53,16 @@ class FlutterProcess {
   /// messages in between.
   final void Function(String stage)? _onProgress;
 
+  /// When true, open [flutterAppUrl] in the default browser once it is
+  /// published by the daemon (`app.webLaunchUrl`).
+  final bool _launchBrowser;
+
   /// Test-only spawn args override; replaces the default `flutter run`
   /// arg list when non-null.
   final List<String>? _argsOverrideForTesting;
+
+  /// Test-only override for [BrowserLauncher.openUrl].
+  final Future<bool> Function(Uri url)? _openBrowserForTesting;
 
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
@@ -70,6 +80,7 @@ class FlutterProcess {
   String? _flutterAppUrl;
   String? _dtdUri;
   VmService? _vmService;
+  bool _browserOpening = false;
 
   // `null` result means the process exited before publishing a URI.
   final Completer<String?> _vmServiceUriCompleter = Completer<String?>();
@@ -88,6 +99,7 @@ class FlutterProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     @visibleForTesting List<String>? argsOverrideForTesting,
+    @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
        _flutterExecutable = flutterExecutable,
        _device = device,
@@ -96,7 +108,9 @@ class FlutterProcess {
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
-       _argsOverrideForTesting = argsOverrideForTesting;
+       _launchBrowser = device == flutterDeviceWebServerWithBrowser,
+       _argsOverrideForTesting = argsOverrideForTesting,
+       _openBrowserForTesting = openBrowserForTesting;
 
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
@@ -130,9 +144,10 @@ class FlutterProcess {
       throw StateError('FlutterProcess is already running.');
     }
 
+    final device = _launchBrowser ? 'web-server' : _device;
     final args =
         _argsOverrideForTesting ??
-        <String>['run', '--machine', '-d', _device, ..._extraArgs];
+        <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
 
@@ -459,6 +474,9 @@ class FlutterProcess {
           if (url is String) {
             _flutterAppUrl = url;
             if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
+            if (_launchBrowser) {
+              unawaited(_openBrowser(Uri.parse(url)));
+            }
           }
         case 'app.dtd':
           final uri = paramMap['uri'];
@@ -480,6 +498,18 @@ class FlutterProcess {
           if (message is String) log.debug('flutter[daemon] $message');
       }
     }
+  }
+
+  Future<void> _openBrowser(Uri url) async {
+    if (_browserOpening) return;
+    _browserOpening = true;
+    final open = _openBrowserForTesting ?? BrowserLauncher.openUrl;
+    if (!await open(url)) {
+      log.warning('Could not open browser at $url');
+    }
+
+    // Reset the flag so we can open the browser again if the app is restarted.
+    _browserOpening = false;
   }
 
   bool _appStopHandled = false;
