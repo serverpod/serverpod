@@ -5,14 +5,14 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 
-/// Regression coverage for the cwd-independence guarantee:
-/// when `serverDirectory:` is passed explicitly, [Serverpod] loads
+/// Regression coverage for the cwd-independence guarantee: when
+/// `serverDirectory:` is passed explicitly, [Serverpod] loads
 /// `config/<runMode>.yaml` and `config/passwords.yaml` from there
 /// regardless of where [Directory.current] points.
 void main() {
   group('Given a server package laid out under a temp dir', () {
-    late Directory tempServerDir;
-    late Directory cwdSentinel;
+    Directory? tempServerDir;
+    Directory? cwdSentinel;
     late Directory originalCwd;
 
     setUp(() async {
@@ -20,7 +20,7 @@ void main() {
       tempServerDir = await Directory.systemTemp.createTemp('sd_');
       cwdSentinel = await Directory.systemTemp.createTemp('sd_cwd_');
 
-      final configDir = Directory(p.join(tempServerDir.path, 'config'))
+      final configDir = Directory(p.join(tempServerDir!.path, 'config'))
         ..createSync(recursive: true);
       File(p.join(configDir.path, 'development.yaml')).writeAsStringSync('''
 apiServer:
@@ -38,43 +38,39 @@ webServer:
         'development: {}\n',
       );
 
-      // Point cwd somewhere that contains no `config/` so anything that
-      // still reads cwd-relative paths fails loudly (test would either
-      // fall back to defaults or throw on missing file).
       Directory.current = cwdSentinel;
     });
 
     tearDown(() async {
       Directory.current = originalCwd;
-      try {
-        tempServerDir.deleteSync(recursive: true);
-      } on FileSystemException {
-        // Best effort.
+      for (final d in [tempServerDir, cwdSentinel]) {
+        try {
+          d?.deleteSync(recursive: true);
+        } on FileSystemException {
+          // Best effort.
+        }
       }
-      try {
-        cwdSentinel.deleteSync(recursive: true);
-      } on FileSystemException {
-        // Best effort.
-      }
+      tempServerDir = null;
+      cwdSentinel = null;
     });
 
     test(
       'when Serverpod is constructed with serverDirectory pointing at the '
       'temp dir, then it loads config from there even though cwd is unrelated',
       () async {
+        // Pin run mode so SERVERPOD_RUN_MODE in the environment can't
+        // redirect the load to a config file that doesn't exist.
         final pod = Serverpod(
-          [],
+          ['--mode', 'development'],
           internal.Protocol(),
           _EmptyEndpoints(),
           serverDirectory: tempServerDir,
         );
         addTearDown(() => pod.shutdown(exitProcess: false));
 
-        // If config had been loaded cwd-relative, ServerpodConfig.load would
-        // not find development.yaml and the api server would default to port
-        // 8080 (the hardcoded default). Our file pins it to 0.
+        // Default would be 8080; our file pins it to 0.
         expect(pod.config.apiServer.port, equals(0));
-        expect(pod.serverDirectory.path, equals(tempServerDir.path));
+        expect(pod.serverDirectory.path, equals(tempServerDir!.path));
       },
     );
   });
