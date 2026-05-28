@@ -5,6 +5,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 
+import 'test_helpers/empty_endpoints.dart';
+
 /// Regression coverage for the cwd-independence guarantee: when
 /// `serverDirectory:` is passed explicitly, [Serverpod] loads
 /// `config/<runMode>.yaml` and `config/passwords.yaml` from there
@@ -63,7 +65,7 @@ webServer:
         final pod = Serverpod(
           ['--mode', 'development'],
           internal.Protocol(),
-          _EmptyEndpoints(),
+          EmptyEndpoints(),
           serverDirectory: tempServerDir,
         );
         addTearDown(() => pod.shutdown(exitProcess: false));
@@ -74,9 +76,4 @@ webServer:
       },
     );
   });
-}
-
-class _EmptyEndpoints extends EndpointDispatch {
-  @override
-  void initializeEndpoints(Server server) {}
 }

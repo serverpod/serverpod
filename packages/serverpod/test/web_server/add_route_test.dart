@@ -5,10 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 
-class _EmptyEndpoints extends EndpointDispatch {
-  @override
-  void initializeEndpoints(Server server) {}
-}
+import '../server/test_helpers/empty_endpoints.dart';
 
 void main() {
   final portZeroConfig = ServerConfig(
@@ -25,7 +22,7 @@ void main() {
       pod = Serverpod(
         [],
         internal.Protocol(),
-        _EmptyEndpoints(),
+        EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
           webServer: portZeroConfig,
@@ -172,7 +169,7 @@ void main() {
       pod = Serverpod(
         [],
         internal.Protocol(),
-        _EmptyEndpoints(),
+        EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
           webServer: portZeroConfig,
