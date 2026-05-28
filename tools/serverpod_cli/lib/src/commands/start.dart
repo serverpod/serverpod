@@ -635,7 +635,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         onFlutterReady?.call(url);
       }
       await log.progress('Connecting to Flutter VM service', () async {
-        await fp.connectToVmService();
+        // `-d web-server` requires a human to open the URL, so the wait is unbounded.
+        await fp.connectToVmService(
+          timeout: flutterDevice == flutterDeviceWebServer
+              ? null
+              : const Duration(seconds: 30),
+        );
         if (fp.isVmServiceConnected && onFlutterStart != null) {
           await onFlutterStart(fp);
         }

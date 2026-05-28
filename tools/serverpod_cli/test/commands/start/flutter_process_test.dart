@@ -135,6 +135,23 @@ void main() {
             expect(fp.isVmServiceConnected, isFalse);
           },
         );
+
+        test(
+          'when connectToVmService is called with a short timeout '
+          'then it gives up without throwing so the caller can proceed',
+          () async {
+            // Mirrors the chrome-tab-closed-quickly bug:
+            // https://github.com/serverpod/serverpod/issues/5173
+            // app.debugPort "never" arrives
+            await fp
+                .connectToVmService(
+                  timeout: const Duration(milliseconds: 200),
+                )
+                .timeout(const Duration(seconds: 2));
+            expect(fp.isVmServiceConnected, isFalse);
+            expect(fp.vmServiceUri, isNull);
+          },
+        );
       },
     );
   });
