@@ -35,6 +35,9 @@ class ServerpodCreateAppState extends TuiAppState<ServerpodCreateApp> {
   }
 
   @override
+  void onExit() => component.onQuit();
+
+  @override
   Component buildApp(BuildContext context) {
     return Focusable(
       focused: true,
