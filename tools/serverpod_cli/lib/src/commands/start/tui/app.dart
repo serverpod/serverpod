@@ -163,6 +163,16 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   }
 
   @override
+  void onExit() {
+    final quit = onQuit;
+    if (quit != null) {
+      quit();
+    } else {
+      super.onExit();
+    }
+  }
+
+  @override
   Component buildApp(BuildContext context) {
     final state = component.holder.state;
 
@@ -202,6 +212,10 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         state.showHelp = false;
         _rebuild();
         return true;
+      }
+      // Let Ctrl-C bubble to the base TuiAppState so copy/exit still work.
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
       }
       // Route navigation keys to the help overlay's controller; absorb the
       // rest so they don't fall through to tab/scroll handling underneath.
