@@ -62,6 +62,7 @@ dependencies:
   vm_service: '>=13.0.0 <16.0.0'
   watcher: ^1.0.2
   whiskers: ^0.1.1
+  win32: ^5.13.0
   yaml: ^3.1.2
   yaml_edit: ^2.2.2
 
