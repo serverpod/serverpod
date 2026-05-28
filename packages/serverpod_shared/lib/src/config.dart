@@ -364,6 +364,16 @@ class ServerpodConfig {
     ]);
   }
 
+  /// Returns the path to `config/passwords.yaml` under [serverDir]
+  /// (or cwd-relative when [serverDir] is null).
+  static String passwordsConfigPath({String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      'passwords.yaml',
+    ]);
+  }
+
   @override
   String toString() {
     var str = '';

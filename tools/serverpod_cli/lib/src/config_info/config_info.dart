@@ -1,4 +1,3 @@
-import 'package:path/path.dart' as path;
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -8,7 +7,7 @@ class ConfigInfo {
 
   ConfigInfo(String runMode, {required String serverDir, this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords(
-      path.join(serverDir, 'config', 'passwords.yaml'),
+      ServerpodConfig.passwordsConfigPath(serverDir: serverDir),
     );
     config = ServerpodConfig.load(
       runMode,
