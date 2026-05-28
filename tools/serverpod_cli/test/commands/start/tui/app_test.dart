@@ -31,7 +31,7 @@ void main() {
     await holder.dispose();
   });
 
-  group('Given onQuit is wired', () {
+  group('Given a running TUI start app with onQuit callback wired', () {
     late int quitCalls;
 
     setUp(() {
@@ -50,13 +50,13 @@ void main() {
     );
   });
 
-  group('Given the help overlay is open', () {
+  group('Given a running TUI start app with the help overlay open', () {
     setUp(() {
       state.showHelp = true;
     });
 
     test(
-      'when Ctrl-C is pressed then exit is armed (it bubbles past the help-mode key absorber)',
+      'when Ctrl-C is pressed then it bubbles past the help-mode key absorber and exit is armed',
       () async {
         await _sendCtrlC(tester);
 

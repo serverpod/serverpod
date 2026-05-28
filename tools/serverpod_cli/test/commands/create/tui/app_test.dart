@@ -15,33 +15,33 @@ Future<void> _sendCtrlC(NoctermTester tester) {
 }
 
 void main() {
-  late NoctermTester tester;
-  late CreateConfigState state;
-  late CreateAppStateHolder holder;
-  late int quitCalls;
-
-  setUp(() async {
-    state = CreateConfigState(ServerpodTemplateType.server);
-    holder = CreateAppStateHolder(state);
-    quitCalls = 0;
-    tester = await NoctermTester.create(size: const Size(80, 24));
-    await tester.pumpComponent(
-      ServerpodCreateApp(
-        holder: holder,
-        name: 'test_project',
-        onCreate: () {},
-        onQuit: () => quitCalls++,
-        onSkipFlutterBuild: () {},
-      ),
-    );
-  });
-
-  tearDown(() async {
-    tester.dispose();
-    await holder.dispose();
-  });
-
   group('Given the create TUI', () {
+    late NoctermTester tester;
+    late CreateConfigState state;
+    late CreateAppStateHolder holder;
+    late int quitCalls;
+
+    setUp(() async {
+      state = CreateConfigState(ServerpodTemplateType.server);
+      holder = CreateAppStateHolder(state);
+      quitCalls = 0;
+      tester = await NoctermTester.create(size: const Size(80, 24));
+      await tester.pumpComponent(
+        ServerpodCreateApp(
+          holder: holder,
+          name: 'test_project',
+          onCreate: () {},
+          onQuit: () => quitCalls++,
+          onSkipFlutterBuild: () {},
+        ),
+      );
+    });
+
+    tearDown(() async {
+      tester.dispose();
+      await holder.dispose();
+    });
+
     test(
       'when Ctrl-C is pressed twice without a selection then onQuit is invoked',
       () async {
