@@ -97,12 +97,24 @@ class PasswordManager {
   Map<String, String> loadPasswords([
     String passwordsFilePath = 'config/passwords.yaml',
   ]) {
-    Map<String, Map> data;
-    try {
-      var passwordYaml = File(passwordsFilePath).readAsStringSync();
-      data = (loadYaml(passwordYaml) as Map).cast<String, Map>();
-    } catch (e) {
-      data = {};
+    final file = File(passwordsFilePath);
+    Map<String, Map> data = {};
+    if (file.existsSync()) {
+      final String contents;
+      try {
+        contents = file.readAsStringSync();
+      } catch (e) {
+        throw FormatException(
+          'Failed to read passwords from "$passwordsFilePath": $e',
+        );
+      }
+      final parsed = loadYaml(contents);
+      if (parsed != null && parsed is! Map) {
+        throw FormatException(
+          'Expected a YAML map in "$passwordsFilePath", got ${parsed.runtimeType}.',
+        );
+      }
+      if (parsed is Map) data = parsed.cast<String, Map>();
     }
 
     return loadPasswordsFromMap(data, environment: Platform.environment);
