@@ -26,6 +26,7 @@ class MainScreen extends StatelessComponent {
     this.onCreateMigration,
     this.onCreateRepairMigration,
     this.onApplyMigration,
+    this.onClearLogs,
     this.onQuit,
   });
 
@@ -42,6 +43,7 @@ class MainScreen extends StatelessComponent {
   final void Function({bool force})? onCreateMigration;
   final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
+  final VoidCallback? onClearLogs;
   final VoidCallback? onQuit;
 
   static const _helpBindings = [
@@ -76,6 +78,7 @@ class MainScreen extends StatelessComponent {
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
+        ('L', 'Clear logs'),
         ('Q', 'Quit'),
       ],
     ),
@@ -356,6 +359,13 @@ class MainScreen extends StatelessComponent {
           activationKeys: const [LogicalKey.keyA],
           onActivate: (_) => onApplyMigration?.call(),
           enabled: actionsEnabled && onApplyMigration != null,
+        ),
+        Button(
+          name: 'Clear logs',
+          activationChar: 'L',
+          activationKeys: const [LogicalKey.keyL],
+          onActivate: (_) => onClearLogs?.call(),
+          enabled: onClearLogs != null,
         ),
         Button(
           name: 'Help',

@@ -199,6 +199,10 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         onCreateMigration: onCreateMigration,
         onCreateRepairMigration: onCreateRepairMigration,
         onApplyMigration: onApplyMigration,
+        onClearLogs: () {
+          state.clearLogs();
+          _rebuild();
+        },
         onQuit: onQuit,
       ),
     );
