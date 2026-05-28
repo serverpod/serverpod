@@ -269,6 +269,7 @@ class InsightsEndpoint extends Endpoint {
     final serverDir = session.serverpod.serverDirectory;
     var versions = await MigrationManager.fromDirectory(
       serverDir,
+      runMode: session.serverpod.runMode,
     ).listAvailableVersions();
 
     var latestAvailableMigrations = <DatabaseMigrationVersionModel>[];
