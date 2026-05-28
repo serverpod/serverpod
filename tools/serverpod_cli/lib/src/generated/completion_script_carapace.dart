@@ -43,6 +43,8 @@ commands:
             tool: ["completely", "carapace"]
             write-dir: ["$directories"]
 
+  - name: cloud
+
   - name: create
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
