@@ -70,7 +70,7 @@ webServer:
 
         // Default would be 8080; our file pins it to 0.
         expect(pod.config.apiServer.port, equals(0));
-        expect(pod.serverDirectory.path, equals(tempServerDir!.path));
+        expect(p.equals(pod.serverDirectory.path, tempServerDir!.path), isTrue);
       },
     );
   });

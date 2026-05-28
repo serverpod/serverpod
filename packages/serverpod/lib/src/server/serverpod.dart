@@ -441,7 +441,9 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  }) : serverDirectory = serverDirectory ?? Directory.current,
+  }) : serverDirectory = Directory(
+         p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
+       ),
        httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
