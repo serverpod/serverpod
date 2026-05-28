@@ -151,6 +151,10 @@ void main() {
             testToolsFile,
             contains('\n///\n/// [experimentalFeatures] '),
           );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverDirectory] '),
+          );
         },
       );
 
