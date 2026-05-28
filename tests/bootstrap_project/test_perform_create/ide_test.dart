@@ -78,7 +78,7 @@ void main() {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -110,7 +110,7 @@ void main() {
               '''
 [mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp", "--server-dir", "$serverDirRelative"]
+args = ["mcp-server", "--server-dir", "$serverDirRelative"]
 
 [mcp_servers.dart_mcp]
 command = "dart"
@@ -145,7 +145,7 @@ args = ["mcp-server", "--force-roots-fallback"]
   "mcp": {
     "serverpod": {
       "type": "local",
-      "command": ["serverpod", "mcp", "--server-dir", "$serverDirRelative"],
+      "command": ["serverpod", "mcp-server", "--server-dir", "$serverDirRelative"],
       "enabled": true
     },
     "dart-mcp-server": {
