@@ -67,4 +67,14 @@ class ServerWatchState extends TuiState {
 
   /// Maximum number of raw lines to keep.
   static const maxRawLines = 10000;
+
+  /// Drops all server, raw server, and Flutter log entries.
+  ///
+  /// In-progress [activeOperations] are kept so a running hot reload or
+  /// migration still renders its pinned spinner after the buffers are cleared.
+  void clearLogs() {
+    logHistory.clear();
+    rawLines.clear();
+    rawFlutterLines.clear();
+  }
 }
