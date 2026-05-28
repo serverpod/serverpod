@@ -617,6 +617,7 @@ class Serverpod {
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
+        serverDirectory: serverDirectory,
       );
     }
 
