@@ -6,9 +6,6 @@ import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/app.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/run_app.dart';
-import 'package:serverpod_cli/src/commands/tui/terminal_backend.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -17,6 +14,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 enum CreateOption<V> implements OptionDefinition<V> {
   force(
@@ -189,7 +187,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
   Future<void> _shutdownTuiApp([int exitCode = 0]) async {
     await closeLogger();
     initializeLogger();
-    shutdownServerpodApp(exitCode);
+    shutdownTuiApp(exitCode);
   }
 
   /// Flushes success logs if [projectPath] is not null.
@@ -241,7 +239,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       ),
     );
 
-    await runServerpodApp(
+    await runTuiApp(
       backend: backend,
       ServerpodCreateApp(
         name: name,

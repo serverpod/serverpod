@@ -51,6 +51,7 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
+  serverpod_tui: ^0.1.0-rc.4
   skills: ^0.3.0
   source_span: ^1.10.0
   stream_channel: ^2.1.1

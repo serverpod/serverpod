@@ -1,10 +1,10 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/create/tui/main_screen.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/app.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Root TUI component for `serverpod create`.
-class ServerpodCreateApp extends ServerpodApp<CreateAppStateHolder> {
+class ServerpodCreateApp extends TuiApp<CreateAppStateHolder> {
   const ServerpodCreateApp({
     super.key,
     required super.holder,
@@ -20,10 +20,10 @@ class ServerpodCreateApp extends ServerpodApp<CreateAppStateHolder> {
   final VoidCallback onSkipFlutterBuild;
 
   @override
-  ServerpodAppState createState() => ServerpodCreateAppState();
+  TuiAppState createState() => ServerpodCreateAppState();
 }
 
-class ServerpodCreateAppState extends ServerpodAppState<ServerpodCreateApp> {
+class ServerpodCreateAppState extends TuiAppState<ServerpodCreateApp> {
   final _scrollController = ScrollController();
   final _logScrollController = ScrollController();
 
