@@ -80,7 +80,7 @@ class FlutterProcess {
   String? _flutterAppUrl;
   String? _dtdUri;
   VmService? _vmService;
-  bool _browserOpened = false;
+  bool _browserOpening = false;
 
   // `null` result means the process exited before publishing a URI.
   final Completer<String?> _vmServiceUriCompleter = Completer<String?>();
@@ -501,15 +501,15 @@ class FlutterProcess {
   }
 
   Future<void> _openBrowser(Uri url) async {
-    if (_browserOpened) return;
-    _browserOpened = true;
+    if (_browserOpening) return;
+    _browserOpening = true;
     final open = _openBrowserForTesting ?? BrowserLauncher.openUrl;
     if (!await open(url)) {
       log.warning('Could not open browser at $url');
     }
 
     // Reset the flag so we can open the browser again if the app is restarted.
-    _browserOpened = false;
+    _browserOpening = false;
   }
 
   bool _appStopHandled = false;
