@@ -61,12 +61,5 @@ void main() {
         expect(command.usage, contains('-h, --help'));
       },
     );
-
-    test(
-      'when reading the usage then the top-level help reference note is removed',
-      () {
-        expect(command.usage, isNot(contains('to see global options')));
-      },
-    );
   });
 }

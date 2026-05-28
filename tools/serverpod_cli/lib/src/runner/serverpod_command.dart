@@ -36,19 +36,7 @@ abstract class ServerpodCommand<O extends OptionDefinition>
       usageLineLength: argParser.usageLineLength,
     );
     prepareOptionsForParsing(runner.globalOptions, globalOptionsParser);
-    final globalOptionsSection =
-        'Global options:\n${globalOptionsParser.usage}';
 
-    // Replace the `args` note that points to the top-level help with the
-    // global options themselves, falling back to appending them if the note
-    // can no longer be found.
-    final globalOptionsNote = RegExp(
-      r'Run\s+"\S+\s+help"\s+to\s+see\s+global\s+options\.',
-    );
-    if (baseUsage.contains(globalOptionsNote)) {
-      return baseUsage.replaceFirst(globalOptionsNote, globalOptionsSection);
-    }
-
-    return '$baseUsage\n\n$globalOptionsSection';
+    return '$baseUsage\n\nGlobal options:\n${globalOptionsParser.usage}';
   }
 }
