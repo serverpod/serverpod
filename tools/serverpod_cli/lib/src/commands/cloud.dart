@@ -60,35 +60,13 @@ class CloudCommand extends ServerpodCommand {
           process.kill(signal);
         });
 
-    StreamSubscription<List<int>>? stdinSubscription;
-    stdinSubscription = stdin.listen(
-      (data) {
-        try {
-          process.stdin.add(data);
-        } on StateError {
-          stdinSubscription?.cancel();
-        } on IOException {
-          stdinSubscription?.cancel();
-        }
-      },
-      cancelOnError: true,
-      onError: (_) {},
-    );
-
     try {
-      await Future.wait([
-        stdout.addStream(_replaceScloudInOutput(process.stdout)),
-        stderr.addStream(_replaceScloudInOutput(process.stderr)),
-      ]);
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw ExitException(exitCode);
+      }
     } finally {
-      await stdinSubscription.cancel();
-      await _closeProcessStdin(process.stdin);
       await sigSubscription.cancel();
-    }
-
-    final exitCode = await process.exitCode;
-    if (exitCode != 0) {
-      throw ExitException(exitCode);
     }
   }
 }
@@ -117,6 +95,7 @@ Future<Process> _startScloudProcess(
       scloudExecutable,
       args,
       workingDirectory: Directory.current.path,
+      mode: ProcessStartMode.inheritStdio,
     );
   } on ProcessException catch (exception) {
     log.error(
@@ -146,47 +125,6 @@ Future<void> _installScloud() async {
   if (!success) {
     log.error('Failed to install Serverpod Cloud CLI.');
     throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-  }
-}
-
-/// Rewrites [scloud] branding in child process output for the parent CLI.
-Stream<List<int>> _replaceScloudInOutput(Stream<List<int>> stream) async* {
-  var pending = '';
-
-  await for (final chunk in stream.transform(const Utf8Decoder())) {
-    pending += chunk;
-
-    final lastSpace = pending.lastIndexOf(' ');
-    if (lastSpace == -1) {
-      continue;
-    }
-
-    final emit = pending.substring(0, lastSpace + 1);
-    pending = pending.substring(lastSpace + 1);
-    yield _encodeReplacingScloudInText(emit);
-  }
-
-  if (pending.isNotEmpty) {
-    yield _encodeReplacingScloudInText(pending);
-  }
-}
-
-List<int> _encodeReplacingScloudInText(String text) {
-  return utf8.encode(
-    text.replaceAllMapped(
-      RegExp(r'''(["' ])scloud(["' ])?'''),
-      (match) => '${match.group(1)}serverpod cloud${match.group(2) ?? ''}',
-    ),
-  );
-}
-
-Future<void> _closeProcessStdin(IOSink sink) async {
-  try {
-    await sink.close();
-  } on StateError {
-    // The child may already have closed stdin.
-  } on IOException {
-    // Ignore broken pipe errors during shutdown.
   }
 }
 
