@@ -271,7 +271,7 @@ void main() async {
 
                   expect(
                     devConfigFile.readAsStringSync(),
-                    contains('dataPath: .serverpod/dev/pgdata'),
+                    contains('dataPath: .serverpod/development/pgdata'),
                   );
                 },
               );
