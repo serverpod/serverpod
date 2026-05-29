@@ -101,6 +101,56 @@ void main() {
       );
 
       test(
+        'then the server server.dart disables WASM headers by default',
+        () async {
+          final serverFile = File(p.join(serverDir, 'lib', 'server.dart'));
+          final content = await serverFile.readAsString();
+
+          expect(
+            content,
+            contains(
+              'Remove this line if you build the Flutter app with --wasm',
+            ),
+          );
+          expect(content, contains('enableWasmHeaders: false'));
+          expect(content, isNot(contains('enableWasmHeaders: true')));
+        },
+      );
+
+      test(
+        'then the server pubspec contains a Flutter build script without WASM',
+        () async {
+          final pubspec = File(p.join(serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /app/'));
+          expect(content, isNot(contains('--wasm')));
+        },
+      );
+
+      test(
+        'then the build Flutter app page uses a non-WASM build by default',
+        () async {
+          final buildFlutterAppPage = File(
+            p.join(serverDir, 'web', 'pages', 'build_flutter_app.html'),
+          );
+          final content = await buildFlutterAppPage.readAsString();
+
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href /app/ '
+              '-o ../${projectName}_server/web/app',
+            ),
+          );
+          expect(
+            content,
+            isNot(contains('flutter build web --base-href /app/ --wasm')),
+          );
+        },
+      );
+
+      test(
         'then the server config for development contains webserver configurations',
         () async {
           final config = File(

@@ -120,6 +120,59 @@ void main() {
     );
   });
 
+  group(
+    'Given a web server with FlutterRoute configured without WASM headers',
+    () {
+      late Serverpod pod;
+      late int port;
+
+      setUp(() async {
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(
+            apiServer: portZeroConfig,
+            webServer: portZeroConfig,
+          ),
+        );
+
+        pod.webServer.addRoute(
+          FlutterRoute(webDir, enableWasmHeaders: false),
+        );
+
+        await pod.start();
+        port = pod.webServer.port!;
+      });
+
+      tearDown(() async {
+        await pod.shutdown(exitProcess: false);
+      });
+
+      test('when requesting file, then WASM headers are not present', () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/main.dart.js'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cross-origin-opener-policy'], isNull);
+        expect(response.headers['cross-origin-embedder-policy'], isNull);
+      });
+
+      test(
+        'when requesting non-existent file, then fallback does not have WASM headers',
+        () async {
+          final response = await client.get(
+            Uri.http('localhost:$port', '/app/route/123'),
+          );
+          expect(response.statusCode, 200);
+          expect(response.body, contains('Flutter App'));
+          expect(response.headers['cross-origin-opener-policy'], isNull);
+          expect(response.headers['cross-origin-embedder-policy'], isNull);
+        },
+      );
+    },
+  );
+
   group('Given a FlutterRoute with custom index file', () {
     late Serverpod pod;
     late int port;

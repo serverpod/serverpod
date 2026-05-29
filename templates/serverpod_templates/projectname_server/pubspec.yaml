@@ -28,8 +28,8 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
-        && flutter build web --base-href /app/ --wasm
+        && flutter build web --base-href /app/
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         cd ../projectname_flutter
-        flutter build web --base-href /app/ --wasm --output ../projectname_server/web/app
+        flutter build web --base-href /app/ --output ../projectname_server/web/app
