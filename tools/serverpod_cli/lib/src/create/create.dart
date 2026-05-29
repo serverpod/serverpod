@@ -99,8 +99,17 @@ Future<String?> performCreate(
   required TemplateContext context,
 }) async {
   _errorBuffer.clear();
-  // If the name is a dot, we can either create a new project in the current
-  // directory or upgrade an existing project.
+  // Resolve where the project will be created without mutating the
+  // process-wide current directory. Mutating it would leak into a subsequent
+  // performCreate call within the same process (e.g. the dry-run followed by
+  // the real run in the `create .` TUI flow), resolving the second run
+  // against the wrong directory.
+  //
+  // For an explicit name the project lives in a `name` subdirectory of the
+  // current directory. If the name is a dot, we either upgrade the project we
+  // are standing in, or create a new one in place: it takes the current
+  // directory's name and its parent becomes the project root.
+  var projectRoot = Directory.current;
   if (name == '.') {
     if (findServerDirectory(Directory.current) != null) {
       return await _performUpgrade(
@@ -110,10 +119,8 @@ Future<String?> performCreate(
       );
     }
 
-    // If we are creating a new project in the current directory, we need to
-    // use the parent directory as the project root.
     name = p.basename(Directory.current.absolute.path);
-    Directory.current = Directory.current.parent;
+    projectRoot = Directory.current.parent;
   }
 
   // check if project name is valid
@@ -126,7 +133,7 @@ Future<String?> performCreate(
   }
 
   var serverpodDirs = ServerpodDirectories(
-    projectDir: Directory(p.join(Directory.current.path, name)),
+    projectDir: Directory(p.join(projectRoot.path, name)),
     name: name,
   );
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
