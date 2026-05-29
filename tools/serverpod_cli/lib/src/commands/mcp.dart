@@ -14,7 +14,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
     show hasUnixSocketSupport;
 
-/// Options for the `mcp` command.
+/// Options for the `mcp-server` command.
 enum McpOption<V> implements OptionDefinition<V> {
   serverDir(
     StringOption(
@@ -45,7 +45,7 @@ enum McpOption<V> implements OptionDefinition<V> {
 /// agent's MCP config.
 class McpCommand extends ServerpodCommand<McpOption> {
   @override
-  final name = 'mcp';
+  final name = 'mcp-server';
 
   @override
   final description =
@@ -53,7 +53,7 @@ class McpCommand extends ServerpodCommand<McpOption> {
       'server project.';
 
   @override
-  String get invocation => 'serverpod mcp';
+  String get invocation => 'serverpod mcp-server';
 
   McpCommand() : super(options: McpOption.values);
 
