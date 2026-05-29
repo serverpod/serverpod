@@ -15,11 +15,10 @@ import 'options.dart';
 /// no Docker dependency and (by default) no TCP port allocation. See the
 /// design doc at `docs/design/serverpod_embedded_postgres_spec.md`.
 abstract class EmbeddedPostgres {
-  /// Boot or attach to a postmaster for [opts.dataDir].
+  /// Boot a fresh postmaster supervised by this process for [opts.dataDir].
   ///
-  /// Idempotent: if the data dir's pidfile points at our live postmaster,
-  /// the existing handle is returned (cmdline + cwd verified to avoid
-  /// PID-recycling false positives).
+  /// Throws [PostmasterLockBusyException] if a live postmaster already holds
+  /// [opts.dataDir].
   ///
   /// Phases on cold first run: download Zonky binaries (if not cached) ->
   /// `initdb` -> spawn `postgres` -> wait for ready -> `CREATE DATABASE`.
@@ -31,8 +30,22 @@ abstract class EmbeddedPostgres {
   static Future<EmbeddedPostgres> start(EmbeddedPostgresOptions opts) =>
       EmbeddedPostgresImpl.start(opts);
 
+  /// Boot a fresh postmaster, or attach to one that already supervises
+  /// [opts.dataDir].
+  ///
+  /// [EmbeddedStartResult.launched] reports which path was taken, so callers
+  /// know whether they own the postmaster's lifecycle. Only the launcher
+  /// should [stop] it; an attached client calling [stop] would tear down a
+  /// postmaster another process owns.
+  ///
+  /// Rethrows [start]'s [PostmasterLockBusyException] if the live postmaster
+  /// disappears before [attach] can latch onto it.
+  static Future<EmbeddedStartResult> startOrAttach(
+    EmbeddedPostgresOptions opts,
+  ) => EmbeddedPostgresImpl.startOrAttach(opts);
+
   /// Reattach to a postmaster started with [EmbeddedPostgresOptions.detach]
-  /// = true. Reads the supervisor pidfile, validates the process is still
+  /// set. Reads the supervisor pidfile, validates the process is still
   /// our postmaster, returns a handle.
   ///
   /// Throws [CrashedException] if the pidfile points at a dead process or
@@ -92,4 +105,19 @@ abstract class EmbeddedPostgres {
   /// Stop, wipe data dir + run dir + pidfile + log, fresh `initdb`.
   /// Caller is responsible for re-creating any application databases.
   Future<void> reset();
+}
+
+/// Outcome of [EmbeddedPostgres.startOrAttach].
+class EmbeddedStartResult {
+  /// The resolved postmaster handle, whether freshly launched or attached.
+  final EmbeddedPostgres handle;
+
+  /// `true` if this call spawned the postmaster (so [handle] supervises it and
+  /// [EmbeddedPostgres.stop] shuts it down); `false` if it attached to a
+  /// postmaster another supervisor already owns (stopping [handle] would tear
+  /// down a process this caller does not own).
+  final bool launched;
+
+  /// Creates an [EmbeddedStartResult].
+  const EmbeddedStartResult({required this.handle, required this.launched});
 }
