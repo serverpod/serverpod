@@ -169,6 +169,9 @@ void main() async {
         );
 
         var serverStarted = false;
+        // A fresh project's first `dart run` compiles the whole server graph
+        // (now including embedded-postgres support), so give the cold boot a
+        // generous budget.
         for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
