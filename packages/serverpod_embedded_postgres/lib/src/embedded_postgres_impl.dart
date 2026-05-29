@@ -54,6 +54,24 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
        _resolvedTransport = resolvedTransport,
        _resolvedPassword = resolvedPassword;
 
+  /// Backs [EmbeddedPostgres.startOrAttach].
+  static Future<EmbeddedStartResult> startOrAttach(
+    EmbeddedPostgresOptions options,
+  ) async {
+    try {
+      var handle = await start(options);
+      return EmbeddedStartResult(handle: handle, launched: true);
+    } on PostmasterLockBusyException catch (exc, stackTrace) {
+      try {
+        var attached = await attach(options.dataDir);
+        return EmbeddedStartResult(handle: attached, launched: false);
+      } on AttachException {
+        // The postmaster vanished between start()'s lock check and attach().
+        Error.throwWithStackTrace(exc, stackTrace);
+      }
+    }
+  }
+
   /// Backs [EmbeddedPostgres.attach]. Public only so the abstract class
   /// can delegate.
   static Future<EmbeddedPostgres> attach(Directory dataDir) async {
