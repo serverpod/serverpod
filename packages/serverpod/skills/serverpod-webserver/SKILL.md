@@ -382,10 +382,9 @@ build command and remove the `enableWasmHeaders: false` line.
 
 ### Default caching
 
-- **Critical files** (`index.html`, `flutter_service_worker.js`, `flutter_bootstrap.js`, `manifest.json`, `version.json`): never cached (`private, no-cache, no-store`)
-- **All other files**: cached 1 day (`public, max-age=86400`)
+- **All files**: served with `private, no-cache` by default, so browsers revalidate with ETags and avoid stale Flutter assets after rebuilds.
 
-Override with `cacheControlFactory`. Invalidate cache by bumping version in Flutter `pubspec.yaml` and rebuilding.
+Override with `cacheControlFactory` when using cache-busted assets.
 
 ### WASM headers
 
