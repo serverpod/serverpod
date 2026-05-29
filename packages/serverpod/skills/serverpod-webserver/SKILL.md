@@ -365,7 +365,13 @@ pod.webServer.addRoute(StaticRoute.directory(Directory('web/app')), '/');
 ```dart
 final appDir = Directory('web/app');
 if (appDir.existsSync()) {
-  pod.webServer.addRoute(FlutterRoute(appDir));
+  pod.webServer.addRoute(
+    FlutterRoute(
+      appDir,
+      // Disable WASM headers for non-WASM builds.
+      // enableWasmHeaders: false,
+    ),
+  );
 }
 ```
 
