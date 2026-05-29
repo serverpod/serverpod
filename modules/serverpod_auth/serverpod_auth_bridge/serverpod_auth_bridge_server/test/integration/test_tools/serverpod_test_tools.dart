@@ -13,16 +13,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:async' as _i3;
+import 'dart:io' as _i3;
+import 'dart:async' as _i4;
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_info.dart'
-    as _i4;
-import 'package:serverpod_auth_bridge_server/src/generated/legacy_authentication_response.dart'
     as _i5;
-import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_settings_config.dart'
+import 'package:serverpod_auth_bridge_server/src/generated/legacy_authentication_response.dart'
     as _i6;
-import 'dart:typed_data' as _i7;
+import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_settings_config.dart'
+    as _i7;
+import 'dart:typed_data' as _i8;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i8;
+    as _i9;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -97,6 +98,13 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// This property allows this tag to be overridden to something else. Defaults to `['integration']`.
 ///
 /// [experimentalFeatures] Optionally specify experimental features. See [Serverpod] for more information.
+///
+/// [serverDirectory] The server package directory `config/<runMode>.yaml`, `config/passwords.yaml`,
+/// and `migrations/<module>/...` are resolved against. Defaults to
+/// [Directory.current] at the time the test boots. Pass this when the test
+/// isolate's cwd is not the server package root (e.g. running tests from a
+/// workspace parent directory) so config and migrations are still loaded
+/// from the right place.
 @_i1.isTestGroup
 void withServerpod(
   String testGroupName,
@@ -108,6 +116,7 @@ void withServerpod(
   _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _i3.Directory? serverDirectory,
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
@@ -124,6 +133,7 @@ void withServerpod(
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
       testServerOutputMode: testServerOutputMode,
+      serverDirectory: serverDirectory,
       experimentalFeatures: experimentalFeatures,
       configOverride: configOverride,
       runtimeParametersBuilder: runtimeParametersBuilder,
@@ -188,7 +198,7 @@ class _LegacyAdminEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.LegacyUserInfo?> getUserInfo(
+  _i4.Future<_i5.LegacyUserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -211,7 +221,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.LegacyUserInfo?>);
+                as _i4.Future<_i5.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -219,7 +229,7 @@ class _LegacyAdminEndpoint {
     });
   }
 
-  _i3.Future<void> blockUser(
+  _i4.Future<void> blockUser(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -242,7 +252,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -250,7 +260,7 @@ class _LegacyAdminEndpoint {
     });
   }
 
-  _i3.Future<void> unblockUser(
+  _i4.Future<void> unblockUser(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -273,7 +283,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -292,7 +302,7 @@ class _LegacyEmailEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i5.LegacyAuthenticationResponse> authenticate(
+  _i4.Future<_i6.LegacyAuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String password,
@@ -319,7 +329,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.LegacyAuthenticationResponse>);
+                as _i4.Future<_i6.LegacyAuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -327,7 +337,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<bool> createAccountRequest(
+  _i4.Future<bool> createAccountRequest(
     _i1.TestSessionBuilder sessionBuilder,
     String userName,
     String email,
@@ -356,7 +366,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -364,7 +374,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<_i4.LegacyUserInfo?> createAccount(
+  _i4.Future<_i5.LegacyUserInfo?> createAccount(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String verificationCode,
@@ -391,7 +401,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.LegacyUserInfo?>);
+                as _i4.Future<_i5.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -399,7 +409,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<bool> changePassword(
+  _i4.Future<bool> changePassword(
     _i1.TestSessionBuilder sessionBuilder,
     String oldPassword,
     String newPassword,
@@ -426,7 +436,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -434,7 +444,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<bool> initiatePasswordReset(
+  _i4.Future<bool> initiatePasswordReset(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
   ) async {
@@ -457,7 +467,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -465,7 +475,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<bool> resetPassword(
+  _i4.Future<bool> resetPassword(
     _i1.TestSessionBuilder sessionBuilder,
     String verificationCode,
     String password,
@@ -492,7 +502,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -511,7 +521,7 @@ class _LegacyStatusEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> isSignedIn(_i1.TestSessionBuilder sessionBuilder) async {
+  _i4.Future<bool> isSignedIn(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -531,7 +541,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -539,7 +549,7 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i3.Future<void> signOutDevice(_i1.TestSessionBuilder sessionBuilder) async {
+  _i4.Future<void> signOutDevice(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -559,7 +569,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -567,7 +577,7 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i3.Future<void> signOutAllDevices(
+  _i4.Future<void> signOutAllDevices(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -589,7 +599,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -597,7 +607,7 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i3.Future<_i4.LegacyUserInfo?> getUserInfo(
+  _i4.Future<_i5.LegacyUserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -619,7 +629,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.LegacyUserInfo?>);
+                as _i4.Future<_i5.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -627,7 +637,7 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i3.Future<_i6.LegacyUserSettingsConfig> getUserSettingsConfig(
+  _i4.Future<_i7.LegacyUserSettingsConfig> getUserSettingsConfig(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -649,7 +659,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i6.LegacyUserSettingsConfig>);
+                as _i4.Future<_i7.LegacyUserSettingsConfig>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -668,7 +678,7 @@ class _LegacyUserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<bool> removeUserImage(
+  _i4.Future<bool> removeUserImage(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -690,7 +700,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -698,9 +708,9 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i3.Future<bool> setUserImage(
+  _i4.Future<bool> setUserImage(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.ByteData image,
+    _i8.ByteData image,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -721,7 +731,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -729,7 +739,7 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i3.Future<bool> changeUserName(
+  _i4.Future<bool> changeUserName(
     _i1.TestSessionBuilder sessionBuilder,
     String userName,
   ) async {
@@ -752,7 +762,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -760,7 +770,7 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i3.Future<bool> changeFullName(
+  _i4.Future<bool> changeFullName(
     _i1.TestSessionBuilder sessionBuilder,
     String fullName,
   ) async {
@@ -783,7 +793,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<bool>);
+                as _i4.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -802,7 +812,7 @@ class _SessionMigrationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i8.AuthSuccess?> convertSession(
+  _i4.Future<_i9.AuthSuccess?> convertSession(
     _i1.TestSessionBuilder sessionBuilder, {
     required String sessionKey,
   }) async {
@@ -825,7 +835,7 @@ class _SessionMigrationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i8.AuthSuccess?>);
+                as _i4.Future<_i9.AuthSuccess?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
