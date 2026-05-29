@@ -15,20 +15,6 @@ import 'package:whiskers/whiskers.dart';
 /// caller didn't ask for, sidestepping any question of "should we have
 /// entered `.dart_tool` / `build` / `.git`".
 class TemplateRenderer {
-  /// File extensions whose contents the renderer is allowed to read and
-  /// rewrite. Serverpod templates only produce text files in this set;
-  /// anything else is left untouched as a defensive sanity guard.
-  static const Set<String> _renderableExtensions = <String>{
-    '.dart',
-    '.yaml',
-    '.yml',
-    '.json',
-    '.html',
-    '.css',
-    '.md',
-    '.svg',
-  };
-
   static final DartFormatter _dartFormatter = DartFormatter(
     // update in concert with `code_generator.dart`
     languageVersion: Version(3, 10, 0),
@@ -171,8 +157,7 @@ class TemplateRenderer {
     } on FileSystemException {
       // File gone.
     } on FormatException {
-      // Non-UTF8 content. The extension allowlist already filters known
-      // binary types; this is defence-in-depth for malformed text files.
+      // A binary file slipped into the path list. Skip it!
     }
   }
 
@@ -202,7 +187,6 @@ class TemplateRenderer {
 
   Future<void> _renderFileContent(File file, TemplateContext context) async {
     final extension = p.extension(file.path);
-    if (!_renderableExtensions.contains(extension.toLowerCase())) return;
 
     final content = await file.readAsString();
     if (!_hasTemplateMarker(content)) return;
