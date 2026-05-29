@@ -14,6 +14,10 @@ import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
+/// Flutter's headless web device; serves the app but never opens a
+/// browser, so a VM service attach waits for a human to open the URL.
+const flutterDeviceWebServer = 'web-server';
+
 const flutterDeviceWebServerWithBrowser = 'web-server-launch-browser';
 
 /// Thrown by [FlutterProcess.start] when `flutter` cannot be launched.
@@ -144,7 +148,7 @@ class FlutterProcess {
       throw StateError('FlutterProcess is already running.');
     }
 
-    final device = _launchBrowser ? 'web-server' : _device;
+    final device = _launchBrowser ? flutterDeviceWebServer : _device;
     final args =
         _argsOverrideForTesting ??
         <String>['run', '--machine', '-d', device, ..._extraArgs];
@@ -228,14 +232,28 @@ class FlutterProcess {
     );
   }
 
-  /// Wait for `app.debugPort`, bind [flutterProxy] upstream so IDE
-  /// clients can attach, open a `vm_service` client. Best-effort.
-  /// On `-d web-server` pends until a browser attaches.
-  Future<void> connectToVmService() async {
+  /// Connects to the Flutter VM service.
+  ///
+  /// When set [timeout] caps the wait for the daemon to publish URI.
+  ///
+  /// Waits for `app.debugPort`, binds [flutterProxy] upstream so IDE
+  /// clients can attach, then opens a `vm_service` client.
+  Future<void> connectToVmService({Duration? timeout}) async {
     if (_vmService != null) return;
     _onProgress?.call('connecting');
 
-    final maybeUri = await _vmServiceUriCompleter.future;
+    final String? maybeUri;
+    try {
+      final pending = _vmServiceUriCompleter.future;
+      maybeUri = await (timeout == null ? pending : pending.timeout(timeout));
+    } on TimeoutException {
+      log.warning(
+        'Flutter VM service did not publish within ${timeout!.inSeconds}s; '
+        'continuing without an attached VM service. '
+        '(Hot reload from the CLI/IDE for the Flutter app will be unavailable.)',
+      );
+      return;
+    }
     if (maybeUri == null) return;
     _vmServiceUri = maybeUri;
 
