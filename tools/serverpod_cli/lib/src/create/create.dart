@@ -163,54 +163,59 @@ Future<String?> performCreate(
     newParagraph: true,
   );
 
+  final writtenPaths = <String>{};
+
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.mini) {
     success &= await log.progress(
       'Writing project files.',
       () async {
-        _copyServerTemplates(
-          serverpodDirs,
-          name: name,
-          customServerpodPath: productionMode ? null : serverpodHome,
+        writtenPaths.addAll(
+          _copyServerTemplates(
+            serverpodDirs,
+            name: name,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
         );
         return true;
       },
     );
   } else if (template == ServerpodTemplateType.module) {
-    success &= await log.progress(
-      'Writing project files.',
-      () => Future(() {
+    success &= await log.progress('Writing project files.', () async {
+      writtenPaths.addAll(
         _copyModuleTemplates(
           serverpodDirs,
           name: name,
           customServerpodPath: productionMode ? null : serverpodHome,
-        );
-        return true;
-      }),
-    );
+        ),
+      );
+      return true;
+    });
   }
 
   if (template == ServerpodTemplateType.server) {
     success &= await log.progress(
       'Writing additional project files.',
       () async {
-        await _copyServerUpgrade(
-          serverpodDirs,
-          name: name,
-          isUpgrade: false,
-          customServerpodPath: productionMode ? null : serverpodHome,
-        );
-        await _copyFlutterUpgrade(
-          serverpodDirs,
-          name: name,
-          customServerpodPath: productionMode ? null : serverpodHome,
-        );
+        writtenPaths.addAll([
+          ...await _copyServerUpgrade(
+            serverpodDirs,
+            name: name,
+            isUpgrade: false,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
+          ...await _copyFlutterUpgrade(
+            serverpodDirs,
+            name: name,
+            customServerpodPath: productionMode ? null : serverpodHome,
+          ),
+        ]);
         return true;
       },
     );
   }
 
-  success &= await _renderTemplates(serverpodDirs.projectDir, context);
+  success &= await _renderTemplates(writtenPaths, context);
 
   success &= await log.progress('Getting workspace dependencies.', () {
     return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
@@ -468,21 +473,24 @@ Future<String?> _performUpgrade({
     projectDir: serverDir.parent,
   );
 
+  final writtenPaths = <String>{};
   var success = true;
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      await _copyServerUpgrade(
-        serverpodDir,
-        name: name,
-        isUpgrade: true,
-        customServerpodPath: productionMode ? null : serverpodHome,
+      writtenPaths.addAll(
+        await _copyServerUpgrade(
+          serverpodDir,
+          name: name,
+          isUpgrade: true,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        ),
       );
       return true;
     },
   );
 
-  success &= await _renderTemplates(serverpodDir.projectDir, context);
+  success &= await _renderTemplates(writtenPaths, context);
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -512,10 +520,13 @@ Future<String?> _performUpgrade({
   return null;
 }
 
-/// Parses and renders the template files in the given directory.
-Future<bool> _renderTemplates(Directory dir, TemplateContext context) async {
+/// Renders Mustache directives in the file paths the copiers just wrote.
+Future<bool> _renderTemplates(
+  Iterable<String> paths,
+  TemplateContext context,
+) async {
   return await log.progress('Applying template options', () async {
-    await TemplateRenderer(dir: dir).render(context);
+    await const TemplateRenderer().renderPaths(paths, context);
     return true;
   });
 }
@@ -633,7 +644,7 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-Future<void> _copyFlutterUpgrade(
+Future<List<String>> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   String? customServerpodPath,
@@ -656,7 +667,7 @@ Future<void> _copyFlutterUpgrade(
     fileNameReplacements: const [],
     ignoreFileNames: const [],
   );
-  copier.copyFiles();
+  final writtenPaths = [...copier.copyFiles()];
 
   log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
   _addDependenciesToPubspec(
@@ -729,9 +740,10 @@ Future<void> _copyFlutterUpgrade(
       ],
     );
   }
+  return writtenPaths;
 }
 
-Future<void> _copyServerUpgrade(
+Future<List<String>> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   required bool isUpgrade,
@@ -880,7 +892,7 @@ Future<void> _copyServerUpgrade(
       ],
     ],
   );
-  copier.copyFiles();
+  final writtenPaths = [...copier.copyFiles()];
 
   log.debug('Copying .github files', newParagraph: true);
   copier = Copier(
@@ -914,7 +926,7 @@ Future<void> _copyServerUpgrade(
     ],
     fileNameReplacements: [],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   if (!isUpgrade) {
     log.debug('Copying .vscode files', newParagraph: true);
@@ -935,7 +947,7 @@ Future<void> _copyServerUpgrade(
       ],
       fileNameReplacements: [],
     );
-    copier.copyFiles();
+    writtenPaths.addAll(copier.copyFiles());
   }
 
   if (!isUpgrade) {
@@ -984,6 +996,7 @@ Future<void> _copyServerUpgrade(
       );
     }
   }
+  return writtenPaths;
 }
 
 void _enableWorkspaceInRootPubspec({
@@ -1010,11 +1023,12 @@ void _addDependenciesToPubspec({
   pubspecFile.writeAsStringSync(contents);
 }
 
-void _copyServerTemplates(
+List<String> _copyServerTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
   String? customServerpodPath,
 }) {
+  final writtenPaths = <String>[];
   log.debug('Copying root workspace pubspec');
   var rootCopier = Copier(
     srcDir: Directory(
@@ -1045,7 +1059,7 @@ void _copyServerTemplates(
     ],
     ignoreFileNames: const [],
   );
-  rootCopier.copyFiles();
+  writtenPaths.addAll(rootCopier.copyFiles());
 
   log.debug('Copying server files');
   var copier = Copier(
@@ -1075,7 +1089,7 @@ void _copyServerTemplates(
       ),
     ],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Copying client files', newParagraph: true);
   copier = Copier(
@@ -1105,7 +1119,7 @@ void _copyServerTemplates(
       ),
     ],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Copying Flutter files', newParagraph: true);
   copier = Copier(
@@ -1142,7 +1156,7 @@ void _copyServerTemplates(
       'build',
     ],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Enabling workspace configuration', newParagraph: true);
   _enableWorkspaceInRootPubspec(
@@ -1155,13 +1169,15 @@ void _copyServerTemplates(
       '${name}_flutter',
     ],
   );
+  return writtenPaths;
 }
 
-void _copyModuleTemplates(
+List<String> _copyModuleTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
   String? customServerpodPath,
 }) {
+  final writtenPaths = <String>[];
   log.debug('Copying root workspace pubspec');
   var rootCopier = Copier(
     srcDir: Directory(
@@ -1192,7 +1208,7 @@ void _copyModuleTemplates(
     ],
     ignoreFileNames: const [],
   );
-  rootCopier.copyFiles();
+  writtenPaths.addAll(rootCopier.copyFiles());
 
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
@@ -1222,7 +1238,7 @@ void _copyModuleTemplates(
       ),
     ],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Copying client files', newParagraph: true);
   copier = Copier(
@@ -1252,7 +1268,7 @@ void _copyModuleTemplates(
       ),
     ],
   );
-  copier.copyFiles();
+  writtenPaths.addAll(copier.copyFiles());
 
   log.debug('Enabling workspace configuration', newParagraph: true);
   _enableWorkspaceInRootPubspec(
@@ -1264,6 +1280,7 @@ void _copyModuleTemplates(
       '${name}_server',
     ],
   );
+  return writtenPaths;
 }
 
 Future<bool> _runGenerate(
