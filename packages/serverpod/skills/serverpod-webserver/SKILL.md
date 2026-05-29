@@ -360,7 +360,7 @@ pod.webServer.addRoute(StaticRoute.directory(Directory('web/app')), '/');
 
 ## Flutter web apps
 
-`FlutterRoute` serves Flutter web builds with WASM multi-threading headers and smart caching:
+`FlutterRoute` serves Flutter web builds with SPA fallback and smart caching:
 
 ```dart
 final appDir = Directory('web/app');
@@ -368,14 +368,17 @@ if (appDir.existsSync()) {
   pod.webServer.addRoute(
     FlutterRoute(
       appDir,
-      // Disable WASM headers for non-WASM builds.
-      // enableWasmHeaders: false,
+      enableWasmHeaders: false,
     ),
   );
 }
 ```
 
-Build: `cd my_project_flutter && flutter build web --wasm`. Copy output to server's `web/app/`.
+Build: `cd my_project_flutter && flutter build web --base-href /app/ -o ../my_project_server/web/app`.
+
+Generated projects set `enableWasmHeaders: false` on the `FlutterRoute` because
+the default build is non-WASM. To opt into Flutter WASM, add `--wasm` to the
+build command and remove the `enableWasmHeaders: false` line.
 
 ### Default caching
 
