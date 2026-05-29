@@ -31,6 +31,7 @@ import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -943,9 +944,20 @@ Future<int> _runWithTui({
   // Shared shutdown signal
   final shutdown = _ShutdownSignal(listenForSignals: false);
 
+  // Captured on a fatal crash so it can be replayed to the real terminal in
+  // [preExit], after the TUI has released the alternate screen. The TUI routes
+  // logs into an in-memory history that is discarded when we leave the
+  // alternate screen, so a crash would otherwise vanish without ever reaching
+  // the user's scrollback.
+  ({Object error, StackTrace stackTrace})? fatalCrash;
+  void recordFatalCrash(Object error, StackTrace stackTrace) {
+    fatalCrash ??= (error: error, stackTrace: stackTrace);
+    shutdown.complete(ExitException.codeError);
+  }
+
   // Captured so the renderer tear-down listener can wait for the
   // backend's cleanup (ctx.dispose) to finish before calling
-  // shutdownServerpodApp. Default to a no-op so the listener is safe to invoke
+  // shutdownTuiApp. Default to a no-op so the listener is safe to invoke
   // even if SIGINT arrives before onReady fires.
   Future<void> backendFuture = Future.value();
 
@@ -953,25 +965,34 @@ Future<int> _runWithTui({
     if (backendStarted) return;
     backendStarted = true;
 
-    backendFuture =
-        _runTuiBackend(
-          holder: h,
-          commandConfig: commandConfig,
-          watch: watch,
-          launchFlutterApp: launchFlutterApp,
-          flutterDevice: flutterDevice,
-          flutterExtraArgs: flutterExtraArgs,
-          serverArgs: serverArgs,
-          config: config,
-          shutdown: shutdown,
-        ).catchError((Object e, StackTrace st) {
-          // Show the error in the TUI.
-          // The TUI stays open until Ctrl-C / Quit completes shutdown.
-          log.error('Fatal error: $e', stackTrace: st);
-        });
+    backendFuture = _runTuiBackend(
+      holder: h,
+      commandConfig: commandConfig,
+      watch: watch,
+      launchFlutterApp: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      flutterExtraArgs: flutterExtraArgs,
+      serverArgs: serverArgs,
+      config: config,
+      shutdown: shutdown,
+      onFatalError: recordFatalCrash,
+    ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
   }
 
-  // Wait for the backend's dispose to finish before calling shutdownServerpodApp
+  // Runs after the TUI tears down (alternate screen restored) but before the
+  // process exits. Restores the stdout logger and replays any captured crash
+  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // flushes its errors to the terminal on exit.
+  Future<void> preExit() async {
+    final crash = fatalCrash;
+    if (crash == null) return;
+    await closeLogger();
+    initializeLogger();
+    printInternalError(crash.error, crash.stackTrace);
+    await log.flush();
+  }
+
+  // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
@@ -981,6 +1002,7 @@ Future<int> _runWithTui({
 
   await runTuiApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
+    backend: ServerpodTerminalBackend(preExit: preExit),
     onShutdownSignal: () => shutdown.complete(0),
   );
 
@@ -1000,6 +1022,7 @@ Future<void> _runTuiBackend({
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
+  required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
   try {
     // Replace the CLI logger with a TUI-backed logger.
@@ -1122,10 +1145,10 @@ Future<void> _runTuiBackend({
         await ctx.dispose();
     }
   } catch (e, st) {
-    // Show the error in the TUI; let the user read it. Quitting still
-    // works via the Ctrl-C signal handler routed through shutdown.
-    holder.state.showSplash = false;
-    log.error('$e', stackTrace: st);
+    // Capture the crash and tear the TUI down so it can be replayed to the
+    // terminal in [_runWithTui]; otherwise it dies with the in-memory TUI log
+    // history when we leave the alternate screen.
+    onFatalError(e, st);
   }
 }
 
