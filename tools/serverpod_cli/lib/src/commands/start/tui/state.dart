@@ -62,6 +62,12 @@ class ServerWatchState extends TuiState {
   /// Whether the help overlay is visible.
   bool showHelp = false;
 
+  /// Whether stack traces attached to log entries are shown inline.
+  ///
+  /// When false, an error entry that carries a trace shows a compact
+  /// affordance instead; toggled with `e` on the structured log tab.
+  bool expandStackTraces = false;
+
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;
 

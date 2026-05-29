@@ -1,6 +1,7 @@
-import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
 Future<void> _sendCtrlC(NoctermTester tester) {
@@ -10,6 +11,10 @@ Future<void> _sendCtrlC(NoctermTester tester) {
       modifiers: ModifierKeys(ctrl: true),
     ),
   );
+}
+
+Future<void> _sendKey(NoctermTester tester, LogicalKey key) {
+  return tester.sendKeyEvent(KeyboardEvent(logicalKey: key));
 }
 
 void main() {
@@ -48,6 +53,39 @@ void main() {
         expect(quitCalls, 1);
       },
     );
+  });
+
+  group('Given a structured log tab with a stack-traced error entry', () {
+    setUp(() {
+      state.logHistory.add(
+        LogEntry(
+          time: DateTime(2026),
+          level: LogLevel.error,
+          message: 'boom',
+          scope: LogScope.root('server'),
+          error: 'Exception: boom',
+          stackTrace: StackTrace.fromString('#0 a\n#1 b'),
+        ),
+      );
+    });
+
+    test('when e is pressed then stack traces expand and collapse', () async {
+      expect(state.expandStackTraces, isFalse);
+
+      await _sendKey(tester, LogicalKey.keyE);
+      expect(state.expandStackTraces, isTrue);
+
+      await _sendKey(tester, LogicalKey.keyE);
+      expect(state.expandStackTraces, isFalse);
+    });
+
+    test('when e is pressed on a raw output tab then traces do not toggle', () async {
+      state.selectedTab = 2;
+
+      await _sendKey(tester, LogicalKey.keyE);
+
+      expect(state.expandStackTraces, isFalse);
+    });
   });
 
   group('Given a running TUI start app with the help overlay open', () {

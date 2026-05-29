@@ -78,6 +78,7 @@ class MainScreen extends StatelessComponent {
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
+        ('e', 'Expand / collapse stack traces'),
         ('L', 'Clear logs'),
         ('Q', 'Quit'),
       ],
@@ -281,10 +282,7 @@ class MainScreen extends StatelessComponent {
           itemBuilder: (context, index) {
             final item = items[items.length - 1 - index];
             if (item is LogEntry) {
-              return LogMessageWidget(
-                key: ValueKey(index),
-                entry: item,
-              );
+              return _buildLogEntry(context, item, index);
             }
             if (item is CompletedOperation) {
               return CompletedOperationWidget(
@@ -296,6 +294,35 @@ class MainScreen extends StatelessComponent {
           },
         ),
       ),
+    );
+  }
+
+  /// Renders a single [LogEntry], appending its stack trace - or a collapsed
+  /// affordance hinting that one exists - when the entry carries one.
+  Component _buildLogEntry(BuildContext context, LogEntry entry, int index) {
+    final message = LogMessageWidget(key: ValueKey(index), entry: entry);
+    final stackTrace = entry.stackTrace?.toString().trimRight();
+    if (stackTrace == null || stackTrace.isEmpty) return message;
+
+    final st = ServerpodTheme.of(context);
+    final dim = TextStyle(color: st.debugLevel, fontWeight: FontWeight.dim);
+
+    final trailing = state.expandStackTraces
+        ? Text(stackTrace, style: dim)
+        : Text(
+            '▸ ${stackTrace.split('\n').length}-line stack trace (press e)',
+            style: dim,
+          );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        message,
+        Padding(
+          padding: const EdgeInsets.only(left: 6),
+          child: trailing,
+        ),
+      ],
     );
   }
 

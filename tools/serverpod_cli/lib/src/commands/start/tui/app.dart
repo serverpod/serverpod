@@ -258,6 +258,13 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
+    // Expand / collapse inline stack traces on the structured log tab.
+    if (event.logicalKey == LogicalKey.keyE && state.selectedTab == 0) {
+      state.expandStackTraces = !state.expandStackTraces;
+      _rebuild();
+      return true;
+    }
+
     final c = switch (state.selectedTab) {
       0 => logScrollController,
       1 => flutterRawScrollController,
