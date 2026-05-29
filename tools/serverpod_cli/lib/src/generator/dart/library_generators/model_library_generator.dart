@@ -226,13 +226,15 @@ class SerializableModelLibraryGenerator {
               ),
           ]);
 
-          libraryBuilder.body.add(
-            _buildReactiveFutureCallClass(
-              className,
-              tableName,
-              idTypeReference,
-            ),
-          );
+          if (serverCode) {
+            libraryBuilder.body.add(
+              _buildReactiveFutureCallClass(
+                className,
+                tableName,
+                idTypeReference,
+              ),
+            );
+          }
 
           // TODO: Remove this workaround when closing issue
           // https://github.com/serverpod/serverpod/issues/3462

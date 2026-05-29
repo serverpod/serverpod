@@ -478,6 +478,71 @@ class ReactiveDatabaseCallEntryRepository {
     );
   }
 
+  /// Upserts all [ReactiveDatabaseCallEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ReactiveDatabaseCallEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ReactiveDatabaseCallEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<ReactiveDatabaseCallEntry> rows, {
+    required _i1.ColumnSelections<ReactiveDatabaseCallEntryTable>
+    conflictColumns,
+    _i1.ColumnSelections<ReactiveDatabaseCallEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ReactiveDatabaseCallEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ReactiveDatabaseCallEntry>(
+      rows,
+      conflictColumns: conflictColumns(ReactiveDatabaseCallEntry.t),
+      updateColumns: updateColumns?.call(ReactiveDatabaseCallEntry.t),
+      updateWhere: updateWhere?.call(ReactiveDatabaseCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ReactiveDatabaseCallEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ReactiveDatabaseCallEntry] will have its `id` field set.
+  Future<ReactiveDatabaseCallEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    ReactiveDatabaseCallEntry row, {
+    required _i1.ColumnSelections<ReactiveDatabaseCallEntryTable>
+    conflictColumns,
+    _i1.ColumnSelections<ReactiveDatabaseCallEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ReactiveDatabaseCallEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ReactiveDatabaseCallEntry>(
+      row,
+      conflictColumns: conflictColumns(ReactiveDatabaseCallEntry.t),
+      updateColumns: updateColumns?.call(ReactiveDatabaseCallEntry.t),
+      updateWhere: updateWhere?.call(ReactiveDatabaseCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ReactiveDatabaseCallEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

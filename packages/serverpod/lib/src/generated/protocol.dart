@@ -1777,7 +1777,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i37.SessionLogResult():
         return 'SessionLogResult';
     }
-    className = _i38.Protocol().getClassNameForObject(data);
+    className = _i39.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
@@ -1902,13 +1902,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     if (dataClassName.startsWith('serverpod_database.')) {
       data['className'] = dataClassName.substring(19);
-      return _i38.Protocol().deserializeByClassName(data);
+      return _i39.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i38.Protocol().registerHostProtocol('serverpod', this);
+    _i39.Protocol().registerHostProtocol('serverpod', this);
   }
 
   @override

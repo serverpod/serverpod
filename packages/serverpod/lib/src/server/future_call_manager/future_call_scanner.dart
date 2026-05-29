@@ -163,9 +163,11 @@ class FutureCallScanner {
         );
       } catch (_) {}
 
-      stderr.writeln('${DateTime.now().toUtc()} $message');
-      stderr.writeln('$error');
-      stderr.writeln('$stackTrace');
+      log.error(
+        message,
+        error: error,
+        stackTrace: stackTrace,
+      );
     } finally {
       _reactiveScanCompleter.complete();
     }
