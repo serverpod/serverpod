@@ -315,6 +315,38 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i8.ChallengeTracker] = (data, protocol) =>
+        _i8.ChallengeTracker.fromJson(data);
+    map[_i9.SessionMetadata] = (data, protocol) =>
+        _i9.SessionMetadata.fromJson(data);
+    map[_i10.TokenMetadata] = (data, protocol) =>
+        _i10.TokenMetadata.fromJson(data);
+    map[_i11.UserData] = (data, protocol) => _i11.UserData.fromJson(data);
+    map[_i1.getType<_i8.ChallengeTracker?>()] = (data, protocol) =>
+        (data != null ? _i8.ChallengeTracker.fromJson(data) : null);
+    map[_i1.getType<_i9.SessionMetadata?>()] = (data, protocol) =>
+        (data != null ? _i9.SessionMetadata.fromJson(data) : null);
+    map[_i1.getType<_i10.TokenMetadata?>()] = (data, protocol) =>
+        (data != null ? _i10.TokenMetadata.fromJson(data) : null);
+    map[_i1.getType<_i11.UserData?>()] = (data, protocol) =>
+        (data != null ? _i11.UserData.fromJson(data) : null);
+    map[Set<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toSet();
+    map[_i1.getType<({_i12.ByteData challenge, _i1.UuidValue id})>()] =
+        (data, protocol) => (
+          challenge: protocol.deserialize<_i12.ByteData>(
+            ((data as Map)['n'] as Map)['challenge'],
+          ),
+          id: protocol.deserialize<_i1.UuidValue>(data['n']['id']),
+        );
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -342,41 +374,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i8.ChallengeTracker) {
-      return _i8.ChallengeTracker.fromJson(data) as T;
-    }
-    if (t == _i9.SessionMetadata) {
-      return _i9.SessionMetadata.fromJson(data) as T;
-    }
-    if (t == _i10.TokenMetadata) {
-      return _i10.TokenMetadata.fromJson(data) as T;
-    }
-    if (t == _i11.UserData) {
-      return _i11.UserData.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i8.ChallengeTracker?>()) {
-      return (data != null ? _i8.ChallengeTracker.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.SessionMetadata?>()) {
-      return (data != null ? _i9.SessionMetadata.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.TokenMetadata?>()) {
-      return (data != null ? _i10.TokenMetadata.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.UserData?>()) {
-      return (data != null ? _i11.UserData.fromJson(data) : null) as T;
-    }
-    if (t == Set<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
-    }
-    if (t == _i1.getType<({_i12.ByteData challenge, _i1.UuidValue id})>()) {
-      return (
-            challenge: deserialize<_i12.ByteData>(
-              ((data as Map)['n'] as Map)['challenge'],
-            ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
-          )
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

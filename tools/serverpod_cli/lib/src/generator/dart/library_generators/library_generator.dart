@@ -210,6 +210,103 @@ class LibraryGenerator {
         .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
 
+    // Per-type deserializer entries used by deserialize<T>.
+    //
+    // Emitted as a static `Map<Type, _DeserializerFn>` populated by
+    // `_buildDeserializers`. Replacing the previous if-chain — one method
+    // with a branch per registered type — with a map lookup dramatically cuts
+    // AOT compile time (`gen_snapshot` per-function passes degrade
+    // non-linearly on huge methods); each branch is now a tiny closure of
+    // its own. Population is done in a function body rather than a map
+    // literal so that duplicate `Type` keys (same Dart class imported under
+    // multiple module aliases) don't trigger the `equal_keys_in_map`
+    // analyzer warning — last-write-wins is harmless since duplicates have
+    // identical bodies. See https://github.com/serverpod/serverpod/issues/5000.
+    final deserializerEntries = <MapEntry<Expression, Code>>[
+      for (var classInfo in unsealedModels)
+        MapEntry(
+          refer(classInfo.className, TypeDefinition.getRef(classInfo)),
+          Code.scope(
+            (a) =>
+                '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                '.fromJson(data)',
+          ),
+        ),
+      for (var classInfo in unsealedModels)
+        MapEntry(
+          refer('getType', serverpodUrl(serverCode)).call([], {}, [
+            TypeReference(
+              (b) => b
+                ..symbol = classInfo.className
+                ..url = TypeDefinition.getRef(classInfo)
+                ..isNullable = true,
+            ),
+          ]),
+          Code.scope(
+            (a) =>
+                '(data!=null?'
+                '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
+                '.fromJson(data) :null)',
+          ),
+        ),
+      for (var field in allFieldsToGenerateSerialization)
+        ...field.type.generateDeserialization(serverCode, config: config),
+      for (var type in allTypesToDeserialize)
+        ...type.generateDeserialization(serverCode, config: config),
+      for (var extraClass in config.extraClasses)
+        ...extraClass.generateDeserialization(serverCode, config: config),
+      for (var extraClass in config.extraClasses)
+        ...extraClass.asNullable.generateDeserialization(
+          serverCode,
+          config: config,
+        ),
+      for (var type in nonModelStreamTypes)
+        ...type.generateDeserialization(serverCode, config: config),
+    ];
+
+    final deserializerFnTypeRef = refer(
+      'dynamic Function(dynamic, Protocol)',
+    );
+    final deserializerMapTypeRef = TypeReference(
+      (t) => t
+        ..symbol = 'Map'
+        ..types.addAll([refer('Type'), deserializerFnTypeRef]),
+    );
+
+    protocol.fields.add(
+      Field(
+        (f) => f
+          ..name = '_deserializers'
+          ..static = true
+          ..modifier = FieldModifier.final$
+          ..type = deserializerMapTypeRef
+          ..assignment = const Code('_buildDeserializers()'),
+      ),
+    );
+
+    protocol.methods.add(
+      Method(
+        (m) => m
+          ..static = true
+          ..name = '_buildDeserializers'
+          ..returns = deserializerMapTypeRef
+          ..body = Block.of([
+            const Code(
+              'final map = <Type, dynamic Function(dynamic, Protocol)>{};',
+            ),
+            for (final entry in deserializerEntries)
+              Block.of([
+                const Code('map['),
+                entry.key.code,
+                const Code('] = (data, protocol) => '),
+                entry.value,
+                const Code(';'),
+              ]),
+            const Code('return map;'),
+          ]),
+      ),
+    );
+
     protocol.methods.addAll([
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
@@ -277,68 +374,10 @@ class LibraryGenerator {
               }
             }
           '''),
-            ...(<Expression, Code>{
-                  for (var classInfo in unsealedModels)
-                    refer(
-                      classInfo.className,
-                      TypeDefinition.getRef(classInfo),
-                    ): Code.scope(
-                      (a) =>
-                          '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
-                          '.fromJson(data) as T',
-                    ),
-                  for (var classInfo in unsealedModels)
-                    refer('getType', serverpodUrl(serverCode)).call([], {}, [
-                      TypeReference(
-                        (b) => b
-                          ..symbol = classInfo.className
-                          ..url = TypeDefinition.getRef(classInfo)
-                          ..isNullable = true,
-                      ),
-                    ]): Code.scope(
-                      (a) =>
-                          '(data!=null?'
-                          '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}'
-                          '.fromJson(data) :null) as T',
-                    ),
-                }..addEntries([
-                  // Generate deserialization for fields of models.
-                  for (var field in allFieldsToGenerateSerialization)
-                    ...field.type.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  for (var type in allTypesToDeserialize)
-                    ...type.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for extra classes.
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for extra classes as nullables.
-                  for (var extraClass in config.extraClasses)
-                    ...extraClass.asNullable.generateDeserialization(
-                      serverCode,
-                      config: config,
-                    ),
-                  // Generate deserialization for containers used in streams
-                  for (var type in nonModelStreamTypes)
-                    ...type.generateDeserialization(serverCode, config: config),
-                ]))
-                .entries
-                .map(
-                  (e) => Block.of([
-                    const Code('if(t=='),
-                    e.key.code,
-                    const Code('){return '),
-                    e.value,
-                    const Code(';}'),
-                  ]),
-                ),
+            const Code(
+              'final fn = _deserializers[t];'
+              'if (fn != null) { return fn(data, this) as T; }',
+            ),
             for (var module in config.modules)
               Code.scope(
                 (a) =>

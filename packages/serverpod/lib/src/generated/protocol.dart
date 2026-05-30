@@ -1183,6 +1183,215 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ),
   ];
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.RevokedAuthenticationAuthId] = (data, protocol) =>
+        _i3.RevokedAuthenticationAuthId.fromJson(data);
+    map[_i4.RevokedAuthenticationScope] = (data, protocol) =>
+        _i4.RevokedAuthenticationScope.fromJson(data);
+    map[_i5.RevokedAuthenticationUser] = (data, protocol) =>
+        _i5.RevokedAuthenticationUser.fromJson(data);
+    map[_i6.CacheInfo] = (data, protocol) => _i6.CacheInfo.fromJson(data);
+    map[_i7.CachesInfo] = (data, protocol) => _i7.CachesInfo.fromJson(data);
+    map[_i8.CloudStorageEntry] = (data, protocol) =>
+        _i8.CloudStorageEntry.fromJson(data);
+    map[_i9.CloudStorageDirectUploadEntry] = (data, protocol) =>
+        _i9.CloudStorageDirectUploadEntry.fromJson(data);
+    map[_i10.ClusterInfo] = (data, protocol) => _i10.ClusterInfo.fromJson(data);
+    map[_i11.ClusterServerInfo] = (data, protocol) =>
+        _i11.ClusterServerInfo.fromJson(data);
+    map[_i12.CronFutureCallScheduling] = (data, protocol) =>
+        _i12.CronFutureCallScheduling.fromJson(data);
+    map[_i13.DatabaseMigrationVersion] = (data, protocol) =>
+        _i13.DatabaseMigrationVersion.fromJson(data);
+    map[_i14.DistributedCacheEntry] = (data, protocol) =>
+        _i14.DistributedCacheEntry.fromJson(data);
+    map[_i15.AccessDeniedException] = (data, protocol) =>
+        _i15.AccessDeniedException.fromJson(data);
+    map[_i16.FileNotFoundException] = (data, protocol) =>
+        _i16.FileNotFoundException.fromJson(data);
+    map[_i17.FutureCallClaimEntry] = (data, protocol) =>
+        _i17.FutureCallClaimEntry.fromJson(data);
+    map[_i18.FutureCallEntry] = (data, protocol) =>
+        _i18.FutureCallEntry.fromJson(data);
+    map[_i12.IntervalFutureCallScheduling] = (data, protocol) =>
+        _i12.IntervalFutureCallScheduling.fromJson(data);
+    map[_i19.LogEntry] = (data, protocol) => _i19.LogEntry.fromJson(data);
+    map[_i20.LogLevel] = (data, protocol) => _i20.LogLevel.fromJson(data);
+    map[_i21.LogResult] = (data, protocol) => _i21.LogResult.fromJson(data);
+    map[_i22.LogSettings] = (data, protocol) => _i22.LogSettings.fromJson(data);
+    map[_i23.LogSettingsOverride] = (data, protocol) =>
+        _i23.LogSettingsOverride.fromJson(data);
+    map[_i24.MessageLogEntry] = (data, protocol) =>
+        _i24.MessageLogEntry.fromJson(data);
+    map[_i25.MethodInfo] = (data, protocol) => _i25.MethodInfo.fromJson(data);
+    map[_i26.QueryLogEntry] = (data, protocol) =>
+        _i26.QueryLogEntry.fromJson(data);
+    map[_i27.ReadWriteTestEntry] = (data, protocol) =>
+        _i27.ReadWriteTestEntry.fromJson(data);
+    map[_i28.RuntimeSettings] = (data, protocol) =>
+        _i28.RuntimeSettings.fromJson(data);
+    map[_i29.ServerHealthConnectionInfo] = (data, protocol) =>
+        _i29.ServerHealthConnectionInfo.fromJson(data);
+    map[_i30.ServerHealthMetric] = (data, protocol) =>
+        _i30.ServerHealthMetric.fromJson(data);
+    map[_i31.ServerHealthResult] = (data, protocol) =>
+        _i31.ServerHealthResult.fromJson(data);
+    map[_i32.ServerpodSqlException] = (data, protocol) =>
+        _i32.ServerpodSqlException.fromJson(data);
+    map[_i33.SessionLogEntry] = (data, protocol) =>
+        _i33.SessionLogEntry.fromJson(data);
+    map[_i34.SessionLogFilter] = (data, protocol) =>
+        _i34.SessionLogFilter.fromJson(data);
+    map[_i35.SessionLogInfo] = (data, protocol) =>
+        _i35.SessionLogInfo.fromJson(data);
+    map[_i36.SessionLogResult] = (data, protocol) =>
+        _i36.SessionLogResult.fromJson(data);
+    map[_i1.getType<_i3.RevokedAuthenticationAuthId?>()] = (data, protocol) =>
+        (data != null ? _i3.RevokedAuthenticationAuthId.fromJson(data) : null);
+    map[_i1.getType<_i4.RevokedAuthenticationScope?>()] = (data, protocol) =>
+        (data != null ? _i4.RevokedAuthenticationScope.fromJson(data) : null);
+    map[_i1.getType<_i5.RevokedAuthenticationUser?>()] = (data, protocol) =>
+        (data != null ? _i5.RevokedAuthenticationUser.fromJson(data) : null);
+    map[_i1.getType<_i6.CacheInfo?>()] = (data, protocol) =>
+        (data != null ? _i6.CacheInfo.fromJson(data) : null);
+    map[_i1.getType<_i7.CachesInfo?>()] = (data, protocol) =>
+        (data != null ? _i7.CachesInfo.fromJson(data) : null);
+    map[_i1.getType<_i8.CloudStorageEntry?>()] = (data, protocol) =>
+        (data != null ? _i8.CloudStorageEntry.fromJson(data) : null);
+    map[_i1.getType<_i9.CloudStorageDirectUploadEntry?>()] = (data, protocol) =>
+        (data != null
+        ? _i9.CloudStorageDirectUploadEntry.fromJson(data)
+        : null);
+    map[_i1.getType<_i10.ClusterInfo?>()] = (data, protocol) =>
+        (data != null ? _i10.ClusterInfo.fromJson(data) : null);
+    map[_i1.getType<_i11.ClusterServerInfo?>()] = (data, protocol) =>
+        (data != null ? _i11.ClusterServerInfo.fromJson(data) : null);
+    map[_i1.getType<_i12.CronFutureCallScheduling?>()] = (data, protocol) =>
+        (data != null ? _i12.CronFutureCallScheduling.fromJson(data) : null);
+    map[_i1.getType<_i13.DatabaseMigrationVersion?>()] = (data, protocol) =>
+        (data != null ? _i13.DatabaseMigrationVersion.fromJson(data) : null);
+    map[_i1.getType<_i14.DistributedCacheEntry?>()] = (data, protocol) =>
+        (data != null ? _i14.DistributedCacheEntry.fromJson(data) : null);
+    map[_i1.getType<_i15.AccessDeniedException?>()] = (data, protocol) =>
+        (data != null ? _i15.AccessDeniedException.fromJson(data) : null);
+    map[_i1.getType<_i16.FileNotFoundException?>()] = (data, protocol) =>
+        (data != null ? _i16.FileNotFoundException.fromJson(data) : null);
+    map[_i1.getType<_i17.FutureCallClaimEntry?>()] = (data, protocol) =>
+        (data != null ? _i17.FutureCallClaimEntry.fromJson(data) : null);
+    map[_i1.getType<_i18.FutureCallEntry?>()] = (data, protocol) =>
+        (data != null ? _i18.FutureCallEntry.fromJson(data) : null);
+    map[_i1.getType<_i12.IntervalFutureCallScheduling?>()] = (data, protocol) =>
+        (data != null
+        ? _i12.IntervalFutureCallScheduling.fromJson(data)
+        : null);
+    map[_i1.getType<_i19.LogEntry?>()] = (data, protocol) =>
+        (data != null ? _i19.LogEntry.fromJson(data) : null);
+    map[_i1.getType<_i20.LogLevel?>()] = (data, protocol) =>
+        (data != null ? _i20.LogLevel.fromJson(data) : null);
+    map[_i1.getType<_i21.LogResult?>()] = (data, protocol) =>
+        (data != null ? _i21.LogResult.fromJson(data) : null);
+    map[_i1.getType<_i22.LogSettings?>()] = (data, protocol) =>
+        (data != null ? _i22.LogSettings.fromJson(data) : null);
+    map[_i1.getType<_i23.LogSettingsOverride?>()] = (data, protocol) =>
+        (data != null ? _i23.LogSettingsOverride.fromJson(data) : null);
+    map[_i1.getType<_i24.MessageLogEntry?>()] = (data, protocol) =>
+        (data != null ? _i24.MessageLogEntry.fromJson(data) : null);
+    map[_i1.getType<_i25.MethodInfo?>()] = (data, protocol) =>
+        (data != null ? _i25.MethodInfo.fromJson(data) : null);
+    map[_i1.getType<_i26.QueryLogEntry?>()] = (data, protocol) =>
+        (data != null ? _i26.QueryLogEntry.fromJson(data) : null);
+    map[_i1.getType<_i27.ReadWriteTestEntry?>()] = (data, protocol) =>
+        (data != null ? _i27.ReadWriteTestEntry.fromJson(data) : null);
+    map[_i1.getType<_i28.RuntimeSettings?>()] = (data, protocol) =>
+        (data != null ? _i28.RuntimeSettings.fromJson(data) : null);
+    map[_i1.getType<_i29.ServerHealthConnectionInfo?>()] = (data, protocol) =>
+        (data != null ? _i29.ServerHealthConnectionInfo.fromJson(data) : null);
+    map[_i1.getType<_i30.ServerHealthMetric?>()] = (data, protocol) =>
+        (data != null ? _i30.ServerHealthMetric.fromJson(data) : null);
+    map[_i1.getType<_i31.ServerHealthResult?>()] = (data, protocol) =>
+        (data != null ? _i31.ServerHealthResult.fromJson(data) : null);
+    map[_i1.getType<_i32.ServerpodSqlException?>()] = (data, protocol) =>
+        (data != null ? _i32.ServerpodSqlException.fromJson(data) : null);
+    map[_i1.getType<_i33.SessionLogEntry?>()] = (data, protocol) =>
+        (data != null ? _i33.SessionLogEntry.fromJson(data) : null);
+    map[_i1.getType<_i34.SessionLogFilter?>()] = (data, protocol) =>
+        (data != null ? _i34.SessionLogFilter.fromJson(data) : null);
+    map[_i1.getType<_i35.SessionLogInfo?>()] = (data, protocol) =>
+        (data != null ? _i35.SessionLogInfo.fromJson(data) : null);
+    map[_i1.getType<_i36.SessionLogResult?>()] = (data, protocol) =>
+        (data != null ? _i36.SessionLogResult.fromJson(data) : null);
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    map[_i1.getType<List<String>?>()] = (data, protocol) => (data != null
+        ? (data as List).map((e) => protocol.deserialize<String>(e)).toList()
+        : null);
+    map[List<_i11.ClusterServerInfo>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i11.ClusterServerInfo>(e))
+        .toList();
+    map[List<_i19.LogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i19.LogEntry>(e))
+        .toList();
+    map[List<_i23.LogSettingsOverride>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i23.LogSettingsOverride>(e))
+        .toList();
+    map[List<_i30.ServerHealthMetric>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i30.ServerHealthMetric>(e))
+        .toList();
+    map[List<_i29.ServerHealthConnectionInfo>] = (data, protocol) =>
+        (data as List)
+            .map(
+              (e) => protocol.deserialize<_i29.ServerHealthConnectionInfo>(e),
+            )
+            .toList();
+    map[List<_i19.LogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i19.LogEntry>(e))
+        .toList();
+    map[_i1.getType<List<_i19.LogEntry>?>()] = (data, protocol) => (data != null
+        ? (data as List)
+              .map((e) => protocol.deserialize<_i19.LogEntry>(e))
+              .toList()
+        : null);
+    map[List<_i26.QueryLogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i26.QueryLogEntry>(e))
+        .toList();
+    map[_i1.getType<List<_i26.QueryLogEntry>?>()] = (data, protocol) =>
+        (data != null
+        ? (data as List)
+              .map((e) => protocol.deserialize<_i26.QueryLogEntry>(e))
+              .toList()
+        : null);
+    map[List<_i24.MessageLogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i24.MessageLogEntry>(e))
+        .toList();
+    map[_i1.getType<List<_i24.MessageLogEntry>?>()] = (data, protocol) =>
+        (data != null
+        ? (data as List)
+              .map((e) => protocol.deserialize<_i24.MessageLogEntry>(e))
+              .toList()
+        : null);
+    map[List<_i26.QueryLogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i26.QueryLogEntry>(e))
+        .toList();
+    map[List<_i24.MessageLogEntry>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i24.MessageLogEntry>(e))
+        .toList();
+    map[List<_i35.SessionLogInfo>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i35.SessionLogInfo>(e))
+        .toList();
+    map[List<_i37.TableDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i37.TableDefinition>(e))
+        .toList();
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -1212,336 +1421,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i3.RevokedAuthenticationAuthId) {
-      return _i3.RevokedAuthenticationAuthId.fromJson(data) as T;
-    }
-    if (t == _i4.RevokedAuthenticationScope) {
-      return _i4.RevokedAuthenticationScope.fromJson(data) as T;
-    }
-    if (t == _i5.RevokedAuthenticationUser) {
-      return _i5.RevokedAuthenticationUser.fromJson(data) as T;
-    }
-    if (t == _i6.CacheInfo) {
-      return _i6.CacheInfo.fromJson(data) as T;
-    }
-    if (t == _i7.CachesInfo) {
-      return _i7.CachesInfo.fromJson(data) as T;
-    }
-    if (t == _i8.CloudStorageEntry) {
-      return _i8.CloudStorageEntry.fromJson(data) as T;
-    }
-    if (t == _i9.CloudStorageDirectUploadEntry) {
-      return _i9.CloudStorageDirectUploadEntry.fromJson(data) as T;
-    }
-    if (t == _i10.ClusterInfo) {
-      return _i10.ClusterInfo.fromJson(data) as T;
-    }
-    if (t == _i11.ClusterServerInfo) {
-      return _i11.ClusterServerInfo.fromJson(data) as T;
-    }
-    if (t == _i12.CronFutureCallScheduling) {
-      return _i12.CronFutureCallScheduling.fromJson(data) as T;
-    }
-    if (t == _i13.DatabaseMigrationVersion) {
-      return _i13.DatabaseMigrationVersion.fromJson(data) as T;
-    }
-    if (t == _i14.DistributedCacheEntry) {
-      return _i14.DistributedCacheEntry.fromJson(data) as T;
-    }
-    if (t == _i15.AccessDeniedException) {
-      return _i15.AccessDeniedException.fromJson(data) as T;
-    }
-    if (t == _i16.FileNotFoundException) {
-      return _i16.FileNotFoundException.fromJson(data) as T;
-    }
-    if (t == _i17.FutureCallClaimEntry) {
-      return _i17.FutureCallClaimEntry.fromJson(data) as T;
-    }
-    if (t == _i18.FutureCallEntry) {
-      return _i18.FutureCallEntry.fromJson(data) as T;
-    }
-    if (t == _i12.IntervalFutureCallScheduling) {
-      return _i12.IntervalFutureCallScheduling.fromJson(data) as T;
-    }
-    if (t == _i19.LogEntry) {
-      return _i19.LogEntry.fromJson(data) as T;
-    }
-    if (t == _i20.LogLevel) {
-      return _i20.LogLevel.fromJson(data) as T;
-    }
-    if (t == _i21.LogResult) {
-      return _i21.LogResult.fromJson(data) as T;
-    }
-    if (t == _i22.LogSettings) {
-      return _i22.LogSettings.fromJson(data) as T;
-    }
-    if (t == _i23.LogSettingsOverride) {
-      return _i23.LogSettingsOverride.fromJson(data) as T;
-    }
-    if (t == _i24.MessageLogEntry) {
-      return _i24.MessageLogEntry.fromJson(data) as T;
-    }
-    if (t == _i25.MethodInfo) {
-      return _i25.MethodInfo.fromJson(data) as T;
-    }
-    if (t == _i26.QueryLogEntry) {
-      return _i26.QueryLogEntry.fromJson(data) as T;
-    }
-    if (t == _i27.ReadWriteTestEntry) {
-      return _i27.ReadWriteTestEntry.fromJson(data) as T;
-    }
-    if (t == _i28.RuntimeSettings) {
-      return _i28.RuntimeSettings.fromJson(data) as T;
-    }
-    if (t == _i29.ServerHealthConnectionInfo) {
-      return _i29.ServerHealthConnectionInfo.fromJson(data) as T;
-    }
-    if (t == _i30.ServerHealthMetric) {
-      return _i30.ServerHealthMetric.fromJson(data) as T;
-    }
-    if (t == _i31.ServerHealthResult) {
-      return _i31.ServerHealthResult.fromJson(data) as T;
-    }
-    if (t == _i32.ServerpodSqlException) {
-      return _i32.ServerpodSqlException.fromJson(data) as T;
-    }
-    if (t == _i33.SessionLogEntry) {
-      return _i33.SessionLogEntry.fromJson(data) as T;
-    }
-    if (t == _i34.SessionLogFilter) {
-      return _i34.SessionLogFilter.fromJson(data) as T;
-    }
-    if (t == _i35.SessionLogInfo) {
-      return _i35.SessionLogInfo.fromJson(data) as T;
-    }
-    if (t == _i36.SessionLogResult) {
-      return _i36.SessionLogResult.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i3.RevokedAuthenticationAuthId?>()) {
-      return (data != null
-              ? _i3.RevokedAuthenticationAuthId.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.RevokedAuthenticationScope?>()) {
-      return (data != null
-              ? _i4.RevokedAuthenticationScope.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i5.RevokedAuthenticationUser?>()) {
-      return (data != null
-              ? _i5.RevokedAuthenticationUser.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i6.CacheInfo?>()) {
-      return (data != null ? _i6.CacheInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.CachesInfo?>()) {
-      return (data != null ? _i7.CachesInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.CloudStorageEntry?>()) {
-      return (data != null ? _i8.CloudStorageEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.CloudStorageDirectUploadEntry?>()) {
-      return (data != null
-              ? _i9.CloudStorageDirectUploadEntry.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i10.ClusterInfo?>()) {
-      return (data != null ? _i10.ClusterInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.ClusterServerInfo?>()) {
-      return (data != null ? _i11.ClusterServerInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.CronFutureCallScheduling?>()) {
-      return (data != null
-              ? _i12.CronFutureCallScheduling.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.DatabaseMigrationVersion?>()) {
-      return (data != null
-              ? _i13.DatabaseMigrationVersion.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i14.DistributedCacheEntry?>()) {
-      return (data != null ? _i14.DistributedCacheEntry.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i15.AccessDeniedException?>()) {
-      return (data != null ? _i15.AccessDeniedException.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i16.FileNotFoundException?>()) {
-      return (data != null ? _i16.FileNotFoundException.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i17.FutureCallClaimEntry?>()) {
-      return (data != null ? _i17.FutureCallClaimEntry.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i18.FutureCallEntry?>()) {
-      return (data != null ? _i18.FutureCallEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.IntervalFutureCallScheduling?>()) {
-      return (data != null
-              ? _i12.IntervalFutureCallScheduling.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i19.LogEntry?>()) {
-      return (data != null ? _i19.LogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.LogLevel?>()) {
-      return (data != null ? _i20.LogLevel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.LogResult?>()) {
-      return (data != null ? _i21.LogResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.LogSettings?>()) {
-      return (data != null ? _i22.LogSettings.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i23.LogSettingsOverride?>()) {
-      return (data != null ? _i23.LogSettingsOverride.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i24.MessageLogEntry?>()) {
-      return (data != null ? _i24.MessageLogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.MethodInfo?>()) {
-      return (data != null ? _i25.MethodInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.QueryLogEntry?>()) {
-      return (data != null ? _i26.QueryLogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i27.ReadWriteTestEntry?>()) {
-      return (data != null ? _i27.ReadWriteTestEntry.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i28.RuntimeSettings?>()) {
-      return (data != null ? _i28.RuntimeSettings.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.ServerHealthConnectionInfo?>()) {
-      return (data != null
-              ? _i29.ServerHealthConnectionInfo.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i30.ServerHealthMetric?>()) {
-      return (data != null ? _i30.ServerHealthMetric.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i31.ServerHealthResult?>()) {
-      return (data != null ? _i31.ServerHealthResult.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i32.ServerpodSqlException?>()) {
-      return (data != null ? _i32.ServerpodSqlException.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i33.SessionLogEntry?>()) {
-      return (data != null ? _i33.SessionLogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i34.SessionLogFilter?>()) {
-      return (data != null ? _i34.SessionLogFilter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i35.SessionLogInfo?>()) {
-      return (data != null ? _i35.SessionLogInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i36.SessionLogResult?>()) {
-      return (data != null ? _i36.SessionLogResult.fromJson(data) : null) as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<String>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i11.ClusterServerInfo>) {
-      return (data as List)
-              .map((e) => deserialize<_i11.ClusterServerInfo>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i19.LogEntry>) {
-      return (data as List).map((e) => deserialize<_i19.LogEntry>(e)).toList()
-          as T;
-    }
-    if (t == List<_i23.LogSettingsOverride>) {
-      return (data as List)
-              .map((e) => deserialize<_i23.LogSettingsOverride>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i30.ServerHealthMetric>) {
-      return (data as List)
-              .map((e) => deserialize<_i30.ServerHealthMetric>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i29.ServerHealthConnectionInfo>) {
-      return (data as List)
-              .map((e) => deserialize<_i29.ServerHealthConnectionInfo>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i19.LogEntry>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i19.LogEntry>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i26.QueryLogEntry>) {
-      return (data as List)
-              .map((e) => deserialize<_i26.QueryLogEntry>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i26.QueryLogEntry>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i26.QueryLogEntry>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i24.MessageLogEntry>) {
-      return (data as List)
-              .map((e) => deserialize<_i24.MessageLogEntry>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i24.MessageLogEntry>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i24.MessageLogEntry>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i35.SessionLogInfo>) {
-      return (data as List)
-              .map((e) => deserialize<_i35.SessionLogInfo>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i37.TableDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i37.TableDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i38.Protocol().deserialize<T>(data, t);

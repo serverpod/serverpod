@@ -35,6 +35,41 @@ class Protocol extends _i1.SerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.SharedContainer] = (data, protocol) =>
+        _i2.SharedContainer.fromJson(data);
+    map[_i3.DynamicOnShared] = (data, protocol) =>
+        _i3.DynamicOnShared.fromJson(data);
+    map[_i4.SharedEnum] = (data, protocol) => _i4.SharedEnum.fromJson(data);
+    map[_i5.SharedException] = (data, protocol) =>
+        _i5.SharedException.fromJson(data);
+    map[_i6.SharedSubclass] = (data, protocol) =>
+        _i6.SharedSubclass.fromJson(data);
+    map[_i7.SharedModel] = (data, protocol) => _i7.SharedModel.fromJson(data);
+    map[_i8.SharedSealedChild] = (data, protocol) =>
+        _i8.SharedSealedChild.fromJson(data);
+    map[_i1.getType<_i2.SharedContainer?>()] = (data, protocol) =>
+        (data != null ? _i2.SharedContainer.fromJson(data) : null);
+    map[_i1.getType<_i3.DynamicOnShared?>()] = (data, protocol) =>
+        (data != null ? _i3.DynamicOnShared.fromJson(data) : null);
+    map[_i1.getType<_i4.SharedEnum?>()] = (data, protocol) =>
+        (data != null ? _i4.SharedEnum.fromJson(data) : null);
+    map[_i1.getType<_i5.SharedException?>()] = (data, protocol) =>
+        (data != null ? _i5.SharedException.fromJson(data) : null);
+    map[_i1.getType<_i6.SharedSubclass?>()] = (data, protocol) =>
+        (data != null ? _i6.SharedSubclass.fromJson(data) : null);
+    map[_i1.getType<_i7.SharedModel?>()] = (data, protocol) =>
+        (data != null ? _i7.SharedModel.fromJson(data) : null);
+    map[_i1.getType<_i8.SharedSealedChild?>()] = (data, protocol) =>
+        (data != null ? _i8.SharedSealedChild.fromJson(data) : null);
+    map[dynamic] = (data, protocol) => deserializeDynamicFieldValue(data) as T;
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -69,50 +104,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.SharedContainer) {
-      return _i2.SharedContainer.fromJson(data) as T;
-    }
-    if (t == _i3.DynamicOnShared) {
-      return _i3.DynamicOnShared.fromJson(data) as T;
-    }
-    if (t == _i4.SharedEnum) {
-      return _i4.SharedEnum.fromJson(data) as T;
-    }
-    if (t == _i5.SharedException) {
-      return _i5.SharedException.fromJson(data) as T;
-    }
-    if (t == _i6.SharedSubclass) {
-      return _i6.SharedSubclass.fromJson(data) as T;
-    }
-    if (t == _i7.SharedModel) {
-      return _i7.SharedModel.fromJson(data) as T;
-    }
-    if (t == _i8.SharedSealedChild) {
-      return _i8.SharedSealedChild.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.SharedContainer?>()) {
-      return (data != null ? _i2.SharedContainer.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.DynamicOnShared?>()) {
-      return (data != null ? _i3.DynamicOnShared.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.SharedEnum?>()) {
-      return (data != null ? _i4.SharedEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.SharedException?>()) {
-      return (data != null ? _i5.SharedException.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.SharedSubclass?>()) {
-      return (data != null ? _i6.SharedSubclass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.SharedModel?>()) {
-      return (data != null ? _i7.SharedModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.SharedSealedChild?>()) {
-      return (data != null ? _i8.SharedSealedChild.fromJson(data) : null) as T;
-    }
-    if (t == dynamic) {
-      return deserializeDynamicFieldValue(data) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     return super.deserialize<T>(data, t);
   }

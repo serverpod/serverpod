@@ -82,6 +82,198 @@ class Protocol extends _i1.SerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.BulkData] = (data, protocol) => _i2.BulkData.fromJson(data);
+    map[_i3.BulkDataException] = (data, protocol) =>
+        _i3.BulkDataException.fromJson(data);
+    map[_i4.BulkQueryColumnDescription] = (data, protocol) =>
+        _i4.BulkQueryColumnDescription.fromJson(data);
+    map[_i5.BulkQueryResult] = (data, protocol) =>
+        _i5.BulkQueryResult.fromJson(data);
+    map[_i6.ColumnDefinition] = (data, protocol) =>
+        _i6.ColumnDefinition.fromJson(data);
+    map[_i7.ColumnMigration] = (data, protocol) =>
+        _i7.ColumnMigration.fromJson(data);
+    map[_i8.ColumnType] = (data, protocol) => _i8.ColumnType.fromJson(data);
+    map[_i9.DatabaseDefinition] = (data, protocol) =>
+        _i9.DatabaseDefinition.fromJson(data);
+    map[_i10.DatabaseDefinitions] = (data, protocol) =>
+        _i10.DatabaseDefinitions.fromJson(data);
+    map[_i11.DatabaseMigration] = (data, protocol) =>
+        _i11.DatabaseMigration.fromJson(data);
+    map[_i12.DatabaseMigrationAction] = (data, protocol) =>
+        _i12.DatabaseMigrationAction.fromJson(data);
+    map[_i13.DatabaseMigrationActionType] = (data, protocol) =>
+        _i13.DatabaseMigrationActionType.fromJson(data);
+    map[_i14.DatabaseMigrationVersionModel] = (data, protocol) =>
+        _i14.DatabaseMigrationVersionModel.fromJson(data);
+    map[_i15.DatabaseMigrationWarning] = (data, protocol) =>
+        _i15.DatabaseMigrationWarning.fromJson(data);
+    map[_i16.DatabaseMigrationWarningType] = (data, protocol) =>
+        _i16.DatabaseMigrationWarningType.fromJson(data);
+    map[_i17.EnumSerialization] = (data, protocol) =>
+        _i17.EnumSerialization.fromJson(data);
+    map[_i18.Filter] = (data, protocol) => _i18.Filter.fromJson(data);
+    map[_i19.FilterConstraint] = (data, protocol) =>
+        _i19.FilterConstraint.fromJson(data);
+    map[_i20.FilterConstraintType] = (data, protocol) =>
+        _i20.FilterConstraintType.fromJson(data);
+    map[_i21.ForeignKeyAction] = (data, protocol) =>
+        _i21.ForeignKeyAction.fromJson(data);
+    map[_i22.ForeignKeyDefinition] = (data, protocol) =>
+        _i22.ForeignKeyDefinition.fromJson(data);
+    map[_i23.ForeignKeyMatchType] = (data, protocol) =>
+        _i23.ForeignKeyMatchType.fromJson(data);
+    map[_i24.GinOperatorClass] = (data, protocol) =>
+        _i24.GinOperatorClass.fromJson(data);
+    map[_i25.IndexDefinition] = (data, protocol) =>
+        _i25.IndexDefinition.fromJson(data);
+    map[_i26.IndexElementDefinition] = (data, protocol) =>
+        _i26.IndexElementDefinition.fromJson(data);
+    map[_i27.IndexElementDefinitionType] = (data, protocol) =>
+        _i27.IndexElementDefinitionType.fromJson(data);
+    map[_i28.MigrationsApplyResult] = (data, protocol) =>
+        _i28.MigrationsApplyResult.fromJson(data);
+    map[_i29.TableDefinition] = (data, protocol) =>
+        _i29.TableDefinition.fromJson(data);
+    map[_i30.TableMigration] = (data, protocol) =>
+        _i30.TableMigration.fromJson(data);
+    map[_i31.VectorDistanceFunction] = (data, protocol) =>
+        _i31.VectorDistanceFunction.fromJson(data);
+    map[_i1.getType<_i2.BulkData?>()] = (data, protocol) =>
+        (data != null ? _i2.BulkData.fromJson(data) : null);
+    map[_i1.getType<_i3.BulkDataException?>()] = (data, protocol) =>
+        (data != null ? _i3.BulkDataException.fromJson(data) : null);
+    map[_i1.getType<_i4.BulkQueryColumnDescription?>()] = (data, protocol) =>
+        (data != null ? _i4.BulkQueryColumnDescription.fromJson(data) : null);
+    map[_i1.getType<_i5.BulkQueryResult?>()] = (data, protocol) =>
+        (data != null ? _i5.BulkQueryResult.fromJson(data) : null);
+    map[_i1.getType<_i6.ColumnDefinition?>()] = (data, protocol) =>
+        (data != null ? _i6.ColumnDefinition.fromJson(data) : null);
+    map[_i1.getType<_i7.ColumnMigration?>()] = (data, protocol) =>
+        (data != null ? _i7.ColumnMigration.fromJson(data) : null);
+    map[_i1.getType<_i8.ColumnType?>()] = (data, protocol) =>
+        (data != null ? _i8.ColumnType.fromJson(data) : null);
+    map[_i1.getType<_i9.DatabaseDefinition?>()] = (data, protocol) =>
+        (data != null ? _i9.DatabaseDefinition.fromJson(data) : null);
+    map[_i1.getType<_i10.DatabaseDefinitions?>()] = (data, protocol) =>
+        (data != null ? _i10.DatabaseDefinitions.fromJson(data) : null);
+    map[_i1.getType<_i11.DatabaseMigration?>()] = (data, protocol) =>
+        (data != null ? _i11.DatabaseMigration.fromJson(data) : null);
+    map[_i1.getType<_i12.DatabaseMigrationAction?>()] = (data, protocol) =>
+        (data != null ? _i12.DatabaseMigrationAction.fromJson(data) : null);
+    map[_i1.getType<_i13.DatabaseMigrationActionType?>()] = (data, protocol) =>
+        (data != null ? _i13.DatabaseMigrationActionType.fromJson(data) : null);
+    map[_i1
+        .getType<_i14.DatabaseMigrationVersionModel?>()] = (data, protocol) =>
+        (data != null
+        ? _i14.DatabaseMigrationVersionModel.fromJson(data)
+        : null);
+    map[_i1.getType<_i15.DatabaseMigrationWarning?>()] = (data, protocol) =>
+        (data != null ? _i15.DatabaseMigrationWarning.fromJson(data) : null);
+    map[_i1.getType<_i16.DatabaseMigrationWarningType?>()] = (data, protocol) =>
+        (data != null
+        ? _i16.DatabaseMigrationWarningType.fromJson(data)
+        : null);
+    map[_i1.getType<_i17.EnumSerialization?>()] = (data, protocol) =>
+        (data != null ? _i17.EnumSerialization.fromJson(data) : null);
+    map[_i1.getType<_i18.Filter?>()] = (data, protocol) =>
+        (data != null ? _i18.Filter.fromJson(data) : null);
+    map[_i1.getType<_i19.FilterConstraint?>()] = (data, protocol) =>
+        (data != null ? _i19.FilterConstraint.fromJson(data) : null);
+    map[_i1.getType<_i20.FilterConstraintType?>()] = (data, protocol) =>
+        (data != null ? _i20.FilterConstraintType.fromJson(data) : null);
+    map[_i1.getType<_i21.ForeignKeyAction?>()] = (data, protocol) =>
+        (data != null ? _i21.ForeignKeyAction.fromJson(data) : null);
+    map[_i1.getType<_i22.ForeignKeyDefinition?>()] = (data, protocol) =>
+        (data != null ? _i22.ForeignKeyDefinition.fromJson(data) : null);
+    map[_i1.getType<_i23.ForeignKeyMatchType?>()] = (data, protocol) =>
+        (data != null ? _i23.ForeignKeyMatchType.fromJson(data) : null);
+    map[_i1.getType<_i24.GinOperatorClass?>()] = (data, protocol) =>
+        (data != null ? _i24.GinOperatorClass.fromJson(data) : null);
+    map[_i1.getType<_i25.IndexDefinition?>()] = (data, protocol) =>
+        (data != null ? _i25.IndexDefinition.fromJson(data) : null);
+    map[_i1.getType<_i26.IndexElementDefinition?>()] = (data, protocol) =>
+        (data != null ? _i26.IndexElementDefinition.fromJson(data) : null);
+    map[_i1.getType<_i27.IndexElementDefinitionType?>()] = (data, protocol) =>
+        (data != null ? _i27.IndexElementDefinitionType.fromJson(data) : null);
+    map[_i1.getType<_i28.MigrationsApplyResult?>()] = (data, protocol) =>
+        (data != null ? _i28.MigrationsApplyResult.fromJson(data) : null);
+    map[_i1.getType<_i29.TableDefinition?>()] = (data, protocol) =>
+        (data != null ? _i29.TableDefinition.fromJson(data) : null);
+    map[_i1.getType<_i30.TableMigration?>()] = (data, protocol) =>
+        (data != null ? _i30.TableMigration.fromJson(data) : null);
+    map[_i1.getType<_i31.VectorDistanceFunction?>()] = (data, protocol) =>
+        (data != null ? _i31.VectorDistanceFunction.fromJson(data) : null);
+    map[List<_i32.BulkQueryColumnDescription>] = (data, protocol) =>
+        (data as List)
+            .map(
+              (e) => protocol.deserialize<_i32.BulkQueryColumnDescription>(e),
+            )
+            .toList();
+    map[List<_i32.TableDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.TableDefinition>(e))
+        .toList();
+    map[List<_i32.DatabaseMigrationVersionModel>] = (data, protocol) =>
+        (data as List)
+            .map(
+              (e) =>
+                  protocol.deserialize<_i32.DatabaseMigrationVersionModel>(e),
+            )
+            .toList();
+    map[List<_i32.DatabaseMigrationAction>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.DatabaseMigrationAction>(e))
+        .toList();
+    map[List<_i32.DatabaseMigrationWarning>] = (data, protocol) =>
+        (data as List)
+            .map((e) => protocol.deserialize<_i32.DatabaseMigrationWarning>(e))
+            .toList();
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    map[List<_i32.FilterConstraint>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.FilterConstraint>(e))
+        .toList();
+    map[List<_i32.IndexElementDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.IndexElementDefinition>(e))
+        .toList();
+    map[Map<String, String>] = (data, protocol) => (data as Map).map(
+      (k, v) => MapEntry(
+        protocol.deserialize<String>(k),
+        protocol.deserialize<String>(v),
+      ),
+    );
+    map[_i1.getType<Map<String, String>?>()] = (data, protocol) => (data != null
+        ? (data as Map).map(
+            (k, v) => MapEntry(
+              protocol.deserialize<String>(k),
+              protocol.deserialize<String>(v),
+            ),
+          )
+        : null);
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    map[_i1.getType<List<String>?>()] = (data, protocol) => (data != null
+        ? (data as List).map((e) => protocol.deserialize<String>(e)).toList()
+        : null);
+    map[List<_i32.ColumnDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.ColumnDefinition>(e))
+        .toList();
+    map[List<_i32.ForeignKeyDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.ForeignKeyDefinition>(e))
+        .toList();
+    map[List<_i32.IndexDefinition>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.IndexDefinition>(e))
+        .toList();
+    map[List<_i32.ColumnMigration>] = (data, protocol) => (data as List)
+        .map((e) => protocol.deserialize<_i32.ColumnMigration>(e))
+        .toList();
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -118,301 +310,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.BulkData) {
-      return _i2.BulkData.fromJson(data) as T;
-    }
-    if (t == _i3.BulkDataException) {
-      return _i3.BulkDataException.fromJson(data) as T;
-    }
-    if (t == _i4.BulkQueryColumnDescription) {
-      return _i4.BulkQueryColumnDescription.fromJson(data) as T;
-    }
-    if (t == _i5.BulkQueryResult) {
-      return _i5.BulkQueryResult.fromJson(data) as T;
-    }
-    if (t == _i6.ColumnDefinition) {
-      return _i6.ColumnDefinition.fromJson(data) as T;
-    }
-    if (t == _i7.ColumnMigration) {
-      return _i7.ColumnMigration.fromJson(data) as T;
-    }
-    if (t == _i8.ColumnType) {
-      return _i8.ColumnType.fromJson(data) as T;
-    }
-    if (t == _i9.DatabaseDefinition) {
-      return _i9.DatabaseDefinition.fromJson(data) as T;
-    }
-    if (t == _i10.DatabaseDefinitions) {
-      return _i10.DatabaseDefinitions.fromJson(data) as T;
-    }
-    if (t == _i11.DatabaseMigration) {
-      return _i11.DatabaseMigration.fromJson(data) as T;
-    }
-    if (t == _i12.DatabaseMigrationAction) {
-      return _i12.DatabaseMigrationAction.fromJson(data) as T;
-    }
-    if (t == _i13.DatabaseMigrationActionType) {
-      return _i13.DatabaseMigrationActionType.fromJson(data) as T;
-    }
-    if (t == _i14.DatabaseMigrationVersionModel) {
-      return _i14.DatabaseMigrationVersionModel.fromJson(data) as T;
-    }
-    if (t == _i15.DatabaseMigrationWarning) {
-      return _i15.DatabaseMigrationWarning.fromJson(data) as T;
-    }
-    if (t == _i16.DatabaseMigrationWarningType) {
-      return _i16.DatabaseMigrationWarningType.fromJson(data) as T;
-    }
-    if (t == _i17.EnumSerialization) {
-      return _i17.EnumSerialization.fromJson(data) as T;
-    }
-    if (t == _i18.Filter) {
-      return _i18.Filter.fromJson(data) as T;
-    }
-    if (t == _i19.FilterConstraint) {
-      return _i19.FilterConstraint.fromJson(data) as T;
-    }
-    if (t == _i20.FilterConstraintType) {
-      return _i20.FilterConstraintType.fromJson(data) as T;
-    }
-    if (t == _i21.ForeignKeyAction) {
-      return _i21.ForeignKeyAction.fromJson(data) as T;
-    }
-    if (t == _i22.ForeignKeyDefinition) {
-      return _i22.ForeignKeyDefinition.fromJson(data) as T;
-    }
-    if (t == _i23.ForeignKeyMatchType) {
-      return _i23.ForeignKeyMatchType.fromJson(data) as T;
-    }
-    if (t == _i24.GinOperatorClass) {
-      return _i24.GinOperatorClass.fromJson(data) as T;
-    }
-    if (t == _i25.IndexDefinition) {
-      return _i25.IndexDefinition.fromJson(data) as T;
-    }
-    if (t == _i26.IndexElementDefinition) {
-      return _i26.IndexElementDefinition.fromJson(data) as T;
-    }
-    if (t == _i27.IndexElementDefinitionType) {
-      return _i27.IndexElementDefinitionType.fromJson(data) as T;
-    }
-    if (t == _i28.MigrationsApplyResult) {
-      return _i28.MigrationsApplyResult.fromJson(data) as T;
-    }
-    if (t == _i29.TableDefinition) {
-      return _i29.TableDefinition.fromJson(data) as T;
-    }
-    if (t == _i30.TableMigration) {
-      return _i30.TableMigration.fromJson(data) as T;
-    }
-    if (t == _i31.VectorDistanceFunction) {
-      return _i31.VectorDistanceFunction.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.BulkData?>()) {
-      return (data != null ? _i2.BulkData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.BulkDataException?>()) {
-      return (data != null ? _i3.BulkDataException.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.BulkQueryColumnDescription?>()) {
-      return (data != null
-              ? _i4.BulkQueryColumnDescription.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i5.BulkQueryResult?>()) {
-      return (data != null ? _i5.BulkQueryResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.ColumnDefinition?>()) {
-      return (data != null ? _i6.ColumnDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.ColumnMigration?>()) {
-      return (data != null ? _i7.ColumnMigration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.ColumnType?>()) {
-      return (data != null ? _i8.ColumnType.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.DatabaseDefinition?>()) {
-      return (data != null ? _i9.DatabaseDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.DatabaseDefinitions?>()) {
-      return (data != null ? _i10.DatabaseDefinitions.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i11.DatabaseMigration?>()) {
-      return (data != null ? _i11.DatabaseMigration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.DatabaseMigrationAction?>()) {
-      return (data != null ? _i12.DatabaseMigrationAction.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.DatabaseMigrationActionType?>()) {
-      return (data != null
-              ? _i13.DatabaseMigrationActionType.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i14.DatabaseMigrationVersionModel?>()) {
-      return (data != null
-              ? _i14.DatabaseMigrationVersionModel.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i15.DatabaseMigrationWarning?>()) {
-      return (data != null
-              ? _i15.DatabaseMigrationWarning.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i16.DatabaseMigrationWarningType?>()) {
-      return (data != null
-              ? _i16.DatabaseMigrationWarningType.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i17.EnumSerialization?>()) {
-      return (data != null ? _i17.EnumSerialization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.Filter?>()) {
-      return (data != null ? _i18.Filter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.FilterConstraint?>()) {
-      return (data != null ? _i19.FilterConstraint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.FilterConstraintType?>()) {
-      return (data != null ? _i20.FilterConstraintType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i21.ForeignKeyAction?>()) {
-      return (data != null ? _i21.ForeignKeyAction.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.ForeignKeyDefinition?>()) {
-      return (data != null ? _i22.ForeignKeyDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i23.ForeignKeyMatchType?>()) {
-      return (data != null ? _i23.ForeignKeyMatchType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i24.GinOperatorClass?>()) {
-      return (data != null ? _i24.GinOperatorClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.IndexDefinition?>()) {
-      return (data != null ? _i25.IndexDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.IndexElementDefinition?>()) {
-      return (data != null ? _i26.IndexElementDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i27.IndexElementDefinitionType?>()) {
-      return (data != null
-              ? _i27.IndexElementDefinitionType.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i28.MigrationsApplyResult?>()) {
-      return (data != null ? _i28.MigrationsApplyResult.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i29.TableDefinition?>()) {
-      return (data != null ? _i29.TableDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.TableMigration?>()) {
-      return (data != null ? _i30.TableMigration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i31.VectorDistanceFunction?>()) {
-      return (data != null ? _i31.VectorDistanceFunction.fromJson(data) : null)
-          as T;
-    }
-    if (t == List<_i32.BulkQueryColumnDescription>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.BulkQueryColumnDescription>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.TableDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.TableDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.DatabaseMigrationVersionModel>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationVersionModel>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.DatabaseMigrationAction>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationAction>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.DatabaseMigrationWarning>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationWarning>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == List<_i32.FilterConstraint>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.FilterConstraint>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.IndexElementDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.IndexElementDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == Map<String, String>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
-          )
-          as T;
-    }
-    if (t == _i1.getType<Map<String, String>?>()) {
-      return (data != null
-              ? (data as Map).map(
-                  (k, v) =>
-                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
-                )
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<String>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i32.ColumnDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.ColumnDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.ForeignKeyDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.ForeignKeyDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.IndexDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.IndexDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i32.ColumnMigration>) {
-      return (data as List)
-              .map((e) => deserialize<_i32.ColumnMigration>(e))
-              .toList()
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     return super.deserialize<T>(data, t);
   }

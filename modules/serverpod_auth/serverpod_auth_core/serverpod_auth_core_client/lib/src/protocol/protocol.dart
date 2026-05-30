@@ -56,6 +56,86 @@ class Protocol extends _i1.SerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.AuthUser] = (data, protocol) => _i2.AuthUser.fromJson(data);
+    map[_i3.AuthUserBlockedException] = (data, protocol) =>
+        _i3.AuthUserBlockedException.fromJson(data);
+    map[_i4.AuthUserModel] = (data, protocol) =>
+        _i4.AuthUserModel.fromJson(data);
+    map[_i5.AuthUserNotFoundException] = (data, protocol) =>
+        _i5.AuthUserNotFoundException.fromJson(data);
+    map[_i6.AuthStrategy] = (data, protocol) => _i6.AuthStrategy.fromJson(data);
+    map[_i7.AuthSuccess] = (data, protocol) => _i7.AuthSuccess.fromJson(data);
+    map[_i8.JwtTokenInfo] = (data, protocol) => _i8.JwtTokenInfo.fromJson(data);
+    map[_i9.RefreshTokenExpiredException] = (data, protocol) =>
+        _i9.RefreshTokenExpiredException.fromJson(data);
+    map[_i10.RefreshTokenInvalidSecretException] = (data, protocol) =>
+        _i10.RefreshTokenInvalidSecretException.fromJson(data);
+    map[_i11.RefreshTokenMalformedException] = (data, protocol) =>
+        _i11.RefreshTokenMalformedException.fromJson(data);
+    map[_i12.RefreshTokenNotFoundException] = (data, protocol) =>
+        _i12.RefreshTokenNotFoundException.fromJson(data);
+    map[_i13.TokenPair] = (data, protocol) => _i13.TokenPair.fromJson(data);
+    map[_i14.UserProfile] = (data, protocol) => _i14.UserProfile.fromJson(data);
+    map[_i15.UserProfileData] = (data, protocol) =>
+        _i15.UserProfileData.fromJson(data);
+    map[_i16.UserProfileImage] = (data, protocol) =>
+        _i16.UserProfileImage.fromJson(data);
+    map[_i17.UserProfileModel] = (data, protocol) =>
+        _i17.UserProfileModel.fromJson(data);
+    map[_i18.ServerSideSessionInfo] = (data, protocol) =>
+        _i18.ServerSideSessionInfo.fromJson(data);
+    map[_i1.getType<_i2.AuthUser?>()] = (data, protocol) =>
+        (data != null ? _i2.AuthUser.fromJson(data) : null);
+    map[_i1.getType<_i3.AuthUserBlockedException?>()] = (data, protocol) =>
+        (data != null ? _i3.AuthUserBlockedException.fromJson(data) : null);
+    map[_i1.getType<_i4.AuthUserModel?>()] = (data, protocol) =>
+        (data != null ? _i4.AuthUserModel.fromJson(data) : null);
+    map[_i1.getType<_i5.AuthUserNotFoundException?>()] = (data, protocol) =>
+        (data != null ? _i5.AuthUserNotFoundException.fromJson(data) : null);
+    map[_i1.getType<_i6.AuthStrategy?>()] = (data, protocol) =>
+        (data != null ? _i6.AuthStrategy.fromJson(data) : null);
+    map[_i1.getType<_i7.AuthSuccess?>()] = (data, protocol) =>
+        (data != null ? _i7.AuthSuccess.fromJson(data) : null);
+    map[_i1.getType<_i8.JwtTokenInfo?>()] = (data, protocol) =>
+        (data != null ? _i8.JwtTokenInfo.fromJson(data) : null);
+    map[_i1.getType<_i9.RefreshTokenExpiredException?>()] = (data, protocol) =>
+        (data != null ? _i9.RefreshTokenExpiredException.fromJson(data) : null);
+    map[_i1.getType<_i10.RefreshTokenInvalidSecretException?>()] =
+        (data, protocol) => (data != null
+        ? _i10.RefreshTokenInvalidSecretException.fromJson(data)
+        : null);
+    map[_i1
+        .getType<_i11.RefreshTokenMalformedException?>()] = (data, protocol) =>
+        (data != null
+        ? _i11.RefreshTokenMalformedException.fromJson(data)
+        : null);
+    map[_i1
+        .getType<_i12.RefreshTokenNotFoundException?>()] = (data, protocol) =>
+        (data != null
+        ? _i12.RefreshTokenNotFoundException.fromJson(data)
+        : null);
+    map[_i1.getType<_i13.TokenPair?>()] = (data, protocol) =>
+        (data != null ? _i13.TokenPair.fromJson(data) : null);
+    map[_i1.getType<_i14.UserProfile?>()] = (data, protocol) =>
+        (data != null ? _i14.UserProfile.fromJson(data) : null);
+    map[_i1.getType<_i15.UserProfileData?>()] = (data, protocol) =>
+        (data != null ? _i15.UserProfileData.fromJson(data) : null);
+    map[_i1.getType<_i16.UserProfileImage?>()] = (data, protocol) =>
+        (data != null ? _i16.UserProfileImage.fromJson(data) : null);
+    map[_i1.getType<_i17.UserProfileModel?>()] = (data, protocol) =>
+        (data != null ? _i17.UserProfileModel.fromJson(data) : null);
+    map[_i1.getType<_i18.ServerSideSessionInfo?>()] = (data, protocol) =>
+        (data != null ? _i18.ServerSideSessionInfo.fromJson(data) : null);
+    map[Set<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toSet();
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -92,127 +172,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.AuthUser) {
-      return _i2.AuthUser.fromJson(data) as T;
-    }
-    if (t == _i3.AuthUserBlockedException) {
-      return _i3.AuthUserBlockedException.fromJson(data) as T;
-    }
-    if (t == _i4.AuthUserModel) {
-      return _i4.AuthUserModel.fromJson(data) as T;
-    }
-    if (t == _i5.AuthUserNotFoundException) {
-      return _i5.AuthUserNotFoundException.fromJson(data) as T;
-    }
-    if (t == _i6.AuthStrategy) {
-      return _i6.AuthStrategy.fromJson(data) as T;
-    }
-    if (t == _i7.AuthSuccess) {
-      return _i7.AuthSuccess.fromJson(data) as T;
-    }
-    if (t == _i8.JwtTokenInfo) {
-      return _i8.JwtTokenInfo.fromJson(data) as T;
-    }
-    if (t == _i9.RefreshTokenExpiredException) {
-      return _i9.RefreshTokenExpiredException.fromJson(data) as T;
-    }
-    if (t == _i10.RefreshTokenInvalidSecretException) {
-      return _i10.RefreshTokenInvalidSecretException.fromJson(data) as T;
-    }
-    if (t == _i11.RefreshTokenMalformedException) {
-      return _i11.RefreshTokenMalformedException.fromJson(data) as T;
-    }
-    if (t == _i12.RefreshTokenNotFoundException) {
-      return _i12.RefreshTokenNotFoundException.fromJson(data) as T;
-    }
-    if (t == _i13.TokenPair) {
-      return _i13.TokenPair.fromJson(data) as T;
-    }
-    if (t == _i14.UserProfile) {
-      return _i14.UserProfile.fromJson(data) as T;
-    }
-    if (t == _i15.UserProfileData) {
-      return _i15.UserProfileData.fromJson(data) as T;
-    }
-    if (t == _i16.UserProfileImage) {
-      return _i16.UserProfileImage.fromJson(data) as T;
-    }
-    if (t == _i17.UserProfileModel) {
-      return _i17.UserProfileModel.fromJson(data) as T;
-    }
-    if (t == _i18.ServerSideSessionInfo) {
-      return _i18.ServerSideSessionInfo.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.AuthUser?>()) {
-      return (data != null ? _i2.AuthUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.AuthUserBlockedException?>()) {
-      return (data != null ? _i3.AuthUserBlockedException.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.AuthUserModel?>()) {
-      return (data != null ? _i4.AuthUserModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.AuthUserNotFoundException?>()) {
-      return (data != null
-              ? _i5.AuthUserNotFoundException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i6.AuthStrategy?>()) {
-      return (data != null ? _i6.AuthStrategy.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.AuthSuccess?>()) {
-      return (data != null ? _i7.AuthSuccess.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.JwtTokenInfo?>()) {
-      return (data != null ? _i8.JwtTokenInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.RefreshTokenExpiredException?>()) {
-      return (data != null
-              ? _i9.RefreshTokenExpiredException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i10.RefreshTokenInvalidSecretException?>()) {
-      return (data != null
-              ? _i10.RefreshTokenInvalidSecretException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i11.RefreshTokenMalformedException?>()) {
-      return (data != null
-              ? _i11.RefreshTokenMalformedException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i12.RefreshTokenNotFoundException?>()) {
-      return (data != null
-              ? _i12.RefreshTokenNotFoundException.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.TokenPair?>()) {
-      return (data != null ? _i13.TokenPair.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.UserProfile?>()) {
-      return (data != null ? _i14.UserProfile.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.UserProfileData?>()) {
-      return (data != null ? _i15.UserProfileData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.UserProfileImage?>()) {
-      return (data != null ? _i16.UserProfileImage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i17.UserProfileModel?>()) {
-      return (data != null ? _i17.UserProfileModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.ServerSideSessionInfo?>()) {
-      return (data != null ? _i18.ServerSideSessionInfo.fromJson(data) : null)
-          as T;
-    }
-    if (t == Set<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     return super.deserialize<T>(data, t);
   }

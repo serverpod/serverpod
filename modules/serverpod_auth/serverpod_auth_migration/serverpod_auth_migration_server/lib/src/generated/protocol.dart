@@ -116,6 +116,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i7.MigratedUser] = (data, protocol) => _i7.MigratedUser.fromJson(data);
+    map[_i1.getType<_i7.MigratedUser?>()] = (data, protocol) =>
+        (data != null ? _i7.MigratedUser.fromJson(data) : null);
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -152,11 +163,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i7.MigratedUser) {
-      return _i7.MigratedUser.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i7.MigratedUser?>()) {
-      return (data != null ? _i7.MigratedUser.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

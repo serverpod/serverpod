@@ -33,6 +33,24 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i5.Greeting] = (data, protocol) => _i5.Greeting.fromJson(data);
+    map[_i1.getType<_i5.Greeting?>()] = (data, protocol) =>
+        (data != null ? _i5.Greeting.fromJson(data) : null);
+    map[_i1.getType<({_i6.ByteData challenge, _i1.UuidValue id})>()] =
+        (data, protocol) => (
+          challenge: protocol.deserialize<_i6.ByteData>(
+            ((data as Map)['n'] as Map)['challenge'],
+          ),
+          id: protocol.deserialize<_i1.UuidValue>(data['n']['id']),
+        );
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -60,20 +78,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i5.Greeting) {
-      return _i5.Greeting.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i5.Greeting?>()) {
-      return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<({_i6.ByteData challenge, _i1.UuidValue id})>()) {
-      return (
-            challenge: deserialize<_i6.ByteData>(
-              ((data as Map)['n'] as Map)['challenge'],
-            ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
-          )
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

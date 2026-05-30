@@ -519,6 +519,67 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i3.AppleAuthInfo] = (data, protocol) =>
+        _i3.AppleAuthInfo.fromJson(data);
+    map[_i4.AuthKey] = (data, protocol) => _i4.AuthKey.fromJson(data);
+    map[_i5.AuthenticationFailReason] = (data, protocol) =>
+        _i5.AuthenticationFailReason.fromJson(data);
+    map[_i6.AuthenticationResponse] = (data, protocol) =>
+        _i6.AuthenticationResponse.fromJson(data);
+    map[_i7.EmailAuth] = (data, protocol) => _i7.EmailAuth.fromJson(data);
+    map[_i8.EmailCreateAccountRequest] = (data, protocol) =>
+        _i8.EmailCreateAccountRequest.fromJson(data);
+    map[_i9.EmailFailedSignIn] = (data, protocol) =>
+        _i9.EmailFailedSignIn.fromJson(data);
+    map[_i10.EmailPasswordReset] = (data, protocol) =>
+        _i10.EmailPasswordReset.fromJson(data);
+    map[_i11.EmailReset] = (data, protocol) => _i11.EmailReset.fromJson(data);
+    map[_i12.GoogleRefreshToken] = (data, protocol) =>
+        _i12.GoogleRefreshToken.fromJson(data);
+    map[_i13.UserImage] = (data, protocol) => _i13.UserImage.fromJson(data);
+    map[_i14.UserInfo] = (data, protocol) => _i14.UserInfo.fromJson(data);
+    map[_i15.UserInfoPublic] = (data, protocol) =>
+        _i15.UserInfoPublic.fromJson(data);
+    map[_i16.UserSettingsConfig] = (data, protocol) =>
+        _i16.UserSettingsConfig.fromJson(data);
+    map[_i1.getType<_i3.AppleAuthInfo?>()] = (data, protocol) =>
+        (data != null ? _i3.AppleAuthInfo.fromJson(data) : null);
+    map[_i1.getType<_i4.AuthKey?>()] = (data, protocol) =>
+        (data != null ? _i4.AuthKey.fromJson(data) : null);
+    map[_i1.getType<_i5.AuthenticationFailReason?>()] = (data, protocol) =>
+        (data != null ? _i5.AuthenticationFailReason.fromJson(data) : null);
+    map[_i1.getType<_i6.AuthenticationResponse?>()] = (data, protocol) =>
+        (data != null ? _i6.AuthenticationResponse.fromJson(data) : null);
+    map[_i1.getType<_i7.EmailAuth?>()] = (data, protocol) =>
+        (data != null ? _i7.EmailAuth.fromJson(data) : null);
+    map[_i1.getType<_i8.EmailCreateAccountRequest?>()] = (data, protocol) =>
+        (data != null ? _i8.EmailCreateAccountRequest.fromJson(data) : null);
+    map[_i1.getType<_i9.EmailFailedSignIn?>()] = (data, protocol) =>
+        (data != null ? _i9.EmailFailedSignIn.fromJson(data) : null);
+    map[_i1.getType<_i10.EmailPasswordReset?>()] = (data, protocol) =>
+        (data != null ? _i10.EmailPasswordReset.fromJson(data) : null);
+    map[_i1.getType<_i11.EmailReset?>()] = (data, protocol) =>
+        (data != null ? _i11.EmailReset.fromJson(data) : null);
+    map[_i1.getType<_i12.GoogleRefreshToken?>()] = (data, protocol) =>
+        (data != null ? _i12.GoogleRefreshToken.fromJson(data) : null);
+    map[_i1.getType<_i13.UserImage?>()] = (data, protocol) =>
+        (data != null ? _i13.UserImage.fromJson(data) : null);
+    map[_i1.getType<_i14.UserInfo?>()] = (data, protocol) =>
+        (data != null ? _i14.UserInfo.fromJson(data) : null);
+    map[_i1.getType<_i15.UserInfoPublic?>()] = (data, protocol) =>
+        (data != null ? _i15.UserInfoPublic.fromJson(data) : null);
+    map[_i1.getType<_i16.UserSettingsConfig?>()] = (data, protocol) =>
+        (data != null ? _i16.UserSettingsConfig.fromJson(data) : null);
+    map[List<String>] = (data, protocol) =>
+        (data as List).map((e) => protocol.deserialize<String>(e)).toList();
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -555,100 +616,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i3.AppleAuthInfo) {
-      return _i3.AppleAuthInfo.fromJson(data) as T;
-    }
-    if (t == _i4.AuthKey) {
-      return _i4.AuthKey.fromJson(data) as T;
-    }
-    if (t == _i5.AuthenticationFailReason) {
-      return _i5.AuthenticationFailReason.fromJson(data) as T;
-    }
-    if (t == _i6.AuthenticationResponse) {
-      return _i6.AuthenticationResponse.fromJson(data) as T;
-    }
-    if (t == _i7.EmailAuth) {
-      return _i7.EmailAuth.fromJson(data) as T;
-    }
-    if (t == _i8.EmailCreateAccountRequest) {
-      return _i8.EmailCreateAccountRequest.fromJson(data) as T;
-    }
-    if (t == _i9.EmailFailedSignIn) {
-      return _i9.EmailFailedSignIn.fromJson(data) as T;
-    }
-    if (t == _i10.EmailPasswordReset) {
-      return _i10.EmailPasswordReset.fromJson(data) as T;
-    }
-    if (t == _i11.EmailReset) {
-      return _i11.EmailReset.fromJson(data) as T;
-    }
-    if (t == _i12.GoogleRefreshToken) {
-      return _i12.GoogleRefreshToken.fromJson(data) as T;
-    }
-    if (t == _i13.UserImage) {
-      return _i13.UserImage.fromJson(data) as T;
-    }
-    if (t == _i14.UserInfo) {
-      return _i14.UserInfo.fromJson(data) as T;
-    }
-    if (t == _i15.UserInfoPublic) {
-      return _i15.UserInfoPublic.fromJson(data) as T;
-    }
-    if (t == _i16.UserSettingsConfig) {
-      return _i16.UserSettingsConfig.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i3.AppleAuthInfo?>()) {
-      return (data != null ? _i3.AppleAuthInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.AuthKey?>()) {
-      return (data != null ? _i4.AuthKey.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i5.AuthenticationFailReason?>()) {
-      return (data != null ? _i5.AuthenticationFailReason.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i6.AuthenticationResponse?>()) {
-      return (data != null ? _i6.AuthenticationResponse.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i7.EmailAuth?>()) {
-      return (data != null ? _i7.EmailAuth.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.EmailCreateAccountRequest?>()) {
-      return (data != null
-              ? _i8.EmailCreateAccountRequest.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.EmailFailedSignIn?>()) {
-      return (data != null ? _i9.EmailFailedSignIn.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.EmailPasswordReset?>()) {
-      return (data != null ? _i10.EmailPasswordReset.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i11.EmailReset?>()) {
-      return (data != null ? _i11.EmailReset.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.GoogleRefreshToken?>()) {
-      return (data != null ? _i12.GoogleRefreshToken.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.UserImage?>()) {
-      return (data != null ? _i13.UserImage.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.UserInfo?>()) {
-      return (data != null ? _i14.UserInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.UserInfoPublic?>()) {
-      return (data != null ? _i15.UserInfoPublic.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.UserSettingsConfig?>()) {
-      return (data != null ? _i16.UserSettingsConfig.fromJson(data) : null)
-          as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i2.Protocol().deserialize<T>(data, t);

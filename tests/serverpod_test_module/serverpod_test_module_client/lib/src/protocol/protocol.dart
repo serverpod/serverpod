@@ -40,6 +40,70 @@ class Protocol extends _i1.SerializationManager {
 
   final Set<_i1.SerializationManager> _hostProtocols = {};
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i2.DynamicOnModule] = (data, protocol) =>
+        _i2.DynamicOnModule.fromJson(data);
+    map[_i3.ModulePolymorphicGrandChild] = (data, protocol) =>
+        _i3.ModulePolymorphicGrandChild.fromJson(data);
+    map[_i4.ModulePolymorphicChild] = (data, protocol) =>
+        _i4.ModulePolymorphicChild.fromJson(data);
+    map[_i5.ModulePolymorphicParent] = (data, protocol) =>
+        _i5.ModulePolymorphicParent.fromJson(data);
+    map[_i6.ModuleClass] = (data, protocol) => _i6.ModuleClass.fromJson(data);
+    map[_i7.MyModuleFeatureModel] = (data, protocol) =>
+        _i7.MyModuleFeatureModel.fromJson(data);
+    map[_i8.ModuleStreamingClass] = (data, protocol) =>
+        _i8.ModuleStreamingClass.fromJson(data);
+    map[_i9.ProjectStreamingClass] = (data, protocol) =>
+        _i9.ProjectStreamingClass.fromJson(data);
+    map[_i1.getType<_i2.DynamicOnModule?>()] = (data, protocol) =>
+        (data != null ? _i2.DynamicOnModule.fromJson(data) : null);
+    map[_i1.getType<_i3.ModulePolymorphicGrandChild?>()] = (data, protocol) =>
+        (data != null ? _i3.ModulePolymorphicGrandChild.fromJson(data) : null);
+    map[_i1.getType<_i4.ModulePolymorphicChild?>()] = (data, protocol) =>
+        (data != null ? _i4.ModulePolymorphicChild.fromJson(data) : null);
+    map[_i1.getType<_i5.ModulePolymorphicParent?>()] = (data, protocol) =>
+        (data != null ? _i5.ModulePolymorphicParent.fromJson(data) : null);
+    map[_i1.getType<_i6.ModuleClass?>()] = (data, protocol) =>
+        (data != null ? _i6.ModuleClass.fromJson(data) : null);
+    map[_i1.getType<_i7.MyModuleFeatureModel?>()] = (data, protocol) =>
+        (data != null ? _i7.MyModuleFeatureModel.fromJson(data) : null);
+    map[_i1.getType<_i8.ModuleStreamingClass?>()] = (data, protocol) =>
+        (data != null ? _i8.ModuleStreamingClass.fromJson(data) : null);
+    map[_i1.getType<_i9.ProjectStreamingClass?>()] = (data, protocol) =>
+        (data != null ? _i9.ProjectStreamingClass.fromJson(data) : null);
+    map[dynamic] = (data, protocol) => deserializeDynamicFieldValue(data) as T;
+    map[_i1.getType<(bool,)?>()] = (data, protocol) => (data == null)
+        ? null
+        : (protocol.deserialize<bool>(((data as Map)['p'] as List)[0]),);
+    map[_i1.getType<(int?, _i10.ModuleStreamingClass?)>()] = (data, protocol) =>
+        (
+          ((data as Map)['p'] as List)[0] == null
+              ? null
+              : protocol.deserialize<int>(data['p'][0]),
+          ((data)['p'] as List)[1] == null
+              ? null
+              : protocol.deserialize<_i10.ModuleStreamingClass>(data['p'][1]),
+        );
+    map[_i1.getType<(bool,)?>()] = (data, protocol) => (data == null)
+        ? null
+        : (protocol.deserialize<bool>(((data as Map)['p'] as List)[0]),);
+    map[_i1.getType<(int?, _i10.ModuleStreamingClass?)>()] = (data, protocol) =>
+        (
+          ((data as Map)['p'] as List)[0] == null
+              ? null
+              : protocol.deserialize<int>(data['p'][0]),
+          ((data)['p'] as List)[1] == null
+              ? null
+              : protocol.deserialize<_i10.ModuleStreamingClass>(data['p'][1]),
+        );
+    return map;
+  }
+
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
@@ -76,96 +140,9 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.DynamicOnModule) {
-      return _i2.DynamicOnModule.fromJson(data) as T;
-    }
-    if (t == _i3.ModulePolymorphicGrandChild) {
-      return _i3.ModulePolymorphicGrandChild.fromJson(data) as T;
-    }
-    if (t == _i4.ModulePolymorphicChild) {
-      return _i4.ModulePolymorphicChild.fromJson(data) as T;
-    }
-    if (t == _i5.ModulePolymorphicParent) {
-      return _i5.ModulePolymorphicParent.fromJson(data) as T;
-    }
-    if (t == _i6.ModuleClass) {
-      return _i6.ModuleClass.fromJson(data) as T;
-    }
-    if (t == _i7.MyModuleFeatureModel) {
-      return _i7.MyModuleFeatureModel.fromJson(data) as T;
-    }
-    if (t == _i8.ModuleStreamingClass) {
-      return _i8.ModuleStreamingClass.fromJson(data) as T;
-    }
-    if (t == _i9.ProjectStreamingClass) {
-      return _i9.ProjectStreamingClass.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i2.DynamicOnModule?>()) {
-      return (data != null ? _i2.DynamicOnModule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i3.ModulePolymorphicGrandChild?>()) {
-      return (data != null
-              ? _i3.ModulePolymorphicGrandChild.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<_i4.ModulePolymorphicChild?>()) {
-      return (data != null ? _i4.ModulePolymorphicChild.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i5.ModulePolymorphicParent?>()) {
-      return (data != null ? _i5.ModulePolymorphicParent.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i6.ModuleClass?>()) {
-      return (data != null ? _i6.ModuleClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.MyModuleFeatureModel?>()) {
-      return (data != null ? _i7.MyModuleFeatureModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i8.ModuleStreamingClass?>()) {
-      return (data != null ? _i8.ModuleStreamingClass.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.ProjectStreamingClass?>()) {
-      return (data != null ? _i9.ProjectStreamingClass.fromJson(data) : null)
-          as T;
-    }
-    if (t == dynamic) {
-      return deserializeDynamicFieldValue(data) as T;
-    }
-    if (t == _i1.getType<(bool,)?>()) {
-      return (data == null)
-          ? null as T
-          : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
-    }
-    if (t == _i1.getType<(int?, _i10.ModuleStreamingClass?)>()) {
-      return (
-            ((data as Map)['p'] as List)[0] == null
-                ? null
-                : deserialize<int>(data['p'][0]),
-            ((data)['p'] as List)[1] == null
-                ? null
-                : deserialize<_i10.ModuleStreamingClass>(data['p'][1]),
-          )
-          as T;
-    }
-    if (t == _i1.getType<(bool,)?>()) {
-      return (data == null)
-          ? null as T
-          : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
-    }
-    if (t == _i1.getType<(int?, _i10.ModuleStreamingClass?)>()) {
-      return (
-            ((data as Map)['p'] as List)[0] == null
-                ? null
-                : deserialize<int>(data['p'][0]),
-            ((data)['p'] as List)[1] == null
-                ? null
-                : deserialize<_i10.ModuleStreamingClass>(data['p'][1]),
-          )
-          as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     return super.deserialize<T>(data, t);
   }

@@ -28,6 +28,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
+  static final Map<Type, dynamic Function(dynamic, Protocol)> _deserializers =
+      _buildDeserializers();
+
+  static Map<Type, dynamic Function(dynamic, Protocol)> _buildDeserializers() {
+    final map = <Type, dynamic Function(dynamic, Protocol)>{};
+    map[_i4.Example] = (data, protocol) => _i4.Example.fromJson(data);
+    map[_i1.getType<_i4.Example?>()] = (data, protocol) =>
+        (data != null ? _i4.Example.fromJson(data) : null);
+    return map;
+  }
+
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
     final className = data['__className__'] as String?;
@@ -55,11 +66,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i4.Example) {
-      return _i4.Example.fromJson(data) as T;
-    }
-    if (t == _i1.getType<_i4.Example?>()) {
-      return (data != null ? _i4.Example.fromJson(data) : null) as T;
+    final fn = _deserializers[t];
+    if (fn != null) {
+      return fn(data, this) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
