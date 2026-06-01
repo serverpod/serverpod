@@ -18,17 +18,18 @@ import 'package:win32/win32.dart';
 /// Only call this on Windows; the underlying `kernel32.dll` bindings (via
 /// `package:win32`) are unavailable on other platforms.
 int? enableWindowsVirtualTerminalInput() {
-  final handle = GetStdHandle(STD_INPUT_HANDLE);
+  final Win32Result(value: handle) = GetStdHandle(STD_INPUT_HANDLE);
   final modePointer = calloc<Uint32>();
   try {
-    if (GetConsoleMode(handle, modePointer) == 0) return null;
+    final Win32Result(value: modeRead) = GetConsoleMode(handle, modePointer);
+    if (!modeRead) return null;
 
     final originalMode = modePointer.value;
-    final result = SetConsoleMode(
+    final Win32Result(value: modeSet) = SetConsoleMode(
       handle,
-      originalMode | ENABLE_VIRTUAL_TERMINAL_INPUT,
+      CONSOLE_MODE(originalMode | ENABLE_VIRTUAL_TERMINAL_INPUT),
     );
-    return result == 0 ? null : originalMode;
+    return modeSet ? originalMode : null;
   } finally {
     calloc.free(modePointer);
   }
@@ -37,5 +38,6 @@ int? enableWindowsVirtualTerminalInput() {
 /// Restores a console input mode previously captured by
 /// [enableWindowsVirtualTerminalInput].
 void restoreWindowsConsoleInputMode(int mode) {
-  SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), mode);
+  final Win32Result(value: handle) = GetStdHandle(STD_INPUT_HANDLE);
+  SetConsoleMode(handle, CONSOLE_MODE(mode));
 }
