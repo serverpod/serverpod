@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 12))
+@Timeout(Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -274,6 +274,14 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
+          );
+        });
+
+        test('has a Dockerfile', () {
+          expect(
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Server Dockerfile does not exist.',
           );
         });
 
@@ -1028,6 +1036,70 @@ void main() async {
           reason: 'Client protocol client file does not exist.',
         );
       },
+    );
+  });
+
+  group('Given a created project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+
+    setUp(() async {
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          projectName,
+          '--no-analytics',
+          '--no-interactive',
+        ],
+        rootPath: rootPath,
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+    });
+
+    test(
+      'when building the server Dockerfile then the image is built successfully',
+      () async {
+        // Temporarily remove the `enableWasmHeaders` parameter from server.dart
+        // because it has not been published yet and the Dockerfile won't have
+        // access to the local override. Once published, we can remove this.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        serverFile.writeAsStringSync(serverSource.replaceAll(wasmHeaders, ''));
+
+        final dockerBuildProcess = await startProcess(
+          'docker',
+          [
+            'build',
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await dockerBuildProcess.kill();
+        });
+
+        expect(
+          await dockerBuildProcess.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
     );
   });
 
