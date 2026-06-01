@@ -12,6 +12,7 @@ environment:
 
 dependencies:
   meta: ^1.15.0
+  path: ^1.8.3
   postgres: ^3.4.0
   serverpod: SERVERPOD_VERSION
   serverpod_database: SERVERPOD_VERSION

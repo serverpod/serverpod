@@ -1,4 +1,3 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
@@ -383,20 +382,14 @@ void main() {
       (sessionBuilder, endpoints) {
         var session = sessionBuilder.build();
 
-        tearDownAll(() async {
-          await SimpleData.db.deleteWhere(
-            session,
-            where: (t) => Constant.bool(true),
-          );
-        });
+        test(
+          'then the data does not carry over (each group has its own database)',
+          () async {
+            final result = await SimpleData.db.find(session);
 
-        test('then the database is not rolled back', () async {
-          final result = await SimpleData.db.find(session);
-
-          expect(result.length, 2);
-          expect(result[0].num, 111);
-          expect(result[1].num, 222);
-        });
+            expect(result.length, 0);
+          },
+        );
       },
       rollbackDatabase: RollbackDatabase.disabled,
       testGroupTagsOverride: [TestTags.concurrencyOneTestTag],

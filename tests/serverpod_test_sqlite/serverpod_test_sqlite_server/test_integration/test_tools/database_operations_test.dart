@@ -360,21 +360,14 @@ void main() {
         'when fetching SimpleData in the next withServerpod',
         (sessionBuilder, endpoints) {
           var session = sessionBuilder.build();
-          tearDownAll(() async {
-            await SimpleData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-            );
-          });
 
           test(
-            'then should not have been rolled back and has to be deleted manually',
+            'then the committed data does not carry over (each group has its '
+            'own database)',
             () async {
               var simpleDatas = await SimpleData.db.find(session);
 
-              expect(simpleDatas, hasLength(2));
-              expect(simpleDatas[0].num, 123);
-              expect(simpleDatas[1].num, 123);
+              expect(simpleDatas, hasLength(0));
             },
           );
         },
@@ -417,18 +410,15 @@ void main() {
         (sessionBuilder, endpoints) {
           var session = sessionBuilder.build();
 
-          tearDownAll(() async {
-            await SimpleData.db.deleteWhere(
-              session,
-              where: (_) => Constant.bool(true),
-            );
-          });
+          test(
+            'then the committed data does not carry over (each group has its '
+            'own database)',
+            () async {
+              var simpleDatas = await SimpleData.db.find(session);
 
-          test('then only committed data should have persisted', () async {
-            var simpleDatas = await SimpleData.db.find(session);
-
-            expect(simpleDatas, hasLength(1));
-          });
+              expect(simpleDatas, hasLength(0));
+            },
+          );
         },
         rollbackDatabase: RollbackDatabase.disabled,
         testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
