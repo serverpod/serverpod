@@ -266,7 +266,23 @@ void main() {
           'compile(changed):[/lib/a.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
+      },
+    );
+
+    test(
+      'when the server hot reloads, '
+      'then the browser is refreshed after the reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        // The browser refresh must follow the reload so the page re-fetches
+        // the newly loaded server code.
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -362,7 +378,7 @@ void main() {
           'compile(changed):[/lib/endpoint.dart, /lib/other.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -391,7 +407,7 @@ void main() {
           'compile(changed):[/generated/user.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -441,7 +457,7 @@ void main() {
           'compile(changed):[/generated/protocol.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -470,7 +486,7 @@ void main() {
           'compile(changed):[/generated/protocol.dart, /generated/user.dart, /lib/endpoint.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -596,7 +612,7 @@ void main() {
         // Old server should have no new calls.
         expect(server.calls, isEmpty);
         // New server should receive the reload.
-        expect(factoryServer.calls, ['reload:/out.dill']);
+        expect(factoryServer.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -825,6 +841,10 @@ void main() {
 
       test('then it creates a new server with the fresh full dill.', () {
         expect(factoryCalls, ['createServer:/out.dill']);
+      });
+
+      test('then it refreshes the browser on the new server.', () {
+        expect(factoryServer.calls, contains('notifyStaticChange'));
       });
     },
   );
@@ -1087,7 +1107,10 @@ void main() {
             'compile(changed):[/lib/helper.dart]',
             'accept',
           ]);
-          expect(classifierServer.calls, ['reload:/out.dill']);
+          expect(classifierServer.calls, [
+            'reload:/out.dill',
+            'notifyStaticChange',
+          ]);
         },
       );
 
@@ -1289,7 +1312,7 @@ class Counter {
         expect(noCompilerGenerateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(noCompilerServer.calls, ['reload:null']);
+        expect(noCompilerServer.calls, ['reload:null', 'notifyStaticChange']);
       },
     );
 
@@ -1315,7 +1338,7 @@ class Counter {
       () async {
         await noCompilerSession.forceReload();
 
-        expect(noCompilerServer.calls, ['reload:null']);
+        expect(noCompilerServer.calls, ['reload:null', 'notifyStaticChange']);
       },
     );
 
@@ -1408,7 +1431,7 @@ class Counter {
       () async {
         await noFactorySession.forceReload();
 
-        expect(noFactoryServer.calls, ['reload:null']);
+        expect(noFactoryServer.calls, ['reload:null', 'notifyStaticChange']);
       },
     );
 

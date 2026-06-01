@@ -187,7 +187,7 @@ class WatchSession {
 
     // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
     if (!hasDartChanges) {
-      await _handleStaticChange();
+      await _notifyBrowserRefresh();
       return;
     }
 
@@ -247,8 +247,9 @@ class WatchSession {
     // Without a compiler, drive a reload through the VM's own kernel
     // service instead of the FES pipeline.
     if (_compiler == null) {
-      await _reloadOrRestart(null);
+      final reloaded = await _reloadOrRestart(null);
       await _reloadFlutter();
+      if (reloaded) await _notifyBrowserRefresh();
       return;
     }
 
@@ -260,30 +261,43 @@ class WatchSession {
       ...generatedDartFiles,
     };
 
-    await _compileAndReload(
+    final reloaded = await _compileAndReload(
       dartFiles: allDartChanges,
       packageConfigChanged: event.packageConfigChanged,
     );
     // Always reload Flutter: flutter/lib-only changes short-circuit
     // the server compile but still need a Flutter refresh.
     await _reloadFlutter();
+    if (reloaded) await _notifyBrowserRefresh();
   }
 
   /// Returns `true` if [path] is inside a generated directory.
   bool _isGenerated(String path) =>
       _generatedDirPaths.any((prefix) => p.isWithin(prefix, path));
 
-  /// Notifies the server of static file changes for browser refresh.
-  Future<void> _handleStaticChange() async {
-    if (_server.isVmServiceConnected) {
-      log.debug('Static files changed, notifying server.');
+  /// Triggers a refresh of any connected browsers by bumping the server's
+  /// static change counter, which the dev auto-refresh script polls. Called
+  /// both for static file changes and after the server reloads new Dart code,
+  /// so server-rendered web pages stay in sync.
+  Future<void> _notifyBrowserRefresh() async {
+    if (!_server.isVmServiceConnected) {
+      log.debug('Server VM service not connected; skipping browser refresh.');
+      return;
+    }
+    try {
       await _server.notifyStaticChange();
       log.info('Browser refresh triggered.');
+    } catch (e) {
+      log.warning('Browser refresh failed: $e');
     }
   }
 
   /// Compiles changed files and hot-reloads or restarts the server.
-  Future<void> _compileAndReload({
+  ///
+  /// Returns `true` if the server is now running the new code, `false` if
+  /// generation, native build hooks, or compilation failed (or there was
+  /// nothing to compile).
+  Future<bool> _compileAndReload({
     required Set<String> dartFiles,
     required bool packageConfigChanged,
     bool forceFullCompile = false,
@@ -307,7 +321,7 @@ class WatchSession {
         case NativeAssetsApplyFailure(:final message):
           log.error('$message Server not reloaded.');
           if (changedPaths.isNotEmpty) _pendingPaths.addAll(changedPaths);
-          return;
+          return false;
         case NativeAssetsApplySuccess(:final restarted):
           if (restarted) {
             compilerRestartedByHooks = true;
@@ -345,25 +359,28 @@ class WatchSession {
       );
     } else {
       // No changes to compile.
-      return;
+      return false;
     }
 
     if (result == null) {
       // Compilation failed - remember which paths need re-invalidation.
       _pendingPaths.addAll(changedPaths);
-      return;
+      return false;
     }
 
     _pendingPaths.clear();
     compiler.accept();
 
-    await _reloadOrRestart(result);
+    return _reloadOrRestart(result);
   }
 
   /// Attempts hot reload; falls back to a server restart if reload fails.
-  Future<void> _reloadOrRestart(CompileResult? result) async {
-    if (await _reload(result?.dillOutput)) return;
-    await _fullCompileAndRestart();
+  ///
+  /// Returns `true` if the server is now running the new code (via a
+  /// successful hot reload or restart), `false` otherwise.
+  Future<bool> _reloadOrRestart(CompileResult? result) async {
+    if (await _reload(result?.dillOutput)) return true;
+    return _fullCompileAndRestart();
   }
 
   /// Resets the compiler, produces a fresh full dill, and restarts the server.
@@ -406,18 +423,20 @@ class WatchSession {
       throw StateError('Session has been disposed.');
     }
     return _chain(() async {
+      final bool reloaded;
       if (_compiler == null) {
         // forceReload doesn't fall through to restart; the file-change
         // path does (via _reloadOrRestart). Different intents.
-        await _reload(null);
+        reloaded = await _reload(null);
       } else {
-        await _compileAndReload(
+        reloaded = await _compileAndReload(
           dartFiles: const {},
           packageConfigChanged: false,
           forceFullCompile: true,
         );
       }
       await _reloadFlutter();
+      if (reloaded) await _notifyBrowserRefresh();
     });
   }
 
@@ -434,6 +453,7 @@ class WatchSession {
     return _chain(() async {
       if (await _fullCompileAndRestart()) {
         await _restartFlutter();
+        await _notifyBrowserRefresh();
       }
     });
   }
