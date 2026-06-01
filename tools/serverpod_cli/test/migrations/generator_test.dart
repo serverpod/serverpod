@@ -14,7 +14,7 @@ void main() {
         'foo..bar/baz\\qux:\'"*?<>|',
       );
 
-      expect(versionName, matches(RegExp(r'^\d{17}-foo_bar_baz_qux_$')));
+      expect(versionName, matches(RegExp(r'^\d{17}-foo_bar_baz_qux$')));
     });
 
     test('when tag has repeated invalid characters, then they collapse', () {
