@@ -3,7 +3,6 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:test/test.dart';
 
-import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -12,7 +11,6 @@ void main() {
 
   withServerpod(
     'Given an unauthenticated session',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       setUp(() {
         utils = _createUtils();
