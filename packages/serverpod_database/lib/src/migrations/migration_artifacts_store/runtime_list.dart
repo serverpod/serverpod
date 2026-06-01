@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:collection/collection.dart';
-
 import '../migration_artifacts.dart';
 
 /// A [MigrationArtifactStore] backed by a fixed list that is used to apply
@@ -42,7 +40,7 @@ class RuntimeListMigrationArtifactStore
   Future<MigrationVersionSql?> readVersionSql(
     String version,
   ) async {
-    return _migrations.firstWhereOrNull((m) => m.version == version);
+    return _findMigration(version);
   }
 
   @override
@@ -54,8 +52,19 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<String?> loadDefinitionModuleName(String version) async {
-    return _migrations
-        .firstWhereOrNull((m) => m.version == version)
-        ?.moduleName;
+    return _findMigration(version)?.moduleName;
+  }
+
+  MigrationVersionSql? _findMigration(String version) {
+    return _migrations.lookup(_migrationProbe(version));
+  }
+
+  static MigrationVersionSql _migrationProbe(String version) {
+    return MigrationVersionSql(
+      version: version,
+      moduleName: '',
+      definitionSql: '',
+      migrationSql: '',
+    );
   }
 }
