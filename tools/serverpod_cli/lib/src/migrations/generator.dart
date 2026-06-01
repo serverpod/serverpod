@@ -475,5 +475,6 @@ class MigrationGenerator {
 String _sanitizeVersionTag(String tag) {
   return tag
       .replaceAll(RegExp(r'[^0-9A-Za-z_-]+'), '_')
+      .replaceAll(RegExp(r'_+'), '_')
       .replaceAll(RegExp(r'^_+|_+$'), '');
 }
