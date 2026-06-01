@@ -19,18 +19,16 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.8'
+          flutter-version: '3.38.4'
 
       - name: Start containers
         working-directory: projectname_server
-        run: docker compose up --quiet-pull --quiet-build --build -d
+        run: docker compose up --quiet-pull --build -d
 
       - name: Install dependencies
-        working-directory: projectname_server
-        run: dart pub get
+        run: flutter pub get
 
       - name: Install Serverpod CLI
-        working-directory: projectname_server
         run: dart install serverpod_cli $VERSION
 
       - name: Run Serverpod generator
