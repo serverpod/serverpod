@@ -187,7 +187,6 @@ class WatchSession {
 
     // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
     if (!hasDartChanges) {
-      log.debug('Static files changed.');
       await _notifyBrowserRefresh();
       return;
     }
