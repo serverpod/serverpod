@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# Runs the serverpod_test_module_server integration tests against an
-# embedded PostgreSQL postmaster (no Docker required).
-
+# Runs the serverpod_auth_test_server integration tests against an embedded PG
+#
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/run_tests_module_integration_embedded"
+    echo "I.e. util/run_tests_auth_integration_embedded"
     exit 1
 fi
 
@@ -15,7 +14,7 @@ export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
 
 REPO_ROOT="$(pwd)"
 
-cd "tests/serverpod_test_module/serverpod_test_module_server"
+cd "tests/serverpod_auth_test/serverpod_auth_test_server"
 
 dart test -t integration --reporter=failures-only
 
