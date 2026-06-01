@@ -1,3 +1,7 @@
+import 'dart:collection';
+
+import 'package:collection/collection.dart';
+
 import '../migration_artifacts.dart';
 
 /// A [MigrationArtifactStore] backed by a fixed list that is used to apply
@@ -6,34 +10,39 @@ class RuntimeListMigrationArtifactStore
     implements MigrationArtifactStoreReader {
   /// Creates a store from the given [migrations] (same [moduleName] for all).
   RuntimeListMigrationArtifactStore(
-    this.migrations, {
+    List<MigrationVersionSql> migrations, {
     required this.moduleName,
-  }) : _byVersion = {for (final m in migrations) m.version: m},
-       assert(
-         migrations.isEmpty ||
-             migrations.every((m) => m.moduleName == moduleName),
-         'All migrations must be from the "$moduleName" module',
-       );
-
-  /// Migrations in ascending version order.
-  final List<MigrationVersionSql> migrations;
+  }) : _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations) {
+    _migrations.addAll(migrations);
+    assert(
+      migrations.isEmpty || migrations.every((m) => m.moduleName == moduleName),
+      'All migrations must be from the "$moduleName" module',
+    );
+  }
 
   /// The module for all [migrations] (and placeholder definitions).
   final String moduleName;
 
-  /// A map of migrations by version.
-  final Map<String, MigrationVersionSql> _byVersion;
+  /// Migrations stored in ascending version order.
+  final SplayTreeSet<MigrationVersionSql> _migrations;
+
+  static int _compareMigrations(
+    MigrationVersionSql a,
+    MigrationVersionSql b,
+  ) {
+    return a.version.compareTo(b.version);
+  }
 
   @override
   Future<List<String>> listVersions() async {
-    return migrations.map((m) => m.version).toList();
+    return _migrations.map((m) => m.version).toList();
   }
 
   @override
   Future<MigrationVersionSql?> readVersionSql(
     String version,
   ) async {
-    return _byVersion[version];
+    return _migrations.firstWhereOrNull((m) => m.version == version);
   }
 
   @override
@@ -45,6 +54,8 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<String?> loadDefinitionModuleName(String version) async {
-    return _byVersion[version]?.moduleName;
+    return _migrations
+        .firstWhereOrNull((m) => m.version == version)
+        ?.moduleName;
   }
 }
