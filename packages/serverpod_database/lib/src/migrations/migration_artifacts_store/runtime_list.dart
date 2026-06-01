@@ -59,6 +59,10 @@ class RuntimeListMigrationArtifactStore
     return _migrations.lookup(_migrationProbe(version));
   }
 
+  /// Creates a minimal probe object for `SplayTreeSet.lookup()`.
+  ///
+  /// The comparator only considers [MigrationVersionSql.version], so the
+  /// remaining fields can be empty placeholders.
   static MigrationVersionSql _migrationProbe(String version) {
     return MigrationVersionSql(
       version: version,
