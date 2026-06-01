@@ -3,7 +3,6 @@ import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
-import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -116,7 +115,6 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 
@@ -369,7 +367,6 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 }
