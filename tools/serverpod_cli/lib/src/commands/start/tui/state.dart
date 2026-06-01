@@ -9,11 +9,12 @@ class ServerWatchState extends TuiState {
   @override
   final logHistory = BoundedQueueList<Object>(maxLogEntries);
 
-  /// Raw stdout/stderr lines for the "Raw server output" tab.
+  /// Raw stdout/stderr lines shown in the raw server logs overlay
+  /// (toggled with the backtick shortcut).
   @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
-  /// Raw lines for the "Flutter output" tab.
+  /// Raw lines for the "Flutter logs" tab.
   final rawFlutterLines = BoundedQueueList<String>(maxRawLines);
 
   /// Currently active tracked operations (keyed by ID).
