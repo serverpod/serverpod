@@ -23,14 +23,12 @@ jobs:
 
       - name: Start containers
         working-directory: projectname_server
-        run: docker compose up --quiet-pull --quiet-build --build -d
+        run: docker compose up --quiet-pull --build -d
 
       - name: Install dependencies
-        working-directory: projectname_server
-        run: dart pub get
+        run: flutter pub get
 
       - name: Install Serverpod CLI
-        working-directory: projectname_server
         run: dart pub global activate serverpod_cli $VERSION
 
       - name: Run Serverpod generator
