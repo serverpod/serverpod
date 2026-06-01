@@ -11,27 +11,10 @@ void main() {
 
     test('when tag contains unsafe characters, then it is sanitized', () {
       final versionName = MigrationGenerator.createVersionName(
-        'foo.bar/baz\\qux:"*?<>|',
+        'foo..bar/baz\\qux:\'"*?<>|',
       );
 
-      expect(versionName, matches(RegExp(r'^\d{17}-[0-9A-Za-z_-]+$')));
-      expect(versionName, contains('foo_bar_baz_qux'));
-
-      for (final invalidCharacter in [
-        '.',
-        '/',
-        '\\',
-        ':',
-        '"',
-        "'",
-        '*',
-        '?',
-        '<',
-        '>',
-        '|',
-      ]) {
-        expect(versionName, isNot(contains(invalidCharacter)));
-      }
+      expect(versionName, matches(RegExp(r'^\d{17}-foo_bar_baz_qux_$')));
     });
   });
 }
