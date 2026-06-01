@@ -485,6 +485,87 @@ void main() async {
     );
   });
 
+  group('Given a connected method stream with a closed output controller,', () {
+    Completer<Uri> callbackUrlFuture;
+    late RelicWebSocket testWebSocket;
+    late OpenMethodStreamCommand openMethodStreamCommand;
+    late Completer<void> webSocketClosed;
+    late Future<void> Function() closeServer;
+    late MethodStreamConnectionDetails streamConnectionDetails;
+    setUp(() async {
+      webSocketClosed = Completer<void>();
+      callbackUrlFuture = Completer<Uri>();
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          testWebSocket = webSocket;
+          webSocket.textEvents.listen(
+            (event) {
+              var message = WebSocketMessage.fromJsonString(
+                event,
+                TestSerializationManager(),
+              );
+              if (message is PingCommand) {
+                webSocket.sendText(PongCommand.buildMessage());
+              } else if (message is OpenMethodStreamCommand) {
+                openMethodStreamCommand = message;
+                webSocket.sendText(
+                  OpenMethodStreamResponse.buildMessage(
+                    connectionId: message.connectionId,
+                    endpoint: message.endpoint,
+                    method: message.method,
+                    responseType: OpenMethodStreamResponseType.success,
+                  ),
+                );
+              }
+            },
+            onDone: () {
+              webSocketClosed.complete();
+            },
+          );
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      var webSocketHost = await callbackUrlFuture.future;
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+      );
+
+      streamConnectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(streamConnectionDetails);
+
+      // The controller has no listener, so the close future never completes.
+      // It is still marked closed synchronously, which is the state under test.
+      unawaited(streamConnectionDetails.outputController.close());
+    });
+
+    tearDown(() async => await closeServer());
+
+    test(
+      'when the server closes the method stream command with error reason, '
+      'then the websocket connection is closed without an exception.',
+      () async {
+        testWebSocket.sendText(
+          CloseMethodStreamCommand.buildMessage(
+            endpoint: openMethodStreamCommand.endpoint,
+            connectionId: openMethodStreamCommand.connectionId,
+            method: openMethodStreamCommand.method,
+            reason: CloseReason.error,
+          ),
+        );
+
+        await expectLater(
+          webSocketClosed.future.timeout(const Duration(seconds: 1)),
+          completes,
+        );
+      },
+    );
+  });
+
   group('Given idle method stream connection', () {
     Completer<Uri> callbackUrlFuture;
     late Future<void> Function() closeServer;
