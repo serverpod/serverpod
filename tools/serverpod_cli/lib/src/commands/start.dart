@@ -1032,10 +1032,6 @@ Future<void> _runTuiBackend({
     initializeLoggerWith(ServerpodCliLogger(tuiWriter));
     tuiWriter.attach(holder);
 
-    // TEMP(#5217 verification): force a backend crash to exercise the
-    // crash-replay path. Remove before committing.
-    throw StateError('Simulated start crash for #5217');
-
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
 
