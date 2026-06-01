@@ -945,14 +945,13 @@ Future<int> _runWithTui({
   final shutdown = _ShutdownSignal(listenForSignals: false);
 
   // Captured on a fatal crash so it can be replayed to the real terminal in
-  // [preExit], after the TUI has released the alternate screen. The TUI routes
-  // logs into an in-memory history that is discarded when we leave the
-  // alternate screen, so a crash would otherwise vanish without ever reaching
-  // the user's scrollback.
+  // [preExit] when the user quits. The crash is also shown inside the TUI, but
+  // that copy lives in an in-memory log history that is discarded once we leave
+  // the alternate screen - so without this capture it would never reach the
+  // user's scrollback. First crash wins.
   ({Object error, StackTrace stackTrace})? fatalCrash;
   void recordFatalCrash(Object error, StackTrace stackTrace) {
     fatalCrash ??= (error: error, stackTrace: stackTrace);
-    shutdown.complete(ExitException.codeError);
   }
 
   // Captured so the renderer tear-down listener can wait for the
@@ -986,6 +985,9 @@ Future<int> _runWithTui({
   Future<void> preExit() async {
     final crash = fatalCrash;
     if (crash == null) return;
+    // Swap the TUI-backed logger (whose output went to the now-gone alternate
+    // screen) for a fresh stdout-backed one, so the replayed crash actually
+    // reaches the terminal.
     await closeLogger();
     initializeLogger();
     printInternalError(crash.error, crash.stackTrace);
@@ -1029,6 +1031,10 @@ Future<void> _runTuiBackend({
     final tuiWriter = TuiLogWriter();
     initializeLoggerWith(ServerpodCliLogger(tuiWriter));
     tuiWriter.attach(holder);
+
+    // TEMP(#5217 verification): force a backend crash to exercise the
+    // crash-replay path. Remove before committing.
+    throw StateError('Simulated start crash for #5217');
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
@@ -1145,9 +1151,12 @@ Future<void> _runTuiBackend({
         await ctx.dispose();
     }
   } catch (e, st) {
-    // Capture the crash and tear the TUI down so it can be replayed to the
-    // terminal in [_runWithTui]; otherwise it dies with the in-memory TUI log
-    // history when we leave the alternate screen.
+    // Surface the crash in the TUI (left open so it stays visible alongside the
+    // preceding logs), and capture it via [onFatalError] so it is also replayed
+    // to the terminal in [_runWithTui] when the user quits - the in-TUI copy is
+    // lost when we leave the alternate screen.
+    holder.state.showSplash = false;
+    log.error('$e', stackTrace: st);
     onFatalError(e, st);
   }
 }
