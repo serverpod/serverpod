@@ -16,5 +16,11 @@ void main() {
 
       expect(versionName, matches(RegExp(r'^\d{17}-foo_bar_baz_qux_$')));
     });
+
+    test('when tag has repeated invalid characters, then they collapse', () {
+      final versionName = MigrationGenerator.createVersionName('foo..bar');
+
+      expect(versionName, matches(RegExp(r'^\d{17}-foo_bar$')));
+    });
   });
 }
