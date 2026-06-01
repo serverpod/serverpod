@@ -34,7 +34,10 @@ class MigrationGenerator {
     var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
     if (tag != null) {
-      versionName += '-$tag';
+      var sanitizedTag = _sanitizeVersionTag(tag);
+      if (sanitizedTag.isNotEmpty) {
+        versionName += '-$sanitizedTag';
+      }
     }
     return versionName;
   }
@@ -467,4 +470,8 @@ class MigrationGenerator {
       ),
     );
   }
+}
+
+String _sanitizeVersionTag(String tag) {
+  return tag.replaceAll(RegExp(r'[^0-9A-Za-z_-]'), '_');
 }
