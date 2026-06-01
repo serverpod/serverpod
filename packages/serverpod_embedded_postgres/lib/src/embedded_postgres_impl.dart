@@ -148,6 +148,41 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
 
     ensureSecureDirectorySync(runDir.path);
 
+    // Serialize launches for this data directory: one caller initializes the
+    // cluster and starts the postmaster; the rest wait, then attach below.
+    // A held lock is heartbeated so a slow cold launch (binary download +
+    // initdb) is not mistaken for a leak; a dead holder is reclaimed by PID.
+    final launchLock = await InterProcessLock.acquire(
+      p.join(dataRoot.path, 'postgres.launch.lock'),
+      staleWhen: const StaleLockPolicy.processLiveness(
+        staleAfter: Duration(minutes: 2),
+      ),
+      heartbeatInterval: const Duration(seconds: 30),
+    );
+    try {
+      return await _startLocked(
+        options: options,
+        pgDataDir: pgDataDir,
+        dataRoot: dataRoot,
+        runDir: runDir,
+        pidFile: pidFile,
+        logFile: logFile,
+        pwFile: pwFile,
+      );
+    } finally {
+      await launchLock.release();
+    }
+  }
+
+  static Future<EmbeddedPostgres> _startLocked({
+    required EmbeddedPostgresOptions options,
+    required Directory pgDataDir,
+    required Directory dataRoot,
+    required Directory runDir,
+    required File pidFile,
+    required File logFile,
+    required File pwFile,
+  }) async {
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
     var artifact = ZonkyArtifact.forCurrentPlatform(version: options.version);
     Directory installDir;
@@ -177,7 +212,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
         password: resolvedPassword,
       );
     }
-    cluster.reconcilePostgresConf(transport: resolvedTransport);
+    cluster.reconcilePostgresConf(
+      transport: resolvedTransport,
+      maxConnections: options.maxConnections,
+    );
 
     if (options.repairStaleLocks) {
       await repairStaleEmbeddedPostgresLocks(
@@ -210,7 +248,10 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       detach: options.detach,
       onResolveTransport: (newTransport) {
         resolvedTransport = newTransport;
-        cluster.reconcilePostgresConf(transport: newTransport);
+        cluster.reconcilePostgresConf(
+          transport: newTransport,
+          maxConnections: options.maxConnections,
+        );
       },
     );
 
