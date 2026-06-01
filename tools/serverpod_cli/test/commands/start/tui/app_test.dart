@@ -79,12 +79,38 @@ void main() {
       expect(state.expandStackTraces, isFalse);
     });
 
-    test('when e is pressed on a raw output tab then traces do not toggle', () async {
-      state.selectedTab = 2;
+    test(
+      'when e is pressed on the Flutter logs tab then traces do not toggle',
+      () async {
+        state.showFlutterOutput = true;
+        state.selectedTab = 1;
 
-      await _sendKey(tester, LogicalKey.keyE);
+        await _sendKey(tester, LogicalKey.keyE);
 
-      expect(state.expandStackTraces, isFalse);
+        expect(state.expandStackTraces, isFalse);
+      },
+    );
+
+    test('when backtick is pressed then the raw server logs open', () async {
+      expect(state.showRawServerLogs, isFalse);
+
+      await _sendKey(tester, LogicalKey.backquote);
+      expect(state.showRawServerLogs, isTrue);
+
+      await _sendKey(tester, LogicalKey.backquote);
+      expect(state.showRawServerLogs, isFalse);
+    });
+  });
+
+  group('Given the raw server logs overlay is open', () {
+    setUp(() {
+      state.showRawServerLogs = true;
+    });
+
+    test('when Esc is pressed then it closes', () async {
+      await _sendKey(tester, LogicalKey.escape);
+
+      expect(state.showRawServerLogs, isFalse);
     });
   });
 

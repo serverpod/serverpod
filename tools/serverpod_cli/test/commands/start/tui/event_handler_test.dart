@@ -89,7 +89,10 @@ void main() {
         'registered but it is not found in the project files.',
       );
       expect(entry.stackTrace, isNotNull);
-      expect(entry.stackTrace.toString(), '#0      fake (file:///fake.dart:1:1)');
+      expect(
+        entry.stackTrace.toString(),
+        '#0      fake (file:///fake.dart:1:1)',
+      );
     });
   });
 

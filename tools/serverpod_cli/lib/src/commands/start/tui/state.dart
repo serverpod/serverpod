@@ -23,8 +23,7 @@ class ServerWatchState extends TuiState {
   /// Currently selected tab index.
   ///
   /// - 0 = structured server logs
-  /// - 1 = Flutter logs (narrow layout only)
-  /// - 2 = raw server logs
+  /// - 1 = Flutter logs (only when [showFlutterOutput])
   int selectedTab = 0;
 
   /// Latest measured content width from the main log area.
@@ -67,6 +66,12 @@ class ServerWatchState extends TuiState {
   /// When false, an error entry that carries a trace shows a compact
   /// affordance instead; toggled with `e` on the structured log tab.
   bool expandStackTraces = false;
+
+  /// Whether the raw server logs overlay (the "dev console") is visible.
+  ///
+  /// Raw server stdout/stderr is hidden from the default tabs and reached
+  /// on demand via the backtick (`` ` ``) shortcut.
+  bool showRawServerLogs = false;
 
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;

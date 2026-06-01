@@ -67,8 +67,8 @@ class MainScreen extends StatelessComponent {
       [
         ('Tab / →', 'Next tab'),
         ('Shift+Tab / ←', 'Previous tab'),
-        ('1', 'Log Messages'),
-        ('2', 'Raw server output'),
+        ('1', 'Server logs'),
+        ('2', 'Flutter logs'),
       ],
     ),
     (
@@ -79,6 +79,7 @@ class MainScreen extends StatelessComponent {
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
         ('e', 'Expand / collapse stack traces'),
+        ('`', 'Show raw server logs'),
         ('L', 'Clear logs'),
         ('Q', 'Quit'),
       ],
@@ -96,69 +97,71 @@ class MainScreen extends StatelessComponent {
           children: [
             Expanded(
               child: BorderedBox(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    state.contentWidth = constraints.maxWidth;
-                    final showSideBySide = state.useSideBySideLayout;
+                child: state.showRawServerLogs
+                    ? _buildRawServerLogsPanel(st)
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          state.contentWidth = constraints.maxWidth;
+                          final showSideBySide = state.useSideBySideLayout;
 
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 1),
-                          child: _buildTabBar(st, showSideBySide),
-                        ),
-                        if (!showSideBySide) ?_buildFlutterStatusLine(st),
-                        Expanded(
-                          child: !showSideBySide
-                              ? _buildTabContent(state.selectedTab)
-                              : Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 1),
+                                child: _buildTabBar(st, showSideBySide),
+                              ),
+                              if (!showSideBySide) ?_buildFlutterStatusLine(st),
+                              Expanded(
+                                child: !showSideBySide
+                                    ? _buildTabContent(state.selectedTab)
+                                    : Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
                                         children: [
                                           Expanded(
-                                            child: _buildTabContent(
-                                              state.selectedTab,
+                                            child: Column(
+                                              children: [
+                                                Expanded(
+                                                  child: _buildTabContent(
+                                                    state.selectedTab,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          VerticalDivider(
+                                            color: st.subtleDivider,
+                                            width: 1,
+                                            thickness: 1,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                ?_buildFlutterStatusLine(
+                                                  st,
+                                                  withTitle: false,
+                                                ),
+                                                Expanded(
+                                                  child: _buildTabContent(1),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    VerticalDivider(
-                                      color: st.subtleDivider,
-                                      width: 1,
-                                      thickness: 1,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        children: [
-                                          ?_buildFlutterStatusLine(
-                                            st,
-                                            withTitle: false,
-                                          ),
-                                          Expanded(
-                                            child: _buildTabContent(1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
+                              ),
 
-                        if (state.activeOperations.isNotEmpty)
-                          ...state.activeOperations.values.map(
-                            (op) => TrackedOperationWidget(
-                              key: ValueKey(op.id),
-                              operation: op,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
+                              if (state.activeOperations.isNotEmpty)
+                                ...state.activeOperations.values.map(
+                                  (op) => TrackedOperationWidget(
+                                    key: ValueKey(op.id),
+                                    operation: op,
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
               ),
             ),
             _buildButtonBar(),
@@ -220,7 +223,6 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabBar(ServerpodThemeData st, bool sideBySide) {
     const serverLogs = 'Server logs';
-    const rawServerLogs = 'Raw server logs';
     const flutterLogs = 'Flutter logs';
 
     return !sideBySide
@@ -228,7 +230,6 @@ class MainScreen extends StatelessComponent {
             labels: [
               serverLogs,
               if (state.showFlutterOutput) flutterLogs,
-              rawServerLogs,
             ],
             selectedTab: state.selectedTab,
             onTabChanged: onTabChanged,
@@ -237,9 +238,9 @@ class MainScreen extends StatelessComponent {
             children: [
               Expanded(
                 child: TabBar(
-                  labels: const [serverLogs, rawServerLogs],
-                  selectedTab: state.selectedTab == 2 ? 1 : 0,
-                  onTabChanged: (index) => onTabChanged(index == 0 ? 0 : 2),
+                  labels: const [serverLogs],
+                  selectedTab: 0,
+                  onTabChanged: (_) {},
                 ),
               ),
               Expanded(
@@ -259,9 +260,39 @@ class MainScreen extends StatelessComponent {
         state.rawFlutterLines,
         flutterRawScrollController,
       ),
-      2 => _buildRawOutputView(state.rawLines, rawScrollController),
       _ => _buildStructuredLogView(),
     };
+  }
+
+  /// The raw server logs "dev console", shown as a full-area overlay when
+  /// toggled via the backtick (`` ` ``) shortcut.
+  Component _buildRawServerLogsPanel(ServerpodThemeData st) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 1),
+          child: Row(
+            children: [
+              Text(
+                'Raw server logs',
+                style: TextStyle(
+                  color: st.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                '  press ` or Esc to close',
+                style: TextStyle(fontWeight: FontWeight.dim),
+              ),
+            ],
+          ),
+        ),
+        Divider(color: st.subtleDivider),
+        Expanded(
+          child: _buildRawOutputView(state.rawLines, rawScrollController),
+        ),
+      ],
+    );
   }
 
   Component _buildStructuredLogView() {

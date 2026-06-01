@@ -146,19 +146,17 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   void _normalizeSelectedTab() {
     final state = component.holder.state;
-    if (state.useSideBySideLayout && state.selectedTab == 1) {
+    if (state.selectedTab == 1 &&
+        (state.useSideBySideLayout || !state.showFlutterOutput)) {
       state.selectedTab = 0;
     }
   }
 
   void _cycleTab(int delta) {
     final state = component.holder.state;
-    if (state.useSideBySideLayout) {
-      state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-    } else {
-      final tabCount = state.showFlutterOutput ? 3 : 2;
-      state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
-    }
+    if (state.useSideBySideLayout) return;
+    final tabCount = state.showFlutterOutput ? 2 : 1;
+    state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
     _rebuild();
   }
 
@@ -227,9 +225,22 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      _handleScrollKey(rawScrollController, event);
+      return true;
+    }
+
     final sideBySide = state.useSideBySideLayout;
 
-    // Tab cycling. In side-by-side mode, only server tabs are selectable.
     if (event.matches(LogicalKey.tab, shift: false) ||
         event.logicalKey == LogicalKey.arrowRight) {
       _cycleTab(1);
@@ -245,30 +256,29 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit2) {
-      state.selectedTab = sideBySide ? 2 : 1;
-      _rebuild();
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.digit3 &&
+    if (event.logicalKey == LogicalKey.digit2 &&
         !sideBySide &&
         state.showFlutterOutput) {
-      state.selectedTab = 2;
+      state.selectedTab = 1;
       _rebuild();
       return true;
     }
 
-    // Expand / collapse inline stack traces on the structured log tab.
     if (event.logicalKey == LogicalKey.keyE && state.selectedTab == 0) {
       state.expandStackTraces = !state.expandStackTraces;
       _rebuild();
       return true;
     }
 
+    if (event.logicalKey == LogicalKey.backquote) {
+      state.showRawServerLogs = true;
+      _rebuild();
+      return true;
+    }
+
     final c = switch (state.selectedTab) {
-      0 => logScrollController,
       1 => flutterRawScrollController,
-      _ => rawScrollController,
+      _ => logScrollController,
     };
     return _handleScrollKey(c, event);
   }
