@@ -47,6 +47,8 @@ class MigrationGenerator {
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
   /// warnings.
+  /// If [empty] is true, the migration will be created even if there are no
+  /// database changes.
   /// If [write] is false, the migration will not be written to disk.
   ///
   /// A [precomputedVersion] can be provided to skip the version name creation.
@@ -62,6 +64,7 @@ class MigrationGenerator {
   Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
     String? precomputedVersion,
+    bool empty = false,
     required bool force,
     required GeneratorConfig config,
     MigrationGenerationContext? context,
@@ -115,7 +118,7 @@ class MigrationGenerator {
       throw const MigrationAbortedException();
     }
 
-    if (migration.isEmpty) {
+    if (migration.isEmpty && !empty) {
       return null;
     }
 
