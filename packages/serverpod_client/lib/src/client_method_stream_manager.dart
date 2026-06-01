@@ -385,7 +385,8 @@ final class ClientMethodStreamManager {
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
 
-    if (reason == CloseReason.error) {
+    if (reason == CloseReason.error &&
+        !inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(
         const ConnectionClosedException(),
       );
