@@ -11,18 +11,11 @@ class RuntimeListMigrationArtifactStore
     List<MigrationVersionSql> migrations, {
     required String moduleName,
   }) {
-    final byVersion = _buildVersionMap(migrations);
-    final orderedMigrations = SplayTreeSet<MigrationVersionSql>(
-      _compareMigrations,
-    )..addAll(byVersion.values);
-    assert(
-      byVersion.values.every((m) => m.moduleName == moduleName),
-      'All migrations must be from the "$moduleName" module',
-    );
+    final data = _buildMigrationData(migrations, moduleName);
     return RuntimeListMigrationArtifactStore._(
       moduleName,
-      orderedMigrations,
-      byVersion,
+      data.migrations,
+      data.byVersion,
     );
   }
 
@@ -48,19 +41,33 @@ class RuntimeListMigrationArtifactStore
     return a.version.compareTo(b.version);
   }
 
-  static Map<String, MigrationVersionSql> _buildVersionMap(
+  static ({
+    Map<String, MigrationVersionSql> byVersion,
+    SplayTreeSet<MigrationVersionSql> migrations,
+  })
+  _buildMigrationData(
     List<MigrationVersionSql> migrations,
+    String moduleName,
   ) {
     final byVersion = <String, MigrationVersionSql>{};
+    final orderedMigrations = SplayTreeSet<MigrationVersionSql>(
+      _compareMigrations,
+    );
     for (final migration in migrations) {
+      if (migration.moduleName != moduleName) {
+        throw ArgumentError(
+          'All migrations must be from the "$moduleName" module',
+        );
+      }
       if (byVersion.containsKey(migration.version)) {
         throw ArgumentError(
           'Duplicate migration version: ${migration.version}',
         );
       }
       byVersion[migration.version] = migration;
+      orderedMigrations.add(migration);
     }
-    return byVersion;
+    return (byVersion: byVersion, migrations: orderedMigrations);
   }
 
   @override
