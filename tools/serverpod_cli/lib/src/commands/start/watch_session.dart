@@ -107,6 +107,12 @@ class WatchSession {
   final FlutterProcess? Function() _flutterProcessProvider;
   FlutterProcess? get _flutterProcess => _flutterProcessProvider();
 
+  /// Relaunches the Flutter app (kills the running `flutter run` process and
+  /// starts a fresh one). Supplied by the orchestrator, which owns the spawn
+  /// closure; `null` when this session has no Flutter app to restart (e.g.
+  /// `--no-flutter`, or no Flutter package in the project).
+  final Future<void> Function()? _flutterAppRestartAction;
+
   final Completer<int> _done = Completer<int>();
 
   /// Dart file paths from prior compile cycles that were rejected.
@@ -144,6 +150,7 @@ class WatchSession {
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
     FlutterProcess? Function()? flutterProcessProvider,
+    Future<void> Function()? flutterAppRestartAction,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -152,7 +159,8 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
-       _flutterProcessProvider = flutterProcessProvider ?? (() => null) {
+       _flutterProcessProvider = flutterProcessProvider ?? (() => null),
+       _flutterAppRestartAction = flutterAppRestartAction {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -442,7 +450,9 @@ class WatchSession {
 
   /// Forces a full server process restart (clears singletons, pools, and
   /// caches that survive a hot reload). More expensive than [forceReload];
-  /// recompiles from scratch.
+  /// recompiles from scratch. Hot-restarts the Flutter app afterwards so it
+  /// reconnects to the fresh server. To fully relaunch the Flutter process
+  /// (e.g. to pick up new dependencies), use [restartFlutterApp].
   Future<void> forceRestart() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
@@ -455,6 +465,28 @@ class WatchSession {
         await _restartFlutter();
         await _notifyBrowserRefresh();
       }
+    });
+  }
+
+  /// Fully restarts the Flutter app: kills the running `flutter run` process
+  /// and launches a fresh one. Unlike the Flutter hot restart bundled into
+  /// [forceRestart], this only drives the Flutter process and is independent
+  /// of the server's compiler, so it works in both watch and non-watch mode.
+  ///
+  /// No-op when the session has no Flutter app to restart. Serialized behind
+  /// any in-flight reload, restart, or migration via [_chain]. Throws a
+  /// [StateError] if the session has been disposed.
+  Future<void> restartFlutterApp() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    final action = _flutterAppRestartAction;
+    if (action == null) return Future.value();
+    return _chain(() async {
+      // The session may have been disposed while this call was queued;
+      // don't respawn a Flutter process we'd immediately leak.
+      if (_state == SessionState.disposed) return;
+      await action();
     });
   }
 

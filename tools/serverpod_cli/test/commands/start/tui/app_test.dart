@@ -17,6 +17,15 @@ Future<void> _sendKey(NoctermTester tester, LogicalKey key) {
   return tester.sendKeyEvent(KeyboardEvent(logicalKey: key));
 }
 
+Future<void> _sendCtrlR(NoctermTester tester) {
+  return tester.sendKeyEvent(
+    const KeyboardEvent(
+      logicalKey: LogicalKey.keyR,
+      modifiers: ModifierKeys(ctrl: true),
+    ),
+  );
+}
+
 void main() {
   late NoctermTester tester;
   late ServerWatchState state;
@@ -128,6 +137,58 @@ void main() {
 
       expect(state.showRawServerLogs, isFalse);
     });
+  });
+
+  group('Given a running TUI start app with a Flutter app running', () {
+    late int restartCalls;
+
+    setUp(() {
+      restartCalls = 0;
+      holder.onRestartFlutterApp = () => restartCalls++;
+      state.showFlutterOutput = true;
+    });
+
+    test(
+      'when Ctrl+R is pressed then the Flutter app restart is invoked',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(restartCalls, 1);
+      },
+    );
+
+    test(
+      'when Ctrl+R is pressed then it does not fall through to hot reload',
+      () async {
+        var reloadCalls = 0;
+        holder.onHotReload = () => reloadCalls++;
+        state.serverReady = true;
+        state.showSplash = false;
+
+        await _sendCtrlR(tester);
+
+        expect(reloadCalls, 0);
+      },
+    );
+  });
+
+  group('Given a running TUI start app with no Flutter app', () {
+    late int restartCalls;
+
+    setUp(() {
+      restartCalls = 0;
+      holder.onRestartFlutterApp = () => restartCalls++;
+      // showFlutterOutput defaults to false.
+    });
+
+    test(
+      'when Ctrl+R is pressed then the Flutter app restart is not invoked',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(restartCalls, 0);
+      },
+    );
   });
 
   group('Given a running TUI start app with the help overlay open', () {
