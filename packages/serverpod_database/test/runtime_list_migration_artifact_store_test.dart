@@ -69,7 +69,7 @@ void main() {
   );
 
   test(
-    'Given duplicate runtime migration versions, when creating the store, then it fails fast',
+    'Given duplicate runtime migration versions when creating the store then it throws ArgumentError',
     () {
       expect(
         () => RuntimeListMigrationArtifactStore(

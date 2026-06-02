@@ -7,17 +7,30 @@ import '../migration_artifacts.dart';
 class RuntimeListMigrationArtifactStore
     implements MigrationArtifactStoreReader {
   /// Creates a store from the given [migrations] (same [moduleName] for all).
-  RuntimeListMigrationArtifactStore(
+  factory RuntimeListMigrationArtifactStore(
     List<MigrationVersionSql> migrations, {
-    required this.moduleName,
-  }) : _byVersion = _buildVersionMap(migrations),
-       _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations) {
-    _migrations.addAll(migrations);
+    required String moduleName,
+  }) {
+    final byVersion = _buildVersionMap(migrations);
+    final orderedMigrations = SplayTreeSet<MigrationVersionSql>(
+      _compareMigrations,
+    )..addAll(byVersion.values);
     assert(
-      migrations.isEmpty || migrations.every((m) => m.moduleName == moduleName),
+      byVersion.values.every((m) => m.moduleName == moduleName),
       'All migrations must be from the "$moduleName" module',
     );
+    return RuntimeListMigrationArtifactStore._(
+      moduleName,
+      orderedMigrations,
+      byVersion,
+    );
   }
+
+  RuntimeListMigrationArtifactStore._(
+    this.moduleName,
+    this._migrations,
+    this._byVersion,
+  );
 
   /// The module for all [migrations] (and placeholder definitions).
   final String moduleName;
