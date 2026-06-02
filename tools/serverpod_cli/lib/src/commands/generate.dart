@@ -155,20 +155,50 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   }
 }
 
-/// One-shot code generation in an isolate-friendly function.
-Future<bool> performOneShotGenerate({
+/// Generates code if it is stale, returning whether it was already [upToDate]
+/// and, when generation ran, whether it reported [success].
+///
+/// [createAnalyzers] must return an *unprimed* analyzer (e.g.
+/// [Analyzers.create]); the single full prime happens inside [analyzeAndGenerate].
+///
+/// When [keepPrimedWhenFresh] is `false` (one-shot generate), a fresh project
+/// returns before the analyzer is created, skipping the spin-up entirely. When
+/// `true` (the watch loops), the analyzer is always created and primed so the
+/// incremental loop has full context, even when there is nothing to generate.
+Future<({bool upToDate, bool success})> generateIfStale({
   required GeneratorConfig config,
+  required Future<Analyzers> Function() createAnalyzers,
+  bool keepPrimedWhenFresh = false,
 }) async {
-  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
+  if (!keepPrimedWhenFresh && await isGenerationUpToDate(config, allSources)) {
+    return (upToDate: true, success: true);
+  }
+
+  final analyzers = await createAnalyzers();
+  // skipStalenessCheck stays false: update(allSources) is the single full prime,
+  // then performGenerate(affectedPaths: null) reuses it for a cheap generate.
+  // On a fresh project the prime still runs before the staleness check skips
+  // generation, leaving the analyzer ready for the watch loop.
   final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources,
-    // Always run generation to prevent bad output from the watch command to be
-    // persisted, since the generation stamp will be greater than source files.
-    skipStalenessCheck: true,
   );
+  return (upToDate: false, success: result.success);
+}
+
+/// One-shot code generation in an isolate-friendly function.
+Future<bool> performOneShotGenerate({
+  required GeneratorConfig config,
+}) async {
+  final result = await generateIfStale(
+    config: config,
+    createAnalyzers: () => Analyzers.create(config),
+  );
+  if (result.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+  }
   return result.success;
 }
 
@@ -206,10 +236,16 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     return true;
   });
-  if (!needsGenerate) return (success: true, generatedFiles: <String>{});
-  if (!skipStalenessCheck &&
-      await isGenerationUpToDate(config, affectedPaths)) {
-    log.debug('All affected files are older than generation stamp, skipping.');
+  if (skipStalenessCheck) {
+    // Watcher-driven incremental run: the changed files are known, so skip only
+    // when none of them affect generation.
+    if (!needsGenerate) return (success: true, generatedFiles: <String>{});
+  } else if (await isGenerationUpToDate(config, affectedPaths)) {
+    // Full run: the stamp is the source of truth. When it is up to date there
+    // is nothing to do; otherwise fall through and regenerate even if no single
+    // source "needs" it, so deleted sources are cleaned up, a CLI upgrade is
+    // applied, and the stamp is refreshed (avoiding re-analysis every run).
+    log.debug('Generated code is up to date, skipping.');
     return (success: true, generatedFiles: <String>{});
   }
   late final GenerateResult result;
@@ -232,14 +268,19 @@ Future<GenerateResult> analyzeAndGenerate({
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
 }) async {
+  // keepPrimedWhenFresh: the incremental loop only updates changed files, so the
+  // analyzer must be primed up front even when nothing needs regenerating.
+  // In-process is fine here; only start's TUI needs the isolate offload.
   final analyzers = await Analyzers.create(config);
-  final allSources = await enumerateSourceFiles(config);
-  final initialResult = await analyzeAndGenerate(
+  final initialResult = await generateIfStale(
     config: config,
-    analyzers: analyzers,
-    affectedPaths: allSources,
+    createAnalyzers: () async => analyzers,
+    keepPrimedWhenFresh: true,
   );
-  if (!initialResult.success) return false;
+  if (!initialResult.success) {
+    await analyzers.close();
+    return false;
+  }
 
   log.debug(initialCodeGenerationComplete);
 

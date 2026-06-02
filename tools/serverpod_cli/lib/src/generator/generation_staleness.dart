@@ -16,9 +16,24 @@ String _stampFilePath(GeneratorConfig config) => p.joinAll([
   'generation.stamp',
 ]);
 
-/// Returns `true` if all [paths] are older than the generation stamp,
-/// the stamp's CLI version matches the running version, and all previously
-/// generated output files still exist on disk.
+/// Deterministic fingerprint of the source-file *set*.
+///
+/// Used to detect added or removed source files, which the mtime checks alone
+/// cannot: a deleted file has no mtime left to compare against the stamp.
+/// 32-bit FNV-1a over the sorted paths - stable across runs, unlike
+/// [Object.hashCode].
+String _sourceSetFingerprint(Set<String> paths) {
+  final sorted = paths.toList()..sort();
+  var hash = 0x811c9dc5;
+  for (final unit in sorted.join('\n').codeUnits) {
+    hash = ((hash ^ unit) * 0x01000193) & 0xFFFFFFFF;
+  }
+  return hash.toRadixString(16);
+}
+
+/// Returns `true` if all [paths] are older than the generation stamp, the
+/// stamp's CLI version matches the running version, the source-file set is
+/// unchanged, and all previously generated output files still exist on disk.
 Future<bool> isGenerationUpToDate(
   GeneratorConfig config,
   Set<String> paths,
@@ -29,14 +44,18 @@ Future<bool> isGenerationUpToDate(
   final content = (await stampFile.readAsString()).trim();
   if (content.isEmpty) return false;
 
-  // First line is the CLI version.
+  // Line 0: CLI version. Line 1: timestamp. Line 2: source-set fingerprint.
+  // Remaining lines: generated file paths.
   final lines = content.split('\n');
+  if (lines.length < 3) return false;
   if (lines.first.trim() != templateVersion) return false;
 
-  // Remaining lines (after version and timestamp) are generated file paths.
-  // If any are missing, generation must run.
-  if (lines.length > 2) {
-    final generatedFiles = lines.skip(2).where((l) => l.isNotEmpty);
+  // A fingerprint mismatch means a source file was added or removed.
+  if (lines[2].trim() != _sourceSetFingerprint(paths)) return false;
+
+  // If any previously generated file is missing, generation must run.
+  if (lines.length > 3) {
+    final generatedFiles = lines.skip(3).where((l) => l.isNotEmpty);
     for (final filePath in generatedFiles) {
       if (!await File(filePath).exists()) return false;
     }
@@ -74,6 +93,7 @@ Future<bool> isGenerationUpToDate(
 /// ```
 /// <cli-version>
 /// <iso8601-timestamp>
+/// <source-set-fingerprint>
 /// <generated-file-path-1>
 /// <generated-file-path-2>
 /// ...
@@ -82,11 +102,13 @@ Future<void> writeGenerationStamp(
   GeneratorConfig config, {
   required Set<String> generatedFiles,
 }) async {
+  final fingerprint = _sourceSetFingerprint(await enumerateSourceFiles(config));
   final file = File(_stampFilePath(config));
   await file.create(recursive: true);
   final buf = StringBuffer()
     ..writeln(templateVersion)
-    ..writeln(DateTime.now().toIso8601String());
+    ..writeln(DateTime.now().toIso8601String())
+    ..writeln(fingerprint);
   for (final path in generatedFiles) {
     buf.writeln(path);
   }
@@ -100,8 +122,8 @@ Set<String> readGenerationStamp(GeneratorConfig config) {
   try {
     final stampFile = File(_stampFilePath(config));
     final lines = stampFile.readAsLinesSync();
-    // First line is CLI version, second is timestamp, rest are file paths.
-    return lines.skip(2).where((l) => l.isNotEmpty).toSet();
+    // Lines 0-2 are version, timestamp, and fingerprint; the rest are paths.
+    return lines.skip(3).where((l) => l.isNotEmpty).toSet();
   } catch (e) {
     return {};
   }
