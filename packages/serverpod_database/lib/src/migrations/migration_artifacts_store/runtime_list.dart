@@ -10,7 +10,7 @@ class RuntimeListMigrationArtifactStore
   RuntimeListMigrationArtifactStore(
     List<MigrationVersionSql> migrations, {
     required this.moduleName,
-  }) : migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations)
+  }) : _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations)
          ..addAll(migrations),
        _byVersion = {
          for (final migration in migrations) migration.version: migration,
@@ -25,7 +25,7 @@ class RuntimeListMigrationArtifactStore
   final String moduleName;
 
   /// Migrations stored in ascending version order.
-  final SplayTreeSet<MigrationVersionSql> migrations;
+  final SplayTreeSet<MigrationVersionSql> _migrations;
 
   /// A map of migrations by version.
   final Map<String, MigrationVersionSql> _byVersion;
@@ -39,7 +39,7 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<List<String>> listVersions() async {
-    return migrations.map((m) => m.version).toList();
+    return _migrations.map((m) => m.version).toList();
   }
 
   @override
