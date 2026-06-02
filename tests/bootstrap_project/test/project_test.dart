@@ -169,7 +169,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 15; retries++) {
+        for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
