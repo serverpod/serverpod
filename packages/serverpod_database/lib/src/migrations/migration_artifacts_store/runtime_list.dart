@@ -10,8 +10,11 @@ class RuntimeListMigrationArtifactStore
   RuntimeListMigrationArtifactStore(
     List<MigrationVersionSql> migrations, {
     required this.moduleName,
-  }) : _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations) {
-    _migrations.addAll(migrations);
+  }) : migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations)
+         ..addAll(migrations),
+       _byVersion = {
+         for (final migration in migrations) migration.version: migration,
+       } {
     assert(
       migrations.isEmpty || migrations.every((m) => m.moduleName == moduleName),
       'All migrations must be from the "$moduleName" module',
@@ -22,7 +25,10 @@ class RuntimeListMigrationArtifactStore
   final String moduleName;
 
   /// Migrations stored in ascending version order.
-  final SplayTreeSet<MigrationVersionSql> _migrations;
+  final SplayTreeSet<MigrationVersionSql> migrations;
+
+  /// A map of migrations by version.
+  final Map<String, MigrationVersionSql> _byVersion;
 
   static int _compareMigrations(
     MigrationVersionSql a,
@@ -33,14 +39,14 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<List<String>> listVersions() async {
-    return _migrations.map((m) => m.version).toList();
+    return migrations.map((m) => m.version).toList();
   }
 
   @override
   Future<MigrationVersionSql?> readVersionSql(
     String version,
   ) async {
-    return _findMigration(version);
+    return _byVersion[version];
   }
 
   @override
@@ -52,23 +58,6 @@ class RuntimeListMigrationArtifactStore
 
   @override
   Future<String?> loadDefinitionModuleName(String version) async {
-    return _findMigration(version)?.moduleName;
-  }
-
-  MigrationVersionSql? _findMigration(String version) {
-    return _migrations.lookup(_migrationProbe(version));
-  }
-
-  /// Creates a minimal probe object for `SplayTreeSet.lookup()`.
-  ///
-  /// The comparator only considers [MigrationVersionSql.version], so the
-  /// remaining fields can be empty placeholders.
-  static MigrationVersionSql _migrationProbe(String version) {
-    return MigrationVersionSql(
-      version: version,
-      moduleName: '',
-      definitionSql: '',
-      migrationSql: '',
-    );
+    return _byVersion[version]?.moduleName;
   }
 }
