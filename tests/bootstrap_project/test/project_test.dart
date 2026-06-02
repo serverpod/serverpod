@@ -772,6 +772,14 @@ void main() async {
           },
         );
 
+        test('has AGENTS.md', () {
+          final agentsMd = File(
+            path.join(tempPath, projectName, 'AGENTS.md'),
+          );
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(

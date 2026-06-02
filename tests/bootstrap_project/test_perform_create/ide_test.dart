@@ -49,6 +49,12 @@ void main() {
         }
       });
 
+      test('then the created project has AGENTS.md', () {
+        final agentsMd = File(p.join(projectName, 'AGENTS.md'));
+        expect(agentsMd.existsSync(), isTrue);
+        expect(agentsMd.readAsStringSync(), isNotEmpty);
+      });
+
       test('then the created project has agent skills installed', () {
         expect(
           Directory(p.join(projectName, '.agents', 'skills')).existsSync(),
