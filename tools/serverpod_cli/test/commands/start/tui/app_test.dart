@@ -100,6 +100,16 @@ void main() {
       await _sendKey(tester, LogicalKey.backquote);
       expect(state.showRawServerLogs, isFalse);
     });
+
+    test('when period is pressed then the raw server logs open', () async {
+      expect(state.showRawServerLogs, isFalse);
+
+      await _sendKey(tester, LogicalKey.period);
+      expect(state.showRawServerLogs, isTrue);
+
+      await _sendKey(tester, LogicalKey.period);
+      expect(state.showRawServerLogs, isFalse);
+    });
   });
 
   group('Given the raw server logs overlay is open', () {
@@ -109,6 +119,12 @@ void main() {
 
     test('when Esc is pressed then it closes', () async {
       await _sendKey(tester, LogicalKey.escape);
+
+      expect(state.showRawServerLogs, isFalse);
+    });
+
+    test('when period is pressed then it closes', () async {
+      await _sendKey(tester, LogicalKey.period);
 
       expect(state.showRawServerLogs, isFalse);
     });

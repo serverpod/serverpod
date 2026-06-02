@@ -227,7 +227,8 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
     if (state.showRawServerLogs) {
       if (event.logicalKey == LogicalKey.escape ||
-          event.logicalKey == LogicalKey.backquote) {
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.period) {
         state.showRawServerLogs = false;
         _rebuild();
         return true;
@@ -270,7 +271,8 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    if (event.logicalKey == LogicalKey.backquote) {
+    if (event.logicalKey == LogicalKey.backquote ||
+        event.logicalKey == LogicalKey.period) {
       state.showRawServerLogs = true;
       _rebuild();
       return true;

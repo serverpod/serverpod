@@ -79,7 +79,7 @@ class MainScreen extends StatelessComponent {
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
         ('e', 'Expand / collapse stack traces'),
-        ('`', 'Show raw server logs'),
+        ('` / .', 'Show raw server logs'),
         ('L', 'Clear logs'),
         ('Q', 'Quit'),
       ],
@@ -281,7 +281,7 @@ class MainScreen extends StatelessComponent {
                 ),
               ),
               const Text(
-                '  press ` or Esc to close',
+                '  press ` / . or Esc to close',
                 style: TextStyle(fontWeight: FontWeight.dim),
               ),
             ],

@@ -10,7 +10,7 @@ class ServerWatchState extends TuiState {
   final logHistory = BoundedQueueList<Object>(maxLogEntries);
 
   /// Raw stdout/stderr lines shown in the raw server logs overlay
-  /// (toggled with the backtick shortcut).
+  /// (toggled with the backtick or `.` shortcut).
   @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
@@ -71,7 +71,7 @@ class ServerWatchState extends TuiState {
   /// Whether the raw server logs overlay (the "dev console") is visible.
   ///
   /// Raw server stdout/stderr is hidden from the default tabs and reached
-  /// on demand via the backtick (`` ` ``) shortcut.
+  /// on demand via the backtick or `.` shortcut.
   bool showRawServerLogs = false;
 
   /// Maximum number of log entries to keep.
