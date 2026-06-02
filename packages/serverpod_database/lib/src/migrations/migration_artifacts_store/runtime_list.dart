@@ -41,11 +41,7 @@ class RuntimeListMigrationArtifactStore
     return a.version.compareTo(b.version);
   }
 
-  static ({
-    Map<String, MigrationVersionSql> byVersion,
-    SplayTreeSet<MigrationVersionSql> migrations,
-  })
-  _buildMigrationData(
+  static _MigrationBuildResult _buildMigrationData(
     List<MigrationVersionSql> migrations,
     String moduleName,
   ) {
@@ -67,7 +63,10 @@ class RuntimeListMigrationArtifactStore
       byVersion[migration.version] = migration;
       orderedMigrations.add(migration);
     }
-    return (byVersion: byVersion, migrations: orderedMigrations);
+    return _MigrationBuildResult(
+      byVersion: byVersion,
+      migrations: orderedMigrations,
+    );
   }
 
   @override
@@ -93,4 +92,14 @@ class RuntimeListMigrationArtifactStore
   Future<String?> loadDefinitionModuleName(String version) async {
     return _byVersion[version]?.moduleName;
   }
+}
+
+class _MigrationBuildResult {
+  _MigrationBuildResult({
+    required this.byVersion,
+    required this.migrations,
+  });
+
+  final Map<String, MigrationVersionSql> byVersion;
+  final SplayTreeSet<MigrationVersionSql> migrations;
 }

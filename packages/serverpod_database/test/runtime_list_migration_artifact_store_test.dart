@@ -89,7 +89,13 @@ void main() {
           ],
           moduleName: 'test',
         ),
-        throwsA(isA<ArgumentError>()),
+        throwsA(
+          isA<ArgumentError>().having(
+            (error) => error.message,
+            'message',
+            contains('20240101000000001'),
+          ),
+        ),
       );
     },
   );
