@@ -9,42 +9,7 @@ import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
-
-/// Creates a [GeneratorConfig] for a test project at [projectDir].
-GeneratorConfig _buildTestConfig(Directory projectDir) {
-  return GeneratorConfigBuilder()
-      .withName('test')
-      .withServerPackageDirectoryPathParts([projectDir.path])
-      .withRelativeDartClientPackagePathParts(['test_client'])
-      .withModules([
-        ModuleConfig(
-          type: PackageType.server,
-          name: 'test',
-          nickname: 'test',
-          migrationVersions: [],
-          serverPackageDirectoryPathParts: [projectDir.path],
-        ),
-      ])
-      .build();
-}
-
-/// Waits until the file system reports an mtime strictly after [reference].
-///
-/// Avoids hard-coded delays that may be too short on platforms with coarse
-/// timestamp resolution.
-Future<void> waitForMtimeAfter(DateTime reference, Directory dir) async {
-  final probe = File(p.join(dir.path, '.mtime_probe'));
-  try {
-    for (var i = 0; i < 100; i++) {
-      await probe.writeAsString('$i');
-      if (probe.statSync().modified.isAfter(reference)) return;
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-    }
-    throw StateError('File system mtime did not advance after 5 seconds');
-  } finally {
-    if (probe.existsSync()) await probe.delete();
-  }
-}
+import '../../test_util/mtime_helpers.dart';
 
 void main() {
   group('Given a generated project with a stamp', () {
@@ -68,7 +33,7 @@ fields:
   name: String
 ''');
 
-      config = _buildTestConfig(projectDir);
+      config = buildTestServerConfig(projectDir);
       stampFile = File(
         p.joinAll(
           [projectDir.path, '.dart_tool', 'serverpod', 'generation.stamp'],

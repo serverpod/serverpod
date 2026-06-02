@@ -7,6 +7,8 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
+import '../test_util/mtime_helpers.dart';
+
 class _FakeConfig extends Fake implements GeneratorConfig {
   final String serverDir;
   final Map<String, List<String>> _sharedModels;
@@ -39,25 +41,6 @@ class _FakeConfig extends Fake implements GeneratorConfig {
 
   @override
   List<ModuleConfig> get modulesDependent => _modulesDependent;
-}
-
-/// Waits until the file system reports an mtime strictly after [reference].
-///
-/// This avoids hard-coded delays that may be too short on platforms with
-/// coarse timestamp resolution (e.g. Windows).
-Future<void> waitForMtimeAfter(DateTime reference, [Directory? dir]) async {
-  dir ??= await Directory.systemTemp.createTemp();
-  final probe = File(p.join(dir.path, '.mtime_probe'));
-  try {
-    for (var i = 0; i < 100; i++) {
-      await probe.writeAsString('$i');
-      if (probe.statSync().modified.isAfter(reference)) return;
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-    }
-    throw StateError('File system mtime did not advance after 5 seconds');
-  } finally {
-    if (probe.existsSync()) await probe.delete();
-  }
 }
 
 void main() {
