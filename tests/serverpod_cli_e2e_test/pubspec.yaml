@@ -17,6 +17,7 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   serverpod_cli: 4.0.0-beta.0
   serverpod_lints: 4.0.0-beta.0
+  serverpod_shared: 3.5.0-beta.9
   test_descriptor: ^2.0.2
   uuid: ^4.5.3
 
