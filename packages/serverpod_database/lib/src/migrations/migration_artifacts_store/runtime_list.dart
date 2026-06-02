@@ -10,11 +10,17 @@ class RuntimeListMigrationArtifactStore
   RuntimeListMigrationArtifactStore(
     List<MigrationVersionSql> migrations, {
     required this.moduleName,
-  }) : _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations)
-         ..addAll(migrations),
+  }) : _migrations = SplayTreeSet<MigrationVersionSql>(_compareMigrations),
        _byVersion = {
          for (final migration in migrations) migration.version: migration,
        } {
+    _migrations.addAll(migrations);
+    final seenVersions = <String>{};
+    for (final migration in migrations) {
+      if (!seenVersions.add(migration.version)) {
+        throw ArgumentError('Duplicate migration versions are not allowed.');
+      }
+    }
     assert(
       migrations.isEmpty || migrations.every((m) => m.moduleName == moduleName),
       'All migrations must be from the "$moduleName" module',

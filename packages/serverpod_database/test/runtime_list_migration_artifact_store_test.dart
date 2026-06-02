@@ -67,4 +67,30 @@ void main() {
       expect(await store.readVersionSql('missing'), isNull);
     },
   );
+
+  test(
+    'Given duplicate runtime migration versions, when creating the store, then it fails fast',
+    () {
+      expect(
+        () => RuntimeListMigrationArtifactStore(
+          [
+            const MigrationVersionSql(
+              version: '20240101000000001',
+              moduleName: 'test',
+              definitionSql: 'definition-1',
+              migrationSql: 'migration-1',
+            ),
+            const MigrationVersionSql(
+              version: '20240101000000001',
+              moduleName: 'test',
+              definitionSql: 'definition-1b',
+              migrationSql: 'migration-1b',
+            ),
+          ],
+          moduleName: 'test',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
 }
