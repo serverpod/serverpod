@@ -185,7 +185,9 @@ Future<({bool upToDate, bool success})> generateIfStale({
     analyzers: analyzers,
     affectedPaths: allSources,
   );
-  return (upToDate: false, success: result.success);
+  // A full run only returns an empty file set when it skipped generation
+  // because the output was already up to date.
+  return (upToDate: result.generatedFiles.isEmpty, success: result.success);
 }
 
 /// One-shot code generation in an isolate-friendly function.
@@ -280,6 +282,9 @@ Future<bool> _performGenerateWatch({
   if (!initialResult.success) {
     await analyzers.close();
     return false;
+  }
+  if (initialResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
   log.debug(initialCodeGenerationComplete);

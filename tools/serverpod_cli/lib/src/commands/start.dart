@@ -488,6 +488,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     await rollbackProvisioning();
     return const WatchLoopAborted(1);
   }
+  if (genResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+  }
 
   // FES setup (watch mode only).
   KernelCompiler? compiler;
