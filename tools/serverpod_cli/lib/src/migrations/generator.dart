@@ -33,11 +33,14 @@ class MigrationGenerator {
     var now = DateTime.now().toUtc();
     var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
-    if (tag != null) {
-      var sanitizedTag = _sanitizeVersionTag(tag);
-      if (sanitizedTag.isNotEmpty) {
-        versionName += '-$sanitizedTag';
+    if (tag != null && tag.isNotEmpty) {
+      if (RegExp(r'[/\\:*?"<>|\x00-\x1f]').hasMatch(tag)) {
+        throw FormatException(
+          'Invalid migration tag: "$tag". Only characters that are supported '
+          'in file names are allowed.',
+        );
       }
+      versionName += '-$tag';
     }
     return versionName;
   }
@@ -470,11 +473,4 @@ class MigrationGenerator {
       ),
     );
   }
-}
-
-String _sanitizeVersionTag(String tag) {
-  return tag
-      .replaceAll(RegExp(r'[^0-9A-Za-z_-]+'), '_')
-      .replaceAll(RegExp(r'_+'), '_')
-      .replaceAll(RegExp(r'^_+|_+$'), '');
 }
