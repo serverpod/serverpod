@@ -58,12 +58,16 @@ String? _readWindowsImagePath(int pid) {
   return _withProcessHandle(pid, (handle) {
     // 32768 wide chars covers the extended-path limit (Win10+).
     const capacity = 32768;
-    final buffer = calloc<Uint16>(capacity).cast<Utf16>();
+    final buffer = win32.PWSTR(calloc<Uint16>(capacity).cast());
     final sizePtr = calloc<Uint32>()..value = capacity;
     try {
-      if (win32.QueryFullProcessImageName(handle, 0, buffer, sizePtr) == 0) {
-        return null;
-      }
+      final win32.Win32Result(value: success) = win32.QueryFullProcessImageName(
+        handle,
+        win32.PROCESS_NAME_WIN32,
+        buffer,
+        sizePtr,
+      );
+      if (!success) return null;
       return buffer.toDartString(length: sizePtr.value);
     } finally {
       calloc
@@ -76,13 +80,13 @@ String? _readWindowsImagePath(int pid) {
 /// Opens a `PROCESS_QUERY_LIMITED_INFORMATION` handle to [pid], runs [body]
 /// with it, and closes the handle. Returns null when the PID is unassigned.
 /// Windows-only.
-T? _withProcessHandle<T>(int pid, T? Function(int handle) body) {
-  final handle = win32.OpenProcess(
+T? _withProcessHandle<T>(int pid, T? Function(win32.HANDLE handle) body) {
+  final win32.Win32Result(value: handle) = win32.OpenProcess(
     win32.PROCESS_QUERY_LIMITED_INFORMATION,
-    win32.FALSE,
+    false,
     pid,
   );
-  if (handle == 0) return null;
+  if (!handle.isValid) return null;
   try {
     return body(handle);
   } finally {

@@ -17,7 +17,7 @@ dependencies:
   meta: ^1.15.0
   path: ^1.8.3
   super_string: ^1.0.3
-  win32: ^5.13.0
+  win32: ^6.0.0
   yaml: ^3.1.2
 
 dev_dependencies:
