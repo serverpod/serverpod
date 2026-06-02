@@ -9,11 +9,12 @@ class ServerWatchState extends TuiState {
   @override
   final logHistory = BoundedQueueList<Object>(maxLogEntries);
 
-  /// Raw stdout/stderr lines for the "Raw server output" tab.
+  /// Raw stdout/stderr lines shown in the raw server logs overlay
+  /// (toggled with the backtick or `.` shortcut).
   @override
   final rawLines = BoundedQueueList<String>(maxRawLines);
 
-  /// Raw lines for the "Flutter output" tab.
+  /// Raw lines for the "Flutter logs" tab.
   final rawFlutterLines = BoundedQueueList<String>(maxRawLines);
 
   /// Currently active tracked operations (keyed by ID).
@@ -23,8 +24,7 @@ class ServerWatchState extends TuiState {
   /// Currently selected tab index.
   ///
   /// - 0 = structured server logs
-  /// - 1 = Flutter logs (narrow layout only)
-  /// - 2 = raw server logs
+  /// - 1 = Flutter logs (only when [showFlutterOutput])
   int selectedTab = 0;
 
   /// Latest measured content width from the main log area.
@@ -61,6 +61,18 @@ class ServerWatchState extends TuiState {
 
   /// Whether the help overlay is visible.
   bool showHelp = false;
+
+  /// Whether stack traces attached to log entries are shown inline.
+  ///
+  /// When false, an error entry that carries a trace shows a compact
+  /// affordance instead; toggled with `e` on the structured log tab.
+  bool expandStackTraces = false;
+
+  /// Whether the raw server logs overlay (the "dev console") is visible.
+  ///
+  /// Raw server stdout/stderr is hidden from the default tabs and reached
+  /// on demand via the backtick or `.` shortcut.
+  bool showRawServerLogs = false;
 
   /// Maximum number of log entries to keep.
   static const maxLogEntries = 10000;

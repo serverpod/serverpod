@@ -1,6 +1,7 @@
-import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
 Future<void> _sendCtrlC(NoctermTester tester) {
@@ -10,6 +11,10 @@ Future<void> _sendCtrlC(NoctermTester tester) {
       modifiers: ModifierKeys(ctrl: true),
     ),
   );
+}
+
+Future<void> _sendKey(NoctermTester tester, LogicalKey key) {
+  return tester.sendKeyEvent(KeyboardEvent(logicalKey: key));
 }
 
 void main() {
@@ -48,6 +53,81 @@ void main() {
         expect(quitCalls, 1);
       },
     );
+  });
+
+  group('Given a structured log tab with a stack-traced error entry', () {
+    setUp(() {
+      state.logHistory.add(
+        LogEntry(
+          time: DateTime(2026),
+          level: LogLevel.error,
+          message: 'boom',
+          scope: LogScope.root('server'),
+          error: 'Exception: boom',
+          stackTrace: StackTrace.fromString('#0 a\n#1 b'),
+        ),
+      );
+    });
+
+    test('when e is pressed then stack traces expand and collapse', () async {
+      expect(state.expandStackTraces, isFalse);
+
+      await _sendKey(tester, LogicalKey.keyE);
+      expect(state.expandStackTraces, isTrue);
+
+      await _sendKey(tester, LogicalKey.keyE);
+      expect(state.expandStackTraces, isFalse);
+    });
+
+    test(
+      'when e is pressed on the Flutter logs tab then traces do not toggle',
+      () async {
+        state.showFlutterOutput = true;
+        state.selectedTab = 1;
+
+        await _sendKey(tester, LogicalKey.keyE);
+
+        expect(state.expandStackTraces, isFalse);
+      },
+    );
+
+    test('when backtick is pressed then the raw server logs open', () async {
+      expect(state.showRawServerLogs, isFalse);
+
+      await _sendKey(tester, LogicalKey.backquote);
+      expect(state.showRawServerLogs, isTrue);
+
+      await _sendKey(tester, LogicalKey.backquote);
+      expect(state.showRawServerLogs, isFalse);
+    });
+
+    test('when period is pressed then the raw server logs open', () async {
+      expect(state.showRawServerLogs, isFalse);
+
+      await _sendKey(tester, LogicalKey.period);
+      expect(state.showRawServerLogs, isTrue);
+
+      await _sendKey(tester, LogicalKey.period);
+      expect(state.showRawServerLogs, isFalse);
+    });
+  });
+
+  group('Given the raw server logs overlay is open', () {
+    setUp(() {
+      state.showRawServerLogs = true;
+    });
+
+    test('when Esc is pressed then it closes', () async {
+      await _sendKey(tester, LogicalKey.escape);
+
+      expect(state.showRawServerLogs, isFalse);
+    });
+
+    test('when period is pressed then it closes', () async {
+      await _sendKey(tester, LogicalKey.period);
+
+      expect(state.showRawServerLogs, isFalse);
+    });
   });
 
   group('Given a running TUI start app with the help overlay open', () {
