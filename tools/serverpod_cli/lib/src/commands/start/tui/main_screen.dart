@@ -74,7 +74,7 @@ class MainScreen extends StatelessComponent {
     (
       'Actions',
       [
-        ('R / Shift+R', 'Hot reload / restart'),
+        ('R / Shift+R', 'Hot reload / restart (⇧ relaunches the Flutter app)'),
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),

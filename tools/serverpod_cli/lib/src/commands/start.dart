@@ -671,6 +671,16 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
     flutterProcessProvider: () => flutterProcess,
+    // Kill the running Flutter app and relaunch it. `stop` clears
+    // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
+    // Only wired when a Flutter app is actually in play; otherwise null so a
+    // restart never spawns an app the user opted out of (e.g. --no-flutter).
+    flutterAppRestartAction: launchFlutterApp && config.hasFlutterPackage
+        ? () async {
+            await flutterProcess?.stop();
+            await spawnFlutterAppIfNeeded();
+          }
+        : null,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,

@@ -167,6 +167,7 @@ void main() {
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
     FlutterProcess? flutterProcess,
+    Future<void> Function()? flutterAppRestartAction,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -191,6 +192,7 @@ void main() {
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterProcessProvider: () => flutterProcess,
+      flutterAppRestartAction: flutterAppRestartAction,
     );
   }
 
@@ -933,42 +935,52 @@ void main() {
     );
   });
 
-  group('Given a Flutter process with a connected VM service,', () {
+  group('Given a watch session with a Flutter app restart action,', () {
+    late int restartActionCalls;
     late _FakeFlutter flutter;
 
     setUp(() {
+      restartActionCalls = 0;
       flutter = _FakeFlutter();
       session = buildSession(
         compiler: compiler,
         initialServer: server,
         flutterProcess: flutter,
+        flutterAppRestartAction: () async {
+          restartActionCalls++;
+        },
       );
     });
 
     test(
       'when force restart is called, '
-      'then the Flutter app is hot-restarted after the server restarts.',
+      'then the Flutter app is relaunched after the server restarts.',
       () async {
         await session.forceRestart();
 
         expect(server.calls, contains('stop'));
         expect(factoryCalls, ['createServer:/out.dill']);
-        expect(flutter.calls, ['restart']);
+        expect(restartActionCalls, 1);
+        // The relaunch replaces the in-process hot restart.
+        expect(flutter.calls, isEmpty);
       },
     );
   });
 
   group(
-    'Given a Flutter process with a connected VM service and a next compile that fails,',
+    'Given a watch session with a Flutter app restart action and a next '
+    'compile that fails,',
     () {
-      late _FakeFlutter flutter;
+      late int restartActionCalls;
 
       setUp(() {
-        flutter = _FakeFlutter();
+        restartActionCalls = 0;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
         );
 
         compiler.nextCompileResult = _failResult();
@@ -976,72 +988,37 @@ void main() {
 
       test(
         'when force restart is called, '
-        'then the Flutter app is not hot-restarted.',
+        'then the Flutter app is not relaunched.',
         () async {
           await session.forceRestart();
 
           expect(server.calls, isNot(contains('stop')));
-          expect(flutter.calls, isEmpty);
+          expect(restartActionCalls, 0);
         },
       );
     },
   );
 
-  group('Given a Flutter process with a disconnected VM service,', () {
-    late _FakeFlutter flutter;
-
+  group('Given a watch session whose Flutter app restart action throws,', () {
     setUp(() {
-      flutter = _FakeFlutter();
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: flutter,
+        flutterAppRestartAction: () async => throw StateError('relaunch boom'),
       );
-
-      flutter.isVmServiceConnected = false;
     });
 
     test(
       'when force restart is called, '
-      'then the Flutter app is not hot-restarted.',
+      'then the server restart completes and the error is not surfaced.',
       () async {
         await session.forceRestart();
 
         expect(server.calls, contains('stop'));
-        expect(flutter.calls, isEmpty);
+        expect(factoryCalls, ['createServer:/out.dill']);
       },
     );
   });
-
-  group(
-    'Given a Flutter process with a connected VM service and a hot restart that fails,',
-    () {
-      late _FakeFlutter flutter;
-
-      setUp(() {
-        flutter = _FakeFlutter();
-        session = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          flutterProcess: flutter,
-        );
-
-        flutter.restartSuccess = false;
-      });
-
-      test(
-        'when force restart is called, '
-        'then the server restart still completes.',
-        () async {
-          await session.forceRestart();
-
-          expect(server.calls, contains('stop'));
-          expect(factoryCalls, ['createServer:/out.dill']);
-          expect(flutter.calls, ['restart']);
-        },
-      );
-    },
-  );
 
   group('Given dispose is called', () {
     test(
