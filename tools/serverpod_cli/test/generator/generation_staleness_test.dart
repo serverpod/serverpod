@@ -40,6 +40,20 @@ class _FakeConfig extends Fake implements GeneratorConfig {
   ];
 
   @override
+  List<String> get generatedServeModelPathParts => [
+    serverDir,
+    'lib',
+    'src',
+    'generated',
+  ];
+
+  @override
+  List<String> get generatedSharedModelsPaths => [
+    for (final pathParts in _sharedModels.values)
+      p.joinAll([serverDir, ...pathParts, 'lib', 'src', 'generated']),
+  ];
+
+  @override
   List<ModuleConfig> get modulesDependent => _modulesDependent;
 }
 
@@ -357,6 +371,20 @@ void main() {
         final sources = await enumerateSourceFiles(config);
 
         expect(sources, contains(endsWith('top_level.spy.yaml')));
+      },
+    );
+
+    test(
+      'when generated output exists under lib/src/generated, '
+      'then it is excluded (outputs are not inputs)',
+      () async {
+        await File(
+          p.join(tempDir.path, 'lib', 'src', 'generated', 'protocol.dart'),
+        ).create(recursive: true);
+
+        final sources = await enumerateSourceFiles(config);
+
+        expect(sources.where((s) => s.contains('generated')), isEmpty);
       },
     );
   });

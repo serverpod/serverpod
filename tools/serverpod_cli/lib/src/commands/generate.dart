@@ -161,10 +161,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 /// [createAnalyzers] must return an *unprimed* analyzer (e.g.
 /// [Analyzers.create]); the single full prime happens inside [analyzeAndGenerate].
 ///
-/// When [keepPrimedWhenFresh] is `false` (one-shot generate), a fresh project
-/// returns before the analyzer is created, skipping the spin-up entirely. When
-/// `true` (the watch loops), the analyzer is always created and primed so the
-/// incremental loop has full context, even when there is nothing to generate.
+/// When [keepPrimedWhenFresh] is `false` (one-shot generate) a fresh project
+/// returns before the analyzer is created. When `true` (the watch loops) the
+/// analyzer is always created and primed for the incremental loop.
 Future<({bool upToDate, bool success})> generateIfStale({
   required GeneratorConfig config,
   required Future<Analyzers> Function() createAnalyzers,
@@ -176,14 +175,13 @@ Future<({bool upToDate, bool success})> generateIfStale({
   }
 
   final analyzers = await createAnalyzers();
-  // skipStalenessCheck stays false: update(allSources) is the single full prime,
-  // then performGenerate(affectedPaths: null) reuses it for a cheap generate.
-  // On a fresh project the prime still runs before the staleness check skips
-  // generation, leaving the analyzer ready for the watch loop.
+  // Re-verify staleness only when we skipped the up-front check; the one-shot
+  // path already verified it, so generation runs unconditionally.
   final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources,
+    verifyStaleness: keepPrimedWhenFresh,
   );
   // A full run only returns an empty file set when it skipped generation
   // because the output was already up to date.
@@ -206,9 +204,13 @@ Future<bool> performOneShotGenerate({
 
 /// Analyzes affected paths and runs code generation if needed.
 ///
-/// When [skipStalenessCheck] is `true`, skips the mtime check against the
-/// generation stamp (use when the caller already knows files changed, e.g.
-/// from a file watcher event).
+/// An [incremental] (watcher-driven) run generates only [affectedPaths] and
+/// skips when none of them affect generation; a full run regenerates the whole
+/// project.
+///
+/// [verifyStaleness] applies only to full runs: skip generation when the stamp
+/// is up to date. Pass `false` when the caller already verified staleness, so
+/// generation runs and refreshes the stamp regardless.
 ///
 /// The [requirements] parameter controls which parts of the generation
 /// pipeline run. When model files change, use [GenerationRequirements.full].
@@ -217,16 +219,12 @@ Future<bool> performOneShotGenerate({
 ///
 /// Returns a [GenerateResult] with success status and the set of files
 /// written by code generation (empty when generation was skipped).
-///
-/// When [skipStalenessCheck] is `true` (watcher-driven runs), model hint/info
-/// output is limited to [affectedPaths]. When `false`, all model issues are
-/// reported (one-shot generate and runs that re-check staleness against the
-/// whole project).
 Future<GenerateResult> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
-  bool skipStalenessCheck = false,
+  bool incremental = false,
+  bool verifyStaleness = true,
   GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   bool needsGenerate = false;
@@ -238,15 +236,10 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     return true;
   });
-  if (skipStalenessCheck) {
-    // Watcher-driven incremental run: the changed files are known, so skip only
-    // when none of them affect generation.
+  if (incremental) {
     if (!needsGenerate) return (success: true, generatedFiles: <String>{});
-  } else if (await isGenerationUpToDate(config, affectedPaths)) {
-    // Full run: the stamp is the source of truth. When it is up to date there
-    // is nothing to do; otherwise fall through and regenerate even if no single
-    // source "needs" it, so deleted sources are cleaned up, a CLI upgrade is
-    // applied, and the stamp is refreshed (avoiding re-analysis every run).
+  } else if (verifyStaleness &&
+      await isGenerationUpToDate(config, affectedPaths)) {
     log.debug('Generated code is up to date, skipping.');
     return (success: true, generatedFiles: <String>{});
   }
@@ -255,12 +248,18 @@ Future<GenerateResult> analyzeAndGenerate({
     result = await analyzers.performGenerate(
       config: config,
       requirements: requirements,
-      affectedPaths: skipStalenessCheck ? affectedPaths : null,
+      affectedPaths: incremental ? affectedPaths : null,
     );
     return result.success;
   });
   if (result.success) {
-    await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
+    await writeGenerationStamp(
+      config,
+      generatedFiles: result.generatedFiles,
+      // A full run's affectedPaths is the complete source set it just
+      // enumerated; reuse it so the stamp doesn't walk the tree again.
+      sourceFiles: incremental ? null : affectedPaths,
+    );
     log.debug(incrementalCodeGenerationComplete);
   }
   return result;
@@ -311,7 +310,7 @@ Future<bool> _performGenerateWatch({
         config: config,
         analyzers: analyzers,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
       );
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);

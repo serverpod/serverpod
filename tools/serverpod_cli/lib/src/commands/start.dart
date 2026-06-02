@@ -459,6 +459,16 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
+  // Tear down everything provisioned so far: the analyzer isolate and any
+  // Docker services. A failed/in-flight analyzer future must not prevent the
+  // Docker teardown, so closing it is guarded.
+  Future<void> rollbackStartup() async {
+    try {
+      await closeAnalyzers();
+    } catch (_) {}
+    await rollbackProvisioning();
+  }
+
   // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
   // generation is up to date.
   late final ({bool upToDate, bool success}) genResult;
@@ -476,16 +486,14 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       },
     );
   } catch (_) {
-    // The eager analyzer isolate and any Docker services must be torn down even
-    // when analysis/generation throws, not just on a clean failure.
-    await closeAnalyzers();
-    await rollbackProvisioning();
+    // Tear down even when analysis/generation throws, not just on a clean
+    // failure.
+    await rollbackStartup();
     rethrow;
   }
   if (!genResult.success) {
     log.error('Code generation failed.');
-    await closeAnalyzers();
-    await rollbackProvisioning();
+    await rollbackStartup();
     return const WatchLoopAborted(1);
   }
   if (genResult.upToDate) {
@@ -515,8 +523,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return hooksOk;
     });
     if (!hooksOk) {
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -530,8 +537,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -671,7 +677,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
         requirements: requirements,
       );
     },

@@ -98,11 +98,15 @@ Future<bool> isGenerationUpToDate(
 /// <generated-file-path-2>
 /// ...
 /// ```
+/// Pass [sourceFiles] (the set already enumerated this run) to skip a second
+/// directory walk; omit it to re-enumerate the full set.
 Future<void> writeGenerationStamp(
   GeneratorConfig config, {
   required Set<String> generatedFiles,
+  Set<String>? sourceFiles,
 }) async {
-  final fingerprint = _sourceSetFingerprint(await enumerateSourceFiles(config));
+  final sources = sourceFiles ?? await enumerateSourceFiles(config);
+  final fingerprint = _sourceSetFingerprint(sources);
   final file = File(_stampFilePath(config));
   await file.create(recursive: true);
   final buf = StringBuffer()
@@ -130,14 +134,25 @@ Set<String> readGenerationStamp(GeneratorConfig config) {
 }
 
 /// Enumerates all source files that feed into code generation.
+///
+/// Generated output dirs are excluded - they are outputs, and including them
+/// would make the set differ before vs. after a generation.
 Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
   final sources = <String>{};
+
+  final generatedDirs = {
+    p.absolute(p.joinAll(config.generatedServeModelPathParts)),
+    ...config.generatedSharedModelsPaths.map(p.absolute),
+  };
+  bool isGenerated(String path) =>
+      generatedDirs.any((dir) => p.isWithin(dir, p.absolute(path)));
 
   Future<void> collect(Directory dir, List<String> extensions) async {
     if (!await dir.exists()) return;
     await for (final entity in dir.list(recursive: true)) {
       if (entity is File &&
-          extensions.any((ext) => entity.path.endsWith(ext))) {
+          extensions.any((ext) => entity.path.endsWith(ext)) &&
+          !isGenerated(entity.path)) {
         sources.add(entity.path);
       }
     }
