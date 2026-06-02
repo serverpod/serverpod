@@ -41,7 +41,9 @@ class RuntimeListMigrationArtifactStore
     final byVersion = <String, MigrationVersionSql>{};
     for (final migration in migrations) {
       if (byVersion.containsKey(migration.version)) {
-        throw ArgumentError('Duplicate migration versions are not allowed.');
+        throw ArgumentError(
+          'Duplicate migration version: ${migration.version}',
+        );
       }
       byVersion[migration.version] = migration;
     }
