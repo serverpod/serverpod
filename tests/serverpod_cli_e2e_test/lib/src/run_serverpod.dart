@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/process_io.dart';
 
 import 'shared_test_dir.dart';
 
@@ -28,43 +29,38 @@ Future<String> _compileServerpodCli() async {
   const exeName = 'serverpod_cli_test.exe';
   final exePath = p.join(sharedTestDir.path, exeName);
   final lockPath = p.join(sharedTestDir.path, '$exeName.lock');
-  final lockFile = File(lockPath);
 
-  // If executable exists, we're done
+  // If executable exists, we're done.
   if (File(exePath).existsSync()) {
     return exePath;
   }
 
-  // Try to create lock file exclusively - only one isolate succeeds
-  try {
-    lockFile.createSync(exclusive: true);
-  } on FileSystemException {
-    // Another isolate is compiling, wait for lock to be released
-    while (lockFile.existsSync()) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-    return exePath;
-  }
+  // Compile once across the racing test isolates: the lock winner compiles,
+  // the rest wait and then find the executable already built.
+  await InterProcessLock.withLock(
+    lockPath,
+    staleWhen: const StaleLockPolicy.never(),
+    timeout: const Duration(minutes: 10),
+    () async {
+      if (File(exePath).existsSync()) return;
 
-  try {
-    var result = await Process.run(
-      'dart',
-      ['pub', 'get', '--directory', _cliRoot],
-    );
-    if (result.exitCode != 0) {
-      throw StateError('Failed to resolve dependencies:\n${result.stderr}');
-    }
+      var result = await Process.run(
+        'dart',
+        ['pub', 'get', '--directory', _cliRoot],
+      );
+      if (result.exitCode != 0) {
+        throw StateError('Failed to resolve dependencies:\n${result.stderr}');
+      }
 
-    result = await Process.run(
-      'dart',
-      ['compile', 'exe', _cliPath, '-o', exePath],
-    );
-    if (result.exitCode != 0) {
-      throw StateError('Failed to compile serverpod_cli:\n${result.stderr}');
-    }
-  } finally {
-    lockFile.deleteSync();
-  }
+      result = await Process.run(
+        'dart',
+        ['compile', 'exe', _cliPath, '-o', exePath],
+      );
+      if (result.exitCode != 0) {
+        throw StateError('Failed to compile serverpod_cli:\n${result.stderr}');
+      }
+    },
+  );
 
   return exePath;
 }
