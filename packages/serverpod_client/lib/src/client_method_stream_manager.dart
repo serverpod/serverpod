@@ -229,6 +229,7 @@ final class ClientMethodStreamManager {
 
     if (exception != null) {
       for (var c in inputControllers) {
+        if (c.isClosed) continue;
         c.addError(exception);
       }
     }
@@ -385,7 +386,8 @@ final class ClientMethodStreamManager {
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
 
-    if (reason == CloseReason.error) {
+    if (reason == CloseReason.error &&
+        !inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(
         const ConnectionClosedException(),
       );
@@ -444,7 +446,8 @@ final class ClientMethodStreamManager {
     );
 
     var inboundStreamContext = _inboundStreams[inboundStreamKey];
-    if (inboundStreamContext == null) {
+    if (inboundStreamContext == null ||
+        inboundStreamContext.controller.isClosed) {
       return false;
     }
 
@@ -480,7 +483,9 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    inboundStreamContext.controller.addError(message.exception);
+    if (!inboundStreamContext.controller.isClosed) {
+      inboundStreamContext.controller.addError(message.exception);
+    }
     await _closeControllers([inboundStreamContext.controller]);
   }
 
