@@ -133,27 +133,35 @@ Set<String> readGenerationStamp(GeneratorConfig config) {
 Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
   final sources = <String>{};
 
-  // Server lib/src/ directory.
-  final srcDir = Directory(p.joinAll(config.srcSourcePathParts));
-  if (await srcDir.exists()) {
-    await for (final entity in srcDir.list(recursive: true)) {
+  Future<void> collect(Directory dir, List<String> extensions) async {
+    if (!await dir.exists()) return;
+    await for (final entity in dir.list(recursive: true)) {
       if (entity is File &&
-          _sourceExtensions.any((ext) => entity.path.endsWith(ext))) {
+          extensions.any((ext) => entity.path.endsWith(ext))) {
         sources.add(entity.path);
       }
     }
   }
 
+  // Server lib/ directory. Endpoints and models can live anywhere under lib/,
+  // matching the endpoint analyzer and model loader (not just lib/src/).
+  await collect(
+    Directory(p.joinAll(config.libSourcePathParts)),
+    _sourceExtensions,
+  );
+
   // Shared model packages.
   for (final path in config.sharedModelsLibSourcePaths) {
-    final dir = Directory(path);
-    if (!await dir.exists()) continue;
-    await for (final entity in dir.list(recursive: true)) {
-      if (entity is File &&
-          _sourceExtensions.any((ext) => entity.path.endsWith(ext))) {
-        sources.add(entity.path);
-      }
-    }
+    await collect(Directory(path), _sourceExtensions);
+  }
+
+  // Dependent modules contribute their models to this project's protocol; only
+  // their model files affect generation here (their endpoints are their own).
+  for (final module in config.modulesDependent) {
+    await collect(
+      Directory(p.joinAll(module.libSourcePathParts)),
+      modelFileExtensions,
+    );
   }
 
   return sources;

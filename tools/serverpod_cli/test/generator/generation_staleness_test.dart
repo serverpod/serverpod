@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:test/fake.dart';
@@ -10,12 +10,20 @@ import 'package:test/test.dart';
 class _FakeConfig extends Fake implements GeneratorConfig {
   final String serverDir;
   final Map<String, List<String>> _sharedModels;
+  final List<ModuleConfig> _modulesDependent;
 
-  _FakeConfig(this.serverDir, {Map<String, List<String>>? sharedModels})
-    : _sharedModels = sharedModels ?? {};
+  _FakeConfig(
+    this.serverDir, {
+    Map<String, List<String>>? sharedModels,
+    List<ModuleConfig>? modulesDependent,
+  }) : _sharedModels = sharedModels ?? {},
+       _modulesDependent = modulesDependent ?? [];
 
   @override
   List<String> get serverPackageDirectoryPathParts => [serverDir];
+
+  @override
+  List<String> get libSourcePathParts => [serverDir, 'lib'];
 
   @override
   List<String> get srcSourcePathParts => [serverDir, 'lib', 'src'];
@@ -28,6 +36,9 @@ class _FakeConfig extends Fake implements GeneratorConfig {
     for (final pathParts in _sharedModels.values)
       p.joinAll([...serverPackageDirectoryPathParts, ...pathParts, 'lib']),
   ];
+
+  @override
+  List<ModuleConfig> get modulesDependent => _modulesDependent;
 }
 
 /// Waits until the file system reports an mtime strictly after [reference].
@@ -242,6 +253,50 @@ void main() {
     );
   });
 
+  group('Given a dependent module with a newer model file', () {
+    late _FakeConfig moduleConfig;
+    late File moduleModel;
+
+    setUp(() async {
+      final moduleDir = Directory(p.join(tempDir.path, 'dep_module'));
+      moduleModel = File(
+        p.join(moduleDir.path, 'lib', 'src', 'mod.spy.yaml'),
+      )..createSync(recursive: true);
+      await moduleModel.writeAsString('class: ModModel');
+
+      moduleConfig = _FakeConfig(
+        tempDir.path,
+        modulesDependent: [
+          ModuleConfig(
+            type: PackageType.server,
+            name: 'dep',
+            nickname: 'dep',
+            migrationVersions: [],
+            serverPackageDirectoryPathParts: p.split(moduleDir.path),
+          ),
+        ],
+      );
+
+      await writeGenerationStamp(moduleConfig, generatedFiles: {});
+      final stampMtime = stampFile.statSync().modified;
+      await waitForMtimeAfter(stampMtime, tempDir);
+
+      // Touch the module model file after the stamp.
+      await moduleModel.writeAsString(
+        'class: ModModel\nfields:\n  name: String',
+      );
+    });
+
+    test(
+      'when isGenerationUpToDate is called, '
+      'then it returns false',
+      () async {
+        final sources = await enumerateSourceFiles(moduleConfig);
+        expect(await isGenerationUpToDate(moduleConfig, sources), isFalse);
+      },
+    );
+  });
+
   group('Given writeGenerationStamp is called', () {
     test(
       'when the stamp file is read, '
@@ -305,6 +360,20 @@ void main() {
         final sources = await enumerateSourceFiles(config);
 
         expect(sources.where((s) => s.endsWith('.md')), isEmpty);
+      },
+    );
+
+    test(
+      'when a model lives under lib/ outside lib/src, '
+      'then it is still included',
+      () async {
+        await File(
+          p.join(tempDir.path, 'lib', 'top_level.spy.yaml'),
+        ).writeAsString('class: TopLevel');
+
+        final sources = await enumerateSourceFiles(config);
+
+        expect(sources, contains(endsWith('top_level.spy.yaml')));
       },
     );
   });
