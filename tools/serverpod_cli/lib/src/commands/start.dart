@@ -461,18 +461,27 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
   // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
   // generation is up to date.
-  final genResult = await generateIfStale(
-    config: config,
-    keepPrimedWhenFresh: true,
-    createAnalyzers: () async {
-      late final IsolatedAnalyzers analyzers;
-      await log.progress('Initializing analyzers', () async {
-        analyzers = await analyzersFuture;
-        return true;
-      });
-      return analyzers;
-    },
-  );
+  late final ({bool upToDate, bool success}) genResult;
+  try {
+    genResult = await generateIfStale(
+      config: config,
+      keepPrimedWhenFresh: true,
+      createAnalyzers: () async {
+        late final IsolatedAnalyzers analyzers;
+        await log.progress('Initializing analyzers', () async {
+          analyzers = await analyzersFuture;
+          return true;
+        });
+        return analyzers;
+      },
+    );
+  } catch (_) {
+    // The eager analyzer isolate and any Docker services must be torn down even
+    // when analysis/generation throws, not just on a clean failure.
+    await closeAnalyzers();
+    await rollbackProvisioning();
+    rethrow;
+  }
   if (!genResult.success) {
     log.error('Code generation failed.');
     await closeAnalyzers();
