@@ -97,30 +97,35 @@ Future<String?> performCreate(
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   _errorBuffer.clear();
-  // Resolve where the project will be created without mutating the
+  // Resolve where the project will be created relative to [workingDirectory]
+  // (defaulting to the current directory) without ever mutating the
   // process-wide current directory. Mutating it would leak into a subsequent
   // performCreate call within the same process (e.g. the dry-run followed by
   // the real run in the `create .` TUI flow), resolving the second run
-  // against the wrong directory.
+  // against the wrong directory. An explicit [workingDirectory] also lets
+  // callers such as tests target an isolated temp dir.
   //
   // For an explicit name the project lives in a `name` subdirectory of the
-  // current directory. If the name is a dot, we either upgrade the project we
-  // are standing in, or create a new one in place: it takes the current
+  // working directory. If the name is a dot, we either upgrade the project we
+  // are standing in, or create a new one in place: it takes the working
   // directory's name and its parent becomes the project root.
-  var projectRoot = Directory.current;
+  final cwd = workingDirectory ?? Directory.current;
+  var projectRoot = cwd;
   if (name == '.') {
-    if (findServerDirectory(Directory.current) != null) {
+    if (findServerDirectory(cwd) != null) {
       return await _performUpgrade(
         dryRun: dryRun,
         interactive: interactive,
         context: context,
+        workingDirectory: cwd,
       );
     }
 
-    name = p.basename(Directory.current.absolute.path);
-    projectRoot = Directory.current.parent;
+    name = p.basename(cwd.absolute.path);
+    projectRoot = cwd.parent;
   }
 
   // check if project name is valid
@@ -403,13 +408,14 @@ Future<String?> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
     return null;
   }
 
-  var serverDir = findServerDirectory(Directory.current);
+  var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
   if (serverDir == null) {
     _logError('Could not find a Serverpod project in the current directory.');
     return null;
