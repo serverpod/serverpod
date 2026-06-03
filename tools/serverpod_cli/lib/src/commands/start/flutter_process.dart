@@ -122,7 +122,7 @@ class FlutterProcess {
   /// True once [connectToVmService] resolved the upstream VM service.
   bool get isVmServiceConnected => _vmService != null;
 
-  /// HTTP VM service URI, or `null` before [connectToVmService] resolves.
+  /// HTTP VM service URI published by the daemon, or `null` before publication.
   String? get vmServiceUri => _vmServiceUri;
 
   /// Connected `vm_service` client; `null` outside connect..[stop].
@@ -255,7 +255,6 @@ class FlutterProcess {
       return;
     }
     if (maybeUri == null) return;
-    _vmServiceUri = maybeUri;
 
     final wsUri = vmServiceWsUri(maybeUri);
     await _flutterProxy?.setUpstream(Uri.parse(wsUri));
@@ -484,7 +483,9 @@ class FlutterProcess {
           final wsUri = paramMap['wsUri'];
           if (wsUri is String && !_vmServiceUriCompleter.isCompleted) {
             // IDEs and callers expect the http form.
-            _vmServiceUriCompleter.complete(httpFromWs(wsUri));
+            final httpUri = httpFromWs(wsUri);
+            _vmServiceUri = httpUri;
+            _vmServiceUriCompleter.complete(httpUri);
           }
           if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
         case 'app.webLaunchUrl':
