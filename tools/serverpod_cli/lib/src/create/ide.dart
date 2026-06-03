@@ -11,7 +11,7 @@ enum TemplateIde {
   codex(filePath: '.codex/config.toml', config: _codexConfig),
   cursor(filePath: '.cursor/mcp.json', config: _genericConfig),
   claude(filePath: '.mcp.json', config: _genericConfig),
-  openCode(filePath: '.opencode/opencode.json', config: _openCodeConfig),
+  openCode(filePath: 'opencode.json', config: _openCodeConfig),
   vscode(
     filePath: '.vscode/mcp.json',
     config: _genericConfig,

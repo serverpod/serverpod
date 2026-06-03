@@ -135,7 +135,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             'has Serverpod and Dart MCP servers configured for OpenCode',
             () {
               final config = File(
-                p.join(projectName, '.opencode/opencode.json'),
+                p.join(projectName, 'opencode.json'),
               );
               expect(config.existsSync(), isTrue);
               expect(
