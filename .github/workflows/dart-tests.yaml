@@ -494,16 +494,15 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - name: Setup docker (missing on MacOS)
-        if: runner.os == 'macos'
-        run: |
-          brew install docker docker-compose
-
-          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
-          mkdir -p ~/.docker/cli-plugins
-          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
-
-          colima start
+      - name: Cache embedded PostgreSQL binaries
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cache/serverpod/pg-binaries
+            ~/Library/Caches/serverpod/pg-binaries
+            ~/AppData/Local/serverpod/Cache/pg-binaries
+          key: pg-binaries-${{ runner.os }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/lib/src/binary/maven_url.dart') }}
+          restore-keys: pg-binaries-${{ runner.os }}-
       - name: Run unit tests
         shell: bash
         run: util/run_tests_bootstrap
