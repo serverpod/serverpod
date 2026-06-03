@@ -15,7 +15,7 @@ export SERVERPOD_HOME=$(pwd)
 cd tests/bootstrap_project
 
 # Run bootstrap tests
-dart test --concurrency=1 --reporter=failures-only
+dart test --reporter=failures-only
 
 # Run performCreate tests
 dart test test_perform_create --reporter=failures-only
