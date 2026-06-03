@@ -708,8 +708,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
             await spawnFlutterAppIfNeeded();
           }
         : null,
-    flutterDependenciesChangedSinceLastCheck:
-        flutterDependencyTracker?.refreshIfChanged,
+    checkFlutterDependencyChange: flutterDependencyTracker?.refresh,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,

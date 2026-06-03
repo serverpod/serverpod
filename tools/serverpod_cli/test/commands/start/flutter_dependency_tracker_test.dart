@@ -31,6 +31,27 @@ void main() {
     );
   }
 
+  /// Creates a fake package source directory holding [pubspec], returning its
+  /// rootUri relative to the `.dart_tool` directory.
+  String writePackage(String name, String pubspec) {
+    final dir = Directory(p.join(tempDir.path, 'pkgs', name))
+      ..createSync(recursive: true);
+    File(p.join(dir.path, 'pubspec.yaml')).writeAsStringSync(pubspec);
+    return '../pkgs/$name';
+  }
+
+  void writePackageConfig(Map<String, String> rootUris) {
+    File(p.join(dartToolDir, 'package_config.json')).writeAsStringSync(
+      jsonEncode({
+        'configVersion': 2,
+        'packages': [
+          for (final entry in rootUris.entries)
+            {'name': entry.key, 'rootUri': entry.value, 'packageUri': 'lib/'},
+        ],
+      }),
+    );
+  }
+
   // A Flutter app that transitively depends on the client (and http) but not
   // the server. flutter_test is a dev dependency only.
   Map<String, dynamic> baseGraph() => {
@@ -58,91 +79,279 @@ void main() {
     ],
   };
 
-  group('Given a Flutter app dependency graph in a workspace,', () {
-    late FlutterDependencyTracker tracker;
+  /// Pure-Dart source dirs + package_config for the app's closure packages.
+  Map<String, String> closureRootUris() => {
+    'app_flutter': writePackage('app_flutter', 'name: app_flutter\n'),
+    'app_client': writePackage('app_client', 'name: app_client\n'),
+    'http': writePackage('http', 'name: http\n'),
+  };
 
-    setUp(() {
-      writeGraph(baseGraph());
-      tracker = FlutterDependencyTracker(
-        dartToolDir: dartToolDir,
-        flutterPackageName: 'app_flutter',
+  group(
+    'Given a Flutter app dependency graph of pure-Dart packages '
+    'in a workspace,',
+    () {
+      late FlutterDependencyTracker tracker;
+
+      setUp(() {
+        writeGraph(baseGraph());
+        writePackageConfig(closureRootUris());
+        tracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: 'app_flutter',
+        );
+      });
+
+      test(
+        'when a server-only dependency version changes, '
+        'then no change is reported',
+        () {
+          final graph = baseGraph();
+          packageNamed(graph, 'postgres')['version'] = '3.1.0';
+          writeGraph(graph);
+
+          expect(tracker.refresh(), FlutterDependencyChange.none);
+        },
       );
+
+      test(
+        'when a dependency inside the app closure changes version, '
+        'then a pure-Dart change is reported',
+        () {
+          final graph = baseGraph();
+          packageNamed(graph, 'http')['version'] = '1.3.0';
+          writeGraph(graph);
+
+          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        },
+      );
+
+      test(
+        'when a pure-Dart dependency is added to the app, '
+        'then a pure-Dart change is reported',
+        () {
+          final graph = baseGraph();
+          (packageNamed(graph, 'app_flutter')['dependencies'] as List).add(
+            'redis',
+          );
+          (graph['packages'] as List).add({
+            'name': 'redis',
+            'version': '1.0.0',
+            'dependencies': <String>[],
+          });
+          writeGraph(graph);
+          writePackageConfig({
+            ...closureRootUris(),
+            'redis': writePackage('redis', 'name: redis\n'),
+          });
+
+          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        },
+      );
+
+      test(
+        'when a dependency is removed from the app, '
+        'then a pure-Dart change is reported',
+        () {
+          // Stale native code in the running binary is harmless, so removals
+          // never require more than a hot restart.
+          final graph = baseGraph();
+          packageNamed(graph, 'app_flutter')['dependencies'] = ['http'];
+          writeGraph(graph);
+
+          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        },
+      );
+
+      test(
+        'when a dev dependency of the app changes, '
+        'then no change is reported',
+        () {
+          final graph = baseGraph();
+          packageNamed(graph, 'flutter_test')['version'] = '0.1.0';
+          writeGraph(graph);
+
+          expect(tracker.refresh(), FlutterDependencyChange.none);
+        },
+      );
+
+      test(
+        'when the graph is rewritten with identical contents, '
+        'then no change is reported',
+        () {
+          writeGraph(baseGraph());
+
+          expect(tracker.refresh(), FlutterDependencyChange.none);
+        },
+      );
+    },
+  );
+
+  /// Sets up an app depending on a single package `dep@1.0.0` (described by
+  /// [depPubspec]), then bumps it to 1.0.1 in the graph so the next
+  /// `refresh()` classifies the bump.
+  FlutterDependencyTracker prepareBumpedDependency({
+    required String depPubspec,
+    bool listedInPackageConfig = true,
+    bool withBuildHook = false,
+  }) {
+    Map<String, dynamic> graph(String version) => {
+      'roots': ['app_flutter'],
+      'packages': [
+        {
+          'name': 'app_flutter',
+          'version': '1.0.0',
+          'dependencies': ['dep'],
+        },
+        {'name': 'dep', 'version': version, 'dependencies': <String>[]},
+      ],
+    };
+
+    final depRoot = writePackage('dep', depPubspec);
+    if (withBuildHook) {
+      final hookDir = Directory(p.join(tempDir.path, 'pkgs', 'dep', 'hook'))
+        ..createSync(recursive: true);
+      File(
+        p.join(hookDir.path, 'build.dart'),
+      ).writeAsStringSync('void main() {}');
+    }
+    writePackageConfig({
+      'app_flutter': writePackage('app_flutter', 'name: app_flutter\n'),
+      if (listedInPackageConfig) 'dep': depRoot,
     });
 
-    test(
-      'when a server-only dependency version changes, '
-      'then no change is reported',
-      () {
-        final graph = baseGraph();
-        packageNamed(graph, 'postgres')['version'] = '3.1.0';
-        writeGraph(graph);
-
-        expect(tracker.refreshIfChanged(), isFalse);
-      },
+    writeGraph(graph('1.0.0'));
+    final tracker = FlutterDependencyTracker(
+      dartToolDir: dartToolDir,
+      flutterPackageName: 'app_flutter',
     );
+    writeGraph(graph('1.0.1'));
+    return tracker;
+  }
 
+  group('Given a changed app dependency declaring a native plugin class,', () {
     test(
-      'when a dependency inside the app closure changes version, '
-      'then a change is reported',
+      'when the closure is refreshed, '
+      'then a native change is reported',
       () {
-        final graph = baseGraph();
-        packageNamed(graph, 'http')['version'] = '1.3.0';
-        writeGraph(graph);
-
-        expect(tracker.refreshIfChanged(), isTrue);
-      },
-    );
-
-    test(
-      'when a dependency is added to the app, '
-      'then a change is reported',
-      () {
-        final graph = baseGraph();
-        (packageNamed(graph, 'app_flutter')['dependencies'] as List).add(
-          'redis',
+        final tracker = prepareBumpedDependency(
+          depPubspec:
+              'name: dep\n'
+              'flutter:\n'
+              '  plugin:\n'
+              '    platforms:\n'
+              '      android:\n'
+              '        package: com.example.dep\n'
+              '        pluginClass: DepPlugin\n',
         );
-        (graph['packages'] as List).add({
-          'name': 'redis',
-          'version': '1.0.0',
-          'dependencies': <String>[],
-        });
-        writeGraph(graph);
 
-        expect(tracker.refreshIfChanged(), isTrue);
+        expect(tracker.refresh(), FlutterDependencyChange.native);
       },
     );
+  });
 
+  group('Given a changed app dependency declaring an FFI plugin,', () {
     test(
-      'when a dependency is removed from the app, '
-      'then a change is reported',
+      'when the closure is refreshed, '
+      'then a native change is reported',
       () {
-        final graph = baseGraph();
-        packageNamed(graph, 'app_flutter')['dependencies'] = ['http'];
-        writeGraph(graph);
+        final tracker = prepareBumpedDependency(
+          depPubspec:
+              'name: dep\n'
+              'flutter:\n'
+              '  plugin:\n'
+              '    platforms:\n'
+              '      windows:\n'
+              '        ffiPlugin: true\n',
+        );
 
-        expect(tracker.refreshIfChanged(), isTrue);
+        expect(tracker.refresh(), FlutterDependencyChange.native);
       },
     );
+  });
 
+  group(
+    'Given a changed app dependency declaring only a Dart plugin class,',
+    () {
+      test(
+        'when the closure is refreshed, '
+        'then a pure-Dart change is reported',
+        () {
+          final tracker = prepareBumpedDependency(
+            depPubspec:
+                'name: dep\n'
+                'flutter:\n'
+                '  plugin:\n'
+                '    platforms:\n'
+                '      linux:\n'
+                '        dartPluginClass: DepPluginLinux\n',
+          );
+
+          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        },
+      );
+    },
+  );
+
+  group('Given a changed app dependency with "pluginClass: none",', () {
     test(
-      'when a dev dependency of the app changes, '
-      'then no change is reported',
+      'when the closure is refreshed, '
+      'then a pure-Dart change is reported',
       () {
-        final graph = baseGraph();
-        packageNamed(graph, 'flutter_test')['version'] = '0.1.0';
-        writeGraph(graph);
+        final tracker = prepareBumpedDependency(
+          depPubspec:
+              'name: dep\n'
+              'flutter:\n'
+              '  plugin:\n'
+              '    platforms:\n'
+              '      web:\n'
+              '        pluginClass: none\n',
+        );
 
-        expect(tracker.refreshIfChanged(), isFalse);
+        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
       },
     );
+  });
 
+  group('Given a changed app dependency with a native-assets build hook,', () {
     test(
-      'when the graph is rewritten with identical contents, '
-      'then no change is reported',
+      'when the closure is refreshed, '
+      'then a native change is reported',
       () {
-        writeGraph(baseGraph());
+        final tracker = prepareBumpedDependency(
+          depPubspec: 'name: dep\n',
+          withBuildHook: true,
+        );
 
-        expect(tracker.refreshIfChanged(), isFalse);
+        expect(tracker.refresh(), FlutterDependencyChange.native);
+      },
+    );
+  });
+
+  group('Given a changed app dependency missing from package_config.json,', () {
+    test(
+      'when the closure is refreshed, '
+      'then a native change is conservatively reported',
+      () {
+        final tracker = prepareBumpedDependency(
+          depPubspec: 'name: dep\n',
+          listedInPackageConfig: false,
+        );
+
+        expect(tracker.refresh(), FlutterDependencyChange.native);
+      },
+    );
+  });
+
+  group('Given a changed app dependency with an unreadable pubspec,', () {
+    test(
+      'when the closure is refreshed, '
+      'then a native change is conservatively reported',
+      () {
+        final tracker = prepareBumpedDependency(
+          depPubspec: 'name: [unclosed\n  flutter: {',
+        );
+
+        expect(tracker.refresh(), FlutterDependencyChange.native);
       },
     );
   });
@@ -150,7 +359,7 @@ void main() {
   group('Given a missing or malformed dependency graph,', () {
     test(
       'when the graph file is absent, '
-      'then the fingerprint is null and no change is reported',
+      'then no change is reported',
       () {
         // No graph written.
         final tracker = FlutterDependencyTracker(
@@ -158,14 +367,13 @@ void main() {
           flutterPackageName: 'app_flutter',
         );
 
-        expect(tracker.computeFingerprint(), isNull);
-        expect(tracker.refreshIfChanged(), isFalse);
+        expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
 
     test(
       'when the graph file is malformed, '
-      'then the fingerprint is null',
+      'then no change is reported',
       () {
         File(
           p.join(dartToolDir, 'package_graph.json'),
@@ -176,13 +384,13 @@ void main() {
           flutterPackageName: 'app_flutter',
         );
 
-        expect(tracker.computeFingerprint(), isNull);
+        expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
 
     test(
       'when the Flutter package is absent from the graph, '
-      'then the fingerprint is null',
+      'then no change is reported',
       () {
         writeGraph(baseGraph());
 
@@ -191,7 +399,7 @@ void main() {
           flutterPackageName: 'not_in_graph',
         );
 
-        expect(tracker.computeFingerprint(), isNull);
+        expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
 
@@ -208,10 +416,10 @@ void main() {
         // Simulate a transient state (e.g. mid-pub-get / flutter clean): the
         // file vanishes and is then recreated with identical contents.
         File(p.join(dartToolDir, 'package_graph.json')).deleteSync();
-        expect(tracker.refreshIfChanged(), isFalse);
+        expect(tracker.refresh(), FlutterDependencyChange.none);
 
         writeGraph(baseGraph());
-        expect(tracker.refreshIfChanged(), isFalse);
+        expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
   });

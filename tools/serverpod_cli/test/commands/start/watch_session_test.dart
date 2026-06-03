@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -168,7 +169,7 @@ void main() {
     ProtocolChangeClassifier? classifyProtocolChange,
     FlutterProcess? flutterProcess,
     Future<void> Function()? flutterAppRestartAction,
-    bool Function()? flutterDependenciesChangedSinceLastCheck,
+    FlutterDependencyChange Function()? checkFlutterDependencyChange,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -194,8 +195,7 @@ void main() {
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterProcessProvider: () => flutterProcess,
       flutterAppRestartAction: flutterAppRestartAction,
-      flutterDependenciesChangedSinceLastCheck:
-          flutterDependenciesChangedSinceLastCheck,
+      checkFlutterDependencyChange: checkFlutterDependencyChange,
     );
   }
 
@@ -1083,7 +1083,7 @@ void main() {
   });
 
   group(
-    'Given a watch session where the Flutter dependency closure changed,',
+    'Given a watch session where native Flutter dependencies changed,',
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
@@ -1098,7 +1098,7 @@ void main() {
           flutterAppRestartAction: () async {
             restartActionCalls++;
           },
-          flutterDependenciesChangedSinceLastCheck: () => true,
+          checkFlutterDependencyChange: () => FlutterDependencyChange.native,
         );
       });
 
@@ -1114,8 +1114,8 @@ void main() {
           await session.handleFileChange(event);
 
           expect(restartActionCalls, 1);
-          // No server compile, and a full relaunch (the action) rather than the
-          // in-process hot reload.
+          // No server compile, and a full relaunch (the action) rather than
+          // the in-process hot reload or hot restart.
           expect(compiler.calls, isEmpty);
           expect(flutter.calls, isEmpty);
         },
@@ -1141,6 +1141,62 @@ void main() {
   );
 
   group(
+    'Given a watch session where only pure-Dart Flutter dependencies changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.dartOnly,
+        );
+      });
+
+      test(
+        'when only the dependencies change, '
+        'then the Flutter app is hot restarted without a full relaunch.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(flutter.calls, ['restart']);
+          expect(restartActionCalls, 0);
+          expect(compiler.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when dependencies and dart files change together, '
+        'then the server reloads and the app is hot restarted instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(flutter.calls, ['restart']);
+          expect(restartActionCalls, 0);
+        },
+      );
+    },
+  );
+
+  group(
     'Given a watch session where the Flutter dependency file changed but the '
     'closure did not,',
     () {
@@ -1157,7 +1213,7 @@ void main() {
           flutterAppRestartAction: () async {
             restartActionCalls++;
           },
-          flutterDependenciesChangedSinceLastCheck: () => false,
+          checkFlutterDependencyChange: () => FlutterDependencyChange.none,
         );
       });
 
