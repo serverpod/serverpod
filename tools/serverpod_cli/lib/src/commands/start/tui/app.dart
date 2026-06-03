@@ -16,6 +16,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
   VoidCallback? _onHotRestart;
+  VoidCallback? _onRestartFlutterApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
@@ -32,6 +33,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
     widgetState.onHotRestart = _onHotRestart;
+    widgetState.onRestartFlutterApp = _onRestartFlutterApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
@@ -51,6 +53,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   set onHotRestart(VoidCallback? cb) {
     _onHotRestart = cb;
     _widgetState?.onHotRestart = cb;
+  }
+
+  set onRestartFlutterApp(VoidCallback? cb) {
+    _onRestartFlutterApp = cb;
+    _widgetState?.onRestartFlutterApp = cb;
   }
 
   set onCreateMigration(void Function({bool force})? cb) {
@@ -97,6 +104,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onHotRestart;
+  VoidCallback? onRestartFlutterApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
@@ -237,6 +245,18 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         return false;
       }
       _handleScrollKey(rawScrollController, event);
+      return true;
+    }
+
+    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
+    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
+    // Handled here rather than as a ButtonBar entry because the Button widget
+    // matches only plain/Shift keys. Always consumed so it never falls through
+    // to the plain-R hot reload.
+    if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
+      if (state.showFlutterOutput || state.flutterRestartAvailable) {
+        onRestartFlutterApp?.call();
+      }
       return true;
     }
 

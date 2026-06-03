@@ -167,6 +167,7 @@ void main() {
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
     FlutterProcess? flutterProcess,
+    Future<void> Function()? flutterAppRestartAction,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -191,6 +192,7 @@ void main() {
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterProcessProvider: () => flutterProcess,
+      flutterAppRestartAction: flutterAppRestartAction,
     );
   }
 
@@ -991,19 +993,17 @@ void main() {
     late _FakeFlutter flutter;
 
     setUp(() {
-      flutter = _FakeFlutter();
+      flutter = _FakeFlutter()..isVmServiceConnected = false;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
         flutterProcess: flutter,
       );
-
-      flutter.isVmServiceConnected = false;
     });
 
     test(
       'when force restart is called, '
-      'then the Flutter app is not hot-restarted.',
+      'then the server restarts but the Flutter app is not hot-restarted.',
       () async {
         await session.forceRestart();
 
@@ -1013,31 +1013,102 @@ void main() {
     );
   });
 
+  group('Given a watch session with a Flutter app restart action,', () {
+    late int restartActionCalls;
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      restartActionCalls = 0;
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+        flutterAppRestartAction: () async {
+          restartActionCalls++;
+        },
+      );
+    });
+
+    test(
+      'when restartFlutterApp is called, '
+      'then it relaunches via the action without hot-restarting or touching the server.',
+      () async {
+        await session.restartFlutterApp();
+
+        expect(restartActionCalls, 1);
+        // A full relaunch is the process respawn, not the in-process hot
+        // restart, and it leaves the server alone.
+        expect(flutter.calls, isEmpty);
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when restartFlutterApp is called after dispose, '
+      'then it throws a StateError without invoking the action.',
+      () async {
+        await session.dispose();
+
+        expect(
+          session.restartFlutterApp,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(restartActionCalls, 0);
+      },
+    );
+  });
+
+  group('Given a watch session without a Flutter app restart action,', () {
+    test(
+      'when restartFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        // No action injected (non-Flutter session); the call is a no-op.
+        await session.restartFlutterApp();
+
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
   group(
-    'Given a Flutter process with a connected VM service and a hot restart that fails,',
+    'Given an in-flight forceReload and a Flutter app restart action,',
     () {
-      late _FakeFlutter flutter;
+      late List<String> order;
+      late Future<void> reload;
+      late WatchSession flutterRestartSession;
 
       setUp(() {
-        flutter = _FakeFlutter();
-        session = buildSession(
+        order = <String>[];
+        flutterRestartSession = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
+          flutterAppRestartAction: () async {},
         );
-
-        flutter.restartSuccess = false;
+        reload = flutterRestartSession.forceReload().then(
+          (_) => order.add('reload'),
+        );
       });
 
       test(
-        'when force restart is called, '
-        'then the server restart still completes.',
+        'when restartFlutterApp is called, '
+        'then it runs after the reload completes.',
         () async {
-          await session.forceRestart();
+          final restart = flutterRestartSession.restartFlutterApp().then(
+            (_) => order.add('flutter-restart'),
+          );
 
-          expect(server.calls, contains('stop'));
-          expect(factoryCalls, ['createServer:/out.dill']);
-          expect(flutter.calls, ['restart']);
+          await Future.wait([reload, restart]);
+
+          expect(order, ['reload', 'flutter-restart']);
         },
       );
     },
