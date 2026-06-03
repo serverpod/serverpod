@@ -10,6 +10,20 @@ void main() {
   group(
     'Given a clean state',
     () {
+      late Directory workingDir;
+
+      setUp(() {
+        workingDir = Directory.systemTemp.createTempSync('sp_perform_create_');
+      });
+
+      tearDown(() {
+        try {
+          workingDir.deleteSync(recursive: true);
+        } on FileSystemException {
+          // Gone.
+        }
+      });
+
       group(
         'when calling performCreate with a valid name and dryRun set to true',
         () {
@@ -23,6 +37,7 @@ void main() {
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
           });
 
@@ -44,6 +59,7 @@ void main() {
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
           });
 
@@ -56,17 +72,14 @@ void main() {
       group(
         'when calling performCreate with an existing project name and dryRun set to true',
         () {
-          late Directory projectDir;
           String? result;
           final projectName =
               'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
           setUp(() async {
-            projectDir = Directory(projectName);
-            projectDir.create();
-
-            final pubspecFile = File(p.join(projectName, 'pubspec.yaml'));
-            await pubspecFile.create();
+            final projectDir = Directory(p.join(workingDir.path, projectName))
+              ..createSync(recursive: true);
+            await File(p.join(projectDir.path, 'pubspec.yaml')).create();
 
             result = await performCreate(
               projectName,
@@ -74,15 +87,8 @@ void main() {
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
-          });
-
-          tearDown(() {
-            try {
-              projectDir.delete(recursive: true);
-            } on FileSystemException {
-              // Gone.
-            }
           });
 
           test('then returns null', () {
