@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/commands/create/tui/app.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
@@ -42,6 +43,8 @@ Future<void> performCreateWithTui(
   final backend = ServerpodTerminalBackend(
     preExit: () => _preExit(
       template: state.template,
+      ides: state.toTemplateContext().ides,
+      serverDirAbsolute: serverDirAbsolutePathFor(name),
       projectPath: projectPath,
     ),
   );
@@ -82,6 +85,8 @@ Future<void> _shutdownTui([int exitCode = 0]) async {
 /// the Dart process.
 Future<void> _preExit({
   required ServerpodTemplateType template,
+  required List<TemplateIde> ides,
+  required String serverDirAbsolute,
   String? projectPath,
 }) async {
   CommandLineTools.flushErrors();
@@ -96,6 +101,10 @@ Future<void> _preExit({
 
     if (template.isServer) logStartInstructions(projectPath);
     if (template.isMini) logMiniStartInstructions(projectPath);
+
+    // The TUI runs on an alternate screen, so MCP setup instructions logged
+    // during create don't persist. Re-emit them here, after teardown.
+    logManualMcpSetupInstructions(ides, serverDirAbsolute: serverDirAbsolute);
   }
 
   await log.flush();

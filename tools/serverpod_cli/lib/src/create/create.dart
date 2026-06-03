@@ -351,6 +351,11 @@ Future<String?> performCreate(
       logMiniStartInstructions(projectDirPath);
     }
 
+    logManualMcpSetupInstructions(
+      context.ides,
+      serverDirAbsolute: serverpodDirs.serverDir.path,
+    );
+
     return projectDirPath;
   }
 
@@ -383,20 +388,57 @@ Future<void> _moveDirectoryContents(
   }
 }
 
+/// Writes project-local MCP config files for the [ides] that support them.
+///
+/// IDEs that only read from a global config file (e.g. Antigravity) are
+/// skipped here; surface their setup with [logManualMcpSetupInstructions].
 Future<void> _configureMcpServer(
   String projectDirPath,
   List<TemplateIde> ides, {
   required String serverDirRelative,
+}) async {
+  for (final ide in ides) {
+    final filePath = ide.filePath;
+    // Skip IDEs without a project-local config; they are configured globally.
+    if (filePath == null) continue;
+    await _createFileAndWrite(
+      p.join(projectDirPath, filePath),
+      ide.effectiveConfig(serverDir: serverDirRelative),
+    );
+  }
+}
+
+/// Absolute path to the server directory of a project named [name] created in
+/// the current working directory. Used to render global MCP setup snippets,
+/// which need an absolute path (a global config has no project root).
+String serverDirAbsolutePathFor(String name) => ServerpodDirectories(
+  projectDir: Directory(p.join(Directory.current.absolute.path, name)),
+  name: name,
+).serverDir.path;
+
+/// Prints setup instructions for any of [ides] that only read MCP config from a
+/// global file (e.g. Antigravity) and therefore can't be configured with a
+/// generated project file. The snippet uses [serverDirAbsolute] since a global
+/// config has no project root to resolve a relative path against.
+void logManualMcpSetupInstructions(
+  List<TemplateIde> ides, {
+  required String serverDirAbsolute,
 }) {
-  return Future.forEach(
-    ides,
-    (ide) async {
-      await _createFileAndWrite(
-        p.join(projectDirPath, ide.filePath),
-        ide.effectiveConfig(serverDirRelative: serverDirRelative),
-      );
-    },
-  );
+  for (final ide in ides.where((ide) => ide.usesGlobalConfig)) {
+    log.info(
+      '${ide.displayName} reads MCP servers from a global config file and has '
+      'no per-project config. To enable the Serverpod MCP server, open '
+      '"Manage MCP Servers" -> "View raw config" in ${ide.displayName} '
+      '(or edit ${ide.globalConfigPath}) and merge in:',
+      type: TextLogType.header,
+      newParagraph: true,
+    );
+    log.info(
+      ide.effectiveConfig(serverDir: serverDirAbsolute),
+      type: TextLogType.normal,
+      newParagraph: true,
+    );
+  }
 }
 
 Future<void> _createFileAndWrite(String path, String content) async {
