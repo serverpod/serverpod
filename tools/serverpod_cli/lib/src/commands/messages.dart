@@ -12,6 +12,11 @@ const serverReloaded = '✓ Server reloaded.';
 const serverRestarted = '✓ Server restarted.';
 const flutterAppReloaded = '✓ Flutter app reloaded.';
 const flutterAppRestarted = '✓ Flutter app restarted.';
+const flutterDependenciesChangedNative =
+    'Flutter dependencies with native code changed. '
+    'Relaunching the Flutter app...';
+const flutterDependenciesChangedDart =
+    'Flutter dependencies changed. Hot restarting the Flutter app...';
 const flutterPackageNotFound =
     'No Flutter package found; skipping --flutter. '
     'Pass --no-flutter to silence this notice.';

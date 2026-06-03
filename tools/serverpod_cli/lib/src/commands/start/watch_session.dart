@@ -309,8 +309,10 @@ class WatchSession {
   Future<void> _refreshFlutterApp(FlutterDependencyChange change) async {
     switch (change) {
       case FlutterDependencyChange.native:
+        log.info(flutterDependenciesChangedNative);
         await _flutterAppRestartAction?.call();
       case FlutterDependencyChange.dartOnly:
+        log.info(flutterDependenciesChangedDart);
         await _restartFlutter();
       case FlutterDependencyChange.none:
         await _reloadFlutter();

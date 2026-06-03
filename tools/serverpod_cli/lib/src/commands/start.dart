@@ -584,6 +584,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Calling while previous instance is still running is a no-op.
   FlutterProcess? flutterProcess;
   var spawnInFlight = false;
+  // Set by the restart action when the spawn replaces a previously running
+  // app, so the progress message reads as a relaunch rather than a first run.
+  var flutterRelaunchInProgress = false;
   spawnFlutterAppIfNeeded = () async {
     if (runMode != 'development') return;
     if (!config.hasFlutterPackage) {
@@ -594,6 +597,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (existing != null && existing.isRunning) return;
     if (spawnInFlight) return;
     spawnInFlight = true;
+    final isRelaunch = flutterRelaunchInProgress;
+    flutterRelaunchInProgress = false;
 
     final fp = FlutterProcess(
       flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
@@ -626,7 +631,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // On `-d web-server` `launched` pends until a browser attaches.
     unawaited(() async {
       await log.progress(
-        'Launching Flutter app (first run may take 30-60s)',
+        isRelaunch
+            ? 'Relaunching Flutter app'
+            : 'Launching Flutter app (first run may take 30-60s)',
         () async {
           await fp.launched;
           return true;
@@ -704,6 +711,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
     flutterAppRestartAction: config.hasFlutterPackage
         ? () async {
+            flutterRelaunchInProgress = flutterProcess != null;
             await flutterProcess?.stop();
             await spawnFlutterAppIfNeeded();
           }
