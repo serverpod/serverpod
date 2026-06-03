@@ -480,13 +480,11 @@ class WatchSession {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
     }
-    final action = _flutterAppRestartAction;
-    if (action == null) return Future.value();
     return _chain(() async {
       // The session may have been disposed while this call was queued;
       // don't respawn a Flutter process we'd immediately leak.
       if (_state == SessionState.disposed) return;
-      await action();
+      await _flutterAppRestartAction?.call();
     });
   }
 
