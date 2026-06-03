@@ -961,8 +961,7 @@ void main() {
   });
 
   group(
-    'Given a Flutter process with a connected VM service and a next compile '
-    'that fails,',
+    'Given a Flutter process with a connected VM service and a next compile that fails,',
     () {
       late _FakeFlutter flutter;
 
@@ -1033,8 +1032,7 @@ void main() {
 
     test(
       'when restartFlutterApp is called, '
-      'then it relaunches via the action without hot-restarting or '
-      'touching the server.',
+      'then it relaunches via the action without hot-restarting or touching the server.',
       () async {
         await session.restartFlutterApp();
 

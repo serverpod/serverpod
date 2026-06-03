@@ -172,13 +172,37 @@ void main() {
     );
   });
 
-  group('Given a running TUI start app with no Flutter app', () {
+  group(
+    'Given a running TUI start app where the Flutter app has not launched yet but a restart is available',
+    () {
+      late int restartCalls;
+
+      setUp(() {
+        restartCalls = 0;
+        holder.onRestartFlutterApp = () => restartCalls++;
+        // No Flutter tab shown yet, but the project can launch one.
+        state.showFlutterOutput = false;
+        state.flutterRestartAvailable = true;
+      });
+
+      test(
+        'when Ctrl+R is pressed then the Flutter app launch is invoked',
+        () async {
+          await _sendCtrlR(tester);
+
+          expect(restartCalls, 1);
+        },
+      );
+    },
+  );
+
+  group('Given a running TUI start app with no Flutter package', () {
     late int restartCalls;
 
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
-      // showFlutterOutput defaults to false.
+      // Both gates default to false: no Flutter tab and nothing to launch.
     });
 
     test(

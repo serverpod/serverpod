@@ -248,12 +248,15 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn).
+    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
+    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
     // Handled here rather than as a ButtonBar entry because the Button widget
     // matches only plain/Shift keys. Always consumed so it never falls through
     // to the plain-R hot reload.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
-      if (state.showFlutterOutput) onRestartFlutterApp?.call();
+      if (state.showFlutterOutput || state.flutterRestartAvailable) {
+        onRestartFlutterApp?.call();
+      }
       return true;
     }
 

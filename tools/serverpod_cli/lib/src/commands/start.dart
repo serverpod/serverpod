@@ -671,11 +671,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
     flutterProcessProvider: () => flutterProcess,
-    // Kill the running Flutter app and relaunch it. `stop` clears
+    // Kill the running Flutter app (if any) and (re)launch it. `stop` clears
     // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
-    // Only wired when a Flutter app is actually in play; otherwise null so a
-    // restart never spawns an app the user opted out of (e.g. --no-flutter).
-    flutterAppRestartAction: launchFlutterApp && config.hasFlutterPackage
+    // Wired whenever the project has a Flutter package — even after a
+    // `--no-flutter` start — so Ctrl+R doubles as a "launch the app now"
+    // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
+    flutterAppRestartAction: config.hasFlutterPackage
         ? () async {
             await flutterProcess?.stop();
             await spawnFlutterAppIfNeeded();
@@ -1110,6 +1111,11 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        // Offer Ctrl+R whenever a Flutter app could run here — even after a
+        // `--no-flutter` start, where it acts as a "launch the app" button.
+        holder.state.flutterRestartAvailable =
+            config.hasFlutterPackage &&
+            runModeFromServerArgs(serverArgs) == 'development';
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);

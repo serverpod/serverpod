@@ -49,6 +49,12 @@ class ServerWatchState extends TuiState {
   /// Whether the "Flutter output" tab is shown.
   bool showFlutterOutput = false;
 
+  /// Whether the Flutter app can be launched or restarted from here (the
+  /// project has a Flutter package and we're in development mode). Gates the
+  /// Ctrl+R action so it can launch the app even after a `--no-flutter` start,
+  /// but stays inert in projects with no Flutter package.
+  bool flutterRestartAvailable = false;
+
   /// HTTP URL the Flutter app is served at.
   String? flutterUrl;
 

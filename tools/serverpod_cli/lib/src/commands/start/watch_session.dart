@@ -107,10 +107,11 @@ class WatchSession {
   final FlutterProcess? Function() _flutterProcessProvider;
   FlutterProcess? get _flutterProcess => _flutterProcessProvider();
 
-  /// Relaunches the Flutter app (kills the running `flutter run` process and
-  /// starts a fresh one). Supplied by the orchestrator, which owns the spawn
-  /// closure; `null` when this session has no Flutter app to restart (e.g.
-  /// `--no-flutter`, or no Flutter package in the project).
+  /// (Re)launches the Flutter app: kills the running `flutter run` process (if
+  /// any) and starts a fresh one — launching it from scratch when none is
+  /// running yet, e.g. after a `--no-flutter` start. Supplied by the
+  /// orchestrator, which owns the spawn closure; `null` only when the project
+  /// has no Flutter package to launch.
   final Future<void> Function()? _flutterAppRestartAction;
 
   final Completer<int> _done = Completer<int>();
@@ -468,13 +469,15 @@ class WatchSession {
     });
   }
 
-  /// Fully restarts the Flutter app: kills the running `flutter run` process
-  /// and launches a fresh one. Unlike the Flutter hot restart bundled into
-  /// [forceRestart], this only drives the Flutter process and is independent
-  /// of the server's compiler, so it works in both watch and non-watch mode.
+  /// Fully (re)launches the Flutter app: kills the running `flutter run`
+  /// process (if any) and launches a fresh one — including launching it from
+  /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
+  /// the Flutter hot restart bundled into [forceRestart], this only drives the
+  /// Flutter process and is independent of the server's compiler, so it works
+  /// in both watch and non-watch mode.
   ///
-  /// No-op when the session has no Flutter app to restart. Serialized behind
-  /// any in-flight reload, restart, or migration via [_chain]. Throws a
+  /// No-op when the project has no Flutter package. Serialized behind any
+  /// in-flight reload, restart, or migration via [_chain]. Throws a
   /// [StateError] if the session has been disposed.
   Future<void> restartFlutterApp() {
     if (_state == SessionState.disposed) {
