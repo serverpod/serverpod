@@ -6,7 +6,6 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
-import 'package:cli_tools/execute.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -16,8 +15,6 @@ import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/scripts/script.dart';
-import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -97,7 +94,6 @@ void flushPerformCreateErrors() {
 Future<String?> performCreate(
   String name,
   bool force, {
-  Completer<int>? flutterBuildCompleter,
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
@@ -251,54 +247,6 @@ Future<String?> performCreate(
         interactive: interactive,
       );
     });
-  }
-
-  if (template == ServerpodTemplateType.server) {
-    String skipKey = interactive == true ? 'S' : 'CTRL+C';
-    await log.progress(
-      'Building Flutter web app (press $skipKey to skip).',
-      () async {
-        final Script? script;
-        try {
-          script = _locateFlutterBuildScript(serverpodDirs.serverDir);
-        } catch (e) {
-          _logError('Error when locating flutter build script: $e');
-          return false;
-        }
-
-        if (script == null) {
-          _logError('Failed to locate flutter build script, skipping build.');
-          return false;
-        }
-
-        final stdoutController = StreamController<List<int>>();
-        stdoutController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => log.debug(data));
-        final toDebugLog = IOSink(stdoutController);
-        final stderrController = StreamController<List<int>>();
-        stderrController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => _logError(data));
-        final toErrorLog = IOSink(stderrController);
-
-        final executionFuture = execute(
-          script.command,
-          workingDirectory: serverpodDirs.serverDir,
-          stdout: toDebugLog,
-          stderr: toErrorLog,
-        );
-
-        final exitCode = await Future.any([
-          ?flutterBuildCompleter?.future,
-          executionFuture,
-        ]);
-
-        return exitCode == 0;
-      },
-    );
   }
 
   if (context.ides.isNotEmpty) {
@@ -1296,10 +1244,4 @@ Future<bool> _runGenerate(
       interactive: interactive,
     );
   });
-}
-
-Script? _locateFlutterBuildScript(Directory serverDir) {
-  final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-  final scripts = Scripts.fromPubspecFile(pubspecFile);
-  return scripts['flutter_build'];
 }

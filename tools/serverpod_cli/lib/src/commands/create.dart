@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
@@ -222,7 +220,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     bool force, {
     required bool? interactive,
   }) async {
-    final flutterBuildCompleter = Completer<int>();
     final state = CreateConfigState(template);
     final holder = CreateAppStateHolder(state);
 
@@ -248,7 +245,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
           projectPath = await performCreate(
             name,
             force,
-            flutterBuildCompleter: flutterBuildCompleter,
             interactive: interactive,
             context: state.toTemplateContext(),
           );
@@ -258,11 +254,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
           await _shutdownTuiApp(success ? 0 : 1);
         },
         onQuit: () => _shutdownTuiApp(1),
-        onSkipFlutterBuild: () {
-          if (!flutterBuildCompleter.isCompleted) {
-            flutterBuildCompleter.complete(0);
-          }
-        },
       ),
     );
   }
