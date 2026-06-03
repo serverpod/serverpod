@@ -168,6 +168,7 @@ void main() {
     ProtocolChangeClassifier? classifyProtocolChange,
     FlutterProcess? flutterProcess,
     Future<void> Function()? flutterAppRestartAction,
+    bool Function()? flutterDependenciesChangedSinceLastCheck,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -193,6 +194,8 @@ void main() {
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterProcessProvider: () => flutterProcess,
       flutterAppRestartAction: flutterAppRestartAction,
+      flutterDependenciesChangedSinceLastCheck:
+          flutterDependenciesChangedSinceLastCheck,
     );
   }
 
@@ -1078,6 +1081,120 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a watch session where the Flutter dependency closure changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          flutterDependenciesChangedSinceLastCheck: () => true,
+        );
+      });
+
+      test(
+        'when only the dependencies change, '
+        'then the Flutter app is relaunched without recompiling the server.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 1);
+          // No server compile, and a full relaunch (the action) rather than the
+          // in-process hot reload.
+          expect(compiler.calls, isEmpty);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when dependencies and dart files change together, '
+        'then the server reloads and the app is relaunched instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(restartActionCalls, 1);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the Flutter dependency file changed but the '
+    'closure did not,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          flutterDependenciesChangedSinceLastCheck: () => false,
+        );
+      });
+
+      test(
+        'when dart files also change, '
+        'then the Flutter app is hot reloaded, not relaunched.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, ['reload']);
+        },
+      );
+
+      test(
+        'when only the dependency file changed, '
+        'then nothing is relaunched, reloaded, or recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, isEmpty);
+          expect(compiler.calls, isEmpty);
+        },
+      );
+    },
+  );
 
   group(
     'Given an in-flight forceReload and a Flutter app restart action,',

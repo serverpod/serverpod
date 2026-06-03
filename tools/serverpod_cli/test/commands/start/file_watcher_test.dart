@@ -103,6 +103,71 @@ void main() {
     },
   );
 
+  group('Given a FileWatcher watching a .dart_tool directory', () {
+    late FileWatcher watcher;
+    late String dartToolDir;
+
+    setUp(() async {
+      dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+
+      watcher = FileWatcher(
+        watchPaths: [dartToolDir],
+        debounceDelay: const Duration(milliseconds: 200),
+      );
+    });
+
+    test(
+      'when package_graph.json changes, '
+      'then it emits a FileChangeEvent with only flutterDependenciesChanged set',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        await File(
+          p.join(dartToolDir, 'package_graph.json'),
+        ).writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent;
+
+        expect(event.flutterDependenciesChanged, isTrue);
+        // The Flutter-only scope: package_graph changes must not drive the
+        // server FES restart, and .dart_tool churn is not a static change.
+        expect(event.packageConfigChanged, isFalse);
+        expect(event.staticFilesChanged, isFalse);
+        expect(event.dartFiles, isEmpty);
+      },
+    );
+
+    test(
+      'when package_config.json and other .dart_tool files change alongside '
+      'package_graph.json, '
+      'then only flutterDependenciesChanged is set',
+      () async {
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
+
+        // All within one debounce window. package_config.json and the build
+        // artifact must be ignored inside .dart_tool.
+        await File(
+          p.join(dartToolDir, 'package_config.json'),
+        ).writeAsString('{"configVersion":2,"packages":[]}');
+        await File(
+          p.join(dartToolDir, 'version'),
+        ).writeAsString('3.12.0');
+        await File(
+          p.join(dartToolDir, 'package_graph.json'),
+        ).writeAsString('{"roots":[],"packages":[]}');
+
+        final event = await firstEvent;
+
+        expect(event.flutterDependenciesChanged, isTrue);
+        expect(event.packageConfigChanged, isFalse);
+        expect(event.staticFilesChanged, isFalse);
+      },
+    );
+  });
+
   group('Given a list of FileChangeEvents', () {
     test(
       'when merge is called on a single event, '
@@ -156,6 +221,20 @@ void main() {
         final e2 = FileChangeEvent(dartFiles: {}, packageConfigChanged: true);
         final result = [e1, e2].merge();
         expect(result.packageConfigChanged, isTrue);
+      },
+    );
+
+    test(
+      'when merge is called on events where one has flutterDependenciesChanged, '
+      'then result has flutterDependenciesChanged true',
+      () {
+        final e1 = FileChangeEvent(dartFiles: {});
+        final e2 = FileChangeEvent(
+          dartFiles: {},
+          flutterDependenciesChanged: true,
+        );
+        final result = [e1, e2].merge();
+        expect(result.flutterDependenciesChanged, isTrue);
       },
     );
   });

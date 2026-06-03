@@ -10,6 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -32,6 +33,7 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -654,6 +656,30 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     await spawnFlutterAppIfNeeded();
   }
 
+  // Track the Flutter app's resolved dependency closure so a dependency change
+  // (which a hot restart can't pick up) auto-triggers a full relaunch. Disabled
+  // when there is no Flutter package or its dependencies haven't been resolved.
+  FlutterDependencyTracker? flutterDependencyTracker;
+  if (config.hasFlutterPackage) {
+    final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
+    final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+      flutterPackageDir,
+    );
+    if (dartToolDir != null) {
+      flutterDependencyTracker = FlutterDependencyTracker(
+        dartToolDir: dartToolDir,
+        flutterPackageName: parsePubspec(
+          File(p.join(flutterPackageDir, 'pubspec.yaml')),
+        ).name,
+      );
+    } else {
+      log.debug(
+        'Flutter dependency tracking disabled: no '
+        '.dart_tool/package_config.json found for $flutterPackageDir.',
+      );
+    }
+  }
+
   // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
@@ -682,6 +708,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
             await spawnFlutterAppIfNeeded();
           }
         : null,
+    flutterDependenciesChangedSinceLastCheck:
+        flutterDependencyTracker?.refreshIfChanged,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -742,6 +770,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         ),
         if (config.hasFlutterPackage)
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
+        // The resolution's .dart_tool holds package_graph.json, watched to
+        // detect Flutter dependency changes (workspace root or, in a
+        // non-workspace project, the Flutter package's own .dart_tool).
+        if (flutterDependencyTracker != null)
+          p.absolute(flutterDependencyTracker.dartToolDir),
       },
     );
     fileChangeSub = watcher.onFilesChanged

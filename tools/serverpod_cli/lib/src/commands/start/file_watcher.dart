@@ -18,6 +18,12 @@ class FileChangeEvent {
   /// Whether package_config.json was modified in this batch.
   final bool packageConfigChanged;
 
+  /// Whether the Flutter app's dependency graph (`package_graph.json`) was
+  /// modified in this batch. Signals that the Flutter app may need a full
+  /// relaunch to pick up new dependencies; the actual decision is made by
+  /// comparing the dependency fingerprint (see `FlutterDependencyTracker`).
+  final bool flutterDependenciesChanged;
+
   /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
   ///
   /// Used to trigger a browser refresh without recompilation.
@@ -27,12 +33,17 @@ class FileChangeEvent {
     required this.dartFiles,
     this.modelFiles = const {},
     this.packageConfigChanged = false,
+    this.flutterDependenciesChanged = false,
     this.staticFilesChanged = false,
   });
 }
 
 bool _isModelFile(String filePath) {
   return spyModelFileExtensions.any((ext) => filePath.endsWith(ext));
+}
+
+bool _isWithinDartTool(String filePath) {
+  return p.split(filePath).contains('.dart_tool');
 }
 
 /// Merges multiple buffered [FileChangeEvent]s into a single event.
@@ -44,12 +55,14 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
     final dartFiles = <String>{};
     final modelFiles = <String>{};
     var packageConfigChanged = false;
+    var flutterDependenciesChanged = false;
     var staticFilesChanged = false;
 
     for (final event in this) {
       dartFiles.addAll(event.dartFiles);
       modelFiles.addAll(event.modelFiles);
       packageConfigChanged |= event.packageConfigChanged;
+      flutterDependenciesChanged |= event.flutterDependenciesChanged;
       staticFilesChanged |= event.staticFilesChanged;
     }
 
@@ -57,6 +70,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       dartFiles: dartFiles,
       modelFiles: modelFiles,
       packageConfigChanged: packageConfigChanged,
+      flutterDependenciesChanged: flutterDependenciesChanged,
       staticFilesChanged: staticFilesChanged,
     );
   }
@@ -108,11 +122,19 @@ class FileWatcher {
           final dartFiles = <String>{};
           final modelFiles = <String>{};
           var packageConfigChanged = false;
+          var flutterDependenciesChanged = false;
           var staticFilesChanged = false;
 
           for (final event in events) {
             final filePath = event.path;
-            if (p.basename(filePath) == 'package_config.json') {
+            if (_isWithinDartTool(filePath)) {
+              // Inside .dart_tool only the dependency graph is relevant.
+              // Everything else (build artifacts, pub metadata) is ignored so
+              // it triggers neither a browser refresh nor the FES restart path.
+              if (p.basename(filePath) == 'package_graph.json') {
+                flutterDependenciesChanged = true;
+              }
+            } else if (p.basename(filePath) == 'package_config.json') {
               packageConfigChanged = true;
             } else if (_isModelFile(filePath)) {
               modelFiles.add(filePath);
@@ -127,6 +149,7 @@ class FileWatcher {
             dartFiles: dartFiles,
             modelFiles: modelFiles,
             packageConfigChanged: packageConfigChanged,
+            flutterDependenciesChanged: flutterDependenciesChanged,
             staticFilesChanged: staticFilesChanged,
           );
         })
@@ -135,6 +158,7 @@ class FileWatcher {
               e.dartFiles.isNotEmpty ||
               e.modelFiles.isNotEmpty ||
               e.packageConfigChanged ||
+              e.flutterDependenciesChanged ||
               e.staticFilesChanged,
         );
   }
