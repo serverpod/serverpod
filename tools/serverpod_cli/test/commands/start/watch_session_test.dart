@@ -120,6 +120,9 @@ class _FakeFlutter extends Fake implements FlutterProcess {
   bool restartSuccess = true;
 
   @override
+  bool isRunning = true;
+
+  @override
   bool get isVmServiceConnected => _vmServiceConnected;
   set isVmServiceConnected(bool value) => _vmServiceConnected = value;
 
@@ -1078,6 +1081,52 @@ void main() {
         await session.restartFlutterApp();
 
         expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given a watch session with a running Flutter process,', () {
+    setUp(() {
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: _FakeFlutter(),
+      );
+    });
+
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports true',
+      () {
+        expect(session.isFlutterAppRunning, isTrue);
+      },
+    );
+  });
+
+  group('Given a watch session whose Flutter process has stopped,', () {
+    setUp(() {
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: _FakeFlutter()..isRunning = false,
+      );
+    });
+
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports false',
+      () {
+        expect(session.isFlutterAppRunning, isFalse);
+      },
+    );
+  });
+
+  group('Given a watch session with no Flutter process,', () {
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports false',
+      () {
+        expect(session.isFlutterAppRunning, isFalse);
       },
     );
   });

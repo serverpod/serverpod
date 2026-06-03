@@ -108,6 +108,10 @@ class WatchSession {
   final FlutterProcess? Function() _flutterProcessProvider;
   FlutterProcess? get _flutterProcess => _flutterProcessProvider();
 
+  /// Whether a Flutter app process is currently running. Used e.g. to label
+  /// the Ctrl+R action as a start or a restart.
+  bool get isFlutterAppRunning => _flutterProcess?.isRunning ?? false;
+
   /// (Re)launches the Flutter app: kills the running `flutter run` process (if
   /// any) and starts a fresh one — launching it from scratch when none is
   /// running yet, e.g. after a `--no-flutter` start. Supplied by the

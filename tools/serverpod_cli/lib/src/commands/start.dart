@@ -1166,7 +1166,9 @@ Future<void> _runTuiBackend({
         holder.onRestartFlutterApp = () {
           runTrackedAction(
             holder,
-            'Restart Flutter app',
+            ctx.session.isFlutterAppRunning
+                ? 'Restart Flutter app'
+                : 'Start Flutter app',
             ctx.session.restartFlutterApp,
           );
         };
