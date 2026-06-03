@@ -12,14 +12,9 @@ import '../test_util/mtime_helpers.dart';
 class _FakeConfig extends Fake implements GeneratorConfig {
   final String serverDir;
   final Map<String, List<String>> _sharedModels;
-  final List<ModuleConfig> _modulesDependent;
 
-  _FakeConfig(
-    this.serverDir, {
-    Map<String, List<String>>? sharedModels,
-    List<ModuleConfig>? modulesDependent,
-  }) : _sharedModels = sharedModels ?? {},
-       _modulesDependent = modulesDependent ?? [];
+  _FakeConfig(this.serverDir, {Map<String, List<String>>? sharedModels})
+    : _sharedModels = sharedModels ?? {};
 
   @override
   List<String> get serverPackageDirectoryPathParts => [serverDir];
@@ -52,9 +47,6 @@ class _FakeConfig extends Fake implements GeneratorConfig {
     for (final pathParts in _sharedModels.values)
       p.joinAll([serverDir, ...pathParts, 'lib', 'src', 'generated']),
   ];
-
-  @override
-  List<ModuleConfig> get modulesDependent => _modulesDependent;
 }
 
 void main() {
@@ -246,50 +238,6 @@ void main() {
       () async {
         final sources = await enumerateSourceFiles(sharedConfig);
         expect(await isGenerationUpToDate(sharedConfig, sources), isFalse);
-      },
-    );
-  });
-
-  group('Given a dependent module with a newer model file', () {
-    late _FakeConfig moduleConfig;
-    late File moduleModel;
-
-    setUp(() async {
-      final moduleDir = Directory(p.join(tempDir.path, 'dep_module'));
-      moduleModel = File(
-        p.join(moduleDir.path, 'lib', 'src', 'mod.spy.yaml'),
-      )..createSync(recursive: true);
-      await moduleModel.writeAsString('class: ModModel');
-
-      moduleConfig = _FakeConfig(
-        tempDir.path,
-        modulesDependent: [
-          ModuleConfig(
-            type: PackageType.server,
-            name: 'dep',
-            nickname: 'dep',
-            migrationVersions: [],
-            serverPackageDirectoryPathParts: p.split(moduleDir.path),
-          ),
-        ],
-      );
-
-      await writeGenerationStamp(moduleConfig, generatedFiles: {});
-      final stampMtime = stampFile.statSync().modified;
-      await waitForMtimeAfter(stampMtime, tempDir);
-
-      // Touch the module model file after the stamp.
-      await moduleModel.writeAsString(
-        'class: ModModel\nfields:\n  name: String',
-      );
-    });
-
-    test(
-      'when isGenerationUpToDate is called, '
-      'then it returns false',
-      () async {
-        final sources = await enumerateSourceFiles(moduleConfig);
-        expect(await isGenerationUpToDate(moduleConfig, sources), isFalse);
       },
     );
   });

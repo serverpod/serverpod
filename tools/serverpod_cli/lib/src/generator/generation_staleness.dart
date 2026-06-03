@@ -170,14 +170,5 @@ Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
     await collect(Directory(path), _sourceExtensions);
   }
 
-  // Dependent modules contribute their models to this project's protocol; only
-  // their model files affect generation here (their endpoints are their own).
-  for (final module in config.modulesDependent) {
-    await collect(
-      Directory(p.joinAll(module.libSourcePathParts)),
-      modelFileExtensions,
-    );
-  }
-
   return sources;
 }
