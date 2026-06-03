@@ -452,15 +452,6 @@ void main() async {
       );
     });
 
-    tearDown(() async {
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-    });
-
     test(
       'when upgrading the project to a full project '
       'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
@@ -489,21 +480,8 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
-        );
-
+        // The server boots against embedded PostgreSQL (config/development.yaml
+        // sets `dataPath`), so no external database needs provisioning.
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -513,8 +491,10 @@ void main() async {
         var startProjectExitCode = await startProjectProcess.exitCode;
         expect(startProjectExitCode, 0);
       },
+      // The generated server now uses embedded PostgreSQL; drop this skip once
+      // embedded PG is verified on Windows CI.
       skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
+          ? 'Pending: verify embedded PostgreSQL on Windows CI'
           : null,
     );
   });
@@ -769,17 +749,8 @@ void main() async {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
-    tearDown(() async {
+    tearDown(() {
       createProcess.kill();
-
-      await runProcess(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-        skipBatExtentionOnWindows: true,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) ;
     });
 
     test(
@@ -833,21 +804,8 @@ void main() async {
           reason: 'Failed to upgrade the serverpod project.',
         );
 
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        var dockerExitCode = await docker.exitCode;
-
-        expect(
-          dockerExitCode,
-          0,
-          reason: 'Docker with postgres failed to start.',
-        );
-
+        // The server boots against embedded PostgreSQL (config/development.yaml
+        // sets `dataPath`), so no external database needs provisioning.
         var startProjectProcess = await startProcess(
           'dart',
           ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
@@ -874,8 +832,10 @@ void main() async {
 
         expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
       },
+      // The generated server now uses embedded PostgreSQL; drop this skip once
+      // embedded PG is verified on Windows CI.
       skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
+          ? 'Pending: verify embedded PostgreSQL on Windows CI'
           : null,
     );
   });

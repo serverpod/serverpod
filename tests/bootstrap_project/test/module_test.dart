@@ -479,9 +479,9 @@ void main() {
   });
 
   group(
-    'Given a created module project and a running docker environment',
+    'Given a created module project',
     () {
-      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+      final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
       late Process createProcess;
 
@@ -503,33 +503,18 @@ void main() {
           },
         );
         assert((await createProcess.exitCode) == 0);
-
-        final docker = await startProcess(
-          'docker',
-          ['compose', 'up', '--build', '--detach'],
-          workingDirectory: commandRoot,
-          ignorePlatform: true,
-        );
-
-        assert((await docker.exitCode) == 0);
       });
 
-      tearDown(() async {
+      tearDown(() {
         createProcess.kill();
-
-        await runProcess(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-          skipBatExtentionOnWindows: true,
-        );
-
-        while (!await isNetworkPortAvailable(8090)) ;
       });
 
       test(
         'when running tests then example unit and integration tests passes',
         () async {
+          // The generated server's integration tests run on embedded
+          // PostgreSQL (config/test.yaml sets `dataPath`), so no external
+          // database needs to be provisioned here.
           var testProcess = await startProcess(
             'dart',
             ['test'],
@@ -544,8 +529,11 @@ void main() {
         },
       );
     },
+    // Previously skipped because the Postgres docker image is unavailable on
+    // Windows GitHub Actions. The generated tests now use embedded PostgreSQL,
+    // so this skip can be dropped once embedded PG is verified on Windows CI.
     skip: Platform.isWindows
-        ? 'Windows does not support postgres docker image in github actions'
+        ? 'Pending: verify embedded PostgreSQL on Windows CI'
         : null,
   );
 }
