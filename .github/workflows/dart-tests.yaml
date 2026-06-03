@@ -505,12 +505,9 @@ jobs:
           colima start
       - name: Run unit tests
         shell: bash
-        # TODO: Switch to util/run_tests_bootstrap once we manage to run all
-        # tests in a reasonable time. Currently they take up to 40 minutes.
-        # run: cd ../.. && util/run_tests_bootstrap
         run: |
           export SERVERPOD_HOME="$(cd ../.. && pwd)"
-          dart test --concurrency=1 --reporter=failures-only
+          dart test --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
