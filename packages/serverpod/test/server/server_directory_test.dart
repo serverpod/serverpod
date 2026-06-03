@@ -75,5 +75,29 @@ webServer:
         expect(p.equals(pod.serverDirectory.path, tempServerDir!.path), isTrue);
       },
     );
+
+    test(
+      'when Serverpod is constructed without serverDirectory while cwd points '
+      'at the temp dir, then it falls back to cwd and loads config from there',
+      () async {
+        // Point cwd at the laid-out server dir; the constructor should resolve
+        // serverDirectory to it via the Directory.current fallback.
+        Directory.current = tempServerDir;
+        final cwd = Directory.current;
+
+        // Pin run mode so SERVERPOD_RUN_MODE in the environment can't
+        // redirect the load to a config file that doesn't exist.
+        final pod = Serverpod(
+          ['--mode', 'development'],
+          internal.Protocol(),
+          EmptyEndpoints(),
+        );
+        addTearDown(() => pod.shutdown(exitProcess: false));
+
+        // Default would be 8080; our file pins it to 0.
+        expect(pod.config.apiServer.port, equals(0));
+        expect(p.equals(pod.serverDirectory.path, cwd.path), isTrue);
+      },
+    );
   });
 }
