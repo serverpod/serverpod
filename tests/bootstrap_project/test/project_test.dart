@@ -148,8 +148,10 @@ void main() async {
           reason: 'Failed to get 200 response from server.',
         );
       },
+      // The generated server now uses embedded PostgreSQL; drop this skip once
+      // embedded PG is verified on Windows CI.
       skip: Platform.isWindows
-          ? 'Windows does not support postgres docker image in github actions'
+          ? 'Pending: verify embedded PostgreSQL on Windows CI'
           : null,
     );
   });
