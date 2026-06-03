@@ -151,6 +151,7 @@ class _SignInWidgetState extends State<SignInWidget> {
 
     if (!auth.idp.hasAny) {
       return Material(
+        type: MaterialType.transparency,
         child: Center(
           child: Text(
             texts.noAuthenticationProvidersConfigured,
@@ -228,6 +229,7 @@ class _SignInWidgetState extends State<SignInWidget> {
 
     // TODO: Make this adaptative.
     return Material(
+      type: MaterialType.transparency,
       child: SignInWidgetsColumn(
         spacing: 12,
         children: [
