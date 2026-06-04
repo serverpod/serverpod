@@ -65,26 +65,50 @@ class FlutterDependencyTracker {
   }
 
   /// Resolves the `.dart_tool` directory whose `package_graph.json` describes
-  /// [flutterPackageDir]'s dependency resolution.
-  ///
-  /// Walks up from [flutterPackageDir] to the nearest ancestor (including
-  /// itself) that contains `.dart_tool/package_config.json` — the canonical
-  /// marker of a pub resolution root, always written by `pub get` (unlike
-  /// `package_graph.json`, which requires a newer SDK). In a workspace this
-  /// resolves to the workspace root; in a non-workspace project it resolves to
-  /// the package's own directory. Returns `null` if no such directory exists
-  /// (e.g. dependencies have not been fetched yet).
-  static String? resolveDartToolDir(String flutterPackageDir) {
+  /// [flutterPackageDir]'s dependency resolution: the nearest ancestor
+  /// (including itself) whose `.dart_tool/package_config.json` lists
+  /// [flutterPackageName] — the workspace root in a workspace, the package's
+  /// own directory otherwise. The membership check prevents latching onto an
+  /// unrelated resolution root. Returns `null` if none exists (e.g.
+  /// dependencies have not been fetched yet).
+  static String? resolveDartToolDir(
+    String flutterPackageDir, {
+    required String flutterPackageName,
+  }) {
     var dir = p.absolute(flutterPackageDir);
     while (true) {
       final dartTool = p.join(dir, '.dart_tool');
-      if (File(p.join(dartTool, 'package_config.json')).existsSync()) {
+      if (_packageConfigContains(dartTool, flutterPackageName)) {
         return dartTool;
       }
       final parent = p.dirname(dir);
       if (parent == dir) return null; // Reached the filesystem root.
       dir = parent;
     }
+  }
+
+  /// Whether `<dartTool>/package_config.json` exists, parses, and lists a
+  /// package named [packageName]. Unreadable or malformed files count as a
+  /// non-match so the walk continues to the next ancestor.
+  static bool _packageConfigContains(String dartTool, String packageName) {
+    final file = File(p.join(dartTool, 'package_config.json'));
+    if (!file.existsSync()) return false;
+
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(file.readAsStringSync());
+    } on FormatException {
+      return false;
+    } on IOException {
+      return false;
+    }
+    if (decoded is! Map<String, dynamic>) return false;
+
+    final packages = decoded['packages'];
+    if (packages is! List) return false;
+    return packages.any(
+      (pkg) => pkg is Map<String, dynamic> && pkg['name'] == packageName,
+    );
   }
 
   /// Recomputes the dependency closure, compares it to the cached value, and

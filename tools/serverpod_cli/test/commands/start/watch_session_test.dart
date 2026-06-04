@@ -1249,8 +1249,7 @@ void main() {
   );
 
   group(
-    'Given a watch session where the Flutter dependency file changed but the '
-    'closure did not,',
+    'Given a watch session where the Flutter dependency file changed but the closure did not,',
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;

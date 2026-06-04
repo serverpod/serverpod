@@ -140,8 +140,7 @@ void main() {
     );
 
     test(
-      'when package_config.json and other .dart_tool files change alongside '
-      'package_graph.json, '
+      'when package_config.json and other .dart_tool files change alongside package_graph.json, '
       'then only flutterDependenciesChanged is set',
       () async {
         final firstEvent = watcher.onFilesChanged.first;

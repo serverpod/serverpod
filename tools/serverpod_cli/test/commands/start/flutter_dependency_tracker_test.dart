@@ -5,237 +5,273 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:test/test.dart';
 
+/// Runs a real `dart pub get` in [dir]. Fixtures use only path and workspace
+/// dependencies, so resolution works offline and the tests exercise the actual
+/// `package_graph.json` and `package_config.json` files pub generates.
+Future<void> _pubGet(String dir) async {
+  final result = await Process.run(Platform.resolvedExecutable, [
+    'pub',
+    'get',
+    '--offline',
+  ], workingDirectory: dir);
+  if (result.exitCode != 0) {
+    fail('pub get failed in $dir:\n${result.stdout}\n${result.stderr}');
+  }
+}
+
+String _pubspec(
+  String name, {
+  String version = '1.0.0',
+  List<String>? workspace,
+  bool workspaceMember = false,
+  Map<String, String> deps = const {},
+  Map<String, String> devDeps = const {},
+  String? flutterBlock,
+}) {
+  final buffer = StringBuffer()
+    ..writeln('name: $name')
+    ..writeln('version: $version')
+    ..writeln('environment:')
+    ..writeln('  sdk: ^3.6.0');
+  if (workspace != null) {
+    buffer.writeln('workspace:');
+    for (final member in workspace) {
+      buffer.writeln('  - $member');
+    }
+  }
+  if (workspaceMember) buffer.writeln('resolution: workspace');
+  if (deps.isNotEmpty) {
+    buffer.writeln('dependencies:');
+    deps.forEach((dep, path) {
+      buffer
+        ..writeln('  $dep:')
+        ..writeln('    path: $path');
+    });
+  }
+  if (devDeps.isNotEmpty) {
+    buffer.writeln('dev_dependencies:');
+    devDeps.forEach((dep, path) {
+      buffer
+        ..writeln('  $dep:')
+        ..writeln('    path: $path');
+    });
+  }
+  if (flutterBlock != null) buffer.writeln(flutterBlock);
+  return buffer.toString();
+}
+
 void main() {
   late Directory tempDir;
-  late String dartToolDir;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('flutter_dep_tracker_');
-    dartToolDir = p.join(tempDir.path, '.dart_tool');
-    await Directory(dartToolDir).create();
   });
 
   tearDown(() async {
     await tempDir.delete(recursive: true);
   });
 
-  void writeGraph(Map<String, dynamic> graph) {
-    File(
-      p.join(dartToolDir, 'package_graph.json'),
-    ).writeAsStringSync(jsonEncode(graph));
+  void write(String path, String contents) {
+    File(path)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(contents);
   }
 
-  Map<String, dynamic> packageNamed(Map<String, dynamic> graph, String name) {
-    return (graph['packages'] as List).cast<Map<String, dynamic>>().firstWhere(
-      (pkg) => pkg['name'] == name,
-    );
-  }
+  // ---------------------------------------------------------------------
+  // Real-resolution fixtures: a workspace whose dependency files are
+  // produced by an actual `pub get`, mirroring generated Serverpod projects.
+  // Layout: app_flutter -> app_client -> dep_pure (transitive), app_server ->
+  // dep_server_only, and dep_dev as a dev dependency of the app. Third-party
+  // packages live outside the workspace and are wired up as path deps.
+  // ---------------------------------------------------------------------
 
-  /// Creates a fake package source directory holding [pubspec], returning its
-  /// rootUri relative to the `.dart_tool` directory.
-  String writePackage(String name, String pubspec) {
-    final dir = Directory(p.join(tempDir.path, 'pkgs', name))
-      ..createSync(recursive: true);
-    File(p.join(dir.path, 'pubspec.yaml')).writeAsStringSync(pubspec);
-    return '../pkgs/$name';
-  }
+  late String wsDir;
 
-  void writePackageConfig(Map<String, String> rootUris) {
-    File(p.join(dartToolDir, 'package_config.json')).writeAsStringSync(
-      jsonEncode({
-        'configVersion': 2,
-        'packages': [
-          for (final entry in rootUris.entries)
-            {'name': entry.key, 'rootUri': entry.value, 'packageUri': 'lib/'},
-        ],
-      }),
-    );
-  }
-
-  // A Flutter app that transitively depends on the client (and http) but not
-  // the server. flutter_test is a dev dependency only.
-  Map<String, dynamic> baseGraph() => {
-    'roots': ['app_flutter', 'app_server', 'app_client'],
-    'packages': [
-      {
-        'name': 'app_flutter',
-        'version': '1.0.0',
-        'dependencies': ['app_client', 'http'],
-        'devDependencies': ['flutter_test'],
-      },
-      {
-        'name': 'app_client',
-        'version': '1.0.0',
-        'dependencies': ['http'],
-      },
-      {
-        'name': 'app_server',
-        'version': '1.0.0',
-        'dependencies': ['postgres'],
-      },
-      {'name': 'http', 'version': '1.2.0', 'dependencies': <String>[]},
-      {'name': 'postgres', 'version': '3.0.0', 'dependencies': <String>[]},
-      {'name': 'flutter_test', 'version': '0.0.0', 'dependencies': <String>[]},
-    ],
-  };
-
-  /// Pure-Dart source dirs + package_config for the app's closure packages.
-  Map<String, String> closureRootUris() => {
-    'app_flutter': writePackage('app_flutter', 'name: app_flutter\n'),
-    'app_client': writePackage('app_client', 'name: app_client\n'),
-    'http': writePackage('http', 'name: http\n'),
-  };
-
-  group(
-    'Given a Flutter app dependency graph of pure-Dart packages '
-    'in a workspace,',
-    () {
-      late FlutterDependencyTracker tracker;
-
-      setUp(() {
-        writeGraph(baseGraph());
-        writePackageConfig(closureRootUris());
-        tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'app_flutter',
-        );
-      });
-
-      test(
-        'when a server-only dependency version changes, '
-        'then no change is reported',
-        () {
-          final graph = baseGraph();
-          packageNamed(graph, 'postgres')['version'] = '3.1.0';
-          writeGraph(graph);
-
-          expect(tracker.refresh(), FlutterDependencyChange.none);
-        },
-      );
-
-      test(
-        'when a dependency inside the app closure changes version, '
-        'then a pure-Dart change is reported',
-        () {
-          final graph = baseGraph();
-          packageNamed(graph, 'http')['version'] = '1.3.0';
-          writeGraph(graph);
-
-          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
-        },
-      );
-
-      test(
-        'when a pure-Dart dependency is added to the app, '
-        'then a pure-Dart change is reported',
-        () {
-          final graph = baseGraph();
-          (packageNamed(graph, 'app_flutter')['dependencies'] as List).add(
-            'redis',
-          );
-          (graph['packages'] as List).add({
-            'name': 'redis',
-            'version': '1.0.0',
-            'dependencies': <String>[],
-          });
-          writeGraph(graph);
-          writePackageConfig({
-            ...closureRootUris(),
-            'redis': writePackage('redis', 'name: redis\n'),
-          });
-
-          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
-        },
-      );
-
-      test(
-        'when a dependency is removed from the app, '
-        'then a pure-Dart change is reported',
-        () {
-          // Stale native code in the running binary is harmless, so removals
-          // never require more than a hot restart.
-          final graph = baseGraph();
-          packageNamed(graph, 'app_flutter')['dependencies'] = ['http'];
-          writeGraph(graph);
-
-          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
-        },
-      );
-
-      test(
-        'when a dev dependency of the app changes, '
-        'then no change is reported',
-        () {
-          final graph = baseGraph();
-          packageNamed(graph, 'flutter_test')['version'] = '0.1.0';
-          writeGraph(graph);
-
-          expect(tracker.refresh(), FlutterDependencyChange.none);
-        },
-      );
-
-      test(
-        'when the graph is rewritten with identical contents, '
-        'then no change is reported',
-        () {
-          writeGraph(baseGraph());
-
-          expect(tracker.refresh(), FlutterDependencyChange.none);
-        },
-      );
-    },
-  );
-
-  /// Sets up an app depending on a single package `dep@1.0.0` (described by
-  /// [depPubspec]), then bumps it to 1.0.1 in the graph so the next
-  /// `refresh()` classifies the bump.
-  FlutterDependencyTracker prepareBumpedDependency({
-    required String depPubspec,
-    bool listedInPackageConfig = true,
-    bool withBuildHook = false,
+  void writeThirdParty(
+    String name, {
+    String version = '1.0.0',
+    String? flutterBlock,
   }) {
-    Map<String, dynamic> graph(String version) => {
-      'roots': ['app_flutter'],
-      'packages': [
-        {
-          'name': 'app_flutter',
-          'version': '1.0.0',
-          'dependencies': ['dep'],
-        },
-        {'name': 'dep', 'version': version, 'dependencies': <String>[]},
-      ],
-    };
+    write(
+      p.join(tempDir.path, 'third_party', name, 'pubspec.yaml'),
+      _pubspec(name, version: version, flutterBlock: flutterBlock),
+    );
+  }
 
-    final depRoot = writePackage('dep', depPubspec);
-    if (withBuildHook) {
-      final hookDir = Directory(p.join(tempDir.path, 'pkgs', 'dep', 'hook'))
-        ..createSync(recursive: true);
-      File(
-        p.join(hookDir.path, 'build.dart'),
-      ).writeAsStringSync('void main() {}');
-    }
-    writePackageConfig({
-      'app_flutter': writePackage('app_flutter', 'name: app_flutter\n'),
-      if (listedInPackageConfig) 'dep': depRoot,
-    });
+  void writeAppFlutterPubspec({Map<String, String>? deps}) {
+    write(
+      p.join(wsDir, 'app_flutter', 'pubspec.yaml'),
+      _pubspec(
+        'app_flutter',
+        workspaceMember: true,
+        deps: deps ?? {'app_client': '../app_client'},
+        devDeps: {'dep_dev': '../../third_party/dep_dev'},
+      ),
+    );
+  }
 
-    writeGraph(graph('1.0.0'));
-    final tracker = FlutterDependencyTracker(
-      dartToolDir: dartToolDir,
+  Future<FlutterDependencyTracker> createWorkspaceTracker() async {
+    wsDir = p.join(tempDir.path, 'ws');
+    writeThirdParty('dep_pure');
+    writeThirdParty('dep_dev');
+    writeThirdParty('dep_server_only');
+    write(
+      p.join(wsDir, 'pubspec.yaml'),
+      _pubspec(
+        'fixture_root',
+        workspace: ['app_flutter', 'app_client', 'app_server'],
+      ),
+    );
+    writeAppFlutterPubspec();
+    write(
+      p.join(wsDir, 'app_client', 'pubspec.yaml'),
+      _pubspec(
+        'app_client',
+        workspaceMember: true,
+        deps: {'dep_pure': '../../third_party/dep_pure'},
+      ),
+    );
+    write(
+      p.join(wsDir, 'app_server', 'pubspec.yaml'),
+      _pubspec(
+        'app_server',
+        workspaceMember: true,
+        deps: {'dep_server_only': '../../third_party/dep_server_only'},
+      ),
+    );
+    await _pubGet(wsDir);
+    return FlutterDependencyTracker(
+      dartToolDir: p.join(wsDir, '.dart_tool'),
       flutterPackageName: 'app_flutter',
     );
-    writeGraph(graph('1.0.1'));
-    return tracker;
+  }
+
+  group('Given a real pub workspace with a Flutter app,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      tracker = await createWorkspaceTracker();
+    });
+
+    test(
+      'when a server-only dependency version changes, '
+      'then no change is reported',
+      () async {
+        writeThirdParty('dep_server_only', version: '1.0.1');
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.none);
+      },
+    );
+
+    test(
+      'when a transitive dependency of the app changes version, '
+      'then a pure-Dart change is reported',
+      () async {
+        // dep_pure is reached only through app_client.
+        writeThirdParty('dep_pure', version: '1.0.1');
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+      },
+    );
+
+    test(
+      'when a pure-Dart dependency is added to the app, '
+      'then a pure-Dart change is reported',
+      () async {
+        writeThirdParty('dep_added');
+        writeAppFlutterPubspec(
+          deps: {
+            'app_client': '../app_client',
+            'dep_added': '../../third_party/dep_added',
+          },
+        );
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+      },
+    );
+
+    test(
+      'when a dependency is removed from the app, '
+      'then a pure-Dart change is reported',
+      () async {
+        // Stale native code in the running binary is harmless, so removals
+        // never require more than a hot restart.
+        writeAppFlutterPubspec(deps: {});
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+      },
+    );
+
+    test(
+      'when a dev dependency of the app changes, '
+      'then no change is reported',
+      () async {
+        writeThirdParty('dep_dev', version: '1.0.1');
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.none);
+      },
+    );
+
+    test(
+      'when pub get runs again with no pubspec changes, '
+      'then no change is reported',
+      () async {
+        await _pubGet(wsDir);
+
+        expect(tracker.refresh(), FlutterDependencyChange.none);
+      },
+    );
+  });
+
+  /// Resolves a standalone app depending on `dep@1.0.0` (described by
+  /// [depFlutterBlock]) with a real `pub get`, bumps it to 1.0.1, re-resolves,
+  /// and returns the tracker's classification of the bump.
+  Future<FlutterDependencyChange> classifyRealDependencyBump({
+    String? depFlutterBlock,
+    bool withBuildHook = false,
+    bool corruptDepPubspecAfterResolve = false,
+  }) async {
+    final appDir = p.join(tempDir.path, 'app');
+    writeThirdParty('dep', flutterBlock: depFlutterBlock);
+    if (withBuildHook) {
+      write(
+        p.join(tempDir.path, 'third_party', 'dep', 'hook', 'build.dart'),
+        'void main() {}',
+      );
+    }
+    write(
+      p.join(appDir, 'pubspec.yaml'),
+      _pubspec('app_flutter', deps: {'dep': '../third_party/dep'}),
+    );
+    await _pubGet(appDir);
+    final tracker = FlutterDependencyTracker(
+      dartToolDir: p.join(appDir, '.dart_tool'),
+      flutterPackageName: 'app_flutter',
+    );
+
+    writeThirdParty('dep', version: '1.0.1', flutterBlock: depFlutterBlock);
+    await _pubGet(appDir);
+    if (corruptDepPubspecAfterResolve) {
+      write(
+        p.join(tempDir.path, 'third_party', 'dep', 'pubspec.yaml'),
+        'name: [unclosed',
+      );
+    }
+    return tracker.refresh();
   }
 
   group('Given a changed app dependency declaring a native plugin class,', () {
     test(
       'when the closure is refreshed, '
       'then a native change is reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec:
-              'name: dep\n'
+      () async {
+        final change = await classifyRealDependencyBump(
+          depFlutterBlock:
               'flutter:\n'
               '  plugin:\n'
               '    platforms:\n'
@@ -244,7 +280,7 @@ void main() {
               '        pluginClass: DepPlugin\n',
         );
 
-        expect(tracker.refresh(), FlutterDependencyChange.native);
+        expect(change, FlutterDependencyChange.native);
       },
     );
   });
@@ -253,10 +289,9 @@ void main() {
     test(
       'when the closure is refreshed, '
       'then a native change is reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec:
-              'name: dep\n'
+      () async {
+        final change = await classifyRealDependencyBump(
+          depFlutterBlock:
               'flutter:\n'
               '  plugin:\n'
               '    platforms:\n'
@@ -264,7 +299,7 @@ void main() {
               '        ffiPlugin: true\n',
         );
 
-        expect(tracker.refresh(), FlutterDependencyChange.native);
+        expect(change, FlutterDependencyChange.native);
       },
     );
   });
@@ -275,10 +310,9 @@ void main() {
       test(
         'when the closure is refreshed, '
         'then a pure-Dart change is reported',
-        () {
-          final tracker = prepareBumpedDependency(
-            depPubspec:
-                'name: dep\n'
+        () async {
+          final change = await classifyRealDependencyBump(
+            depFlutterBlock:
                 'flutter:\n'
                 '  plugin:\n'
                 '    platforms:\n'
@@ -286,7 +320,7 @@ void main() {
                 '        dartPluginClass: DepPluginLinux\n',
           );
 
-          expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+          expect(change, FlutterDependencyChange.dartOnly);
         },
       );
     },
@@ -296,10 +330,9 @@ void main() {
     test(
       'when the closure is refreshed, '
       'then a pure-Dart change is reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec:
-              'name: dep\n'
+      () async {
+        final change = await classifyRealDependencyBump(
+          depFlutterBlock:
               'flutter:\n'
               '  plugin:\n'
               '    platforms:\n'
@@ -307,7 +340,7 @@ void main() {
               '        pluginClass: none\n',
         );
 
-        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        expect(change, FlutterDependencyChange.dartOnly);
       },
     );
   });
@@ -316,28 +349,10 @@ void main() {
     test(
       'when the closure is refreshed, '
       'then a native change is reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec: 'name: dep\n',
-          withBuildHook: true,
-        );
+      () async {
+        final change = await classifyRealDependencyBump(withBuildHook: true);
 
-        expect(tracker.refresh(), FlutterDependencyChange.native);
-      },
-    );
-  });
-
-  group('Given a changed app dependency missing from package_config.json,', () {
-    test(
-      'when the closure is refreshed, '
-      'then a native change is conservatively reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec: 'name: dep\n',
-          listedInPackageConfig: false,
-        );
-
-        expect(tracker.refresh(), FlutterDependencyChange.native);
+        expect(change, FlutterDependencyChange.native);
       },
     );
   });
@@ -346,17 +361,129 @@ void main() {
     test(
       'when the closure is refreshed, '
       'then a native change is conservatively reported',
-      () {
-        final tracker = prepareBumpedDependency(
-          depPubspec: 'name: [unclosed\n  flutter: {',
+      () async {
+        final change = await classifyRealDependencyBump(
+          corruptDepPubspecAfterResolve: true,
         );
 
-        expect(tracker.refresh(), FlutterDependencyChange.native);
+        expect(change, FlutterDependencyChange.native);
       },
     );
   });
 
+  group('Given a Flutter package directory in a workspace,', () {
+    test(
+      'when resolving its .dart_tool, '
+      'then it resolves to the workspace root .dart_tool',
+      () async {
+        await createWorkspaceTracker();
+
+        final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          p.join(wsDir, 'app_flutter'),
+          flutterPackageName: 'app_flutter',
+        );
+
+        expect(resolved, p.join(wsDir, '.dart_tool'));
+      },
+    );
+  });
+
+  group('Given a standalone (non-workspace) Flutter package directory,', () {
+    test(
+      'when resolving its .dart_tool, '
+      'then it resolves to the package\'s own .dart_tool',
+      () async {
+        final appDir = p.join(tempDir.path, 'standalone');
+        write(p.join(appDir, 'pubspec.yaml'), _pubspec('app_flutter'));
+        await _pubGet(appDir);
+
+        final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          appDir,
+          flutterPackageName: 'app_flutter',
+        );
+
+        expect(resolved, p.join(appDir, '.dart_tool'));
+      },
+    );
+
+    test(
+      'when no resolution exists in any ancestor, '
+      'then it resolves to null',
+      () async {
+        final pkg = await Directory(
+          p.join(tempDir.path, 'unresolved'),
+        ).create();
+
+        final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          pkg.path,
+          flutterPackageName: 'app_flutter',
+        );
+
+        expect(resolved, isNull);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter package whose own resolution was deleted and an unrelated ancestor resolution,',
+    () {
+      test(
+        'when resolving its .dart_tool, '
+        'then it does not latch onto the unrelated resolution',
+        () async {
+          // E.g. a standalone app under some other Dart project's tree: the
+          // ancestor's resolution is real but doesn't list the app.
+          final ancestorDir = p.join(tempDir.path, 'other_project');
+          write(
+            p.join(ancestorDir, 'pubspec.yaml'),
+            _pubspec('something_unrelated'),
+          );
+          await _pubGet(ancestorDir);
+          final pkg = await Directory(
+            p.join(ancestorDir, 'nested', 'app_flutter'),
+          ).create(recursive: true);
+
+          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+            pkg.path,
+            flutterPackageName: 'app_flutter',
+          );
+
+          expect(resolved, isNull);
+        },
+      );
+    },
+  );
+
+  // ---------------------------------------------------------------------
+  // Corruption and race states. These stay hand-written deliberately: pub
+  // never produces malformed or partially-missing dependency files, so the
+  // only way to cover the tracker's tolerance of them is synthetically.
+  // ---------------------------------------------------------------------
+
   group('Given a missing or malformed dependency graph,', () {
+    late String dartToolDir;
+
+    setUp(() async {
+      dartToolDir = p.join(tempDir.path, '.dart_tool');
+      await Directory(dartToolDir).create();
+    });
+
+    void writeGraph(Map<String, dynamic> graph) {
+      write(p.join(dartToolDir, 'package_graph.json'), jsonEncode(graph));
+    }
+
+    Map<String, dynamic> minimalGraph({String depVersion = '1.0.0'}) => {
+      'roots': ['app_flutter'],
+      'packages': [
+        {
+          'name': 'app_flutter',
+          'version': '1.0.0',
+          'dependencies': ['dep'],
+        },
+        {'name': 'dep', 'version': depVersion, 'dependencies': <String>[]},
+      ],
+    };
+
     test(
       'when the graph file is absent, '
       'then no change is reported',
@@ -375,9 +502,7 @@ void main() {
       'when the graph file is malformed, '
       'then no change is reported',
       () {
-        File(
-          p.join(dartToolDir, 'package_graph.json'),
-        ).writeAsStringSync('{ not valid json');
+        write(p.join(dartToolDir, 'package_graph.json'), '{ not valid json');
 
         final tracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
@@ -392,7 +517,7 @@ void main() {
       'when the Flutter package is absent from the graph, '
       'then no change is reported',
       () {
-        writeGraph(baseGraph());
+        writeGraph(minimalGraph());
 
         final tracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
@@ -407,7 +532,7 @@ void main() {
       'when the graph disappears then reappears unchanged, '
       'then no change is reported',
       () {
-        writeGraph(baseGraph());
+        writeGraph(minimalGraph());
         final tracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
           flutterPackageName: 'app_flutter',
@@ -418,68 +543,39 @@ void main() {
         File(p.join(dartToolDir, 'package_graph.json')).deleteSync();
         expect(tracker.refresh(), FlutterDependencyChange.none);
 
-        writeGraph(baseGraph());
+        writeGraph(minimalGraph());
         expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
-  });
 
-  group('Given a Flutter package directory in a workspace,', () {
     test(
-      'when resolving its .dart_tool, '
-      'then it resolves to the workspace root .dart_tool',
-      () async {
-        final root = await Directory(
-          p.join(tempDir.path, 'workspace'),
-        ).create();
-        await Directory(p.join(root.path, '.dart_tool')).create();
-        await File(
-          p.join(root.path, '.dart_tool', 'package_config.json'),
-        ).writeAsString('{}');
-        // Member package with no resolution of its own.
-        final member = await Directory(
-          p.join(root.path, 'app_flutter'),
-        ).create();
-
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(
-          member.path,
+      'when a changed dependency is missing from package_config.json, '
+      'then a native change is conservatively reported',
+      () {
+        // A graph/config mismatch can only arise from a racing or partial
+        // write; the unlocatable package must not be assumed pure-Dart.
+        writeGraph(minimalGraph());
+        write(
+          p.join(dartToolDir, 'package_config.json'),
+          jsonEncode({
+            'configVersion': 2,
+            'packages': [
+              {
+                'name': 'app_flutter',
+                'rootUri': '../',
+                'packageUri': 'lib/',
+              },
+            ],
+          }),
+        );
+        final tracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: 'app_flutter',
         );
 
-        expect(resolved, p.join(root.path, '.dart_tool'));
-      },
-    );
-  });
+        writeGraph(minimalGraph(depVersion: '1.0.1'));
 
-  group('Given a standalone (non-workspace) Flutter package directory,', () {
-    test(
-      'when resolving its .dart_tool, '
-      'then it resolves to the package\'s own .dart_tool',
-      () async {
-        final pkg = await Directory(
-          p.join(tempDir.path, 'standalone'),
-        ).create();
-        await Directory(p.join(pkg.path, '.dart_tool')).create();
-        await File(
-          p.join(pkg.path, '.dart_tool', 'package_config.json'),
-        ).writeAsString('{}');
-
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(pkg.path);
-
-        expect(resolved, p.join(pkg.path, '.dart_tool'));
-      },
-    );
-
-    test(
-      'when no resolution exists in any ancestor, '
-      'then it resolves to null',
-      () async {
-        final pkg = await Directory(
-          p.join(tempDir.path, 'unresolved'),
-        ).create();
-
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(pkg.path);
-
-        expect(resolved, isNull);
+        expect(tracker.refresh(), FlutterDependencyChange.native);
       },
     );
   });

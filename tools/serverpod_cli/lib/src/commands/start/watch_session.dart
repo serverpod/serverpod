@@ -221,7 +221,7 @@ class WatchSession {
     // server-rendered pages.
     if (!hasDartChanges) {
       if (flutterDependencyChange != FlutterDependencyChange.none) {
-        await _refreshFlutterApp(flutterDependencyChange);
+        await _reloadOrRestartFlutterApp(flutterDependencyChange);
       }
       if (event.staticFilesChanged) await _notifyBrowserRefresh();
       return;
@@ -284,7 +284,7 @@ class WatchSession {
     // service instead of the FES pipeline.
     if (_compiler == null) {
       final reloaded = await _reloadOrRestart(null);
-      await _refreshFlutterApp(flutterDependencyChange);
+      await _reloadOrRestartFlutterApp(flutterDependencyChange);
       if (reloaded) await _notifyBrowserRefresh();
       return;
     }
@@ -304,7 +304,7 @@ class WatchSession {
     // Always refresh Flutter: flutter/lib-only changes short-circuit the server
     // compile but still need a Flutter refresh (escalated when dependencies
     // changed, otherwise a hot reload).
-    await _refreshFlutterApp(flutterDependencyChange);
+    await _reloadOrRestartFlutterApp(flutterDependencyChange);
     if (reloaded) await _notifyBrowserRefresh();
   }
 
@@ -313,7 +313,9 @@ class WatchSession {
   /// pure-Dart dependencies changed, or a full process relaunch when native
   /// code changed. The relaunch calls the action directly rather than via
   /// [restartFlutterApp] since we are already running inside [_chain].
-  Future<void> _refreshFlutterApp(FlutterDependencyChange change) async {
+  Future<void> _reloadOrRestartFlutterApp(
+    FlutterDependencyChange change,
+  ) async {
     switch (change) {
       case FlutterDependencyChange.native:
         log.info(flutterDependenciesChangedNative);

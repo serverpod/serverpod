@@ -128,9 +128,10 @@ class FileWatcher {
           for (final event in events) {
             final filePath = event.path;
             if (_isWithinDartTool(filePath)) {
-              // Inside .dart_tool only the dependency graph is relevant.
-              // Everything else (build artifacts, pub metadata) is ignored so
-              // it triggers neither a browser refresh nor the FES restart path.
+              // Inside .dart_tool only the dependency graph is relevant;
+              // everything else is ignored. Notably this keeps
+              // packageConfigChanged (the FES restart path) dormant, exactly
+              // as before .dart_tool was watched at all.
               if (p.basename(filePath) == 'package_graph.json') {
                 flutterDependenciesChanged = true;
               }

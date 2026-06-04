@@ -669,29 +669,31 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   FlutterDependencyTracker? flutterDependencyTracker;
   if (config.hasFlutterPackage) {
     final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
-    final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
-      flutterPackageDir,
-    );
-    if (dartToolDir != null) {
-      try {
+    try {
+      final flutterPackageName = parsePubspec(
+        File(p.join(flutterPackageDir, 'pubspec.yaml')),
+      ).name;
+      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+        flutterPackageDir,
+        flutterPackageName: flutterPackageName,
+      );
+      if (dartToolDir != null) {
         flutterDependencyTracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
-          flutterPackageName: parsePubspec(
-            File(p.join(flutterPackageDir, 'pubspec.yaml')),
-          ).name,
+          flutterPackageName: flutterPackageName,
         );
-      } catch (e) {
-        // A malformed Flutter pubspec must not prevent the server from
-        // starting; it only disables dependency tracking.
+      } else {
         log.debug(
-          'Flutter dependency tracking disabled: could not read the Flutter '
-          'package name from $flutterPackageDir ($e).',
+          'Flutter dependency tracking disabled: no resolution listing '
+          '$flutterPackageName found above $flutterPackageDir.',
         );
       }
-    } else {
+    } catch (e) {
+      // A malformed Flutter pubspec must not prevent the server from
+      // starting; it only disables dependency tracking.
       log.debug(
-        'Flutter dependency tracking disabled: no '
-        '.dart_tool/package_config.json found for $flutterPackageDir.',
+        'Flutter dependency tracking disabled: could not read the Flutter '
+        'package name from $flutterPackageDir ($e).',
       );
     }
   }
