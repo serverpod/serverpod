@@ -20,6 +20,9 @@ class ServerpodConfigMap {
 
   /// The future call configuration.
   static const String futureCall = 'futureCall';
+
+  /// The web authentication cookie configuration.
+  static const String authCookie = 'authCookie';
 }
 
 /// The configuration sections for the serverpod server configuration file.
@@ -201,6 +204,21 @@ enum ServerpodEnv {
   /// Allowed `Origin` header values for WebSocket handshakes (comma-separated
   /// when set via environment variable).
   allowedWebSocketOrigins,
+
+  /// The name of the web authentication cookie.
+  authCookieName,
+
+  /// The domain of the web authentication cookie.
+  authCookieDomain,
+
+  /// The path of the web authentication cookie.
+  authCookiePath,
+
+  /// Whether the web authentication cookie is only sent over HTTPS.
+  authCookieSecure,
+
+  /// The `SameSite` attribute of the web authentication cookie.
+  authCookieSameSite,
   ;
 
   /// The key used in the environment configuration file.
@@ -258,6 +276,11 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
       (ServerpodEnv.allowedWebSocketOrigins) => 'allowedWebSocketOrigins',
+      (ServerpodEnv.authCookieName) => 'name',
+      (ServerpodEnv.authCookieDomain) => 'domain',
+      (ServerpodEnv.authCookiePath) => 'path',
+      (ServerpodEnv.authCookieSecure) => 'secure',
+      (ServerpodEnv.authCookieSameSite) => 'sameSite',
     };
   }
 
@@ -331,6 +354,11 @@ enum ServerpodEnv {
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
       (ServerpodEnv.allowedWebSocketOrigins) =>
         'SERVERPOD_ALLOWED_WEBSOCKET_ORIGINS',
+      (ServerpodEnv.authCookieName) => 'SERVERPOD_AUTH_COOKIE_NAME',
+      (ServerpodEnv.authCookieDomain) => 'SERVERPOD_AUTH_COOKIE_DOMAIN',
+      (ServerpodEnv.authCookiePath) => 'SERVERPOD_AUTH_COOKIE_PATH',
+      (ServerpodEnv.authCookieSecure) => 'SERVERPOD_AUTH_COOKIE_SECURE',
+      (ServerpodEnv.authCookieSameSite) => 'SERVERPOD_AUTH_COOKIE_SAME_SITE',
     };
   }
 }

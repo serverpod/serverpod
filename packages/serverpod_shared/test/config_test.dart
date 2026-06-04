@@ -2124,4 +2124,104 @@ allowedWebSocketOrigins: []
       },
     );
   });
+
+  group('Given authCookie configuration', () {
+    var apiServerConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+    test('when not set then authCookie is null.', () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(apiServerConfig),
+      );
+
+      expect(config.authCookie, isNull);
+    });
+
+    test('when set as a YAML section then all fields are parsed.', () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$apiServerConfig
+authCookie:
+  name: my_auth
+  domain: .example.com
+  path: /app
+  secure: false
+  sameSite: strict
+'''),
+      );
+
+      var cookie = config.authCookie!;
+      expect(cookie.name, 'my_auth');
+      expect(cookie.domain, '.example.com');
+      expect(cookie.path, '/app');
+      expect(cookie.secure, isFalse);
+      expect(cookie.sameSite, CookieSameSite.strict);
+    });
+
+    test('when only some fields are set then the rest use defaults.', () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$apiServerConfig
+authCookie:
+  domain: .example.com
+'''),
+      );
+
+      var cookie = config.authCookie!;
+      expect(cookie.name, WebAuthCookieConfig.defaultName);
+      expect(cookie.domain, '.example.com');
+      expect(cookie.path, '/');
+      expect(cookie.secure, isTrue);
+      expect(cookie.sameSite, CookieSameSite.lax);
+    });
+
+    test('when set via environment variables then they are parsed.', () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(apiServerConfig),
+        environment: {
+          'SERVERPOD_AUTH_COOKIE_NAME': 'env_auth',
+          'SERVERPOD_AUTH_COOKIE_SECURE': 'false',
+          'SERVERPOD_AUTH_COOKIE_SAME_SITE': 'none',
+        },
+      );
+
+      var cookie = config.authCookie!;
+      expect(cookie.name, 'env_auth');
+      expect(cookie.secure, isFalse);
+      expect(cookie.sameSite, CookieSameSite.none);
+    });
+
+    test('when sameSite is invalid then it throws.', () {
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+authCookie:
+  sameSite: sometimes
+'''),
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
 }
