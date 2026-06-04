@@ -95,6 +95,15 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration websocketPingInterval;
 
+  /// Allowed values of the `Origin` header for WebSocket handshakes.
+  ///
+  /// When non-empty, a browser WebSocket connection whose `Origin` is not in
+  /// this list is rejected with HTTP 403 - a defense against cross-site
+  /// WebSocket hijacking. Connections without an `Origin` header (e.g. native,
+  /// mobile, or server-to-server clients, which don't send one) are always
+  /// allowed. When null or empty (the default), all origins are allowed.
+  final List<String>? allowedWebSocketOrigins;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -117,6 +126,7 @@ class ServerpodConfig {
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
     this.websocketPingInterval = const Duration(seconds: 30),
+    this.allowedWebSocketOrigins,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -244,6 +254,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var allowedWebSocketOrigins = _readAllowedWebSocketOrigins(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -263,6 +278,7 @@ class ServerpodConfig {
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
       websocketPingInterval: websocketPingInterval,
+      allowedWebSocketOrigins: allowedWebSocketOrigins,
     );
   }
 
@@ -322,6 +338,7 @@ class ServerpodConfig {
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
+    List<String>? allowedWebSocketOrigins,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -346,6 +363,9 @@ class ServerpodConfig {
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
       validateHeaders: validateHeaders ?? this.validateHeaders,
+      websocketPingInterval: websocketPingInterval,
+      allowedWebSocketOrigins:
+          allowedWebSocketOrigins ?? this.allowedWebSocketOrigins,
     );
   }
 
@@ -1533,4 +1553,32 @@ void _validateJsonConfig(
 List<String>? _parseList(String? value) {
   if (value == null) return null;
   return value.split(',').map((e) => e.trim()).toList();
+}
+
+List<String>? _readAllowedWebSocketOrigins(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  final envVariable = ServerpodEnv.allowedWebSocketOrigins.envVariable;
+  final configKey = ServerpodEnv.allowedWebSocketOrigins.configKey;
+
+  // The environment variable (a comma-separated string) takes precedence over
+  // the config file value (which may be a YAML list or a comma-separated
+  // string).
+  Object? value = configMap[configKey];
+  if (environment[envVariable] != null) {
+    value = environment[envVariable];
+  }
+
+  List<String>? origins;
+  if (value is List) {
+    origins = value.map((e) => e.toString().trim()).toList();
+  } else if (value is String) {
+    origins = _parseList(value);
+  }
+
+  // Treat an empty list as "no restriction" (same as null) so an empty config
+  // value doesn't accidentally reject every browser connection.
+  if (origins == null || origins.isEmpty) return null;
+  return origins;
 }

@@ -197,6 +197,10 @@ enum ServerpodEnv {
 
   /// The interval in seconds between websocket ping messages.
   websocketPingInterval,
+
+  /// Allowed `Origin` header values for WebSocket handshakes (comma-separated
+  /// when set via environment variable).
+  allowedWebSocketOrigins,
   ;
 
   /// The key used in the environment configuration file.
@@ -253,6 +257,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
+      (ServerpodEnv.allowedWebSocketOrigins) => 'allowedWebSocketOrigins',
     };
   }
 
@@ -324,6 +329,8 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
+      (ServerpodEnv.allowedWebSocketOrigins) =>
+        'SERVERPOD_ALLOWED_WEBSOCKET_ORIGINS',
     };
   }
 }

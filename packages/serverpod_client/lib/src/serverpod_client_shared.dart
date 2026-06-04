@@ -115,21 +115,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     return uri;
   }
 
-  Future<String> get _webSocketHostWithAuth async {
-    var uri = _webSocketHost;
-
-    var auth = await authKeyProvider?.authHeaderValue;
-    if (auth != null) {
-      uri = uri.replace(
-        queryParameters: {
-          // Key must be unwrapped here because the server expects it plain.
-          'auth': unwrapAuthHeaderValue(auth),
-        },
-      );
-    }
-    return uri.toString();
-  }
-
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
@@ -351,9 +336,18 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       // Connect to the server.
       _firstMessageReceived = false;
-      var host = await _webSocketHostWithAuth;
-      _webSocket = WebSocketChannel.connect(Uri.parse(host));
+      _webSocket = WebSocketChannel.connect(_webSocketHost);
       await _webSocket?.ready;
+
+      // Authenticate in-band via a control message rather than a query
+      // parameter, so the token never appears in the connection URL (and
+      // therefore not in server/proxy access logs or browser history). The
+      // wrapped header value is sent as-is; the server validates and unwraps
+      // it (matching the method-stream protocol).
+      var auth = await authKeyProvider?.authHeaderValue;
+      if (auth != null) {
+        await _sendControlCommandToStream('auth', {'key': auth});
+      }
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
