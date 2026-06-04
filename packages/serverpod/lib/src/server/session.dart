@@ -34,6 +34,27 @@ abstract class Session implements DatabaseSession {
     _willCloseListeners.remove(listener);
   }
 
+  // Lazily allocated: most sessions never set response output, so the common
+  // path (every method call, every streaming message) allocates nothing.
+  List<SetCookie>? _responseCookies;
+  Map<String, String>? _responseHeaders;
+
+  /// Sets the HTTP response header [name] to [value] for this call.
+  ///
+  /// Applied to the response of method calls (HTTP); other session types (e.g.
+  /// streaming) have no per-call response and ignore it. A header set here
+  /// takes precedence over the server's default response headers.
+  void setResponseHeader(String name, String value) {
+    (_responseHeaders ??= {})[name] = value;
+  }
+
+  /// Adds a `Set-Cookie` to this call's HTTP response. See [setResponseHeader]
+  /// for which calls this applies to. To remove a cookie on the client, set one
+  /// with the same name and `maxAge: 0`.
+  void setResponseCookie(SetCookie cookie) {
+    (_responseCookies ??= []).add(cookie);
+  }
+
   /// The id of the session.
   final UuidValue sessionId;
 
@@ -688,6 +709,16 @@ class MessageCentralAccess {
 /// This is used to provide access to internal methods that should not be
 /// accessed from outside the library.
 extension SessionInternalMethods on Session {
+  /// The cookies queued via [Session.setResponseCookie], applied when building
+  /// the response.
+  List<SetCookie> get responseCookies =>
+      _responseCookies ?? const <SetCookie>[];
+
+  /// The headers queued via [Session.setResponseHeader], applied when building
+  /// the response.
+  Map<String, String> get responseHeaders =>
+      _responseHeaders ?? const <String, String>{};
+
   /// Creates a new [MethodCallSession].
   static Future<MethodCallSession> createMethodCallSession({
     required Server server,

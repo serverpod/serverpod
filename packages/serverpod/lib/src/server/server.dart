@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
@@ -220,18 +221,36 @@ class Server implements RouterInjectable {
     return (req) async {
       try {
         return await next(req);
-      } on MaxBodySizeExceeded catch (e) {
+      } catch (e, stackTrace) {
+        return await _toErrorResponse(e, stackTrace, request: req);
+      }
+    };
+  }
+
+  /// Builds the HTTP [Response] for an [error] thrown while handling a request.
+  ///
+  /// Shared by [_reportException] and the method-call error path so a faulted
+  /// call's queued response output (e.g. a sign-out cookie clear) can be
+  /// applied to the same error response instead of being dropped. An
+  /// unrecognized error is reported as a framework exception and becomes a 500.
+  Future<Response> _toErrorResponse(
+    Object error,
+    StackTrace stackTrace, {
+    Request? request,
+  }) async {
+    switch (error) {
+      case MaxBodySizeExceeded():
         return Response.contentTooLarge(
           body: Body.fromString(
-            'Request size exceeds the maximum allowed size of ${e.maxLength} bytes.',
+            'Request size exceeds the maximum allowed size of ${error.maxLength} bytes.',
           ),
         );
-      } on EndpointDispatchException catch (e) {
-        return switch (e) {
+      case EndpointDispatchException():
+        return switch (error) {
           EndpointNotFoundException() => Response.notFound(
-            body: Body.fromString(e.message),
+            body: Body.fromString(error.message),
           ),
-          NotAuthorizedException() => Response(switch (e.reason) {
+          NotAuthorizedException() => Response(switch (error.reason) {
             AuthenticationFailureReason.unauthenticated =>
               io.HttpStatus.unauthorized,
             AuthenticationFailureReason.insufficientAccess =>
@@ -240,33 +259,34 @@ class Server implements RouterInjectable {
           MethodNotFoundException() ||
           InvalidEndpointMethodTypeException() ||
           InvalidParametersException() => Response.badRequest(
-            body: Body.fromString(e.message),
+            body: Body.fromString(error.message),
           ),
         };
-      } on SerializableException catch (e) {
+      case SerializableException():
         return Response.badRequest(
           body: Body.fromString(
-            serializationManager.encodeWithTypeForProtocol(e),
+            serializationManager.encodeWithTypeForProtocol(error),
             mimeType: MimeType.json,
           ),
         );
-      } on HeaderException catch (e) {
-        return Response.badRequest(body: Body.fromString(e.httpResponseBody));
-      } on AuthHeaderEncodingException catch (_) {
+      case HeaderException():
+        return Response.badRequest(
+          body: Body.fromString(error.httpResponseBody),
+        );
+      case AuthHeaderEncodingException():
         return Response.badRequest(
           body: Body.fromString('Request has invalid "authorization" header'),
         );
-      } catch (e, stackTrace) {
+      default:
         await _reportFrameworkException(
-          e,
+          error,
           stackTrace,
           message:
               'Internal server error. Request handler failed with exception.',
-          request: req,
+          request: request,
         );
         return Response.internalServerError();
-      }
-    };
+    }
   }
 
   Handler _headers(Handler next) {
@@ -457,12 +477,18 @@ class Server implements RouterInjectable {
           session,
           methodCallContext.arguments,
         );
-        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
-        return Response.ok(
-          body: Body.fromString(
-            SerializationManager.encodeForProtocol(result),
-            mimeType: MimeType.json,
-          ),
+        var response = methodCallContext.endpoint.sendAsRaw
+            ? _toResponse(result)
+            : Response.ok(
+                body: Body.fromString(
+                  SerializationManager.encodeForProtocol(result),
+                  mimeType: MimeType.json,
+                ),
+              );
+        return applyResponseOutput(
+          response,
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
@@ -473,7 +499,20 @@ class Server implements RouterInjectable {
           context: contextFromSession(session, request: request),
         );
         await session.close(error: e, stackTrace: stackTrace);
-        rethrow;
+
+        // Apply response output queued before the failure (e.g. a sign-out's
+        // cookie clear) to the error response, so it still reaches the client
+        // instead of being dropped when the call throws. With nothing queued,
+        // defer to _reportException for identical handling.
+        if (session.responseHeaders.isEmpty &&
+            session.responseCookies.isEmpty) {
+          rethrow;
+        }
+        return applyResponseOutput(
+          await _toErrorResponse(e, stackTrace, request: request),
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
+        );
       }
     } finally {
       await maybeSession?.close(); // safe to close twice
