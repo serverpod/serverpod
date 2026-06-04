@@ -158,12 +158,12 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 /// Generates code if it is stale, returning whether it was already [upToDate]
 /// and, when generation ran, whether it reported [success].
 ///
-/// [createAnalyzers] must return an *unprimed* analyzer (e.g.
-/// [Analyzers.create]); the single full prime happens inside [analyzeAndGenerate].
+/// [createAnalyzers] must return an unprimed analyzer (ie. [Analyzers.create]).
+/// The priming happens inside [analyzeAndGenerate].
 ///
-/// When [keepPrimedWhenFresh] is `false` (one-shot generate) a fresh project
-/// returns before the analyzer is created. When `true` (the watch loops) the
-/// analyzer is always created and primed for the incremental loop.
+/// When [keepPrimedWhenFresh] is `false` a fresh project returns before the
+/// analyzer is created. When `true` the analyzer is always created and primed
+/// for an incremental loop.
 Future<({bool upToDate, bool success})> generateIfStale({
   required GeneratorConfig config,
   required Future<Analyzers> Function() createAnalyzers,
@@ -180,8 +180,9 @@ Future<({bool upToDate, bool success})> generateIfStale({
   final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
-    affectedPaths: allSources,
+    affectedPaths: allSources.keys.toSet(),
     verifyStaleness: keepPrimedWhenFresh,
+    sourceStats: allSources,
   );
   // A full run only returns an empty file set when it skipped generation
   // because the output was already up to date.
@@ -225,6 +226,7 @@ Future<GenerateResult> analyzeAndGenerate({
   required Set<String> affectedPaths,
   bool incremental = false,
   bool verifyStaleness = true,
+  Map<String, FileStamp>? sourceStats,
   GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   bool needsGenerate = false;
@@ -239,7 +241,8 @@ Future<GenerateResult> analyzeAndGenerate({
   if (incremental) {
     if (!needsGenerate) return (success: true, generatedFiles: <String>{});
   } else if (verifyStaleness &&
-      await isGenerationUpToDate(config, affectedPaths)) {
+      sourceStats != null &&
+      await isGenerationUpToDate(config, sourceStats)) {
     log.debug('Generated code is up to date, skipping.');
     return (success: true, generatedFiles: <String>{});
   }
@@ -256,9 +259,9 @@ Future<GenerateResult> analyzeAndGenerate({
     await writeGenerationStamp(
       config,
       generatedFiles: result.generatedFiles,
-      // A full run's affectedPaths is the complete source set it just
-      // enumerated; reuse it so the stamp doesn't walk the tree again.
-      sourceFiles: incremental ? null : affectedPaths,
+      // A full run reuses the stamps captured at enumeration; an incremental
+      // run re-enumerates, since its affected paths is only the changed subset.
+      sourceStats: incremental ? null : sourceStats,
     );
     log.debug(incrementalCodeGenerationComplete);
   }
@@ -269,8 +272,8 @@ Future<GenerateResult> analyzeAndGenerate({
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
 }) async {
-  // keepPrimedWhenFresh: the incremental loop only updates changed files, so the
-  // analyzer must be primed up front even when nothing needs regenerating.
+  // keepPrimedWhenFresh: the incremental loop only updates changed files, so
+  // the analyzer must be primed up front even when nothing needs regenerating.
   // In-process is fine here; only start's TUI needs the isolate offload.
   final analyzers = await Analyzers.create(config);
   final initialResult = await generateIfStale(
