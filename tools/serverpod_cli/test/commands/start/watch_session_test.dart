@@ -44,17 +44,21 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
+    final suffix = invalidatePackageConfig ? '+package_config' : '';
     if (changedPaths.isEmpty) {
-      calls.add('compile');
+      calls.add('compile$suffix');
       return nextCompileResult;
     }
-    calls.add('compile(changed):${changedPaths.toList()..sort()}');
+    calls.add('compile(changed):${changedPaths.toList()..sort()}$suffix');
     return nextIncrementalResult;
   }
 
   @override
-  void accept() => calls.add('accept');
+  Future<void> accept() async => calls.add('accept');
 
   @override
   Future<void> reject() async => calls.add('reject');
@@ -633,7 +637,7 @@ void main() {
   group('Given package_config.json changed', () {
     test(
       'when dart files also changed, '
-      'then it runs codegen, restarts compiler, and does a full compile',
+      'then it recompiles incrementally and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -645,13 +649,16 @@ void main() {
         expect(generateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]+package_config',
+          'accept',
+        ]);
       },
     );
 
     test(
-      'when both package_config and model files changed, '
-      'then it runs codegen and restarts compiler',
+      'when package_config and model files changed, '
+      'then it recompiles and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {},
@@ -664,7 +671,40 @@ void main() {
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
+      },
+    );
+
+    test(
+      'when the package_config compile fails, '
+      'then the package config is re-invalidated on the next compile',
+      () async {
+        // First cycle: package_config changed, but the compile fails and is
+        // rolled back - the new package map never took effect.
+        compiler.nextIncrementalResult = _failResult();
+        await session.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, contains('reject'));
+        expect(compiler.calls, isNot(contains('accept')));
+
+        // Next cycle: an unrelated dart change that does NOT set
+        // packageConfigChanged. The dropped invalidation must ride along.
+        compiler.calls.clear();
+        compiler.nextIncrementalResult = _successResult();
+        await session.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(
+          compiler.calls.where((c) => c.contains('+package_config')),
+          isNotEmpty,
+          reason: 'a failed package_config compile must not drop the signal',
+        );
+        expect(compiler.calls, contains('accept'));
       },
     );
   });

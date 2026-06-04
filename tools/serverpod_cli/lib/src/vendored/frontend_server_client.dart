@@ -55,14 +55,21 @@ class FrontendServerClient {
   final Process _feServer;
   final StreamQueue<String> _feServerStdoutLines;
 
+  /// The `file:` URI passed to the CFE as `--packages`, or `null` if none was
+  /// given. This is the exact URI the resident compiler associates with the
+  /// package config, so callers must invalidate *this* value (not a separately
+  /// reconstructed one) to have the package map reloaded in place by [compile].
+  final Uri? packageConfigUri;
+
   _ClientState _state;
 
   FrontendServerClient._(
     this._entrypoint,
     this._feServer,
     this._feServerStdoutLines,
-    IOSink errorSink,
-  ) : _state = _ClientState.waitingForFirstCompile {
+    IOSink errorSink, {
+    this.packageConfigUri,
+  }) : _state = _ClientState.waitingForFirstCompile {
     _feServer.stderr.transform(utf8.decoder).listen(errorSink.write);
   }
 
@@ -77,6 +84,9 @@ class FrontendServerClient {
     IOSink? errorSink,
   }) async {
     final entrypointUri = Uri.file(p.absolute(entrypoint));
+    final packageConfigUri = packagesJson == null
+        ? null
+        : Uri.file(p.absolute(packagesJson));
     final arguments = <String>[
       '--sdk-root',
       sdkRoot,
@@ -84,8 +94,7 @@ class FrontendServerClient {
       '--target=$target',
       '--output-dill',
       outputDillPath,
-      if (packagesJson != null)
-        '--packages=${Uri.file(p.absolute(packagesJson))}',
+      if (packageConfigUri != null) '--packages=$packageConfigUri',
       if (nativeAssetsPath != null) ...[
         '--native-assets',
         p.absolute(nativeAssetsPath),
@@ -124,6 +133,7 @@ class FrontendServerClient {
       feServer,
       feServerStdoutLines,
       errorSink ?? stderr,
+      packageConfigUri: packageConfigUri,
     );
   }
 

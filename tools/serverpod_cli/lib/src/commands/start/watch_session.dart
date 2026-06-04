@@ -119,6 +119,13 @@ class WatchSession {
   /// rolled back to its last accepted state and no longer knows about them.
   final Set<String> _pendingPaths = {};
 
+  /// Whether a prior `package_config.json` change still needs to be invalidated
+  /// because the compile that carried it failed (and was rolled back). Without
+  /// this, a dependency change that races a transient compile error would be
+  /// dropped, and the new package would stay unresolved until the next
+  /// `package_config.json` write.
+  bool _pendingPackageConfig = false;
+
   ServerProcess _server;
 
   SessionState _state = SessionState.idle;
@@ -380,6 +387,10 @@ class WatchSession {
     // Compile changes. Merge any paths carried over from prior rejected
     // compiles so the FES re-invalidates them (reject rolls back its state).
     final changedPaths = {..._pendingPaths, ...dartFiles};
+    // Likewise carry a package_config change forward if a prior compile that
+    // should have invalidated it failed.
+    final invalidatePackageConfig =
+        packageConfigChanged || _pendingPackageConfig;
 
     // 1. Run native build hooks (if configured). The hook runner caches on
     //    input hashes, so this is cheap when nothing changed. A manifest
@@ -394,6 +405,7 @@ class WatchSession {
         case NativeAssetsApplyFailure(:final message):
           log.error('$message Server not reloaded.');
           if (changedPaths.isNotEmpty) _pendingPaths.addAll(changedPaths);
+          if (invalidatePackageConfig) _pendingPackageConfig = true;
           return false;
         case NativeAssetsApplySuccess(:final restarted):
           if (restarted) {
@@ -413,21 +425,19 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-    } else if (packageConfigChanged) {
-      // FES reads package_config.json only at startup - must restart it.
-      // After restart the FES is in initial state, so we do a full compile.
-      _pendingPaths.clear();
-      if (!compilerRestartedByHooks) await compiler.restart();
-      result = await compileWithProgress(
-        'Compiling server',
-        compiler,
-        rejectOnFailure: true,
-      );
-    } else if (changedPaths.isNotEmpty || compilerRestartedByHooks) {
+    } else if (changedPaths.isNotEmpty ||
+        invalidatePackageConfig ||
+        compilerRestartedByHooks) {
+      // A package_config.json change is picked up incrementally: passing its
+      // URI in the invalidated set makes the Frontend Server reload the
+      // package map in place, so no process restart is needed. (When the
+      // hooks already restarted the FES it's in initial state, so the next
+      // compile is full and reads package_config.json fresh anyway.)
       result = await compileWithProgress(
         'Compiling server',
         compiler,
         changedPaths: changedPaths,
+        invalidatePackageConfig: invalidatePackageConfig,
         rejectOnFailure: true,
       );
     } else {
@@ -436,13 +446,15 @@ class WatchSession {
     }
 
     if (result == null) {
-      // Compilation failed - remember which paths need re-invalidation.
+      // Compilation failed - remember what needs re-invalidation next time.
       _pendingPaths.addAll(changedPaths);
+      if (invalidatePackageConfig) _pendingPackageConfig = true;
       return false;
     }
 
     _pendingPaths.clear();
-    compiler.accept();
+    _pendingPackageConfig = false;
+    await compiler.accept();
 
     return _reloadOrRestart(result);
   }
@@ -468,6 +480,7 @@ class WatchSession {
     final compiler = _compiler;
     if (compiler != null) {
       _pendingPaths.clear();
+      _pendingPackageConfig = false;
       await compiler.reset();
       final fullResult = await compileWithProgress(
         'Compiling server',
@@ -475,7 +488,7 @@ class WatchSession {
         rejectOnFailure: true,
       );
       if (fullResult == null) return false;
-      compiler.accept();
+      await compiler.accept();
       dillPath = fullResult.dillOutput!;
     }
 

@@ -30,12 +30,15 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
     return _successResult();
   }
 
   @override
-  void accept() {}
+  Future<void> accept() async {}
 
   @override
   Future<void> reject() async {}
