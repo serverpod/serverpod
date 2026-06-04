@@ -615,3 +615,13 @@ class UpsertTestModelRepository {
     );
   }
 }
+
+abstract class UpsertTestModelReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UpsertTestModel> {
+  @override
+  String get tableName => 'upsert_test_model';
+
+  _i1.WhereExpressionBuilder<UpsertTestModelTable> get where;
+  @override
+  _i1.Expression? get condition => where(UpsertTestModel.t);
+}

@@ -658,3 +658,13 @@ class DateTimeDefaultMixRepository {
     );
   }
 }
+
+abstract class DateTimeDefaultMixReactiveFutureCall
+    extends _i1.ReactiveFutureCall<DateTimeDefaultMix> {
+  @override
+  String get tableName => 'datetime_default_mix';
+
+  _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> get where;
+  @override
+  _i1.Expression? get condition => where(DateTimeDefaultMix.t);
+}

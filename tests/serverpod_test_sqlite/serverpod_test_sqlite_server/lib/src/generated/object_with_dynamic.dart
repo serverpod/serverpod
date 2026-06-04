@@ -772,3 +772,13 @@ class ObjectWithDynamicRepository {
     );
   }
 }
+
+abstract class ObjectWithDynamicReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithDynamic> {
+  @override
+  String get tableName => 'object_with_dynamic';
+
+  _i1.WhereExpressionBuilder<ObjectWithDynamicTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithDynamic.t);
+}

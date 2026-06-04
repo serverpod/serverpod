@@ -56,6 +56,13 @@ class FutureCallsAnalyzer {
   /// iteration order when collecting definitions across runs.
   final _fileCache = SplayTreeMap<String, _CachedFutureCallFileResult>();
 
+  Set<ReactiveFutureCallDefinition> _reactiveFutureCallDefinitions = {};
+
+  /// The reactive future call definitions discovered during analysis.
+  List<ReactiveFutureCallDefinition> get reactiveFutureCallDefinitions =>
+      _reactiveFutureCallDefinitions.toList()
+        ..sort((a, b) => a.className.compareTo(b.className));
+
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
@@ -285,6 +292,21 @@ class FutureCallsAnalyzer {
     }
     futureCallDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
+    final reactiveDefs = <ReactiveFutureCallDefinition>[];
+    for (final (library, filePath) in validLibraries) {
+      for (final classElement in _getReactiveFutureCallClasses(library)) {
+        if (classElement.isAbstract) continue;
+        if (filePath.startsWith('package:')) continue;
+        reactiveDefs.add(
+          ReactiveFutureCallDefinition(
+            className: classElement.name!,
+            filePath: filePath,
+          ),
+        );
+      }
+    }
+    _reactiveFutureCallDefinitions = reactiveDefs.toSet();
+
     return futureCallDefs;
   }
 
@@ -420,6 +442,14 @@ class FutureCallsAnalyzer {
   Iterable<ClassElement> _getFutureCallClasses(ResolvedLibraryResult library) {
     return library.element.classes.where(
       FutureCallClassAnalyzer.isFutureCallClass,
+    );
+  }
+
+  Iterable<ClassElement> _getReactiveFutureCallClasses(
+    ResolvedLibraryResult library,
+  ) {
+    return library.element.classes.where(
+      FutureCallClassAnalyzer.isReactiveFutureCallClass,
     );
   }
 

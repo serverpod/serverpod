@@ -591,3 +591,13 @@ class ObjectWithIndexRepository {
     );
   }
 }
+
+abstract class ObjectWithIndexReactiveFutureCall
+    extends _i1.ReactiveFutureCall<ObjectWithIndex> {
+  @override
+  String get tableName => 'object_with_index';
+
+  _i1.WhereExpressionBuilder<ObjectWithIndexTable> get where;
+  @override
+  _i1.Expression? get condition => where(ObjectWithIndex.t);
+}

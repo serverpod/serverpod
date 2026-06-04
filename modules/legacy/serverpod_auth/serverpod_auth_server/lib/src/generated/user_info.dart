@@ -762,3 +762,13 @@ class UserInfoRepository {
     );
   }
 }
+
+abstract class UserInfoReactiveFutureCall
+    extends _i1.ReactiveFutureCall<UserInfo> {
+  @override
+  String get tableName => 'serverpod_user_info';
+
+  _i1.WhereExpressionBuilder<UserInfoTable> get where;
+  @override
+  _i1.Expression? get condition => where(UserInfo.t);
+}

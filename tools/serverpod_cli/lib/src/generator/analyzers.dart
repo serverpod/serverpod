@@ -245,7 +245,10 @@ class Analyzers {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: allModels,
-        futureCalls: futureCalls,
+        futureCalls: [
+          ...futureCalls,
+          ..._futureCalls.reactiveFutureCallDefinitions,
+        ],
       );
 
       var generatedProtocolFiles =

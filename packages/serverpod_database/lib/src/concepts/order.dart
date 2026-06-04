@@ -44,6 +44,9 @@ class Order implements Column {
   factory Order({required Column column, bool orderDescending}) = Order._;
 
   @override
+  Expression hasChanged() => column.hasChanged();
+
+  @override
   String toString() {
     var str = '$column';
     if (orderDescending) str += ' DESC';
