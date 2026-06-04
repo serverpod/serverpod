@@ -12,23 +12,6 @@ import '../../test_util/endpoint_validation_helpers.dart';
 
 const _protocolBackupMarker = 'UNIQUE_PROTOCOL_BACKUP_MARKER';
 
-GeneratorConfig _buildTestConfig(Directory projectDir) {
-  return GeneratorConfigBuilder()
-      .withName('test')
-      .withServerPackageDirectoryPathParts([projectDir.path])
-      .withRelativeDartClientPackagePathParts(['test_client'])
-      .withModules([
-        ModuleConfig(
-          type: PackageType.server,
-          name: 'test',
-          nickname: 'test',
-          migrationVersions: [],
-          serverPackageDirectoryPathParts: [projectDir.path],
-        ),
-      ])
-      .build();
-}
-
 void main() {
   group(
     'Given an existing protocol.dart when model-only generation runs',
@@ -72,7 +55,7 @@ fields:
   name: String
 ''');
 
-        config = _buildTestConfig(projectDir);
+        config = buildTestServerConfig(projectDir);
         analyzers = await Analyzers.create(config);
         await analyzers.update(
           config: config,

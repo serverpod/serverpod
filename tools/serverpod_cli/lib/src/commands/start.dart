@@ -23,7 +23,6 @@ import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
-import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -455,33 +454,50 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     rethrow;
   }
 
-  final analyzersFuture = IsolatedAnalyzers.create(config);
+  // prime: false - the single full prime happens inside generateIfStale; here
+  // we only spawn the isolate eagerly so it overlaps the staleness check.
+  final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
-  // Code generation staleness check.
-  final allSources = await enumerateSourceFiles(config);
-  if (!await isGenerationUpToDate(config, allSources)) {
-    late final IsolatedAnalyzers analyzers;
-    await log.progress('Initializing analyzers', () async {
-      analyzers = await analyzersFuture;
-      return true;
-    });
-    late final ({bool success, Set<String> generatedFiles}) genResult;
-    await log.progress('Generating code', () async {
-      genResult = await analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: allSources,
-        requirements: GenerationRequirements.full,
-      );
-      return genResult.success;
-    });
-    if (!genResult.success) {
-      log.error('Code generation failed.');
+  // Tear down everything provisioned so far: the analyzer isolate and any
+  // Docker services. A failed/in-flight analyzer future must not prevent the
+  // Docker teardown, so closing it is guarded.
+  Future<void> rollbackStartup() async {
+    try {
       await closeAnalyzers();
-      await rollbackProvisioning();
-      return const WatchLoopAborted(1);
-    }
+    } catch (_) {}
+    await rollbackProvisioning();
+  }
+
+  // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
+  // generation is up to date.
+  late final ({bool upToDate, bool success}) genResult;
+  try {
+    genResult = await generateIfStale(
+      config: config,
+      keepPrimedWhenFresh: true,
+      createAnalyzers: () async {
+        late final IsolatedAnalyzers analyzers;
+        await log.progress('Initializing analyzers', () async {
+          analyzers = await analyzersFuture;
+          return true;
+        });
+        return analyzers;
+      },
+    );
+  } catch (_) {
+    // Tear down even when analysis/generation throws, not just on a clean
+    // failure.
+    await rollbackStartup();
+    rethrow;
+  }
+  if (!genResult.success) {
+    log.error('Code generation failed.');
+    await rollbackStartup();
+    return const WatchLoopAborted(1);
+  }
+  if (genResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
   // FES setup (watch mode only).
@@ -507,8 +523,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return hooksOk;
     });
     if (!hooksOk) {
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -522,8 +537,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -663,7 +677,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
         requirements: requirements,
       );
     },

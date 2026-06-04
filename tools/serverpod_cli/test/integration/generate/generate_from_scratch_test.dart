@@ -11,24 +11,6 @@ import 'package:test/test.dart';
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
 
-/// Creates a [GeneratorConfig] for a test project at [projectDir].
-GeneratorConfig _buildTestConfig(Directory projectDir) {
-  return GeneratorConfigBuilder()
-      .withName('test')
-      .withServerPackageDirectoryPathParts([projectDir.path])
-      .withRelativeDartClientPackagePathParts(['test_client'])
-      .withModules([
-        ModuleConfig(
-          type: PackageType.server,
-          name: 'test',
-          nickname: 'test',
-          migrationVersions: [],
-          serverPackageDirectoryPathParts: [projectDir.path],
-        ),
-      ])
-      .build();
-}
-
 Future<(Directory, Directory)> _buildProject() async {
   final projectDir = Directory.systemTemp.createTempSync('cli_test_');
   final generatedDir = Directory(
@@ -91,7 +73,7 @@ class MyFutureCall extends FutureCall {
 }
 ''');
 
-        config = _buildTestConfig(projectDir);
+        config = buildTestServerConfig(projectDir);
         analyzers = await Analyzers.create(config);
       });
 
@@ -185,7 +167,7 @@ class ItemEndpoint extends Endpoint {
 }
 ''');
 
-      config = _buildTestConfig(projectDir);
+      config = buildTestServerConfig(projectDir);
       analyzers = await Analyzers.create(config);
     });
 
@@ -231,7 +213,7 @@ class ItemEndpoint extends Endpoint {
 
       setUpAll(() async {
         (projectDir, _) = await _buildProject();
-        config = _buildTestConfig(projectDir);
+        config = buildTestServerConfig(projectDir);
         analyzers = await Analyzers.createAndUpdate(config);
 
         modelPath = p.join(

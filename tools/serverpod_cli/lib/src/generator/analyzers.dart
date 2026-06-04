@@ -69,7 +69,7 @@ class Analyzers {
     final analyzers = await Analyzers.create(config);
     await analyzers.update(
       config: config,
-      affectedPaths: await enumerateSourceFiles(config),
+      affectedPaths: (await enumerateSourceFiles(config)).keys.toSet(),
     );
     return analyzers;
   }

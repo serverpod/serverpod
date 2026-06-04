@@ -3,6 +3,7 @@ const initialCodeGenerationComplete =
     '✓ Initial code generation complete. Listening for changes.';
 const incrementalCodeGenerationComplete =
     '✓ Incremental code generation complete.';
+const generatedCodeAlreadyUpToDate = '✓ Generated code is already up to date.';
 
 // Start command messages
 const serverRunning = 'Server running.';
