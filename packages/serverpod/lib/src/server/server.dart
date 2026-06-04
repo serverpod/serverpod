@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
@@ -455,12 +456,18 @@ class Server implements RouterInjectable {
           session,
           methodCallContext.arguments,
         );
-        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
-        return Response.ok(
-          body: Body.fromString(
-            SerializationManager.encodeForProtocol(result),
-            mimeType: MimeType.json,
-          ),
+        var response = methodCallContext.endpoint.sendAsRaw
+            ? _toResponse(result)
+            : Response.ok(
+                body: Body.fromString(
+                  SerializationManager.encodeForProtocol(result),
+                  mimeType: MimeType.json,
+                ),
+              );
+        return applyResponseOutput(
+          response,
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
