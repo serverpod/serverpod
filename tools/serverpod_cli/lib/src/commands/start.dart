@@ -370,9 +370,9 @@ Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
 }) async {
-  final client = ConfigInfo.fromDir(
+  final client = ConfigInfo(
+    runMode,
     serverDir: serverDir,
-    runMode: runMode,
   ).createServiceClient();
   try {
     await client.insights.applyMigrations(

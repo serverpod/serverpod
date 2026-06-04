@@ -97,23 +97,35 @@ Future<String?> performCreate(
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   _errorBuffer.clear();
-  // If the name is a dot, we can either create a new project in the current
-  // directory or upgrade an existing project.
+  // Resolve where the project will be created relative to [workingDirectory]
+  // (defaulting to the current directory) without ever mutating the
+  // process-wide current directory. Mutating it would leak into a subsequent
+  // performCreate call within the same process (e.g. the dry-run followed by
+  // the real run in the `create .` TUI flow), resolving the second run
+  // against the wrong directory. An explicit [workingDirectory] also lets
+  // callers such as tests target an isolated temp dir.
+  //
+  // For an explicit name the project lives in a `name` subdirectory of the
+  // working directory. If the name is a dot, we either upgrade the project we
+  // are standing in, or create a new one in place: it takes the working
+  // directory's name and its parent becomes the project root.
+  final cwd = workingDirectory ?? Directory.current;
+  var projectRoot = cwd;
   if (name == '.') {
-    if (findServerDirectory(Directory.current) != null) {
+    if (findServerDirectory(cwd) != null) {
       return await _performUpgrade(
         dryRun: dryRun,
         interactive: interactive,
         context: context,
+        workingDirectory: cwd,
       );
     }
 
-    // If we are creating a new project in the current directory, we need to
-    // use the parent directory as the project root.
-    name = p.basename(Directory.current.absolute.path);
-    Directory.current = Directory.current.parent;
+    name = p.basename(cwd.absolute.path);
+    projectRoot = cwd.parent;
   }
 
   // check if project name is valid
@@ -126,7 +138,7 @@ Future<String?> performCreate(
   }
 
   var serverpodDirs = ServerpodDirectories(
-    projectDir: Directory(p.join(Directory.current.path, name)),
+    projectDir: Directory(p.join(projectRoot.path, name)),
     name: name,
   );
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
@@ -396,13 +408,14 @@ Future<String?> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
     return null;
   }
 
-  var serverDir = findServerDirectory(Directory.current);
+  var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
   if (serverDir == null) {
     _logError('Could not find a Serverpod project in the current directory.');
     return null;

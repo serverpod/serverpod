@@ -15,7 +15,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 /// [MigrationManager]. Returns the list of versions applied (empty if
 /// the database was already up to date).
 ///
-/// Does not require a running pod — the database can be migrated
+/// Does not require a running pod - the database can be migrated
 /// while the pod is offline. The resulting database may be
 /// inconsistent with the project's protocol; the pod verifies
 /// integrity on its next start.
@@ -28,10 +28,7 @@ Future<List<String>> applyPendingMigrations({
   required String runMode,
   required String moduleName,
 }) async {
-  final config = ConfigInfo.fromDir(
-    serverDir: serverDir,
-    runMode: runMode,
-  ).config;
+  final config = ConfigInfo(runMode, serverDir: serverDir).config;
   final dbConfig = config.database;
   if (dbConfig == null) {
     throw StateError('No database configured for run mode "$runMode".');

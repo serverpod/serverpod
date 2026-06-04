@@ -121,8 +121,8 @@ class GeneratorConfig implements ModelLoadConfig {
   /// True, if dart client depends on the `package:serverpod_service_client`.
   final bool dartClientDependsOnServiceClient;
 
-  /// The parts of the path where the server package is located at.
-  /// Might be relative.
+  /// The parts of the absolute, normalized path where the server package
+  /// is located. Anchored at [GeneratorConfig.load] time.
   final List<String> serverPackageDirectoryPathParts;
 
   /// The path parts to packages of shared models.
@@ -362,6 +362,10 @@ class GeneratorConfig implements ModelLoadConfig {
       );
       serverRootDir = serverDir.path;
     }
+
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    serverRootDir = p.normalize(p.absolute(serverRootDir));
 
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 

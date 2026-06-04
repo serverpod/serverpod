@@ -268,16 +268,21 @@ class ServerpodConfig {
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
+  ///
+  /// [serverDir] is the directory the `config/` folder lives under.
   factory ServerpodConfig.load(
     String runMode,
     String? serverId,
     Map<String, String> passwords, {
     Map<String, dynamic>? commandLineArgs,
+    String? serverDir,
   }) {
     dynamic doc = {};
 
-    if (isConfigAvailable(runMode)) {
-      String data = File(_createConfigPath(runMode)).readAsStringSync();
+    if (isConfigAvailable(runMode, serverDir: serverDir)) {
+      String data = File(
+        _createConfigPath(runMode, serverDir: serverDir),
+      ).readAsStringSync();
       doc = loadYaml(data);
     }
 
@@ -345,12 +350,28 @@ class ServerpodConfig {
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
-  static bool isConfigAvailable(String runMode) {
-    return File(_createConfigPath(runMode)).existsSync();
+  static bool isConfigAvailable(String runMode, {String? serverDir}) {
+    return File(
+      _createConfigPath(runMode, serverDir: serverDir),
+    ).existsSync();
   }
 
-  static String _createConfigPath(String runMode) {
-    return path.joinAll(['config', '$runMode.yaml']);
+  static String _createConfigPath(String runMode, {String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      '$runMode.yaml',
+    ]);
+  }
+
+  /// Returns the path to `config/passwords.yaml` under [serverDir]
+  /// (or cwd-relative when [serverDir] is null).
+  static String passwordsConfigPath({String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      'passwords.yaml',
+    ]);
   }
 
   @override
