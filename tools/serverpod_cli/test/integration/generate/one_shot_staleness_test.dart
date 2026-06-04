@@ -62,6 +62,23 @@ fields:
     );
 
     test(
+      'when performOneShotGenerate runs with force and no changes '
+      'then it regenerates and rewrites the stamp',
+      () async {
+        final stampMtime = stampFile.statSync().modified;
+        await waitForMtimeAfter(stampMtime, projectDir);
+
+        final success = await performOneShotGenerate(
+          config: config,
+          force: true, // bypass the staleness check
+        );
+
+        expect(success, isTrue);
+        expect(stampFile.statSync().modified.isAfter(stampMtime), isTrue);
+      },
+    );
+
+    test(
       'when a source file changes after the stamp '
       'then performOneShotGenerate regenerates and updates the stamp',
       () async {

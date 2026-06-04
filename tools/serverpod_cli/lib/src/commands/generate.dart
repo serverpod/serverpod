@@ -37,6 +37,17 @@ enum GenerateOption<V> implements OptionDefinition<V> {
           'The directory to generate code for (defaults to current directory).',
     ),
   ),
+  force(
+    FlagOption(
+      argName: 'force',
+      argAbbrev: 'f',
+      defaultsTo: false,
+      negatable: false,
+      helpText:
+          'Regenerate even when the output looks up to date. Use this '
+          'to rebuild after hand-editing or reverting generated files.',
+    ),
+  ),
   ;
 
   const GenerateOption(this.option);
@@ -59,6 +70,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   ) async {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
+    bool force = commandConfig.value(GenerateOption.force);
     String directory = commandConfig.value(GenerateOption.directory);
 
     // Get interactive flag from global configuration
@@ -142,9 +154,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 
     late final bool success;
     if (watch) {
-      success = await _performGenerateWatch(config: config);
+      success = await _performGenerateWatch(config: config, force: force);
     } else {
-      success = await performOneShotGenerate(config: config);
+      success = await performOneShotGenerate(config: config, force: force);
     }
 
     if (!success) {
@@ -161,27 +173,34 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 /// [createAnalyzers] must return an unprimed analyzer (ie. [Analyzers.create]).
 /// The priming happens inside [analyzeAndGenerate].
 ///
+/// When [keepPrimedWhenFresh] is `false` (one-shot generate) a fresh project
 /// When [keepPrimedWhenFresh] is `false` a fresh project returns before the
 /// analyzer is created. When `true` the analyzer is always created and primed
 /// for an incremental loop.
+/// When [force] is `true`, the staleness check is bypassed and generation
+/// always runs.
 Future<({bool upToDate, bool success})> generateIfStale({
   required GeneratorConfig config,
   required Future<Analyzers> Function() createAnalyzers,
   bool keepPrimedWhenFresh = false,
+  bool force = false,
 }) async {
   final allSources = await enumerateSourceFiles(config);
-  if (!keepPrimedWhenFresh && await isGenerationUpToDate(config, allSources)) {
+  if (!force &&
+      !keepPrimedWhenFresh &&
+      await isGenerationUpToDate(config, allSources)) {
     return (upToDate: true, success: true);
   }
 
   final analyzers = await createAnalyzers();
-  // Re-verify staleness only when we skipped the up-front check; the one-shot
-  // path already verified it, so generation runs unconditionally.
+  // Re-verify staleness only when we skipped the up-front check (and aren't
+  // forcing); the one-shot path already verified it, so generation runs
+  // unconditionally.
   final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources.keys.toSet(),
-    verifyStaleness: keepPrimedWhenFresh,
+    verifyStaleness: keepPrimedWhenFresh && !force,
     sourceStats: allSources,
   );
   // A full run only returns an empty file set when it skipped generation
@@ -190,12 +209,16 @@ Future<({bool upToDate, bool success})> generateIfStale({
 }
 
 /// One-shot code generation in an isolate-friendly function.
+///
+/// Pass [force] to regenerate even when the output looks up to date.
 Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
+  bool force = false,
 }) async {
   final result = await generateIfStale(
     config: config,
     createAnalyzers: () => Analyzers.create(config),
+    force: force,
   );
   if (result.upToDate) {
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
@@ -271,6 +294,7 @@ Future<GenerateResult> analyzeAndGenerate({
 /// Watch-mode code generation with persistent analyzers and file watching.
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
+  bool force = false,
 }) async {
   // keepPrimedWhenFresh: the incremental loop only updates changed files, so
   // the analyzer must be primed up front even when nothing needs regenerating.
@@ -280,6 +304,7 @@ Future<bool> _performGenerateWatch({
     config: config,
     createAnalyzers: () async => analyzers,
     keepPrimedWhenFresh: true,
+    force: force,
   );
   if (!initialResult.success) {
     await analyzers.close();
