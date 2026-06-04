@@ -95,14 +95,22 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration websocketPingInterval;
 
-  /// Allowed values of the `Origin` header for WebSocket handshakes.
+  /// Browser origins trusted by the server.
   ///
-  /// When non-empty, a browser WebSocket connection whose `Origin` is not in
-  /// this list is rejected with HTTP 403 - a defense against cross-site
-  /// WebSocket hijacking. Connections without an `Origin` header (e.g. native,
-  /// mobile, or server-to-server clients, which don't send one) are always
-  /// allowed. When null or empty (the default), all origins are allowed.
-  final List<String>? allowedWebSocketOrigins;
+  /// Used in two places:
+  /// - WebSocket handshakes: a browser connection whose `Origin` is not in this
+  ///   list is rejected with HTTP 403 (a defense against cross-site WebSocket
+  ///   hijacking).
+  /// - Credentialed CORS (when [authCookie] is set): the matching `Origin` is
+  ///   echoed in `Access-Control-Allow-Origin` together with
+  ///   `Access-Control-Allow-Credentials: true`, since the wildcard `*` is
+  ///   invalid for credentialed requests.
+  ///
+  /// Requests without an `Origin` header (e.g. native, mobile, or
+  /// server-to-server clients, which don't send one) are always allowed for
+  /// WebSocket. When null or empty (the default), all origins are allowed for
+  /// WebSocket and no per-origin CORS echo is emitted.
+  final List<String>? allowedOrigins;
 
   /// Configuration for the web authentication cookie. Null (the default) when
   /// no `authCookie` section is configured.
@@ -130,7 +138,7 @@ class ServerpodConfig {
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
     this.websocketPingInterval = const Duration(seconds: 30),
-    this.allowedWebSocketOrigins,
+    this.allowedOrigins,
     this.authCookie,
   }) : sessionLogs =
            sessionLogs ??
@@ -259,7 +267,7 @@ class ServerpodConfig {
       environment,
     );
 
-    var allowedWebSocketOrigins = _readAllowedWebSocketOrigins(
+    var allowedOrigins = _readAllowedOrigins(
       configMap,
       environment,
     );
@@ -291,7 +299,7 @@ class ServerpodConfig {
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
       websocketPingInterval: websocketPingInterval,
-      allowedWebSocketOrigins: allowedWebSocketOrigins,
+      allowedOrigins: allowedOrigins,
       authCookie: authCookie,
     );
   }
@@ -353,7 +361,7 @@ class ServerpodConfig {
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
     Duration? websocketPingInterval,
-    List<String>? allowedWebSocketOrigins,
+    List<String>? allowedOrigins,
     WebAuthCookieConfig? authCookie,
   }) {
     return ServerpodConfig(
@@ -381,8 +389,7 @@ class ServerpodConfig {
       validateHeaders: validateHeaders ?? this.validateHeaders,
       websocketPingInterval:
           websocketPingInterval ?? this.websocketPingInterval,
-      allowedWebSocketOrigins:
-          allowedWebSocketOrigins ?? this.allowedWebSocketOrigins,
+      allowedOrigins: allowedOrigins ?? this.allowedOrigins,
       authCookie: authCookie ?? this.authCookie,
     );
   }
@@ -1661,12 +1668,12 @@ List<String>? _parseList(String? value) {
   return value.split(',').map((e) => e.trim()).toList();
 }
 
-List<String>? _readAllowedWebSocketOrigins(
+List<String>? _readAllowedOrigins(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
 ) {
-  final envVariable = ServerpodEnv.allowedWebSocketOrigins.envVariable;
-  final configKey = ServerpodEnv.allowedWebSocketOrigins.configKey;
+  final envVariable = ServerpodEnv.allowedOrigins.envVariable;
+  final configKey = ServerpodEnv.allowedOrigins.configKey;
 
   // The environment variable (a comma-separated string) takes precedence over
   // the config file value (which may be a YAML list or a comma-separated

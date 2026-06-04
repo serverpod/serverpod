@@ -271,13 +271,15 @@ class Server implements RouterInjectable {
   Handler _headers(Handler next) {
     return (req) async {
       final isOptions = req.method == Method.options;
-      final headers = isOptions
+      var headers = isOptions
           ? httpResponseHeaders.transform((mh) {
               for (final h in httpOptionsResponseHeaders.entries) {
                 mh[h.key] = h.value;
               }
             })
           : httpResponseHeaders;
+
+      headers = _applyCredentialedCorsHeaders(headers, req);
 
       // early exit on Method.options
       if (isOptions) return Response.ok(headers: headers);
@@ -296,6 +298,32 @@ class Server implements RouterInjectable {
         _ => result,
       };
     };
+  }
+
+  /// When cookie-based web auth is enabled, credentialed CORS requires echoing
+  /// the specific request `Origin` (the wildcard `*` is invalid with
+  /// credentials) plus `Access-Control-Allow-Credentials: true`. Applied only
+  /// for requests whose `Origin` is in [ServerpodConfig.allowedOrigins];
+  /// otherwise [headers] is returned unchanged.
+  Headers _applyCredentialedCorsHeaders(Headers headers, Request req) {
+    if (serverpod.config.authCookie == null) return headers;
+
+    var allowedOrigins = serverpod.config.allowedOrigins;
+    var origin = req.headers[Headers.originHeader]?.firstOrNull?.trim();
+    if (origin == null ||
+        allowedOrigins == null ||
+        !allowedOrigins.contains(origin)) {
+      return headers;
+    }
+
+    return headers.transform((mh) {
+      mh[Headers.accessControlAllowOriginHeader] = [origin];
+      mh[Headers.accessControlAllowCredentialsHeader] = ['true'];
+      // The response varies by Origin, so caches must key on it.
+      var vary = mh[Headers.varyHeader]?.toList() ?? <String>[];
+      if (!vary.contains('Origin')) vary.add('Origin');
+      mh[Headers.varyHeader] = vary;
+    });
   }
 
   FutureOr<Result> _cloudStorage(Request req) async {
@@ -323,7 +351,7 @@ class Server implements RouterInjectable {
       // Reject cross-site WebSocket handshakes when an origin allow-list is
       // configured. Only browsers send an `Origin` header; native, mobile and
       // server-to-server clients don't, and are always allowed.
-      var allowedOrigins = serverpod.config.allowedWebSocketOrigins;
+      var allowedOrigins = serverpod.config.allowedOrigins;
       if (allowedOrigins != null) {
         var origin = req.headers['origin']?.firstOrNull?.trim();
         if (origin != null && !allowedOrigins.contains(origin)) {
