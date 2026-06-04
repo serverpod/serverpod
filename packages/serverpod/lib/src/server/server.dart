@@ -319,6 +319,19 @@ class Server implements RouterInjectable {
     requestHandler,
   ) {
     return (req) async {
+      // Reject cross-site WebSocket handshakes when an origin allow-list is
+      // configured. Only browsers send an `Origin` header; native, mobile and
+      // server-to-server clients don't, and are always allowed.
+      var allowedOrigins = serverpod.config.allowedWebSocketOrigins;
+      if (allowedOrigins != null) {
+        var origin = req.headers['origin']?.firstOrNull?.trim();
+        if (origin != null && !allowedOrigins.contains(origin)) {
+          return Response.forbidden(
+            body: Body.fromString('WebSocket origin not allowed.'),
+          );
+        }
+      }
+
       return WebSocketUpgrade((webSocket) async {
         try {
           webSocket.pingInterval = serverpod.config.websocketPingInterval;
@@ -389,9 +402,9 @@ class Server implements RouterInjectable {
       }
     }
 
-    // Get the authentication key, if any
-    // If it is provided in the HTTP authorization header we use that,
-    // otherwise we look for it in the query parameters (the old method).
+    // Get the authentication key, if any, from the HTTP authorization header.
+    // Auth tokens are no longer accepted via the `?auth=` query parameter, so
+    // they never appear in request URLs (and thus server/proxy access logs).
     String? authenticationKey;
     String? authenticationHeaderValue;
 
@@ -399,7 +412,6 @@ class Server implements RouterInjectable {
       serverpod.config.validateHeaders,
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    authenticationKey ??= queryParameters['auth'] as String?;
 
     MethodCallSession? maybeSession;
     try {

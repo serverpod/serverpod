@@ -391,8 +391,9 @@ class StreamingSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    // Get the authentication key, if any
-    _authenticationKey = queryParameters['auth'];
+    // The authentication key is no longer read from the URL. Streaming clients
+    // authenticate in-band via the 'auth' control message so the token never
+    // appears in the connection URL (and thus server/proxy logs).
   }
 }
 

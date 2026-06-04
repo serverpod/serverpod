@@ -2013,4 +2013,115 @@ websocketPingInterval: 0
       );
     },
   );
+
+  group('Given allowedWebSocketOrigins configuration', () {
+    var apiServerConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+''';
+
+    test(
+      'when not set then allowedWebSocketOrigins defaults to null.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(apiServerConfig),
+        );
+
+        expect(config.allowedWebSocketOrigins, isNull);
+      },
+    );
+
+    test(
+      'when set as a YAML list then allowedWebSocketOrigins is parsed.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+allowedWebSocketOrigins:
+  - https://app.example.com
+  - https://admin.example.com
+'''),
+        );
+
+        expect(
+          config.allowedWebSocketOrigins,
+          equals(['https://app.example.com', 'https://admin.example.com']),
+        );
+      },
+    );
+
+    test(
+      'when set as a comma-separated string then allowedWebSocketOrigins is '
+      'parsed and trimmed.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+allowedWebSocketOrigins: "https://app.example.com, https://admin.example.com"
+'''),
+        );
+
+        expect(
+          config.allowedWebSocketOrigins,
+          equals(['https://app.example.com', 'https://admin.example.com']),
+        );
+      },
+    );
+
+    test(
+      'when set via environment variable then it overrides the config and is '
+      'parsed as a comma-separated list.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+allowedWebSocketOrigins:
+  - https://ignored.example.com
+'''),
+          environment: {
+            'SERVERPOD_ALLOWED_WEBSOCKET_ORIGINS':
+                'https://app.example.com,https://admin.example.com',
+          },
+        );
+
+        expect(
+          config.allowedWebSocketOrigins,
+          equals(['https://app.example.com', 'https://admin.example.com']),
+        );
+      },
+    );
+
+    test(
+      'when set to an empty list then allowedWebSocketOrigins is null '
+      '(no restriction).',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+allowedWebSocketOrigins: []
+'''),
+        );
+
+        expect(config.allowedWebSocketOrigins, isNull);
+      },
+    );
+  });
 }
