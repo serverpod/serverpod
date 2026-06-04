@@ -6,6 +6,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
+import '../../util/column_alias_resolver.dart';
 
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
@@ -62,6 +63,7 @@ class SelectQueryBuilder {
 
     var select = _buildSelectStatement(
       selectColumns,
+      aliasResolver: ColumnAliasResolver.forColumns(selectColumns),
       countTableRelation: _countTableRelation,
     );
 
@@ -675,7 +677,7 @@ class DeleteQueryBuilder {
     switch (returning) {
       case Returning.all:
         _returningStatement =
-            ' RETURNING ${_buildColumnAliases(_table.columns)}';
+            ' RETURNING ${_buildColumnAliases(_table.columns, ColumnAliasResolver.forQuery(_table, null))}';
         break;
       case Returning.id:
         _returningStatement = ' RETURNING "${_table.tableName}".id';
@@ -756,9 +758,10 @@ class DeleteQueryBuilder {
 
 String _buildSelectStatement(
   List<Column> selectColumns, {
+  required ColumnAliasResolver aliasResolver,
   TableRelation? countTableRelation,
 }) {
-  var selectStatements = _buildColumnAliases(selectColumns);
+  var selectStatements = _buildColumnAliases(selectColumns, aliasResolver);
 
   if (countTableRelation != null) {
     selectStatements +=
@@ -768,15 +771,12 @@ String _buildSelectStatement(
   return selectStatements;
 }
 
-String _buildColumnAliases(List<Column> columns) {
+String _buildColumnAliases(
+  List<Column> columns,
+  ColumnAliasResolver aliasResolver,
+) {
   return columns
-      .map(
-        (column) =>
-            '$column AS "${truncateIdentifier(
-              column.fieldQueryAlias,
-              DatabaseConstants.pgsqlMaxNameLimitation,
-            )}"',
-      )
+      .map((column) => '$column AS "${aliasResolver.resolve(column)}"')
       .join(', ');
 }
 
@@ -1516,9 +1516,29 @@ LinkedHashMap<String, String> _gatherIncludeJoins(
 
     for (var subTableRelation
         in tableRelation?.getRelations ?? <TableRelation>[]) {
-      joins[subTableRelation.relationQueryAlias] = _buildJoinStatement(
-        tableRelation: subTableRelation,
-      );
+      var alias = subTableRelation.relationQueryAlias;
+      var joinStatement = _buildJoinStatement(tableRelation: subTableRelation);
+
+      var existingJoin = joins[alias];
+      if (existingJoin != null && existingJoin != joinStatement) {
+        // Two different table relations resolved to the same join alias, which
+        // would silently drop one join (and corrupt included data). This can
+        // happen when relation names are long enough to be truncated to the
+        // same identifier. See https://github.com/serverpod/serverpod/issues/5287
+        throw StateError(
+          'Table alias collision in include query: two different relations '
+          'resolved to the same join alias "$alias". This is likely caused by '
+          'very long or similar relation names being truncated to the same '
+          'identifier.\n'
+          'Workaround: reduce the include graph for this query (e.g. drop or '
+          'split out the deepest/most redundant included relation), or shorten '
+          'the affected relation field names.\n'
+          'Please report this so it can be fixed: '
+          'https://github.com/serverpod/serverpod/issues/new/choose',
+        );
+      }
+
+      joins[alias] = joinStatement;
     }
   }
 
