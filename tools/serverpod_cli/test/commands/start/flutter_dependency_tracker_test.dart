@@ -451,6 +451,34 @@ void main() {
           expect(resolved, isNull);
         },
       );
+
+      test(
+        'when an even higher resolution does list the package name, '
+        'then it still resolves to null',
+        () async {
+          // Resolution stops at the nearest root: a same-named package in a
+          // resolution further up must not be mistaken for this app.
+          final outerDir = p.join(tempDir.path, 'outer');
+          write(p.join(outerDir, 'pubspec.yaml'), _pubspec('app_flutter'));
+          await _pubGet(outerDir);
+          final midDir = p.join(outerDir, 'mid');
+          write(
+            p.join(midDir, 'pubspec.yaml'),
+            _pubspec('something_unrelated'),
+          );
+          await _pubGet(midDir);
+          final pkg = await Directory(
+            p.join(midDir, 'app_flutter'),
+          ).create(recursive: true);
+
+          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+            pkg.path,
+            flutterPackageName: 'app_flutter',
+          );
+
+          expect(resolved, isNull);
+        },
+      );
     },
   );
 

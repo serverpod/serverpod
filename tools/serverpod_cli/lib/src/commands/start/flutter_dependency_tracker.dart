@@ -66,11 +66,10 @@ class FlutterDependencyTracker {
 
   /// Resolves the `.dart_tool` directory whose `package_graph.json` describes
   /// [flutterPackageDir]'s dependency resolution: the nearest ancestor
-  /// (including itself) whose `.dart_tool/package_config.json` lists
-  /// [flutterPackageName] — the workspace root in a workspace, the package's
-  /// own directory otherwise. The membership check prevents latching onto an
-  /// unrelated resolution root. Returns `null` if none exists (e.g.
-  /// dependencies have not been fetched yet).
+  /// (including itself) with a `.dart_tool/package_config.json` — the
+  /// workspace root in a workspace, the package's own directory otherwise.
+  /// Returns `null` if there is none (e.g. dependencies have not been fetched
+  /// yet) or if the one found does not list [flutterPackageName].
   static String? resolveDartToolDir(
     String flutterPackageDir, {
     required String flutterPackageName,
@@ -78,8 +77,14 @@ class FlutterDependencyTracker {
     var dir = p.absolute(flutterPackageDir);
     while (true) {
       final dartTool = p.join(dir, '.dart_tool');
-      if (_packageConfigContains(dartTool, flutterPackageName)) {
-        return dartTool;
+      if (File(p.join(dartTool, 'package_config.json')).existsSync()) {
+        // The nearest resolution root must list the package. An unrelated
+        // resolution (e.g. found after the package's own .dart_tool was
+        // deleted) disables tracking rather than risking a wrong root
+        // further up that merely contains a same-named package.
+        return _packageConfigContains(dartTool, flutterPackageName)
+            ? dartTool
+            : null;
       }
       final parent = p.dirname(dir);
       if (parent == dir) return null; // Reached the filesystem root.
@@ -87,9 +92,8 @@ class FlutterDependencyTracker {
     }
   }
 
-  /// Whether `<dartTool>/package_config.json` exists, parses, and lists a
-  /// package named [packageName]. Unreadable or malformed files count as a
-  /// non-match so the walk continues to the next ancestor.
+  /// Whether `<dartTool>/package_config.json` parses and lists a package
+  /// named [packageName]. Unreadable or malformed files count as a non-match.
   static bool _packageConfigContains(String dartTool, String packageName) {
     final file = File(p.join(dartTool, 'package_config.json'));
     if (!file.existsSync()) return false;
