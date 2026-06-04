@@ -203,7 +203,7 @@ enum ServerpodEnv {
 
   /// Allowed `Origin` header values for WebSocket handshakes (comma-separated
   /// when set via environment variable).
-  allowedWebSocketOrigins,
+  allowedOrigins,
 
   /// The name of the web authentication cookie.
   authCookieName,
@@ -275,7 +275,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
-      (ServerpodEnv.allowedWebSocketOrigins) => 'allowedWebSocketOrigins',
+      (ServerpodEnv.allowedOrigins) => 'allowedOrigins',
       (ServerpodEnv.authCookieName) => 'name',
       (ServerpodEnv.authCookieDomain) => 'domain',
       (ServerpodEnv.authCookiePath) => 'path',
@@ -352,8 +352,7 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
-      (ServerpodEnv.allowedWebSocketOrigins) =>
-        'SERVERPOD_ALLOWED_WEBSOCKET_ORIGINS',
+      (ServerpodEnv.allowedOrigins) => 'SERVERPOD_ALLOWED_ORIGINS',
       (ServerpodEnv.authCookieName) => 'SERVERPOD_AUTH_COOKIE_NAME',
       (ServerpodEnv.authCookieDomain) => 'SERVERPOD_AUTH_COOKIE_DOMAIN',
       (ServerpodEnv.authCookiePath) => 'SERVERPOD_AUTH_COOKIE_PATH',
