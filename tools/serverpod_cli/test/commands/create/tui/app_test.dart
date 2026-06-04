@@ -32,7 +32,6 @@ void main() {
           name: 'test_project',
           onCreate: () {},
           onQuit: () => quitCalls++,
-          onSkipFlutterBuild: () {},
         ),
       );
     });
