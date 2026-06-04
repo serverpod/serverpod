@@ -1,3 +1,11 @@
+## 3.4.9
+
+- fix: Fixes joins with long column names and deeply nested relations not mapping the correct columns.
+- fix: Fixes error when closing method stream command with error after already closed.
+- fix: Fixes migrations not being generated when changing columns of an index.
+- fix: Fixes Dockerfile after workspaces upgrade.
+- fix: Fixes GitHub workflows on project templates after workspaces upgrade.
+
 ## 3.4.8
 
 - fix: Fixes Postgres throwing when using row-lock on `find` methods with `includes`.
