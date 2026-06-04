@@ -26,6 +26,7 @@ import '../../interface/database_session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../query_parameters.dart';
+import '../../util/column_alias_resolver.dart';
 
 part 'postgres_exceptions.dart';
 
@@ -712,6 +713,8 @@ class PostgresDatabaseConnection
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -719,6 +722,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .map(poolManager.serializationManager.deserialize<T>)
@@ -873,6 +877,10 @@ class PostgresDatabaseConnection
           transaction,
         );
 
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -880,6 +888,7 @@ class PostgresDatabaseConnection
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()
