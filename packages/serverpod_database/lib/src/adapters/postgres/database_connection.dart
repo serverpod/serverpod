@@ -7,6 +7,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
@@ -802,6 +803,8 @@ class PostgresDatabaseConnection
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -809,6 +812,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .map(poolManager.serializationManager.deserialize<T>)
@@ -931,6 +935,8 @@ class PostgresDatabaseConnection
           transaction,
         );
 
+        var listAliasResolver =
+            ColumnAliasResolver.forQuery(relationTable, nestedInclude);
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -938,6 +944,7 @@ class PostgresDatabaseConnection
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()

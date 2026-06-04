@@ -23,6 +23,7 @@ import 'package:sqlparser/sqlparser.dart'
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import '../postgres/sql_query_builder.dart';
 import 'sqlite_database_result.dart';
@@ -1040,6 +1041,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Table table, {
     Include? include,
     bool prefixedColumns = false,
+    ColumnAliasResolver? aliasResolver,
   }) {
     if (!prefixedColumns) {
       final fieldNamedRow = table.hasColumnMapping
@@ -1057,7 +1059,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
 
     final normalized = Map<String, dynamic>.from(row);
-    _normalizePrefixedColumns(normalized, table, include: include);
+    _normalizePrefixedColumns(
+      normalized,
+      table,
+      include: include,
+      aliasResolver: aliasResolver ?? ColumnAliasResolver.forQuery(table, include),
+    );
     return normalized;
   }
 
@@ -1065,12 +1072,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Map<String, dynamic> row,
     Table table, {
     Include? include,
+    required ColumnAliasResolver aliasResolver,
   }) {
     for (final column in table.columns) {
-      final key = truncateIdentifier(
-        column.fieldQueryAlias,
-        DatabaseConstants.pgsqlMaxNameLimitation,
-      );
+      final key = aliasResolver.resolve(column);
       if (row.containsKey(key)) {
         row[key] = poolManager.encoder.coerceColumnValue(
           column,
@@ -1087,6 +1092,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         row,
         relationTable,
         include: relationInclude,
+        aliasResolver: aliasResolver,
       );
     });
   }
@@ -1149,12 +1155,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     var rows = result.map((row) => Map<String, dynamic>.from(row));
     if (table != null) {
+      var aliasResolver = ColumnAliasResolver.forQuery(table, include);
       rows = rows.map(
         (row) => _normalizeQueryResultRow(
           row,
           table,
           include: include,
           prefixedColumns: prefixedColumns,
+          aliasResolver: aliasResolver,
         ),
       );
     }
@@ -1186,6 +1194,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -1193,6 +1203,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .whereType<Map<String, dynamic>>()
@@ -1286,6 +1297,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           transaction,
         );
 
+        var listAliasResolver =
+            ColumnAliasResolver.forQuery(relationTable, nestedInclude);
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -1293,6 +1306,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()
