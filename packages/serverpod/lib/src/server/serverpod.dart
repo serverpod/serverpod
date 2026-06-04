@@ -524,7 +524,7 @@ class Serverpod {
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
     _passwords = _passwordManager.loadPasswords(
-      ServerpodConfig.passwordsConfigPath(serverDir: serverDirectory.path),
+      serverDir: serverDirectory.path,
     );
 
     // Because `.copyWith` is not a real copyWith method (`null` is not a valid

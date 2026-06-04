@@ -7,7 +7,7 @@ class ConfigInfo {
 
   ConfigInfo(String runMode, {required String serverDir, this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords(
-      ServerpodConfig.passwordsConfigPath(serverDir: serverDir),
+      serverDir: serverDir,
     );
     config = ServerpodConfig.load(
       runMode,

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:serverpod_shared/src/environment_variables.dart';
 import 'package:yaml/yaml.dart';
 
+import 'config.dart';
+
 const _userDefinedPasswordPrefix = 'SERVERPOD_PASSWORD_';
 
 /// Keeps track of passwords used by the server. Passwords are loaded from
@@ -94,9 +96,13 @@ class PasswordManager {
   }
 
   /// Load all passwords for the current run mode.
-  Map<String, String> loadPasswords([
-    String passwordsFilePath = 'config/passwords.yaml',
-  ]) {
+  ///
+  /// [serverDir] is the directory the `config/` folder lives under; when
+  /// omitted the path is resolved relative to the current directory.
+  Map<String, String> loadPasswords({String? serverDir}) {
+    final passwordsFilePath = ServerpodConfig.passwordsConfigPath(
+      serverDir: serverDir,
+    );
     final file = File(passwordsFilePath);
     Map<String, Map> data = {};
     if (file.existsSync()) {
