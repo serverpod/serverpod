@@ -1063,7 +1063,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       normalized,
       table,
       include: include,
-      aliasResolver: aliasResolver ?? ColumnAliasResolver.forQuery(table, include),
+      aliasResolver:
+          aliasResolver ?? ColumnAliasResolver.forQuery(table, include),
     );
     return normalized;
   }
@@ -1297,8 +1298,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           transaction,
         );
 
-        var listAliasResolver =
-            ColumnAliasResolver.forQuery(relationTable, nestedInclude);
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(

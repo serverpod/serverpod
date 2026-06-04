@@ -37,26 +37,27 @@ void main() {
   ]).build();
 
   group(
-      'Given a query selecting columns from two long-named relations to the same table',
-      () {
-    var query = SelectQueryBuilder(table: citizenTable).withSelectFields([
-      citizenTable.id,
-      firstRelation.id,
-      secondRelation.id,
-    ]).build();
+    'Given a query selecting columns from two long-named relations to the same table',
+    () {
+      var query = SelectQueryBuilder(table: citizenTable).withSelectFields([
+        citizenTable.id,
+        firstRelation.id,
+        secondRelation.id,
+      ]).build();
 
-    test('then each selected column has a unique alias.', () {
-      var aliases = RegExp(r'AS "([^"]+)"')
-          .allMatches(query)
-          .map((match) => match.group(1))
-          .toList();
+      test('then each selected column has a unique alias.', () {
+        var aliases = RegExp(
+          r'AS "([^"]+)"',
+        ).allMatches(query).map((match) => match.group(1)).toList();
 
-      expect(
-        aliases,
-        equals(aliases.toSet().toList()),
-        reason: 'Column aliases collide, causing one relation\'s value to '
-            'bleed into another relation\'s field. Query: $query',
-      );
-    });
-  });
+        expect(
+          aliases,
+          equals(aliases.toSet().toList()),
+          reason:
+              'Column aliases collide, causing one relation\'s value to '
+              'bleed into another relation\'s field. Query: $query',
+        );
+      });
+    },
+  );
 }

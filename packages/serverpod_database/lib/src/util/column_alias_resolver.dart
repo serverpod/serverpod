@@ -80,11 +80,13 @@ String _baseAlias(String fieldQueryAlias) => truncateIdentifier(
 String _allocateAlias(String base, Set<String> usedAliases) {
   if (!usedAliases.contains(base)) return base;
 
-  for (var counter = 1;; counter++) {
+  for (var counter = 1; ; counter++) {
     var suffix = '_$counter';
-    var maxBaseLength = DatabaseConstants.pgsqlMaxNameLimitation - suffix.length;
-    var trimmedBase =
-        base.length <= maxBaseLength ? base : base.substring(0, maxBaseLength);
+    var maxBaseLength =
+        DatabaseConstants.pgsqlMaxNameLimitation - suffix.length;
+    var trimmedBase = base.length <= maxBaseLength
+        ? base
+        : base.substring(0, maxBaseLength);
     var candidate = '$trimmedBase$suffix';
     if (!usedAliases.contains(candidate)) return candidate;
   }

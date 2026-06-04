@@ -935,8 +935,10 @@ class PostgresDatabaseConnection
           transaction,
         );
 
-        var listAliasResolver =
-            ColumnAliasResolver.forQuery(relationTable, nestedInclude);
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
