@@ -49,4 +49,15 @@ extension RequestExtension on Request {
       return headers['authorization']?.firstOrNull;
     }
   }
+
+  /// Returns the value of the cookie named [cookieName] from the request's
+  /// `Cookie` header, or null if it is absent. A malformed `Cookie` header is
+  /// treated as absent rather than failing the request.
+  String? getCookieValue(String cookieName) {
+    try {
+      return headers.cookie?.getCookie(cookieName)?.value;
+    } on Exception {
+      return null;
+    }
+  }
 }

@@ -414,6 +414,13 @@ class Server implements RouterInjectable {
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
 
+    // Fall back to the web auth cookie when configured and no header was sent
+    // (the browser carries it for cookie-based web clients).
+    var authCookie = serverpod.config.authCookie;
+    if (authenticationKey == null && authCookie != null) {
+      authenticationKey = request.getCookieValue(authCookie.name);
+    }
+
     MethodCallSession? maybeSession;
     try {
       var methodCallContext = await endpoints.getMethodCallContext(
