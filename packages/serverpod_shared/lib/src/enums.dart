@@ -26,3 +26,17 @@ enum ServerpodLoggingMode {
   /// Log all messages, including debugging information.
   verbose,
 }
+
+/// The `SameSite` attribute of a cookie, controlling whether it is sent on
+/// cross-site requests. Maps to the HTTP `SameSite` values.
+enum CookieSameSite {
+  /// Sent on same-site requests and top-level cross-site navigations.
+  lax,
+
+  /// Only sent on same-site requests.
+  strict,
+
+  /// Sent on all requests, including cross-site. Requires the cookie to be
+  /// secure.
+  none,
+}

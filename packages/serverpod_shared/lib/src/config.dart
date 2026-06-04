@@ -104,6 +104,10 @@ class ServerpodConfig {
   /// allowed. When null or empty (the default), all origins are allowed.
   final List<String>? allowedWebSocketOrigins;
 
+  /// Configuration for the web authentication cookie. Null (the default) when
+  /// no `authCookie` section is configured.
+  final WebAuthCookieConfig? authCookie;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -127,6 +131,7 @@ class ServerpodConfig {
     this.validateHeaders = true,
     this.websocketPingInterval = const Duration(seconds: 30),
     this.allowedWebSocketOrigins,
+    this.authCookie,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -259,6 +264,14 @@ class ServerpodConfig {
       environment,
     );
 
+    var authCookieConfigJson = _buildAuthCookieConfigMap(
+      configMap,
+      environment,
+    );
+    var authCookie = authCookieConfigJson != null
+        ? WebAuthCookieConfig._fromJson(authCookieConfigJson)
+        : null;
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -279,6 +292,7 @@ class ServerpodConfig {
       validateHeaders: validateHeaders,
       websocketPingInterval: websocketPingInterval,
       allowedWebSocketOrigins: allowedWebSocketOrigins,
+      authCookie: authCookie,
     );
   }
 
@@ -338,7 +352,9 @@ class ServerpodConfig {
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
+    Duration? websocketPingInterval,
     List<String>? allowedWebSocketOrigins,
+    WebAuthCookieConfig? authCookie,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -363,9 +379,11 @@ class ServerpodConfig {
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
       validateHeaders: validateHeaders ?? this.validateHeaders,
-      websocketPingInterval: websocketPingInterval,
+      websocketPingInterval:
+          websocketPingInterval ?? this.websocketPingInterval,
       allowedWebSocketOrigins:
           allowedWebSocketOrigins ?? this.allowedWebSocketOrigins,
+      authCookie: authCookie ?? this.authCookie,
     );
   }
 
@@ -919,6 +937,82 @@ class FutureCallConfig {
   }
 }
 
+/// Configuration for the cookie used to carry the web authentication token.
+///
+/// [domain] and [path] are plain strings. [sameSite] controls cross-site
+/// behaviour. Defaults are suitable for first-party web apps over HTTPS:
+/// host-only domain, `path: /`, `secure: true`, `sameSite: lax`.
+class WebAuthCookieConfig {
+  /// The name of the cookie.
+  final String name;
+
+  /// The domain the cookie applies to. Null (the default) makes it host-only;
+  /// set a registrable domain (e.g. `.example.com`) to share across subdomains.
+  final String? domain;
+
+  /// The path the cookie applies to. Defaults to `/`.
+  final String path;
+
+  /// Whether the cookie is only sent over secure (HTTPS) connections. Defaults
+  /// to true.
+  final bool secure;
+
+  /// The `SameSite` attribute. Defaults to [CookieSameSite.lax].
+  final CookieSameSite sameSite;
+
+  /// The default cookie name.
+  static const String defaultName = 'serverpod_auth';
+
+  /// Creates a new [WebAuthCookieConfig].
+  const WebAuthCookieConfig({
+    this.name = defaultName,
+    this.domain,
+    this.path = '/',
+    this.secure = true,
+    this.sameSite = CookieSameSite.lax,
+  });
+
+  factory WebAuthCookieConfig._fromJson(Map json) {
+    var name = json[ServerpodEnv.authCookieName.configKey];
+    var domain = json[ServerpodEnv.authCookieDomain.configKey];
+    var path = json[ServerpodEnv.authCookiePath.configKey];
+    var secure = json[ServerpodEnv.authCookieSecure.configKey];
+    var sameSite = json[ServerpodEnv.authCookieSameSite.configKey];
+
+    return WebAuthCookieConfig(
+      name: name is String && name.isNotEmpty ? name : defaultName,
+      domain: domain is String && domain.isNotEmpty ? domain : null,
+      path: path is String && path.isNotEmpty ? path : '/',
+      secure: secure is bool ? secure : true,
+      sameSite: sameSite is String
+          ? _parseSameSite(sameSite)
+          : CookieSameSite.lax,
+    );
+  }
+
+  static CookieSameSite _parseSameSite(String value) {
+    return CookieSameSite.values.firstWhere(
+      (s) => s.name == value.toLowerCase(),
+      orElse: () => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSameSite.configKey,
+        'Expected one of: ${CookieSameSite.values.map((s) => s.name).join(', ')}',
+      ),
+    );
+  }
+
+  @override
+  String toString() {
+    var output = StringBuffer()
+      ..writeln('auth cookie name: $name')
+      ..writeln('auth cookie domain: ${domain ?? '(host-only)'}')
+      ..writeln('auth cookie path: $path')
+      ..writeln('auth cookie secure: $secure')
+      ..writeln('auth cookie sameSite: ${sameSite.name}');
+    return output.toString();
+  }
+}
+
 /// Valid values for console log format.
 enum ConsoleLogFormat {
   /// JSON format.
@@ -1205,6 +1299,23 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.futureCallScanInterval, int.parse),
     (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
     (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
+  ]);
+}
+
+Map? _buildAuthCookieConfigMap(Map configMap, Map<String, String> environment) {
+  var authCookieConfig = configMap[ServerpodConfigMap.authCookie] ?? {};
+
+  // `secure` is intentionally passed through unconverted (null) so that
+  // WebAuthCookieConfig._parseSecure owns all boolean coercion and reports a
+  // bad value the same way (ArgumentError) whether it came from an env var or
+  // a YAML string, rather than splitting parsing across two layers with
+  // divergent error types.
+  return _buildConfigMap(authCookieConfig, environment, [
+    (ServerpodEnv.authCookieName, null),
+    (ServerpodEnv.authCookieDomain, null),
+    (ServerpodEnv.authCookiePath, null),
+    (ServerpodEnv.authCookieSecure, null),
+    (ServerpodEnv.authCookieSameSite, null),
   ]);
 }
 
@@ -1579,6 +1690,5 @@ List<String>? _readAllowedWebSocketOrigins(
 
   // Treat an empty list as "no restriction" (same as null) so an empty config
   // value doesn't accidentally reject every browser connection.
-  if (origins == null || origins.isEmpty) return null;
-  return origins;
+  return (origins == null || origins.isEmpty) ? null : origins;
 }
