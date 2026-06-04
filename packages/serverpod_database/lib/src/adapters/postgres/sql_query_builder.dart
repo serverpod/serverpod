@@ -1528,7 +1528,13 @@ LinkedHashMap<String, String> _gatherIncludeJoins(
         throw StateError(
           'Table alias collision in include query: two different relations '
           'resolved to the same join alias "$alias". This is likely caused by '
-          'very long or similar relation names.',
+          'very long or similar relation names being truncated to the same '
+          'identifier.\n'
+          'Workaround: reduce the include graph for this query (e.g. drop or '
+          'split out the deepest/most redundant included relation), or shorten '
+          'the affected relation field names.\n'
+          'Please report this so it can be fixed: '
+          'https://github.com/serverpod/serverpod/issues/new/choose',
         );
       }
 
