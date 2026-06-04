@@ -22,7 +22,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-    'Given two relations to the same table with long relation field names (issue #5287)',
+    'Given two relations to the same table with long relation field names',
     () {
       late int childId;
 
