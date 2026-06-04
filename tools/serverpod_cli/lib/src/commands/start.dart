@@ -673,12 +673,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       flutterPackageDir,
     );
     if (dartToolDir != null) {
-      flutterDependencyTracker = FlutterDependencyTracker(
-        dartToolDir: dartToolDir,
-        flutterPackageName: parsePubspec(
-          File(p.join(flutterPackageDir, 'pubspec.yaml')),
-        ).name,
-      );
+      try {
+        flutterDependencyTracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: parsePubspec(
+            File(p.join(flutterPackageDir, 'pubspec.yaml')),
+          ).name,
+        );
+      } catch (e) {
+        // A malformed Flutter pubspec must not prevent the server from
+        // starting; it only disables dependency tracking.
+        log.debug(
+          'Flutter dependency tracking disabled: could not read the Flutter '
+          'package name from $flutterPackageDir ($e).',
+        );
+      }
     } else {
       log.debug(
         'Flutter dependency tracking disabled: no '

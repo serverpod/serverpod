@@ -1164,9 +1164,11 @@ void main() {
 
           expect(restartActionCalls, 1);
           // No server compile, and a full relaunch (the action) rather than
-          // the in-process hot reload or hot restart.
+          // the in-process hot reload or hot restart. The server stays
+          // untouched - no compile, no browser refresh.
           expect(compiler.calls, isEmpty);
           expect(flutter.calls, isEmpty);
+          expect(server.calls, isEmpty);
         },
       );
 
@@ -1223,6 +1225,7 @@ void main() {
           expect(flutter.calls, ['restart']);
           expect(restartActionCalls, 0);
           expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
         },
       );
 
@@ -1296,6 +1299,7 @@ void main() {
           expect(restartActionCalls, 0);
           expect(flutter.calls, isEmpty);
           expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
         },
       );
     },

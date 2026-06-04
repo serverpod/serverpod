@@ -215,12 +215,15 @@ class WatchSession {
               FlutterDependencyChange.none)
         : FlutterDependencyChange.none;
 
-    // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
+    // Static-only changes (HTML, JS, CSS, templates) and dependency-only
+    // changes: no compilation needed. The browser refresh is tied to static
+    // files specifically - a dependency-only change doesn't affect
+    // server-rendered pages.
     if (!hasDartChanges) {
       if (flutterDependencyChange != FlutterDependencyChange.none) {
         await _refreshFlutterApp(flutterDependencyChange);
       }
-      await _notifyBrowserRefresh();
+      if (event.staticFilesChanged) await _notifyBrowserRefresh();
       return;
     }
 
