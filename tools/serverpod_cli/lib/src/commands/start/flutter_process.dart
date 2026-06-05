@@ -412,8 +412,9 @@ class FlutterProcess {
     }
   }
 
-  /// SIGINT -> wait -> SIGKILL. Reaches the daemon because [start]
-  /// spawns flutter_tools directly, bypassing wrappers.
+  /// Graceful daemon `app.stop` -> SIGINT -> wait -> SIGKILL. The signals
+  /// reach the daemon because [start] spawns flutter_tools directly,
+  /// bypassing wrappers.
   Future<int> stop({
     Duration timeout = const Duration(seconds: 5),
   }) async {
@@ -425,6 +426,31 @@ class FlutterProcess {
 
     await _sigtermSub?.cancel();
     _sigtermSub = null;
+
+    // Ask the daemon to stop the app first: in --machine mode a bare SIGINT
+    // can terminate flutter_tools without device cleanup, leaving e.g. the
+    // browser window it spawned open. `app.stop` tears the device session
+    // down properly; signals below remain as the fallback.
+    final daemon = _daemon;
+    final appId = _appId;
+    if (daemon != null && appId != null) {
+      try {
+        await daemon
+            .sendRequest('app.stop', <String, Object?>{'appId': appId})
+            .timeout(timeout);
+        final exitCode = await process.exitCode.timeout(timeout);
+        log.debug(
+          'Flutter stop: PID ${process.pid} exited gracefully with $exitCode',
+        );
+        await _cleanup();
+        return exitCode;
+      } catch (e) {
+        log.debug(
+          'Flutter stop: app.stop failed ($e); falling back to '
+          'signals.',
+        );
+      }
+    }
 
     log.debug('Flutter stop: sending SIGINT to PID ${process.pid}');
     process.kill(ProcessSignal.sigint);
