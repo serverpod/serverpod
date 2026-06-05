@@ -144,8 +144,7 @@ void main() {
   );
 
   group(
-    'Given a CreateConfigState exposing only the ide config '
-    'with default values for the other configs, '
+    'Given a CreateConfigState exposing only the ide config with default values for the other configs, '
     'when converting to template context',
     () {
       late CreateConfigState state;
@@ -159,8 +158,7 @@ void main() {
       });
 
       test(
-        'then TemplateContext has the default values '
-        'for configs not exposed in the form',
+        'then TemplateContext has the default values for configs not exposed in the form',
         () {
           final context = state.toTemplateContext();
           expect(context.postgres, isTrue);
@@ -179,14 +177,29 @@ void main() {
         },
       );
 
-      test(
-        'and ides are selected then TemplateContext contains ides',
-        () {
-          state.form.updateSelectedOption(
-            ServerpodCreateConfig.ide,
-            IdeOption.claude,
-          );
+    },
+  );
 
+  group(
+    'Given a CreateConfigState exposing only the ide config with an ide selected, '
+    'when converting to template context',
+    () {
+      late CreateConfigState state;
+
+      setUp(() {
+        state = CreateConfigState(
+          ServerpodTemplateType.server,
+          configs: const [ServerpodCreateConfig.ide],
+        );
+        state.form.updateSelectedOption(
+          ServerpodCreateConfig.ide,
+          IdeOption.claude,
+        );
+      });
+
+      test(
+        'then TemplateContext contains the selected ide',
+        () {
           final context = state.toTemplateContext();
           expect(context.ides, [TemplateIde.claude]);
         },

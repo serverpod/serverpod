@@ -143,19 +143,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     final useTui = (interactive ?? true) && !ci.isCI;
 
     if (useTui && !template.isMini) {
-      // Dry run to collect early errors and exit if needed.
-      final dryRunProjectPath = await performCreate(
-        name,
-        force,
-        dryRun: true,
-        interactive: interactive,
-        context: context,
-      );
-
-      if (dryRunProjectPath == null) {
-        throw ExitException.error();
-      }
-
       await performCreateWithTui(
         name,
         force,

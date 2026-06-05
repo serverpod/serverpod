@@ -123,6 +123,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
 
     final context = TemplateContext(
       template: template,
+      auth: true,
       postgres: true,
       web: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
@@ -131,26 +132,13 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
     final useTui = (interactive ?? true) && !ci.isCI;
 
     if (useTui) {
-      // Dry run to collect early errors and exit if needed.
-      final dryRunProjectPath = await performCreate(
-        name,
-        force,
-        dryRun: true,
-        interactive: interactive,
-        context: context,
-      );
-
-      if (dryRunProjectPath == null) {
-        throw ExitException.error();
-      }
-
       await performCreateWithTui(
         name,
         force,
         state: CreateConfigState(
           template,
           configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(postgres: true, web: true),
+          defaults: TemplateContext(auth: true, postgres: true, web: true),
           requireIde: true,
         ),
         interactive: true,

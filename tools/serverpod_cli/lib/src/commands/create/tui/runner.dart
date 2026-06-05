@@ -9,12 +9,28 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Creates a Serverpod project with the create TUI.
 /// The configurations exposed in the TUI form are determined by [state].
+///
+/// Performs a dry run before starting the TUI to collect early errors,
+/// throwing an [ExitException] if any are found.
 Future<void> performCreateWithTui(
   String name,
   bool force, {
   required CreateConfigState state,
   required bool? interactive,
 }) async {
+  // Dry run to collect early errors and exit if needed.
+  final dryRunProjectPath = await performCreate(
+    name,
+    force,
+    dryRun: true,
+    interactive: interactive,
+    context: state.toTemplateContext(),
+  );
+
+  if (dryRunProjectPath == null) {
+    throw ExitException.error();
+  }
+
   final holder = CreateAppStateHolder(state);
 
   final tuiWriter = TuiLogWriter();
