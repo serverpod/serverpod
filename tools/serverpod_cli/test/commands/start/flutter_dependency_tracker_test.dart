@@ -265,184 +265,176 @@ void main() {
     return tracker.refresh();
   }
 
-  group('Given a changed app dependency declaring a native plugin class,', () {
-    test(
-      'when the closure is refreshed, '
-      'then a native change is reported',
-      () async {
-        final change = await classifyRealDependencyBump(
-          depFlutterBlock:
-              'flutter:\n'
-              '  plugin:\n'
-              '    platforms:\n'
-              '      android:\n'
-              '        package: com.example.dep\n'
-              '        pluginClass: DepPlugin\n',
-        );
-
-        expect(change, FlutterDependencyChange.native);
-      },
-    );
-  });
-
-  group('Given a changed app dependency declaring an FFI plugin,', () {
-    test(
-      'when the closure is refreshed, '
-      'then a native change is reported',
-      () async {
-        final change = await classifyRealDependencyBump(
-          depFlutterBlock:
-              'flutter:\n'
-              '  plugin:\n'
-              '    platforms:\n'
-              '      windows:\n'
-              '        ffiPlugin: true\n',
-        );
-
-        expect(change, FlutterDependencyChange.native);
-      },
-    );
-  });
-
-  group(
-    'Given a changed app dependency declaring only a Dart plugin class,',
-    () {
-      test(
-        'when the closure is refreshed, '
-        'then a pure-Dart change is reported',
-        () async {
-          final change = await classifyRealDependencyBump(
-            depFlutterBlock:
-                'flutter:\n'
-                '  plugin:\n'
-                '    platforms:\n'
-                '      linux:\n'
-                '        dartPluginClass: DepPluginLinux\n',
-          );
-
-          expect(change, FlutterDependencyChange.dartOnly);
-        },
+  test(
+    'Given a changed app dependency declaring a native plugin class, '
+    'when the closure is refreshed, '
+    'then a native change is reported',
+    () async {
+      final change = await classifyRealDependencyBump(
+        depFlutterBlock:
+            'flutter:\n'
+            '  plugin:\n'
+            '    platforms:\n'
+            '      android:\n'
+            '        package: com.example.dep\n'
+            '        pluginClass: DepPlugin\n',
       );
+
+      expect(change, FlutterDependencyChange.native);
     },
   );
 
-  group('Given a changed app dependency with "pluginClass: none",', () {
-    test(
-      'when the closure is refreshed, '
-      'then a pure-Dart change is reported',
-      () async {
-        final change = await classifyRealDependencyBump(
-          depFlutterBlock:
-              'flutter:\n'
-              '  plugin:\n'
-              '    platforms:\n'
-              '      web:\n'
-              '        pluginClass: none\n',
-        );
+  test(
+    'Given a changed app dependency declaring an FFI plugin, '
+    'when the closure is refreshed, '
+    'then a native change is reported',
+    () async {
+      final change = await classifyRealDependencyBump(
+        depFlutterBlock:
+            'flutter:\n'
+            '  plugin:\n'
+            '    platforms:\n'
+            '      windows:\n'
+            '        ffiPlugin: true\n',
+      );
 
-        expect(change, FlutterDependencyChange.dartOnly);
-      },
-    );
-  });
+      expect(change, FlutterDependencyChange.native);
+    },
+  );
 
-  group('Given a changed app dependency with a native-assets build hook,', () {
-    test(
-      'when the closure is refreshed, '
-      'then a native change is reported',
-      () async {
-        final change = await classifyRealDependencyBump(withBuildHook: true);
+  test(
+    'Given a changed app dependency declaring only a Dart plugin class, '
+    'when the closure is refreshed, '
+    'then a pure-Dart change is reported',
+    () async {
+      final change = await classifyRealDependencyBump(
+        depFlutterBlock:
+            'flutter:\n'
+            '  plugin:\n'
+            '    platforms:\n'
+            '      linux:\n'
+            '        dartPluginClass: DepPluginLinux\n',
+      );
 
-        expect(change, FlutterDependencyChange.native);
-      },
-    );
-  });
+      expect(change, FlutterDependencyChange.dartOnly);
+    },
+  );
 
-  group('Given a changed app dependency with an unreadable pubspec,', () {
-    test(
-      'when the closure is refreshed, '
-      'then a native change is conservatively reported',
-      () async {
-        final change = await classifyRealDependencyBump(
-          corruptDepPubspecAfterResolve: true,
-        );
+  test(
+    'Given a changed app dependency with "pluginClass: none", '
+    'when the closure is refreshed, '
+    'then a pure-Dart change is reported',
+    () async {
+      final change = await classifyRealDependencyBump(
+        depFlutterBlock:
+            'flutter:\n'
+            '  plugin:\n'
+            '    platforms:\n'
+            '      web:\n'
+            '        pluginClass: none\n',
+      );
 
-        expect(change, FlutterDependencyChange.native);
-      },
-    );
-  });
+      expect(change, FlutterDependencyChange.dartOnly);
+    },
+  );
 
-  group('Given a Flutter package directory in a workspace,', () {
-    test(
-      'when resolving its .dart_tool, '
-      'then it resolves to the workspace root .dart_tool',
-      () async {
-        await createWorkspaceTracker();
+  test(
+    'Given a changed app dependency with a native-assets build hook, '
+    'when the closure is refreshed, '
+    'then a native change is reported',
+    () async {
+      final change = await classifyRealDependencyBump(withBuildHook: true);
 
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(
-          p.join(wsDir, 'app_flutter'),
-          flutterPackageName: 'app_flutter',
-        );
+      expect(change, FlutterDependencyChange.native);
+    },
+  );
 
-        expect(resolved, p.join(wsDir, '.dart_tool'));
-      },
-    );
-  });
+  test(
+    'Given a changed app dependency with an unreadable pubspec, '
+    'when the closure is refreshed, '
+    'then a native change is conservatively reported',
+    () async {
+      final change = await classifyRealDependencyBump(
+        corruptDepPubspecAfterResolve: true,
+      );
 
-  group('Given a standalone (non-workspace) Flutter package directory,', () {
-    test(
-      'when resolving its .dart_tool, '
-      'then it resolves to the package\'s own .dart_tool',
-      () async {
-        final appDir = p.join(tempDir.path, 'standalone');
-        write(p.join(appDir, 'pubspec.yaml'), _pubspec('app_flutter'));
-        await _pubGet(appDir);
+      expect(change, FlutterDependencyChange.native);
+    },
+  );
 
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(
-          appDir,
-          flutterPackageName: 'app_flutter',
-        );
+  test(
+    'Given a Flutter package directory in a workspace, '
+    'when resolving its .dart_tool, '
+    'then it resolves to the workspace root .dart_tool',
+    () async {
+      await createWorkspaceTracker();
 
-        expect(resolved, p.join(appDir, '.dart_tool'));
-      },
-    );
+      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+        p.join(wsDir, 'app_flutter'),
+        flutterPackageName: 'app_flutter',
+      );
 
-    test(
-      'when no resolution exists in any ancestor, '
-      'then it resolves to null',
-      () async {
-        final pkg = await Directory(
-          p.join(tempDir.path, 'unresolved'),
-        ).create();
+      expect(resolved, p.join(wsDir, '.dart_tool'));
+    },
+  );
 
-        final resolved = FlutterDependencyTracker.resolveDartToolDir(
-          pkg.path,
-          flutterPackageName: 'app_flutter',
-        );
+  test(
+    'Given a standalone (non-workspace) Flutter package directory, '
+    'when resolving its .dart_tool, '
+    'then it resolves to the package\'s own .dart_tool',
+    () async {
+      final appDir = p.join(tempDir.path, 'standalone');
+      write(p.join(appDir, 'pubspec.yaml'), _pubspec('app_flutter'));
+      await _pubGet(appDir);
 
-        expect(resolved, isNull);
-      },
-    );
-  });
+      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+        appDir,
+        flutterPackageName: 'app_flutter',
+      );
+
+      expect(resolved, p.join(appDir, '.dart_tool'));
+    },
+  );
+
+  test(
+    'Given a Flutter package directory with no resolution in any ancestor, '
+    'when resolving its .dart_tool, '
+    'then it resolves to null',
+    () async {
+      final pkg = await Directory(p.join(tempDir.path, 'unresolved')).create();
+
+      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+        pkg.path,
+        flutterPackageName: 'app_flutter',
+      );
+
+      expect(resolved, isNull);
+    },
+  );
 
   group(
     'Given a Flutter package whose own resolution was deleted and an unrelated ancestor resolution,',
     () {
+      // E.g. a standalone app under some other Dart project's tree: the
+      // ancestor's resolution is real but doesn't list the app.
+      late Directory pkg;
+
+      setUp(() async {
+        final ancestorDir = p.join(tempDir.path, 'other_project');
+        write(
+          p.join(ancestorDir, 'pubspec.yaml'),
+          _pubspec('something_unrelated'),
+        );
+        await _pubGet(ancestorDir);
+        pkg = await Directory(
+          p.join(ancestorDir, 'nested', 'app_flutter'),
+        ).create(recursive: true);
+      });
+
       test(
         'when resolving its .dart_tool, '
         'then it does not latch onto the unrelated resolution',
-        () async {
-          // E.g. a standalone app under some other Dart project's tree: the
-          // ancestor's resolution is real but doesn't list the app.
-          final ancestorDir = p.join(tempDir.path, 'other_project');
-          write(
-            p.join(ancestorDir, 'pubspec.yaml'),
-            _pubspec('something_unrelated'),
-          );
-          await _pubGet(ancestorDir);
-          final pkg = await Directory(
-            p.join(ancestorDir, 'nested', 'app_flutter'),
-          ).create(recursive: true);
-
+        () {
           final resolved = FlutterDependencyTracker.resolveDartToolDir(
             pkg.path,
             flutterPackageName: 'app_flutter',
@@ -451,26 +443,35 @@ void main() {
           expect(resolved, isNull);
         },
       );
+    },
+  );
+
+  group(
+    'Given a Flutter package under an unrelated resolution with a same-named package resolved further up,',
+    () {
+      // Resolution stops at the nearest root: a same-named package in a
+      // resolution further up must not be mistaken for this app.
+      late Directory pkg;
+
+      setUp(() async {
+        final outerDir = p.join(tempDir.path, 'outer');
+        write(p.join(outerDir, 'pubspec.yaml'), _pubspec('app_flutter'));
+        await _pubGet(outerDir);
+        final midDir = p.join(outerDir, 'mid');
+        write(
+          p.join(midDir, 'pubspec.yaml'),
+          _pubspec('something_unrelated'),
+        );
+        await _pubGet(midDir);
+        pkg = await Directory(
+          p.join(midDir, 'app_flutter'),
+        ).create(recursive: true);
+      });
 
       test(
-        'when an even higher resolution does list the package name, '
-        'then it still resolves to null',
-        () async {
-          // Resolution stops at the nearest root: a same-named package in a
-          // resolution further up must not be mistaken for this app.
-          final outerDir = p.join(tempDir.path, 'outer');
-          write(p.join(outerDir, 'pubspec.yaml'), _pubspec('app_flutter'));
-          await _pubGet(outerDir);
-          final midDir = p.join(outerDir, 'mid');
-          write(
-            p.join(midDir, 'pubspec.yaml'),
-            _pubspec('something_unrelated'),
-          );
-          await _pubGet(midDir);
-          final pkg = await Directory(
-            p.join(midDir, 'app_flutter'),
-          ).create(recursive: true);
-
+        'when resolving its .dart_tool, '
+        'then it resolves to null',
+        () {
           final resolved = FlutterDependencyTracker.resolveDartToolDir(
             pkg.path,
             flutterPackageName: 'app_flutter',
@@ -488,103 +489,131 @@ void main() {
   // only way to cover the tracker's tolerance of them is synthetically.
   // ---------------------------------------------------------------------
 
-  group('Given a missing or malformed dependency graph,', () {
-    late String dartToolDir;
+  late String syntheticDartTool;
+
+  Future<void> createSyntheticDartTool() async {
+    syntheticDartTool = p.join(tempDir.path, '.dart_tool');
+    await Directory(syntheticDartTool).create();
+  }
+
+  void writeGraph(Map<String, dynamic> graph) {
+    write(p.join(syntheticDartTool, 'package_graph.json'), jsonEncode(graph));
+  }
+
+  Map<String, dynamic> minimalGraph({String depVersion = '1.0.0'}) => {
+    'roots': ['app_flutter'],
+    'packages': [
+      {
+        'name': 'app_flutter',
+        'version': '1.0.0',
+        'dependencies': ['dep'],
+      },
+      {'name': 'dep', 'version': depVersion, 'dependencies': <String>[]},
+    ],
+  };
+
+  FlutterDependencyTracker createSyntheticTracker({
+    String flutterPackageName = 'app_flutter',
+  }) => FlutterDependencyTracker(
+    dartToolDir: syntheticDartTool,
+    flutterPackageName: flutterPackageName,
+  );
+
+  group('Given a resolution whose dependency graph file is absent,', () {
+    late FlutterDependencyTracker tracker;
 
     setUp(() async {
-      dartToolDir = p.join(tempDir.path, '.dart_tool');
-      await Directory(dartToolDir).create();
+      await createSyntheticDartTool();
+      tracker = createSyntheticTracker();
     });
 
-    void writeGraph(Map<String, dynamic> graph) {
-      write(p.join(dartToolDir, 'package_graph.json'), jsonEncode(graph));
-    }
-
-    Map<String, dynamic> minimalGraph({String depVersion = '1.0.0'}) => {
-      'roots': ['app_flutter'],
-      'packages': [
-        {
-          'name': 'app_flutter',
-          'version': '1.0.0',
-          'dependencies': ['dep'],
-        },
-        {'name': 'dep', 'version': depVersion, 'dependencies': <String>[]},
-      ],
-    };
-
     test(
-      'when the graph file is absent, '
+      'when the closure is refreshed, '
       'then no change is reported',
       () {
-        // No graph written.
-        final tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'app_flutter',
-        );
-
         expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
+  });
+
+  group('Given a malformed dependency graph file,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      await createSyntheticDartTool();
+      write(
+        p.join(syntheticDartTool, 'package_graph.json'),
+        '{ not valid json',
+      );
+      tracker = createSyntheticTracker();
+    });
 
     test(
-      'when the graph file is malformed, '
+      'when the closure is refreshed, '
       'then no change is reported',
       () {
-        write(p.join(dartToolDir, 'package_graph.json'), '{ not valid json');
-
-        final tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'app_flutter',
-        );
-
         expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
+  });
 
-    test(
-      'when the Flutter package is absent from the graph, '
-      'then no change is reported',
-      () {
+  group(
+    'Given a dependency graph that does not list the Flutter package,',
+    () {
+      late FlutterDependencyTracker tracker;
+
+      setUp(() async {
+        await createSyntheticDartTool();
         writeGraph(minimalGraph());
+        tracker = createSyntheticTracker(flutterPackageName: 'not_in_graph');
+      });
 
-        final tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'not_in_graph',
-        );
+      test(
+        'when the closure is refreshed, '
+        'then no change is reported',
+        () {
+          expect(tracker.refresh(), FlutterDependencyChange.none);
+        },
+      );
+    },
+  );
 
-        expect(tracker.refresh(), FlutterDependencyChange.none);
-      },
-    );
+  group('Given a tracked dependency graph,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      await createSyntheticDartTool();
+      writeGraph(minimalGraph());
+      tracker = createSyntheticTracker();
+    });
 
     test(
       'when the graph disappears then reappears unchanged, '
       'then no change is reported',
       () {
-        writeGraph(minimalGraph());
-        final tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'app_flutter',
-        );
-
         // Simulate a transient state (e.g. mid-pub-get / flutter clean): the
         // file vanishes and is then recreated with identical contents.
-        File(p.join(dartToolDir, 'package_graph.json')).deleteSync();
+        File(p.join(syntheticDartTool, 'package_graph.json')).deleteSync();
         expect(tracker.refresh(), FlutterDependencyChange.none);
 
         writeGraph(minimalGraph());
         expect(tracker.refresh(), FlutterDependencyChange.none);
       },
     );
+  });
 
-    test(
-      'when a changed dependency is missing from package_config.json, '
-      'then a native change is conservatively reported',
-      () {
-        // A graph/config mismatch can only arise from a racing or partial
-        // write; the unlocatable package must not be assumed pure-Dart.
+  group(
+    'Given a changed dependency that is missing from package_config.json,',
+    () {
+      // A graph/config mismatch can only arise from a racing or partial
+      // write; the unlocatable package must not be assumed pure-Dart.
+      late FlutterDependencyTracker tracker;
+
+      setUp(() async {
+        await createSyntheticDartTool();
         writeGraph(minimalGraph());
         write(
-          p.join(dartToolDir, 'package_config.json'),
+          p.join(syntheticDartTool, 'package_config.json'),
           jsonEncode({
             'configVersion': 2,
             'packages': [
@@ -596,15 +625,18 @@ void main() {
             ],
           }),
         );
-        final tracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: 'app_flutter',
-        );
+        tracker = createSyntheticTracker();
 
         writeGraph(minimalGraph(depVersion: '1.0.1'));
+      });
 
-        expect(tracker.refresh(), FlutterDependencyChange.native);
-      },
-    );
-  });
+      test(
+        'when the closure is refreshed, '
+        'then a native change is conservatively reported',
+        () {
+          expect(tracker.refresh(), FlutterDependencyChange.native);
+        },
+      );
+    },
+  );
 }
