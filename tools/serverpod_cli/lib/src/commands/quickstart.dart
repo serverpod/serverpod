@@ -124,6 +124,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
     final context = TemplateContext(
       template: template,
       auth: true,
+      redis: true,
       postgres: true,
       web: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
@@ -138,7 +139,12 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
         state: CreateConfigState(
           template,
           configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(auth: true, postgres: true, web: true),
+          defaults: TemplateContext(
+            auth: true,
+            redis: true,
+            postgres: true,
+            web: true,
+          ),
           requireIde: true,
         ),
         interactive: true,
