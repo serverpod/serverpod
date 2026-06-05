@@ -85,7 +85,7 @@ class MainScreen extends StatelessComponent {
         Button(
           name: 'Create Project',
           activationChar: 'Enter',
-          enabled: !creatingProject,
+          enabled: !creatingProject && state.canCreate,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
             state.markCreatingProject();
@@ -149,7 +149,10 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
-        const Tip('Click to select'),
+        if (state.canCreate)
+          const Tip('Click to select')
+        else
+          const Tip('Select at least one IDE'),
       ],
     );
   }
