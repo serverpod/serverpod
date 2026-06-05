@@ -26,6 +26,15 @@ Future<void> _sendCtrlR(NoctermTester tester) {
   );
 }
 
+Future<void> _sendShiftR(NoctermTester tester) {
+  return tester.sendKeyEvent(
+    const KeyboardEvent(
+      logicalKey: LogicalKey.keyR,
+      modifiers: ModifierKeys(shift: true),
+    ),
+  );
+}
+
 void main() {
   late NoctermTester tester;
   late ServerWatchState state;
@@ -213,6 +222,77 @@ void main() {
         expect(restartCalls, 0);
       },
     );
+  });
+
+  group('Given a ready TUI start app in watch mode', () {
+    late int reloadCalls;
+    late int restartCalls;
+
+    setUp(() async {
+      reloadCalls = 0;
+      restartCalls = 0;
+      // Hot reload and hot restart callbacks wired so the button is enabled.
+      holder.onHotReload = () => reloadCalls++;
+      holder.onHotRestart = () => restartCalls++;
+      state.watchModeEnabled = true;
+      state.serverReady = true;
+      state.showSplash = false;
+      // Rebuild so the button bar picks up the enabled state.
+      holder.widgetState?.rebuild();
+      await tester.pump();
+    });
+
+    test(
+      'when R is pressed then hot restart is invoked instead of hot reload',
+      () async {
+        await _sendKey(tester, LogicalKey.keyR);
+
+        expect(restartCalls, 1);
+        expect(reloadCalls, 0);
+      },
+    );
+
+    test('when Shift+R is pressed then hot restart is invoked', () async {
+      await _sendShiftR(tester);
+
+      expect(restartCalls, 1);
+      expect(reloadCalls, 0);
+    });
+  });
+
+  group('Given a ready TUI start app without watch mode', () {
+    late int reloadCalls;
+    late int restartCalls;
+
+    setUp(() async {
+      reloadCalls = 0;
+      restartCalls = 0;
+      // Hot reload and hot restart callbacks wired so the button is enabled.
+      holder.onHotReload = () => reloadCalls++;
+      holder.onHotRestart = () => restartCalls++;
+      state.serverReady = true;
+      state.showSplash = false;
+      // Rebuild so the button bar picks up the enabled state.
+      holder.widgetState?.rebuild();
+      await tester.pump();
+    });
+
+    test(
+      'when R is pressed then hot reload is invoked instead of hot restart',
+      () async {
+        await _sendKey(tester, LogicalKey.keyR);
+
+        expect(reloadCalls, 1);
+        expect(restartCalls, 0);
+      },
+    );
+
+    test('when Shift+R is pressed then hot restart is invoked', () async {
+      await _sendShiftR(tester);
+
+      expect(restartCalls, 1);
+      expect(reloadCalls, 0);
+    });
   });
 
   group('Given a running TUI start app with the help overlay open', () {

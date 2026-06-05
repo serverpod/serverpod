@@ -40,6 +40,12 @@ class ServerWatchState extends TuiState {
   /// Whether a tracked action (hot reload, migration) is in progress.
   bool actionBusy = false;
 
+  /// Whether the server runs in watch mode (incremental compilation with
+  /// automatic hot reload on file changes). Swaps the manual
+  /// `Hot reload / restart` button for a plain `Hot restart`, since reloads
+  /// are already handled by the incremental compiler.
+  bool watchModeEnabled = false;
+
   /// Whether the server is running and ready for actions.
   bool serverReady = false;
 

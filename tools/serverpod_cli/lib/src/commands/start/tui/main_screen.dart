@@ -46,7 +46,7 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onClearLogs;
   final VoidCallback? onQuit;
 
-  static const _helpBindings = [
+  List<(String, List<(String, String)>)> get _helpBindings => [
     (
       'Navigation',
       [
@@ -74,7 +74,10 @@ class MainScreen extends StatelessComponent {
     (
       'Actions',
       [
-        ('R / Shift+R', 'Hot reload / restart'),
+        if (state.watchModeEnabled)
+          ('R', 'Hot restart')
+        else
+          ('R / Shift+R', 'Hot reload / restart'),
         ('Ctrl+R', 'Start / restart Flutter app'),
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
@@ -388,14 +391,27 @@ class MainScreen extends StatelessComponent {
 
     return ButtonBar(
       buttons: [
-        Button(
-          name: 'Hot reload / restart',
-          activationChar: 'R',
-          activationKeys: const [LogicalKey.keyR],
-          onActivate: (_) => onHotReload?.call(),
-          onShiftActivate: (_) => onHotRestart?.call(),
-          enabled: actionsEnabled && onHotReload != null,
-        ),
+        // In watch mode the incremental compiler already hot reloads on file
+        // changes, so the manual action is a hot restart (with no shift
+        // variant, Shift+R restarts too). Without watch, R hot reloads and
+        // Shift+R hot restarts.
+        if (state.watchModeEnabled)
+          Button(
+            name: 'Hot restart',
+            activationChar: 'R',
+            activationKeys: const [LogicalKey.keyR],
+            onActivate: (_) => onHotRestart?.call(),
+            enabled: actionsEnabled && onHotRestart != null,
+          )
+        else
+          Button(
+            name: 'Hot reload / restart',
+            activationChar: 'R',
+            activationKeys: const [LogicalKey.keyR],
+            onActivate: (_) => onHotReload?.call(),
+            onShiftActivate: (_) => onHotRestart?.call(),
+            enabled: actionsEnabled && onHotReload != null,
+          ),
         Button(
           name: 'Create migration',
           activationChar: 'M',
