@@ -252,7 +252,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
     // Handled here rather than as a ButtonBar entry because the Button widget
     // matches only plain/Shift keys. Always consumed so it never falls through
-    // to the plain-R hot reload.
+    // to the plain-R hot reload / restart.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (state.showFlutterOutput || state.flutterRestartAvailable) {
         onRestartFlutterApp?.call();

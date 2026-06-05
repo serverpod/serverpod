@@ -1017,7 +1017,9 @@ Future<int> _runWithTui({
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
-  final holder = StartAppStateHolder(ServerWatchState());
+  final holder = StartAppStateHolder(
+    ServerWatchState()..watchModeEnabled = watch,
+  );
   var backendStarted = false;
 
   // Shared shutdown signal
