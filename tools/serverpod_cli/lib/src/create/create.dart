@@ -276,7 +276,7 @@ Future<String?> performCreate(
 
     await log.progress('Installing agent skills', () async {
       try {
-        if (context.template == ServerpodTemplateType.server &&
+        if (context.template != ServerpodTemplateType.module &&
             context.ides.contains(TemplateIde.claude)) {
           await _createFileAndWrite(
             p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
@@ -395,12 +395,6 @@ Future<void> _configureMcpServer(
         p.join(projectDirPath, ide.filePath),
         ide.effectiveConfig(serverDirRelative: serverDirRelative),
       );
-      if (ide == TemplateIde.claude) {
-        await _createFileAndWrite(
-          p.join(projectDirPath, 'CLAUDE.md'),
-          '@AGENTS.md',
-        );
-      }
     },
   );
 }
