@@ -150,11 +150,14 @@ class _SignInWidgetState extends State<SignInWidget> {
     final texts = context.basicSignInTexts;
 
     if (!auth.idp.hasAny) {
-      return Center(
-        child: Text(
-          texts.noAuthenticationProvidersConfigured,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.error,
+      return Material(
+        type: MaterialType.transparency,
+        child: Center(
+          child: Text(
+            texts.noAuthenticationProvidersConfigured,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ),
       );
@@ -225,27 +228,30 @@ class _SignInWidgetState extends State<SignInWidget> {
     }
 
     // TODO: Make this adaptative.
-    return SignInWidgetsColumn(
-      spacing: 12,
-      children: [
-        if (hasEmail)
-          widget.emailSignInWidget ??
-              EmailSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
-        if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
-        ...socialProviders,
-        if (hasAnonymous) ...[
-          widget.anonymousSignInWidget ??
-              AnonymousSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
+    return Material(
+      type: MaterialType.transparency,
+      child: SignInWidgetsColumn(
+        spacing: 12,
+        children: [
+          if (hasEmail)
+            widget.emailSignInWidget ??
+                EmailSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
+          ...socialProviders,
+          if (hasAnonymous) ...[
+            widget.anonymousSignInWidget ??
+                AnonymousSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

@@ -66,33 +66,51 @@ void main() {
   });
 
   group('Given an error log event with error details and stackTrace', () {
-    test(
-      'when dispatched then stores the error text but not the stack trace',
-      () {
-        handleServerLogEvent(
-          holder,
-          _logEvent({
-            'type': 'log',
-            'level': 'error',
-            'message': 'Failed to apply database migrations.',
-            'error':
-                'Exception: DB has migration version 20260428173453748 '
-                'registered but it is not found in the project files.',
-            'stackTrace': '#0      fake (file:///fake.dart:1:1)',
-          }),
-        );
+    test('when dispatched then stores the error text and stack trace', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'error',
+          'message': 'Failed to apply database migrations.',
+          'error':
+              'Exception: DB has migration version 20260428173453748 '
+              'registered but it is not found in the project files.',
+          'stackTrace': '#0      fake (file:///fake.dart:1:1)',
+        }),
+      );
 
-        final entry = state.logHistory.first as LogEntry;
-        expect(entry.level, LogLevel.error);
-        expect(entry.message, 'Failed to apply database migrations.');
-        expect(
-          entry.error,
-          'Exception: DB has migration version 20260428173453748 '
-          'registered but it is not found in the project files.',
-        );
-        expect(entry.stackTrace, isNull);
-      },
-    );
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.level, LogLevel.error);
+      expect(entry.message, 'Failed to apply database migrations.');
+      expect(
+        entry.error,
+        'Exception: DB has migration version 20260428173453748 '
+        'registered but it is not found in the project files.',
+      );
+      expect(entry.stackTrace, isNotNull);
+      expect(
+        entry.stackTrace.toString(),
+        '#0      fake (file:///fake.dart:1:1)',
+      );
+    });
+  });
+
+  group('Given an error log event with an empty stackTrace', () {
+    test('when dispatched then leaves the stack trace null', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'error',
+          'message': 'Something failed.',
+          'stackTrace': '',
+        }),
+      );
+
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.stackTrace, isNull);
+    });
   });
 
   group('Given a scope_start event', () {

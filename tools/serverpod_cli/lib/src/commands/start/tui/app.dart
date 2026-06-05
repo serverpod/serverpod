@@ -16,6 +16,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
   VoidCallback? _onHotRestart;
+  VoidCallback? _onRestartFlutterApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
@@ -32,6 +33,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
     widgetState.onHotRestart = _onHotRestart;
+    widgetState.onRestartFlutterApp = _onRestartFlutterApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
@@ -51,6 +53,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   set onHotRestart(VoidCallback? cb) {
     _onHotRestart = cb;
     _widgetState?.onHotRestart = cb;
+  }
+
+  set onRestartFlutterApp(VoidCallback? cb) {
+    _onRestartFlutterApp = cb;
+    _widgetState?.onRestartFlutterApp = cb;
   }
 
   set onCreateMigration(void Function({bool force})? cb) {
@@ -97,6 +104,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onHotRestart;
+  VoidCallback? onRestartFlutterApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
@@ -146,19 +154,17 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   void _normalizeSelectedTab() {
     final state = component.holder.state;
-    if (state.useSideBySideLayout && state.selectedTab == 1) {
+    if (state.selectedTab == 1 &&
+        (state.useSideBySideLayout || !state.showFlutterOutput)) {
       state.selectedTab = 0;
     }
   }
 
   void _cycleTab(int delta) {
     final state = component.holder.state;
-    if (state.useSideBySideLayout) {
-      state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-    } else {
-      final tabCount = state.showFlutterOutput ? 3 : 2;
-      state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
-    }
+    if (state.useSideBySideLayout) return;
+    final tabCount = state.showFlutterOutput ? 2 : 1;
+    state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
     _rebuild();
   }
 
@@ -227,9 +233,35 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.period) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      _handleScrollKey(rawScrollController, event);
+      return true;
+    }
+
+    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
+    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
+    // Handled here rather than as a ButtonBar entry because the Button widget
+    // matches only plain/Shift keys. Always consumed so it never falls through
+    // to the plain-R hot reload.
+    if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
+      if (state.showFlutterOutput || state.flutterRestartAvailable) {
+        onRestartFlutterApp?.call();
+      }
+      return true;
+    }
+
     final sideBySide = state.useSideBySideLayout;
 
-    // Tab cycling. In side-by-side mode, only server tabs are selectable.
     if (event.matches(LogicalKey.tab, shift: false) ||
         event.logicalKey == LogicalKey.arrowRight) {
       _cycleTab(1);
@@ -245,23 +277,30 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit2) {
-      state.selectedTab = sideBySide ? 2 : 1;
+    if (event.logicalKey == LogicalKey.digit2 &&
+        !sideBySide &&
+        state.showFlutterOutput) {
+      state.selectedTab = 1;
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit3 &&
-        !sideBySide &&
-        state.showFlutterOutput) {
-      state.selectedTab = 2;
+
+    if (event.logicalKey == LogicalKey.keyE && state.selectedTab == 0) {
+      state.expandStackTraces = !state.expandStackTraces;
+      _rebuild();
+      return true;
+    }
+
+    if (event.logicalKey == LogicalKey.backquote ||
+        event.logicalKey == LogicalKey.period) {
+      state.showRawServerLogs = true;
       _rebuild();
       return true;
     }
 
     final c = switch (state.selectedTab) {
-      0 => logScrollController,
       1 => flutterRawScrollController,
-      _ => rawScrollController,
+      _ => logScrollController,
     };
     return _handleScrollKey(c, event);
   }

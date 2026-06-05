@@ -6,7 +6,6 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
-import 'package:cli_tools/execute.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -16,8 +15,6 @@ import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/scripts/script.dart';
-import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -97,27 +94,38 @@ void flushPerformCreateErrors() {
 Future<String?> performCreate(
   String name,
   bool force, {
-  Completer<int>? flutterBuildCompleter,
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   _errorBuffer.clear();
-  // If the name is a dot, we can either create a new project in the current
-  // directory or upgrade an existing project.
+  // Resolve where the project will be created relative to [workingDirectory]
+  // (defaulting to the current directory) without ever mutating the
+  // process-wide current directory. Mutating it would leak into a subsequent
+  // performCreate call within the same process (e.g. the dry-run followed by
+  // the real run in the `create .` TUI flow), resolving the second run
+  // against the wrong directory. An explicit [workingDirectory] also lets
+  // callers such as tests target an isolated temp dir.
+  //
+  // For an explicit name the project lives in a `name` subdirectory of the
+  // working directory. If the name is a dot, we either upgrade the project we
+  // are standing in, or create a new one in place: it takes the working
+  // directory's name and its parent becomes the project root.
+  final cwd = workingDirectory ?? Directory.current;
+  var projectRoot = cwd;
   if (name == '.') {
-    if (findServerDirectory(Directory.current) != null) {
+    if (findServerDirectory(cwd) != null) {
       return await _performUpgrade(
         dryRun: dryRun,
         interactive: interactive,
         context: context,
+        workingDirectory: cwd,
       );
     }
 
-    // If we are creating a new project in the current directory, we need to
-    // use the parent directory as the project root.
-    name = p.basename(Directory.current.absolute.path);
-    Directory.current = Directory.current.parent;
+    name = p.basename(cwd.absolute.path);
+    projectRoot = cwd.parent;
   }
 
   // check if project name is valid
@@ -130,7 +138,7 @@ Future<String?> performCreate(
   }
 
   var serverpodDirs = ServerpodDirectories(
-    projectDir: Directory(p.join(Directory.current.path, name)),
+    projectDir: Directory(p.join(projectRoot.path, name)),
     name: name,
   );
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
@@ -251,54 +259,6 @@ Future<String?> performCreate(
         interactive: interactive,
       );
     });
-  }
-
-  if (template == ServerpodTemplateType.server) {
-    String skipKey = interactive == true ? 'S' : 'CTRL+C';
-    await log.progress(
-      'Building Flutter web app (press $skipKey to skip).',
-      () async {
-        final Script? script;
-        try {
-          script = _locateFlutterBuildScript(serverpodDirs.serverDir);
-        } catch (e) {
-          _logError('Error when locating flutter build script: $e');
-          return false;
-        }
-
-        if (script == null) {
-          _logError('Failed to locate flutter build script, skipping build.');
-          return false;
-        }
-
-        final stdoutController = StreamController<List<int>>();
-        stdoutController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => log.debug(data));
-        final toDebugLog = IOSink(stdoutController);
-        final stderrController = StreamController<List<int>>();
-        stderrController.stream
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .transform(const LineSplitter())
-            .listen((data) => _logError(data));
-        final toErrorLog = IOSink(stderrController);
-
-        final executionFuture = execute(
-          script.command,
-          workingDirectory: serverpodDirs.serverDir,
-          stdout: toDebugLog,
-          stderr: toErrorLog,
-        );
-
-        final exitCode = await Future.any([
-          ?flutterBuildCompleter?.future,
-          executionFuture,
-        ]);
-
-        return exitCode == 0;
-      },
-    );
   }
 
   if (context.ides.isNotEmpty) {
@@ -462,13 +422,14 @@ Future<String?> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  Directory? workingDirectory,
 }) async {
   if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
     return null;
   }
 
-  var serverDir = findServerDirectory(Directory.current);
+  var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
   if (serverDir == null) {
     _logError('Could not find a Serverpod project in the current directory.');
     return null;
@@ -1310,10 +1271,4 @@ Future<bool> _runGenerate(
       interactive: interactive,
     );
   });
-}
-
-Script? _locateFlutterBuildScript(Directory serverDir) {
-  final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-  final scripts = Scripts.fromPubspecFile(pubspecFile);
-  return scripts['flutter_build'];
 }

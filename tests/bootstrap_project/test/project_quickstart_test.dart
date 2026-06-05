@@ -215,30 +215,6 @@ void main() async {
               });
 
               test(
-                'has a web/app directory containing the flutter web app',
-                () {
-                  expect(
-                    Directory(
-                      path.join(tempPath, serverDir, 'web', 'app'),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                  expect(
-                    File(
-                      path.join(
-                        tempPath,
-                        serverDir,
-                        'web',
-                        'app',
-                        'index.html',
-                      ),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                },
-              );
-
-              test(
                 'has embedded postgres configuration on test run mode',
                 () {
                   final testConfigFile = File(

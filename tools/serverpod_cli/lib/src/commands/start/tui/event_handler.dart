@@ -17,6 +17,7 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
+      final stackTrace = data['stackTrace'] as String?;
       state.logHistory.add(
         LogEntry(
           level: parseLogLevel(data['level'] as String? ?? 'info'),
@@ -26,6 +27,9 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
           message: data['message'] as String? ?? '',
           scope: LogScope.root('server'),
           error: data['error']?.toString(),
+          stackTrace: stackTrace != null && stackTrace.isNotEmpty
+              ? StackTrace.fromString(stackTrace)
+              : null,
         ),
       );
 

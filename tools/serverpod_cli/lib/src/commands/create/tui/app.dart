@@ -11,13 +11,11 @@ class ServerpodCreateApp extends TuiApp<CreateAppStateHolder> {
     required this.name,
     required this.onCreate,
     required this.onQuit,
-    required this.onSkipFlutterBuild,
   });
 
   final String name;
   final VoidCallback onCreate;
   final VoidCallback onQuit;
-  final VoidCallback onSkipFlutterBuild;
 
   @override
   TuiAppState createState() => ServerpodCreateAppState();
@@ -41,7 +39,8 @@ class ServerpodCreateAppState extends TuiAppState<ServerpodCreateApp> {
   Component buildApp(BuildContext context) {
     return Focusable(
       focused: true,
-      onKeyEvent: _handleKeyEvent,
+      // Pass all keys through to the form fields below.
+      onKeyEvent: (_) => false,
       child: MainScreen(
         name: component.name,
         holder: component.holder,
@@ -51,14 +50,5 @@ class ServerpodCreateAppState extends TuiAppState<ServerpodCreateApp> {
         onQuit: component.onQuit,
       ),
     );
-  }
-
-  bool _handleKeyEvent(KeyboardEvent event) {
-    if (event.logicalKey == LogicalKey.keyS) {
-      component.onSkipFlutterBuild();
-      return true;
-    }
-
-    return false;
   }
 }

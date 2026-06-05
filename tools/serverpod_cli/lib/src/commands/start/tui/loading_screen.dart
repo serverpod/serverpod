@@ -59,7 +59,15 @@ class _LoadingScreenState extends State<LoadingScreen>
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
     final t = _controller.value;
-    if (t <= 0 && _fadingOut) return const SizedBox.shrink();
+    // Hidden when not visible, unless a fade-out is still in flight. The
+    // explicit !visible check matters: ancestors changing their tree shape
+    // (e.g. the Ctrl-C hint row appearing, or NoctermApp wrapping the app
+    // once theme detection lands) remount this component, and a fresh mount
+    // with visible=false never sees the true->false transition that arms
+    // the fade - without this guard it would render the splash forever.
+    if (!component.visible && (!_fadingOut || t <= 0)) {
+      return const SizedBox.shrink();
+    }
 
     final baseColor = Color.lerp(Color.defaultColor, theme.primary, t)!;
     final highlightColor = Color.lerp(Color.defaultColor, Colors.white, t)!;

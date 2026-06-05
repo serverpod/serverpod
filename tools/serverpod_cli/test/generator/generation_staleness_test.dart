@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
+
+import '../test_util/mtime_helpers.dart';
 
 class _FakeConfig extends Fake implements GeneratorConfig {
   final String serverDir;
@@ -18,6 +20,19 @@ class _FakeConfig extends Fake implements GeneratorConfig {
   List<String> get serverPackageDirectoryPathParts => [serverDir];
 
   @override
+  List<String> get clientPackagePathParts => [serverDir, '..', 'client'];
+
+  @override
+  List<String> get auxiliaryInputPaths => [
+    p.join(serverDir, 'config', 'generator.yaml'),
+    p.join(serverDir, 'pubspec.yaml'),
+    p.join(serverDir, 'pubspec.lock'),
+  ];
+
+  @override
+  List<String> get libSourcePathParts => [serverDir, 'lib'];
+
+  @override
   List<String> get srcSourcePathParts => [serverDir, 'lib', 'src'];
 
   @override
@@ -28,25 +43,20 @@ class _FakeConfig extends Fake implements GeneratorConfig {
     for (final pathParts in _sharedModels.values)
       p.joinAll([...serverPackageDirectoryPathParts, ...pathParts, 'lib']),
   ];
-}
 
-/// Waits until the file system reports an mtime strictly after [reference].
-///
-/// This avoids hard-coded delays that may be too short on platforms with
-/// coarse timestamp resolution (e.g. Windows).
-Future<void> waitForMtimeAfter(DateTime reference, [Directory? dir]) async {
-  dir ??= await Directory.systemTemp.createTemp();
-  final probe = File(p.join(dir.path, '.mtime_probe'));
-  try {
-    for (var i = 0; i < 100; i++) {
-      await probe.writeAsString('$i');
-      if (probe.statSync().modified.isAfter(reference)) return;
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-    }
-    throw StateError('File system mtime did not advance after 5 seconds');
-  } finally {
-    if (probe.existsSync()) await probe.delete();
-  }
+  @override
+  List<String> get generatedServeModelPathParts => [
+    serverDir,
+    'lib',
+    'src',
+    'generated',
+  ];
+
+  @override
+  List<String> get generatedSharedModelsPaths => [
+    for (final pathParts in _sharedModels.values)
+      p.joinAll([serverDir, ...pathParts, 'lib', 'src', 'generated']),
+  ];
 }
 
 void main() {
@@ -200,6 +210,114 @@ void main() {
         expect(await isGenerationUpToDate(config, sources), isFalse);
       },
     );
+
+    test(
+      'when a recorded generated file is hand-edited or reverted, '
+      'then isGenerationUpToDate returns false',
+      () async {
+        // The file still exists, but its mtime changed - a git revert or a
+        // manual edit must not be trusted as up to date.
+        final genMtime = generatedFile.statSync().modified;
+        await waitForMtimeAfter(genMtime, tempDir);
+        await generatedFile.writeAsString('// tampered');
+
+        final sources = await enumerateSourceFiles(config);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
+      },
+    );
+  });
+
+  group('Given the server pubspec changes after the stamp', () {
+    late File pubspecFile;
+
+    setUp(() async {
+      pubspecFile = File(p.join(tempDir.path, 'pubspec.yaml'));
+      await pubspecFile.writeAsString('name: server\ndependencies:\n');
+
+      await writeGenerationStamp(config, generatedFiles: {});
+      final stampMtime = stampFile.statSync().modified;
+      await waitForMtimeAfter(stampMtime, tempDir);
+
+      // Adding a module dependency changes the generated output even though no
+      // file under lib/ changed.
+      await pubspecFile.writeAsString(
+        'name: server\ndependencies:\n  serverpod_auth: any\n',
+      );
+    });
+
+    test(
+      'when isGenerationUpToDate is called, '
+      'then it returns false',
+      () async {
+        final sources = await enumerateSourceFiles(config);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
+      },
+    );
+  });
+
+  group('Given a source edited after enumeration but before the stamp is '
+      'written (the mid-generation race)', () {
+    setUp(() async {
+      // The walk stamps each source as it reads it.
+      final stamps = await enumerateSourceFiles(config);
+
+      // A source is edited while generation is still running.
+      final srcMtime = (await endpointFile.stat()).modified;
+      await waitForMtimeAfter(srcMtime, tempDir);
+      await endpointFile.writeAsString(
+        'class MyEndpoint extends Endpoint { /* edited mid-run */ }',
+      );
+
+      // The stamp records the pre-edit stamps, not the post-run state. Were it
+      // to stat live at write time, the edit would be silently swallowed on the
+      // next run.
+      await writeGenerationStamp(
+        config,
+        generatedFiles: {},
+        sourceStats: stamps,
+      );
+    });
+
+    test(
+      'when isGenerationUpToDate is called, '
+      'then it returns false so the mid-run edit is not silently missed',
+      () async {
+        final sources = await enumerateSourceFiles(config);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
+      },
+    );
+  });
+
+  group('Given a source whose size changed but mtime did not '
+      '(a same-tick edit)', () {
+    // A second-aligned mtime so setLastModified round-trips exactly (the
+    // filesystem here truncates mtimes to whole seconds).
+    final pinnedMtime = DateTime(2026, 1, 1, 12, 0, 0);
+
+    setUp(() async {
+      await endpointFile.setLastModified(pinnedMtime);
+      await writeGenerationStamp(config, generatedFiles: {});
+
+      // Change the file's length, then pin the mtime back to the same value -
+      // simulating an edit landing within a single coarse mtime tick.
+      await endpointFile.writeAsString(
+        'class MyEndpoint extends Endpoint { /* a noticeably longer body */ }',
+      );
+      await endpointFile.setLastModified(pinnedMtime);
+    });
+
+    test(
+      'when isGenerationUpToDate is called, '
+      'then it returns false because the size changed',
+      () async {
+        // Precondition: mtime matches what the stamp recorded, so size is the
+        // only signal that changed.
+        expect((await endpointFile.stat()).modified, pinnedMtime);
+
+        final sources = await enumerateSourceFiles(config);
+        expect(await isGenerationUpToDate(config, sources), isFalse);
+      },
+    );
   });
 
   group('Given a shared model package with a newer file', () {
@@ -267,11 +385,11 @@ void main() {
 
         final lines = (await stampFile.readAsString()).trim().split('\n');
 
-        // version, timestamp, then file paths.
-        expect(lines.length, greaterThanOrEqualTo(4));
+        // version, fingerprint, then file paths.
+        expect(lines.length, 4);
         expect(
           lines.skip(2).toSet(),
-          containsAll(['/tmp/a.dart', '/tmp/b.dart']),
+          {'/tmp/a.dart', '/tmp/b.dart'},
         );
       },
     );
@@ -289,8 +407,8 @@ void main() {
 
         final sources = await enumerateSourceFiles(config);
 
-        expect(sources, contains(endsWith('endpoint.dart')));
-        expect(sources, contains(endsWith('model.spy.yaml')));
+        expect(sources.keys, contains(endsWith('endpoint.dart')));
+        expect(sources.keys, contains(endsWith('model.spy.yaml')));
       },
     );
 
@@ -304,7 +422,35 @@ void main() {
 
         final sources = await enumerateSourceFiles(config);
 
-        expect(sources.where((s) => s.endsWith('.md')), isEmpty);
+        expect(sources.keys.where((s) => s.endsWith('.md')), isEmpty);
+      },
+    );
+
+    test(
+      'when a model lives under lib/ outside lib/src, '
+      'then it is still included',
+      () async {
+        await File(
+          p.join(tempDir.path, 'lib', 'top_level.spy.yaml'),
+        ).writeAsString('class: TopLevel');
+
+        final sources = await enumerateSourceFiles(config);
+
+        expect(sources.keys, contains(endsWith('top_level.spy.yaml')));
+      },
+    );
+
+    test(
+      'when generated output exists under lib/src/generated, '
+      'then it is excluded (outputs are not inputs)',
+      () async {
+        await File(
+          p.join(tempDir.path, 'lib', 'src', 'generated', 'protocol.dart'),
+        ).create(recursive: true);
+
+        final sources = await enumerateSourceFiles(config);
+
+        expect(sources.keys.where((s) => s.contains('generated')), isEmpty);
       },
     );
   });
@@ -320,7 +466,7 @@ void main() {
   );
 
   test(
-    'Given stamp file that exists with only version and timestamp, '
+    'Given stamp file that exists with only version and fingerprint, '
     'when calling readGenerationStamp, '
     'then it returns an empty set.',
     () async {

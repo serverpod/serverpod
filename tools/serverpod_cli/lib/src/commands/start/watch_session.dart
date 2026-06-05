@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
@@ -107,6 +108,22 @@ class WatchSession {
   final FlutterProcess? Function() _flutterProcessProvider;
   FlutterProcess? get _flutterProcess => _flutterProcessProvider();
 
+  /// Whether a Flutter app process is currently running. Used e.g. to label
+  /// the Ctrl+R action as a start or a restart.
+  bool get isFlutterAppRunning => _flutterProcess?.isRunning ?? false;
+
+  /// (Re)launches the Flutter app: kills the running `flutter run` process (if
+  /// any) and starts a fresh one — launching it from scratch when none is
+  /// running yet, e.g. after a `--no-flutter` start. Supplied by the
+  /// orchestrator, which owns the spawn closure; `null` only when the project
+  /// has no Flutter package to launch.
+  final Future<void> Function()? _flutterAppRestartAction;
+
+  /// Classifies how the Flutter app's dependency closure changed since the
+  /// last check (updating its cache); drives the choice between hot reload,
+  /// hot restart, and full relaunch. `null` when tracking is unavailable.
+  final FlutterDependencyChange Function()? _checkFlutterDependencyChange;
+
   final Completer<int> _done = Completer<int>();
 
   /// Dart file paths from prior compile cycles that were rejected.
@@ -144,6 +161,8 @@ class WatchSession {
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
     FlutterProcess? Function()? flutterProcessProvider,
+    Future<void> Function()? flutterAppRestartAction,
+    FlutterDependencyChange Function()? checkFlutterDependencyChange,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -152,7 +171,9 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
-       _flutterProcessProvider = flutterProcessProvider ?? (() => null) {
+       _flutterProcessProvider = flutterProcessProvider ?? (() => null),
+       _flutterAppRestartAction = flutterAppRestartAction,
+       _checkFlutterDependencyChange = checkFlutterDependencyChange {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -185,9 +206,24 @@ class WatchSession {
         event.modelFiles.isNotEmpty ||
         event.packageConfigChanged;
 
-    // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
+    // How the Flutter app must be refreshed after this change: dependency
+    // closure changes escalate from the default hot reload to a hot restart
+    // (pure-Dart deps) or a full relaunch (native code). Checked once here
+    // since the check updates the dependency fingerprint cache.
+    final flutterDependencyChange = event.flutterDependenciesChanged
+        ? (_checkFlutterDependencyChange?.call() ??
+              FlutterDependencyChange.none)
+        : FlutterDependencyChange.none;
+
+    // Static-only changes (HTML, JS, CSS, templates) and dependency-only
+    // changes: no compilation needed. The browser refresh is tied to static
+    // files specifically - a dependency-only change doesn't affect
+    // server-rendered pages.
     if (!hasDartChanges) {
-      await _notifyBrowserRefresh();
+      if (flutterDependencyChange != FlutterDependencyChange.none) {
+        await _reloadOrRestartFlutterApp(flutterDependencyChange);
+      }
+      if (event.staticFilesChanged) await _notifyBrowserRefresh();
       return;
     }
 
@@ -248,7 +284,7 @@ class WatchSession {
     // service instead of the FES pipeline.
     if (_compiler == null) {
       final reloaded = await _reloadOrRestart(null);
-      await _reloadFlutter();
+      await _reloadOrRestartFlutterApp(flutterDependencyChange);
       if (reloaded) await _notifyBrowserRefresh();
       return;
     }
@@ -265,10 +301,31 @@ class WatchSession {
       dartFiles: allDartChanges,
       packageConfigChanged: event.packageConfigChanged,
     );
-    // Always reload Flutter: flutter/lib-only changes short-circuit
-    // the server compile but still need a Flutter refresh.
-    await _reloadFlutter();
+    // Always refresh Flutter: flutter/lib-only changes short-circuit the server
+    // compile but still need a Flutter refresh (escalated when dependencies
+    // changed, otherwise a hot reload).
+    await _reloadOrRestartFlutterApp(flutterDependencyChange);
     if (reloaded) await _notifyBrowserRefresh();
+  }
+
+  /// Refreshes the Flutter app after a file change with the lightest step that
+  /// picks the change up: a hot reload by default, a hot restart when
+  /// pure-Dart dependencies changed, or a full process relaunch when native
+  /// code changed. The relaunch calls the action directly rather than via
+  /// [restartFlutterApp] since we are already running inside [_chain].
+  Future<void> _reloadOrRestartFlutterApp(
+    FlutterDependencyChange change,
+  ) async {
+    switch (change) {
+      case FlutterDependencyChange.native:
+        log.info(flutterDependenciesChangedNative);
+        await _flutterAppRestartAction?.call();
+      case FlutterDependencyChange.dartOnly:
+        log.info(flutterDependenciesChangedDart);
+        await _restartFlutter();
+      case FlutterDependencyChange.none:
+        await _reloadFlutter();
+    }
   }
 
   /// Returns `true` if [path] is inside a generated directory.
@@ -442,7 +499,9 @@ class WatchSession {
 
   /// Forces a full server process restart (clears singletons, pools, and
   /// caches that survive a hot reload). More expensive than [forceReload];
-  /// recompiles from scratch.
+  /// recompiles from scratch. Hot-restarts the Flutter app afterwards so it
+  /// reconnects to the fresh server. To fully relaunch the Flutter process
+  /// (e.g. to pick up new dependencies), use [restartFlutterApp].
   Future<void> forceRestart() {
     if (_state == SessionState.disposed) {
       throw StateError('Session has been disposed.');
@@ -455,6 +514,28 @@ class WatchSession {
         await _restartFlutter();
         await _notifyBrowserRefresh();
       }
+    });
+  }
+
+  /// Fully (re)launches the Flutter app: kills the running `flutter run`
+  /// process (if any) and launches a fresh one — including launching it from
+  /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
+  /// the Flutter hot restart bundled into [forceRestart], this only drives the
+  /// Flutter process and is independent of the server's compiler, so it works
+  /// in both watch and non-watch mode.
+  ///
+  /// No-op when the project has no Flutter package. Serialized behind any
+  /// in-flight reload, restart, or migration via [_chain]. Throws a
+  /// [StateError] if the session has been disposed.
+  Future<void> restartFlutterApp() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    return _chain(() async {
+      // The session may have been disposed while this call was queued;
+      // don't respawn a Flutter process we'd immediately leak.
+      if (_state == SessionState.disposed) return;
+      await _flutterAppRestartAction?.call();
     });
   }
 

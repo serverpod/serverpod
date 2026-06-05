@@ -68,6 +68,7 @@ commands:
     flags:
       -w, --watch: "Watch for changes and continuously generate code."
       -d, --directory=: "The directory to generate code for (defaults to current directory)."
+      -f, --force: "Regenerate even when the output looks up to date. Use this to rebuild after hand-editing or reverting generated files."
 
   - name: language-server
     flags:

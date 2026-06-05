@@ -10,6 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -23,7 +24,6 @@ import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
-import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -32,6 +32,7 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -371,9 +372,9 @@ Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
 }) async {
-  final client = ConfigInfo.fromDir(
+  final client = ConfigInfo(
+    runMode,
     serverDir: serverDir,
-    runMode: runMode,
   ).createServiceClient();
   try {
     await client.insights.applyMigrations(
@@ -455,33 +456,50 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     rethrow;
   }
 
-  final analyzersFuture = IsolatedAnalyzers.create(config);
+  // prime: false - the single full prime happens inside generateIfStale; here
+  // we only spawn the isolate eagerly so it overlaps the staleness check.
+  final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
-  // Code generation staleness check.
-  final allSources = await enumerateSourceFiles(config);
-  if (!await isGenerationUpToDate(config, allSources)) {
-    late final IsolatedAnalyzers analyzers;
-    await log.progress('Initializing analyzers', () async {
-      analyzers = await analyzersFuture;
-      return true;
-    });
-    late final ({bool success, Set<String> generatedFiles}) genResult;
-    await log.progress('Generating code', () async {
-      genResult = await analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: allSources,
-        requirements: GenerationRequirements.full,
-      );
-      return genResult.success;
-    });
-    if (!genResult.success) {
-      log.error('Code generation failed.');
+  // Tear down everything provisioned so far: the analyzer isolate and any
+  // Docker services. A failed/in-flight analyzer future must not prevent the
+  // Docker teardown, so closing it is guarded.
+  Future<void> rollbackStartup() async {
+    try {
       await closeAnalyzers();
-      await rollbackProvisioning();
-      return const WatchLoopAborted(1);
-    }
+    } catch (_) {}
+    await rollbackProvisioning();
+  }
+
+  // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
+  // generation is up to date.
+  late final ({bool upToDate, bool success}) genResult;
+  try {
+    genResult = await generateIfStale(
+      config: config,
+      keepPrimedWhenFresh: true,
+      createAnalyzers: () async {
+        late final IsolatedAnalyzers analyzers;
+        await log.progress('Initializing analyzers', () async {
+          analyzers = await analyzersFuture;
+          return true;
+        });
+        return analyzers;
+      },
+    );
+  } catch (_) {
+    // Tear down even when analysis/generation throws, not just on a clean
+    // failure.
+    await rollbackStartup();
+    rethrow;
+  }
+  if (!genResult.success) {
+    log.error('Code generation failed.');
+    await rollbackStartup();
+    return const WatchLoopAborted(1);
+  }
+  if (genResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
   // FES setup (watch mode only).
@@ -507,8 +525,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return hooksOk;
     });
     if (!hooksOk) {
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -522,8 +539,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -582,6 +598,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Calling while previous instance is still running is a no-op.
   FlutterProcess? flutterProcess;
   var spawnInFlight = false;
+  // Set by the restart action when the spawn replaces a previously running
+  // app, so the progress message reads as a relaunch rather than a first run.
+  var flutterRelaunchInProgress = false;
   spawnFlutterAppIfNeeded = () async {
     if (runMode != 'development') return;
     if (!config.hasFlutterPackage) {
@@ -592,6 +611,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (existing != null && existing.isRunning) return;
     if (spawnInFlight) return;
     spawnInFlight = true;
+    final isRelaunch = flutterRelaunchInProgress;
+    flutterRelaunchInProgress = false;
 
     final fp = FlutterProcess(
       flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
@@ -624,7 +645,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // On `-d web-server` `launched` pends until a browser attaches.
     unawaited(() async {
       await log.progress(
-        'Launching Flutter app (first run may take 30-60s)',
+        isRelaunch
+            ? 'Relaunching Flutter app'
+            : 'Launching Flutter app (first run may take 30-60s)',
         () async {
           await fp.launched;
           return true;
@@ -654,6 +677,41 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     await spawnFlutterAppIfNeeded();
   }
 
+  // Track the Flutter app's resolved dependency closure so a dependency change
+  // (which a hot restart can't pick up) auto-triggers a full relaunch. Disabled
+  // when there is no Flutter package or its dependencies haven't been resolved.
+  FlutterDependencyTracker? flutterDependencyTracker;
+  if (config.hasFlutterPackage) {
+    final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
+    try {
+      final flutterPackageName = parsePubspec(
+        File(p.join(flutterPackageDir, 'pubspec.yaml')),
+      ).name;
+      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+        flutterPackageDir,
+        flutterPackageName: flutterPackageName,
+      );
+      if (dartToolDir != null) {
+        flutterDependencyTracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: flutterPackageName,
+        );
+      } else {
+        log.debug(
+          'Flutter dependency tracking disabled: no resolution listing '
+          '$flutterPackageName found above $flutterPackageDir.',
+        );
+      }
+    } catch (e) {
+      // A malformed Flutter pubspec must not prevent the server from
+      // starting; it only disables dependency tracking.
+      log.debug(
+        'Flutter dependency tracking disabled: could not read the Flutter '
+        'package name from $flutterPackageDir ($e).',
+      );
+    }
+  }
+
   // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
@@ -663,7 +721,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
         requirements: requirements,
       );
     },
@@ -671,6 +729,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
     flutterProcessProvider: () => flutterProcess,
+    // Kill the running Flutter app (if any) and (re)launch it. `stop` clears
+    // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
+    // Wired whenever the project has a Flutter package — even after a
+    // `--no-flutter` start — so Ctrl+R doubles as a "launch the app now"
+    // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
+    flutterAppRestartAction: config.hasFlutterPackage
+        ? () async {
+            flutterRelaunchInProgress = flutterProcess != null;
+            await flutterProcess?.stop();
+            await spawnFlutterAppIfNeeded();
+          }
+        : null,
+    checkFlutterDependencyChange: flutterDependencyTracker?.refresh,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -731,6 +802,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         ),
         if (config.hasFlutterPackage)
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
+        // The resolution's .dart_tool holds package_graph.json, watched to
+        // detect Flutter dependency changes (workspace root or, in a
+        // non-workspace project, the Flutter package's own .dart_tool).
+        if (flutterDependencyTracker != null)
+          p.absolute(flutterDependencyTracker.dartToolDir),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -1100,12 +1176,26 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        // Offer Ctrl+R whenever a Flutter app could run here — even after a
+        // `--no-flutter` start, where it acts as a "launch the app" button.
+        holder.state.flutterRestartAvailable =
+            config.hasFlutterPackage &&
+            runModeFromServerArgs(serverArgs) == 'development';
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
         holder.onHotRestart = () {
           runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+        };
+        holder.onRestartFlutterApp = () {
+          runTrackedAction(
+            holder,
+            ctx.session.isFlutterAppRunning
+                ? 'Restart Flutter app'
+                : 'Start Flutter app',
+            ctx.session.restartFlutterApp,
+          );
         };
         holder.onCreateMigration = ({bool force = false}) {
           runTrackedAction(
