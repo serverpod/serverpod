@@ -176,7 +176,6 @@ void main() {
           expect(context.template, ServerpodTemplateType.server);
         },
       );
-
     },
   );
 
