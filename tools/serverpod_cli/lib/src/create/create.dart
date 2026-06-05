@@ -316,6 +316,14 @@ Future<String?> performCreate(
 
     await log.progress('Installing agent skills', () async {
       try {
+        if (context.template == ServerpodTemplateType.server &&
+            context.ides.contains(TemplateIde.claude)) {
+          await _createFileAndWrite(
+            p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
+            '@AGENTS.md\n',
+          );
+        }
+
         final workspace = await const WorkspaceResolver().resolve(
           serverpodDirs.projectDir.path,
         );
@@ -427,6 +435,12 @@ Future<void> _configureMcpServer(
         p.join(projectDirPath, ide.filePath),
         ide.effectiveConfig(serverDirRelative: serverDirRelative),
       );
+      if (ide == TemplateIde.claude) {
+        await _createFileAndWrite(
+          p.join(projectDirPath, 'CLAUDE.md'),
+          '@AGENTS.md',
+        );
+      }
     },
   );
 }
