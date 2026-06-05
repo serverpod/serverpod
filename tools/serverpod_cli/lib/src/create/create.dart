@@ -276,6 +276,14 @@ Future<String?> performCreate(
 
     await log.progress('Installing agent skills', () async {
       try {
+        if (context.template != ServerpodTemplateType.module &&
+            context.ides.contains(TemplateIde.claude)) {
+          await _createFileAndWrite(
+            p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
+            '@AGENTS.md\n',
+          );
+        }
+
         final workspace = await const WorkspaceResolver().resolve(
           serverpodDirs.projectDir.path,
         );

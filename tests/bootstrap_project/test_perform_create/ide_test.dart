@@ -28,6 +28,18 @@ void main() {
         context: TemplateContext(ides: TemplateIde.values),
       );
 
+      test('then the created project has AGENTS.md', () {
+        final agentsMd = File(p.join(project.projectRoot, 'AGENTS.md'));
+        expect(agentsMd.existsSync(), isTrue);
+        expect(agentsMd.readAsStringSync(), isNotEmpty);
+      });
+
+      test('then the created project has CLAUDE.md', () {
+        final claudeMd = File(p.join(project.projectRoot, 'CLAUDE.md'));
+        expect(claudeMd.existsSync(), isTrue);
+        expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+      });
+
       test('then the created project has agent skills installed', () {
         expect(
           Directory(
