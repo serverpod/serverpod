@@ -102,8 +102,17 @@ class NotExpression extends Expression<Expression> {
   List<Column> get columns => _expression.columns;
 
   /// Returns the expression as a string wrapped in NOT.
+  ///
+  /// The [expression] parameter is the already-resolved SQL string for the
+  /// wrapped expression (e.g. a subquery-backed `IN`/`NOT IN` clause for a
+  /// many-relation filter). It must be used here instead of [_expression]:
+  /// the raw `_expression.toString()` of a many-relation filter references a
+  /// relation alias that only exists inside a generated CTE, not in the outer
+  /// query's FROM clause. The surrounding parentheses keep `NOT` bound to the
+  /// whole sub-expression regardless of its internal operator precedence.
+  /// See https://github.com/serverpod/serverpod/issues/5294.
   String wrapExpression(String expression) {
-    return 'NOT $_expression';
+    return 'NOT ($expression)';
   }
 
   @override

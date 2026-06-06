@@ -61,6 +61,28 @@ void main() {
     });
   });
 
+  group('Given a NotExpression when wrapExpression is called', () {
+    var notWrappedExpression = NotExpression(const Expression('TRUE'));
+
+    test(
+      'then the resolved argument is used and parenthesized (not the raw inner '
+      'expression). See issue #5294.',
+      () {
+        expect(
+          notWrappedExpression.wrapExpression('x IN (SELECT y FROM z)'),
+          'NOT (x IN (SELECT y FROM z))',
+        );
+      },
+    );
+
+    test('then toString stays unparenthesized and uses the raw inner '
+        'expression', () {
+      // toString() must remain stable: it is relied on by the pinned tests
+      // and is never used to render a many-relation where clause.
+      expect(notWrappedExpression.toString(), 'NOT TRUE');
+    });
+  });
+
   group('Given a combined expression wrapped in NOT expression', () {
     var expression1 = const Expression('true = true');
     var expression2 = const Expression('"A" = "A"');
