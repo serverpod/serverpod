@@ -342,6 +342,10 @@ class OrderUuidRepository {
 
   final attachRow = const OrderUuidAttachRowRepository._();
 
+  final detach = const OrderUuidDetachRepository._();
+
+  final detachRow = const OrderUuidDetachRowRepository._();
+
   /// Returns a list of [OrderUuid]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -795,6 +799,58 @@ class OrderUuidAttachRowRepository {
     }
 
     var $commentInt = commentInt.copyWith(orderId: orderUuid.id);
+    await session.db.updateRow<_i3.CommentInt>(
+      $commentInt,
+      columns: [_i3.CommentInt.t.orderId],
+      transaction: transaction,
+    );
+  }
+}
+
+class OrderUuidDetachRepository {
+  const OrderUuidDetachRepository._();
+
+  /// Detaches the relation between this [OrderUuid] and the given [CommentInt]
+  /// by setting the [CommentInt]'s foreign key `orderId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> comments(
+    _i1.DatabaseSession session,
+    List<_i3.CommentInt> commentInt, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (commentInt.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('commentInt.id');
+    }
+
+    var $commentInt = commentInt.map((e) => e.copyWith(orderId: null)).toList();
+    await session.db.update<_i3.CommentInt>(
+      $commentInt,
+      columns: [_i3.CommentInt.t.orderId],
+      transaction: transaction,
+    );
+  }
+}
+
+class OrderUuidDetachRowRepository {
+  const OrderUuidDetachRowRepository._();
+
+  /// Detaches the relation between this [OrderUuid] and the given [CommentInt]
+  /// by setting the [CommentInt]'s foreign key `orderId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> comments(
+    _i1.DatabaseSession session,
+    _i3.CommentInt commentInt, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (commentInt.id == null) {
+      throw ArgumentError.notNull('commentInt.id');
+    }
+
+    var $commentInt = commentInt.copyWith(orderId: null);
     await session.db.updateRow<_i3.CommentInt>(
       $commentInt,
       columns: [_i3.CommentInt.t.orderId],

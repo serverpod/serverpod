@@ -270,6 +270,10 @@ class StudentUuidRepository {
 
   final attachRow = const StudentUuidAttachRowRepository._();
 
+  final detach = const StudentUuidDetachRepository._();
+
+  final detachRow = const StudentUuidDetachRowRepository._();
+
   /// Returns a list of [StudentUuid]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -700,6 +704,60 @@ class StudentUuidAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(studentId: studentUuid.id);
+    await session.db.updateRow<_i2.EnrollmentInt>(
+      $enrollmentInt,
+      columns: [_i2.EnrollmentInt.t.studentId],
+      transaction: transaction,
+    );
+  }
+}
+
+class StudentUuidDetachRepository {
+  const StudentUuidDetachRepository._();
+
+  /// Detaches the relation between this [StudentUuid] and the given [EnrollmentInt]
+  /// by setting the [EnrollmentInt]'s foreign key `studentId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    List<_i2.EnrollmentInt> enrollmentInt, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollmentInt.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('enrollmentInt.id');
+    }
+
+    var $enrollmentInt = enrollmentInt
+        .map((e) => e.copyWith(studentId: null))
+        .toList();
+    await session.db.update<_i2.EnrollmentInt>(
+      $enrollmentInt,
+      columns: [_i2.EnrollmentInt.t.studentId],
+      transaction: transaction,
+    );
+  }
+}
+
+class StudentUuidDetachRowRepository {
+  const StudentUuidDetachRowRepository._();
+
+  /// Detaches the relation between this [StudentUuid] and the given [EnrollmentInt]
+  /// by setting the [EnrollmentInt]'s foreign key `studentId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> enrollments(
+    _i1.DatabaseSession session,
+    _i2.EnrollmentInt enrollmentInt, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (enrollmentInt.id == null) {
+      throw ArgumentError.notNull('enrollmentInt.id');
+    }
+
+    var $enrollmentInt = enrollmentInt.copyWith(studentId: null);
     await session.db.updateRow<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.studentId],

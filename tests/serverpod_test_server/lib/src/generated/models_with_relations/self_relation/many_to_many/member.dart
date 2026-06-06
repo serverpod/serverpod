@@ -340,6 +340,10 @@ class MemberRepository {
 
   final attachRow = const MemberAttachRowRepository._();
 
+  final detach = const MemberDetachRepository._();
+
+  final detachRow = const MemberDetachRowRepository._();
+
   /// Returns a list of [Member]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -818,6 +822,102 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: member.id);
+    await session.db.updateRow<_i2.Blocking>(
+      $blocking,
+      columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
+    );
+  }
+}
+
+class MemberDetachRepository {
+  const MemberDetachRepository._();
+
+  /// Detaches the relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedById` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> blocking(
+    _i1.DatabaseSession session,
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+
+    var $blocking = blocking.map((e) => e.copyWith(blockedById: null)).toList();
+    await session.db.update<_i2.Blocking>(
+      $blocking,
+      columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
+    );
+  }
+
+  /// Detaches the relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> blockedBy(
+    _i1.DatabaseSession session,
+    List<_i2.Blocking> blocking, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+
+    var $blocking = blocking.map((e) => e.copyWith(blockedId: null)).toList();
+    await session.db.update<_i2.Blocking>(
+      $blocking,
+      columns: [_i2.Blocking.t.blockedId],
+      transaction: transaction,
+    );
+  }
+}
+
+class MemberDetachRowRepository {
+  const MemberDetachRowRepository._();
+
+  /// Detaches the relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedById` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> blocking(
+    _i1.DatabaseSession session,
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.id == null) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+
+    var $blocking = blocking.copyWith(blockedById: null);
+    await session.db.updateRow<_i2.Blocking>(
+      $blocking,
+      columns: [_i2.Blocking.t.blockedById],
+      transaction: transaction,
+    );
+  }
+
+  /// Detaches the relation between this [Member] and the given [Blocking]
+  /// by setting the [Blocking]'s foreign key `blockedId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> blockedBy(
+    _i1.DatabaseSession session,
+    _i2.Blocking blocking, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (blocking.id == null) {
+      throw ArgumentError.notNull('blocking.id');
+    }
+
+    var $blocking = blocking.copyWith(blockedId: null);
     await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],

@@ -385,7 +385,7 @@ void main() {
         class: Employee
         table: employee
         fields:
-          company: 
+          company:
             type: Company?
             relation:
               name: 1
@@ -396,7 +396,7 @@ void main() {
         class: Company
         table: company
         fields:
-          employees: 
+          employees:
             type: List<Employee>?
             relation:
               name: 1
@@ -709,6 +709,400 @@ void main() {
           expect(relation.containerField?.name, 'customer');
         },
       );
+    },
+  );
+
+  group(
+    'Given a named nullable list relation where the child model is processed first and declares the object field before its implicit foreign key, '
+    'when parsing the models',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
+        class: Child
+        table: child
+        fields:
+          parent: Parent?, relation(name=parent_children)
+        ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
+        class: Parent
+        table: parent
+        fields:
+          children: List<Child>?, relation(name=parent_children)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var parentDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Parent',
+          );
+      var childDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+        (d) => d.className == 'Child',
+      );
+
+      var errors = collector.errors;
+      var relation = parentDefinition.findField('children')?.relation;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('then children is a list relation.', () {
+        expect(relation.runtimeType, ListRelationDefinition);
+      });
+
+      test(
+        'then the list relation points to the explicit foreign key field.',
+        () {
+          relation as ListRelationDefinition;
+          expect(relation.foreignFieldName, 'parentId');
+        },
+      );
+
+      test('then nullableRelation stays true on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.nullableRelation, isTrue);
+      });
+
+      test('then the foreign container field is set on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.foreignContainerField?.name, 'parent');
+      });
+
+      test('then the object relation points back to the list relation.', () {
+        var objectRelation =
+            childDefinition.findField('parent')?.relation
+                as ObjectRelationDefinition;
+
+        expect(objectRelation.foreignContainerField?.name, 'children');
+      });
+    },
+  );
+
+  group(
+    'Given a named list relation with an implicit child foreign key and child defined before parent '
+    'when analyzing ',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
+        class: Child
+        table: child
+        fields:
+          name: String
+          parent: Parent?, relation(name=parent_children)
+        ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
+        class: Parent
+        table: parent
+        fields:
+          children: List<Child>?, relation(name=parent_children)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var parentDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Parent',
+          );
+      var childDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+        (d) => d.className == 'Child',
+      );
+      var errors = collector.errors;
+      var relation = parentDefinition.findField('children')?.relation;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('then the relation is a list relation.', () {
+        expect(relation.runtimeType, ListRelationDefinition);
+      });
+
+      test('then nullableRelation is false on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.nullableRelation, isFalse);
+      });
+
+      test('then the list relation points to the implicit foreign key.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignFieldName,
+          'parentId',
+        );
+      });
+
+      test('then the list relation points to the child object field.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignContainerField?.name,
+          'parent',
+        );
+      });
+
+      test('then the child object relation points back to the list field.', () {
+        var objectRelation =
+            childDefinition.findField('parent')?.relation
+                as ObjectRelationDefinition;
+
+        expect(objectRelation.foreignContainerField?.name, 'children');
+      });
+    },
+  );
+
+  group(
+    'Given a named list relation with an implicit child foreign key and parent defined before child '
+    'when analyzing ',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
+        class: Parent
+        table: parent
+        fields:
+          children: List<Child>?, relation(name=parent_children)
+        ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
+        class: Child
+        table: child
+        fields:
+          name: String
+          parent: Parent?, relation(name=parent_children)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var parentDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Parent',
+          );
+      var childDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+        (d) => d.className == 'Child',
+      );
+      var errors = collector.errors;
+      var relation = parentDefinition.findField('children')?.relation;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('then the relation is a list relation.', () {
+        expect(relation.runtimeType, ListRelationDefinition);
+      });
+
+      test('then nullableRelation is true on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.nullableRelation, isTrue);
+      });
+
+      test('then the list relation points to the implicit foreign key.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignFieldName,
+          'parentId',
+        );
+      });
+
+      test('then the list relation points to the child object field.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignContainerField?.name,
+          'parent',
+        );
+      });
+
+      test('then the child object relation points back to the list field.', () {
+        var objectRelation =
+            childDefinition.findField('parent')?.relation
+                as ObjectRelationDefinition;
+
+        expect(objectRelation.foreignContainerField?.name, 'children');
+      });
+    },
+  );
+
+  group(
+    'Given an optional named list relation with an implicit child foreign key and child defined before parent '
+    'when analyzing ',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
+        class: Child
+        table: child
+        fields:
+          name: String
+          parent: Parent?, relation(name=parent_children, optional=true)
+        ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
+        class: Parent
+        table: parent
+        fields:
+          children: List<Child>?, relation(name=parent_children)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var parentDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Parent',
+          );
+      var childDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+        (d) => d.className == 'Child',
+      );
+      var errors = collector.errors;
+      var relation = parentDefinition.findField('children')?.relation;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('then the relation is a list relation.', () {
+        expect(relation.runtimeType, ListRelationDefinition);
+      });
+
+      test('then nullableRelation is true on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.nullableRelation, isTrue);
+      });
+
+      test('then the list relation points to the implicit foreign key.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignFieldName,
+          'parentId',
+        );
+      });
+
+      test('then the list relation points to the child object field.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignContainerField?.name,
+          'parent',
+        );
+      });
+
+      test('then the child object relation points back to the list field.', () {
+        var objectRelation =
+            childDefinition.findField('parent')?.relation
+                as ObjectRelationDefinition;
+
+        expect(objectRelation.foreignContainerField?.name, 'children');
+      });
+    },
+  );
+
+  group(
+    'Given an optional named list relation with an implicit child foreign key and parent defined before child '
+    'when analyzing ',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('parent').withYaml(
+          '''
+        class: Parent
+        table: parent
+        fields:
+          children: List<Child>?, relation(name=parent_children)
+        ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('child').withYaml(
+          '''
+        class: Child
+        table: child
+        fields:
+          name: String
+          parent: Parent?, relation(name=parent_children, optional=true)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var parentDefinition = definitions
+          .whereType<ClassDefinition>()
+          .firstWhere(
+            (d) => d.className == 'Parent',
+          );
+      var childDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+        (d) => d.className == 'Child',
+      );
+      var errors = collector.errors;
+      var relation = parentDefinition.findField('children')?.relation;
+
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      test('then the relation is a list relation.', () {
+        expect(relation.runtimeType, ListRelationDefinition);
+      });
+
+      test('then nullableRelation is true on the list relation.', () {
+        relation as ListRelationDefinition;
+        expect(relation.nullableRelation, isTrue);
+      });
+
+      test('then the list relation points to the implicit foreign key.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignFieldName,
+          'parentId',
+        );
+      });
+
+      test('then the list relation points to the child object field.', () {
+        expect(
+          (relation as ListRelationDefinition).foreignContainerField?.name,
+          'parent',
+        );
+      });
+
+      test('then the child object relation points back to the list field.', () {
+        var objectRelation =
+            childDefinition.findField('parent')?.relation
+                as ObjectRelationDefinition;
+
+        expect(objectRelation.foreignContainerField?.name, 'children');
+      });
     },
   );
 

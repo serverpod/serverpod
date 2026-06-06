@@ -26,7 +26,29 @@ class ModelDependencyResolver {
     });
 
     // Then resolve everything else, including relations on inherited ids.
-    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+    // Class order still matters: list resolution on the owner reads the element
+    // type's fields, so process list element models before list owners.
+    final classDefs = modelDefinitions.whereType<ClassDefinition>().toList();
+    final originalIndex = {
+      for (var i = 0; i < classDefs.length; i++) classDefs[i]: i,
+    };
+    final modelClasses = classDefs.whereType<ModelClassDefinition>().toList();
+    final topologicalRank = _topologicalRankForListDependencies(
+      modelClasses,
+      modelDefinitions,
+    );
+
+    classDefs.sort((a, b) {
+      if (a is ModelClassDefinition && b is ModelClassDefinition) {
+        final cmp = topologicalRank[a.className]!.compareTo(
+          topologicalRank[b.className]!,
+        );
+        if (cmp != 0) return cmp;
+      }
+      return originalIndex[a]!.compareTo(originalIndex[b]!);
+    });
+
+    for (final classDefinition in classDefs) {
       var fields = classDefinition is ModelClassDefinition
           ? classDefinition.fieldsIncludingInherited
           : classDefinition.fields;
@@ -49,7 +71,74 @@ class ModelDependencyResolver {
           modelDefinitions,
         );
       }
-    });
+    }
+  }
+
+  /// Lower rank = process earlier. For each list field `List<R>`, [R] is
+  /// ordered before the owner so list resolution sees the foreign class ready.
+  static Map<String, int> _topologicalRankForListDependencies(
+    List<ModelClassDefinition> models,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    final nameToModel = {for (final m in models) m.className: m};
+    final firstOrder = <String, int>{};
+    for (var i = 0; i < modelDefinitions.length; i++) {
+      final m = modelDefinitions[i];
+      if (m is ModelClassDefinition) {
+        firstOrder.putIfAbsent(m.className, () => i);
+      }
+    }
+
+    final inDegree = <String, int>{};
+    final adj = <String, List<String>>{};
+
+    for (final m in models) {
+      inDegree[m.className] = 0;
+    }
+
+    for (final owner in models) {
+      for (final field in owner.fields) {
+        if (field.relation is! UnresolvedListRelationDefinition) continue;
+        if (field.type.generics.isEmpty) continue;
+        final refName = field.type.generics.first.className;
+        if (!nameToModel.containsKey(refName)) continue;
+        if (refName == owner.className) continue;
+        adj.putIfAbsent(refName, () => []).add(owner.className);
+        inDegree[owner.className] = (inDegree[owner.className] ?? 0) + 1;
+      }
+    }
+
+    final ready =
+        models
+            .where((m) => inDegree[m.className] == 0)
+            .map((m) => m.className)
+            .toList()
+          ..sort((a, b) => firstOrder[a]!.compareTo(firstOrder[b]!));
+
+    final rank = <String, int>{};
+    var r = 0;
+    while (ready.isNotEmpty) {
+      final n = ready.removeAt(0);
+      rank[n] = r++;
+      for (final owner in adj[n] ?? []) {
+        inDegree[owner] = inDegree[owner]! - 1;
+        if (inDegree[owner] == 0) {
+          ready.add(owner);
+          ready.sort((a, b) => firstOrder[a]!.compareTo(firstOrder[b]!));
+        }
+      }
+    }
+
+    var next = r;
+    final remaining =
+        models.where((m) => !rank.containsKey(m.className)).toList()..sort(
+          (a, b) =>
+              firstOrder[a.className]!.compareTo(firstOrder[b.className]!),
+        );
+    for (final m in remaining) {
+      rank[m.className] = next++;
+    }
+    return rank;
   }
 
   static void _resolveInheritance(
@@ -511,11 +600,24 @@ class ModelDependencyResolver {
     } else {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
+        // Include [ObjectRelationDefinition]: the foreign side may already be
+        // resolved when the list side runs (model definition order-dependent).
+        // Include [UnresolvableObjectRelationDefinition]: when the list owner is
+        // processed after the element type, object resolution may fail on the
+        // foreign row until the owner exists; the list side must still see the
+        // object field for nullableRelation (detach) and not only the id field.
         if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
-            fieldRelation is ForeignRelationDefinition)) {
+            fieldRelation is ForeignRelationDefinition ||
+            fieldRelation is ObjectRelationDefinition ||
+            fieldRelation is UnresolvableObjectRelationDefinition)) {
           return false;
         }
-        return fieldRelation?.name == relation.name;
+        if (fieldRelation?.name == relation.name) return true;
+        return _objectFieldPairsWithNamedForeignKey(
+          referenceClass,
+          field,
+          relation.name,
+        );
       });
 
       if (foreignFields.isEmpty) return;
@@ -531,6 +633,12 @@ class ModelDependencyResolver {
         foreignFieldName =
             foreignRelation.fieldName ??
             _createImplicitForeignIdFieldName(foreignField.name);
+      } else if (foreignRelation is ObjectRelationDefinition) {
+        foreignFieldName = foreignField.name;
+      } else if (foreignRelation is UnresolvableObjectRelationDefinition) {
+        foreignFieldName =
+            foreignRelation.objectRelationDefinition.fieldName ??
+            _createImplicitForeignIdFieldName(foreignField.name);
       }
 
       SerializableModelFieldDefinition? foreignContainerField;
@@ -538,6 +646,11 @@ class ModelDependencyResolver {
         foreignRelation.foreignContainerField = fieldDefinition;
         foreignContainerField = foreignRelation.containerField;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
+        foreignContainerField = foreignField;
+      } else if (foreignRelation is ObjectRelationDefinition) {
+        foreignRelation.foreignContainerField = fieldDefinition;
+        foreignContainerField = foreignField;
+      } else if (foreignRelation is UnresolvableObjectRelationDefinition) {
         foreignContainerField = foreignField;
       }
 
@@ -549,7 +662,7 @@ class ModelDependencyResolver {
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
-        nullableRelation: foreignFields.first.type.nullable,
+        nullableRelation: _nullableRelationForListSide(foreignFields),
       );
     }
   }
@@ -569,5 +682,43 @@ class ModelDependencyResolver {
       DatabaseConstants.pgsqlMaxNameLimitation - 2,
     );
     return '${truncatedFieldName}Id';
+  }
+
+  /// Implicit/named object resolution stores [RelationDefinition.name] only on
+  /// the FK field, not on [ObjectRelationDefinition], so list resolution must
+  /// still associate the object field with the named relation for nullableRelation.
+  static bool _objectFieldPairsWithNamedForeignKey(
+    ModelClassDefinition referenceClass,
+    SerializableModelFieldDefinition field,
+    String? relationName,
+  ) {
+    if (relationName == null) return false;
+    final fieldRelation = field.relation;
+    if (fieldRelation is! ObjectRelationDefinition) return false;
+    if (fieldRelation.name != null) return false;
+    return referenceClass.fields.any(
+      (f) =>
+          f.relation is ForeignRelationDefinition &&
+          f.relation?.name == relationName &&
+          f.name == fieldRelation.fieldName,
+    );
+  }
+
+  /// Prefer the object-side field when both it and an injected id field share
+  /// the same relation name (id is non-nullable; optional relations are on the
+  /// object field).
+  static bool _nullableRelationForListSide(
+    Iterable<SerializableModelFieldDefinition> foreignFields,
+  ) {
+    final objectSideFields = foreignFields.where(
+      (f) =>
+          f.relation is ObjectRelationDefinition ||
+          f.relation is UnresolvedObjectRelationDefinition ||
+          f.relation is UnresolvableObjectRelationDefinition,
+    );
+    if (objectSideFields.isNotEmpty) {
+      return objectSideFields.first.type.nullable;
+    }
+    return foreignFields.first.type.nullable;
   }
 }
