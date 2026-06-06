@@ -460,13 +460,6 @@ class InsertQueryBuilder {
             'Column "${col.columnName}" is not a column of table "${table.tableName}"',
           );
         }
-        if (col.columnName == 'id') {
-          throw ArgumentError.value(
-            conflictColumns,
-            'conflictColumns',
-            'The "id" column cannot be used as a conflict column for upsert',
-          );
-        }
       }
 
       if (updateColumns != null) {
