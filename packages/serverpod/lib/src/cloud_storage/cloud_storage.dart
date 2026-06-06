@@ -49,6 +49,21 @@ abstract class CloudStorage {
     required String path,
   });
 
+  /// Returns a time-limited presigned URL that grants temporary access to
+  /// the file at [path] using the given HTTP [method] (defaults to `GET`).
+  ///
+  /// The URL is valid for [expiration] (defaults to 15 minutes).
+  /// Returns `null` if the file does not exist.
+  ///
+  /// Not all storage backends support presigned URLs. Implementations that
+  /// do not may throw an [UnsupportedError].
+  Future<Uri?> getPresignedUrl({
+    required Session session,
+    required String path,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  });
+
   /// Returns true if the file exists.
   Future<bool> fileExists({
     required Session session,
