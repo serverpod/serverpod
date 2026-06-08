@@ -1,11 +1,11 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_database/serverpod_database.dart';
-
 // This is a temporary internal import since the normalize functions are not
 // meant to be exported from the database package. It will be removed once the
 // [PostgresSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart' show Geography;
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {
@@ -235,16 +235,16 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
         type = 'bit(${vectorDimension!})';
         break;
       case ColumnType.geography:
-        type = 'geography(Point,4326)';
+        type = 'geography(Point,${Geography.defaultSrid})';
         break;
       case ColumnType.geographyLineString:
-        type = 'geography(LineString,4326)';
+        type = 'geography(LineString,${Geography.defaultSrid})';
         break;
       case ColumnType.geographyPolygon:
-        type = 'geography(Polygon,4326)';
+        type = 'geography(Polygon,${Geography.defaultSrid})';
         break;
       case ColumnType.geographyGeometryCollection:
-        type = 'geography(GeometryCollection,4326)';
+        type = 'geography(GeometryCollection,${Geography.defaultSrid})';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));

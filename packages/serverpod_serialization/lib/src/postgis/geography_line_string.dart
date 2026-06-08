@@ -13,7 +13,7 @@ class GeographyLineString implements Geography {
   final int srid;
 
   /// Creates a new [GeographyLineString].
-  const GeographyLineString({required this.points, this.srid = 4326});
+  const GeographyLineString({required this.points, this.srid = Geography.defaultSrid});
 
   /// Creates a [GeographyLineString] from its EWKB binary representation
   /// as returned by PostgreSQL for geography columns.
@@ -26,7 +26,7 @@ class GeographyLineString implements Geography {
     final hasSrid = (type & 0x20000000) != 0;
 
     var offset = 5;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (hasSrid) {
       srid = buf.getInt32(offset, endian);
       offset += 4;
@@ -85,7 +85,7 @@ extension GeographyLineStringJsonExtension on GeographyLineString {
     if (value is Uint8List) return GeographyLineString.fromBinary(value);
     if (value is String) return _fromEwkt(value);
     if (value is Map) {
-      final srid = value['srid'] as int? ?? 4326;
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
       final rawPoints = value['points'] as List;
       final points = rawPoints.map((p) {
         final m = p as Map;
@@ -104,7 +104,7 @@ extension GeographyLineStringJsonExtension on GeographyLineString {
 
   static GeographyLineString _fromEwkt(String value) {
     var s = value;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (s.startsWith('SRID=')) {
       final semi = s.indexOf(';');
       srid = int.parse(s.substring(5, semi));

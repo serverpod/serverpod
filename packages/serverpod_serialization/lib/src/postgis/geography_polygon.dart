@@ -19,7 +19,7 @@ class GeographyPolygon implements Geography {
   const GeographyPolygon({
     required this.exteriorRing,
     this.holes = const [],
-    this.srid = 4326,
+    this.srid = Geography.defaultSrid,
   });
 
   /// Creates a [GeographyPolygon] from its EWKB binary representation
@@ -33,7 +33,7 @@ class GeographyPolygon implements Geography {
     final hasSrid = (type & 0x20000000) != 0;
 
     var offset = 5;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (hasSrid) {
       srid = buf.getInt32(offset, endian);
       offset += 4;
@@ -119,7 +119,7 @@ extension GeographyPolygonJsonExtension on GeographyPolygon {
     if (value is Uint8List) return GeographyPolygon.fromBinary(value);
     if (value is String) return _fromEwkt(value);
     if (value is Map) {
-      final srid = value['srid'] as int? ?? 4326;
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
       List<GeographyPoint> parseRing(List pts) => pts.map((p) {
         final m = p as Map;
         return GeographyPoint(
@@ -141,7 +141,7 @@ extension GeographyPolygonJsonExtension on GeographyPolygon {
 
   static GeographyPolygon _fromEwkt(String value) {
     var s = value;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (s.startsWith('SRID=')) {
       final semi = s.indexOf(';');
       srid = int.parse(s.substring(5, semi));

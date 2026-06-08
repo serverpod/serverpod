@@ -18,7 +18,7 @@ class GeographyGeometryCollection implements Geography {
   /// Creates a new [GeographyGeometryCollection].
   const GeographyGeometryCollection({
     required this.geometries,
-    this.srid = 4326,
+    this.srid = Geography.defaultSrid,
   });
 
   /// Creates a [GeographyGeometryCollection] from its EWKB binary
@@ -78,7 +78,7 @@ extension GeographyGeometryCollectionJsonExtension
     }
     if (value is String) return _fromEwkt(value);
     if (value is Map) {
-      final srid = value['srid'] as int? ?? 4326;
+      final srid = value['srid'] as int? ?? Geography.defaultSrid;
       // Each element is already a serialized geography (EWKT or map).
       final rawGeoms = value['geometries'] as List;
       final geoms = rawGeoms.map<Geography>((g) {
@@ -95,7 +95,7 @@ extension GeographyGeometryCollectionJsonExtension
 
   static GeographyGeometryCollection _fromEwkt(String value) {
     var s = value;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (s.startsWith('SRID=')) {
       final semi = s.indexOf(';');
       srid = int.parse(s.substring(5, semi));
@@ -206,7 +206,7 @@ class _WkbParser {
     return GeographyPoint(longitude: lon, latitude: lat, srid: srid);
   }
 
-  Geography readGeometry([int parentSrid = 4326]) {
+  Geography readGeometry([int parentSrid = Geography.defaultSrid]) {
     final e = _readByteOrder();
     final rawType = _readUint32(e);
     final geomType = rawType & 0xFF;

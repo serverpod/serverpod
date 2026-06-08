@@ -19,7 +19,7 @@ class GeographyPoint implements Geography {
   const GeographyPoint({
     required this.longitude,
     required this.latitude,
-    this.srid = 4326,
+    this.srid = Geography.defaultSrid,
   });
 
   /// Creates a [GeographyPoint] from its EWKB binary representation
@@ -33,7 +33,7 @@ class GeographyPoint implements Geography {
     final hasSrid = (type & 0x20000000) != 0;
 
     var offset = 5;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (hasSrid) {
       srid = buf.getInt32(offset, endian);
       offset += 4;
@@ -80,7 +80,7 @@ extension GeographyPointJsonExtension on GeographyPoint {
       return GeographyPoint(
         longitude: (value['longitude'] as num).toDouble(),
         latitude: (value['latitude'] as num).toDouble(),
-        srid: value['srid'] as int? ?? 4326,
+        srid: value['srid'] as int? ?? Geography.defaultSrid,
       );
     }
     throw ArgumentError(
@@ -90,7 +90,7 @@ extension GeographyPointJsonExtension on GeographyPoint {
 
   static GeographyPoint _fromEwkt(String value) {
     var s = value;
-    var srid = 4326;
+    var srid = Geography.defaultSrid;
     if (s.startsWith('SRID=')) {
       final semi = s.indexOf(';');
       srid = int.parse(s.substring(5, semi));
