@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 import 'util.dart';
 
@@ -26,44 +24,45 @@ void main() {
     'Given a clean state, '
     'when calling performCreate with a context containing all supported IDEs',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(ides: TemplateIde.values),
+      );
 
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(ides: TemplateIde.values),
-        );
+      test('then the created project has AGENTS.md', () {
+        final agentsMd = File(p.join(project.projectRoot, 'AGENTS.md'));
+        expect(agentsMd.existsSync(), isTrue);
+        expect(agentsMd.readAsStringSync(), isNotEmpty);
       });
 
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
+      test('then the created project has CLAUDE.md', () {
+        final claudeMd = File(p.join(project.projectRoot, 'CLAUDE.md'));
+        expect(claudeMd.existsSync(), isTrue);
+        expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
       });
 
       test('then the created project has agent skills installed', () {
         expect(
-          Directory(p.join(projectName, '.agents', 'skills')).existsSync(),
+          Directory(
+            p.join(project.projectRoot, '.agents', 'skills'),
+          ).existsSync(),
           isTrue,
         );
         expect(
-          Directory(p.join(projectName, '.claude', 'skills')).existsSync(),
+          Directory(
+            p.join(project.projectRoot, '.claude', 'skills'),
+          ).existsSync(),
           isTrue,
         );
         expect(
-          Directory(p.join(projectName, '.cursor', 'skills')).existsSync(),
+          Directory(
+            p.join(project.projectRoot, '.cursor', 'skills'),
+          ).existsSync(),
           isTrue,
         );
         expect(
-          Directory(p.join(projectName, '.opencode', 'skills')).existsSync(),
+          Directory(
+            p.join(project.projectRoot, '.opencode', 'skills'),
+          ).existsSync(),
           isTrue,
         );
       });
@@ -71,14 +70,14 @@ void main() {
       group(
         'then the created project',
         () {
-          final serverDirRelative = '${projectName}_server';
+          final serverDirRelative = '${project.name}_server';
           final genericConfig =
               '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -92,7 +91,10 @@ void main() {
             'has Serverpod and Dart MCP servers configured for Antigravity',
             () {
               final config = File(
-                p.join(projectName, '.gemini/antigravity/mcp_config.json'),
+                p.join(
+                  project.projectRoot,
+                  '.gemini/antigravity/mcp_config.json',
+                ),
               );
               expect(config.existsSync(), isTrue);
               expect(
@@ -103,14 +105,16 @@ void main() {
           );
 
           test('has Serverpod and Dart MCP servers configured for Codex', () {
-            final config = File(p.join(projectName, '.codex/config.toml'));
+            final config = File(
+              p.join(project.projectRoot, '.codex/config.toml'),
+            );
             expect(config.existsSync(), isTrue);
             expect(
               config.readAsStringSync(),
               '''
 [mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp", "--server-dir", "$serverDirRelative"]
+args = ["mcp-server", "--server-dir", "$serverDirRelative"]
 
 [mcp_servers.dart_mcp]
 command = "dart"
@@ -120,13 +124,17 @@ args = ["mcp-server", "--force-roots-fallback"]
           });
 
           test('has Serverpod and Dart MCP servers configured for Claude', () {
-            final config = File(p.join(projectName, '.mcp.json'));
+            final config = File(
+              p.join(project.projectRoot, '.mcp.json'),
+            );
             expect(config.existsSync(), isTrue);
             expect(config.readAsStringSync(), genericConfig);
           });
 
           test('has Serverpod and Dart MCP servers configured for Cursor', () {
-            final config = File(p.join(projectName, '.cursor/mcp.json'));
+            final config = File(
+              p.join(project.projectRoot, '.cursor/mcp.json'),
+            );
             expect(config.existsSync(), isTrue);
             expect(config.readAsStringSync(), genericConfig);
           });
@@ -135,7 +143,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             'has Serverpod and Dart MCP servers configured for OpenCode',
             () {
               final config = File(
-                p.join(projectName, '.opencode/opencode.json'),
+                p.join(project.projectRoot, 'opencode.json'),
               );
               expect(config.existsSync(), isTrue);
               expect(
@@ -145,7 +153,7 @@ args = ["mcp-server", "--force-roots-fallback"]
   "mcp": {
     "serverpod": {
       "type": "local",
-      "command": ["serverpod", "mcp", "--server-dir", "$serverDirRelative"],
+      "command": ["serverpod", "mcp-server", "--server-dir", "$serverDirRelative"],
       "enabled": true
     },
     "dart-mcp-server": {
@@ -165,7 +173,9 @@ args = ["mcp-server", "--force-roots-fallback"]
           );
 
           test('has Serverpod and Dart MCP servers configured for VSCode', () {
-            final config = File(p.join(projectName, '.vscode/mcp.json'));
+            final config = File(
+              p.join(project.projectRoot, '.vscode/mcp.json'),
+            );
             expect(config.existsSync(), isTrue);
             expect(
               config.readAsStringSync(),

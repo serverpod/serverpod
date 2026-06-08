@@ -10,6 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -21,12 +22,8 @@ import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/commands/tui/run_app.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
-import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -34,10 +31,13 @@ import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -93,12 +93,10 @@ enum StartOption<V> implements OptionDefinition<V> {
   flutterDevice(
     StringOption(
       argName: 'flutter-device',
-      defaultsTo: 'chrome',
+      defaultsTo: flutterDeviceWebServerWithBrowser,
       helpText:
-          'Target device for `flutter run -d`. Defaults to chrome '
-          '(web-server is headless and triggers a known DWDS hot-reload '
-          'bug: dart-lang/sdk#60289). Pass --flutter-device=web-server '
-          'for CI / headless / remote-attach workflows.',
+          'Target device for `flutter run -d`. Defaults to "web-server" '
+          'and launches the default browser as soon as the app is ready.',
     ),
   ),
   flutterOption(
@@ -374,9 +372,9 @@ Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
 }) async {
-  final client = ConfigInfo.fromDir(
+  final client = ConfigInfo(
+    runMode,
     serverDir: serverDir,
-    runMode: runMode,
   ).createServiceClient();
   try {
     await client.insights.applyMigrations(
@@ -458,33 +456,50 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     rethrow;
   }
 
-  final analyzersFuture = IsolatedAnalyzers.create(config);
+  // prime: false - the single full prime happens inside generateIfStale; here
+  // we only spawn the isolate eagerly so it overlaps the staleness check.
+  final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
-  // Code generation staleness check.
-  final allSources = await enumerateSourceFiles(config);
-  if (!await isGenerationUpToDate(config, allSources)) {
-    late final IsolatedAnalyzers analyzers;
-    await log.progress('Initializing analyzers', () async {
-      analyzers = await analyzersFuture;
-      return true;
-    });
-    late final ({bool success, Set<String> generatedFiles}) genResult;
-    await log.progress('Generating code', () async {
-      genResult = await analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: allSources,
-        requirements: GenerationRequirements.full,
-      );
-      return genResult.success;
-    });
-    if (!genResult.success) {
-      log.error('Code generation failed.');
+  // Tear down everything provisioned so far: the analyzer isolate and any
+  // Docker services. A failed/in-flight analyzer future must not prevent the
+  // Docker teardown, so closing it is guarded.
+  Future<void> rollbackStartup() async {
+    try {
       await closeAnalyzers();
-      await rollbackProvisioning();
-      return const WatchLoopAborted(1);
-    }
+    } catch (_) {}
+    await rollbackProvisioning();
+  }
+
+  // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
+  // generation is up to date.
+  late final ({bool upToDate, bool success}) genResult;
+  try {
+    genResult = await generateIfStale(
+      config: config,
+      keepPrimedWhenFresh: true,
+      createAnalyzers: () async {
+        late final IsolatedAnalyzers analyzers;
+        await log.progress('Initializing analyzers', () async {
+          analyzers = await analyzersFuture;
+          return true;
+        });
+        return analyzers;
+      },
+    );
+  } catch (_) {
+    // Tear down even when analysis/generation throws, not just on a clean
+    // failure.
+    await rollbackStartup();
+    rethrow;
+  }
+  if (!genResult.success) {
+    log.error('Code generation failed.');
+    await rollbackStartup();
+    return const WatchLoopAborted(1);
+  }
+  if (genResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
   // FES setup (watch mode only).
@@ -510,8 +525,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return hooksOk;
     });
     if (!hooksOk) {
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -525,8 +539,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await closeAnalyzers();
-      await rollbackProvisioning();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -585,6 +598,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Calling while previous instance is still running is a no-op.
   FlutterProcess? flutterProcess;
   var spawnInFlight = false;
+  // Set by the restart action when the spawn replaces a previously running
+  // app, so the progress message reads as a relaunch rather than a first run.
+  var flutterRelaunchInProgress = false;
   spawnFlutterAppIfNeeded = () async {
     if (runMode != 'development') return;
     if (!config.hasFlutterPackage) {
@@ -595,6 +611,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (existing != null && existing.isRunning) return;
     if (spawnInFlight) return;
     spawnInFlight = true;
+    final isRelaunch = flutterRelaunchInProgress;
+    flutterRelaunchInProgress = false;
 
     final fp = FlutterProcess(
       flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
@@ -627,7 +645,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // On `-d web-server` `launched` pends until a browser attaches.
     unawaited(() async {
       await log.progress(
-        'Launching Flutter app (first run may take 30-60s)',
+        isRelaunch
+            ? 'Relaunching Flutter app'
+            : 'Launching Flutter app (first run may take 30-60s)',
         () async {
           await fp.launched;
           return true;
@@ -639,7 +659,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         onFlutterReady?.call(url);
       }
       await log.progress('Connecting to Flutter VM service', () async {
-        await fp.connectToVmService();
+        // `-d web-server` requires a human to open the URL, so the wait is unbounded.
+        await fp.connectToVmService(
+          timeout: flutterDevice == flutterDeviceWebServer
+              ? null
+              : const Duration(seconds: 30),
+        );
         if (fp.isVmServiceConnected && onFlutterStart != null) {
           await onFlutterStart(fp);
         }
@@ -652,6 +677,41 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     await spawnFlutterAppIfNeeded();
   }
 
+  // Track the Flutter app's resolved dependency closure so a dependency change
+  // (which a hot restart can't pick up) auto-triggers a full relaunch. Disabled
+  // when there is no Flutter package or its dependencies haven't been resolved.
+  FlutterDependencyTracker? flutterDependencyTracker;
+  if (config.hasFlutterPackage) {
+    final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
+    try {
+      final flutterPackageName = parsePubspec(
+        File(p.join(flutterPackageDir, 'pubspec.yaml')),
+      ).name;
+      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+        flutterPackageDir,
+        flutterPackageName: flutterPackageName,
+      );
+      if (dartToolDir != null) {
+        flutterDependencyTracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: flutterPackageName,
+        );
+      } else {
+        log.debug(
+          'Flutter dependency tracking disabled: no resolution listing '
+          '$flutterPackageName found above $flutterPackageDir.',
+        );
+      }
+    } catch (e) {
+      // A malformed Flutter pubspec must not prevent the server from
+      // starting; it only disables dependency tracking.
+      log.debug(
+        'Flutter dependency tracking disabled: could not read the Flutter '
+        'package name from $flutterPackageDir ($e).',
+      );
+    }
+  }
+
   // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
@@ -661,7 +721,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
         requirements: requirements,
       );
     },
@@ -669,6 +729,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
     flutterProcessProvider: () => flutterProcess,
+    // Kill the running Flutter app (if any) and (re)launch it. `stop` clears
+    // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
+    // Wired whenever the project has a Flutter package — even after a
+    // `--no-flutter` start — so Ctrl+R doubles as a "launch the app now"
+    // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
+    flutterAppRestartAction: config.hasFlutterPackage
+        ? () async {
+            flutterRelaunchInProgress = flutterProcess != null;
+            await flutterProcess?.stop();
+            await spawnFlutterAppIfNeeded();
+          }
+        : null,
+    checkFlutterDependencyChange: flutterDependencyTracker?.refresh,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -729,6 +802,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         ),
         if (config.hasFlutterPackage)
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
+        // The resolution's .dart_tool holds package_graph.json, watched to
+        // detect Flutter dependency changes (workspace root or, in a
+        // non-workspace project, the Flutter package's own .dart_tool).
+        if (flutterDependencyTracker != null)
+          p.absolute(flutterDependencyTracker.dartToolDir),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -939,15 +1017,27 @@ Future<int> _runWithTui({
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
-  final holder = StartAppStateHolder(ServerWatchState());
+  final holder = StartAppStateHolder(
+    ServerWatchState()..watchModeEnabled = watch,
+  );
   var backendStarted = false;
 
   // Shared shutdown signal
   final shutdown = _ShutdownSignal(listenForSignals: false);
 
+  // Captured on a fatal crash so it can be replayed to the real terminal in
+  // [preExit] when the user quits. The crash is also shown inside the TUI, but
+  // that copy lives in an in-memory log history that is discarded once we leave
+  // the alternate screen - so without this capture it would never reach the
+  // user's scrollback. First crash wins.
+  ({Object error, StackTrace stackTrace})? fatalCrash;
+  void recordFatalCrash(Object error, StackTrace stackTrace) {
+    fatalCrash ??= (error: error, stackTrace: stackTrace);
+  }
+
   // Captured so the renderer tear-down listener can wait for the
   // backend's cleanup (ctx.dispose) to finish before calling
-  // shutdownServerpodApp. Default to a no-op so the listener is safe to invoke
+  // shutdownTuiApp. Default to a no-op so the listener is safe to invoke
   // even if SIGINT arrives before onReady fires.
   Future<void> backendFuture = Future.value();
 
@@ -955,34 +1045,47 @@ Future<int> _runWithTui({
     if (backendStarted) return;
     backendStarted = true;
 
-    backendFuture =
-        _runTuiBackend(
-          holder: h,
-          commandConfig: commandConfig,
-          watch: watch,
-          launchFlutterApp: launchFlutterApp,
-          flutterDevice: flutterDevice,
-          flutterExtraArgs: flutterExtraArgs,
-          serverArgs: serverArgs,
-          config: config,
-          shutdown: shutdown,
-        ).catchError((Object e, StackTrace st) {
-          // Show the error in the TUI.
-          // The TUI stays open until Ctrl-C / Quit completes shutdown.
-          log.error('Fatal error: $e', stackTrace: st);
-        });
+    backendFuture = _runTuiBackend(
+      holder: h,
+      commandConfig: commandConfig,
+      watch: watch,
+      launchFlutterApp: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      flutterExtraArgs: flutterExtraArgs,
+      serverArgs: serverArgs,
+      config: config,
+      shutdown: shutdown,
+      onFatalError: recordFatalCrash,
+    ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
   }
 
-  // Wait for the backend's dispose to finish before calling shutdownServerpodApp
+  // Runs after the TUI tears down (alternate screen restored) but before the
+  // process exits. Restores the stdout logger and replays any captured crash
+  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // flushes its errors to the terminal on exit.
+  Future<void> preExit() async {
+    final crash = fatalCrash;
+    if (crash == null) return;
+    // Swap the TUI-backed logger (whose output went to the now-gone alternate
+    // screen) for a fresh stdout-backed one, so the replayed crash actually
+    // reaches the terminal.
+    await closeLogger();
+    initializeLogger();
+    printInternalError(crash.error, crash.stackTrace);
+    await log.flush();
+  }
+
+  // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
-      shutdownServerpodApp(code);
+      shutdownTuiApp(code);
     }),
   );
 
-  await runServerpodApp(
+  await runTuiApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
+    backend: ServerpodTerminalBackend(preExit: preExit),
     onShutdownSignal: () => shutdown.complete(0),
   );
 
@@ -1002,6 +1105,7 @@ Future<void> _runTuiBackend({
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
+  required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
   try {
     // Replace the CLI logger with a TUI-backed logger.
@@ -1074,12 +1178,26 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        // Offer Ctrl+R whenever a Flutter app could run here — even after a
+        // `--no-flutter` start, where it acts as a "launch the app" button.
+        holder.state.flutterRestartAvailable =
+            config.hasFlutterPackage &&
+            runModeFromServerArgs(serverArgs) == 'development';
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
         holder.onHotRestart = () {
           runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+        };
+        holder.onRestartFlutterApp = () {
+          runTrackedAction(
+            holder,
+            ctx.session.isFlutterAppRunning
+                ? 'Restart Flutter app'
+                : 'Start Flutter app',
+            ctx.session.restartFlutterApp,
+          );
         };
         holder.onCreateMigration = ({bool force = false}) {
           runTrackedAction(
@@ -1124,10 +1242,13 @@ Future<void> _runTuiBackend({
         await ctx.dispose();
     }
   } catch (e, st) {
-    // Show the error in the TUI; let the user read it. Quitting still
-    // works via the Ctrl-C signal handler routed through shutdown.
+    // Surface the crash in the TUI (left open so it stays visible alongside the
+    // preceding logs), and capture it via [onFatalError] so it is also replayed
+    // to the terminal in [_runWithTui] when the user quits - the in-TUI copy is
+    // lost when we leave the alternate screen.
     holder.state.showSplash = false;
     log.error('$e', stackTrace: st);
+    onFatalError(e, st);
   }
 }
 

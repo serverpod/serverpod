@@ -295,13 +295,19 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
-        test('has a root .gitignore that ignores workspace .dart_tool', () {
-          final rootGitignore = File(
-            path.join(tempPath, projectName, '.gitignore'),
-          );
-          expect(rootGitignore.existsSync(), isTrue);
-          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
-        });
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
 
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
@@ -330,6 +336,18 @@ void main() async {
             isTrue,
             reason: 'Root pubspec.lock file does not exist.',
           );
+        });
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
         });
 
         test('has agent skills installed', () {
@@ -361,7 +379,7 @@ void main() async {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",

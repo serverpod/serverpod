@@ -250,7 +250,7 @@ class InsightsEndpoint extends Endpoint {
     return session.serverpod.withPausedRequestHandling(() {
       return applyMigrationsAndVerify(
         session: session,
-        projectDirectory: Directory.current,
+        projectDirectory: session.serverpod.serverDirectory,
         runMode: session.serverpod.runMode,
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
@@ -266,15 +266,17 @@ class InsightsEndpoint extends Endpoint {
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations = await _getInstalledMigrationVersions(session);
 
+    final serverDir = session.serverpod.serverDirectory;
     var versions = await MigrationManager.fromDirectory(
-      Directory.current,
+      serverDir,
+      runMode: session.serverpod.runMode,
     ).listAvailableVersions();
 
     var latestAvailableMigrations = <DatabaseMigrationVersionModel>[];
     if (versions.isNotEmpty) {
       var version = versions.last;
       var file = MigrationConstants.databaseDefinitionJSONPath(
-        Directory.current,
+        serverDir,
         version,
       );
       var data = await file.readAsString();

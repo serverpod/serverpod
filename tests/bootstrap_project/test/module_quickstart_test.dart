@@ -344,6 +344,16 @@ void main() {
           );
         });
 
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(
@@ -373,7 +383,7 @@ void main() {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",

@@ -59,7 +59,7 @@ void main() {
     test('then it assigns the protocol to the registry', () {
       expect(
         protocolSource,
-        contains('_hostProtocols[projectName] = protocol'),
+        contains('_hostProtocols.add(protocol)'),
       );
     });
 

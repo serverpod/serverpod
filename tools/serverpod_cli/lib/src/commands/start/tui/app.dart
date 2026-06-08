@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/tui/app.dart';
-import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'main_screen.dart';
 
 import 'state.dart';
 
 /// State holder for [ServerpodWatchApp].
-class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
+class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   StartAppStateHolder(this._state);
 
   final ServerWatchState _state;
@@ -17,6 +16,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
   VoidCallback? _onHotRestart;
+  VoidCallback? _onRestartFlutterApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
@@ -26,13 +26,14 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   ServerWatchState get state => _state;
 
   @override
-  ServerpodAppState? get widgetState => _widgetState;
+  TuiAppState? get widgetState => _widgetState;
 
   @override
   void attach(ServerpodWatchAppState widgetState) {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
     widgetState.onHotRestart = _onHotRestart;
+    widgetState.onRestartFlutterApp = _onRestartFlutterApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
@@ -52,6 +53,11 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   set onHotRestart(VoidCallback? cb) {
     _onHotRestart = cb;
     _widgetState?.onHotRestart = cb;
+  }
+
+  set onRestartFlutterApp(VoidCallback? cb) {
+    _onRestartFlutterApp = cb;
+    _widgetState?.onRestartFlutterApp = cb;
   }
 
   set onCreateMigration(void Function({bool force})? cb) {
@@ -76,7 +82,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
 }
 
 /// Root TUI component for `serverpod start`.
-class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
+class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
   const ServerpodWatchApp({
     super.key,
     required super.holder,
@@ -86,10 +92,10 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
   final void Function(StartAppStateHolder holder) onReady;
 
   @override
-  ServerpodAppState createState() => ServerpodWatchAppState();
+  TuiAppState createState() => ServerpodWatchAppState();
 }
 
-class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
+class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   final logScrollController = ScrollController();
   final rawScrollController = ScrollController();
   final flutterRawScrollController = ScrollController();
@@ -98,6 +104,7 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
   VoidCallback? onHotRestart;
+  VoidCallback? onRestartFlutterApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
@@ -147,8 +154,27 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
 
   void _normalizeSelectedTab() {
     final state = component.holder.state;
-    if (state.useSideBySideLayout && state.selectedTab == 1) {
+    if (state.selectedTab == 1 &&
+        (state.useSideBySideLayout || !state.showFlutterOutput)) {
       state.selectedTab = 0;
+    }
+  }
+
+  void _cycleTab(int delta) {
+    final state = component.holder.state;
+    if (state.useSideBySideLayout) return;
+    final tabCount = state.showFlutterOutput ? 2 : 1;
+    state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
+    _rebuild();
+  }
+
+  @override
+  void onExit() {
+    final quit = onQuit;
+    if (quit != null) {
+      quit();
+    } else {
+      super.onExit();
     }
   }
 
@@ -179,6 +205,10 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         onCreateMigration: onCreateMigration,
         onCreateRepairMigration: onCreateRepairMigration,
         onApplyMigration: onApplyMigration,
+        onClearLogs: () {
+          state.clearLogs();
+          _rebuild();
+        },
         onQuit: onQuit,
       ),
     );
@@ -193,34 +223,53 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         _rebuild();
         return true;
       }
+      // Let Ctrl-C bubble to the base TuiAppState so copy/exit still work.
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
       // Route navigation keys to the help overlay's controller; absorb the
       // rest so they don't fall through to tab/scroll handling underneath.
       _handleScrollKey(helpScrollController, event);
       return true;
     }
 
-    final sideBySide = state.useSideBySideLayout;
-
-    // Tab cycling. In side-by-side mode, only server tabs are selectable.
-    if (event.logicalKey == LogicalKey.tab ||
-        event.logicalKey == LogicalKey.arrowRight) {
-      if (sideBySide) {
-        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-      } else {
-        final tabCount = state.showFlutterOutput ? 3 : 2;
-        state.selectedTab = (state.selectedTab + 1) % tabCount;
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.period) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
       }
-      _rebuild();
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      _handleScrollKey(rawScrollController, event);
       return true;
     }
-    if (event.logicalKey == LogicalKey.arrowLeft) {
-      if (sideBySide) {
-        state.selectedTab = state.selectedTab == 0 ? 2 : 0;
-      } else {
-        final tabCount = state.showFlutterOutput ? 3 : 2;
-        state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
+
+    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
+    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
+    // Handled here rather than as a ButtonBar entry because the Button widget
+    // matches only plain/Shift keys. Always consumed so it never falls through
+    // to the plain-R hot reload / restart.
+    if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
+      if (state.showFlutterOutput || state.flutterRestartAvailable) {
+        onRestartFlutterApp?.call();
       }
-      _rebuild();
+      return true;
+    }
+
+    final sideBySide = state.useSideBySideLayout;
+
+    if (event.matches(LogicalKey.tab, shift: false) ||
+        event.logicalKey == LogicalKey.arrowRight) {
+      _cycleTab(1);
+      return true;
+    }
+    if (event.matches(LogicalKey.tab, shift: true) ||
+        event.logicalKey == LogicalKey.arrowLeft) {
+      _cycleTab(-1);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit1) {
@@ -228,23 +277,30 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit2) {
-      state.selectedTab = sideBySide ? 2 : 1;
+    if (event.logicalKey == LogicalKey.digit2 &&
+        !sideBySide &&
+        state.showFlutterOutput) {
+      state.selectedTab = 1;
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit3 &&
-        !sideBySide &&
-        state.showFlutterOutput) {
-      state.selectedTab = 2;
+
+    if (event.logicalKey == LogicalKey.keyE && state.selectedTab == 0) {
+      state.expandStackTraces = !state.expandStackTraces;
+      _rebuild();
+      return true;
+    }
+
+    if (event.logicalKey == LogicalKey.backquote ||
+        event.logicalKey == LogicalKey.period) {
+      state.showRawServerLogs = true;
       _rebuild();
       return true;
     }
 
     final c = switch (state.selectedTab) {
-      0 => logScrollController,
       1 => flutterRawScrollController,
-      _ => rawScrollController,
+      _ => logScrollController,
     };
     return _handleScrollKey(c, event);
   }

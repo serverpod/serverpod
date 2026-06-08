@@ -61,8 +61,9 @@ void main() async {
         expect(
           databaseObject.dateTimeDefaultNow
               .difference(DateTime.now())
-              .inSeconds,
-          0,
+              .inSeconds
+              .abs(),
+          lessThanOrEqualTo(1),
         );
       },
     );

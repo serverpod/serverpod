@@ -20,6 +20,7 @@ dependencies:
   code_builder: ^4.5.0
   collection: ^1.18.0
   config: ^0.8.4
+  dart_data_home: ^0.1.0
   dart_mcp: '>=0.4.1 <0.6.0'
   # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
   # to 3.12 due to a bug on the formatter that was fixed in 3.1.6, but only
@@ -28,6 +29,7 @@ dependencies:
   # details, see: https://github.com/dart-lang/dart_style/issues/1785
   dart_style: 3.1.5
   data_assets: '>=0.19.0 <0.20.0'
+  ffi: ^2.1.4
   file: ^7.0.1
   hooks: ^1.0.0
   hooks_runner: ^1.2.1
@@ -51,6 +53,7 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
+  serverpod_tui: ^0.1.0-rc.6
   skills: ^0.3.0
   source_span: ^1.10.0
   stream_channel: ^2.1.1
@@ -60,6 +63,7 @@ dependencies:
   vm_service: '>=13.0.0 <16.0.0'
   watcher: ^1.0.2
   whiskers: ^0.1.1
+  win32: ^6.0.0
   yaml: ^3.1.2
   yaml_edit: ^2.2.2
 

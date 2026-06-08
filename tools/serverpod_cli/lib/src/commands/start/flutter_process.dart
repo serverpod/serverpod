@@ -7,11 +7,18 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart'
     show vmServiceWsUri;
+import 'package:serverpod_cli/src/util/browser_launcher.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/flutter_daemon_protocol.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
+
+/// Flutter's headless web device; serves the app but never opens a
+/// browser, so a VM service attach waits for a human to open the URL.
+const flutterDeviceWebServer = 'web-server';
+
+const flutterDeviceWebServerWithBrowser = 'web-server-launch-browser';
 
 /// Thrown by [FlutterProcess.start] when `flutter` cannot be launched.
 class FlutterNotInstalledException implements Exception {
@@ -50,9 +57,16 @@ class FlutterProcess {
   /// messages in between.
   final void Function(String stage)? _onProgress;
 
+  /// When true, open [flutterAppUrl] in the default browser once it is
+  /// published by the daemon (`app.webLaunchUrl`).
+  final bool _launchBrowser;
+
   /// Test-only spawn args override; replaces the default `flutter run`
   /// arg list when non-null.
   final List<String>? _argsOverrideForTesting;
+
+  /// Test-only override for [BrowserLauncher.openUrl].
+  final Future<bool> Function(Uri url)? _openBrowserForTesting;
 
   Process? _process;
   StreamSubscription<ProcessSignal>? _sigtermSub;
@@ -60,6 +74,8 @@ class FlutterProcess {
   StreamSubscription<List<int>>? _stderrBytesSub;
   StreamSubscription<String>? _machineLinesSub;
   StreamSubscription<Event>? _loggingSub;
+  StreamSubscription<Event>? _stdoutEventSub;
+  StreamSubscription<Event>? _stderrEventSub;
   Timer? _vmServiceHeartbeat;
 
   String? _appId;
@@ -68,6 +84,7 @@ class FlutterProcess {
   String? _flutterAppUrl;
   String? _dtdUri;
   VmService? _vmService;
+  bool _browserOpening = false;
 
   // `null` result means the process exited before publishing a URI.
   final Completer<String?> _vmServiceUriCompleter = Completer<String?>();
@@ -86,6 +103,7 @@ class FlutterProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     @visibleForTesting List<String>? argsOverrideForTesting,
+    @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
        _flutterExecutable = flutterExecutable,
        _device = device,
@@ -94,7 +112,9 @@ class FlutterProcess {
        _onProgress = onProgress,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
-       _argsOverrideForTesting = argsOverrideForTesting;
+       _launchBrowser = device == flutterDeviceWebServerWithBrowser,
+       _argsOverrideForTesting = argsOverrideForTesting,
+       _openBrowserForTesting = openBrowserForTesting;
 
   /// True between [start] and [stop]/exit.
   bool get isRunning => _process != null;
@@ -102,7 +122,7 @@ class FlutterProcess {
   /// True once [connectToVmService] resolved the upstream VM service.
   bool get isVmServiceConnected => _vmService != null;
 
-  /// HTTP VM service URI, or `null` before [connectToVmService] resolves.
+  /// HTTP VM service URI published by the daemon, or `null` before publication.
   String? get vmServiceUri => _vmServiceUri;
 
   /// Connected `vm_service` client; `null` outside connect..[stop].
@@ -128,9 +148,10 @@ class FlutterProcess {
       throw StateError('FlutterProcess is already running.');
     }
 
+    final device = _launchBrowser ? flutterDeviceWebServer : _device;
     final args =
         _argsOverrideForTesting ??
-        <String>['run', '--machine', '-d', _device, ..._extraArgs];
+        <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
 
@@ -211,16 +232,29 @@ class FlutterProcess {
     );
   }
 
-  /// Wait for `app.debugPort`, bind [flutterProxy] upstream so IDE
-  /// clients can attach, open a `vm_service` client. Best-effort.
-  /// On `-d web-server` pends until a browser attaches.
-  Future<void> connectToVmService() async {
+  /// Connects to the Flutter VM service.
+  ///
+  /// When set [timeout] caps the wait for the daemon to publish URI.
+  ///
+  /// Waits for `app.debugPort`, binds [flutterProxy] upstream so IDE
+  /// clients can attach, then opens a `vm_service` client.
+  Future<void> connectToVmService({Duration? timeout}) async {
     if (_vmService != null) return;
     _onProgress?.call('connecting');
 
-    final maybeUri = await _vmServiceUriCompleter.future;
+    final String? maybeUri;
+    try {
+      final pending = _vmServiceUriCompleter.future;
+      maybeUri = await (timeout == null ? pending : pending.timeout(timeout));
+    } on TimeoutException {
+      log.warning(
+        'Flutter VM service did not publish within ${timeout!.inSeconds}s; '
+        'continuing without an attached VM service. '
+        '(Hot reload from the CLI/IDE for the Flutter app will be unavailable.)',
+      );
+      return;
+    }
     if (maybeUri == null) return;
-    _vmServiceUri = maybeUri;
 
     final wsUri = vmServiceWsUri(maybeUri);
     await _flutterProxy?.setUpstream(Uri.parse(wsUri));
@@ -229,7 +263,7 @@ class FlutterProcess {
       try {
         final vm = await vmServiceConnectUri(wsUri);
         _vmService = vm;
-        await _subscribeToLogging(vm);
+        await _subscribeToVmStreams(vm);
         _startVmServiceHeartbeat(vm);
         return;
       } on Exception {
@@ -283,24 +317,62 @@ class FlutterProcess {
     });
   }
 
-  /// `--machine` doesn't forward `dart:developer.log()`; `Logging` does.
-  Future<void> _subscribeToLogging(VmService vmService) async {
-    try {
-      await vmService.streamListen('Logging');
-    } on RPCError catch (e) {
-      log.debug('Could not subscribe to Flutter Logging stream: $e');
+  /// Subscribes to a named [vmService] stream.
+  /// - 'Logging' for _dart:developer.log()_,
+  /// - 'Stdout' for [stdout] (includes [print])
+  /// - 'Stderr' for [stderr]
+  Future<void> _subscribeToVmStreams(VmService vmService) async {
+    Future<bool> tryListen(String stream) async {
+      try {
+        await vmService.streamListen(stream);
+        return true;
+      } on RPCError catch (e) {
+        log.warning('Could not subscribe to Flutter $stream stream: $e');
+        return false;
+      }
+    }
+
+    if (await tryListen('Logging')) {
+      const severeLevel = 1000;
+      _loggingSub = vmService.onLoggingEvent.listen((event) {
+        final record = event.logRecord;
+        final message = record?.message?.valueAsString;
+        if (message == null || message.isEmpty) return;
+        final name = record?.loggerName?.valueAsString ?? '';
+        final line = name.isEmpty ? message : '[$name] $message';
+        final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
+        sink.writeln(line);
+      });
+    }
+
+    if (await tryListen('Stdout')) {
+      _stdoutEventSub = vmService.onStdoutEvent.listen(
+        (e) => _writeVmStreamEvent(_stdout, e),
+      );
+    }
+    if (await tryListen('Stderr')) {
+      _stderrEventSub = vmService.onStderrEvent.listen(
+        (e) => _writeVmStreamEvent(_stderr, e),
+      );
+    }
+  }
+
+  /// Decodes a VM service [event] and writes its text to [sink]
+  static void _writeVmStreamEvent(IOSink sink, Event event) {
+    final bytes = event.bytes;
+    String text;
+    if (bytes != null) {
+      try {
+        text = utf8.decode(base64.decode(bytes), allowMalformed: true);
+      } catch (_) {
+        return;
+      }
+    } else {
+      // No bytes payload on this VM build
       return;
     }
-    const severeLevel = 1000;
-    _loggingSub = vmService.onLoggingEvent.listen((event) {
-      final record = event.logRecord;
-      final message = record?.message?.valueAsString;
-      if (message == null || message.isEmpty) return;
-      final name = record?.loggerName?.valueAsString ?? '';
-      final line = name.isEmpty ? message : '[$name] $message';
-      final sink = (record?.level ?? 0) >= severeLevel ? _stderr : _stdout;
-      sink.writeln(line);
-    });
+    if (text.isEmpty) return;
+    sink.write(text);
   }
 
   /// Hot reload. Daemon-reported success; never throws.
@@ -340,8 +412,9 @@ class FlutterProcess {
     }
   }
 
-  /// SIGINT -> wait -> SIGKILL. Reaches the daemon because [start]
-  /// spawns flutter_tools directly, bypassing wrappers.
+  /// Graceful daemon `app.stop` -> SIGINT -> wait -> SIGKILL. The signals
+  /// reach the daemon because [start] spawns flutter_tools directly,
+  /// bypassing wrappers.
   Future<int> stop({
     Duration timeout = const Duration(seconds: 5),
   }) async {
@@ -353,6 +426,31 @@ class FlutterProcess {
 
     await _sigtermSub?.cancel();
     _sigtermSub = null;
+
+    // Ask the daemon to stop the app first: in --machine mode a bare SIGINT
+    // can terminate flutter_tools without device cleanup, leaving e.g. the
+    // browser window it spawned open. `app.stop` tears the device session
+    // down properly; signals below remain as the fallback.
+    final daemon = _daemon;
+    final appId = _appId;
+    if (daemon != null && appId != null) {
+      try {
+        await daemon
+            .sendRequest('app.stop', <String, Object?>{'appId': appId})
+            .timeout(timeout);
+        final exitCode = await process.exitCode.timeout(timeout);
+        log.debug(
+          'Flutter stop: PID ${process.pid} exited gracefully with $exitCode',
+        );
+        await _cleanup();
+        return exitCode;
+      } catch (e) {
+        log.debug(
+          'Flutter stop: app.stop failed ($e); falling back to '
+          'signals.',
+        );
+      }
+    }
 
     log.debug('Flutter stop: sending SIGINT to PID ${process.pid}');
     process.kill(ProcessSignal.sigint);
@@ -411,7 +509,9 @@ class FlutterProcess {
           final wsUri = paramMap['wsUri'];
           if (wsUri is String && !_vmServiceUriCompleter.isCompleted) {
             // IDEs and callers expect the http form.
-            _vmServiceUriCompleter.complete(httpFromWs(wsUri));
+            final httpUri = httpFromWs(wsUri);
+            _vmServiceUri = httpUri;
+            _vmServiceUriCompleter.complete(httpUri);
           }
           if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
         case 'app.webLaunchUrl':
@@ -419,6 +519,9 @@ class FlutterProcess {
           if (url is String) {
             _flutterAppUrl = url;
             if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
+            if (_launchBrowser) {
+              unawaited(_openBrowser(Uri.parse(url)));
+            }
           }
         case 'app.dtd':
           final uri = paramMap['uri'];
@@ -435,16 +538,23 @@ class FlutterProcess {
         case 'app.stop':
           log.debug('Flutter daemon emitted app.stop; tearing down.');
           unawaited(_onAppStop());
-        case 'app.log':
-          final logText = paramMap['log'];
-          if (logText is! String || logText.isEmpty) break;
-          final sink = paramMap['error'] == true ? _stderr : _stdout;
-          sink.writeln(logText);
         case 'daemon.logMessage':
           final message = paramMap['message'];
           if (message is String) log.debug('flutter[daemon] $message');
       }
     }
+  }
+
+  Future<void> _openBrowser(Uri url) async {
+    if (_browserOpening) return;
+    _browserOpening = true;
+    final open = _openBrowserForTesting ?? BrowserLauncher.openUrl;
+    if (!await open(url)) {
+      log.warning('Could not open browser at $url');
+    }
+
+    // Reset the flag so we can open the browser again if the app is restarted.
+    _browserOpening = false;
   }
 
   bool _appStopHandled = false;
@@ -482,12 +592,16 @@ class FlutterProcess {
       await _machineLinesSub?.cancel();
       await _sigtermSub?.cancel();
       await _loggingSub?.cancel();
+      await _stdoutEventSub?.cancel();
+      await _stderrEventSub?.cancel();
       _vmServiceHeartbeat?.cancel();
       _stdoutBytesSub = null;
       _stderrBytesSub = null;
       _machineLinesSub = null;
       _sigtermSub = null;
       _loggingSub = null;
+      _stdoutEventSub = null;
+      _stderrEventSub = null;
       _vmServiceHeartbeat = null;
 
       await _vmService?.dispose();

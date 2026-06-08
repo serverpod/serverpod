@@ -78,6 +78,7 @@ extension MigrationOutcomeExtension on CreateMigrationOutcome {
 Future<CreateMigrationOutcome> createMigrationAction({
   required GeneratorConfig config,
   String? tag,
+  bool empty = false,
   bool force = false,
 }) async {
   if (!config.isFeatureEnabled(ServerpodFeature.database)) {
@@ -126,6 +127,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
 
   final results = await Future.wait([
     _createMigration(
+      empty: empty,
       force: force,
       config: config,
       precomputedVersion: precomputedVersion,
@@ -135,6 +137,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
     if (hasClientMigrations)
       _createMigration(
         config: config,
+        empty: empty,
         force: force,
         precomputedVersion: precomputedVersion,
         generator: clientGenerator!,
@@ -155,6 +158,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
 Future<CreateMigrationOutcome> _createMigration({
   required MigrationGenerator generator,
   required GeneratorConfig config,
+  required bool empty,
   required bool force,
   required MigrationGenerationContext context,
   required String precomputedVersion,
@@ -162,6 +166,7 @@ Future<CreateMigrationOutcome> _createMigration({
   MigrationVersionArtifacts? migration;
   try {
     migration = await generator.createMigration(
+      empty: empty,
       force: force,
       config: config,
       context: context,

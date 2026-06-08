@@ -5,7 +5,7 @@ This document describes the MCP (Model Context Protocol) integration for `server
 The integration has two parts:
 
 - A small **per-runner MCP server** that lives inside each `serverpod start --watch` process and exposes dev operations against that instance (currently: `apply_migrations`, `create_migration`, `hot_reload`, `tail_server_logs`).
-- A long-lived **bridge MCP server** (`serverpod mcp`) that sits on stdio between the AI client and the runners. It discovers running instances by scanning a shared socket directory, connects to one at a time, and forwards tool calls. The bridge survives runner restarts.
+- A long-lived **bridge MCP server** (`serverpod mcp-server`) that sits on stdio between the AI client and the runners. It discovers running instances by scanning a shared socket directory, connects to one at a time, and forwards tool calls. The bridge survives runner restarts.
 
 The per-runner server runs inside the CLI process, alongside the compiler, file watcher, and watch session. It is not part of the server subprocess (the Serverpod application). This keeps dev tooling concerns out of the framework itself - the `serverpod` package should not impose an MCP dependency or dev-time features on the application server. It also means the MCP server has access to the CLI's internal state (the incremental compiler, the server process handle, the restart lifecycle) which the server subprocess does not.
 
@@ -25,7 +25,7 @@ The bridge layer solves a separate problem: when the runner process (`serverpod 
 AI client (e.g. Claude Code)
     │  stdio  (long-lived)
     ▼
-serverpod mcp             <- BridgeMcpServer (this process)
+serverpod mcp-server             <- BridgeMcpServer (this process)
     │
     │  scans .../serverpod/serverpod-<pid>-<project>.sock
     │  connects to one at a time
@@ -34,7 +34,7 @@ serverpod mcp             <- BridgeMcpServer (this process)
 serverpod start --watch   <- ServerpodMcpServer (per-runner)
 ```
 
-The bridge is **single-instance**: at any moment it forwards to at most one runner. Switching runners is an explicit `disconnect` then `connect` from the client. To bridge multiple AI windows to multiple projects, run one `serverpod mcp` per window.
+The bridge is **single-instance**: at any moment it forwards to at most one runner. Switching runners is an explicit `disconnect` then `connect` from the client. To bridge multiple AI windows to multiple projects, run one `serverpod mcp-server` per window.
 
 ### Transport: Unix domain sockets
 
@@ -61,14 +61,14 @@ Sockets live in a shared, per-machine temp directory:
 
 The bridge cleans up dead-PID sockets opportunistically the next time it scans.
 
-### `serverpod mcp` (the bridge)
+### `serverpod mcp-server` (the bridge)
 
 ```json
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server"]
     }
   }
 }
@@ -165,7 +165,7 @@ Any operation that the AI agent reaches for mid-session against a running dev en
 - Operations that need the CLI's in-memory state (compiler, server lifecycle) - `apply_migrations`, `hot_reload` - must live here.
 - Operations that are conceptually per-instance but don't strictly need in-memory state - `create_migration`, `tail_server_logs` - are exposed here too. The alternative (shelling out to `serverpod create-migration`) forces a context switch, adds a failure mode where the agent runs in the wrong directory, and makes tool discovery dependent on a shipped skill file.
 
-Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
+Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp-server` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
 
 Future MCP tool candidates include `server_status` (only the CLI knows whether the server subprocess is running, compiling, or errored).
 
@@ -177,7 +177,7 @@ Future MCP tool candidates include `server_status` (only the CLI knows whether t
 
 ## Migration from the previous design
 
-The previous integration used a project-local socket at `<server>/.dart_tool/serverpod/mcp.sock` and shipped `serverpod mcp` as a transparent stdio-to-socket pipe. That socket path is no longer used. AI client config that just runs `serverpod mcp` continues to work; configs that invoked it from a particular project directory no longer need to - the bridge discovers instances independently of the AI client's working directory.
+The previous integration used a project-local socket at `<server>/.dart_tool/serverpod/mcp.sock` and shipped `serverpod mcp-server` as a transparent stdio-to-socket pipe. That socket path is no longer used. AI client config that just runs `serverpod mcp-server` continues to work; configs that invoked it from a particular project directory no longer need to - the bridge discovers instances independently of the AI client's working directory.
 
 ## Open Questions
 

@@ -5,13 +5,34 @@ import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/create/template_renderer.dart';
 import 'package:test/test.dart';
 
+/// The renderer renames ancestor dirs of the file paths it's given.
+/// Tests that exercise dir renaming need at least one file inside the
+/// dir to anchor that ancestor. [_sentinel] is the placeholder used.
+const _sentinel = '.template_sentinel';
+
 void main() {
   late Directory testDir;
-  late TemplateRenderer templateRenderer;
+  const renderer = TemplateRenderer();
+
+  /// Renders every file currently under [testDir] - mirrors how the
+  /// production caller passes the set of files just written by [Copier].
+  Future<void> renderTestDir(TemplateContext context) async {
+    final paths = <String>[];
+    await for (final entity in testDir.list(
+      recursive: true,
+      followLinks: false,
+    )) {
+      if (entity is File) paths.add(entity.path);
+    }
+    await renderer.renderPaths(paths, context);
+  }
+
+  Future<void> addSentinel(Directory dir) async {
+    await File(p.join(dir.path, _sentinel)).create(recursive: true);
+  }
 
   setUp(() async {
     testDir = await Directory.systemTemp.createTemp('template_test_');
-    templateRenderer = TemplateRenderer(dir: testDir);
   });
 
   tearDown(() async {
@@ -26,13 +47,14 @@ void main() {
       setUp(() async {
         dir = Directory(p.join(testDir.path, '{{#web}}web{{!web}}'));
         await dir.create();
+        await addSentinel(dir);
       });
 
       test(
         'when rendering the template with a true context value, '
         'then the directory name is formatted to remove the template directives',
         () async {
-          await templateRenderer.render(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(web: true));
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
@@ -49,7 +71,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the directory is deleted',
         () async {
-          await templateRenderer.render(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(web: false));
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
@@ -66,7 +88,7 @@ void main() {
         'when rendering the template with empty context, '
         'then the directory is deleted',
         () async {
-          await templateRenderer.render(TemplateContext());
+          await renderTestDir(TemplateContext());
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{!web}}')).exists(),
@@ -89,13 +111,14 @@ void main() {
       setUp(() async {
         dir = Directory(p.join(testDir.path, '{{#web}}web{{+web}}'));
         await dir.create();
+        await addSentinel(dir);
       });
 
       test(
         'when rendering the template with a true context value, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await templateRenderer.render(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(web: true));
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
@@ -112,7 +135,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await templateRenderer.render(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(web: false));
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
@@ -129,7 +152,7 @@ void main() {
         'when rendering the template with empty context, '
         'then the directory name is not formatted to remove the template directive',
         () async {
-          await templateRenderer.render(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(web: true));
 
           await expectLater(
             Directory(p.join(testDir.path, '{{#web}}web{{+web}}')).exists(),
@@ -151,13 +174,15 @@ void main() {
     () async {
       final webDir = Directory(p.join(testDir.path, '{{#web}}web{{!web}}'));
       await webDir.create();
+      await addSentinel(webDir);
 
       final redisDir = Directory(
         p.join(testDir.path, '{{#redis}}redis{{!redis}}'),
       );
       await redisDir.create();
+      await addSentinel(redisDir);
 
-      await templateRenderer.render(TemplateContext(redis: false, web: true));
+      await renderTestDir(TemplateContext(redis: false, web: true));
 
       await expectLater(
         Directory(p.join(testDir.path, 'web')).exists(),
@@ -186,13 +211,14 @@ void main() {
           ),
         );
         await nestedDir.create(recursive: true);
+        await addSentinel(nestedDir);
       });
 
       test(
         'when rendering templates with true context values, '
         'then the nested directories are not deleted',
         () async {
-          await templateRenderer.render(
+          await renderTestDir(
             TemplateContext(postgres: true, web: true, redis: true),
           );
 
@@ -209,7 +235,7 @@ void main() {
         'when rendering templates with a false context value for the parent directory '
         'then the nested directories are deleted',
         () async {
-          await templateRenderer.render(
+          await renderTestDir(
             TemplateContext(web: false, redis: true, postgres: true),
           );
 
@@ -226,7 +252,7 @@ void main() {
         'when rendering templates with a false context value for a nested directory, '
         'then only the nested directory is deleted',
         () async {
-          await templateRenderer.render(
+          await renderTestDir(
             TemplateContext(redis: false, postgres: true, web: true),
           );
 

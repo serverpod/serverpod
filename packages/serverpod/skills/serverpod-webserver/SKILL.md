@@ -360,23 +360,31 @@ pod.webServer.addRoute(StaticRoute.directory(Directory('web/app')), '/');
 
 ## Flutter web apps
 
-`FlutterRoute` serves Flutter web builds with WASM multi-threading headers and smart caching:
+`FlutterRoute` serves Flutter web builds with SPA fallback and smart caching:
 
 ```dart
 final appDir = Directory('web/app');
 if (appDir.existsSync()) {
-  pod.webServer.addRoute(FlutterRoute(appDir));
+  pod.webServer.addRoute(
+    FlutterRoute(
+      appDir,
+      enableWasmHeaders: false,
+    ),
+  );
 }
 ```
 
-Build: `cd my_project_flutter && flutter build web --wasm`. Copy output to server's `web/app/`.
+Build: `cd my_project_flutter && flutter build web --base-href /app/ -o ../my_project_server/web/app`.
+
+Generated projects set `enableWasmHeaders: false` on the `FlutterRoute` because
+the default build is non-WASM. To opt into Flutter WASM, add `--wasm` to the
+build command and remove the `enableWasmHeaders: false` line.
 
 ### Default caching
 
-- **Critical files** (`index.html`, `flutter_service_worker.js`, `flutter_bootstrap.js`, `manifest.json`, `version.json`): never cached (`private, no-cache, no-store`)
-- **All other files**: cached 1 day (`public, max-age=86400`)
+- **All files**: served with `private, no-cache` by default, so browsers revalidate with ETags and avoid stale Flutter assets after rebuilds.
 
-Override with `cacheControlFactory`. Invalidate cache by bumping version in Flutter `pubspec.yaml` and rebuilding.
+Override with `cacheControlFactory` when using cache-busted assets.
 
 ### WASM headers
 

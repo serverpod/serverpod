@@ -215,30 +215,6 @@ void main() async {
               });
 
               test(
-                'has a web/app directory containing the flutter web app',
-                () {
-                  expect(
-                    Directory(
-                      path.join(tempPath, serverDir, 'web', 'app'),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                  expect(
-                    File(
-                      path.join(
-                        tempPath,
-                        serverDir,
-                        'web',
-                        'app',
-                        'index.html',
-                      ),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                },
-              );
-
-              test(
                 'has embedded postgres configuration on test run mode',
                 () {
                   final testConfigFile = File(
@@ -271,7 +247,7 @@ void main() async {
 
                   expect(
                     devConfigFile.readAsStringSync(),
-                    contains('dataPath: .serverpod/dev/pgdata'),
+                    contains('dataPath: .serverpod/development/pgdata'),
                   );
                 },
               );
@@ -461,6 +437,22 @@ void main() async {
               );
             });
 
+            test('has AGENTS.md', () {
+              final agentsMd = File(
+                path.join(tempPath, projectName, 'AGENTS.md'),
+              );
+              expect(agentsMd.existsSync(), isTrue);
+              expect(agentsMd.readAsStringSync(), isNotEmpty);
+            });
+
+            test('has CLAUDE.md', () {
+              final claudeMd = File(
+                path.join(tempPath, projectName, 'CLAUDE.md'),
+              );
+              expect(claudeMd.existsSync(), isTrue);
+              expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+            });
+
             test('has agent skills installed', () {
               expect(
                 Directory(
@@ -490,7 +482,7 @@ void main() async {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "$serverDirRelative"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",

@@ -11,7 +11,7 @@ enum TemplateIde {
   codex(filePath: '.codex/config.toml', config: _codexConfig),
   cursor(filePath: '.cursor/mcp.json', config: _genericConfig),
   claude(filePath: '.mcp.json', config: _genericConfig),
-  openCode(filePath: '.opencode/opencode.json', config: _openCodeConfig),
+  openCode(filePath: 'opencode.json', config: _openCodeConfig),
   vscode(
     filePath: '.vscode/mcp.json',
     config: _genericConfig,
@@ -61,7 +61,7 @@ const _genericConfig = '''{
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp", "--server-dir", "{serverDirRelative}"]
+      "args": ["mcp-server", "--server-dir", "{serverDirRelative}"]
     },
     "dart": {
       "command": "dart",
@@ -77,7 +77,7 @@ const _openCodeConfig = '''{
   "mcp": {
     "serverpod": {
       "type": "local",
-      "command": ["serverpod", "mcp", "--server-dir", "{serverDirRelative}"],
+      "command": ["serverpod", "mcp-server", "--server-dir", "{serverDirRelative}"],
       "enabled": true
     },
     "dart-mcp-server": {
@@ -96,7 +96,7 @@ const _openCodeConfig = '''{
 /// MCP server config for Codex.
 const _codexConfig = '''[mcp_servers.serverpod]
 command = "serverpod"
-args = ["mcp", "--server-dir", "{serverDirRelative}"]
+args = ["mcp-server", "--server-dir", "{serverDirRelative}"]
 
 [mcp_servers.dart_mcp]
 command = "dart"

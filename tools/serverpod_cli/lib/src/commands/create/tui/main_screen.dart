@@ -1,14 +1,6 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
-import 'package:serverpod_cli/src/commands/tui/components/checkbox.dart';
-import 'package:serverpod_cli/src/commands/tui/components/log_viewer.dart';
-import 'package:serverpod_cli/src/commands/tui/components/radio_button.dart';
-import 'package:serverpod_cli/src/commands/tui/components/wrap.dart';
-import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 class MainScreen extends StatelessComponent {
   const MainScreen({
@@ -31,8 +23,7 @@ class MainScreen extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final state = holder.state;
-    final creatingProject = state.creatingProject;
+    final creatingProject = holder.state.creatingProject;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +34,7 @@ class MainScreen extends StatelessComponent {
               children: [
                 _buildHeader(theme),
                 Expanded(
-                  child: creatingProject ? _buildLogView() : _buildForm(theme),
+                  child: creatingProject ? _buildLogView() : _buildForm(),
                 ),
               ],
             ),
@@ -76,215 +67,25 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildForm(ServerpodThemeData theme) {
-    return Scrollbar(
-      controller: scrollController,
-      thumbVisibility: true,
-      child: SingleChildScrollView(
-        controller: scrollController,
-        child: _buildConfigurations(theme),
-      ),
-    );
-  }
-
-  Component _buildConfigurations(ServerpodThemeData theme) {
+  Component _buildForm() {
     final state = holder.state;
-    final configurations = state.configValues;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final config in configurations.indexed) ...[
-          _buildConfiguration(
-            theme,
-            config.$2,
-            config.$1 == state.focusedConfigIndex,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Component _buildConfiguration(
-    ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool isConfigFocused,
-  ) {
-    final state = holder.state;
-
-    if (config.multiSelect) {
-      return _buildMultiSelectConfiguration(theme, config, isConfigFocused);
-    }
-
-    if (config.isBoolean) {
-      return _buildBooleanConfiguration(theme, config, isConfigFocused);
-    }
-
-    final selectedOption = state.getSelectedOptionFor(config);
-    final configState = state.getStateFor(config);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            config.label,
-            style: const TextStyle(
-              color: Color.defaultColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Row(
-            children: [
-              for (final option in config.options.indexed) ...[
-                _buildConfigurationOption(
-                  theme,
-                  option.$2,
-                  focused:
-                      isConfigFocused &&
-                      configState?.focusedOptionIndex == option.$1,
-                  selected: selectedOption == option.$2,
-                  onTap: () {
-                    state.updateSelectedOption(config, option.$2);
-                    holder.markDirty();
-                  },
-                ),
-                const SizedBox(width: 2),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Component _buildBooleanConfiguration(
-    ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool isConfigFocused,
-  ) {
-    final state = holder.state;
-    final selectedOption =
-        state.getSelectedOptionFor(config) as BoolConfigOption?;
-    const defaultOption = BoolConfigOption.enabled;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            config.label,
-            style: const TextStyle(
-              color: Color.defaultColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          _buildMultiSelectOption(
-            theme,
-            BoolConfigOption.enabled,
-            focused: isConfigFocused,
-            selected: selectedOption == defaultOption,
-            onTap: () {
-              BoolConfigOption newOption = selectedOption == .enabled
-                  ? .disabled
-                  : .enabled;
-              state.updateSelectedOption(config, newOption);
-              holder.markDirty();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Component _buildMultiSelectConfiguration(
-    ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool isConfigFocused,
-  ) {
-    final state = holder.state;
-    final selectedOptions = state.getSelectedOptionsFor(config) ?? {};
-    final configState = state.getStateFor(config);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 1, left: 1, right: 1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            config.label,
-            style: const TextStyle(
-              color: Color.defaultColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Wrap(
-            spacing: 2,
-            children: [
-              for (final option in config.options.indexed)
-                _buildMultiSelectOption(
-                  theme,
-                  option.$2,
-                  focused:
-                      isConfigFocused &&
-                      configState?.focusedOptionIndex == option.$1,
-                  selected: selectedOptions.contains(option.$2),
-                  onTap: () {
-                    state.updateSelectedOption(config, option.$2);
-                    holder.markDirty();
-                  },
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Component _buildConfigurationOption(
-    ServerpodThemeData theme,
-    ConfigOption option, {
-    required bool focused,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: RadioButton(
-        label: option.label,
-        value: selected,
-        focused: focused,
-      ),
-    );
-  }
-
-  Component _buildMultiSelectOption(
-    ServerpodThemeData theme,
-    ConfigOption option, {
-    required bool focused,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Checkbox(
-        label: option.label,
-        value: selected,
-        focused: focused,
-      ),
+    return Form(
+      state: state.form,
+      scrollController: scrollController,
+      rebuild: holder.markDirty,
     );
   }
 
   Component _buildButtonBar(ServerpodThemeData theme) {
     final state = holder.state;
+    final form = state.form;
     final creatingProject = state.creatingProject;
     return ButtonBar(
       buttons: [
         Button(
           name: 'Create Project',
           activationChar: 'Enter',
-          enabled: !creatingProject,
+          enabled: !creatingProject && state.canCreate,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
             state.markCreatingProject();
@@ -305,22 +106,22 @@ class MainScreen extends StatelessComponent {
           onActivate: (key) {
             switch (key) {
               case LogicalKey.arrowLeft:
-                state.updateFocusedConfigOption(-1);
+                form.updateFocusedConfigOption(-1);
                 break;
               case LogicalKey.arrowRight:
-                state.updateFocusedConfigOption(1);
+                form.updateFocusedConfigOption(1);
                 break;
               case LogicalKey.arrowUp:
-                state.updateFocusedConfig(-1);
-                if (state.focusedConfigIndex == state.maxFocusedConfigIndex) {
+                form.updateFocusedConfig(-1);
+                if (form.focusedConfigIndex == form.maxFocusedConfigIndex) {
                   scrollController.scrollToEnd();
                 } else {
                   scrollController.scrollUp(3);
                 }
                 break;
               case LogicalKey.arrowDown:
-                state.updateFocusedConfig(1);
-                if (state.focusedConfigIndex == 0) {
+                form.updateFocusedConfig(1);
+                if (form.focusedConfigIndex == 0) {
                   scrollController.scrollToStart();
                 } else {
                   scrollController.scrollDown(3);
@@ -335,12 +136,8 @@ class MainScreen extends StatelessComponent {
           activationChar: 'Space',
           enabled: !creatingProject,
           activationKeys: const [LogicalKey.space],
-          onActivate: (key) {
-            switch (key) {
-              case LogicalKey.space:
-                state.selectConfigOption();
-                break;
-            }
+          onActivate: (_) {
+            form.selectConfigOption();
             holder.markDirty();
           },
         ),
@@ -352,7 +149,10 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
-        const Tip('Click to select'),
+        if (state.canCreate)
+          const Tip('Click to select')
+        else
+          const Tip('Select at least one IDE'),
       ],
     );
   }

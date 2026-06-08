@@ -43,13 +43,13 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._();
 
-  final Map<String, _i1.SerializationManager> _hostProtocols = {};
+  final Set<_i1.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
     _i1.SerializationManager protocol,
   ) {
-    _hostProtocols[projectName] = protocol;
+    _hostProtocols.add(protocol);
   }
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -287,9 +287,10 @@ class Protocol extends _i1.SerializationManager {
         getClassNameForObject(object) != null) {
       return super.dynamicFieldToJson(object, forProtocol: forProtocol);
     }
-    for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
+    for (final protocol in _hostProtocols) {
       final className = protocol.getClassNameForObject(object);
       if (className == null) continue;
+      final host = protocol.getModuleName();
       final wrapped = {
         'className': className.contains('.') ? className : '$host.$className',
         'data': object,
@@ -311,7 +312,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
     final className = value['className'] as String;
-    for (final MapEntry(key: host, value: protocol) in _hostProtocols.entries) {
+    for (final protocol in _hostProtocols) {
+      final host = protocol.getModuleName();
       final hostPrefix = '$host.';
       if (className.startsWith(hostPrefix)) {
         final strippedClassName = className.substring(hostPrefix.length);
@@ -326,7 +328,7 @@ class Protocol extends _i1.SerializationManager {
       }
     }
     if (className.contains('.')) {
-      for (final protocol in _hostProtocols.values) {
+      for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
         } on FormatException catch (_) {}
@@ -334,6 +336,9 @@ class Protocol extends _i1.SerializationManager {
     }
     return deserializeByClassName(value);
   }
+
+  @override
+  String getModuleName() => 'serverpod_chat';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

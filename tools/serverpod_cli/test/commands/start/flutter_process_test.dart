@@ -135,6 +135,23 @@ void main() {
             expect(fp.isVmServiceConnected, isFalse);
           },
         );
+
+        test(
+          'when connectToVmService is called with a short timeout '
+          'then it gives up without throwing so the caller can proceed',
+          () async {
+            // Mirrors the chrome-tab-closed-quickly bug:
+            // https://github.com/serverpod/serverpod/issues/5173
+            // app.debugPort "never" arrives
+            await fp
+                .connectToVmService(
+                  timeout: const Duration(milliseconds: 200),
+                )
+                .timeout(const Duration(seconds: 2));
+            expect(fp.isVmServiceConnected, isFalse);
+            expect(fp.vmServiceUri, isNull);
+          },
+        );
       },
     );
   });
@@ -145,10 +162,12 @@ void main() {
       late FlutterProcess fp;
       late ({HttpServer server, String wsUri}) fake;
       late List<String> progressMessages;
+      late Completer<void> ready;
 
       setUp(() async {
         fake = await _startFakeVmService();
         progressMessages = <String>[];
+        ready = Completer<void>();
 
         fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
@@ -159,7 +178,10 @@ void main() {
             '--ws=${fake.wsUri}',
             '--web-url=http://localhost:54321',
           ],
-          onProgress: progressMessages.add,
+          onProgress: (message) {
+            progressMessages.add(message);
+            if (message == 'ready' && !ready.isCompleted) ready.complete();
+          },
         );
 
         await fp.start();
@@ -170,17 +192,14 @@ void main() {
 
       tearDown(() async {
         await fp.stop();
+        await fake.server.close(force: true);
       });
 
       test(
         'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started '
         'then onProgress fires, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
         () async {
-          // Wait until the URI shows up (the shim emits it ~immediately).
-          final deadline = DateTime.now().add(const Duration(seconds: 5));
-          while (fp.vmServiceUri == null && DateTime.now().isBefore(deadline)) {
-            await Future<void>.delayed(const Duration(milliseconds: 20));
-          }
+          await ready.future.timeout(const Duration(seconds: 20));
 
           expect(
             fp.vmServiceUri,
@@ -193,7 +212,6 @@ void main() {
           expect(progressMessages, contains('ready'));
 
           await fp.stop(timeout: const Duration(seconds: 1));
-          await fake.server.close(force: true);
         },
         timeout: const Timeout(Duration(seconds: 30)),
       );
@@ -436,6 +454,58 @@ void main() {
     );
 
     test(
+      'when device is "web-server-launch-browser" and app.webLaunchUrl arrives '
+      'then the browser launcher is invoked with that URL',
+      () async {
+        Uri? openedUrl;
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.systemTemp.path,
+          device: flutterDeviceWebServerWithBrowser,
+          openBrowserForTesting: (url) async {
+            openedUrl = url;
+            return true;
+          },
+        );
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.webLaunchUrl',
+              'params': {'url': 'http://localhost:54321'},
+            },
+          ]),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(openedUrl, Uri.parse('http://localhost:54321'));
+      },
+    );
+
+    test(
+      'when device is "web-server" and app.webLaunchUrl arrives '
+      'then the browser launcher is not invoked',
+      () async {
+        var browserLaunchCount = 0;
+        fp = FlutterProcess(
+          flutterPackageDir: Directory.systemTemp.path,
+          device: 'web-server',
+          openBrowserForTesting: (_) async {
+            browserLaunchCount++;
+            return true;
+          },
+        );
+        fp.handleMachineLine(
+          jsonEncode([
+            {
+              'event': 'app.webLaunchUrl',
+              'params': {'url': 'http://localhost:54321'},
+            },
+          ]),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(browserLaunchCount, 0);
+      },
+    );
+
+    test(
       'when app.debugPort arrives without app.webLaunchUrl '
       'then launched completes immediately (mobile/desktop gate semantics)',
       () async {
@@ -449,6 +519,7 @@ void main() {
         );
         await fp.launched.timeout(const Duration(milliseconds: 100));
         expect(fp.flutterAppUrl, isNull);
+        expect(fp.vmServiceUri, 'http://127.0.0.1:1111');
       },
     );
   });

@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 import 'util.dart';
 
@@ -25,48 +24,20 @@ void main() {
     'Given a TemplateContext with auth and a database option enabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      late File serverFile;
-
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          auth: true,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.server,
-            auth: true,
-            postgres: true,
-          ),
-        );
-
-        serverFile = File(
-          p.join(serverDir, 'lib', 'server.dart'),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the email idp endpoint file is created',
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -83,7 +54,7 @@ void main() {
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -98,6 +69,9 @@ void main() {
       test(
         'then the server server.dart file contains auth imports',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
 
           expect(
@@ -115,6 +89,9 @@ void main() {
       test(
         'then the server server.dart contains auth configuration',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
           expect(content, contains('initializeAuthServices'));
           expect(content, contains('EmailIdpConfigFromPasswords'));
@@ -126,7 +103,7 @@ void main() {
         'then the server passwords config contains auth secret keys',
         () async {
           final file = File(
-            p.join(serverDir, 'config', 'passwords.yaml'),
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
           );
           final content = await file.readAsString();
           expect(content, contains('emailSecretHashPepper:'));
@@ -141,45 +118,19 @@ void main() {
     'Given a TemplateContext with auth disabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      late File serverFile;
-
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          auth: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        await performCreate(
-          projectName,
-          true,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.server,
-            auth: false,
-          ),
-        );
-
-        serverFile = File(p.join(serverDir, 'lib', 'server.dart'));
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the email idp endpoint file is not created',
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -196,7 +147,7 @@ void main() {
         () async {
           final file = File(
             p.join(
-              serverDir,
+              project.serverDir,
               'lib',
               'src',
               'auth',
@@ -211,6 +162,9 @@ void main() {
       test(
         'then the server server.dart file does not contain auth imports',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
 
           expect(
@@ -232,6 +186,9 @@ void main() {
       test(
         'then the server server.dart does not contain auth configuration',
         () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
           final content = await serverFile.readAsString();
           expect(content, isNot(contains('initializeAuthServices')));
           expect(content, isNot(contains('EmailIdpConfigFromPasswords')));
@@ -245,40 +202,20 @@ void main() {
     'Given a TemplateContext with auth disabled and a database option enabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          auth: false,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-
-        await performCreate(
-          projectName,
-          true,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.server,
-            auth: false,
-            postgres: true,
-          ),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the server passwords config does not contain auth secret keys',
         () async {
-          final file = File(p.join(serverDir, 'config', 'passwords.yaml'));
+          final file = File(
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
+          );
           final content = await file.readAsString();
           expect(content, isNot(contains('emailSecretHashPepper:')));
           expect(content, isNot(contains('jwtHmacSha512PrivateKey:')));

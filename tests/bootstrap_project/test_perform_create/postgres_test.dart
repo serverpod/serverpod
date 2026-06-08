@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 import 'util.dart';
 
@@ -25,33 +24,12 @@ void main() {
     'Given a TemplateContext with postgres enabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.server,
-            postgres: true,
-          ),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       group(
         'then the server docker-compose file',
@@ -59,7 +37,9 @@ void main() {
           late File dockerComposeFile;
 
           setUp(() {
-            dockerComposeFile = File(p.join(serverDir, 'docker-compose.yaml'));
+            dockerComposeFile = File(
+              p.join(project.serverDir, 'docker-compose.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -84,7 +64,9 @@ void main() {
           late File config;
 
           setUp(() {
-            config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+            config = File(
+              p.join(project.serverDir, 'config', 'passwords.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -104,7 +86,9 @@ void main() {
       test(
         'then the server config for development contains postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'development.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'development.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, contains('user: postgres'));
         },
@@ -113,7 +97,9 @@ void main() {
       test(
         'then the server config for staging contains postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'staging.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'staging.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, contains('user: postgres'));
         },
@@ -122,7 +108,9 @@ void main() {
       test(
         'then the server config for production contains postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'production.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'production.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, contains('user: postgres'));
         },
@@ -131,7 +119,7 @@ void main() {
       test(
         'then the server config for test contains postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'test.yaml'));
+          final config = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await config.readAsString();
           expect(content, contains('user: postgres'));
         },
@@ -143,33 +131,12 @@ void main() {
     'Given a TemplateContext with postgres disabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          postgres: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.server,
-            postgres: false,
-          ),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       group(
         'then the server passwords config file',
@@ -177,7 +144,9 @@ void main() {
           late File config;
 
           setUp(() {
-            config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+            config = File(
+              p.join(project.serverDir, 'config', 'passwords.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -197,7 +166,9 @@ void main() {
       test(
         'then the server config for development does not contain postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'development.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'development.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, isNot(contains('user: postgres')));
         },
@@ -206,7 +177,9 @@ void main() {
       test(
         'then the server config for staging does not contain postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'staging.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'staging.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, isNot(contains('user: postgres')));
         },
@@ -215,7 +188,9 @@ void main() {
       test(
         'then the server config for production does not contain postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'production.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'production.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, isNot(contains('user: postgres')));
         },
@@ -224,7 +199,7 @@ void main() {
       test(
         'then the server config for test does not contain postgres configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'test.yaml'));
+          final config = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await config.readAsString();
           expect(content, isNot(contains('user: postgres')));
         },
@@ -236,33 +211,12 @@ void main() {
     'Given a TemplateContext with postgres enabled, '
     'when performCreate is called with the context and a module template type',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.module,
+          postgres: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.module,
-            postgres: true,
-          ),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       group(
         'then the server docker-compose file',
@@ -271,7 +225,7 @@ void main() {
 
           setUp(() {
             dockerComposeFile = File(
-              p.join(serverDir, 'docker-compose.yaml'),
+              p.join(project.serverDir, 'docker-compose.yaml'),
             );
           });
 
@@ -296,7 +250,9 @@ void main() {
           late File config;
 
           setUp(() {
-            config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+            config = File(
+              p.join(project.serverDir, 'config', 'passwords.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -318,7 +274,9 @@ void main() {
           late String content;
 
           setUp(() async {
-            final config = File(p.join(serverDir, 'config', 'test.yaml'));
+            final config = File(
+              p.join(project.serverDir, 'config', 'test.yaml'),
+            );
             content = await config.readAsString();
           });
 
@@ -344,33 +302,12 @@ void main() {
     'Given a TemplateContext with postgres disabled, '
     'when performCreate is called with the context and a module template type',
     () {
-      final projectName =
-          'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.module,
+          postgres: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          false,
-          interactive: false,
-          context: TemplateContext(
-            template: ServerpodTemplateType.module,
-            postgres: false,
-          ),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       group(
         'then the server config for test',
@@ -378,7 +315,9 @@ void main() {
           late String content;
 
           setUp(() async {
-            final config = File(p.join(serverDir, 'config', 'test.yaml'));
+            final config = File(
+              p.join(project.serverDir, 'config', 'test.yaml'),
+            );
             content = await config.readAsString();
           });
 

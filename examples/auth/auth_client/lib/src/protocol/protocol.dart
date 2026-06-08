@@ -138,6 +138,9 @@ class Protocol extends _i1.SerializationManager {
     _i5.Protocol().registerHostProtocol('auth', this);
   }
 
+  @override
+  String getModuleName() => 'auth';
+
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
   /// Throws in case the record type is not known.

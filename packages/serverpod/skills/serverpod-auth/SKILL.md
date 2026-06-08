@@ -9,7 +9,8 @@ Serverpod has authentication built in. Pre-configured with email. Most social si
 
 ## Flutter app
 
-Use `SignInWidget` (ALWAYS put it under a `Material` or `Scaffold` widget as it uses Material design). Simplified example:
+Use `SignInWidget`. It provides its own Material surface, so it also renders
+correctly when mixed with non-Material design systems. Simplified example:
 
 ```dart
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -40,8 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return _isSignedIn
         ? widget.child
-        : Material(
-          child: Center(
+        : Center(
             child: SignInWidget(
               client: client,
               onAuthenticated: () {
@@ -51,8 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 _showSnackBar(message: 'Authentication failed: $error');
               },
             ),
-          ),
-        );
+          );
   }
 }
 ```

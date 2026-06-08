@@ -1,6 +1,5 @@
-import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart' hide log;
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
@@ -9,7 +8,7 @@ import 'app.dart';
 int _actionCounter = 0;
 
 /// Dispatches a structured server log event to the TUI state.
-void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
+void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
   if (event.extensionKind != 'ext.serverpod.log') return;
   final data = event.extensionData?.data;
   if (data == null) return;
@@ -18,6 +17,7 @@ void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
+      final stackTrace = data['stackTrace'] as String?;
       state.logHistory.add(
         LogEntry(
           level: parseLogLevel(data['level'] as String? ?? 'info'),
@@ -27,6 +27,9 @@ void handleServerLogEvent(ServerpodAppStateHolder holder, Event event) {
           message: data['message'] as String? ?? '',
           scope: LogScope.root('server'),
           error: data['error']?.toString(),
+          stackTrace: stackTrace != null && stackTrace.isNotEmpty
+              ? StackTrace.fromString(stackTrace)
+              : null,
         ),
       );
 

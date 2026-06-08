@@ -6,10 +6,7 @@ import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:test/test.dart';
 
-class _EmptyEndpoints extends EndpointDispatch {
-  @override
-  void initializeEndpoints(Server server) {}
-}
+import 'test_helpers/empty_endpoints.dart';
 
 class _DummyRoute extends Route {
   @override
@@ -46,7 +43,7 @@ void main() {
       pod = Serverpod(
         [],
         internal.Protocol(),
-        _EmptyEndpoints(),
+        EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
           webServer: portZeroConfig,
@@ -109,7 +106,7 @@ void main() {
       pod = Serverpod(
         [],
         internal.Protocol(),
-        _EmptyEndpoints(),
+        EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
           webServer: portZeroConfig,
