@@ -7,7 +7,7 @@ const london = GeographyPoint(longitude: -0.1278, latitude: 51.5074);
 const paris = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
 
 void main() {
-  group('GeographyLineString construction', () {
+  group('Given a GeographyLineString', () {
     test(
       'when constructed with points then points and default SRID 4326 are stored.',
       () {
@@ -23,7 +23,7 @@ void main() {
     });
   });
 
-  group('GeographyLineString.toEwkt', () {
+  group('Given a GeographyLineString is converted to a string', () {
     test('when called then returns EWKT with SRID=4326.', () {
       const ls = GeographyLineString(points: [london, paris]);
       expect(
@@ -43,7 +43,7 @@ void main() {
     });
   });
 
-  group('GeographyLineStringJsonExtension.toJson', () {
+  group('Given a GeographyLineString is serialized', () {
     test('when called then returns a String.', () {
       const ls = GeographyLineString(points: [london, paris]);
       expect(ls.toJson(), isA<String>());
@@ -55,13 +55,13 @@ void main() {
     });
   });
 
-  group('GeographyLineStringJsonExtension.fromJson', () {
-    test('given GeographyLineString returns it unchanged.', () {
+  group('Given GeographyLineStringJsonExtension.fromJson', () {
+    test('when called with a GeographyLineString then it is returned unchanged.', () {
       const ls = GeographyLineString(points: [london, paris]);
       expect(GeographyLineStringJsonExtension.fromJson(ls), same(ls));
     });
 
-    test('given EWKT string parses correctly.', () {
+    test('when called with an EWKT string then it parses correctly.', () {
       final ls = GeographyLineStringJsonExtension.fromJson(
         'SRID=4326;LINESTRING(-0.1278 51.5074, 2.3522 48.8566)',
       );
@@ -73,14 +73,14 @@ void main() {
       expect(ls.points[1].latitude, 48.8566);
     });
 
-    test('given EWKT with custom SRID parses SRID correctly.', () {
+    test('when called with an EWKT string with custom SRID then the SRID is parsed correctly.', () {
       final ls = GeographyLineStringJsonExtension.fromJson(
         'SRID=3857;LINESTRING(0.0 0.0, 1.0 1.0)',
       );
       expect(ls.srid, 3857);
     });
 
-    test('given Map parses correctly.', () {
+    test('when called with a Map then it parses correctly.', () {
       final ls = GeographyLineStringJsonExtension.fromJson({
         'srid': 4326,
         'points': [
@@ -93,7 +93,7 @@ void main() {
       expect(ls.points[0], equals(london));
     });
 
-    test('given Map without srid defaults to 4326.', () {
+    test('when called with a Map without srid then it defaults to Geography.defaultSrid.', () {
       final ls = GeographyLineStringJsonExtension.fromJson({
         'points': [
           {'longitude': 0.0, 'latitude': 0.0},
@@ -102,7 +102,7 @@ void main() {
       expect(ls.srid, 4326);
     });
 
-    test('given Uint8List (EWKB) decodes binary representation.', () {
+    test('when called with a Uint8List (EWKB) then it decodes the binary representation.', () {
       // Little-endian EWKB for SRID=4326;LINESTRING(0.0 0.0, 1.0 2.0)
       final ewkb = Uint8List.fromList([
         0x01, // LE
@@ -126,7 +126,7 @@ void main() {
     });
 
     test(
-      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      'when called with an unsupported type then an ArgumentError is thrown.',
       () {
         expect(
           () => GeographyLineStringJsonExtension.fromJson(42),
@@ -136,7 +136,7 @@ void main() {
     );
   });
 
-  group('GeographyLineString round-trip', () {
+  group('Given a GeographyLineString is serialized to JSON and deserialized', () {
     test(
       'when serialized to JSON and deserialized then all values are preserved.',
       () {
@@ -163,7 +163,7 @@ void main() {
     );
   });
 
-  group('GeographyLineString equality', () {
+  group('Given two GeographyLineStrings', () {
     test(
       'when two line strings have the same points and SRID then they are equal.',
       () {

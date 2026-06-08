@@ -18,7 +18,7 @@ const squarePolygon = GeographyPolygon(
 );
 
 void main() {
-  group('GeographyGeometryCollection construction', () {
+  group('Given a GeographyGeometryCollection', () {
     test(
       'when constructed with geometries then they and default SRID 4326 are stored.',
       () {
@@ -44,7 +44,7 @@ void main() {
     });
   });
 
-  group('GeographyGeometryCollection.toEwkt', () {
+  group('Given a GeographyGeometryCollection is converted to a string', () {
     test(
       'when called then returns EWKT starting with SRID and GEOMETRYCOLLECTION.',
       () {
@@ -71,7 +71,7 @@ void main() {
     });
   });
 
-  group('GeographyGeometryCollectionJsonExtension.toJson', () {
+  group('Given a GeographyGeometryCollection is serialized', () {
     test('when called then returns a String.', () {
       const col = GeographyGeometryCollection(geometries: [london]);
       expect(col.toJson(), isA<String>());
@@ -83,13 +83,13 @@ void main() {
     });
   });
 
-  group('GeographyGeometryCollectionJsonExtension.fromJson', () {
-    test('given GeographyGeometryCollection returns it unchanged.', () {
+  group('Given GeographyGeometryCollectionJsonExtension.fromJson', () {
+    test('when called with a GeographyGeometryCollection then it is returned unchanged.', () {
       const col = GeographyGeometryCollection(geometries: [london]);
       expect(GeographyGeometryCollectionJsonExtension.fromJson(col), same(col));
     });
 
-    test('given EWKT string with two points parses correctly.', () {
+    test('when called with an EWKT string with two points then it parses correctly.', () {
       final col = GeographyGeometryCollectionJsonExtension.fromJson(
         'SRID=4326;GEOMETRYCOLLECTION(POINT(-0.1278 51.5074), POINT(2.3522 48.8566))',
       );
@@ -99,7 +99,7 @@ void main() {
       expect(col.geometries[1], isA<GeographyPoint>());
     });
 
-    test('given EWKT string with mixed types parses all types.', () {
+    test('when called with an EWKT string with mixed types then all types are parsed.', () {
       final col = GeographyGeometryCollectionJsonExtension.fromJson(
         'SRID=4326;GEOMETRYCOLLECTION('
         'POINT(-0.1278 51.5074), '
@@ -114,7 +114,7 @@ void main() {
     });
 
     test(
-      'given EWKT string with empty collection returns empty geometries.',
+      'when called with an EWKT string for an empty collection then geometries is empty.',
       () {
         final col = GeographyGeometryCollectionJsonExtension.fromJson(
           'SRID=4326;GEOMETRYCOLLECTION()',
@@ -123,7 +123,7 @@ void main() {
       },
     );
 
-    test('given Map with string geometries parses correctly.', () {
+    test('when called with a Map with string geometries then it parses correctly.', () {
       final col = GeographyGeometryCollectionJsonExtension.fromJson({
         'srid': 4326,
         'geometries': [
@@ -136,14 +136,14 @@ void main() {
       expect(col.geometries[1], isA<GeographyLineString>());
     });
 
-    test('given Map without srid defaults to 4326.', () {
+    test('when called with a Map without srid then it defaults to Geography.defaultSrid.', () {
       final col = GeographyGeometryCollectionJsonExtension.fromJson({
         'geometries': ['POINT(0.0 0.0)'],
       });
       expect(col.srid, 4326);
     });
 
-    test('given Uint8List (EWKB) with one Point sub-geometry decodes.', () {
+    test('when called with a Uint8List (EWKB) with one Point sub-geometry then it decodes correctly.', () {
       // LE EWKB for SRID=4326;GEOMETRYCOLLECTION(POINT(1.0 2.0))
       final ewkb = Uint8List.fromList([
         0x01, // LE
@@ -166,7 +166,7 @@ void main() {
     });
 
     test(
-      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      'when called with an unsupported type then an ArgumentError is thrown.',
       () {
         expect(
           () => GeographyGeometryCollectionJsonExtension.fromJson(42),
@@ -176,7 +176,7 @@ void main() {
     );
   });
 
-  group('GeographyGeometryCollection round-trip', () {
+  group('Given a GeographyGeometryCollection is serialized to JSON and deserialized', () {
     test(
       'when serialized to JSON and deserialized then point sub-geometries are preserved.',
       () {
@@ -223,7 +223,7 @@ void main() {
     );
   });
 
-  group('GeographyGeometryCollection equality', () {
+  group('Given two GeographyGeometryCollections', () {
     test(
       'when two collections have the same geometries and SRID then they are equal.',
       () {

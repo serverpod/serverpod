@@ -22,7 +22,7 @@ const holeRing = [
 ];
 
 void main() {
-  group('GeographyPolygon construction', () {
+  group('Given a GeographyPolygon', () {
     test(
       'when constructed with exterior ring then ring, empty holes, and default SRID 4326 are stored.',
       () {
@@ -47,7 +47,7 @@ void main() {
     });
   });
 
-  group('GeographyPolygon.toEwkt', () {
+  group('Given a GeographyPolygon is converted to a string', () {
     test(
       'when called on a simple polygon then returns EWKT with SRID=4326.',
       () {
@@ -75,7 +75,7 @@ void main() {
     });
   });
 
-  group('GeographyPolygonJsonExtension.toJson', () {
+  group('Given a GeographyPolygon is serialized', () {
     test('when called then returns a String.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(poly.toJson(), isA<String>());
@@ -87,13 +87,13 @@ void main() {
     });
   });
 
-  group('GeographyPolygonJsonExtension.fromJson', () {
-    test('given GeographyPolygon returns it unchanged.', () {
+  group('Given GeographyPolygonJsonExtension.fromJson', () {
+    test('when called with a GeographyPolygon then it is returned unchanged.', () {
       const poly = GeographyPolygon(exteriorRing: squareRing);
       expect(GeographyPolygonJsonExtension.fromJson(poly), same(poly));
     });
 
-    test('given EWKT string (no holes) parses correctly.', () {
+    test('when called with an EWKT string (no holes) then it parses correctly.', () {
       final poly = GeographyPolygonJsonExtension.fromJson(
         'SRID=4326;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))',
       );
@@ -102,7 +102,7 @@ void main() {
       expect(poly.holes, isEmpty);
     });
 
-    test('given EWKT string with hole parses both rings.', () {
+    test('when called with an EWKT string with a hole then both rings are parsed.', () {
       final poly = GeographyPolygonJsonExtension.fromJson(
         'SRID=4326;POLYGON('
         '(0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0), '
@@ -113,7 +113,7 @@ void main() {
       expect(poly.holes[0].length, 4);
     });
 
-    test('given Map (no holes) parses correctly.', () {
+    test('when called with a Map (no holes) then it parses correctly.', () {
       final poly = GeographyPolygonJsonExtension.fromJson({
         'srid': 4326,
         'exteriorRing': [
@@ -129,7 +129,7 @@ void main() {
       expect(poly.holes, isEmpty);
     });
 
-    test('given Map without srid defaults to 4326.', () {
+    test('when called with a Map without srid then it defaults to Geography.defaultSrid.', () {
       final poly = GeographyPolygonJsonExtension.fromJson({
         'exteriorRing': [
           {'longitude': 0.0, 'latitude': 0.0},
@@ -140,7 +140,7 @@ void main() {
       expect(poly.srid, 4326);
     });
 
-    test('given Uint8List (EWKB) decodes binary representation.', () {
+    test('when called with a Uint8List (EWKB) then it decodes the binary representation.', () {
       // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
       final ewkb = Uint8List.fromList([
         0x01, // LE
@@ -170,7 +170,7 @@ void main() {
     });
 
     test(
-      'given an unsupported type when fromJson is called then throws ArgumentError.',
+      'when called with an unsupported type then an ArgumentError is thrown.',
       () {
         expect(
           () => GeographyPolygonJsonExtension.fromJson(42),
@@ -180,7 +180,7 @@ void main() {
     );
   });
 
-  group('GeographyPolygon round-trip', () {
+  group('Given a GeographyPolygon is serialized to JSON and deserialized', () {
     test(
       'when serialized to JSON and deserialized then exterior ring and SRID are preserved.',
       () {
@@ -220,7 +220,7 @@ void main() {
     );
   });
 
-  group('GeographyPolygon equality', () {
+  group('Given two GeographyPolygons', () {
     test(
       'when two polygons have the same exterior ring and SRID then they are equal.',
       () {
