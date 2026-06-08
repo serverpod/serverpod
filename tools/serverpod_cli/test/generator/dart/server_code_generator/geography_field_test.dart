@@ -656,6 +656,12 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
+      late final maybeMainClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+
       late final maybeTableClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
@@ -669,6 +675,26 @@ void main() {
           reason: 'Missing definition for class named ${testClassName}Table',
         );
       });
+
+      test(
+        'then the main class has a nullable GeographyPolygon field.',
+        () {
+          final field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            maybeMainClass!,
+            name: 'region',
+          );
+          expect(
+            field,
+            isNotNull,
+            reason: 'Missing region field in $testClassName',
+          );
+          expect(
+            field!.fields.type?.toString(),
+            contains('GeographyPolygon?'),
+            reason: 'region field should be nullable (GeographyPolygon?)',
+          );
+        },
+      );
 
       test(
         'then the table class constructor initializes region as ColumnGeographyPolygon.',
@@ -871,6 +897,12 @@ void main() {
         content: codeMap[expectedFilePath]!,
       ).unit;
 
+      late final maybeMainClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+
       late final maybeTableClass =
           CompilationUnitHelpers.tryFindClassDeclaration(
             compilationUnit,
@@ -884,6 +916,27 @@ void main() {
           reason: 'Missing definition for class named ${testClassName}Table',
         );
       });
+
+      test(
+        'then the main class has a nullable GeographyGeometryCollection field.',
+        () {
+          final field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            maybeMainClass!,
+            name: 'shapes',
+          );
+          expect(
+            field,
+            isNotNull,
+            reason: 'Missing shapes field in $testClassName',
+          );
+          expect(
+            field!.fields.type?.toString(),
+            contains('GeographyGeometryCollection?'),
+            reason:
+                'shapes field should be nullable (GeographyGeometryCollection?)',
+          );
+        },
+      );
 
       test(
         'then the table class constructor initializes shapes as ColumnGeographyGeometryCollection.',
