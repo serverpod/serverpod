@@ -148,13 +148,16 @@ void main() {
   });
 
   group('Given a GeographyPoint is serialized to JSON and deserialized', () {
-    test('when serialized to JSON and deserialized then all values are preserved.', () {
-      const original = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
-      final restored = GeographyPointJsonExtension.fromJson(
-        original.toJson(),
-      );
-      expect(restored, equals(original));
-    });
+    test(
+      'when serialized to JSON and deserialized then all values are preserved.',
+      () {
+        const original = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
+        final restored = GeographyPointJsonExtension.fromJson(
+          original.toJson(),
+        );
+        expect(restored, equals(original));
+      },
+    );
 
     test(
       'when constructed with custom SRID then that SRID is preserved.',

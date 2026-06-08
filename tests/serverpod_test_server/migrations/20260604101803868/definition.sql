@@ -14,6 +14,19 @@ END
 $$;
 
 --
+-- CREATE POSTGIS EXTENSION IF AVAILABLE
+--
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';
+  ELSE
+    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS.';
+  END IF;
+END
+$$;
+
+--
 -- Function: gen_random_uuid_v7()
 -- Source: https://gist.github.com/kjmph/5bd772b2c2df145aa645b837da7eca74
 -- License: MIT (copyright notice included on the generator source code).
@@ -796,6 +809,42 @@ CREATE TABLE "object_with_enum_enhanced" (
     "byName" text NOT NULL,
     "nullableByName" text,
     "byNameList" json NOT NULL
+);
+
+--
+-- Class ObjectWithGeographyGeometryCollection as table object_with_geography_geometry_collection
+--
+CREATE TABLE "object_with_geography_geometry_collection" (
+    "id" bigserial PRIMARY KEY,
+    "collection" geography(GeometryCollection,4326) NOT NULL,
+    "collectionNullable" geography(GeometryCollection,4326)
+);
+
+--
+-- Class ObjectWithGeographyLineString as table object_with_geography_line_string
+--
+CREATE TABLE "object_with_geography_line_string" (
+    "id" bigserial PRIMARY KEY,
+    "lineString" geography(LineString,4326) NOT NULL,
+    "lineStringNullable" geography(LineString,4326)
+);
+
+--
+-- Class ObjectWithGeographyPoint as table object_with_geography_point
+--
+CREATE TABLE "object_with_geography_point" (
+    "id" bigserial PRIMARY KEY,
+    "location" geography(Point,4326) NOT NULL,
+    "locationNullable" geography(Point,4326)
+);
+
+--
+-- Class ObjectWithGeographyPolygon as table object_with_geography_polygon
+--
+CREATE TABLE "object_with_geography_polygon" (
+    "id" bigserial PRIMARY KEY,
+    "polygon" geography(Polygon,4326) NOT NULL,
+    "polygonNullable" geography(Polygon,4326)
 );
 
 --

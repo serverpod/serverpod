@@ -5,7 +5,8 @@ import 'package:serverpod_database/serverpod_database.dart';
 // [PostgresSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart' show Geography;
+import 'package:serverpod_serialization/serverpod_serialization.dart'
+    show Geography;
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {

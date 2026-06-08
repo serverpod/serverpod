@@ -88,30 +88,39 @@ void main() {
   });
 
   group('Given GeographyPolygonJsonExtension.fromJson', () {
-    test('when called with a GeographyPolygon then it is returned unchanged.', () {
-      const poly = GeographyPolygon(exteriorRing: squareRing);
-      expect(GeographyPolygonJsonExtension.fromJson(poly), same(poly));
-    });
+    test(
+      'when called with a GeographyPolygon then it is returned unchanged.',
+      () {
+        const poly = GeographyPolygon(exteriorRing: squareRing);
+        expect(GeographyPolygonJsonExtension.fromJson(poly), same(poly));
+      },
+    );
 
-    test('when called with an EWKT string (no holes) then it parses correctly.', () {
-      final poly = GeographyPolygonJsonExtension.fromJson(
-        'SRID=4326;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))',
-      );
-      expect(poly.srid, 4326);
-      expect(poly.exteriorRing.length, 4);
-      expect(poly.holes, isEmpty);
-    });
+    test(
+      'when called with an EWKT string (no holes) then it parses correctly.',
+      () {
+        final poly = GeographyPolygonJsonExtension.fromJson(
+          'SRID=4326;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0))',
+        );
+        expect(poly.srid, 4326);
+        expect(poly.exteriorRing.length, 4);
+        expect(poly.holes, isEmpty);
+      },
+    );
 
-    test('when called with an EWKT string with a hole then both rings are parsed.', () {
-      final poly = GeographyPolygonJsonExtension.fromJson(
-        'SRID=4326;POLYGON('
-        '(0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0), '
-        '(0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.2)'
-        ')',
-      );
-      expect(poly.holes.length, 1);
-      expect(poly.holes[0].length, 4);
-    });
+    test(
+      'when called with an EWKT string with a hole then both rings are parsed.',
+      () {
+        final poly = GeographyPolygonJsonExtension.fromJson(
+          'SRID=4326;POLYGON('
+          '(0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 0.0), '
+          '(0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.2)'
+          ')',
+        );
+        expect(poly.holes.length, 1);
+        expect(poly.holes[0].length, 4);
+      },
+    );
 
     test('when called with a Map (no holes) then it parses correctly.', () {
       final poly = GeographyPolygonJsonExtension.fromJson({
@@ -129,45 +138,51 @@ void main() {
       expect(poly.holes, isEmpty);
     });
 
-    test('when called with a Map without srid then it defaults to Geography.defaultSrid.', () {
-      final poly = GeographyPolygonJsonExtension.fromJson({
-        'exteriorRing': [
-          {'longitude': 0.0, 'latitude': 0.0},
-          {'longitude': 1.0, 'latitude': 0.0},
-          {'longitude': 0.0, 'latitude': 0.0},
-        ],
-      });
-      expect(poly.srid, 4326);
-    });
+    test(
+      'when called with a Map without srid then it defaults to Geography.defaultSrid.',
+      () {
+        final poly = GeographyPolygonJsonExtension.fromJson({
+          'exteriorRing': [
+            {'longitude': 0.0, 'latitude': 0.0},
+            {'longitude': 1.0, 'latitude': 0.0},
+            {'longitude': 0.0, 'latitude': 0.0},
+          ],
+        });
+        expect(poly.srid, 4326);
+      },
+    );
 
-    test('when called with a Uint8List (EWKB) then it decodes the binary representation.', () {
-      // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
-      final ewkb = Uint8List.fromList([
-        0x01, // LE
-        0x03, 0x00, 0x00, 0x20, // Polygon | SRID_FLAG
-        0xE6, 0x10, 0x00, 0x00, // SRID 4326
-        0x01, 0x00, 0x00, 0x00, // numRings = 1
-        0x04, 0x00, 0x00, 0x00, // ring[0] numPoints = 4
-        // (0.0, 0.0)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        // (1.0, 0.0)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        // (1.0, 1.0)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
-        // (0.0, 0.0) closing point
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      ]);
-      final poly = GeographyPolygonJsonExtension.fromJson(ewkb);
-      expect(poly.srid, 4326);
-      expect(poly.exteriorRing.length, 4);
-      expect(poly.holes, isEmpty);
-      expect(poly.exteriorRing[0].longitude, 0.0);
-      expect(poly.exteriorRing[1].longitude, 1.0);
-    });
+    test(
+      'when called with a Uint8List (EWKB) then it decodes the binary representation.',
+      () {
+        // Little-endian EWKB for SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 0))
+        final ewkb = Uint8List.fromList([
+          0x01, // LE
+          0x03, 0x00, 0x00, 0x20, // Polygon | SRID_FLAG
+          0xE6, 0x10, 0x00, 0x00, // SRID 4326
+          0x01, 0x00, 0x00, 0x00, // numRings = 1
+          0x04, 0x00, 0x00, 0x00, // ring[0] numPoints = 4
+          // (0.0, 0.0)
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          // (1.0, 0.0)
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          // (1.0, 1.0)
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+          // (0.0, 0.0) closing point
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        ]);
+        final poly = GeographyPolygonJsonExtension.fromJson(ewkb);
+        expect(poly.srid, 4326);
+        expect(poly.exteriorRing.length, 4);
+        expect(poly.holes, isEmpty);
+        expect(poly.exteriorRing[0].longitude, 0.0);
+        expect(poly.exteriorRing[1].longitude, 1.0);
+      },
+    );
 
     test(
       'when called with an unsupported type then an ArgumentError is thrown.',

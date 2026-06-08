@@ -56,10 +56,13 @@ void main() {
   });
 
   group('Given GeographyLineStringJsonExtension.fromJson', () {
-    test('when called with a GeographyLineString then it is returned unchanged.', () {
-      const ls = GeographyLineString(points: [london, paris]);
-      expect(GeographyLineStringJsonExtension.fromJson(ls), same(ls));
-    });
+    test(
+      'when called with a GeographyLineString then it is returned unchanged.',
+      () {
+        const ls = GeographyLineString(points: [london, paris]);
+        expect(GeographyLineStringJsonExtension.fromJson(ls), same(ls));
+      },
+    );
 
     test('when called with an EWKT string then it parses correctly.', () {
       final ls = GeographyLineStringJsonExtension.fromJson(
@@ -73,12 +76,15 @@ void main() {
       expect(ls.points[1].latitude, 48.8566);
     });
 
-    test('when called with an EWKT string with custom SRID then the SRID is parsed correctly.', () {
-      final ls = GeographyLineStringJsonExtension.fromJson(
-        'SRID=3857;LINESTRING(0.0 0.0, 1.0 1.0)',
-      );
-      expect(ls.srid, 3857);
-    });
+    test(
+      'when called with an EWKT string with custom SRID then the SRID is parsed correctly.',
+      () {
+        final ls = GeographyLineStringJsonExtension.fromJson(
+          'SRID=3857;LINESTRING(0.0 0.0, 1.0 1.0)',
+        );
+        expect(ls.srid, 3857);
+      },
+    );
 
     test('when called with a Map then it parses correctly.', () {
       final ls = GeographyLineStringJsonExtension.fromJson({
@@ -93,37 +99,43 @@ void main() {
       expect(ls.points[0], equals(london));
     });
 
-    test('when called with a Map without srid then it defaults to Geography.defaultSrid.', () {
-      final ls = GeographyLineStringJsonExtension.fromJson({
-        'points': [
-          {'longitude': 0.0, 'latitude': 0.0},
-        ],
-      });
-      expect(ls.srid, 4326);
-    });
+    test(
+      'when called with a Map without srid then it defaults to Geography.defaultSrid.',
+      () {
+        final ls = GeographyLineStringJsonExtension.fromJson({
+          'points': [
+            {'longitude': 0.0, 'latitude': 0.0},
+          ],
+        });
+        expect(ls.srid, 4326);
+      },
+    );
 
-    test('when called with a Uint8List (EWKB) then it decodes the binary representation.', () {
-      // Little-endian EWKB for SRID=4326;LINESTRING(0.0 0.0, 1.0 2.0)
-      final ewkb = Uint8List.fromList([
-        0x01, // LE
-        0x02, 0x00, 0x00, 0x20, // LineString | SRID_FLAG
-        0xE6, 0x10, 0x00, 0x00, // SRID 4326
-        0x02, 0x00, 0x00, 0x00, // numPoints = 2
-        // point 1 (0.0, 0.0)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        // point 2 (1.0, 2.0)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,
-      ]);
-      final ls = GeographyLineStringJsonExtension.fromJson(ewkb);
-      expect(ls.srid, 4326);
-      expect(ls.points.length, 2);
-      expect(ls.points[0].longitude, 0.0);
-      expect(ls.points[0].latitude, 0.0);
-      expect(ls.points[1].longitude, 1.0);
-      expect(ls.points[1].latitude, 2.0);
-    });
+    test(
+      'when called with a Uint8List (EWKB) then it decodes the binary representation.',
+      () {
+        // Little-endian EWKB for SRID=4326;LINESTRING(0.0 0.0, 1.0 2.0)
+        final ewkb = Uint8List.fromList([
+          0x01, // LE
+          0x02, 0x00, 0x00, 0x20, // LineString | SRID_FLAG
+          0xE6, 0x10, 0x00, 0x00, // SRID 4326
+          0x02, 0x00, 0x00, 0x00, // numPoints = 2
+          // point 1 (0.0, 0.0)
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          // point 2 (1.0, 2.0)
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,
+        ]);
+        final ls = GeographyLineStringJsonExtension.fromJson(ewkb);
+        expect(ls.srid, 4326);
+        expect(ls.points.length, 2);
+        expect(ls.points[0].longitude, 0.0);
+        expect(ls.points[0].latitude, 0.0);
+        expect(ls.points[1].longitude, 1.0);
+        expect(ls.points[1].latitude, 2.0);
+      },
+    );
 
     test(
       'when called with an unsupported type then an ArgumentError is thrown.',
