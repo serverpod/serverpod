@@ -663,6 +663,222 @@ END
     );
 
     test(
+      'Given a migration that adds a geography line string column to existing table, then the code for creating postgis extension is generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder().withName('existing_table').build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('existing_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('route')
+                        .withColumnType(ColumnType.geographyLineString)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'Given a migration that adds a geography polygon column to existing table, then the code for creating postgis extension is generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder().withName('existing_table').build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('existing_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('region')
+                        .withColumnType(ColumnType.geographyPolygon)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'Given a migration that adds a geography geometry collection column to existing table, then the code for creating postgis extension is generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder().withName('existing_table').build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('existing_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('shapes')
+                        .withColumnType(ColumnType.geographyGeometryCollection)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'Given a migration that removes a table with a geography line string field, then the code for creating postgis extension is not generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('geography_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('route')
+                        .withColumnType(ColumnType.geographyLineString)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder().build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPostgisExtension)));
+      },
+    );
+
+    test(
+      'Given a migration that removes a table with a geography polygon field, then the code for creating postgis extension is not generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('geography_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('region')
+                        .withColumnType(ColumnType.geographyPolygon)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder().build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPostgisExtension)));
+      },
+    );
+
+    test(
+      'Given a migration that removes a table with a geography geometry collection field, then the code for creating postgis extension is not generated.',
+      () {
+        var sourceDefinition = DatabaseDefinitionBuilder()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('geography_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('shapes')
+                        .withColumnType(ColumnType.geographyGeometryCollection)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var targetDefinition = DatabaseDefinitionBuilder().build();
+
+        var migration = generateDatabaseMigration(
+          databaseSource: sourceDefinition,
+          databaseTarget: targetDefinition,
+        );
+
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
+
+        expect(pgsql, isNot(contains(createPostgisExtension)));
+      },
+    );
+
+    test(
       'Given a migration that adds a table with a geography line string field, then the code for creating postgis extension is generated.',
       () {
         var sourceDefinition = DatabaseDefinitionBuilder().build();
