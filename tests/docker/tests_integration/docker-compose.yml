@@ -23,7 +23,7 @@ services:
       - concurrent
   postgres:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile.postgres
     environment:
       POSTGRES_USER: postgres

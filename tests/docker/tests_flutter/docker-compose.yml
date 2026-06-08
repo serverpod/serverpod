@@ -17,7 +17,7 @@ services:
   postgres:
     build:
       context: ../../..
-      dockerfile: tests/docker/tests_integration/Dockerfile.postgres
+      dockerfile: tests/docker/Dockerfile.postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
