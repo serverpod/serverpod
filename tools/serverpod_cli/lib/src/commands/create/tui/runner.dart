@@ -20,7 +20,7 @@ Future<void> performCreateWithTui(
   required bool? interactive,
 }) async {
   // Dry run to collect early errors and exit if needed.
-  final dryRunProjectPath = await performCreate(
+  final dryRun = await performCreate(
     name,
     force,
     dryRun: true,
@@ -28,7 +28,7 @@ Future<void> performCreateWithTui(
     context: state.toTemplateContext(),
   );
 
-  if (dryRunProjectPath == null) {
+  if (dryRun is! CreateSuccess) {
     throw ExitException.error();
   }
 
@@ -38,14 +38,14 @@ Future<void> performCreateWithTui(
   initializeLoggerWith(ServerpodCliLogger(tuiWriter));
   tuiWriter.attach(holder);
 
-  String? projectPath;
+  // Captured for [_preExit]
+  CreateResult? result;
 
   final backend = ServerpodTerminalBackend(
     preExit: () => _preExit(
       template: state.template,
       ides: state.toTemplateContext().ides,
-      serverDirAbsolute: serverDirAbsolutePathFor(name),
-      projectPath: projectPath,
+      result: result,
     ),
   );
 
@@ -55,16 +55,16 @@ Future<void> performCreateWithTui(
       name: name,
       holder: holder,
       onCreate: () async {
-        projectPath = await performCreate(
+        final created = await performCreate(
           name,
           force,
           interactive: interactive,
           context: state.toTemplateContext(),
         );
 
-        final success = projectPath != null;
+        result = created;
 
-        await _shutdownTui(success ? 0 : 1);
+        await _shutdownTui(created is CreateSuccess ? 0 : 1);
       },
       onQuit: () => _shutdownTui(1),
     ),
@@ -86,24 +86,24 @@ Future<void> _shutdownTui([int exitCode = 0]) async {
 Future<void> _preExit({
   required ServerpodTemplateType template,
   required List<TemplateIde> ides,
-  required String serverDirAbsolute,
-  String? projectPath,
+  required CreateResult? result,
 }) async {
   CommandLineTools.flushErrors();
   flushPerformCreateErrors();
 
-  if (projectPath != null) {
+  if (result is CreateSuccess) {
     log.info(
       'Serverpod project created.',
       newParagraph: true,
       type: TextLogType.success,
     );
 
-    if (template.isServer) logStartInstructions(projectPath);
-    if (template.isMini) logMiniStartInstructions(projectPath);
+    if (template.isServer) logStartInstructions(result.projectPath);
+    if (template.isMini) logMiniStartInstructions(result.projectPath);
+  }
 
-    // The TUI runs on an alternate screen, so MCP setup instructions logged
-    // during create don't persist. Re-emit them here, after teardown.
+  final serverDirAbsolute = result?.serverDirAbsolute;
+  if (serverDirAbsolute != null) {
     logManualMcpSetupInstructions(ides, serverDirAbsolute: serverDirAbsolute);
   }
 

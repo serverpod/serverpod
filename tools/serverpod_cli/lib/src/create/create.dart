@@ -88,10 +88,34 @@ void flushPerformCreateErrors() {
   _errorBuffer.clear();
 }
 
+/// Outcome of a [performCreate] run.
+sealed class CreateResult {
+  const CreateResult({this.serverDirAbsolute});
+
+  /// Absolute path to the server directory when project files were written, or
+  /// null when nothing was written
+  final String? serverDirAbsolute;
+}
+
+/// The project was fully created (or upgraded) and is ready to use.
+class CreateSuccess extends CreateResult {
+  const CreateSuccess({required this.projectPath, super.serverDirAbsolute});
+
+  /// Basename of the created/upgraded project.
+  final String projectPath;
+}
+
+/// The create failed. [serverDirAbsolute] is set when project files were
+/// written before the failure (a partial failure).
+class CreateFailure extends CreateResult {
+  const CreateFailure({super.serverDirAbsolute});
+}
+
 /// Creates a project for the provided [context].
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
-Future<String?> performCreate(
+///
+/// Returns [CreateSuccess] only when the project is fully created,
+/// otherwise [CreateFailure].
+Future<CreateResult> performCreate(
   String name,
   bool force, {
   bool dryRun = false,
@@ -134,7 +158,7 @@ Future<String?> performCreate(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return null;
+    return const CreateFailure();
   }
 
   var serverpodDirs = ServerpodDirectories(
@@ -144,10 +168,14 @@ Future<String?> performCreate(
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
   if (pubspecFile.existsSync()) {
     _logError('Project $name already exists.');
-    return null;
+    return const CreateFailure();
   }
 
-  if (dryRun) return p.basename(serverpodDirs.projectDir.path);
+  if (dryRun) {
+    return CreateSuccess(
+      projectPath: p.basename(serverpodDirs.projectDir.path),
+    );
+  }
 
   final template = context.template;
   if (template == ServerpodTemplateType.module) {
@@ -261,19 +289,9 @@ Future<String?> performCreate(
     });
   }
 
-  if (context.ides.isNotEmpty) {
-    await log.progress('Configuring Serverpod MCP server', () async {
-      await _configureMcpServer(
-        serverpodDirs.projectDir.path,
-        context.ides,
-        serverDirRelative: p.relative(
-          serverpodDirs.serverDir.path,
-          from: serverpodDirs.projectDir.path,
-        ),
-      );
-      return true;
-    });
+  await _configureProjectMcpServers(serverpodDirs, context.ides);
 
+  if (context.ides.isNotEmpty) {
     await log.progress('Installing agent skills', () async {
       try {
         if (context.template != ServerpodTemplateType.module &&
@@ -336,30 +354,39 @@ Future<String?> performCreate(
     });
   }
 
-  if (success || force) {
+  // Project files have been written, so MCP setup instructions are relevant
+  // even if a later step failed. The TUI runner re-emits these after teardown
+  // (in-progress logs on the alternate screen are lost); they are printed
+  // inline here for the non-TUI path.
+  final serverDirAbsolute = serverpodDirs.serverDir.absolute.path;
+  final projectDirPath = p.basename(serverpodDirs.projectDir.path);
+  final created = success || force;
+
+  if (created) {
     log.info(
       'Serverpod project created.',
       newParagraph: true,
       type: TextLogType.success,
     );
 
-    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
-
     if (template == ServerpodTemplateType.server) {
       logStartInstructions(projectDirPath);
     } else if (template == ServerpodTemplateType.mini) {
       logMiniStartInstructions(projectDirPath);
     }
-
-    logManualMcpSetupInstructions(
-      context.ides,
-      serverDirAbsolute: serverpodDirs.serverDir.path,
-    );
-
-    return projectDirPath;
   }
 
-  return null;
+  logManualMcpSetupInstructions(
+    context.ides,
+    serverDirAbsolute: serverDirAbsolute,
+  );
+
+  return created
+      ? CreateSuccess(
+          projectPath: projectDirPath,
+          serverDirAbsolute: serverDirAbsolute,
+        )
+      : CreateFailure(serverDirAbsolute: serverDirAbsolute);
 }
 
 Future<void> _moveDirectoryContents(
@@ -388,6 +415,27 @@ Future<void> _moveDirectoryContents(
   }
 }
 
+/// Writes project-local MCP config files for [ides] under [dirs], showing
+/// progress. No-op when [ides] is empty. Shared by the create and upgrade
+/// flows; pairs with [logManualMcpSetupInstructions] for global-config IDEs.
+Future<void> _configureProjectMcpServers(
+  ServerpodDirectories dirs,
+  List<TemplateIde> ides,
+) async {
+  if (ides.isEmpty) return;
+  await log.progress('Configuring Serverpod MCP server', () async {
+    await _configureMcpServer(
+      dirs.projectDir.path,
+      ides,
+      serverDirRelative: p.relative(
+        dirs.serverDir.path,
+        from: dirs.projectDir.path,
+      ),
+    );
+    return true;
+  });
+}
+
 /// Writes project-local MCP config files for the [ides] that support them.
 ///
 /// IDEs that only read from a global config file (e.g. Antigravity) are
@@ -407,14 +455,6 @@ Future<void> _configureMcpServer(
     );
   }
 }
-
-/// Absolute path to the server directory of a project named [name] created in
-/// the current working directory. Used to render global MCP setup snippets,
-/// which need an absolute path (a global config has no project root).
-String serverDirAbsolutePathFor(String name) => ServerpodDirectories(
-  projectDir: Directory(p.join(Directory.current.absolute.path, name)),
-  name: name,
-).serverDir.path;
 
 /// Prints setup instructions for any of [ides] that only read MCP config from a
 /// global file (e.g. Antigravity) and therefore can't be configured with a
@@ -452,9 +492,10 @@ Future<void> _createFileAndWrite(String path, String content) async {
 }
 
 /// Upgrades a server project.
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
-Future<String?> _performUpgrade({
+///
+/// Returns [CreateSuccess] when the upgrade completed,
+/// otherwise [CreateFailure].
+Future<CreateResult> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
@@ -462,22 +503,22 @@ Future<String?> _performUpgrade({
 }) async {
   if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
-    return null;
+    return const CreateFailure();
   }
 
   var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
   if (serverDir == null) {
     _logError('Could not find a Serverpod project in the current directory.');
-    return null;
+    return const CreateFailure();
   }
 
   var name = await getProjectName(serverDir);
   if (name == null) {
     _logError('Could not find a project name in the pubspec.yaml file.');
-    return null;
+    return const CreateFailure();
   }
 
-  if (dryRun) return name;
+  if (dryRun) return CreateSuccess(projectPath: name);
 
   var serverpodDir = ServerpodDirectories(
     name: name,
@@ -517,6 +558,10 @@ Future<String?> _performUpgrade({
     );
   });
 
+  await _configureProjectMcpServers(serverpodDir, context.ides);
+
+  final serverDirAbsolute = serverpodDir.serverDir.absolute.path;
+
   if (success) {
     log.info(
       'Serverpod project upgraded.',
@@ -525,10 +570,16 @@ Future<String?> _performUpgrade({
     );
 
     logStartInstructions(name);
-    return name;
   }
 
-  return null;
+  logManualMcpSetupInstructions(
+    context.ides,
+    serverDirAbsolute: serverDirAbsolute,
+  );
+
+  return success
+      ? CreateSuccess(projectPath: name, serverDirAbsolute: serverDirAbsolute)
+      : CreateFailure(serverDirAbsolute: serverDirAbsolute);
 }
 
 /// Renders Mustache directives in the file paths the copiers just wrote.

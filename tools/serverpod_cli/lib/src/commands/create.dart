@@ -152,14 +152,14 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       return;
     }
 
-    final projectPath = await performCreate(
+    final result = await performCreate(
       name,
       force,
       interactive: interactive,
       context: context,
     );
 
-    if (projectPath == null) {
+    if (result is! CreateSuccess) {
       throw ExitException.error();
     }
   }
