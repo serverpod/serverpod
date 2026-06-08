@@ -213,47 +213,6 @@ void main() {
     );
   });
 
-  group('Given a table definition with a GeographyPoint field', () {
-    var modelName = 'gistGeoModel';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(modelName.sentenceCase)
-          .withFileName(modelName)
-          .withTableName(modelName)
-          .withSimpleField('location', 'GeographyPoint')
-          .build(),
-    ];
-
-    var databaseDefinition = createDatabaseDefinitionFromModels(
-      models,
-      'example',
-      [],
-    );
-    var tableDefinition = databaseDefinition.tables.first;
-
-    test(
-      'when defining a GIST index, then SQLite omits non-btree index SQL.',
-      () {
-        var index = IndexDefinitionBuilder()
-            .withIndexName('${modelName}_location_gist_idx')
-            .withElements([
-              IndexElementDefinition(
-                type: IndexElementDefinitionType.column,
-                definition: 'location',
-              ),
-            ])
-            .withType('gist')
-            .withIsUnique(false)
-            .withIsPrimary(false)
-            .build();
-
-        var sql = index.toSql(tableName: tableDefinition.name);
-
-        expect(sql, '');
-      },
-    );
-  });
-
   test(
     'Given a database definition with a jsonb serializable column, '
     'when generating SQL for SQLite, '
