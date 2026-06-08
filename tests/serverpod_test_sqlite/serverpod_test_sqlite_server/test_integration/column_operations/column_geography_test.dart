@@ -18,19 +18,62 @@ final _westernEuropeBbox = GeographyPolygon(
   ],
 );
 
-Future<void> _deleteAll(Session session) async {
+Future<void> _createPointRows(Session session) async {
+  await ObjectWithGeographyPoint.db.insert(session, [
+    ObjectWithGeographyPoint(location: _london, locationNullable: _paris),
+    ObjectWithGeographyPoint(location: _paris, locationNullable: null),
+  ]);
+}
+
+Future<void> _deletePointRows(Session session) async {
   await ObjectWithGeographyPoint.db.deleteWhere(
     session,
     where: (_) => Constant.bool(true),
   );
+}
+
+Future<void> _createLineStringRows(Session session) async {
+  await ObjectWithGeographyLineString.db.insert(session, [
+    ObjectWithGeographyLineString(
+      lineString: _routeLP,
+      lineStringNullable: null,
+    ),
+  ]);
+}
+
+Future<void> _deleteLineStringRows(Session session) async {
   await ObjectWithGeographyLineString.db.deleteWhere(
     session,
     where: (_) => Constant.bool(true),
   );
+}
+
+Future<void> _createPolygonRows(Session session) async {
+  await ObjectWithGeographyPolygon.db.insert(session, [
+    ObjectWithGeographyPolygon(
+      polygon: _westernEuropeBbox,
+      polygonNullable: null,
+    ),
+  ]);
+}
+
+Future<void> _deletePolygonRows(Session session) async {
   await ObjectWithGeographyPolygon.db.deleteWhere(
     session,
     where: (_) => Constant.bool(true),
   );
+}
+
+Future<void> _createCollectionRows(Session session) async {
+  await ObjectWithGeographyGeometryCollection.db.insert(session, [
+    ObjectWithGeographyGeometryCollection(
+      collection: GeographyGeometryCollection(geometries: [_london, _routeLP]),
+      collectionNullable: null,
+    ),
+  ]);
+}
+
+Future<void> _deleteCollectionRows(Session session) async {
   await ObjectWithGeographyGeometryCollection.db.deleteWhere(
     session,
     where: (_) => Constant.bool(true),
@@ -40,56 +83,37 @@ Future<void> _deleteAll(Session session) async {
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  tearDown(() async => await _deleteAll(session));
-
   group('Given a GeographyPoint column in SQLite', () {
-    test('when inserting and fetching then the value is round-tripped correctly.',
-        () async {
-      await ObjectWithGeographyPoint.db.insert(
-        session,
-        [ObjectWithGeographyPoint(location: _london, locationNullable: null)],
-      );
+    setUpAll(() async => await _createPointRows(session));
+    tearDownAll(() async => await _deletePointRows(session));
 
+    test('when fetching all then all rows are returned.', () async {
       final result = await ObjectWithGeographyPoint.db.find(
         session,
         where: (_) => Constant.bool(true),
       );
 
-      expect(result.length, 1);
+      expect(result.length, 2);
       expect(result.first.location, equals(_london));
-      expect(result.first.locationNullable, isNull);
     });
 
     test(
-      'when inserting with nullable field then the nullable value is preserved.',
+      'when fetching with nullable field then the nullable value is preserved.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(
-          session,
-          [
-            ObjectWithGeographyPoint(
-              location: _london,
-              locationNullable: _paris,
-            ),
-          ],
-        );
-
         final result = await ObjectWithGeographyPoint.db.find(
           session,
           where: (_) => Constant.bool(true),
+          orderBy: (t) => t.id,
         );
 
         expect(result.first.locationNullable, equals(_paris));
+        expect(result.last.locationNullable, isNull);
       },
     );
 
     test(
       'when using intersects then an exception is thrown.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(
-          session,
-          [ObjectWithGeographyPoint(location: _london, locationNullable: null)],
-        );
-
         await expectLater(
           ObjectWithGeographyPoint.db.find(
             session,
@@ -103,11 +127,6 @@ void main() async {
     test(
       'when using distanceWithin then an exception is thrown.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(
-          session,
-          [ObjectWithGeographyPoint(location: _london, locationNullable: null)],
-        );
-
         await expectLater(
           ObjectWithGeographyPoint.db.find(
             session,
@@ -121,11 +140,6 @@ void main() async {
     test(
       'when ordering by distance then an exception is thrown.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(
-          session,
-          [ObjectWithGeographyPoint(location: _london, locationNullable: null)],
-        );
-
         await expectLater(
           ObjectWithGeographyPoint.db.find(
             session,
@@ -135,86 +149,101 @@ void main() async {
         );
       },
     );
+
+    test(
+      'when using within then an exception is thrown.',
+      () async {
+        await expectLater(
+          ObjectWithGeographyPoint.db.find(
+            session,
+            where: (t) => t.location.within(_westernEuropeBbox),
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
   });
 
   group('Given a GeographyLineString column in SQLite', () {
+    setUpAll(() async => await _createLineStringRows(session));
+    tearDownAll(() async => await _deleteLineStringRows(session));
+
+    test('when fetching all then all rows are returned.', () async {
+      final result = await ObjectWithGeographyLineString.db.find(
+        session,
+        where: (_) => Constant.bool(true),
+      );
+
+      expect(result.length, 1);
+      expect(result.first.lineString, equals(_routeLP));
+    });
+
     test(
-      'when inserting and fetching then the value is round-tripped correctly.',
+      'when using intersects then an exception is thrown.',
       () async {
-        await ObjectWithGeographyLineString.db.insert(
-          session,
-          [
-            ObjectWithGeographyLineString(
-              lineString: _routeLP,
-              lineStringNullable: null,
-            ),
-          ],
+        await expectLater(
+          ObjectWithGeographyLineString.db.find(
+            session,
+            where: (t) => t.lineString.intersects(_westernEuropeBbox),
+          ),
+          throwsA(isA<Exception>()),
         );
-
-        final result = await ObjectWithGeographyLineString.db.find(
-          session,
-          where: (_) => Constant.bool(true),
-        );
-
-        expect(result.length, 1);
-        expect(result.first.lineString, equals(_routeLP));
-        expect(result.first.lineStringNullable, isNull);
       },
     );
   });
 
   group('Given a GeographyPolygon column in SQLite', () {
+    setUpAll(() async => await _createPolygonRows(session));
+    tearDownAll(() async => await _deletePolygonRows(session));
+
+    test('when fetching all then all rows are returned.', () async {
+      final result = await ObjectWithGeographyPolygon.db.find(
+        session,
+        where: (_) => Constant.bool(true),
+      );
+
+      expect(result.length, 1);
+      expect(result.first.polygon, equals(_westernEuropeBbox));
+    });
+
     test(
-      'when inserting and fetching then the value is round-tripped correctly.',
+      'when using contains then an exception is thrown.',
       () async {
-        await ObjectWithGeographyPolygon.db.insert(
-          session,
-          [
-            ObjectWithGeographyPolygon(
-              polygon: _westernEuropeBbox,
-              polygonNullable: null,
-            ),
-          ],
+        await expectLater(
+          ObjectWithGeographyPolygon.db.find(
+            session,
+            where: (t) => t.polygon.contains(_london),
+          ),
+          throwsA(isA<Exception>()),
         );
-
-        final result = await ObjectWithGeographyPolygon.db.find(
-          session,
-          where: (_) => Constant.bool(true),
-        );
-
-        expect(result.length, 1);
-        expect(result.first.polygon, equals(_westernEuropeBbox));
-        expect(result.first.polygonNullable, isNull);
       },
     );
   });
 
   group('Given a GeographyGeometryCollection column in SQLite', () {
+    setUpAll(() async => await _createCollectionRows(session));
+    tearDownAll(() async => await _deleteCollectionRows(session));
+
+    test('when fetching all then all rows are returned.', () async {
+      final result = await ObjectWithGeographyGeometryCollection.db.find(
+        session,
+        where: (_) => Constant.bool(true),
+      );
+
+      expect(result.length, 1);
+      expect(result.first.collection.geometries.length, 2);
+    });
+
     test(
-      'when inserting and fetching then the value is round-tripped correctly.',
+      'when using intersects then an exception is thrown.',
       () async {
-        final collection = GeographyGeometryCollection(
-          geometries: [_london, _routeLP],
+        await expectLater(
+          ObjectWithGeographyGeometryCollection.db.find(
+            session,
+            where: (t) => t.collection.intersects(_westernEuropeBbox),
+          ),
+          throwsA(isA<Exception>()),
         );
-
-        await ObjectWithGeographyGeometryCollection.db.insert(
-          session,
-          [
-            ObjectWithGeographyGeometryCollection(
-              collection: collection,
-              collectionNullable: null,
-            ),
-          ],
-        );
-
-        final result = await ObjectWithGeographyGeometryCollection.db.find(
-          session,
-          where: (_) => Constant.bool(true),
-        );
-
-        expect(result.length, 1);
-        expect(result.first.collection.geometries.length, 2);
-        expect(result.first.collectionNullable, isNull);
       },
     );
   });
