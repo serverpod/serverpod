@@ -135,14 +135,11 @@ class PostgresDatabaseConnection
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'lockRows');
 
-    var query =
-        SelectQueryBuilder(
-              table: table,
-            )
-            .withSelectFields([table.id])
-            .withWhere(where)
-            .withLockMode(lockMode, lockBehavior)
-            .build();
+    var query = SelectQueryBuilder(table: table)
+        .withSelectFields([table.id])
+        .withWhere(where)
+        .withLockMode(lockMode, lockBehavior)
+        .build();
 
     await _query(
       session,
@@ -455,16 +452,13 @@ class PostgresDatabaseConnection
 
     if (requiresFilteredSubquery) {
       var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
-      var subquery =
-          SelectQueryBuilder(
-                table: table,
-              )
-              .withSelectFields([table.id])
-              .withWhere(where)
-              .withOrderBy(orders)
-              .withLimit(limit)
-              .withOffset(offset)
-              .build();
+      var subquery = SelectQueryBuilder(table: table)
+          .withSelectFields([table.id])
+          .withWhere(where)
+          .withOrderBy(orders)
+          .withLimit(limit)
+          .withOffset(offset)
+          .build();
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
@@ -562,14 +556,11 @@ class PostgresDatabaseConnection
     var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     // Ordering applies to the returned deleted rows, not to which rows are deleted.
-    var query =
-        DeleteQueryBuilder(
-              table: table,
-            )
-            .withReturn(Returning.all)
-            .withWhere(where)
-            .withOrderBy(orderByCols)
-            .build();
+    var query = DeleteQueryBuilder(table: table)
+        .withReturn(Returning.all)
+        .withWhere(where)
+        .withOrderBy(orderByCols)
+        .build();
 
     return await _deserializedMappedQuery(
       session,
