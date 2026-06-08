@@ -152,6 +152,15 @@ class TypeDefinition {
 
   bool get isVectorType => vectorClassNames.contains(className);
 
+  static List<String> get geographyClassNames => [
+    'GeographyPoint',
+    'GeographyLineString',
+    'GeographyPolygon',
+    'GeographyGeometryCollection',
+  ];
+
+  bool get isGeographyType => geographyClassNames.contains(className);
+
   bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>
@@ -362,10 +371,7 @@ class TypeDefinition {
             (url == null &&
                 ([
                   'UuidValue',
-                  'GeographyPoint',
-                  'GeographyLineString',
-                  'GeographyPolygon',
-                  'GeographyGeometryCollection',
+                  ...geographyClassNames,
                   ...vectorClassNames,
                 ]).contains(className))) {
           // serverpod: reference
