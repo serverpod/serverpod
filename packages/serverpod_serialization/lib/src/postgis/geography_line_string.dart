@@ -13,7 +13,10 @@ class GeographyLineString implements Geography {
   final int srid;
 
   /// Creates a new [GeographyLineString].
-  const GeographyLineString({required this.points, this.srid = Geography.defaultSrid});
+  const GeographyLineString({
+    required this.points,
+    this.srid = Geography.defaultSrid,
+  });
 
   /// Creates a [GeographyLineString] from its EWKB binary representation
   /// as returned by PostgreSQL for geography columns.

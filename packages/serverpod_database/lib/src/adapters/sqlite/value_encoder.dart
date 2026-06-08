@@ -123,12 +123,11 @@ class SqliteValueEncoder implements ValueEncoder {
       ColumnDuration() => DurationJsonExtension.fromJson(value),
       ColumnUuid() => UuidValueJsonExtension.fromJson(value),
       ColumnByteData() => ByteDataJsonExtension.fromJson(value),
-      ColumnGeographyPoint() =>
-        GeographyPointJsonExtension.fromJson(value),
-      ColumnGeographyLineString() =>
-        GeographyLineStringJsonExtension.fromJson(value),
-      ColumnGeographyPolygon() =>
-        GeographyPolygonJsonExtension.fromJson(value),
+      ColumnGeographyPoint() => GeographyPointJsonExtension.fromJson(value),
+      ColumnGeographyLineString() => GeographyLineStringJsonExtension.fromJson(
+        value,
+      ),
+      ColumnGeographyPolygon() => GeographyPolygonJsonExtension.fromJson(value),
       ColumnGeographyGeometryCollection() =>
         GeographyGeometryCollectionJsonExtension.fromJson(value),
       ColumnStructured() => _decodeJsonbValue(value),
