@@ -152,7 +152,7 @@ void main() async {
     );
 
     test(
-      'when filtering with dwithin then only nearby lines are returned.',
+      'when filtering with distanceWithin then only nearby lines are returned.',
       () async {
         // _routeAB passes through London-Paris area; _routeABC passes through London-Paris-Berlin.
         await ObjectWithGeographyLineString.db.insert(session, [
@@ -165,7 +165,7 @@ void main() async {
 
         var result = await ObjectWithGeographyLineString.db.find(
           session,
-          where: (t) => t.lineString.dwithin(nearLondon, 10000), // 10 km
+          where: (t) => t.lineString.distanceWithin(nearLondon, 10000), // 10 km
         );
 
         expect(result.length, 1);

@@ -466,7 +466,7 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
 
 /// Mixin providing PostGIS spatial operations for geography columns.
 ///
-/// All geography column types mix this in so that `intersects`, `dwithin`,
+/// All geography column types mix this in so that `intersects`, `distanceWithin`,
 /// `distance`, `contains`, and `within` are available on every geography column.
 mixin _GeographySpatialOperations<T> on Column<T> {
   /// Returns an [Expression] that is true when this column's geometry
@@ -476,9 +476,9 @@ mixin _GeographySpatialOperations<T> on Column<T> {
   );
 
   /// Returns an [Expression] that is true when this column's geometry is
-  /// within [distanceMeters] metres of [other] — wraps `ST_DWithin`.
-  Expression dwithin(Geography other, double distanceMeters) => Expression(
-    'ST_DWithin($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}), $distanceMeters)',
+  /// within [meters] metres of [other] — wraps `ST_DWithin`.
+  Expression distanceWithin(Geography other, double meters) => Expression(
+    'ST_DWithin($this, ST_GeogFromText(${EscapedExpression(other.toEwkt())}), $meters)',
   );
 
   /// Returns a [ColumnGeographyDistance] suitable for use in `orderBy` —

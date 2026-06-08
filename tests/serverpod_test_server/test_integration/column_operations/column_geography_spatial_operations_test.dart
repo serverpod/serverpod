@@ -61,7 +61,7 @@ void main() async {
     );
 
     test(
-      'dwithin: when column value is within distance then row is returned.',
+      'distanceWithin: when column value is within distance then row is returned.',
       () async {
         await ObjectWithGeographyPoint.db.insert(session, [
           ObjectWithGeographyPoint(location: _london),
@@ -72,7 +72,7 @@ void main() async {
         // London–Paris ~344 km; Tokyo is ~9700 km from Paris.
         var result = await ObjectWithGeographyPoint.db.find(
           session,
-          where: (t) => t.location.dwithin(_paris, 500000), // 500 km
+          where: (t) => t.location.distanceWithin(_paris, 500000), // 500 km
         );
 
         expect(result.length, 2);
@@ -84,7 +84,7 @@ void main() async {
     );
 
     test(
-      'dwithin: when column value is outside distance then row is not returned.',
+      'distanceWithin: when column value is outside distance then row is not returned.',
       () async {
         await ObjectWithGeographyPoint.db.insertRow(
           session,
@@ -93,7 +93,7 @@ void main() async {
 
         var result = await ObjectWithGeographyPoint.db.find(
           session,
-          where: (t) => t.location.dwithin(_paris, 500000),
+          where: (t) => t.location.distanceWithin(_paris, 500000),
         );
 
         expect(result, isEmpty);
