@@ -27,7 +27,7 @@ void main() {
       group(
         'when calling performCreate with a valid name and dryRun set to true',
         () {
-          String? result;
+          CreateResult? result;
           final projectName = 'test';
 
           setUp(() async {
@@ -41,8 +41,9 @@ void main() {
             );
           });
 
-          test('then returns relative project directory path', () {
-            expect(result, projectName);
+          test('then returns a success with the relative project path', () {
+            expect(result, isA<CreateSuccess>());
+            expect((result! as CreateSuccess).projectPath, projectName);
           });
         },
       );
@@ -50,7 +51,7 @@ void main() {
       group(
         'when calling performCreate with invalid name and dryRun set to true',
         () {
-          String? result;
+          CreateResult? result;
 
           setUp(() async {
             result = await performCreate(
@@ -63,8 +64,8 @@ void main() {
             );
           });
 
-          test('then returns null', () {
-            expect(result, isNull);
+          test('then returns a failure', () {
+            expect(result, isA<CreateFailure>());
           });
         },
       );
@@ -72,7 +73,7 @@ void main() {
       group(
         'when calling performCreate with an existing project name and dryRun set to true',
         () {
-          String? result;
+          CreateResult? result;
           final projectName =
               'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
@@ -91,8 +92,8 @@ void main() {
             );
           });
 
-          test('then returns null', () {
-            expect(result, isNull);
+          test('then returns a failure', () {
+            expect(result, isA<CreateFailure>());
           });
         },
       );

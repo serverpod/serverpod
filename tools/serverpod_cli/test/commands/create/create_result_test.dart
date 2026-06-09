@@ -35,11 +35,12 @@ void main() {
     group('when performing create', () {
       setUp(() async {
         tempDir = await Directory.systemTemp.createTemp('create_result_test');
-        final projectDir = Directory('${tempDir.path}/my_app')
-          ..createSync(recursive: true);
-        File(
+        final projectDir = await Directory(
+          '${tempDir.path}/my_app',
+        ).create(recursive: true);
+        await File(
           '${projectDir.path}/pubspec.yaml',
-        ).writeAsStringSync('name: my_app');
+        ).writeAsString('name: my_app');
 
         result = await performCreate(
           'my_app',
@@ -51,7 +52,7 @@ void main() {
       });
 
       tearDown(() async {
-        if (tempDir.existsSync()) await tempDir.delete(recursive: true);
+        if (await tempDir.exists()) await tempDir.delete(recursive: true);
       });
 
       test('then the result is a failure.', () {
@@ -82,7 +83,7 @@ void main() {
       });
 
       tearDown(() async {
-        if (tempDir.existsSync()) await tempDir.delete(recursive: true);
+        if (await tempDir.exists()) await tempDir.delete(recursive: true);
       });
 
       test('then it reports success so the TUI may proceed.', () {

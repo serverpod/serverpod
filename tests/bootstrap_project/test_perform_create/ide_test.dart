@@ -88,7 +88,8 @@ void main() {
 ''';
 
           test(
-            'has Serverpod and Dart MCP servers configured for Antigravity',
+            'does not write a project-local config for Antigravity, which '
+            'reads MCP servers from a global config file instead',
             () {
               final config = File(
                 p.join(
@@ -96,11 +97,7 @@ void main() {
                   '.gemini/antigravity/mcp_config.json',
                 ),
               );
-              expect(config.existsSync(), isTrue);
-              expect(
-                config.readAsStringSync(),
-                genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-              );
+              expect(config.existsSync(), isFalse);
             },
           );
 
