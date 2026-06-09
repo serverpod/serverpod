@@ -495,7 +495,8 @@ final class ClientMethodStreamManager {
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
-    _webSocketListenerCompleter = Completer();
+    final webSocketListenerCompleter = Completer();
+    _webSocketListenerCompleter = webSocketListenerCompleter;
     MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
@@ -559,7 +560,9 @@ final class ClientMethodStreamManager {
       await webSocket.sink.close();
     } finally {
       _cancelConnectionTimer();
-      _webSocketListenerCompleter.complete();
+      if (!webSocketListenerCompleter.isCompleted) {
+        webSocketListenerCompleter.complete();
+      }
 
       /// Close any still open streams with an exception.
       await closeAllConnections(closeException);
