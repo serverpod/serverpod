@@ -261,19 +261,9 @@ Future<String?> performCreate(
     });
   }
 
-  if (context.ides.isNotEmpty) {
-    await log.progress('Configuring Serverpod MCP server', () async {
-      await _configureMcpServer(
-        serverpodDirs.projectDir.path,
-        context.ides,
-        serverDirRelative: p.relative(
-          serverpodDirs.serverDir.path,
-          from: serverpodDirs.projectDir.path,
-        ),
-      );
-      return true;
-    });
+  await _configureProjectMcpServers(serverpodDirs, context.ides);
 
+  if (context.ides.isNotEmpty) {
     await log.progress('Installing agent skills', () async {
       try {
         if (context.template != ServerpodTemplateType.module &&
@@ -374,6 +364,10 @@ Future<void> _moveDirectoryContents(
     final newPath = p.join(destination.path, p.basename(entity.path));
 
     if (entity is File) {
+      // Never overwrite files already present at the destination, such as the
+      // Antigravity plugin config written under .agents/plugins/ before this
+      // move runs.
+      if (await File(newPath).exists()) continue;
       await entity.rename(newPath);
     } else if (entity is Directory) {
       final newDir = await Directory(newPath).create(recursive: true);
@@ -381,6 +375,25 @@ Future<void> _moveDirectoryContents(
       await entity.delete();
     }
   }
+}
+
+/// Writes the MCP config files for [ides] under [dirs], showing progress.
+Future<void> _configureProjectMcpServers(
+  ServerpodDirectories dirs,
+  List<TemplateIde> ides,
+) async {
+  if (ides.isEmpty) return;
+  await log.progress('Configuring Serverpod MCP server', () async {
+    await _configureMcpServer(
+      dirs.projectDir.path,
+      ides,
+      serverDirRelative: p.relative(
+        dirs.serverDir.path,
+        from: dirs.projectDir.path,
+      ),
+    );
+    return true;
+  });
 }
 
 Future<void> _configureMcpServer(
@@ -395,6 +408,12 @@ Future<void> _configureMcpServer(
         p.join(projectDirPath, ide.filePath),
         ide.effectiveConfig(serverDirRelative: serverDirRelative),
       );
+      for (final entry in ide.additionalFiles.entries) {
+        await _createFileAndWrite(
+          p.join(projectDirPath, entry.key),
+          ide.render(entry.value, serverDirRelative: serverDirRelative),
+        );
+      }
     },
   );
 }
@@ -404,8 +423,8 @@ Future<void> _createFileAndWrite(String path, String content) async {
   try {
     await file.create(recursive: true);
     await file.writeAsString(content);
-  } on FileSystemException {
-    //
+  } on FileSystemException catch (e) {
+    _logError('Failed to write $path: ${e.osError?.message ?? e.message}');
   }
 }
 
@@ -474,6 +493,8 @@ Future<String?> _performUpgrade({
       interactive: interactive,
     );
   });
+
+  await _configureProjectMcpServers(serverpodDir, context.ides);
 
   if (success) {
     log.info(
