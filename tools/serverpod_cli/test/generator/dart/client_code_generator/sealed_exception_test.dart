@@ -2,7 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/exception_class_definition_builder.dart';
@@ -14,19 +14,21 @@ import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = DartServerCodeGenerator();
+const generator = DartClientCodeGenerator();
 
 void main() {
   String getExpectedFilePath(String fileName, {List<String>? subDirParts}) =>
       p.joinAll([
+        '..',
+        'example_project_client',
         'lib',
         'src',
-        'generated',
+        'protocol',
         ...?subDirParts,
         '$fileName.dart',
       ]);
 
-  var serverpodImportPath = 'package:serverpod/serverpod.dart';
+  var serverpodImportPath = 'package:serverpod_client/serverpod_client.dart';
 
   group(
     'Given a hierarchy with a sealed parent exception and a normal child, when generating code',
@@ -195,14 +197,14 @@ void main() {
           expect(toJsonMethod, isNotNull);
         });
 
-        test('does have a toJsonForProtocol method', () {
+        test('does NOT have a toJsonForProtocol method', () {
           var toJsonForProtocolMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
                 childClass!,
                 name: 'toJsonForProtocol',
               );
 
-          expect(toJsonForProtocolMethod, isNotNull);
+          expect(toJsonForProtocolMethod, isNull);
         });
 
         test('does have a toString method', () {
@@ -228,7 +230,7 @@ void main() {
 
       var child1 = ExceptionClassDefinitionBuilder()
           .withClassName('NetworkException')
-          .withFileName('network_excpetion')
+          .withFileName('network_exception')
           .withExtendsClass(parent)
           .build();
 
@@ -263,7 +265,7 @@ void main() {
         content: codeMap[getExpectedFilePath(child2.fileName)]!,
       ).unit;
 
-      test('then the ${parent.className} has a _Undefined class', () {
+      test('then ${parent.className} has a _Undefined class', () {
         var undefinedMethod = CompilationUnitHelpers.tryFindClassDeclaration(
           parentCompilationUnit,
           name: '_Undefined',
@@ -1276,9 +1278,14 @@ void main() {
         config: config,
       );
 
-      final expectedFileName = getExpectedFilePath(
-        modelWithSealedField.fileName,
-      );
+      final expectedFileName = p.joinAll([
+        '..',
+        '${projectName}_client',
+        'lib',
+        'src',
+        'protocol',
+        '${modelWithSealedField.fileName}.dart',
+      ]);
 
       test('then model file is created.', () {
         expect(codeMap, contains(expectedFileName));
