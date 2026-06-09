@@ -19,12 +19,13 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
     case 'log':
       final stackTrace = data['stackTrace'] as String?;
       final message = data['message'] as String? ?? '';
+      final time =
+          DateTime.tryParse(data['timestamp'] as String? ?? '') ??
+          DateTime.now();
       state.logHistory.add(
         LogEntry(
           level: parseLogLevel(data['level'] as String? ?? 'info'),
-          time:
-              DateTime.tryParse(data['timestamp'] as String? ?? '') ??
-              DateTime.now(),
+          time: time,
           message: message,
           scope: LogScope.root('server'),
           error: data['error']?.toString(),
@@ -39,7 +40,7 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
       // keeps the markup.
       final metadata = data['metadata'];
       if (metadata is Map && metadata['alert'] == true) {
-        holder.showAlert(AlertMessage.parse(message));
+        holder.showAlert(AlertMessage.parse(message), time: time);
       }
 
     case 'scope_start':

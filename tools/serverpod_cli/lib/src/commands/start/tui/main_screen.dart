@@ -162,6 +162,15 @@ class MainScreen extends StatelessComponent {
                                     operation: op,
                                   ),
                                 ),
+
+                              // Pin the alert as the last line in the panel,
+                              // set apart from the logs by a blank row and a
+                              // divider directly above it.
+                              if (state.alert case final alert?) ...[
+                                const SizedBox(height: 1),
+                                Divider(color: st.subtleDivider),
+                                AlertLine(alert: alert, time: state.alertTime),
+                              ],
                             ],
                           );
                         },
