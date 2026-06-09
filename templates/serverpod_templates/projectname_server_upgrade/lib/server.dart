@@ -97,8 +97,13 @@ void _sendRegistrationCode(
   required Transaction? transaction,
 }) {
   // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
+  // the user. For testing, we just log it. The angle brackets and the
+  // `alert` metadata make the `serverpod` CLI surface the code as a copyable
+  // alert in its terminal UI; both are ignored when not running in the CLI.
+  session.log(
+    'Verification code: <$verificationCode>',
+    metadata: {'alert': true},
+  );
 }
 
 void _sendPasswordResetCode(
@@ -109,8 +114,13 @@ void _sendPasswordResetCode(
   required Transaction? transaction,
 }) {
   // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+  // the user. For testing, we just log it. The angle brackets and the
+  // `alert` metadata make the `serverpod` CLI surface the code as a copyable
+  // alert in its terminal UI; both are ignored when not running in the CLI.
+  session.log(
+    'Password reset code: <$verificationCode>',
+    metadata: {'alert': true},
+  );
 }
 
 // {{/auth}}

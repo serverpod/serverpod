@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:nocterm/nocterm.dart' show ClipboardManager;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
@@ -110,6 +111,96 @@ void main() {
 
       final entry = state.logHistory.first as LogEntry;
       expect(entry.stackTrace, isNull);
+    });
+  });
+
+  group('Given a log event flagged as an alert with copy markup', () {
+    setUp(() {
+      ClipboardManager.copy('previous clipboard content');
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Registration code: <h2k9x3mp>',
+          'metadata': {'alert': true},
+        }),
+      );
+    });
+
+    test('when dispatched then shows the alert with the markup stripped', () {
+      expect(state.alert?.displayText, 'Registration code: h2k9x3mp');
+    });
+
+    test('when dispatched then copies the marked segment to the clipboard', () {
+      expect(ClipboardManager.paste(), 'h2k9x3mp');
+    });
+
+    test('when dispatched then the raw log line keeps the markup', () {
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.message, 'Registration code: <h2k9x3mp>');
+    });
+  });
+
+  group('Given a log event flagged as an alert without copy markup', () {
+    setUp(() {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Server requires a restart',
+          'metadata': {'alert': true},
+        }),
+      );
+    });
+
+    test('when dispatched then shows the alert verbatim', () {
+      expect(state.alert?.displayText, 'Server requires a restart');
+    });
+
+    test('when dispatched then the alert has no copy text', () {
+      expect(state.alert?.copyText, isNull);
+    });
+  });
+
+  group('Given an ordinary log event containing angle brackets', () {
+    setUp(() {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Parsed List<int> from <html>',
+        }),
+      );
+    });
+
+    test('when dispatched then no alert is shown', () {
+      expect(state.alert, isNull);
+    });
+
+    test('when dispatched then the markup is left untouched in the log', () {
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.message, 'Parsed List<int> from <html>');
+    });
+  });
+
+  group('Given a log event whose metadata does not flag an alert', () {
+    setUp(() {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'info',
+          'message': 'Some code: <abc>',
+          'metadata': {'alert': false},
+        }),
+      );
+    });
+
+    test('when dispatched then no alert is shown', () {
+      expect(state.alert, isNull);
     });
   });
 

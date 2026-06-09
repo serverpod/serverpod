@@ -220,17 +220,22 @@ abstract class Session implements DatabaseSession {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
+  ///
+  /// [metadata] is forwarded to the CLI over the VM service stream but not
+  /// persisted to the database.
   void log(
     String message, {
     LogLevel? level,
     dynamic exception,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
+      metadata: metadata,
     );
   }
 }
