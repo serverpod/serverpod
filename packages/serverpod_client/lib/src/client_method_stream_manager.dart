@@ -49,6 +49,9 @@ final class ClientMethodStreamManager {
   /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
 
+  /// Optional connector used to override [WebSocketChannel.connect] in tests.
+  final WebSocketChannel Function(Uri uri)? _webSocketConnector;
+
   /// Lock used to synchronize access when establishing websocket connection.
   final Lock _lock = Lock();
 
@@ -67,11 +70,13 @@ final class ClientMethodStreamManager {
     required SerializationManager serializationManager,
     @visibleForTesting Duration? pingInterval,
     @visibleForTesting Duration? idleTimeout,
+    @visibleForTesting WebSocketChannel Function(Uri uri)? webSocketConnector,
   }) : _webSocketHost = webSocketHost,
        _connectionTimeout = connectionTimeout,
        _serializationManager = serializationManager,
        _pingInterval = pingInterval ?? _defaultPingInterval,
-       _idleTimeout = idleTimeout ?? _defaultIdleTimeout;
+       _idleTimeout = idleTimeout ?? _defaultIdleTimeout,
+       _webSocketConnector = webSocketConnector;
 
   /// Closes all open connections and streams
   ///
@@ -565,7 +570,9 @@ final class ClientMethodStreamManager {
     await _lock.synchronized(() async {
       if (_webSocket != null) return;
 
-      var webSocket = WebSocketChannel.connect(_webSocketHost);
+      var webSocket =
+          _webSocketConnector?.call(_webSocketHost) ??
+          WebSocketChannel.connect(_webSocketHost);
 
       await webSocket.ready.onError((e, s) {
         throw WebSocketConnectException(e, s);
