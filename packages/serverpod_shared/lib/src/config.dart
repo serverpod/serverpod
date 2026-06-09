@@ -618,6 +618,55 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     this.dataPath,
   }) : super._(dialect: DatabaseDialect.postgres);
 
+  /// Creates a config for an embedded PostgreSQL launched in [dataPath].
+  ///
+  /// The postmaster is started on demand and reached over a local unix socket
+  /// with trust authentication, so host, port and password do not apply; the
+  /// connection coordinates are resolved at runtime from [dataPath].
+  PostgresDatabaseConfig.embedded({
+    required String dataPath,
+    String user = 'postgres',
+    required String name,
+    int? maxConnectionCount,
+  }) : this(
+         host: '',
+         port: 0,
+         user: user,
+         password: '',
+         name: name,
+         maxConnectionCount: maxConnectionCount,
+         dataPath: dataPath,
+       );
+
+  /// Returns a copy of this config that targets the database [name], keeping
+  /// every other setting (including the connection mode).
+  PostgresDatabaseConfig withName(String name) => _copyWith(name: name);
+
+  /// Returns a copy of this config with the given fields replaced.
+  PostgresDatabaseConfig _copyWith({
+    String? host,
+    int? port,
+    String? user,
+    String? password,
+    String? name,
+    bool? requireSsl,
+    bool? isUnixSocket,
+    List<String>? searchPaths,
+    int? maxConnectionCount,
+    String? dataPath,
+  }) => PostgresDatabaseConfig(
+    host: host ?? this.host,
+    port: port ?? this.port,
+    user: user ?? this.user,
+    password: password ?? this.password,
+    name: name ?? this.name,
+    requireSsl: requireSsl ?? this.requireSsl,
+    isUnixSocket: isUnixSocket ?? this.isUnixSocket,
+    searchPaths: searchPaths ?? this.searchPaths,
+    maxConnectionCount: maxConnectionCount ?? this.maxConnectionCount,
+    dataPath: dataPath ?? this.dataPath,
+  );
+
   factory PostgresDatabaseConfig._fromJson(
     Map dbSetup,
     Map passwords,
