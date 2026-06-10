@@ -271,7 +271,7 @@ class Server implements RouterInjectable {
   Handler _headers(Handler next) {
     return (req) async {
       final isOptions = req.method == Method.options;
-      var headers = isOptions
+      final headers = isOptions
           ? httpResponseHeaders.transform((mh) {
               for (final h in httpOptionsResponseHeaders.entries) {
                 mh[h.key] = h.value;
@@ -279,26 +279,35 @@ class Server implements RouterInjectable {
             })
           : httpResponseHeaders;
 
-      headers = _applyCredentialedCorsHeaders(headers, req);
-
       // early exit on Method.options
-      if (isOptions) return Response.ok(headers: headers);
+      if (isOptions) {
+        return Response.ok(
+          headers: _applyCredentialedCorsHeaders(headers, req),
+        );
+      }
 
       final result = await next(req);
-      return switch (result) {
-        Response() => result.copyWith(
-          headers: result.headers.isEmpty
-              ? headers
-              : result.headers.transform((mh) {
-                  for (final h in headers.entries) {
-                    mh[h.key] ??= h.value;
-                  }
-                }),
-        ),
-        _ => result,
-      };
+      if (result is! Response) return result;
+
+      // Merge default headers under any the response already set, then apply
+      // credentialed CORS to the merged result so its Origin echo / Vary land
+      // on the actual response (and append to a Vary the endpoint may have set).
+      var merged = result.headers.isEmpty
+          ? headers
+          : result.headers.transform((mh) {
+              for (final h in headers.entries) {
+                mh[h.key] ??= h.value;
+              }
+            });
+      return result.copyWith(
+        headers: _applyCredentialedCorsHeaders(merged, req),
+      );
     };
   }
+
+  /// The trimmed `Origin` header of [req], or null if absent.
+  String? _requestOrigin(Request req) =>
+      req.headers[Headers.originHeader]?.firstOrNull?.trim();
 
   /// When cookie-based web auth is enabled, credentialed CORS requires echoing
   /// the specific request `Origin` (the wildcard `*` is invalid with
@@ -309,7 +318,7 @@ class Server implements RouterInjectable {
     if (serverpod.config.authCookie == null) return headers;
 
     var allowedOrigins = serverpod.config.allowedOrigins;
-    var origin = req.headers[Headers.originHeader]?.firstOrNull?.trim();
+    var origin = _requestOrigin(req);
     if (origin == null ||
         allowedOrigins == null ||
         !allowedOrigins.contains(origin)) {
@@ -317,12 +326,22 @@ class Server implements RouterInjectable {
     }
 
     return headers.transform((mh) {
-      mh[Headers.accessControlAllowOriginHeader] = [origin];
-      mh[Headers.accessControlAllowCredentialsHeader] = ['true'];
-      // The response varies by Origin, so caches must key on it.
-      var vary = mh[Headers.varyHeader]?.toList() ?? <String>[];
-      if (!vary.contains('Origin')) vary.add('Origin');
-      mh[Headers.varyHeader] = vary;
+      mh.accessControlAllowOrigin = AccessControlAllowOriginHeader.origin(
+        origin: Origin.parse(origin),
+      );
+      mh.accessControlAllowCredentials = true;
+      // The response varies by Origin, so caches must key on it. VaryHeader
+      // canonicalizes field names to lowercase, so membership is
+      // case-insensitive; a wildcard Vary already covers Origin.
+      var vary = mh.vary;
+      if (vary == null) {
+        mh.vary = VaryHeader.headers(fields: const [Headers.originHeader]);
+      } else if (!vary.isWildcard &&
+          !vary.fields.contains(Headers.originHeader)) {
+        mh.vary = VaryHeader.headers(
+          fields: [...vary.fields, Headers.originHeader],
+        );
+      }
     });
   }
 
@@ -353,7 +372,7 @@ class Server implements RouterInjectable {
       // server-to-server clients don't, and are always allowed.
       var allowedOrigins = serverpod.config.allowedOrigins;
       if (allowedOrigins != null) {
-        var origin = req.headers['origin']?.firstOrNull?.trim();
+        var origin = _requestOrigin(req);
         if (origin != null && !allowedOrigins.contains(origin)) {
           return Response.forbidden(
             body: Body.fromString('WebSocket origin not allowed.'),
@@ -444,10 +463,9 @@ class Server implements RouterInjectable {
 
     // Fall back to the web auth cookie when configured and no header was sent
     // (the browser carries it for cookie-based web clients).
-    var authCookie = serverpod.config.authCookie;
-    if (authenticationKey == null && authCookie != null) {
-      authenticationKey = request.getCookieValue(authCookie.name);
-    }
+    authenticationKey ??= request.getAuthCookieValue(
+      serverpod.config.authCookie,
+    );
 
     MethodCallSession? maybeSession;
     try {

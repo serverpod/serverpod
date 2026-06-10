@@ -110,6 +110,11 @@ class ServerpodConfig {
   /// server-to-server clients, which don't send one) are always allowed for
   /// WebSocket. When null or empty (the default), all origins are allowed for
   /// WebSocket and no per-origin CORS echo is emitted.
+  ///
+  /// Entries are matched exactly against the request `Origin`, so they must be
+  /// serialized origins with no trailing slash, e.g. `https://app.example.com`
+  /// or `https://app.example.com:8443` (browsers send a canonical, lowercase
+  /// origin without a path).
   final List<String>? allowedOrigins;
 
   /// Configuration for the web authentication cookie. Null (the default) when
@@ -150,6 +155,31 @@ class ServerpodConfig {
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
     sessionLogs?._validate(databaseEnabled: database != null);
+
+    // Cookie-based web auth depends on an origin allow-list: it backs the
+    // cross-site WebSocket hijacking guard and credentialed CORS (which cannot
+    // use the wildcard origin). Enabling it without one would silently leave
+    // those protections off, so require allowedOrigins when authCookie is set.
+    if (authCookie != null &&
+        (allowedOrigins == null || allowedOrigins!.isEmpty)) {
+      throw ArgumentError(
+        'allowedOrigins must be set to a non-empty list of trusted browser '
+        'origins when authCookie is configured. Cookie-based web auth requires '
+        'an origin allow-list for cross-site WebSocket protection and '
+        'credentialed CORS.',
+      );
+    }
+
+    // Browsers ignore (drop) a SameSite=None cookie that is not also Secure, so
+    // the combination would silently disable the auth cookie.
+    if (authCookie != null &&
+        authCookie!.sameSite == CookieSameSite.none &&
+        !authCookie!.secure) {
+      throw ArgumentError(
+        'authCookie.sameSite "none" requires authCookie.secure to be true; '
+        'browsers ignore a SameSite=None cookie that is not Secure.',
+      );
+    }
   }
 
   /// Creates a default bare bone configuration.
@@ -990,11 +1020,33 @@ class WebAuthCookieConfig {
       name: name is String && name.isNotEmpty ? name : defaultName,
       domain: domain is String && domain.isNotEmpty ? domain : null,
       path: path is String && path.isNotEmpty ? path : '/',
-      secure: secure is bool ? secure : true,
+      secure: _parseSecure(secure),
       sameSite: sameSite is String
           ? _parseSameSite(sameSite)
           : CookieSameSite.lax,
     );
+  }
+
+  /// Parses the `secure` value, accepting a bool or a bool-string. A non-bool
+  /// value (e.g. a quoted YAML string) throws rather than silently defaulting,
+  /// so a misconfiguration surfaces instead of producing a surprising cookie.
+  static bool _parseSecure(Object? value) {
+    return switch (value) {
+      null => true,
+      bool b => b,
+      String s =>
+        bool.tryParse(s) ??
+            (throw ArgumentError.value(
+              s,
+              ServerpodEnv.authCookieSecure.configKey,
+              'Expected a boolean (true or false)',
+            )),
+      _ => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSecure.configKey,
+        'Expected a boolean (true or false)',
+      ),
+    };
   }
 
   static CookieSameSite _parseSameSite(String value) {
@@ -1689,6 +1741,10 @@ List<String>? _readAllowedOrigins(
   } else if (value is String) {
     origins = _parseList(value);
   }
+
+  // Drop blank entries so an empty env var ("") or a trailing comma
+  // ("https://a.com,") does not become a deny-all [''] list.
+  origins = origins?.where((origin) => origin.isNotEmpty).toList();
 
   // Treat an empty list as "no restriction" (same as null) so an empty config
   // value doesn't accidentally reject every browser connection.
