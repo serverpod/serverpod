@@ -1,3 +1,8 @@
+## 3.4.10
+
+- fix: Fixes malformed query when negating many-relation filters.
+- fix: Fixes trying to complete the web socket listener twice on concurrent connections.
+
 ## 3.4.9
 
 - fix: Fixes joins with long column names and deeply nested relations not mapping the correct columns.
