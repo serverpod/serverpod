@@ -15,11 +15,11 @@ dependencies:
   async: ^2.11.0
   built_collection: ^5.1.1
   ci: ^0.1.0
-  cli_tools: ^0.11.0
+  cli_tools: ^0.13.1
   code_assets: ^1.0.0
   code_builder: ^4.5.0
   collection: ^1.18.0
-  config: ^0.8.4
+  config: ^0.9.0
   dart_data_home: ^0.1.0
   dart_mcp: '>=0.4.1 <0.6.0'
   # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
@@ -53,8 +53,8 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
-  serverpod_tui: ^0.1.0-rc.6
-  skills: ^0.3.0
+  serverpod_tui: ^0.2.0
+  skills: ^0.3.1
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   stream_transform: ^2.1.0
