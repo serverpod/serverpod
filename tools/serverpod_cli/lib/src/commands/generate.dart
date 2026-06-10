@@ -37,6 +37,17 @@ enum GenerateOption<V> implements OptionDefinition<V> {
           'The directory to generate code for (defaults to current directory).',
     ),
   ),
+  force(
+    FlagOption(
+      argName: 'force',
+      argAbbrev: 'f',
+      defaultsTo: false,
+      negatable: false,
+      helpText:
+          'Regenerate even when the output looks up to date. Use this '
+          'to rebuild after hand-editing or reverting generated files.',
+    ),
+  ),
   ;
 
   const GenerateOption(this.option);
@@ -59,6 +70,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   ) async {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
+    bool force = commandConfig.value(GenerateOption.force);
     String directory = commandConfig.value(GenerateOption.directory);
 
     // Get interactive flag from global configuration
@@ -142,9 +154,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 
     late final bool success;
     if (watch) {
-      success = await _performGenerateWatch(config: config);
+      success = await _performGenerateWatch(config: config, force: force);
     } else {
-      success = await performOneShotGenerate(config: config);
+      success = await performOneShotGenerate(config: config, force: force);
     }
 
     if (!success) {
@@ -155,28 +167,74 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   }
 }
 
-/// One-shot code generation in an isolate-friendly function.
-Future<bool> performOneShotGenerate({
+/// Generates code if it is stale, returning whether it was already [upToDate]
+/// and, when generation ran, whether it reported [success].
+///
+/// [createAnalyzers] must return an unprimed analyzer (ie. [Analyzers.create]).
+/// The priming happens inside [analyzeAndGenerate].
+///
+/// When [keepPrimedWhenFresh] is `false` (one-shot generate) a fresh project
+/// When [keepPrimedWhenFresh] is `false` a fresh project returns before the
+/// analyzer is created. When `true` the analyzer is always created and primed
+/// for an incremental loop.
+/// When [force] is `true`, the staleness check is bypassed and generation
+/// always runs.
+Future<({bool upToDate, bool success})> generateIfStale({
   required GeneratorConfig config,
+  required Future<Analyzers> Function() createAnalyzers,
+  bool keepPrimedWhenFresh = false,
+  bool force = false,
 }) async {
-  final analyzers = await Analyzers.create(config);
   final allSources = await enumerateSourceFiles(config);
+  if (!force &&
+      !keepPrimedWhenFresh &&
+      await isGenerationUpToDate(config, allSources)) {
+    return (upToDate: true, success: true);
+  }
+
+  final analyzers = await createAnalyzers();
+  // Re-verify staleness only when we skipped the up-front check (and aren't
+  // forcing); the one-shot path already verified it, so generation runs
+  // unconditionally.
   final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
-    affectedPaths: allSources,
-    // Always run generation to prevent bad output from the watch command to be
-    // persisted, since the generation stamp will be greater than source files.
-    skipStalenessCheck: true,
+    affectedPaths: allSources.keys.toSet(),
+    verifyStaleness: keepPrimedWhenFresh && !force,
+    sourceStats: allSources,
   );
+  // A full run only returns an empty file set when it skipped generation
+  // because the output was already up to date.
+  return (upToDate: result.generatedFiles.isEmpty, success: result.success);
+}
+
+/// One-shot code generation in an isolate-friendly function.
+///
+/// Pass [force] to regenerate even when the output looks up to date.
+Future<bool> performOneShotGenerate({
+  required GeneratorConfig config,
+  bool force = false,
+}) async {
+  final result = await generateIfStale(
+    config: config,
+    createAnalyzers: () => Analyzers.create(config),
+    force: force,
+  );
+  if (result.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+  }
   return result.success;
 }
 
 /// Analyzes affected paths and runs code generation if needed.
 ///
-/// When [skipStalenessCheck] is `true`, skips the mtime check against the
-/// generation stamp (use when the caller already knows files changed, e.g.
-/// from a file watcher event).
+/// An [incremental] (watcher-driven) run generates only [affectedPaths] and
+/// skips when none of them affect generation; a full run regenerates the whole
+/// project.
+///
+/// [verifyStaleness] applies only to full runs: skip generation when the stamp
+/// is up to date. Pass `false` when the caller already verified staleness, so
+/// generation runs and refreshes the stamp regardless.
 ///
 /// The [requirements] parameter controls which parts of the generation
 /// pipeline run. When model files change, use [GenerationRequirements.full].
@@ -185,16 +243,13 @@ Future<bool> performOneShotGenerate({
 ///
 /// Returns a [GenerateResult] with success status and the set of files
 /// written by code generation (empty when generation was skipped).
-///
-/// When [skipStalenessCheck] is `true` (watcher-driven runs), model hint/info
-/// output is limited to [affectedPaths]. When `false`, all model issues are
-/// reported (one-shot generate and runs that re-check staleness against the
-/// whole project).
 Future<GenerateResult> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
-  bool skipStalenessCheck = false,
+  bool incremental = false,
+  bool verifyStaleness = true,
+  Map<String, FileStamp>? sourceStats,
   GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   bool needsGenerate = false;
@@ -206,10 +261,12 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     return true;
   });
-  if (!needsGenerate) return (success: true, generatedFiles: <String>{});
-  if (!skipStalenessCheck &&
-      await isGenerationUpToDate(config, affectedPaths)) {
-    log.debug('All affected files are older than generation stamp, skipping.');
+  if (incremental) {
+    if (!needsGenerate) return (success: true, generatedFiles: <String>{});
+  } else if (verifyStaleness &&
+      sourceStats != null &&
+      await isGenerationUpToDate(config, sourceStats)) {
+    log.debug('Generated code is up to date, skipping.');
     return (success: true, generatedFiles: <String>{});
   }
   late final GenerateResult result;
@@ -217,12 +274,18 @@ Future<GenerateResult> analyzeAndGenerate({
     result = await analyzers.performGenerate(
       config: config,
       requirements: requirements,
-      affectedPaths: skipStalenessCheck ? affectedPaths : null,
+      affectedPaths: incremental ? affectedPaths : null,
     );
     return result.success;
   });
   if (result.success) {
-    await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
+    await writeGenerationStamp(
+      config,
+      generatedFiles: result.generatedFiles,
+      // A full run reuses the stamps captured at enumeration; an incremental
+      // run re-enumerates, since its affected paths is only the changed subset.
+      sourceStats: incremental ? null : sourceStats,
+    );
     log.debug(incrementalCodeGenerationComplete);
   }
   return result;
@@ -231,15 +294,25 @@ Future<GenerateResult> analyzeAndGenerate({
 /// Watch-mode code generation with persistent analyzers and file watching.
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
+  bool force = false,
 }) async {
+  // keepPrimedWhenFresh: the incremental loop only updates changed files, so
+  // the analyzer must be primed up front even when nothing needs regenerating.
+  // In-process is fine here; only start's TUI needs the isolate offload.
   final analyzers = await Analyzers.create(config);
-  final allSources = await enumerateSourceFiles(config);
-  final initialResult = await analyzeAndGenerate(
+  final initialResult = await generateIfStale(
     config: config,
-    analyzers: analyzers,
-    affectedPaths: allSources,
+    createAnalyzers: () async => analyzers,
+    keepPrimedWhenFresh: true,
+    force: force,
   );
-  if (!initialResult.success) return false;
+  if (!initialResult.success) {
+    await analyzers.close();
+    return false;
+  }
+  if (initialResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
+  }
 
   log.debug(initialCodeGenerationComplete);
 
@@ -265,7 +338,7 @@ Future<bool> _performGenerateWatch({
         config: config,
         analyzers: analyzers,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
       );
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);

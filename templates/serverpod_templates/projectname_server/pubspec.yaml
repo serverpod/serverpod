@@ -9,11 +9,11 @@ environment:
 #resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  serverpod: 3.5.0-beta.7
+  serverpod: 3.5.0-beta.10
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 3.5.0-beta.7
+  serverpod_test: 3.5.0-beta.10
   test: ^1.25.5
 
 serverpod:
@@ -28,8 +28,8 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
-        && flutter build web --base-href /app/ --wasm
+        && flutter build web --base-href /app/
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         cd ../projectname_flutter
-        flutter build web --base-href /app/ --wasm --output ../projectname_server/web/app
+        flutter build web --base-href /app/ --output ../projectname_server/web/app

@@ -4,8 +4,8 @@ This document describes the MCP (Model Context Protocol) integration for `server
 
 The integration has two parts:
 
-- A small **per-runner MCP server** that lives inside each `serverpod start --watch` process and exposes dev operations against that instance (currently: `apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`).
-- A long-lived **bridge MCP server** (`serverpod mcp`) that sits on stdio between the AI client and the runners. It discovers running instances by scanning a shared socket directory, connects to one at a time, and forwards tool calls. The bridge survives runner restarts.
+- A small **per-runner MCP server** that lives inside each `serverpod start --watch` process and exposes dev operations against that instance (currently: `apply_migrations`, `create_migration`, `hot_reload`, `tail_server_logs`).
+- A long-lived **bridge MCP server** (`serverpod mcp-server`) that sits on stdio between the AI client and the runners. It discovers running instances by scanning a shared socket directory, connects to one at a time, and forwards tool calls. The bridge survives runner restarts.
 
 The per-runner server runs inside the CLI process, alongside the compiler, file watcher, and watch session. It is not part of the server subprocess (the Serverpod application). This keeps dev tooling concerns out of the framework itself - the `serverpod` package should not impose an MCP dependency or dev-time features on the application server. It also means the MCP server has access to the CLI's internal state (the incremental compiler, the server process handle, the restart lifecycle) which the server subprocess does not.
 
@@ -25,7 +25,7 @@ The bridge layer solves a separate problem: when the runner process (`serverpod 
 AI client (e.g. Claude Code)
     │  stdio  (long-lived)
     ▼
-serverpod mcp             <- BridgeMcpServer (this process)
+serverpod mcp-server             <- BridgeMcpServer (this process)
     │
     │  scans .../serverpod/serverpod-<pid>-<project>.sock
     │  connects to one at a time
@@ -34,7 +34,7 @@ serverpod mcp             <- BridgeMcpServer (this process)
 serverpod start --watch   <- ServerpodMcpServer (per-runner)
 ```
 
-The bridge is **single-instance**: at any moment it forwards to at most one runner. Switching runners is an explicit `disconnect` then `connect` from the client. To bridge multiple AI windows to multiple projects, run one `serverpod mcp` per window.
+The bridge is **single-instance**: at any moment it forwards to at most one runner. Switching runners is an explicit `disconnect` then `connect` from the client. To bridge multiple AI windows to multiple projects, run one `serverpod mcp-server` per window.
 
 ### Transport: Unix domain sockets
 
@@ -61,14 +61,14 @@ Sockets live in a shared, per-machine temp directory:
 
 The bridge cleans up dead-PID sockets opportunistically the next time it scans.
 
-### `serverpod mcp` (the bridge)
+### `serverpod mcp-server` (the bridge)
 
 ```json
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server"]
     }
   }
 }
@@ -95,7 +95,7 @@ Native resource (always present):
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `serverpod://instances` | JSON list of `{pid, project, socketPath, connected}` for each live runner. Updated when the socket directory changes or when the bridge connects/disconnects. |
 
-Currently auto-forwarded from the runner once connected: the tools `apply_migrations`, `create_migration`, `hot_reload`, `tail_logs`, and the resource `serverpod://vm-service`. Adding a new tool or resource on the runner side requires no bridge changes - it appears in the AI client automatically on the next `connect`. Names that collide with a native bridge tool (`connect`/`disconnect`/`spawn`/`stop`) or URI (`serverpod://instances`) are skipped to keep the bridge's surface authoritative.
+Currently auto-forwarded from the runner once connected: the tools `apply_migrations`, `create_migration`, `hot_reload`, `tail_server_logs`, and the resource `serverpod://vm-service`. Adding a new tool or resource on the runner side requires no bridge changes - it appears in the AI client automatically on the next `connect`. Names that collide with a native bridge tool (`connect`/`disconnect`/`spawn`/`stop`) or URI (`serverpod://instances`) are skipped to keep the bridge's surface authoritative.
 
 For per-resource updates, the bridge subscribes to each forwarded resource on `connect` and re-emits `notifications/resources/updated` upstream. Resources that don't support subscription are silently skipped (reads still work).
 
@@ -125,7 +125,7 @@ The runner's MCP socket survives the server-subprocess restart because the socke
 
 `McpSocketServer({required project})` derives its socket path from the current `pid` and the sanitized project. `start()` ensures the shared dir exists, binds the `ServerSocket`, and accepts at most one client at a time. `close()` shuts down the active MCP server, destroys the client socket, and unlinks the socket file. New connections wait for any in-flight shutdown to settle and are rejected once `close()` has been called.
 
-`ServerpodMcpServer` (`lib/src/commands/start/mcp_server.dart`) extends `MCPServer` with `ToolsSupport` and `ResourcesSupport`. It registers `apply_migrations`, `create_migration`, `hot_reload`, and `tail_logs` tools against callbacks wired by `start.dart` (`WatchSession.applyMigration`, a `createMigrationAction`-backed closure, `WatchSession.forceReload`, and a log-history getter respectively). It also exposes the `serverpod://vm-service` resource.
+`ServerpodMcpServer` (`lib/src/commands/start/mcp_server.dart`) extends `MCPServer` with `ToolsSupport` and `ResourcesSupport`. It registers `apply_migrations`, `create_migration`, `hot_reload`, and `tail_server_logs` tools against callbacks wired by `start.dart` (`WatchSession.applyMigration`, a `createMigrationAction`-backed closure, `WatchSession.forceReload`, and a log-history getter respectively). It also exposes the `serverpod://vm-service` resource.
 
 ### Bridge side (`lib/src/mcp/`)
 
@@ -138,7 +138,7 @@ Validates Unix socket support, instantiates `ServerpodMcpBridge`, scans + starts
 
 ### Integration with watch mode
 
-In `_startWatchSession()` and `_runTuiBackend()` (`start.dart`), the runner-side `McpSocketServer` is constructed with `project: config.name`. The `apply_migrations` callback is wired to `WatchSession.applyMigration`; the `create_migration` callback is a closure over `createMigrationAction(config: ...)` (the shared helper also used by the `serverpod create-migration` CLI command and the TUI "Create Migration" button); `hot_reload` is `WatchSession.forceReload`; `tail_logs` reads from `holder.state.logHistory` in the TUI path. The socket is closed on shutdown (signal, TUI quit, or session exit), which removes the file from the shared dir.
+In `_startWatchSession()` and `_runTuiBackend()` (`start.dart`), the runner-side `McpSocketServer` is constructed with `project: config.name`. The `apply_migrations` callback is wired to `WatchSession.applyMigration`; the `create_migration` callback is a closure over `createMigrationAction(config: ...)` (the shared helper also used by the `serverpod create-migration` CLI command and the TUI "Create Migration" button); `hot_reload` is `WatchSession.forceReload`; `tail_server_logs` reads from `holder.state.logHistory` in the TUI path. The socket is closed on shutdown (signal, TUI quit, or session exit), which removes the file from the shared dir.
 
 ### Live migration apply
 
@@ -163,9 +163,9 @@ Forwarding to one runner at a time keeps tool semantics unambiguous - the client
 Any operation that the AI agent reaches for mid-session against a running dev environment belongs on the MCP server, whether or not it strictly needs the CLI's in-memory state. Keeping those operations behind the socket gives agents a stable, discoverable interface tied to the specific running instance (no ambiguity about which project directory the action lands in) and avoids forcing the agent to shell out with the right flags and working directory each time.
 
 - Operations that need the CLI's in-memory state (compiler, server lifecycle) - `apply_migrations`, `hot_reload` - must live here.
-- Operations that are conceptually per-instance but don't strictly need in-memory state - `create_migration`, `tail_logs` - are exposed here too. The alternative (shelling out to `serverpod create-migration`) forces a context switch, adds a failure mode where the agent runs in the wrong directory, and makes tool discovery dependent on a shipped skill file.
+- Operations that are conceptually per-instance but don't strictly need in-memory state - `create_migration`, `tail_server_logs` - are exposed here too. The alternative (shelling out to `serverpod create-migration`) forces a context switch, adds a failure mode where the agent runs in the wrong directory, and makes tool discovery dependent on a shipped skill file.
 
-Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
+Commands that are project-setup / one-shot / infrastructure (`serverpod create`, `serverpod generate` outside watch mode, `serverpod mcp-server` itself) stay as CLI commands. They don't belong to a running instance and don't benefit from being forwarded through a socket.
 
 Future MCP tool candidates include `server_status` (only the CLI knows whether the server subprocess is running, compiling, or errored).
 
@@ -177,7 +177,7 @@ Future MCP tool candidates include `server_status` (only the CLI knows whether t
 
 ## Migration from the previous design
 
-The previous integration used a project-local socket at `<server>/.dart_tool/serverpod/mcp.sock` and shipped `serverpod mcp` as a transparent stdio-to-socket pipe. That socket path is no longer used. AI client config that just runs `serverpod mcp` continues to work; configs that invoked it from a particular project directory no longer need to - the bridge discovers instances independently of the AI client's working directory.
+The previous integration used a project-local socket at `<server>/.dart_tool/serverpod/mcp.sock` and shipped `serverpod mcp-server` as a transparent stdio-to-socket pipe. That socket path is no longer used. AI client config that just runs `serverpod mcp-server` continues to work; configs that invoked it from a particular project directory no longer need to - the bridge discovers instances independently of the AI client's working directory.
 
 ## Open Questions
 

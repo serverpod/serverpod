@@ -52,11 +52,18 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
 
   IsolatedAnalyzers._(super.create, this._logPort);
 
-  /// Creates and primes analyzers on a worker isolate.
+  /// Creates analyzers on a worker isolate.
+  ///
+  /// When [prime] is `true` (the default) the analyzers are also primed over all
+  /// sources before returning. Pass `false` to only spawn the isolate and defer
+  /// priming to the first [update] call.
   ///
   /// Log messages from the worker are forwarded to the main isolate's
   /// [log] singleton via a [SendPort].
-  static Future<IsolatedAnalyzers> create(GeneratorConfig config) async {
+  static Future<IsolatedAnalyzers> create(
+    GeneratorConfig config, {
+    bool prime = true,
+  }) async {
     final logPort = ReceivePort();
     logPort.listen((message) {
       final event = message as IsolateLogEvent;
@@ -78,7 +85,9 @@ final class IsolatedAnalyzers extends IsolatedObject<Analyzers>
       () {
         // Install a logger on the worker isolate that forwards to main.
         initializeLoggerWith(_PortForwardingLogger(logSendPort));
-        return Analyzers.createAndUpdate(config);
+        return prime
+            ? Analyzers.createAndUpdate(config)
+            : Analyzers.create(config);
       },
       logPort,
     );

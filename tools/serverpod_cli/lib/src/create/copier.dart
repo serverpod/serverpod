@@ -19,6 +19,8 @@ class Copier {
 
   bool processUncommentMarker;
 
+  final List<String> _writtenPaths = [];
+
   Copier({
     required this.srcDir,
     required this.dstDir,
@@ -32,8 +34,11 @@ class Copier {
          // the Serverpod repository when using a local built CLI.
          ..addAll(['pubspec.lock', 'pubspec_overrides.yaml']);
 
-  void copyFiles() {
+  /// Copies the template tree into [dstDir] and returns the absolute
+  /// paths of every file written.
+  List<String> copyFiles() {
     _copyDirectory(srcDir, '');
+    return _writtenPaths;
   }
 
   void _copyDirectory(Directory dir, String relativePath) {
@@ -77,6 +82,7 @@ class Copier {
     }
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
+    _writtenPaths.add(dstFile.path);
   }
 
   String _replace(String str, List<Replacement> replacements) {
@@ -122,10 +128,10 @@ class Copier {
 }
 
 class Replacement {
-  String slotName;
-  String replacement;
+  final String slotName;
+  final String replacement;
 
-  Replacement({
+  const Replacement({
     required this.slotName,
     required this.replacement,
   });

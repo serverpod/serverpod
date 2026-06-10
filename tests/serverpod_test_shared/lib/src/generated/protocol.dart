@@ -12,12 +12,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'shared/container.dart' as _i2;
-import 'shared/enum.dart' as _i3;
-import 'shared/exception.dart' as _i4;
-import 'shared/subclass.dart' as _i5;
-import 'shared/model.dart' as _i6;
-import 'shared/sealed/parent.dart' as _i7;
+import 'shared/dynamic_on_shared.dart' as _i3;
+import 'shared/enum.dart' as _i4;
+import 'shared/exception.dart' as _i5;
+import 'shared/subclass.dart' as _i6;
+import 'shared/model.dart' as _i7;
+import 'shared/sealed/parent.dart' as _i8;
 export 'shared/container.dart';
+export 'shared/dynamic_on_shared.dart';
 export 'shared/enum.dart';
 export 'shared/exception.dart';
 export 'shared/subclass.dart';
@@ -30,6 +32,15 @@ class Protocol extends _i1.SerializationManager {
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
+
+  final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  void registerHostProtocol(
+    String projectName,
+    _i1.SerializationManager protocol,
+  ) {
+    _hostProtocols.add(protocol);
+  }
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -61,38 +72,47 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.SharedContainer) {
       return _i2.SharedContainer.fromJson(data) as T;
     }
-    if (t == _i3.SharedEnum) {
-      return _i3.SharedEnum.fromJson(data) as T;
+    if (t == _i3.DynamicOnShared) {
+      return _i3.DynamicOnShared.fromJson(data) as T;
     }
-    if (t == _i4.SharedException) {
-      return _i4.SharedException.fromJson(data) as T;
+    if (t == _i4.SharedEnum) {
+      return _i4.SharedEnum.fromJson(data) as T;
     }
-    if (t == _i5.SharedSubclass) {
-      return _i5.SharedSubclass.fromJson(data) as T;
+    if (t == _i5.SharedException) {
+      return _i5.SharedException.fromJson(data) as T;
     }
-    if (t == _i6.SharedModel) {
-      return _i6.SharedModel.fromJson(data) as T;
+    if (t == _i6.SharedSubclass) {
+      return _i6.SharedSubclass.fromJson(data) as T;
     }
-    if (t == _i7.SharedSealedChild) {
-      return _i7.SharedSealedChild.fromJson(data) as T;
+    if (t == _i7.SharedModel) {
+      return _i7.SharedModel.fromJson(data) as T;
+    }
+    if (t == _i8.SharedSealedChild) {
+      return _i8.SharedSealedChild.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.SharedContainer?>()) {
       return (data != null ? _i2.SharedContainer.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i3.SharedEnum?>()) {
-      return (data != null ? _i3.SharedEnum.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i3.DynamicOnShared?>()) {
+      return (data != null ? _i3.DynamicOnShared.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i4.SharedException?>()) {
-      return (data != null ? _i4.SharedException.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.SharedEnum?>()) {
+      return (data != null ? _i4.SharedEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.SharedSubclass?>()) {
-      return (data != null ? _i5.SharedSubclass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.SharedException?>()) {
+      return (data != null ? _i5.SharedException.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.SharedModel?>()) {
-      return (data != null ? _i6.SharedModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.SharedSubclass?>()) {
+      return (data != null ? _i6.SharedSubclass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.SharedSealedChild?>()) {
-      return (data != null ? _i7.SharedSealedChild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.SharedModel?>()) {
+      return (data != null ? _i7.SharedModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.SharedSealedChild?>()) {
+      return (data != null ? _i8.SharedSealedChild.fromJson(data) : null) as T;
+    }
+    if (t == dynamic) {
+      return deserializeDynamicFieldValue(data) as T;
     }
     return super.deserialize<T>(data, t);
   }
@@ -100,11 +120,12 @@ class Protocol extends _i1.SerializationManager {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i2.SharedContainer => 'SharedContainer',
-      _i3.SharedEnum => 'SharedEnum',
-      _i4.SharedException => 'SharedException',
-      _i5.SharedSubclass => 'SharedSubclass',
-      _i6.SharedModel => 'SharedModel',
-      _i7.SharedSealedChild => 'SharedSealedChild',
+      _i3.DynamicOnShared => 'DynamicOnShared',
+      _i4.SharedEnum => 'SharedEnum',
+      _i5.SharedException => 'SharedException',
+      _i6.SharedSubclass => 'SharedSubclass',
+      _i7.SharedModel => 'SharedModel',
+      _i8.SharedSealedChild => 'SharedSealedChild',
       _ => null,
     };
   }
@@ -124,15 +145,17 @@ class Protocol extends _i1.SerializationManager {
     switch (data) {
       case _i2.SharedContainer():
         return 'SharedContainer';
-      case _i3.SharedEnum():
+      case _i3.DynamicOnShared():
+        return 'DynamicOnShared';
+      case _i4.SharedEnum():
         return 'SharedEnum';
-      case _i4.SharedException():
+      case _i5.SharedException():
         return 'SharedException';
-      case _i5.SharedSubclass():
+      case _i6.SharedSubclass():
         return 'SharedSubclass';
-      case _i6.SharedModel():
+      case _i7.SharedModel():
         return 'SharedModel';
-      case _i7.SharedSealedChild():
+      case _i8.SharedSealedChild():
         return 'SharedSealedChild';
     }
     return null;
@@ -147,23 +170,88 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SharedContainer') {
       return deserialize<_i2.SharedContainer>(data['data']);
     }
+    if (dataClassName == 'DynamicOnShared') {
+      return deserialize<_i3.DynamicOnShared>(data['data']);
+    }
     if (dataClassName == 'SharedEnum') {
-      return deserialize<_i3.SharedEnum>(data['data']);
+      return deserialize<_i4.SharedEnum>(data['data']);
     }
     if (dataClassName == 'SharedException') {
-      return deserialize<_i4.SharedException>(data['data']);
+      return deserialize<_i5.SharedException>(data['data']);
     }
     if (dataClassName == 'SharedSubclass') {
-      return deserialize<_i5.SharedSubclass>(data['data']);
+      return deserialize<_i6.SharedSubclass>(data['data']);
     }
     if (dataClassName == 'SharedModel') {
-      return deserialize<_i6.SharedModel>(data['data']);
+      return deserialize<_i7.SharedModel>(data['data']);
     }
     if (dataClassName == 'SharedSealedChild') {
-      return deserialize<_i7.SharedSealedChild>(data['data']);
+      return deserialize<_i8.SharedSealedChild>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
+
+  @override
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
+    if ((object is List || object is Set || object is Map) ||
+        getClassNameForObject(object) != null) {
+      return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+    }
+    for (final protocol in _hostProtocols) {
+      final className = protocol.getClassNameForObject(object);
+      if (className == null) continue;
+      final host = protocol.getModuleName();
+      final wrapped = {
+        'className': className.contains('.') ? className : '$host.$className',
+        'data': object,
+      };
+      return forProtocol
+          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i1.SerializationManager.toEncodable(wrapped);
+    }
+    return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+  }
+
+  @override
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is! Map<String, dynamic> || value['className'] is! String) {
+      throw FormatException(
+        'Dynamic fields are encoded as a Map with className and data, but got '
+        '${value.runtimeType} instead.',
+      );
+    }
+    final className = value['className'] as String;
+    for (final protocol in _hostProtocols) {
+      final host = protocol.getModuleName();
+      final hostPrefix = '$host.';
+      if (className.startsWith(hostPrefix)) {
+        final strippedClassName = className.substring(hostPrefix.length);
+        if (strippedClassName.contains('.')) {
+          throw FormatException(
+            'Dynamic field className must not use multiple prefixes: $className',
+          );
+        }
+        final hostData = Map<String, dynamic>.from(value);
+        hostData['className'] = strippedClassName;
+        return protocol.deserializeByClassName(hostData);
+      }
+    }
+    if (className.contains('.')) {
+      for (final protocol in _hostProtocols) {
+        try {
+          return protocol.deserializeByClassName(value);
+        } on FormatException catch (_) {}
+      }
+    }
+    return deserializeByClassName(value);
+  }
+
+  @override
+  String getModuleName() => 'serverpod_test';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

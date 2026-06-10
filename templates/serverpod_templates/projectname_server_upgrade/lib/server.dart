@@ -64,9 +64,10 @@ void run(List<String> args) async {
     // Serve the flutter web app under the /app path.
     pod.webServer.addRoute(
       FlutterRoute(
-        Directory(
-          Uri(path: 'web/app').toFilePath(),
-        ),
+        appDir,
+        // If building the Flutter app with WASM, set the below parameter to
+        // true and add the --wasm flag to the flutter build command.
+        enableWasmHeaders: false,
       ),
       '/app',
     );

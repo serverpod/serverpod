@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 12))
+@Timeout(Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -169,7 +169,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 15; retries++) {
+        for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
@@ -274,6 +274,14 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
+          );
+        });
+
+        test('has a Dockerfile', () {
+          expect(
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Server Dockerfile does not exist.',
           );
         });
 
@@ -390,30 +398,6 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server generated protocol.yaml file does not exist.',
-          );
-        });
-
-        test('has a web/app directory containing the flutter web app', () {
-          expect(
-            Directory(
-              path.join(tempPath, serverDir, 'web', 'app'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app directory does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'index.html'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/index.html file does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'main.dart.js'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/main.dart.js file does not exist.',
           );
         });
       });
@@ -658,13 +642,19 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
-        test('has a root .gitignore that ignores workspace .dart_tool', () {
-          final rootGitignore = File(
-            path.join(tempPath, projectName, '.gitignore'),
-          );
-          expect(rootGitignore.existsSync(), isTrue);
-          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
-        });
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
 
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
@@ -758,6 +748,18 @@ void main() async {
           },
         );
 
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(
@@ -771,15 +773,23 @@ void main() async {
             ).existsSync(),
             isTrue,
           );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
         });
 
         group('has Serverpod and Dart MCP servers configured', () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -788,40 +798,6 @@ void main() async {
   }
 }
 ''';
-
-          test('for Antigravity', () {
-            final antigravity = File(
-              path.join(
-                tempPath,
-                projectName,
-                '.gemini/antigravity/mcp_config.json',
-              ),
-            );
-            expect(antigravity.existsSync(), isTrue);
-            expect(
-              antigravity.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
-
-          test('for Codex', () {
-            final codex = File(
-              path.join(tempPath, projectName, '.codex/config.toml'),
-            );
-            expect(codex.existsSync(), isTrue);
-            expect(
-              codex.readAsStringSync(),
-              '''
-[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''',
-            );
-          });
 
           test('for Claude', () {
             final claude = File(
@@ -839,7 +815,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             expect(cursor.readAsStringSync(), genericConfig);
           });
 
-          test('for VSCode', () {
+          test('for VS Code', () {
             final vscode = File(
               path.join(tempPath, projectName, '.vscode/mcp.json'),
             );
@@ -1048,6 +1024,70 @@ args = ["mcp-server", "--force-roots-fallback"]
           reason: 'Client protocol client file does not exist.',
         );
       },
+    );
+  });
+
+  group('Given a created project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+
+    setUp(() async {
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          projectName,
+          '--no-analytics',
+          '--no-interactive',
+        ],
+        rootPath: rootPath,
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+    });
+
+    test(
+      'when building the server Dockerfile then the image is built successfully',
+      () async {
+        // Temporarily remove the `enableWasmHeaders` parameter from server.dart
+        // because it has not been published yet and the Dockerfile won't have
+        // access to the local override. Once published, we can remove this.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        serverFile.writeAsStringSync(serverSource.replaceAll(wasmHeaders, ''));
+
+        final dockerBuildProcess = await startProcess(
+          'docker',
+          [
+            'build',
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await dockerBuildProcess.kill();
+        });
+
+        expect(
+          await dockerBuildProcess.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
     );
   });
 

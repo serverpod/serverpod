@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Mutable holder for `serverArgs` so the migration-fallback hook can
 /// prepend `--apply-migrations` and have the next pod start observe it.
@@ -32,21 +32,25 @@ final class WatchLoopAborted extends WatchLoopSetupResult {
 class WatchLoopContext {
   final WatchSession session;
   final VmServiceProxy? proxy;
+  final VmServiceProxy flutterProxy;
   final McpSocketServer? mcpSocket;
   final StreamSubscription<void>? fileChangeSub;
   final Future<void> Function() closeAnalyzers;
   final Future<void> Function()? stopDocker;
   final String vmServiceInfoFile;
+  final String flutterVmServiceInfoFile;
   bool _disposed = false;
 
   WatchLoopContext({
     required this.session,
     required this.proxy,
+    required this.flutterProxy,
     required this.mcpSocket,
     required this.fileChangeSub,
     required this.closeAnalyzers,
     required this.stopDocker,
     required this.vmServiceInfoFile,
+    required this.flutterVmServiceInfoFile,
   });
 
   /// Whether [dispose] has been called.
@@ -60,7 +64,9 @@ class WatchLoopContext {
     await closeAnalyzers();
     await session.dispose();
     await proxy?.close();
+    await flutterProxy.close();
     await File(vmServiceInfoFile).deleteIfExists();
+    await File(flutterVmServiceInfoFile).deleteIfExists();
     await stopDocker?.call();
   }
 }

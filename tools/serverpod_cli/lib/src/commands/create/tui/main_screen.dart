@@ -1,12 +1,6 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/components/bordered_box.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button.dart';
-import 'package:serverpod_cli/src/commands/tui/components/button_bar.dart';
-import 'package:serverpod_cli/src/commands/tui/components/log_viewer.dart';
-import 'package:serverpod_cli/src/commands/tui/components/radio_button.dart';
-import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 class MainScreen extends StatelessComponent {
   const MainScreen({
@@ -29,10 +23,10 @@ class MainScreen extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final state = holder.state;
-    final creatingProject = state.creatingProject;
+    final creatingProject = holder.state.creatingProject;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: BorderedBox(
@@ -40,7 +34,7 @@ class MainScreen extends StatelessComponent {
               children: [
                 _buildHeader(theme),
                 Expanded(
-                  child: creatingProject ? _buildLogView() : _buildForm(theme),
+                  child: creatingProject ? _buildLogView() : _buildForm(),
                 ),
               ],
             ),
@@ -73,106 +67,25 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildForm(ServerpodThemeData theme) {
-    return Scrollbar(
-      controller: scrollController,
-      thumbVisibility: true,
-      child: SingleChildScrollView(
-        controller: scrollController,
-        child: _buildConfigurations(theme),
-      ),
-    );
-  }
-
-  Component _buildConfigurations(ServerpodThemeData theme) {
+  Component _buildForm() {
     final state = holder.state;
-    final configurations = state.configValues;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final config in configurations.indexed) ...[
-          _buildConfiguration(
-            theme,
-            config.$2,
-            config.$1 == state.focusedConfigIndex,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Component _buildConfiguration(
-    ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool focused,
-  ) {
-    final state = holder.state;
-    final selectedOption = state.getSelectedOptionFor(config);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 1),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 1),
-        color: focused ? theme.highlight : null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              config.label,
-              style: const TextStyle(
-                color: Color.defaultColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Row(
-              children: [
-                for (final option in config.options.indexed) ...[
-                  _buildConfigurationOption(
-                    theme,
-                    option.$2,
-                    selected: selectedOption == option.$2,
-                    style: const TextStyle(color: Color.defaultColor),
-                    onTap: () {
-                      state.updateSelectedOption(config, option.$2);
-                      holder.markDirty();
-                    },
-                  ),
-                  const SizedBox(width: 2),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Component _buildConfigurationOption(
-    ServerpodThemeData theme,
-    ConfigOption option, {
-    required bool selected,
-    required TextStyle style,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: RadioButton(
-        label: option.label,
-        value: selected,
-        style: style,
-      ),
+    return Form(
+      state: state.form,
+      scrollController: scrollController,
+      rebuild: holder.markDirty,
     );
   }
 
   Component _buildButtonBar(ServerpodThemeData theme) {
     final state = holder.state;
+    final form = state.form;
     final creatingProject = state.creatingProject;
     return ButtonBar(
       buttons: [
         Button(
           name: 'Create Project',
           activationChar: 'Enter',
-          enabled: !creatingProject,
+          enabled: !creatingProject && state.canCreate,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
             state.markCreatingProject();
@@ -182,22 +95,33 @@ class MainScreen extends StatelessComponent {
         ),
         Button(
           name: 'Navigate',
-          activationChar: '↑↓',
+          activationChar: '←↑↓→',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowUp, LogicalKey.arrowDown],
+          activationKeys: const [
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
+            LogicalKey.arrowLeft,
+            LogicalKey.arrowRight,
+          ],
           onActivate: (key) {
             switch (key) {
+              case LogicalKey.arrowLeft:
+                form.updateFocusedConfigOption(-1);
+                break;
+              case LogicalKey.arrowRight:
+                form.updateFocusedConfigOption(1);
+                break;
               case LogicalKey.arrowUp:
-                state.updateFocusedConfig(-1);
-                if (state.focusedConfigIndex == state.maxFocusedConfigIndex) {
+                form.updateFocusedConfig(-1);
+                if (form.focusedConfigIndex == form.maxFocusedConfigIndex) {
                   scrollController.scrollToEnd();
                 } else {
                   scrollController.scrollUp(3);
                 }
                 break;
               case LogicalKey.arrowDown:
-                state.updateFocusedConfig(1);
-                if (state.focusedConfigIndex == 0) {
+                form.updateFocusedConfig(1);
+                if (form.focusedConfigIndex == 0) {
                   scrollController.scrollToStart();
                 } else {
                   scrollController.scrollDown(3);
@@ -209,18 +133,11 @@ class MainScreen extends StatelessComponent {
         ),
         Button(
           name: 'Select',
-          activationChar: '←→',
+          activationChar: 'Space',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowLeft, LogicalKey.arrowRight],
-          onActivate: (key) {
-            switch (key) {
-              case LogicalKey.arrowLeft:
-                state.selectConfigOption(-1);
-                break;
-              case LogicalKey.arrowRight:
-                state.selectConfigOption(1);
-                break;
-            }
+          activationKeys: const [LogicalKey.space],
+          onActivate: (_) {
+            form.selectConfigOption();
             holder.markDirty();
           },
         ),
@@ -232,6 +149,10 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
+        if (state.canCreate)
+          const Tip('Click to select')
+        else
+          const Tip('Select at least one IDE'),
       ],
     );
   }

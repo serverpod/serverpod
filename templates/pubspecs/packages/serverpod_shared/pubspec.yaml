@@ -12,9 +12,11 @@ environment:
 
 dependencies:
   crypto: ^3.0.2
+  ffi: ^2.1.4
   meta: ^1.15.0
   path: ^1.8.3
   super_string: ^1.0.3
+  win32: ^6.0.0
   yaml: ^3.1.2
 
 dev_dependencies:

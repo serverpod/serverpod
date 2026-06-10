@@ -717,7 +717,7 @@ class TypeDefinition {
       return [
         MapEntry(
           refer('dynamic'),
-          const Code('decodeDynamicFieldValue(data) as T'),
+          const Code('deserializeDynamicFieldValue(data) as T'),
         ),
       ];
     } else if (customClass) {

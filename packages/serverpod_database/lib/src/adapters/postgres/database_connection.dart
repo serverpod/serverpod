@@ -7,6 +7,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
@@ -20,7 +21,7 @@ part 'postgres_exceptions.dart';
 class PostgresDatabaseConnection
     extends DatabaseConnection<PostgresPoolManager> {
   /// Access to the raw Postgresql connection pool.
-  pg.Pool get _postgresConnection => poolManager.pool;
+  Future<pg.Pool> get _postgresConnection => poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [DatabaseSession]
@@ -641,7 +642,7 @@ class PostgresDatabaseConnection
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
-    required pg.Session context,
+    required Future<pg.Session> context,
   }) async {
     assert(
       simpleQueryMode == false ||
@@ -655,7 +656,8 @@ class PostgresDatabaseConnection
 
     var startTime = DateTime.now();
     try {
-      var result = await context.execute(
+      final resolvedContext = await context;
+      var result = await resolvedContext.execute(
         parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
         ignoreRows: ignoreRows,
@@ -773,7 +775,7 @@ class PostgresDatabaseConnection
     });
   }
 
-  pg.Session _resolveQueryContext(Transaction? transaction) {
+  Future<pg.Session> _resolveQueryContext(Transaction? transaction) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     return postgresTransaction?.executionContext ?? _postgresConnection;
   }
@@ -801,6 +803,8 @@ class PostgresDatabaseConnection
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -808,6 +812,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .map(poolManager.serializationManager.deserialize<T>)
@@ -841,7 +846,7 @@ class PostgresDatabaseConnection
     TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,
     required DatabaseSession session,
-  }) {
+  }) async {
     var pgTransactionSettings = pg.TransactionSettings(
       isolationLevel: switch (settings.isolationLevel) {
         IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
@@ -852,7 +857,8 @@ class PostgresDatabaseConnection
       },
     );
 
-    return _postgresConnection.runTx<R>(
+    final connection = await _postgresConnection;
+    return connection.runTx<R>(
       (ctx) {
         var transaction = _PostgresTransaction(
           ctx,
@@ -929,6 +935,10 @@ class PostgresDatabaseConnection
           transaction,
         );
 
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -936,6 +946,7 @@ class PostgresDatabaseConnection
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()
@@ -1161,7 +1172,7 @@ class _PostgresTransaction implements Transaction {
       _session,
       query,
       parameters: parameters,
-      context: executionContext,
+      context: Future.value(executionContext),
     );
   }
 

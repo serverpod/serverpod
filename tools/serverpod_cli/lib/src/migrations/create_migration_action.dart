@@ -78,6 +78,7 @@ extension MigrationOutcomeExtension on CreateMigrationOutcome {
 Future<CreateMigrationOutcome> createMigrationAction({
   required GeneratorConfig config,
   String? tag,
+  bool empty = false,
   bool force = false,
 }) async {
   if (!config.isFeatureEnabled(ServerpodFeature.database)) {
@@ -101,10 +102,8 @@ Future<CreateMigrationOutcome> createMigrationAction({
   MigrationGenerationContext generationContext;
   try {
     generationContext = await MigrationGenerationContext.load(config);
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
+  } on GenerateMigrationDatabaseDefinitionException catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
   final hasClientMigrations = generationContext.hasClientDatabaseTables;
@@ -128,6 +127,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
 
   final results = await Future.wait([
     _createMigration(
+      empty: empty,
       force: force,
       config: config,
       precomputedVersion: precomputedVersion,
@@ -137,6 +137,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
     if (hasClientMigrations)
       _createMigration(
         config: config,
+        empty: empty,
         force: force,
         precomputedVersion: precomputedVersion,
         generator: clientGenerator!,
@@ -157,6 +158,7 @@ Future<CreateMigrationOutcome> createMigrationAction({
 Future<CreateMigrationOutcome> _createMigration({
   required MigrationGenerator generator,
   required GeneratorConfig config,
+  required bool empty,
   required bool force,
   required MigrationGenerationContext context,
   required String precomputedVersion,
@@ -164,28 +166,16 @@ Future<CreateMigrationOutcome> _createMigration({
   MigrationVersionArtifacts? migration;
   try {
     migration = await generator.createMigration(
+      empty: empty,
       force: force,
       config: config,
       context: context,
       precomputedVersion: precomputedVersion,
     );
-  } on MigrationVersionLoadException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to determine latest database definition due to a corrupted '
-      'migration. Please re-create or remove the migration version and try '
-      'again. Migration version: "${e.versionName}".\n${e.exception}',
-    );
-  } on GenerateMigrationDatabaseDefinitionException {
-    return const CreateMigrationFailed(
-      'Unable to generate database definition for project.',
-    );
-  } on MigrationVersionAlreadyExistsException catch (e) {
-    return CreateMigrationFailed(
-      'Unable to create migration. A directory with the same name already '
-      'exists: "${e.directoryPath}".',
-    );
   } on MigrationAbortedException {
     return const CreateMigrationAborted();
+  } on Exception catch (e) {
+    return CreateMigrationFailed('$e');
   }
 
   if (migration == null) {

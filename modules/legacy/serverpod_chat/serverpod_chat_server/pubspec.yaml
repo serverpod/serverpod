@@ -3,7 +3,7 @@
 
 name: serverpod_chat_server
 description: Serverpod chat server module.
-version: 3.5.0-beta.7
+version: 3.5.0-beta.10
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -13,12 +13,12 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   path: ^1.8.3
-  serverpod: 3.5.0-beta.7
-  serverpod_auth_server: 3.5.0-beta.7
-  serverpod_serialization: 3.5.0-beta.7
+  serverpod: 3.5.0-beta.10
+  serverpod_auth_server: 3.5.0-beta.10
+  serverpod_serialization: 3.5.0-beta.10
 
 dev_dependencies:
-  serverpod_lints: 3.5.0-beta.7
+  serverpod_lints: 3.5.0-beta.10
 
 dependency_overrides:
   serverpod:
@@ -27,6 +27,8 @@ dependency_overrides:
     path: ../../serverpod_auth/serverpod_auth_server
   serverpod_database:
     path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

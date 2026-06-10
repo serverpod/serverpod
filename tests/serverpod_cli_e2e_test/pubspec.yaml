@@ -15,8 +15,8 @@ dev_dependencies:
   async: ^2.11.0
   collection: ^1.18.0
   lints: '>=3.0.0 <7.0.0'
-  serverpod_cli: 3.5.0-beta.7
-  serverpod_lints: 3.5.0-beta.7
+  serverpod_cli: 3.5.0-beta.10
+  serverpod_lints: 3.5.0-beta.10
   test_descriptor: ^2.0.2
   uuid: ^4.5.3
 
@@ -27,6 +27,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

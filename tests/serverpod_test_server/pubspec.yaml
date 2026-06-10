@@ -14,9 +14,9 @@ dependencies:
   clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
   relic: ^1.2.0
-  serverpod: 3.5.0-beta.7
-  serverpod_auth_server: 3.5.0-beta.7
-  serverpod_cloud_storage_s3: 3.5.0-beta.7
+  serverpod: 3.5.0-beta.10
+  serverpod_auth_server: 3.5.0-beta.10
+  serverpod_cloud_storage_s3: 3.5.0-beta.10
   serverpod_test_module_server:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_test_shared:
@@ -28,9 +28,9 @@ dependencies:
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   path: ^1.8.3
-  serverpod_cli: 3.5.0-beta.7
-  serverpod_service_client: 3.5.0-beta.7
-  serverpod_test: 3.5.0-beta.7
+  serverpod_cli: 3.5.0-beta.10
+  serverpod_service_client: 3.5.0-beta.10
+  serverpod_test: 3.5.0-beta.10
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:
@@ -55,6 +55,8 @@ dependency_overrides:
     path: ../../integrations/serverpod_cloud_storage_s3_compat
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

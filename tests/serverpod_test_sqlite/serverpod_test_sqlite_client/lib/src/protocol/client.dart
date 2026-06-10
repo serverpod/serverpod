@@ -14,8 +14,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/simple_data.dart'
     as _i3;
-import 'protocol.dart' as _i4;
-import 'package:serverpod_database/serverpod_database.dart' as _i5;
+import 'package:http/http.dart' as _i4;
+import 'protocol.dart' as _i5;
+import 'package:serverpod_database/serverpod_database.dart' as _i6;
 import 'package:serverpod_test_sqlite_client/migrations/migration_registry.dart';
 
 /// {@category Endpoint}
@@ -79,9 +80,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i4.Client? httpClientOverride,
   }) : super(
          host,
-         _i4.Protocol(),
+         _i5.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -89,6 +91,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     testTools = EndpointTestTools(this);
   }
@@ -116,14 +119,14 @@ class Client extends _i1.ServerpodClientShared {
   /// If [isDebugMode] is true, the database integrity will be verified after
   /// the migrations are applied to provide feedback of possible issues. On a
   /// Flutter application, this should be set to [kDebugMode].
-  _i2.Future<_i5.ClientDatabaseSession> createSession(
+  _i2.Future<_i6.ClientDatabaseSession> createSession(
     String path, {
     bool runMigrations = true,
     bool isDebugMode = false,
   }) async {
-    return await _i5.ClientDatabaseSession.open(
+    return await _i6.ClientDatabaseSession.open(
       path,
-      _i4.Protocol(),
+      _i5.Protocol(),
       clientMigrations: MigrationRegistry.migrations,
       runMigrations: runMigrations,
       isDebugMode: isDebugMode,

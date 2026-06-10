@@ -1017,7 +1017,7 @@ class SerializableModelLibraryGenerator {
         // Since `dynamic` also covers `_Undefined`, the check for `param`
         // must be inverted to explicitly not be `_Undefined`.
         valueDefinition = refer(field.name)
-            .isNotA(refer('_Undefined'))
+            .notEqualTo(refer('_Undefined'))
             .conditional(
               refer(field.name),
               assignment,
@@ -1697,10 +1697,10 @@ class SerializableModelLibraryGenerator {
       currentSharedPackageName: currentSharedPackageName,
     );
     if (fieldType.className == 'dynamic') {
-      var encodeMethod = methodName == _toJsonForProtocolMethodName
-          ? 'encodeWithTypeForProtocol'
-          : 'encodeWithType';
-      return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
+      final methodToJson = protocolRef.call([]).property('dynamicFieldToJson');
+      return (methodName == _toJsonForProtocolMethodName)
+          ? methodToJson.call([fieldRef], {'forProtocol': literal(true)})
+          : methodToJson.call([fieldRef]);
     }
     if (fieldType.isRecordType) {
       return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
@@ -3519,6 +3519,11 @@ class SerializableModelLibraryGenerator {
   /// Generate a temporary protocol library, that just exports the models.
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
+  ///
+  /// Also includes a stub [Protocol] class extending [SerializationManager] so
+  /// generated model files that call `Protocol()` compile even before the full
+  /// protocol is written. The stub is overwritten by the real [Protocol] when
+  /// [ServerpodCodeGenerator.generateProtocolDefinition] runs.
   Library generateTemporaryProtocol({
     required List<SerializableModelDefinition> models,
   }) {
@@ -3526,13 +3531,78 @@ class SerializableModelLibraryGenerator {
 
     library.name = 'protocol';
 
+    if (serverCode) {
+      library.directives.add(
+        Directive.import(
+          'package:serverpod_serialization/serverpod_serialization.dart',
+        ),
+      );
+    }
+
     // exports
     library.directives.addAll([
       for (var classInfo in models) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
+    library.body.add(_buildTemporaryProtocolStubClass());
+
     return library.build();
+  }
+
+  /// Stub [Protocol] used only while the temporary protocol.dart is on disk.
+  ///
+  /// Extends [SerializationManager] so generated model code inherits correct
+  /// signatures for `deserialize`, `dynamicFieldToJson`, and related helpers.
+  /// Only [mapRecordToJson] and [mapContainerToJson] are declared here because
+  /// they are generated on [Protocol], not on the base class.
+  Class _buildTemporaryProtocolStubClass() {
+    return Class(
+      (c) => c
+        ..name = 'Protocol'
+        ..extend = refer('SerializationManager')
+        ..constructors.addAll([
+          Constructor(
+            (c) => c
+              ..factory = true
+              ..redirect = refer('_'),
+          ),
+          Constructor((c) => c..name = '_'),
+        ])
+        ..methods.addAll([
+          Method(
+            (m) => m
+              ..name = mapRecordToJsonFuncName
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([refer('String'), refer('dynamic')])
+                  ..isNullable = true,
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'record'
+                    ..type = refer('Record?'),
+                ),
+              )
+              ..body = literalNull.returned.statement,
+          ),
+          Method(
+            (m) => m
+              ..name = mapContainerToJsonFunctionName
+              ..returns = refer('Object?')
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'obj'
+                    ..type = refer('Object'),
+                ),
+              )
+              ..body = refer('obj').returned.statement,
+          ),
+        ]),
+    );
   }
 
   Reference _createSerializableFieldNameReference(

@@ -2890,7 +2890,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           as T;
     }
     if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
+      return deserializeDynamicFieldValue(data) as T;
     }
     if (t == List<dynamic>) {
       return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;

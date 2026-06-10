@@ -67,22 +67,6 @@ class CommandLineTools {
     );
     return exitCode == 0;
   }
-
-  static Future<bool> dartFormat(File file) async {
-    log.debug('Running `dart format ${file.path}`', newParagraph: true);
-
-    var exitCode = await _runProcessWithDefaultLogger(
-      executable: 'dart',
-      arguments: ['format', file.path],
-    );
-
-    if (exitCode != 0) {
-      _logError('Failed to run `dart format ${file.path}`');
-      return false;
-    }
-
-    return true;
-  }
 }
 
 Future<int> _runProcessWithDefaultLogger({

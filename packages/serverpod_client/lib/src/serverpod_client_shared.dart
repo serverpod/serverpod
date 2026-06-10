@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
@@ -230,6 +231,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    http.Client? httpClientOverride,
   }) : host = host.endsWith('/') ? host : '$host/',
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
@@ -242,6 +244,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       connectionTimeout: this.connectionTimeout,
       serializationManager: serializationManager,
       securityContext: securityContext,
+      httpClientOverride: httpClientOverride,
     );
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
@@ -555,8 +558,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
       var authenticationValue = authenticated
           ? await authKeyProvider?.authHeaderValue
           : null;
-      var body = formatArgs(args, method);
-      var url = Uri.parse('$host$endpoint');
+      var body = formatArgs(args);
+      var url = method.isEmpty
+          ? Uri.parse('$host$endpoint')
+          : Uri.parse('$host$endpoint/$method');
 
       var data = await _requestDelegate.serverRequest(
         url,
@@ -617,7 +622,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
         error = e;
       }
 
-      connectionDetails.outputController.addError(error);
+      if (!connectionDetails.outputController.isClosed) {
+        connectionDetails.outputController.addError(error);
+      }
       connectionDetails.outputController.close();
     });
 

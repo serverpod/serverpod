@@ -10,6 +10,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
@@ -20,20 +22,22 @@ import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/commands/tui/run_app.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_sink.dart';
-import 'package:serverpod_cli/src/commands/tui/tui_log_writer.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
-import 'package:serverpod_cli/src/generator/generation_staleness.dart';
+import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
+import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
+import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
+import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -62,9 +66,11 @@ enum StartOption<V> implements OptionDefinition<V> {
   docker(
     FlagOption(
       argName: 'docker',
-      defaultsTo: true,
+      defaultsTo: false,
       helpText:
-          'Start Docker Compose services if a docker-compose.yaml exists.',
+          'Start Docker Compose services if a docker-compose.yaml exists. '
+          'Default off; pass --docker to opt in to compose-managed services '
+          '(typically Redis when running PostgreSQL separately).',
     ),
   ),
   tui(
@@ -72,6 +78,36 @@ enum StartOption<V> implements OptionDefinition<V> {
       argName: 'tui',
       defaultsTo: true,
       helpText: 'Show interactive terminal UI.',
+    ),
+  ),
+  flutter(
+    FlagOption(
+      argName: 'flutter',
+      defaultsTo: true,
+      helpText:
+          'Launch the project\'s Flutter app alongside the server when a '
+          'companion Flutter package is present. Silently skipped for '
+          'projects without one. Use --no-flutter to disable.',
+    ),
+  ),
+  flutterDevice(
+    StringOption(
+      argName: 'flutter-device',
+      defaultsTo: flutterDeviceWebServerWithBrowser,
+      helpText:
+          'Target device for `flutter run -d`. Defaults to "web-server" '
+          'and launches the default browser as soon as the app is ready.',
+    ),
+  ),
+  flutterOption(
+    MultiOption(
+      argName: 'flutter-option',
+      multiParser: MultiParser(StringParser()),
+      helpText:
+          'Extra argument forwarded to `flutter run`. Repeatable, e.g. '
+          '--flutter-option=--web-hostname=0.0.0.0 '
+          '--flutter-option=--web-port=8090.',
+      defaultsTo: [],
     ),
   ),
   ;
@@ -117,6 +153,21 @@ class StartCommand extends ServerpodCommand<StartOption> {
   ) async {
     final watch = commandConfig.value(StartOption.watch);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
+    final launchFlutterApp = commandConfig.value(StartOption.flutter);
+    final flutterDevice = commandConfig.value(StartOption.flutterDevice);
+    // Narrow once: MultiOption.value() returns List<dynamic>.
+    final flutterExtraArgs = List<String>.from(
+      commandConfig.value(StartOption.flutterOption) as Iterable,
+    );
+    // Mirror serverpod -v into flutter; output flows via log.debug.
+    final verbose =
+        serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.verbose,
+        ) ??
+        false;
+    if (verbose && !flutterExtraArgs.contains('--verbose')) {
+      flutterExtraArgs.insert(0, '--verbose');
+    }
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
@@ -132,9 +183,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
         ),
       );
 
+      // Bail before the TUI takes over the terminal
+      if (await _detectExistingInstance(config)) return;
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
+        launchFlutterApp: launchFlutterApp,
+        flutterDevice: flutterDevice,
+        flutterExtraArgs: flutterExtraArgs,
         serverArgs: argResults?.rest ?? [],
         config: config,
       );
@@ -164,6 +221,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    if (await _detectExistingInstance(config)) return;
+
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.value(StartOption.docker);
 
@@ -184,6 +243,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
         serverArgs: serverArgs,
         watch: watch,
         docker: docker,
+        launchFlutterApp: launchFlutterApp,
+        flutterDevice: flutterDevice,
+        flutterExtraArgs: flutterExtraArgs,
         shutdown: shutdown,
       );
       switch (result) {
@@ -303,26 +365,24 @@ List<String> _withApplyMigrations(List<String> serverArgs) {
   return ['--apply-migrations', ...serverArgs];
 }
 
-/// Watch-session [ApplyMigrationsAction] that wraps [applyPendingMigrations]
-/// with the same FFI-resolver fallback policy as the boot path
-Future<ApplyMigrationsOutcome> _applyMigrationsForSession({
+/// Watch-session [ApplyMigrationsAction] that applies pending and repair
+/// migrations by calling the running pod's `applyMigrations` endpoint. The
+/// pod itself runs the migration in-process; the CLI only triggers it.
+Future<void> _applyMigrationsForSession({
   required String serverDir,
   required String runMode,
-  required String moduleName,
-  required void Function() onDeferToPod,
 }) async {
+  final client = ConfigInfo(
+    runMode,
+    serverDir: serverDir,
+  ).createServiceClient();
   try {
-    final applied = await applyPendingMigrations(
-      serverDir: serverDir,
-      runMode: runMode,
-      moduleName: moduleName,
+    await client.insights.applyMigrations(
+      applyRepairMigration: true,
+      applyMigrations: true,
     );
-    log.info(formatAppliedMigrations(applied));
-    return const MigrationsApplied();
-  } catch (e) {
-    if (!isMissingNativeAssetError(e)) rethrow;
-    onDeferToPod();
-    return const MigrationsRequirePodRestart();
+  } finally {
+    client.close();
   }
 }
 
@@ -333,11 +393,20 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required ServerArgsRef serverArgs,
   required bool watch,
   required bool docker,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
+  IOSink? flutterStdoutSink,
+  IOSink? flutterStderrSink,
+  void Function(String stage)? onFlutterProgress,
+  void Function(String url)? onFlutterReady,
   Future<void> Function(ServerProcess server)? onServerStart,
+  Future<void> Function(FlutterProcess flutter)? onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
+  List<String> Function()? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
@@ -347,8 +416,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+  final flutterVmServiceInfoFile = p.join(
+    serverpodToolDir,
+    'flutter-vm-service-info.json',
+  );
 
-  // Start Docker Compose services if needed.
+  // If a server is already running, abort so the IDE can attach to the
+  // existing instance via the unchanged info file. Cheap local check; runs
+  // before Docker Compose provisioning so we don't pay compose-up just to
+  // discard it.
+  final existingUri = await _checkExistingServer(vmServiceInfoFile);
+  if (existingUri != null) {
+    log.info('Existing server found.');
+    log.info('VM service proxy listening on $existingUri');
+    return const WatchLoopAborted(0);
+  }
+
   var startedDocker = false;
   if (docker) {
     await log.progress('Starting Docker services', () async {
@@ -361,51 +444,62 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     if (startedDocker) await _stopDockerServices(serverDir);
   }
 
-  // If a server is already running, abort so the IDE can attach to the
-  // existing instance via the unchanged info file.
-  final existingUri = await _checkExistingServer(vmServiceInfoFile);
-  if (existingUri != null) {
-    log.info('Existing server found.');
-    log.info('VM service proxy listening on $existingUri');
+  Future<void> rollbackProvisioning() async {
     await stopDockerIfStarted();
-    return const WatchLoopAborted(0);
   }
 
   // Apply pending migrations from the CLI before booting the pod.
   try {
     serverArgs.value = _withApplyMigrations(serverArgs.value);
   } catch (_) {
-    await stopDockerIfStarted();
+    await rollbackProvisioning();
     rethrow;
   }
 
-  final analyzersFuture = IsolatedAnalyzers.create(config);
+  // prime: false - the single full prime happens inside generateIfStale; here
+  // we only spawn the isolate eagerly so it overlaps the staleness check.
+  final analyzersFuture = IsolatedAnalyzers.create(config, prime: false);
   Future<void> closeAnalyzers() async => (await analyzersFuture).close();
 
-  // Code generation staleness check.
-  final allSources = await enumerateSourceFiles(config);
-  if (!await isGenerationUpToDate(config, allSources)) {
-    late final IsolatedAnalyzers analyzers;
-    await log.progress('Initializing analyzers', () async {
-      analyzers = await analyzersFuture;
-      return true;
-    });
-    late final ({bool success, Set<String> generatedFiles}) genResult;
-    await log.progress('Generating code', () async {
-      genResult = await analyzeAndGenerate(
-        analyzers: analyzers,
-        config: config,
-        affectedPaths: allSources,
-        requirements: GenerationRequirements.full,
-      );
-      return genResult.success;
-    });
-    if (!genResult.success) {
-      log.error('Code generation failed.');
+  // Tear down everything provisioned so far: the analyzer isolate and any
+  // Docker services. A failed/in-flight analyzer future must not prevent the
+  // Docker teardown, so closing it is guarded.
+  Future<void> rollbackStartup() async {
+    try {
       await closeAnalyzers();
-      await stopDockerIfStarted();
-      return const WatchLoopAborted(1);
-    }
+    } catch (_) {}
+    await rollbackProvisioning();
+  }
+
+  // keepPrimedWhenFresh: the analyzers are needed by the watch session even when
+  // generation is up to date.
+  late final ({bool upToDate, bool success}) genResult;
+  try {
+    genResult = await generateIfStale(
+      config: config,
+      keepPrimedWhenFresh: true,
+      createAnalyzers: () async {
+        late final IsolatedAnalyzers analyzers;
+        await log.progress('Initializing analyzers', () async {
+          analyzers = await analyzersFuture;
+          return true;
+        });
+        return analyzers;
+      },
+    );
+  } catch (_) {
+    // Tear down even when analysis/generation throws, not just on a clean
+    // failure.
+    await rollbackStartup();
+    rethrow;
+  }
+  if (!genResult.success) {
+    log.error('Code generation failed.');
+    await rollbackStartup();
+    return const WatchLoopAborted(1);
+  }
+  if (genResult.upToDate) {
+    log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
   // FES setup (watch mode only).
@@ -431,8 +525,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       return hooksOk;
     });
     if (!hooksOk) {
-      await closeAnalyzers();
-      await stopDockerIfStarted();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -446,8 +539,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     )) {
       await localCompiler.dispose();
       log.error('Initial compilation failed.');
-      await closeAnalyzers();
-      await stopDockerIfStarted();
+      await rollbackStartup();
       return const WatchLoopAborted(1);
     }
 
@@ -455,6 +547,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     nativeAssetsBuilder = localBuilder;
     dartExecutable = localCompiler.dartExecutable;
   }
+
+  // IDE-facing Flutter VM-service proxy. Bound now so the info file
+  // exists at session start regardless of whether `--flutter` was
+  // passed; the upstream is set later when FlutterProcess connects.
+  Future<void> Function() spawnFlutterAppIfNeeded = () async {};
+  final flutterProxy = await _bindFlutterProxy(
+    infoFile: flutterVmServiceInfoFile,
+    onWaitingClientArrived: () => spawnFlutterAppIfNeeded(),
+  );
 
   // Server process factory. Invoked for the initial start and for each
   // subsequent restart driven by the WatchSession
@@ -489,8 +590,129 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Construct the watch session.
+  // Needed for the Flutter dev-mode gate and the migration action.
   final runMode = runModeFromServerArgs(serverArgs.value);
+
+  // Spawn the Flutter app subprocess.
+  //
+  // Calling while previous instance is still running is a no-op.
+  FlutterProcess? flutterProcess;
+  var spawnInFlight = false;
+  // Set by the restart action when the spawn replaces a previously running
+  // app, so the progress message reads as a relaunch rather than a first run.
+  var flutterRelaunchInProgress = false;
+  spawnFlutterAppIfNeeded = () async {
+    if (runMode != 'development') return;
+    if (!config.hasFlutterPackage) {
+      log.info(flutterPackageNotFound);
+      return;
+    }
+    final existing = flutterProcess;
+    if (existing != null && existing.isRunning) return;
+    if (spawnInFlight) return;
+    spawnInFlight = true;
+    final isRelaunch = flutterRelaunchInProgress;
+    flutterRelaunchInProgress = false;
+
+    final fp = FlutterProcess(
+      flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
+      device: flutterDevice,
+      extraArgs: flutterExtraArgs,
+      flutterProxy: flutterProxy,
+      stdoutSink: flutterStdoutSink,
+      stderrSink: flutterStderrSink,
+      onProgress: (stage) {
+        onFlutterProgress?.call(stage);
+        if (onFlutterProgress == null) {
+          log.info('  Flutter: $stage');
+        }
+      },
+    );
+    try {
+      await fp.start();
+    } on FlutterNotInstalledException catch (e) {
+      log.warning(e.message);
+      spawnInFlight = false;
+      return;
+    } catch (_) {
+      spawnInFlight = false;
+      rethrow;
+    }
+    flutterProcess = fp;
+    spawnInFlight = false;
+
+    // Background: Server-running shouldn't wait on Flutter launch.
+    // On `-d web-server` `launched` pends until a browser attaches.
+    unawaited(() async {
+      await log.progress(
+        isRelaunch
+            ? 'Relaunching Flutter app'
+            : 'Launching Flutter app (first run may take 30-60s)',
+        () async {
+          await fp.launched;
+          return true;
+        },
+      );
+      final url = fp.flutterAppUrl;
+      if (url != null) {
+        log.info('Flutter app running at $url');
+        onFlutterReady?.call(url);
+      }
+      await log.progress('Connecting to Flutter VM service', () async {
+        // `-d web-server` requires a human to open the URL, so the wait is unbounded.
+        await fp.connectToVmService(
+          timeout: flutterDevice == flutterDeviceWebServer
+              ? null
+              : const Duration(seconds: 30),
+        );
+        if (fp.isVmServiceConnected && onFlutterStart != null) {
+          await onFlutterStart(fp);
+        }
+        return fp.isVmServiceConnected;
+      });
+    }());
+  };
+
+  if (launchFlutterApp) {
+    await spawnFlutterAppIfNeeded();
+  }
+
+  // Track the Flutter app's resolved dependency closure so a dependency change
+  // (which a hot restart can't pick up) auto-triggers a full relaunch. Disabled
+  // when there is no Flutter package or its dependencies haven't been resolved.
+  FlutterDependencyTracker? flutterDependencyTracker;
+  if (config.hasFlutterPackage) {
+    final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
+    try {
+      final flutterPackageName = parsePubspec(
+        File(p.join(flutterPackageDir, 'pubspec.yaml')),
+      ).name;
+      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+        flutterPackageDir,
+        flutterPackageName: flutterPackageName,
+      );
+      if (dartToolDir != null) {
+        flutterDependencyTracker = FlutterDependencyTracker(
+          dartToolDir: dartToolDir,
+          flutterPackageName: flutterPackageName,
+        );
+      } else {
+        log.debug(
+          'Flutter dependency tracking disabled: no resolution listing '
+          '$flutterPackageName found above $flutterPackageDir.',
+        );
+      }
+    } catch (e) {
+      // A malformed Flutter pubspec must not prevent the server from
+      // starting; it only disables dependency tracking.
+      log.debug(
+        'Flutter dependency tracking disabled: could not read the Flutter '
+        'package name from $flutterPackageDir ($e).',
+      );
+    }
+  }
+
+  // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
     nativeAssetsBuilder: nativeAssetsBuilder,
@@ -499,24 +721,30 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         analyzers: await analyzersFuture,
         config: config,
         affectedPaths: affectedPaths,
-        skipStalenessCheck: true,
+        incremental: true,
         requirements: requirements,
       );
     },
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
+    flutterProcessProvider: () => flutterProcess,
+    // Kill the running Flutter app (if any) and (re)launch it. `stop` clears
+    // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
+    // Wired whenever the project has a Flutter package — even after a
+    // `--no-flutter` start — so Ctrl+R doubles as a "launch the app now"
+    // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
+    flutterAppRestartAction: config.hasFlutterPackage
+        ? () async {
+            flutterRelaunchInProgress = flutterProcess != null;
+            await flutterProcess?.stop();
+            await spawnFlutterAppIfNeeded();
+          }
+        : null,
+    checkFlutterDependencyChange: flutterDependencyTracker?.refresh,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
-      moduleName: config.name,
-      onDeferToPod: () {
-        log.warning(
-          'Cannot apply migrations from the CLI.\n'
-          'Falling back to restarting the pod with --apply-migrations.',
-        );
-        serverArgs.value = _withApplyMigrations(serverArgs.value);
-      },
     ),
   );
 
@@ -527,16 +755,31 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // Start MCP socket server for AI agent integration. Exposes the proxy
   // URI (not the pod's) so MCP-initiated reloads flow through the same
   // interceptor that IDE attach uses.
-  McpSocketServer? mcpSocket = McpSocketServer(project: config.name);
+  McpSocketServer? mcpSocket = McpSocketServer(serverDir: serverDir);
   try {
     await mcpSocket.start();
     mcpSocket.connect(
       onApplyMigration: session.applyMigration,
       onCreateMigration: ({String? tag, bool force = false}) =>
           _createMigrationForMcp(config, tag: tag, force: force),
+      onCreateRepairMigration:
+          ({
+            String? tag,
+            bool force = false,
+            String? targetMigrationVersion,
+          }) => _createRepairMigrationForMcp(
+            config,
+            runMode: runMode,
+            tag: tag,
+            force: force,
+            targetMigrationVersion: targetMigrationVersion,
+          ),
       onHotReload: session.forceReload,
+      onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
+      getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
+      getFlutterDtdUri: () => flutterProcess?.dtdUri,
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
     log.info('MCP server listening on ${mcpSocket.socketPath}');
@@ -545,7 +788,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
-  // File watcher (watch mode only).
+  // Single watcher across server/shared/client/web/flutter. Changes
+  // serialize through session.handleFileChange via WatchSession._chain.
   StreamSubscription<void>? fileChangeSub;
   if (watch) {
     final watcher = FileWatcher(
@@ -556,6 +800,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
+        if (config.hasFlutterPackage)
+          p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
+        // The resolution's .dart_tool holds package_graph.json, watched to
+        // detect Flutter dependency changes (workspace root or, in a
+        // non-workspace project, the Flutter package's own .dart_tool).
+        if (flutterDependencyTracker != null)
+          p.absolute(flutterDependencyTracker.dartToolDir),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -567,13 +818,38 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     WatchLoopContext(
       session: session,
       proxy: proxy,
+      flutterProxy: flutterProxy,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
+      flutterVmServiceInfoFile: flutterVmServiceInfoFile,
     ),
   );
+}
+
+/// Binds a [VmServiceProxy] that the Flutter app's vm-service will be
+/// attached to once it comes up.
+///
+/// Writes [infoFile] with the proxy's stable URI.
+///
+/// [onWaitingClientArrived] fires the first time a client connects
+/// while no upstream is bound.
+Future<VmServiceProxy> _bindFlutterProxy({
+  required String infoFile,
+  FutureOr<void> Function()? onWaitingClientArrived,
+}) async {
+  final proxy = VmServiceProxy(
+    upstreamWs: null,
+    onWaitingClientArrived: onWaitingClientArrived,
+  );
+  await proxy.bind();
+  await File(infoFile).writeAsString(
+    jsonEncode({'uri': proxy.httpUri.toString()}),
+  );
+  log.info('Flutter VM service proxy listening on ${proxy.httpUri}');
+  return proxy;
 }
 
 /// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
@@ -609,7 +885,7 @@ Future<VmServiceProxy?> _mountOrRetargetProxy({
   final podWs = Uri.parse(vmServiceWsUri(podHttp));
 
   if (existing != null) {
-    await existing.retarget(podWs);
+    await existing.setUpstream(podWs);
     return existing;
   }
 
@@ -671,6 +947,34 @@ class _ShutdownSignal {
   }
 }
 
+/// Cheap pre-flight check for an existing `serverpod start` instance for
+/// [config]'s project, by probing the per-project MCP socket. Logs a
+/// message and returns `true` when another process is listening on it, so
+/// callers can bail before any further setup - in particular before the
+/// TUI takes over the terminal, where the message would otherwise be
+/// invisible.
+Future<bool> _detectExistingInstance(GeneratorConfig config) async {
+  final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+  final socketPath = serverpodMcpSocketPath(serverDir);
+  try {
+    final probe = await connectUnixSocket(
+      socketPath,
+      timeout: const Duration(seconds: 1),
+    );
+    probe.destroy();
+  } catch (_) {
+    // No live listener (or path doesn't fit / no support) - safe to take
+    // over. A stale file left behind by a crashed runner is unlinked by
+    // [bindUnixSocket] when we actually bind.
+    return false;
+  }
+  log.info(
+    'A serverpod instance for "${config.name}" is already running '
+    '(MCP socket: $socketPath).',
+  );
+  return true;
+}
+
 /// Checks if a server is already running by reading the VM service info file
 /// and attempting to connect. Returns the URI if reachable, `null` otherwise.
 /// Cleans up stale files.
@@ -707,18 +1011,33 @@ Future<String?> _checkExistingServer(String infoPath) async {
 Future<int> _runWithTui({
   required Configuration<StartOption> commandConfig,
   required bool watch,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
-  final holder = StartAppStateHolder(ServerWatchState());
+  final holder = StartAppStateHolder(
+    ServerWatchState()..watchModeEnabled = watch,
+  );
   var backendStarted = false;
 
   // Shared shutdown signal
   final shutdown = _ShutdownSignal(listenForSignals: false);
 
+  // Captured on a fatal crash so it can be replayed to the real terminal in
+  // [preExit] when the user quits. The crash is also shown inside the TUI, but
+  // that copy lives in an in-memory log history that is discarded once we leave
+  // the alternate screen - so without this capture it would never reach the
+  // user's scrollback. First crash wins.
+  ({Object error, StackTrace stackTrace})? fatalCrash;
+  void recordFatalCrash(Object error, StackTrace stackTrace) {
+    fatalCrash ??= (error: error, stackTrace: stackTrace);
+  }
+
   // Captured so the renderer tear-down listener can wait for the
   // backend's cleanup (ctx.dispose) to finish before calling
-  // shutdownServerpodApp. Default to a no-op so the listener is safe to invoke
+  // shutdownTuiApp. Default to a no-op so the listener is safe to invoke
   // even if SIGINT arrives before onReady fires.
   Future<void> backendFuture = Future.value();
 
@@ -726,31 +1045,47 @@ Future<int> _runWithTui({
     if (backendStarted) return;
     backendStarted = true;
 
-    backendFuture =
-        _runTuiBackend(
-          holder: h,
-          commandConfig: commandConfig,
-          watch: watch,
-          serverArgs: serverArgs,
-          config: config,
-          shutdown: shutdown,
-        ).catchError((Object e, StackTrace st) {
-          // Show the error in the TUI.
-          // The TUI stays open until Ctrl-C / Quit completes shutdown.
-          log.error('Fatal error: $e', stackTrace: st);
-        });
+    backendFuture = _runTuiBackend(
+      holder: h,
+      commandConfig: commandConfig,
+      watch: watch,
+      launchFlutterApp: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      flutterExtraArgs: flutterExtraArgs,
+      serverArgs: serverArgs,
+      config: config,
+      shutdown: shutdown,
+      onFatalError: recordFatalCrash,
+    ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
   }
 
-  // Wait for the backend's dispose to finish before calling shutdownServerpodApp
+  // Runs after the TUI tears down (alternate screen restored) but before the
+  // process exits. Restores the stdout logger and replays any captured crash
+  // so it survives in the user's scrollback - mirrors how `serverpod create`
+  // flushes its errors to the terminal on exit.
+  Future<void> preExit() async {
+    final crash = fatalCrash;
+    if (crash == null) return;
+    // Swap the TUI-backed logger (whose output went to the now-gone alternate
+    // screen) for a fresh stdout-backed one, so the replayed crash actually
+    // reaches the terminal.
+    await closeLogger();
+    initializeLogger();
+    printInternalError(crash.error, crash.stackTrace);
+    await log.flush();
+  }
+
+  // Wait for the backend's dispose to finish before calling shutdownTuiApp
   unawaited(
     shutdown.future.then((code) async {
       await backendFuture;
-      shutdownServerpodApp(code);
+      shutdownTuiApp(code);
     }),
   );
 
-  await runServerpodApp(
+  await runTuiApp(
     ServerpodWatchApp(holder: holder, onReady: onReady),
+    backend: ServerpodTerminalBackend(preExit: preExit),
     onShutdownSignal: () => shutdown.complete(0),
   );
 
@@ -764,9 +1099,13 @@ Future<void> _runTuiBackend({
   required StartAppStateHolder holder,
   required Configuration<StartOption> commandConfig,
   required bool watch,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
+  required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
   try {
     // Replace the CLI logger with a TUI-backed logger.
@@ -779,8 +1118,16 @@ Future<void> _runTuiBackend({
 
     final argsRef = ServerArgsRef(serverArgs);
 
-    final stdoutSink = TuiLogSink(holder);
-    final stderrSink = TuiLogSink(holder);
+    final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
+    final flutterStdoutSink = TuiLogSink(
+      holder,
+      addLine: holder.state.rawFlutterLines.add,
+    );
+    final flutterStderrSink = TuiLogSink(
+      holder,
+      addLine: holder.state.rawFlutterLines.add,
+    );
 
     final result = await _setupWatchLoop(
       config: config,
@@ -788,9 +1135,24 @@ Future<void> _runTuiBackend({
       serverArgs: argsRef,
       watch: watch,
       docker: docker,
+      launchFlutterApp: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      flutterExtraArgs: flutterExtraArgs,
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
+      flutterStdoutSink: flutterStdoutSink,
+      flutterStderrSink: flutterStderrSink,
+      onFlutterProgress: (stage) {
+        holder.state.flutterStartupStage = stage;
+        holder.state.showFlutterOutput = true;
+        holder.markDirty();
+      },
+      onFlutterReady: (url) {
+        holder.state.flutterUrl = url;
+        holder.state.flutterReady = true;
+        holder.markDirty();
+      },
       onServerStart: (server) async {
         final vmService = server.vmService;
         if (vmService == null) return;
@@ -799,7 +1161,16 @@ Future<void> _runTuiBackend({
           (event) => handleServerLogEvent(holder, event),
         );
       },
+      onFlutterStart: (flutter) async {
+        final vmService = flutter.vmService;
+        if (vmService == null) return;
+        await vmService.streamListen('Extension');
+        vmService.onExtensionEvent.listen(
+          (event) => handleServerLogEvent(holder, event),
+        );
+      },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
+      mcpGetFlutterLogHistory: () => holder.state.rawFlutterLines.toList(),
     );
 
     switch (result) {
@@ -807,15 +1178,45 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        // Offer Ctrl+R whenever a Flutter app could run here — even after a
+        // `--no-flutter` start, where it acts as a "launch the app" button.
+        holder.state.flutterRestartAvailable =
+            config.hasFlutterPackage &&
+            runModeFromServerArgs(serverArgs) == 'development';
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
-        holder.onCreateMigration = () {
+        holder.onHotRestart = () {
+          runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+        };
+        holder.onRestartFlutterApp = () {
           runTrackedAction(
             holder,
-            'Creating migration',
-            () => _runCreateMigrationForTui(config),
+            ctx.session.isFlutterAppRunning
+                ? 'Restart Flutter app'
+                : 'Start Flutter app',
+            ctx.session.restartFlutterApp,
+          );
+        };
+        holder.onCreateMigration = ({bool force = false}) {
+          runTrackedAction(
+            holder,
+            force ? 'Force-creating migration' : 'Creating migration',
+            () => _runCreateMigrationForTui(config, force: force),
+          );
+        };
+        holder.onCreateRepairMigration = ({bool force = false}) {
+          runTrackedAction(
+            holder,
+            force
+                ? 'Force-creating repair migration'
+                : 'Creating repair migration',
+            () => _runCreateRepairMigrationForTui(
+              config,
+              runMode: runModeFromServerArgs(serverArgs),
+              force: force,
+            ),
           );
         };
         holder.onApplyMigration = () {
@@ -841,10 +1242,13 @@ Future<void> _runTuiBackend({
         await ctx.dispose();
     }
   } catch (e, st) {
-    // Show the error in the TUI; let the user read it. Quitting still
-    // works via the Ctrl-C signal handler routed through shutdown.
+    // Surface the crash in the TUI (left open so it stays visible alongside the
+    // preceding logs), and capture it via [onFatalError] so it is also replayed
+    // to the terminal in [_runWithTui] when the user quits - the in-TUI copy is
+    // lost when we leave the alternate screen.
     holder.state.showSplash = false;
     log.error('$e', stackTrace: st);
+    onFatalError(e, st);
   }
 }
 
@@ -902,11 +1306,14 @@ Future<void> _runTuiBackend({
 ///
 /// Logs the outcome; throws on failure so [runTrackedAction] marks the
 /// operation red.
-Future<void> _runCreateMigrationForTui(GeneratorConfig config) async {
-  final outcome = await createMigrationAction(config: config);
+Future<void> _runCreateMigrationForTui(
+  GeneratorConfig config, {
+  bool force = false,
+}) async {
+  final outcome = await createMigrationAction(config: config, force: force);
   final result = _describeCreateMigration(
     outcome,
-    forceHint: 'Run `serverpod create-migration --force` to create it anyway.',
+    forceHint: 'Use ⇧+M to force-create it anyway.',
   );
   if (result.isError) throw Exception(result.message);
   log.info(result.message);
@@ -934,5 +1341,77 @@ Future<CreateMigrationMcpResult> _createMigrationForMcp(
   return CreateMigrationMcpResult(
     message: result.message + followUp,
     isError: result.isError,
+  );
+}
+
+/// Runs `create-repair-migration` for the TUI's Repair Migration button.
+///
+/// Logs the outcome; throws on failure so [runTrackedAction] marks the
+/// operation red.
+Future<void> _runCreateRepairMigrationForTui(
+  GeneratorConfig config, {
+  required String runMode,
+  bool force = false,
+}) async {
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(
+      config: config,
+      runMode: runMode,
+      force: force,
+    );
+  } on MigrationAbortedException {
+    log.info('Use ⇧+P to force-create it anyway.');
+    rethrow;
+  }
+
+  if (file == null) {
+    log.info('Repair migration skipped. No schema drift detected.');
+    return;
+  }
+  final versionName = p.basenameWithoutExtension(file.path);
+  log.info('Repair migration "$versionName" created at ${file.path}.');
+}
+
+/// Runs `create-repair-migration` for the MCP `create_repair_migration` tool.
+/// Returns a structured result so the MCP server can flag errors.
+Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
+  GeneratorConfig config, {
+  required String runMode,
+  String? tag,
+  bool force = false,
+  String? targetMigrationVersion,
+}) async {
+  final File? file;
+  try {
+    file = await createRepairMigrationAction(
+      config: config,
+      tag: tag,
+      runMode: runMode,
+      force: force,
+      targetMigrationVersion: targetMigrationVersion,
+    );
+  } on MigrationAbortedException {
+    return const CreateMigrationMcpResult(
+      message:
+          'Repair migration aborted due to warnings. '
+          'Call again with `force: true` to create it anyway.',
+      isError: true,
+    );
+  } on Exception catch (e) {
+    return CreateMigrationMcpResult(message: '$e', isError: true);
+  }
+
+  if (file == null) {
+    return const CreateMigrationMcpResult(
+      message: 'Repair migration skipped. No schema drift detected.',
+    );
+  }
+
+  final versionName = p.basenameWithoutExtension(file.path);
+  return CreateMigrationMcpResult(
+    message:
+        'Repair migration "$versionName" created at ${file.path}. '
+        'Call `apply_migrations` to run it against the database.',
   );
 }

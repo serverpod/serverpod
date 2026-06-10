@@ -182,25 +182,33 @@ void main() {
             );
           });
 
-          test('does not have docker compose file', () {
-            final dockerComposeFile = File(
-              path.join(tempPath, serverDir, 'docker-compose.yaml'),
-            );
-            expect(dockerComposeFile.existsSync(), isFalse);
-          });
-
           test(
-            'does not have passwords config file',
+            'has docker compose file with project name replaced',
             () {
-              final config = File(
-                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              final dockerComposeFile = File(
+                path.join(tempPath, serverDir, 'docker-compose.yaml'),
               );
-              expect(config.existsSync(), isFalse);
+              expect(dockerComposeFile.existsSync(), isTrue);
+              expect(
+                dockerComposeFile.readAsStringSync(),
+                contains('${projectName}_test'),
+              );
             },
           );
 
           test(
-            'has test configuration with sqlite',
+            'has passwords config file with postgres configurations',
+            () {
+              final config = File(
+                path.join(tempPath, serverDir, 'config', 'passwords.yaml'),
+              );
+              expect(config.existsSync(), isTrue);
+              expect(config.readAsStringSync(), contains('database:'));
+            },
+          );
+
+          test(
+            'has embedded postgres configuration on test run mode',
             () {
               final testConfigFile = File(
                 path.join(tempPath, serverDir, 'config', 'test.yaml'),
@@ -208,7 +216,7 @@ void main() {
 
               expect(
                 testConfigFile.readAsStringSync(),
-                contains('filePath: ${projectName}_test.db'),
+                contains('dataPath: .serverpod/test/pgdata'),
               );
             },
           );
@@ -336,6 +344,16 @@ void main() {
           );
         });
 
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(
@@ -349,15 +367,23 @@ void main() {
             ).existsSync(),
             isTrue,
           );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
         });
 
         group('has Serverpod and Dart MCP servers configured', () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -366,40 +392,6 @@ void main() {
   }
 }
 ''';
-
-          test('for Antigravity', () {
-            final antigravity = File(
-              path.join(
-                tempPath,
-                projectName,
-                '.gemini/antigravity/mcp_config.json',
-              ),
-            );
-            expect(antigravity.existsSync(), isTrue);
-            expect(
-              antigravity.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
-
-          test('for Codex', () {
-            final codex = File(
-              path.join(tempPath, projectName, '.codex/config.toml'),
-            );
-            expect(codex.existsSync(), isTrue);
-            expect(
-              codex.readAsStringSync(),
-              '''
-[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''',
-            );
-          });
 
           test('for Claude', () {
             final claude = File(
@@ -417,7 +409,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             expect(cursor.readAsStringSync(), genericConfig);
           });
 
-          test('for VSCode', () {
+          test('for VS Code', () {
             final vscode = File(
               path.join(tempPath, projectName, '.vscode/mcp.json'),
             );

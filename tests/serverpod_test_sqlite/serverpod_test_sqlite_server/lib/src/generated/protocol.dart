@@ -6830,7 +6830,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           as T;
     }
     if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
+      return deserializeDynamicFieldValue(data) as T;
     }
     if (t == List<dynamic>) {
       return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
@@ -7641,7 +7641,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod.$className';
+      return className.contains('.') ? className : 'serverpod.$className';
     }
     return null;
   }

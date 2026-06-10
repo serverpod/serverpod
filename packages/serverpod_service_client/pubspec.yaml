@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_service_client
-version: 3.5.0-beta.7
+version: 3.5.0-beta.10
 description: Generated client for the Serverpod service protocol.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -12,19 +12,22 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
+  http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
-  serverpod_client: 3.5.0-beta.7
-  serverpod_database: 3.5.0-beta.7
-  serverpod_shared: 3.5.0-beta.7
+  serverpod_client: 3.5.0-beta.10
+  serverpod_database: 3.5.0-beta.10
+  serverpod_shared: 3.5.0-beta.10
 
 dev_dependencies:
-  serverpod_lints: 3.5.0-beta.7
+  serverpod_lints: 3.5.0-beta.10
 
 dependency_overrides:
   serverpod_client:
     path: ../serverpod_client
   serverpod_database:
     path: ../serverpod_database
+  serverpod_embedded_postgres:
+    path: ../serverpod_embedded_postgres
   serverpod_lints:
     path: ../serverpod_lints
   serverpod_serialization:

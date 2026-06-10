@@ -1,0 +1,32 @@
+# TEMPLATE
+
+name: serverpod_embedded_postgres
+version: SERVERPOD_VERSION
+description: Runs a real PostgreSQL server as a child process for Serverpod local dev. No Docker, no port conflicts, UDS by default.
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  archive: ^4.0.0
+  config: ^0.8.4
+  crypto: ^3.0.2
+  http: '>=1.1.0 <2.0.0'
+  meta: ^1.15.0
+  path: ^1.8.3
+  postgres: ^3.4.0
+  pub_semver: ^2.1.4
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_shared:
+    path: ../serverpod_shared

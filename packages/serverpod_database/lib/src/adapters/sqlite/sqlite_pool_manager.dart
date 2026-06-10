@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
@@ -19,6 +22,9 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// Database configuration.
   final SqliteDatabaseConfig config;
 
+  /// Base dir a relative `filePath` resolves against. Defaults to cwd.
+  final Directory? _serverDirectory;
+
   late DatabaseSerializationManager _serializationManager;
 
   /// Access to the serialization manager.
@@ -29,12 +35,16 @@ class SqlitePoolManager implements DatabasePoolManager {
   SqliteDatabase? _db;
 
   /// Tracks the PRAGMA future kicked off by [start]
-  Future<void> _started = Future.value();
+  Future<void>? _startedFuture;
+  bool _databaseStopped = false;
 
   /// The SQLite database instance.
   ///
-  /// Throws a [StateError] if the database has not been started.
-  SqliteDatabase get database {
+  /// If the database has not been started yet, this will start it and then
+  /// return the database instance. Throws a [StateError] if the database is
+  /// not started (e.g. after [stop] has been called).
+  Future<SqliteDatabase> get database async {
+    await started;
     var db = _db;
     if (db == null) {
       throw StateError('Database not started.');
@@ -50,45 +60,64 @@ class SqlitePoolManager implements DatabasePoolManager {
   /// when starting the [Server] with SQLite configuration.
   SqlitePoolManager(
     DatabaseSerializationManager serializationManager,
-    this.config,
-  ) {
+    this.config, {
+    Directory? serverDirectory,
+  }) : _serverDirectory = serverDirectory {
     _serializationManager = serializationManager;
   }
 
-  /// Starts the database connection.
-  ///
-  /// Callers can await [started] to ensure initialization is complete,
-  /// and surface any errors.
-  @override
-  void start() {
-    if (_db != null) return;
-    final db = SqliteDatabase(
-      path: config.filePath,
-      // This will only be available from 0.14 onwards.
-      // options: SqliteOptions(
-      //   maxReaders:
-      //       config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
-      // ),
+  /// `config.filePath`, with a relative path anchored at [_serverDirectory]
+  /// (or cwd). `:memory:` and absolute paths are returned unchanged.
+  String get _resolvedFilePath {
+    final filePath = config.filePath;
+    if (filePath == ':memory:' || path.isAbsolute(filePath)) return filePath;
+    return path.join(
+      (_serverDirectory ?? Directory.current).path,
+      filePath,
     );
-    _db = db;
-    _started = db.execute('PRAGMA foreign_keys = ON');
   }
 
   @override
-  Future<void> get started => _started;
+  void start() {
+    _databaseStopped = false;
+    _startedFuture ??= _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    if (_databaseStopped) {
+      throw StateError('Database stopped. Call `start()` again to restart.');
+    }
+    final db = SqliteDatabase(
+      path: _resolvedFilePath,
+      options: SqliteOptions(
+        maxReaders:
+            config.maxConnectionCount ?? SqliteOptions.defaultMaxReaders,
+      ),
+    );
+    _db = db;
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  @override
+  Future<void> get started => _startedFuture ??= _bootstrap();
 
   /// Closes the database.
   @override
   Future<void> stop() async {
-    await _db?.close();
+    _databaseStopped = true;
+    final db = _db;
+
     _db = null;
-    _started = Future.value();
+    _startedFuture = null;
+
+    await db?.close();
   }
 
   /// Tests the database connection.
   @override
   Future<bool> testConnection() async {
-    await database.get('SELECT 1');
+    final connection = await database;
+    await connection.get('SELECT 1');
     return true;
   }
 }

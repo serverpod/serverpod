@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -23,6 +25,7 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
+  List<String> _relativeFlutterPackagePathParts;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -33,6 +36,7 @@ class GeneratorConfigBuilder {
       _serverPackageDirectoryPathParts = [],
       _sharedModelsSourcePathsParts = {},
       _relativeDartClientPackagePathParts = ['..', 'example_client'],
+      _relativeFlutterPackagePathParts = ['..', 'example_flutter'],
       _modules = [
         ModuleConfig(
           type: PackageType.internal,
@@ -158,6 +162,13 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withRelativeFlutterPackagePathParts(
+    List<String> relativeFlutterPackagePathParts,
+  ) {
+    _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -168,6 +179,7 @@ class GeneratorConfigBuilder {
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
+      relativeFlutterPackagePathParts: _relativeFlutterPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
@@ -177,4 +189,23 @@ class GeneratorConfigBuilder {
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
   }
+}
+
+/// Builds a minimal server [GeneratorConfig] rooted at [projectDir], for
+/// integration tests that generate code from a temporary project.
+GeneratorConfig buildTestServerConfig(Directory projectDir) {
+  return GeneratorConfigBuilder()
+      .withName('test')
+      .withServerPackageDirectoryPathParts([projectDir.path])
+      .withRelativeDartClientPackagePathParts(['test_client'])
+      .withModules([
+        ModuleConfig(
+          type: PackageType.server,
+          name: 'test',
+          nickname: 'test',
+          migrationVersions: [],
+          serverPackageDirectoryPathParts: [projectDir.path],
+        ),
+      ])
+      .build();
 }

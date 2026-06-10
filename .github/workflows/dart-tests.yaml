@@ -155,6 +155,104 @@ jobs:
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
+  nonvector_integration_tests_embedded:
+    name: Nonvector integration tests (embedded PG, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+      - name: Run nonvector integration tests against embedded PG
+        run: bash util/run_tests_nonvector_integration_embedded
+        timeout-minutes: 10
+
+  module_integration_tests_embedded:
+    name: Module integration tests (embedded PG, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+      - name: Run module integration tests against embedded PG
+        run: bash util/run_tests_module_integration_embedded
+        timeout-minutes: 10
+
+  embedded_postgres_integration_tests:
+    name: serverpod_embedded_postgres integration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Resolve dependencies
+        run: dart pub get
+        working-directory: packages/serverpod_embedded_postgres
+      # windows-latest runs as runneradmin (elevated), but Postgres refuses
+      # to start under an Administrators-group token. Strip admin via
+      # PsExec -l. Two non-obvious bits the rest of this block handles:
+      #   - PsExec -l drops the inner process's stdout in GHA (exit code
+      #     propagates fine), so dart test redirects to a file inside
+      #     run-test.cmd and we type that file from the outer step.
+      #   - The limited token still needs read+execute on the Flutter SDK
+      #     to find dart.bat / dart.exe.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-test.cmd <<'EOF'
+          @echo off
+          dart test --tags=integration --reporter=failures-only > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+        working-directory: packages/serverpod_embedded_postgres
+      - name: Run integration tests against real Zonky PG (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-test.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
+        working-directory: packages/serverpod_embedded_postgres
+        timeout-minutes: 10
+      - name: Run integration tests against real Zonky PG
+        if: matrix.os != 'windows-latest'
+        run: dart test --tags=integration --reporter=failures-only
+        working-directory: packages/serverpod_embedded_postgres
+        timeout-minutes: 10
+
   unit_io_tests:
     name: Unit tests IO
     runs-on: ${{ matrix.os }}
@@ -195,7 +293,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - uses: browser-actions/setup-chrome@4f8e94349a351df0f048634f25fec36c3c91eded # v2.1.1
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
       - name: Run unit tests
         run: >-
           dart test
@@ -427,6 +525,9 @@ jobs:
           colima start
       - name: Run unit tests
         shell: bash
+        # TODO: Switch to util/run_tests_bootstrap once we manage to run all
+        # tests in a reasonable time. Currently they take up to 40 minutes.
+        # run: cd ../.. && util/run_tests_bootstrap
         run: |
           export SERVERPOD_HOME="$(cd ../.. && pwd)"
           dart test --concurrency=1 --reporter=failures-only
