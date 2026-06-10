@@ -21,10 +21,7 @@ class ModelDependencyResolver {
     modelDefinitions.whereType<ExceptionClassDefinition>().forEach((
       classDefinition,
     ) {
-      _resolveInheritance(
-        classDefinition,
-        modelDefinitions,
-      );
+      _resolveInheritance(classDefinition, modelDefinitions);
     });
 
     // Then resolve inherited id fields or create default id fields.

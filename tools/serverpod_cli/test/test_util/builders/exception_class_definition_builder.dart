@@ -14,8 +14,8 @@ class ExceptionClassDefinitionBuilder {
   List<_FieldBuilder> _fields;
   List<String>? _documentation;
   bool _isSealed;
-  List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  List<InheritanceDefinition> _childClasses;
   String? _sharedPackageName;
   String? _typeUrl;
 
@@ -26,8 +26,8 @@ class ExceptionClassDefinitionBuilder {
       _fields = [],
       _subDirParts = [],
       _serverOnly = false,
-      _childClasses = [],
-      _isSealed = false;
+      _isSealed = false,
+      _childClasses = [];
 
   ExceptionClassDefinition build() {
     return ExceptionClassDefinition(
@@ -37,9 +37,9 @@ class ExceptionClassDefinitionBuilder {
       fields: _fields.map((f) => f()).toList(),
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
-      childClasses: _childClasses,
-      extendsClass: _extendsClass,
       isSealed: _isSealed,
+      extendsClass: _extendsClass,
+      childClasses: _childClasses,
       documentation: _documentation,
       type: TypeDefinitionBuilder()
           .withClassName(_className)
@@ -132,13 +132,8 @@ class ExceptionClassDefinitionBuilder {
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withChildClasses(
-    List<ExceptionClassDefinition> childClasses,
-  ) {
-    _childClasses = [
-      for (var child in childClasses)
-        ResolvedInheritanceDefinition<ExceptionClassDefinition>(child),
-    ];
+  ExceptionClassDefinitionBuilder withIsSealed(bool isSealed) {
+    _isSealed = isSealed;
     return this;
   }
 
@@ -151,8 +146,13 @@ class ExceptionClassDefinitionBuilder {
     return this;
   }
 
-  ExceptionClassDefinitionBuilder withIsSealed(bool isSealed) {
-    _isSealed = isSealed;
+  ExceptionClassDefinitionBuilder withChildClasses(
+    List<ExceptionClassDefinition> childClasses,
+  ) {
+    _childClasses = [
+      for (var child in childClasses)
+        ResolvedInheritanceDefinition<ExceptionClassDefinition>(child),
+    ];
     return this;
   }
 }

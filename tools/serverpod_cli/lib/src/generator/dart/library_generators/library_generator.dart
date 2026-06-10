@@ -67,7 +67,7 @@ class LibraryGenerator {
             .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! ModelClassDefinition) return true;
+      if (model is! InheritanceClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -77,7 +77,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((model) => !(model is ModelClassDefinition && model.isSealed))
+        .where((m) => !(m is InheritanceClassDefinition && m.isSealed))
         .toList();
 
     var hasDatabaseTablesForCurrentSide = allModels.any(

@@ -278,7 +278,7 @@ class TypeDefinition {
   );
 
   static String getRef(SerializableModelDefinition model) {
-    if (model is ModelClassDefinition) {
+    if (model is InheritanceClassDefinition) {
       var sealedTopNode = model.sealedTopNode;
       if (sealedTopNode != null) {
         return sealedTopNode.fileRef();

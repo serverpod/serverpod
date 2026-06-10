@@ -348,9 +348,7 @@ class SerializableModelLibraryGenerator {
             className,
             fields,
             shouldOverrideAbstractCopyWith: () =>
-                _shouldOverrideAbstractCopyWithMethod(
-                  classDefinition,
-                ),
+                _shouldOverrideAbstractCopyWithMethod(classDefinition),
             subDirParts: classDefinition.subDirParts,
             inheritedFields: classDefinition.inheritedFields,
             isIdInherited: false,

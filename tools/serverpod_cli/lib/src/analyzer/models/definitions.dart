@@ -74,15 +74,14 @@ sealed class ClassDefinition extends SerializableModelDefinition {
 mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
     on ClassDefinition {
   /// If set to true the class is sealed.
-  bool get isSealed;
+  bool isSealed = false;
 
-  /// Returns a list of all fields in this class, including inherited fields.
-  List<SerializableModelFieldDefinition> get fieldsIncludingInherited;
-
-  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
+  /// If set to [InheritanceDefinition] the class extends another class and
+  /// stores the [ClassDefinition] of its parent.
   InheritanceDefinition? extendsClass;
 
-  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
+  /// If set to a List of [InheritanceDefinition] the class is a parent class
+  /// that stores the child classes.
   List<InheritanceDefinition> childClasses = [];
 
   /// Returns the `ClassDefinition` of the parent class.
@@ -96,11 +95,25 @@ mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
     return classDefinition;
   }
 
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  List<SerializableModelFieldDefinition> get inheritedFields =>
+      parentClass?.fieldsIncludingInherited.toList() ?? [];
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+    return [
+      ...inheritedFields,
+      ...fields,
+    ];
+  }
+
   /// Returns `true` if this class is a parent class or sealed.
   bool get isParentClass => childClasses.isNotEmpty || isSealed;
 
-  /// Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
-  /// If the class is not part of a sealed hierarchy, `null` is returned.
+  /// Returns the top node of the sealed hierarchy. If the class is the top node
+  /// it returns itself. If the class is not part of a sealed hierarchy, `null`
+  /// is returned.
   T? get sealedTopNode {
     final parent = parentClass;
     if (parent != null) {
@@ -166,10 +179,6 @@ final class ModelClassDefinition extends ClassDefinition
 
   final bool manageMigration;
 
-  /// If set to true the class is sealed.
-  @override
-  final bool isSealed;
-
   /// If set to true the class is immutable.
   final bool isImmutable;
 
@@ -186,7 +195,7 @@ final class ModelClassDefinition extends ClassDefinition
     required super.serverOnly,
     required this.manageMigration,
     required super.type,
-    required this.isSealed,
+    required bool isSealed,
     required this.isImmutable,
     this.database = ModelDatabaseDefinition.server,
     List<InheritanceDefinition>? childClasses,
@@ -198,6 +207,7 @@ final class ModelClassDefinition extends ClassDefinition
     super.documentation,
     super.sharedPackageName,
   }) {
+    this.isSealed = isSealed;
     this.childClasses = childClasses ?? <InheritanceDefinition>[];
     this.extendsClass = extendsClass;
   }
@@ -221,18 +231,19 @@ final class ModelClassDefinition extends ClassDefinition
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   /// Excludes the id field, as it is re-declared on child classes.
-  List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited
-          .where((element) => tableName == null || element.name != 'id')
-          .toList() ??
-      [];
+  @override
+  List<SerializableModelFieldDefinition> get inheritedFields => super
+      .inheritedFields
+      .where((element) => tableName == null || element.name != 'id')
+      .toList();
 
   /// Returns `true` if the 'id' field is inherited from a parent class.
   bool get isIdInherited =>
       parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  /// It ensures that the 'id' field, if present, is always included at the
+  /// beginning of the list.
   @override
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
     bool hasIdField = fields.any((element) => element.name == 'id');
@@ -268,10 +279,6 @@ final class ModelClassDefinition extends ClassDefinition
 /// A [ClassDefinition] specialization that represents an exception.
 final class ExceptionClassDefinition extends ClassDefinition
     with InheritanceClassDefinition<ExceptionClassDefinition> {
-  /// If set to true the class is sealed.
-  @override
-  final bool isSealed;
-
   /// Create a new [ExceptionClassDefinition].
   ExceptionClassDefinition({
     required super.className,
@@ -280,30 +287,16 @@ final class ExceptionClassDefinition extends ClassDefinition
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
-    required this.isSealed,
+    required bool isSealed,
     List<InheritanceDefinition>? childClasses,
     InheritanceDefinition? extendsClass,
     super.documentation,
     super.subDirParts,
     super.sharedPackageName,
   }) {
+    this.isSealed = isSealed;
     this.childClasses = childClasses ?? <InheritanceDefinition>[];
     this.extendsClass = extendsClass;
-  }
-
-  /// Returns a list of all fields in the parent class.
-  /// If there is no parent class, an empty list is returned.
-  /// Excludes the id field, as it is re-declared on child classes.
-  List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited.toList() ?? [];
-
-  /// Returns a list of all fields in this class, including inherited fields.
-  @override
-  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    return [
-      ...inheritedFields,
-      ...fields,
-    ];
   }
 }
 

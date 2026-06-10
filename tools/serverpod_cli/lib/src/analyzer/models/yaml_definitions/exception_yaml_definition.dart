@@ -24,9 +24,6 @@ class ExceptionYamlDefinition {
       ValidateNode(
         Keyword.isSealed,
         valueRestriction: BooleanValueRestriction().validate,
-        mutuallyExclusiveKeys: {
-          Keyword.table,
-        },
       ),
       ValidateNode(
         Keyword.extendsClass,
