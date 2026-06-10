@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart' as cli;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_shared/log_io.dart';
-import 'package:serverpod_tui/log.dart';
 
 // ---------------------------------------------------------------------------
 // Singleton logger
