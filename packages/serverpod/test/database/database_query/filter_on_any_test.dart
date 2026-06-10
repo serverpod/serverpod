@@ -37,6 +37,24 @@ void main() {
       });
     });
 
+    group('when filtering on NOT any many relation', () {
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withWhere(~manyRelation.any()).build();
+
+      test('then the outer query negates the subquery membership.', () {
+        expect(
+          query,
+          contains('FROM "citizen" WHERE NOT ("citizen"."id" IN (SELECT'),
+        );
+        expect(
+          query,
+          // Issue: https://github.com/serverpod/serverpod/issues/5294
+          isNot(contains('FROM "citizen" WHERE NOT "citizen_company_company"')),
+        );
+      });
+    });
+
     group('when filtering on filtered any many relation', () {
       var query = SelectQueryBuilder(
         table: citizenTable,

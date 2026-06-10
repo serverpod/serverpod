@@ -61,6 +61,21 @@ void main() {
     });
   });
 
+  group('Given a NotExpression when wrapExpression is called', () {
+    var notWrappedExpression = NotExpression(const Expression('TRUE'));
+
+    test('then the resolved expression is wrapped in NOT.', () {
+      expect(
+        notWrappedExpression.wrapExpression('x IN (SELECT y FROM z)'),
+        'NOT (x IN (SELECT y FROM z))',
+      );
+    });
+
+    test('then toString uses the raw inner expression.', () {
+      expect(notWrappedExpression.toString(), 'NOT TRUE');
+    });
+  });
+
   group('Given a combined expression wrapped in NOT expression', () {
     var expression1 = const Expression('true = true');
     var expression2 = const Expression('"A" = "A"');
