@@ -152,6 +152,13 @@ class TypeDefinition {
 
   bool get isVectorType => vectorClassNames.contains(className);
 
+  static List<String> get geographyClassNames => [
+    'GeographyPoint',
+    'GeographyLineString',
+    'GeographyPolygon',
+    'GeographyGeometryCollection',
+  ];
+
   bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>
@@ -360,7 +367,11 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                ([
+                  'UuidValue',
+                  ...geographyClassNames,
+                  ...vectorClassNames,
+                ]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -477,6 +488,12 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
+    if (className == 'GeographyPoint') return 'geography';
+    if (className == 'GeographyLineString') return 'geography line string';
+    if (className == 'GeographyPolygon') return 'geography polygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'geography geometry collection';
+    }
     if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
@@ -504,6 +521,12 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'GeographyLineString') return 'ColumnGeographyLineString';
+    if (className == 'GeographyPolygon') return 'ColumnGeographyPolygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'ColumnGeographyGeometryCollection';
+    }
 
     if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
@@ -815,6 +838,14 @@ class TypeDefinition {
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
     if (className == 'Bit') return ValueType.bit;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
+    if (className == 'GeographyLineString') {
+      return ValueType.geographyLineString;
+    }
+    if (className == 'GeographyPolygon') return ValueType.geographyPolygon;
+    if (className == 'GeographyGeometryCollection') {
+      return ValueType.geographyGeometryCollection;
+    }
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -1046,6 +1077,10 @@ enum ValueType {
   halfVector,
   sparseVector,
   bit,
+  geographyPoint,
+  geographyLineString,
+  geographyPolygon,
+  geographyGeometryCollection,
   uri,
 }
 

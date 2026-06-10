@@ -1,11 +1,12 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_database/serverpod_database.dart';
-
 // This is a temporary internal import since the normalize functions are not
 // meant to be exported from the database package. It will be removed once the
 // [PostgresSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart'
+    show Geography;
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {
@@ -65,6 +66,11 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Must be declared before any table creation.
     if (tables.any((t) => t.columns.any((c) => c.isVectorColumn))) {
       out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    if (tables.any((t) => t.columns.any((c) => c.isGeographyColumn))) {
+      out += _sqlCreatePostgisExtension();
       out += '\n';
     }
 
@@ -177,6 +183,13 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
+  /// Whether the column is of a geography type.
+  bool get isGeographyColumn =>
+      columnType == ColumnType.geography ||
+      columnType == ColumnType.geographyLineString ||
+      columnType == ColumnType.geographyPolygon ||
+      columnType == ColumnType.geographyGeometryCollection;
+
   String toPgSqlFragment({String tableName = ''}) {
     String type;
     switch (columnType) {
@@ -221,6 +234,18 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.bit:
         type = 'bit(${vectorDimension!})';
+        break;
+      case ColumnType.geography:
+        type = 'geography(Point,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyLineString:
+        type = 'geography(LineString,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyPolygon:
+        type = 'geography(Polygon,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyGeometryCollection:
+        type = 'geography(GeometryCollection,${Geography.defaultSrid})';
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
@@ -366,6 +391,17 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
               e.alterTable!.addColumns.any((c) => c.isVectorColumn)),
     )) {
       out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any((c) => c.isGeographyColumn)) ||
+          (e.alterTable != null &&
+              e.alterTable!.addColumns.any((c) => c.isGeographyColumn)),
+    )) {
+      out += _sqlCreatePostgisExtension();
       out += '\n';
     }
 
@@ -638,6 +674,22 @@ String _sqlCreateVectorExtensionIfAvailable() {
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
       '\n  ELSE'
       '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
+String _sqlCreatePostgisExtension() {
+  return '--'
+      '\n-- CREATE POSTGIS EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'
