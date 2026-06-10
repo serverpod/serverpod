@@ -101,7 +101,11 @@ abstract class EndpointWebsocketRequestHandler {
                 unwrapAuthHeaderValue(authKey),
               );
               // Open streams now that authentication has been applied so each
-              // endpoint's streamOpened sees the authenticated session.
+              // endpoint's streamOpened sees the authenticated session. The
+              // 'auth' message must therefore be the first message a client
+              // sends: if a ping or endpoint message arrives first, streams open
+              // (anonymously) and streamOpened does not re-run on this later
+              // auth. The bundled client sends 'auth' before 'ping'.
               await openAllStreams();
             }
             continue;

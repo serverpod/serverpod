@@ -110,6 +110,12 @@ class ServerpodConfig {
   /// server-to-server clients, which don't send one) are always allowed for
   /// WebSocket. When null or empty (the default), all origins are allowed for
   /// WebSocket and no per-origin CORS echo is emitted.
+  ///
+  /// Entries are normalized to lowercase and matched against the (also
+  /// lowercased) request `Origin`, so they must be serialized origins with no
+  /// trailing slash, e.g. `https://app.example.com` or
+  /// `https://app.example.com:8443` (browsers send a canonical, lowercase
+  /// origin without a path); casing in the configured value does not matter.
   final List<String>? allowedOrigins;
 
   /// Configuration for the web authentication cookie. Null (the default) when
@@ -150,6 +156,36 @@ class ServerpodConfig {
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
     sessionLogs?._validate(databaseEnabled: database != null);
+
+    // Cookie-based web auth depends on an origin allow-list: it backs the
+    // cross-site WebSocket hijacking guard and credentialed CORS (which cannot
+    // use the wildcard origin). Enabling it without one would silently leave
+    // those protections off, so require allowedOrigins when authCookie is set.
+    if (authCookie != null &&
+        (allowedOrigins == null || allowedOrigins!.isEmpty)) {
+      throw ArgumentError(
+        'allowedOrigins must be set to a non-empty list of trusted browser '
+        'origins when authCookie is configured. Cookie-based web auth requires '
+        'an origin allow-list for cross-site WebSocket protection and '
+        'credentialed CORS.',
+      );
+    }
+
+    // Browsers ignore (drop) a SameSite=None cookie that is not also Secure, so
+    // the combination would silently disable the auth cookie.
+    if (authCookie != null &&
+        authCookie!.sameSite == CookieSameSite.none &&
+        !authCookie!.secure) {
+      throw ArgumentError(
+        'authCookie.sameSite "none" requires authCookie.secure to be true; '
+        'browsers ignore a SameSite=None cookie that is not Secure.',
+      );
+    }
+
+    // Fail fast on a malformed cookie domain or path so the error surfaces at
+    // startup with a clear message, rather than deep in the first sign-in when
+    // relic parses these into the Set-Cookie header.
+    authCookie?._validate();
   }
 
   /// Creates a default bare bone configuration.
@@ -980,32 +1016,118 @@ class WebAuthCookieConfig {
   });
 
   factory WebAuthCookieConfig._fromJson(Map json) {
-    var name = json[ServerpodEnv.authCookieName.configKey];
-    var domain = json[ServerpodEnv.authCookieDomain.configKey];
-    var path = json[ServerpodEnv.authCookiePath.configKey];
-    var secure = json[ServerpodEnv.authCookieSecure.configKey];
-    var sameSite = json[ServerpodEnv.authCookieSameSite.configKey];
-
     return WebAuthCookieConfig(
-      name: name is String && name.isNotEmpty ? name : defaultName,
-      domain: domain is String && domain.isNotEmpty ? domain : null,
-      path: path is String && path.isNotEmpty ? path : '/',
-      secure: secure is bool ? secure : true,
-      sameSite: sameSite is String
-          ? _parseSameSite(sameSite)
-          : CookieSameSite.lax,
+      name:
+          _parseOptionalString(
+            json[ServerpodEnv.authCookieName.configKey],
+            ServerpodEnv.authCookieName.configKey,
+          ) ??
+          defaultName,
+      domain: _parseOptionalString(
+        json[ServerpodEnv.authCookieDomain.configKey],
+        ServerpodEnv.authCookieDomain.configKey,
+      ),
+      path:
+          _parseOptionalString(
+            json[ServerpodEnv.authCookiePath.configKey],
+            ServerpodEnv.authCookiePath.configKey,
+          ) ??
+          '/',
+      secure: _parseSecure(json[ServerpodEnv.authCookieSecure.configKey]),
+      sameSite: _parseSameSite(json[ServerpodEnv.authCookieSameSite.configKey]),
     );
   }
 
-  static CookieSameSite _parseSameSite(String value) {
+  /// Reads an optional string cookie attribute. Returns null when unset (null
+  /// or empty, so the field falls back to its default) and the value when it is
+  /// a non-empty string. A non-string value (e.g. a YAML number or bool) throws
+  /// rather than silently falling back to the default, mirroring [_parseSecure]
+  /// so every attribute reports a misconfiguration the same way.
+  static String? _parseOptionalString(Object? value, String configKey) {
+    return switch (value) {
+      null => null,
+      String s => s.isEmpty ? null : s,
+      _ => throw ArgumentError.value(value, configKey, 'Expected a string'),
+    };
+  }
+
+  /// Parses the `secure` value, accepting a bool or a bool-string. A non-bool
+  /// value (e.g. a quoted YAML string) throws rather than silently defaulting,
+  /// so a misconfiguration surfaces instead of producing a surprising cookie.
+  static bool _parseSecure(Object? value) {
+    return switch (value) {
+      null => true,
+      bool b => b,
+      String s =>
+        bool.tryParse(s) ??
+            (throw ArgumentError.value(
+              s,
+              ServerpodEnv.authCookieSecure.configKey,
+              'Expected a boolean (true or false)',
+            )),
+      _ => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSecure.configKey,
+        'Expected a boolean (true or false)',
+      ),
+    };
+  }
+
+  /// Parses the `sameSite` value. Null falls back to the [CookieSameSite.lax]
+  /// default; a string is matched case-insensitively against [CookieSameSite];
+  /// any other type (or an unknown string) throws, so a wrong-typed value can't
+  /// silently weaken the configured cross-site posture.
+  static CookieSameSite _parseSameSite(Object? value) {
+    if (value == null) return CookieSameSite.lax;
+
+    final name = switch (value) {
+      String s => s.toLowerCase(),
+      _ => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSameSite.configKey,
+        'Expected one of: ${CookieSameSite.values.map((s) => s.name).join(', ')}',
+      ),
+    };
+
     return CookieSameSite.values.firstWhere(
-      (s) => s.name == value.toLowerCase(),
+      (s) => s.name == name,
       orElse: () => throw ArgumentError.value(
         value,
         ServerpodEnv.authCookieSameSite.configKey,
         'Expected one of: ${CookieSameSite.values.map((s) => s.name).join(', ')}',
       ),
     );
+  }
+
+  /// Checks the [domain] and [path] formats, throwing [ArgumentError] on an
+  /// obviously malformed value (a scheme, port, stray separator, etc.) so a
+  /// misconfiguration fails fast at startup instead of only on the first cookie
+  /// sign-in. This is a cheap, dependency-free pre-check; relic performs the
+  /// authoritative parse when the `Set-Cookie` header is built.
+  void _validate() {
+    final domain = this.domain;
+    if (domain != null) {
+      // A cookie Domain is a bare host (RFC 6265 5.2.3): no scheme, port, path
+      // or whitespace. A leading dot is allowed (normalized away at build time).
+      final bare = domain.startsWith('.') ? domain.substring(1) : domain;
+      if (bare.isEmpty || RegExp(r'[\s:/\\]').hasMatch(domain)) {
+        throw ArgumentError.value(
+          domain,
+          ServerpodEnv.authCookieDomain.configKey,
+          'Expected a bare host such as "example.com" or ".example.com" '
+          '(no scheme, port, path or whitespace)',
+        );
+      }
+    }
+    // A cookie Path is an RFC 6265 path-value: reject whitespace and ";"
+    // here; relic validates the full grammar when the cookie is built.
+    if (RegExp(r'[\s;]').hasMatch(path)) {
+      throw ArgumentError.value(
+        path,
+        ServerpodEnv.authCookiePath.configKey,
+        'Must not contain whitespace or ";"',
+      );
+    }
   }
 
   @override
@@ -1694,6 +1816,20 @@ List<String>? _readAllowedOrigins(
   } else if (value is String) {
     origins = _parseList(value);
   }
+
+  // Normalize to lowercase and drop a trailing slash: origins (scheme + host)
+  // are case-insensitive and a browser sends a canonical lowercase origin with
+  // no path, so a mis-cased entry ("https://App.Example.com") or one copied
+  // from a URL bar with a trailing slash ("https://app.example.com/") must
+  // still match the request origin.
+  origins = origins
+      ?.map((origin) => origin.toLowerCase())
+      .map((origin) => origin.replaceFirst(RegExp(r'/+$'), ''))
+      .toList();
+
+  // Drop blank entries so an empty env var ("") or a trailing comma
+  // ("https://a.com,") does not become a deny-all [''] list.
+  origins = origins?.where((origin) => origin.isNotEmpty).toList();
 
   // Treat an empty list as "no restriction" (same as null) so an empty config
   // value doesn't accidentally reject every browser connection.
