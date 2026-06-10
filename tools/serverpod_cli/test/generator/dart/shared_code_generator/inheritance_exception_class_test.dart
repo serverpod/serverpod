@@ -127,7 +127,7 @@ void main() {
         });
 
         test('does have a fromJson factory constructor', () {
-          var fromJsonConstructor = childClass!.members
+          var fromJsonConstructor = childClass!.body.childEntities
               .whereType<ConstructorDeclaration>()
               .where(
                 (constructor) => constructor.factoryKeyword != null,

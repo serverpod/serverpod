@@ -782,128 +782,134 @@ void main() {
     },
   );
 
-  group('Given a hierarchy: sealed > sealed > normal when generating shared code', () {
-    var grandparent = ExceptionClassDefinitionBuilder()
-        .withClassName('ExampleGrandparentException')
-        .withFileName('example_grandparent_exception')
-        .withSimpleField('message', 'String')
-        .withIsSealed(true)
-        .withSharedPackageName(sharedPackageName)
+  group(
+    'Given a hierarchy: sealed > sealed > normal when generating shared code',
+    () {
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .withSharedPackageName(sharedPackageName)
           .build();
-    var parent = ExceptionClassDefinitionBuilder()
-        .withClassName('ExampleParentException')
-        .withFileName('example_parent_exception')
-        .withSimpleField('name', 'String')
-        .withExtendsClass(grandparent)
-        .withIsSealed(true)
-        .withSharedPackageName(sharedPackageName)
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .withIsSealed(true)
+          .withSharedPackageName(sharedPackageName)
           .build();
-    var child = ExceptionClassDefinitionBuilder()
-        .withClassName('ExampleChildException')
-        .withFileName('example_child_exception')
-        .withSimpleField('code', 'int', nullable: true)
-        .withExtendsClass(parent)
-        .withSharedPackageName(sharedPackageName)
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSimpleField('code', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .withSharedPackageName(sharedPackageName)
           .build();
 
-    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
-    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
 
-    var models = [
-      grandparent,
-      parent,
-      child,
-    ];
+      var models = [
+        grandparent,
+        parent,
+        child,
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-
-    var childCompilationUnit = parseString(
-      content: codeMap[getExpectedFilePath(child.fileName)]!,
-    ).unit;
-
-    group('then ${child.className}', () {
-      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        childCompilationUnit,
-        name: child.className,
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
       );
 
-      var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        childClass!,
-        name: 'copyWith',
-      );
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
 
-      test('has a copyWith method', () {
-        expect(copyWithMethod, isNotNull);
-      });
-
-      test('with the override annotation', () {
-        var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
-          copyWithMethod!,
-          name: 'override',
+      group('then ${child.className}', () {
+        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: child.className,
         );
 
-        expect(overrideAnnotation, isNotNull);
-      });
-    });
-  });
-
-  group('Given a sealed class with no children when generating shared code', () {
-    var parent = ExceptionClassDefinitionBuilder()
-        .withClassName('ExampleParentException')
-        .withFileName('example_parent_exception')
-        .withSimpleField('message', 'String')
-        .withIsSealed(true)
-        .withSharedPackageName(sharedPackageName)
-          .build();
-
-    var models = [
-      parent,
-    ];
-
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-
-    var parentCompilationUnit = parseString(
-      content: codeMap[getExpectedFilePath(parent.fileName)]!,
-    ).unit;
-
-    group('then ${parent.className}', () {
-      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        parentCompilationUnit,
-        name: parent.className,
-      );
-
-      test('is defined', () {
-        expect(parentClass, isNotNull);
-      });
-
-      test('does have an abstract copyWith method', () {
         var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          parentClass!,
+          childClass!,
           name: 'copyWith',
         );
 
-        expect(copyWithMethod, isNotNull);
-        expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
-      });
+        test('has a copyWith method', () {
+          expect(copyWithMethod, isNotNull);
+        });
 
-      var directives = parentCompilationUnit.directives;
+        test('with the override annotation', () {
+          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+            copyWithMethod!,
+            name: 'override',
+          );
 
-      test('has only directive which is an import', () {
-        expect(directives.length, 1);
-        expect(directives.first, isA<ImportDirective>());
+          expect(overrideAnnotation, isNotNull);
+        });
       });
+    },
+  );
 
-      test('does NOT have a part directive', () {
-        expect(directives.first, isNot(isA<PartDirective>()));
+  group(
+    'Given a sealed class with no children when generating shared code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .withSharedPackageName(sharedPackageName)
+          .build();
+
+      var models = [
+        parent,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+
+      group('then ${parent.className}', () {
+        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          parentCompilationUnit,
+          name: parent.className,
+        );
+
+        test('is defined', () {
+          expect(parentClass, isNotNull);
+        });
+
+        test('does have an abstract copyWith method', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            parentClass!,
+            name: 'copyWith',
+          );
+
+          expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
+        });
+
+        var directives = parentCompilationUnit.directives;
+
+        test('has only directive which is an import', () {
+          expect(directives.length, 1);
+          expect(directives.first, isA<ImportDirective>());
+        });
+
+        test('does NOT have a part directive', () {
+          expect(directives.first, isNot(isA<PartDirective>()));
+        });
       });
-    });
-  });
+    },
+  );
 
   group(
     'Given a hierarchy: sealed > normal > normal, when the sealed top node is in another directory',
