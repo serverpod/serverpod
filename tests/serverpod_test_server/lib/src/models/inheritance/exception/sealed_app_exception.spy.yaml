@@ -1,0 +1,4 @@
+exception: SealedAppException
+sealed: true
+fields:
+  message: String
