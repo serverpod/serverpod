@@ -38,6 +38,52 @@ class CreateConfigState extends TuiState {
   bool _creatingProject = false;
   bool get creatingProject => _creatingProject;
 
+  int _currentScreenIndex = 0;
+
+  /// Current screen index (0 = first config screen, [configScreenCount] = summary).
+  int get currentScreenIndex => _currentScreenIndex;
+
+  /// Number of config screens visible in the form (not counting summary).
+  int get configScreenCount => form.configurations.length;
+
+  /// Whether the current screen is the summary screen.
+  bool get isSummary => _currentScreenIndex >= configScreenCount;
+
+  /// Total number of screens (config screens + summary).
+  int get totalScreenCount => configScreenCount + 1;
+
+  /// Advances to the next screen.
+  void nextScreen() {
+    if (_currentScreenIndex < configScreenCount) {
+      _currentScreenIndex++;
+      _updateFormFocus();
+    }
+  }
+
+  /// Goes back to the previous screen.
+  void previousScreen() {
+    if (_currentScreenIndex > 0) {
+      _currentScreenIndex--;
+      _updateFormFocus();
+    }
+  }
+
+  void _updateFormFocus() {
+    if (_currentScreenIndex < form.configurations.length) {
+      final config = form.configurations[_currentScreenIndex];
+      form.requestFocus(config);
+      final currentFocus = form.getFocusedOptionIndexFor(config) ?? 0;
+      if (currentFocus > 0) {
+        form.updateFocusedConfigOption(-currentFocus);
+      }
+    }
+  }
+
+  /// Resets to the first screen.
+  void resetScreens() {
+    _currentScreenIndex = 0;
+  }
+
   @override
   final logHistory = BoundedQueueList<Object>(1000);
 
@@ -67,6 +113,8 @@ class CreateConfigState extends TuiState {
     final selectedIdes =
         form.getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
+    final webOption = form.getSelectedOptionFor(ServerpodCreateConfig.web);
+
     return TemplateContext(
       template: template,
       auth: _isOptionSelected(
@@ -75,27 +123,26 @@ class CreateConfigState extends TuiState {
         fallback: defaults.auth,
       ),
       redis: _isOptionSelected(
-        ServerpodCreateConfig.redis,
-        BoolFormConfigOption.enabled,
+        ServerpodCreateConfig.database,
+        DatabaseConfigOption.redis,
         fallback: defaults.redis,
       ),
       postgres: _isOptionSelected(
         ServerpodCreateConfig.database,
-        DatabaseConfigOption.postgres,
+        DatabaseConfigOption.database,
         fallback: defaults.postgres,
       ),
-      sqlite: _isOptionSelected(
-        ServerpodCreateConfig.database,
-        DatabaseConfigOption.sqlite,
-        fallback: defaults.sqlite,
-      ),
-      web: _isOptionSelected(
-        ServerpodCreateConfig.web,
-        BoolFormConfigOption.enabled,
-        fallback: defaults.web,
-      ),
+      sqlite: false,
+      web: _getWebOption(webOption, fallback: defaults.web),
       ides: selectedIdes.toTemplateIdes,
     );
+  }
+
+  /// Returns the web bool from the given [WebConfigOption] option,
+  /// or [fallback] if no option is selected or config is not exposed.
+  bool _getWebOption(WebConfigOption? option, {required bool fallback}) {
+    if (!configs.contains(ServerpodCreateConfig.web)) return fallback;
+    return option == WebConfigOption.appAndWebsite;
   }
 
   /// Returns whether [option] is selected for [config] in the form,

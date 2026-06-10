@@ -11,21 +11,42 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     label: 'Project Type',
     options: TemplateTypeOption.values,
     defaultOptions: {TemplateTypeOption.server},
+    description: FormDescription(
+      label:
+          'Modules are reusable units (server code, models, and Flutter code) '
+          'that you can use across multiple servers.',
+      spacing: 2,
+    ),
   ),
   database<DatabaseConfigOption>(
-    label: 'Database',
+    label: 'Database & caching',
     options: DatabaseConfigOption.values,
-    defaultOptions: {DatabaseConfigOption.postgres},
+    multiSelect: true,
+    defaultOptions: {DatabaseConfigOption.database},
+    description: FormDescription(
+      label:
+          'The database is required for many features (storage, authentication, '
+          'future calls, etc). Enable Redis if you plan to use multiple servers '
+          'for real-time communication.',
+      spacing: 2,
+    ),
+    requirements: [
+      FormRequirement<TemplateTypeOption>(
+        config: ServerpodCreateConfig.template,
+        configOption: TemplateTypeOption.server,
+      ),
+    ],
   ),
-  redis<BoolFormConfigOption>(
-    label: 'Redis (inter-server pubsub & caching)',
-    options: BoolFormConfigOption.values,
-    defaultOptions: {BoolFormConfigOption.enabled},
-  ),
-  web<BoolFormConfigOption>(
-    label: 'Webserver',
-    options: BoolFormConfigOption.values,
-    defaultOptions: {BoolFormConfigOption.enabled},
+  web<WebConfigOption>(
+    label: 'Web server',
+    options: WebConfigOption.values,
+    defaultOptions: {WebConfigOption.appOnly},
+    description: FormDescription(
+      label:
+          'Serverpod can serve web pages (e.g., a landing page or a companion '
+          'HTML site) and your Flutter web app in addition to your app\'s API.',
+      spacing: 2,
+    ),
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
@@ -34,27 +55,34 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     ],
   ),
   auth<BoolFormConfigOption>(
-    label: 'Authentication (requires Postgres)',
+    label: 'Authentication',
     options: BoolFormConfigOption.values,
     defaultOptions: {BoolFormConfigOption.enabled},
+    description: FormDescription(
+      label:
+          'Enable authentication if you want your users to be able to sign in '
+          'with email or social logins.',
+      spacing: 2,
+    ),
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
         configOption: TemplateTypeOption.server,
       ),
-      FormRequirement<DatabaseConfigOption>(
-        config: ServerpodCreateConfig.database,
-        configOption: DatabaseConfigOption.postgres,
-      ),
     ],
   ),
   ide<IdeOption>(
-    label: 'IDEs',
+    label: 'Code editors & AI agents',
     options: IdeOption.values,
     multiSelect: true,
     defaultOptions: <IdeOption>{},
-  )
-  ;
+    description: FormDescription(
+      label:
+          'Select the editors and agents you are planning to use. We will '
+          'install skills and MCP servers for your selected editors.',
+      spacing: 2,
+    ),
+  );
 
   const ServerpodCreateConfig({
     required this.label,
@@ -84,12 +112,10 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
   final FormDescription? description;
 }
 
-/// [FormConfigOption] for supported databases.
+/// [FormConfigOption] for database & caching options.
 enum DatabaseConfigOption implements FormConfigOption {
-  postgres('Postgres'),
-  sqlite('SQLite'),
-  none('None')
-  ;
+  database('Database (recommended)'),
+  redis('Redis');
 
   const DatabaseConfigOption(this.label);
 
@@ -99,11 +125,22 @@ enum DatabaseConfigOption implements FormConfigOption {
 
 /// [FormConfigOption] for supported template types.
 enum TemplateTypeOption implements FormConfigOption {
-  server('Server'),
-  module('Module')
-  ;
+  server('Server & Flutter app'),
+  module('Module');
 
   const TemplateTypeOption(this.label);
+
+  @override
+  final String label;
+}
+
+/// [FormConfigOption] for web server options.
+enum WebConfigOption implements FormConfigOption {
+  appOnly('Flutter app only (recommended)'),
+  appAndWebsite('App and website'),
+  none('None');
+
+  const WebConfigOption(this.label);
 
   @override
   final String label;
@@ -116,8 +153,7 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code')
-  ;
+  vsCode('VS Code');
 
   const IdeOption(this.label);
 

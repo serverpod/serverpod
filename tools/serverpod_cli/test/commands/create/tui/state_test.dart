@@ -34,60 +34,70 @@ void main() {
       );
 
       test(
-        'and database is postgres (default) then TemplateContext has correct value for postgres',
+        'and database is enabled (default) then TemplateContext has correct value for postgres',
         () {
           final context = state.toTemplateContext();
           expect(context.postgres, isTrue);
+          expect(context.sqlite, isFalse);
         },
       );
 
       test(
-        'and database is sqlite then TemplateContext has correct value for sqlite',
+        'and database is disabled then TemplateContext has correct values',
         () {
+          // Deselect Database (recommended)
           state.form.updateSelectedOption(
             ServerpodCreateConfig.database,
-            DatabaseConfigOption.sqlite,
-          );
-
-          final context = state.toTemplateContext();
-          expect(context.postgres, isFalse);
-          expect(context.sqlite, isTrue);
-        },
-      );
-
-      test(
-        'and database is disabled then TemplateContext '
-        'has correct values for postgres, sqlite and auth',
-        () {
-          state.form.updateSelectedOption(
-            ServerpodCreateConfig.database,
-            DatabaseConfigOption.none,
+            DatabaseConfigOption.database,
           );
 
           final context = state.toTemplateContext();
           expect(context.postgres, isFalse);
           expect(context.sqlite, isFalse);
-          expect(context.auth, isFalse);
         },
       );
 
       test(
-        'and redis is disabled then TemplateContext reflects disabled',
+        'and redis is enabled then TemplateContext reflects enabled',
         () {
           state.form.updateSelectedOption(
-            ServerpodCreateConfig.redis,
-            BoolFormConfigOption.disabled,
+            ServerpodCreateConfig.database,
+            DatabaseConfigOption.redis,
           );
 
+          final context = state.toTemplateContext();
+          expect(context.redis, isTrue);
+        },
+      );
+
+      test(
+        'and redis is not selected then TemplateContext reflects disabled',
+        () {
+          // By default redis is not selected (only database is default)
           final context = state.toTemplateContext();
           expect(context.redis, isFalse);
         },
       );
 
-      test('and web is disabled then TemplateContext reflects disabled', () {
+      test('and web is set to app only (default) then web is disabled', () {
+        final context = state.toTemplateContext();
+        expect(context.web, isFalse);
+      });
+
+      test('and web is set to app and website then web is enabled', () {
         state.form.updateSelectedOption(
           ServerpodCreateConfig.web,
-          BoolFormConfigOption.disabled,
+          WebConfigOption.appAndWebsite,
+        );
+
+        final context = state.toTemplateContext();
+        expect(context.web, isTrue);
+      });
+
+      test('and web is set to none then web is disabled', () {
+        state.form.updateSelectedOption(
+          ServerpodCreateConfig.web,
+          WebConfigOption.none,
         );
 
         final context = state.toTemplateContext();
@@ -95,29 +105,25 @@ void main() {
       });
 
       test(
-        'and database is set to postgres with auth enabled, '
+        'and auth is enabled with server template, '
         'then TemplateContext has the correct value for auth',
         () {
           var context = state.toTemplateContext();
           // True by default
           expect(context.auth, isTrue);
+        },
+      );
 
-          // Move to database config
-          state.form.updateFocusedConfig(1);
-          // Select DatabaseConfigOption.sqlite config option
-          state.form.updateFocusedConfigOption(1);
-          state.form.selectConfigOption();
+      test(
+        'and auth is disabled then TemplateContext reflects disabled',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.auth,
+            BoolFormConfigOption.disabled,
+          );
 
-          context = state.toTemplateContext();
-          // False for sqlite
+          final context = state.toTemplateContext();
           expect(context.auth, isFalse);
-
-          // Select DatabaseConfigOption.postgres config option
-          state.form.updateFocusedConfigOption(-1);
-          state.form.selectConfigOption();
-
-          context = state.toTemplateContext();
-          expect(context.auth, isTrue);
         },
       );
 
@@ -216,7 +222,6 @@ void main() {
       setUp(() {
         state = CreateConfigState(
           ServerpodTemplateType.server,
-          defaults: TemplateContext(auth: true, web: true),
         );
         state.form.updateSelectedOption(
           ServerpodCreateConfig.template,
@@ -225,12 +230,79 @@ void main() {
       });
 
       test(
-        'then TemplateContext resolves the hidden config from the form '
-        'and not from the default values',
+        'then database, web, and auth configs are hidden '
+        'for module template',
+        () {
+          final configs = state.form.configurations;
+          expect(configs, isNot(contains(ServerpodCreateConfig.database)));
+          expect(configs, isNot(contains(ServerpodCreateConfig.web)));
+          expect(configs, isNot(contains(ServerpodCreateConfig.auth)));
+          expect(configs, contains(ServerpodCreateConfig.template));
+          expect(configs, contains(ServerpodCreateConfig.ide));
+        },
+      );
+
+      test(
+        'then hidden configs resolve to false in TemplateContext',
         () {
           final context = state.toTemplateContext();
           expect(context.web, isFalse);
           expect(context.auth, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a CreateConfigState with module template, '
+    'when checking screen navigation',
+    () {
+      late CreateConfigState state;
+
+      setUp(() {
+        state = CreateConfigState(
+          ServerpodTemplateType.module,
+        );
+      });
+
+      test(
+        'then initially on screen 0',
+        () {
+          expect(state.currentScreenIndex, 0);
+        },
+      );
+
+      test(
+        'then nextScreen advances to next config',
+        () {
+          state.nextScreen();
+          expect(state.currentScreenIndex, 1);
+        },
+      );
+
+      test(
+        'then previousScreen goes back',
+        () {
+          state.nextScreen();
+          state.previousScreen();
+          expect(state.currentScreenIndex, 0);
+        },
+      );
+
+      test(
+        'then configScreenCount is less because some configs are hidden for module',
+        () {
+          // For module: template and ide are visible (database/web/auth hidden)
+          expect(state.configScreenCount, 2);
+        },
+      );
+
+      test(
+        'then isSummary is true when past last config screen',
+        () {
+          state.nextScreen();
+          state.nextScreen();
+          expect(state.isSummary, isTrue);
         },
       );
     },

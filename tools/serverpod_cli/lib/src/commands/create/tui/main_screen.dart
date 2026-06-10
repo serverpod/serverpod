@@ -1,4 +1,6 @@
 import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_cli/src/commands/create/tui/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
@@ -23,37 +25,88 @@ class MainScreen extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final creatingProject = holder.state.creatingProject;
+    final state = holder.state;
+    final creatingProject = state.creatingProject;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: BorderedBox(
-            child: Column(
-              children: [
-                _buildHeader(theme),
-                Expanded(
-                  child: creatingProject ? _buildLogView() : _buildForm(),
-                ),
-              ],
+    return Focusable(
+      focused: true,
+      onKeyEvent: (event) {
+        if (state.creatingProject && event.logicalKey != LogicalKey.keyQ) {
+          return false;
+        }
+
+        switch (event.logicalKey) {
+          case LogicalKey.enter:
+            if (state.isSummary) {
+              if (state.canCreate) {
+                state.markCreatingProject();
+                holder.markDirty();
+                onCreate();
+              }
+            } else {
+              state.nextScreen();
+              holder.markDirty();
+            }
+            return true;
+
+          case LogicalKey.escape:
+            if (state.currentScreenIndex > 0) {
+              state.previousScreen();
+              holder.markDirty();
+            }
+            return true;
+
+          case LogicalKey.keyQ:
+            if (!event.isControlPressed) {
+              onQuit();
+              return true;
+            }
+            return false;
+
+          default:
+            return false;
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: BorderedBox(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(theme, state),
+                  Expanded(
+                    child: creatingProject
+                        ? _buildLogView()
+                        : _buildScreenContent(theme, state),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        _buildButtonBar(theme),
-      ],
+          _buildButtonBar(theme, state),
+        ],
+      ),
     );
   }
 
-  Component _buildHeader(ServerpodThemeData theme) {
-    final creatingProject = holder.state.creatingProject;
-    final title = creatingProject
-        ? 'Creating the "$name" project'
-        : 'Configure the "$name" project';
+  FormSelectionConfig? _getCurrentConfig(CreateConfigState state) {
+    final configs = state.form.configurations;
+    final idx = state.currentScreenIndex;
+    if (idx >= 0 && idx < configs.length) {
+      return configs[idx] as FormSelectionConfig?;
+    }
+    return null;
+  }
+
+  Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
+    final creatingProject = state.creatingProject;
+    final title = creatingProject ? 'Creating project' : 'Create new project';
 
     return Container(
-      padding: const EdgeInsets.only(bottom: 1),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Row(
         children: [
           Text(
             title,
@@ -62,97 +115,292 @@ class MainScreen extends StatelessComponent {
               fontWeight: FontWeight.bold,
             ),
           ),
+          const Spacer(),
+          Text(
+            '💡 Click to select',
+            style: TextStyle(
+              color: theme.brightText,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Component _buildForm() {
-    final state = holder.state;
-    return Form(
-      state: state.form,
-      scrollController: scrollController,
-      rebuild: holder.markDirty,
+  Component _buildScreenContent(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+  ) {
+    if (state.isSummary) {
+      return _buildSummaryScreen(theme, state);
+    }
+
+    final config = _getCurrentConfig(state);
+    if (config == null) return const SizedBox.shrink();
+
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1),
+        child: _buildConfigScreen(theme, state, config),
+      ),
     );
   }
 
-  Component _buildButtonBar(ServerpodThemeData theme) {
-    final state = holder.state;
-    final form = state.form;
+  Component _buildConfigScreen(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+    FormSelectionConfig config,
+  ) {
+    final focusedOptionIndex = state.form.getFocusedOptionIndexFor(config) ?? 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 1),
+        Text(
+          config.label,
+          style: const TextStyle(
+            color: Color.defaultColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 1),
+        if (config.isBoolean)
+          _buildBooleanOption(theme, state, config)
+        else
+          Wrap(
+            spacing: 2,
+            children: [
+              for (final option in config.options.indexed)
+                GestureDetector(
+                  onTap: () {
+                    state.form.updateSelectedOption(config, option.$2);
+                    holder.markDirty();
+                  },
+                  child: config.multiSelect
+                      ? Checkbox(
+                          label: option.$2.label,
+                          value: state.form.isOptionSelectedForConfig(
+                            config,
+                            option.$2,
+                          ),
+                          focused: focusedOptionIndex == option.$1,
+                        )
+                      : RadioButton(
+                          label: option.$2.label,
+                          value:
+                              state.form.getSelectedOptionFor(config) ==
+                              option.$2,
+                          focused: focusedOptionIndex == option.$1,
+                        ),
+                ),
+            ],
+          ),
+        const SizedBox(height: 2),
+        if (config.description case final FormDescription description?)
+          Text(
+            description.label,
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.dim,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Component _buildBooleanOption(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+    FormSelectionConfig config,
+  ) {
+    final selectedOption =
+        state.form.getSelectedOptionFor(config) as BoolFormConfigOption?;
+    final isEnabled = selectedOption == BoolFormConfigOption.enabled;
+
+    return GestureDetector(
+      onTap: () {
+        state.form.updateSelectedOption(
+          config,
+          isEnabled
+              ? BoolFormConfigOption.disabled
+              : BoolFormConfigOption.enabled,
+        );
+        holder.markDirty();
+      },
+      child: Checkbox(
+        label: 'Enable authentication',
+        value: isEnabled,
+        focused: true,
+      ),
+    );
+  }
+
+  Component _buildSummaryScreen(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+  ) {
+    final configs = state.form.configurations;
+
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 1),
+            for (final config in configs)
+              _buildSummaryItem(theme, state, config as FormSelectionConfig),
+            const SizedBox(height: 1),
+            Text(
+              'Press Enter to create the project.',
+              style: TextStyle(
+                color: theme.brightText,
+                fontWeight: FontWeight.dim,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Component _buildSummaryItem(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+    FormSelectionConfig config,
+  ) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 1),
+      child: Row(
+        children: [
+          Text(
+            '${config.label}: ',
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            _getSummaryValue(state, config),
+            style: const TextStyle(
+              color: Color.defaultColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getSummaryValue(CreateConfigState state, FormSelectionConfig config) {
+    if (config == ServerpodCreateConfig.template) {
+      final option = state.form.getSelectedOptionFor(config);
+      return option?.label ?? 'None';
+    }
+    if (config == ServerpodCreateConfig.web) {
+      final option = state.form.getSelectedOptionFor(config);
+      return option?.label ?? 'None';
+    }
+    if (config == ServerpodCreateConfig.auth) {
+      final option = state.form.getSelectedOptionFor(config);
+      final enabled = option == BoolFormConfigOption.enabled;
+      return enabled ? 'Enabled' : 'Disabled';
+    }
+    if (config == ServerpodCreateConfig.ide) {
+      final options = state.form.getSelectedOptionsFor(config) ?? <IdeOption>{};
+      final names = options.map((o) => o.label).join(', ');
+      return names.isEmpty ? 'None selected' : names;
+    }
+    if (config == ServerpodCreateConfig.database) {
+      final options =
+          state.form.getSelectedOptionsFor(config) ?? <DatabaseConfigOption>{};
+      final names = options.map((o) => o.label).join(', ');
+      return names.isEmpty ? 'None' : names;
+    }
+    return '';
+  }
+
+  Component _buildButtonBar(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+  ) {
     final creatingProject = state.creatingProject;
+    final isFirstScreen = state.currentScreenIndex == 0;
+    final isSummary = state.isSummary;
+    final createEnabled = !isSummary || state.canCreate;
+
     return ButtonBar(
       buttons: [
         Button(
-          name: 'Create Project',
+          name: isSummary ? 'Create Project' : 'Next',
           activationChar: 'Enter',
-          enabled: !creatingProject && state.canCreate,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
-            state.markCreatingProject();
-            holder.markDirty();
-            onCreate.call();
+            if (state.isSummary) {
+              state.markCreatingProject();
+              holder.markDirty();
+              onCreate();
+            } else {
+              state.nextScreen();
+              holder.markDirty();
+            }
           },
+          enabled: createEnabled && !creatingProject,
+        ),
+        Button(
+          name: 'Back',
+          activationChar: 'Esc',
+          activationKeys: const [LogicalKey.escape],
+          onActivate: (_) {
+            state.previousScreen();
+            holder.markDirty();
+          },
+          enabled: !isFirstScreen && !creatingProject,
         ),
         Button(
           name: 'Navigate',
           activationChar: '←↑↓→',
-          enabled: !creatingProject,
           activationKeys: const [
-            LogicalKey.arrowUp,
-            LogicalKey.arrowDown,
             LogicalKey.arrowLeft,
             LogicalKey.arrowRight,
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
           ],
           onActivate: (key) {
             switch (key) {
               case LogicalKey.arrowLeft:
-                form.updateFocusedConfigOption(-1);
+                state.form.updateFocusedConfigOption(-1);
                 break;
               case LogicalKey.arrowRight:
-                form.updateFocusedConfigOption(1);
+                state.form.updateFocusedConfigOption(1);
                 break;
               case LogicalKey.arrowUp:
-                form.updateFocusedConfig(-1);
-                if (form.focusedConfigIndex == form.maxFocusedConfigIndex) {
-                  scrollController.scrollToEnd();
-                } else {
-                  scrollController.scrollUp(3);
-                }
-                break;
               case LogicalKey.arrowDown:
-                form.updateFocusedConfig(1);
-                if (form.focusedConfigIndex == 0) {
-                  scrollController.scrollToStart();
-                } else {
-                  scrollController.scrollDown(3);
-                }
                 break;
             }
             holder.markDirty();
           },
+          enabled: !isSummary && !creatingProject,
         ),
         Button(
           name: 'Select',
           activationChar: 'Space',
-          enabled: !creatingProject,
           activationKeys: const [LogicalKey.space],
           onActivate: (_) {
-            form.selectConfigOption();
+            state.form.selectConfigOption();
             holder.markDirty();
           },
+          enabled: !isSummary && !creatingProject,
         ),
         Button(
           name: 'Quit',
           activationChar: 'Q',
           activationKeys: const [LogicalKey.keyQ],
-          onActivate: (_) {
-            onQuit.call();
-          },
+          onActivate: (_) => onQuit(),
         ),
-        if (state.canCreate)
-          const Tip('Click to select')
-        else
-          const Tip('Select at least one IDE'),
       ],
     );
   }
