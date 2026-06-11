@@ -55,7 +55,7 @@ abstract class SharedExtendedAppException extends _i1.SharedBaseAppException
 
   @override
   String toString() {
-    return 'SharedExtendedAppException(detail: $detail)';
+    return 'SharedExtendedAppException(message: $message, detail: $detail)';
   }
 }
 

@@ -63,7 +63,7 @@ abstract class NotFoundException extends _i1.SealedAppException
 
   @override
   String toString() {
-    return 'NotFoundException(code: $code)';
+    return 'NotFoundException(message: $message, code: $code)';
   }
 }
 

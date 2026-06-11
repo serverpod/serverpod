@@ -53,7 +53,7 @@ abstract class SharedNotFoundException extends _i1.SharedSealedAppException
 
   @override
   String toString() {
-    return 'SharedNotFoundException(code: $code)';
+    return 'SharedNotFoundException(message: $message, code: $code)';
   }
 }
 

@@ -403,7 +403,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(
           _buildExceptionToStringMethod(
             className,
-            classDefinition.fields,
+            fields,
           ),
         );
       }

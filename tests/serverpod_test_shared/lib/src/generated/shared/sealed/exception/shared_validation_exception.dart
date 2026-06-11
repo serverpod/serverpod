@@ -53,7 +53,7 @@ abstract class SharedValidationException extends _i1.SharedSealedAppException
 
   @override
   String toString() {
-    return 'SharedValidationException(field: $field)';
+    return 'SharedValidationException(message: $message, field: $field)';
   }
 }
 

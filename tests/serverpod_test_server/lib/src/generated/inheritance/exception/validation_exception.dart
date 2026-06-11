@@ -63,7 +63,7 @@ abstract class ValidationException extends _i1.SealedAppException
 
   @override
   String toString() {
-    return 'ValidationException(field: $field)';
+    return 'ValidationException(message: $message, field: $field)';
   }
 }
 

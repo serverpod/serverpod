@@ -153,6 +153,24 @@ void main() {
 
           expect(toStringMethod, isNotNull);
         });
+
+        test(
+          'toString includes inherited and declared fields.',
+          () {
+            var toStringMethod =
+                CompilationUnitHelpers.tryFindMethodDeclaration(
+                  childClass!,
+                  name: 'toString',
+                );
+
+            expect(
+              toStringMethod?.body.toString(),
+              contains(
+                "'NotFoundException(message: \$message, code: \$code)'",
+              ),
+            );
+          },
+        );
       });
     },
   );

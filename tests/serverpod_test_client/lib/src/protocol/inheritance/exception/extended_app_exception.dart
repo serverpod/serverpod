@@ -55,7 +55,7 @@ abstract class ExtendedAppException extends _i1.BaseAppException
 
   @override
   String toString() {
-    return 'ExtendedAppException(detail: $detail)';
+    return 'ExtendedAppException(message: $message, detail: $detail)';
   }
 }
 
