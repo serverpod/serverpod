@@ -225,14 +225,6 @@ class SerializableModelLibraryGenerator {
                 classDefinition,
               ),
           ]);
-
-          // TODO: Remove this workaround when closing issue
-          // https://github.com/serverpod/serverpod/issues/3462
-          if (buildRepository.hasRelationWithNonNullableIds(fields)) {
-            libraryBuilder.ignoreForFile.add('unnecessary_null_comparison');
-            // On Dart 3.10+, this issue becomes a `dead_code` lint.
-            libraryBuilder.ignoreForFile.add('dead_code');
-          }
         }
       },
     );
@@ -3578,17 +3570,6 @@ class SerializableModelLibraryGenerator {
 }
 
 class SimpleData {}
-
-extension on BuildRepositoryClass {
-  bool hasRelationWithNonNullableIds(
-    List<SerializableModelFieldDefinition> fields,
-  ) {
-    return hasAttachOperations(fields) ||
-        hasAttachRowOperations(fields) ||
-        hasDetachOperations(fields) ||
-        hasDetachRowOperations(fields);
-  }
-}
 
 extension on ModelClassDefinition {
   bool isTableOwner(bool serverCode) => switch (database) {

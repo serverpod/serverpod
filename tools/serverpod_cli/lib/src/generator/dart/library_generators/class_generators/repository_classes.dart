@@ -100,7 +100,7 @@ class BuildRepositoryClass {
   Class buildModelAttachRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
       classBuilder
@@ -125,7 +125,7 @@ class BuildRepositoryClass {
   Class buildModelAttachRowRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
       classBuilder
@@ -150,7 +150,7 @@ class BuildRepositoryClass {
   Class buildModelDetachRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
       classBuilder
@@ -175,7 +175,7 @@ class BuildRepositoryClass {
   Class buildModelDetachRowRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
       classBuilder
@@ -1774,7 +1774,7 @@ class BuildRepositoryClass {
   Iterable<Method> _buildAttachMethods(
     List<SerializableModelFieldDefinition> fields,
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return fields
         .where(_isListRelation)
@@ -1790,7 +1790,7 @@ class BuildRepositoryClass {
   Iterable<Method> _buildAttachRowMethods(
     List<SerializableModelFieldDefinition> fields,
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return [
       ...fields
@@ -1817,7 +1817,7 @@ class BuildRepositoryClass {
   Method _buildAttachFromListRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
@@ -1885,12 +1885,18 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableClassFieldId: relation.foreignKeyOwnerIdType.nullable,
+                nullableOtherClassFieldId:
+                    classDefinition.idField.type.nullable,
               )
             : _buildAttachImplementationBlockExplicitListRelation(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableClassFieldId: relation.foreignKeyOwnerIdType.nullable,
+                nullableOtherClassFieldId:
+                    classDefinition.idField.type.nullable,
               );
       const Code('');
     });
@@ -1899,7 +1905,7 @@ class BuildRepositoryClass {
   Method _buildAttachRowFromListRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
@@ -1962,12 +1968,18 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableClassFieldId: relation.foreignKeyOwnerIdType.nullable,
+                nullableOtherClassFieldId:
+                    classDefinition.idField.type.nullable,
               )
             : _buildAttachRowImplementationBlockExplicit(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableClassFieldId: relation.foreignKeyOwnerIdType.nullable,
+                nullableOtherClassFieldId:
+                    classDefinition.idField.type.nullable,
               );
       const Code('');
     });
@@ -1976,7 +1988,7 @@ class BuildRepositoryClass {
   Method _buildAttachRowFromObjectRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
@@ -2036,12 +2048,17 @@ class BuildRepositoryClass {
                 otherClassFieldName,
                 relation.fieldName,
                 refer(className),
+                nullableClassFieldId: classDefinition.idField.type.nullable,
+                nullableOtherClassFieldId: relation.referenceIdType.nullable,
               )
             : _buildAttachRowImplementationBlockExplicit(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableClassFieldId: relation.referenceIdType.nullable,
+                nullableOtherClassFieldId:
+                    classDefinition.idField.type.nullable,
               );
       const Code('');
     });
@@ -2052,15 +2069,20 @@ class BuildRepositoryClass {
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
-    Reference classReference,
-  ) {
+    Reference classReference, {
+    required bool nullableClassFieldId,
+    required bool nullableOtherClassFieldId,
+  }) {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
 
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
-            const Code(''),
+            if (nullableClassFieldId)
+              _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
+            if (nullableOtherClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
+            if (nullableClassFieldId || nullableOtherClassFieldId)
+              const Code(''),
             _buildImplicitCopyClassListField(
               classReference,
               classFieldName,
@@ -2081,13 +2103,18 @@ class BuildRepositoryClass {
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
-    Reference classReference,
-  ) {
+    Reference classReference, {
+    required bool nullableClassFieldId,
+    required bool nullableOtherClassFieldId,
+  }) {
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
-            const Code(''),
+            if (nullableClassFieldId)
+              _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
+            if (nullableOtherClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
+            if (nullableClassFieldId || nullableOtherClassFieldId)
+              const Code(''),
             _buildCopyWithListField(
               classFieldName,
               foreignKeyField,
@@ -2107,13 +2134,18 @@ class BuildRepositoryClass {
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
-    Reference classReference,
-  ) {
+    Reference classReference, {
+    required bool nullableClassFieldId,
+    required bool nullableOtherClassFieldId,
+  }) {
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
-            const Code(''),
+            if (nullableClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            if (nullableOtherClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
+            if (nullableClassFieldId || nullableOtherClassFieldId)
+              const Code(''),
             _buildCopyWithSingleField(
               classFieldName,
               foreignKeyField,
@@ -2134,14 +2166,19 @@ class BuildRepositoryClass {
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
-    Reference classReference,
-  ) {
+    Reference classReference, {
+    required bool nullableClassFieldId,
+    required bool nullableOtherClassFieldId,
+  }) {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
-            const Code(''),
+            if (nullableClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            if (nullableOtherClassFieldId)
+              _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
+            if (nullableClassFieldId || nullableOtherClassFieldId)
+              const Code(''),
             _buildImplicitCopyClassSingleField(
               classReference,
               classFieldName,
@@ -2161,7 +2198,7 @@ class BuildRepositoryClass {
   Iterable<Method> _buildDetachMethods(
     List<SerializableModelFieldDefinition> fields,
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return fields
         .where(_isNullableListRelation)
@@ -2177,7 +2214,7 @@ class BuildRepositoryClass {
   Iterable<Method> _buildDetachRowMethods(
     List<SerializableModelFieldDefinition> fields,
     String className,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return [
       ...fields
@@ -2204,7 +2241,7 @@ class BuildRepositoryClass {
   Method _buildDetachFromListRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var firstGeneric = field.type.generics.first;
@@ -2267,6 +2304,7 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableFieldId: relation.foreignKeyOwnerIdType.nullable,
               )
             : _buildDetachImplementationBlockExplicitListRelation(
                 className,
@@ -2274,6 +2312,7 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableFieldId: relation.foreignKeyOwnerIdType.nullable,
               );
       const Code('');
     });
@@ -2282,7 +2321,7 @@ class BuildRepositoryClass {
   Method _buildDetachRowFromListRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var firstGeneric = field.type.generics.first;
@@ -2344,6 +2383,7 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableFieldId: relation.foreignKeyOwnerIdType.nullable,
               )
             : _buildDetachRowImplementationBlockExplicitListRelation(
                 className,
@@ -2351,6 +2391,7 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.foreignFieldName,
                 foreignType,
+                nullableFieldId: relation.foreignKeyOwnerIdType.nullable,
               );
       const Code('');
     });
@@ -2359,7 +2400,7 @@ class BuildRepositoryClass {
   Method _buildDetachRowFromObjectRelationField(
     String className,
     SerializableModelFieldDefinition field,
-    ClassDefinition classDefinition,
+    ModelClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
       var classFieldName = className.camelCase;
@@ -2408,6 +2449,7 @@ class BuildRepositoryClass {
                 classFieldName,
                 relation.fieldName,
                 className,
+                nullableClassFieldId: classDefinition.idField.type.nullable,
               )
             : _buildDetachRowImplementationBlockForeignSide(
                 fieldName,
@@ -2419,6 +2461,8 @@ class BuildRepositoryClass {
                   subDirParts: classDefinition.subDirParts,
                   config: config,
                 ),
+                nullableFieldId: relation.referenceIdType.nullable,
+                nullableClassFieldId: classDefinition.idField.type.nullable,
               );
       const Code('');
     });
@@ -2429,14 +2473,17 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    Reference foreignClass,
-  ) {
+    Reference foreignClass, {
+    required bool nullableFieldId,
+  }) {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
     return (BlockBuilder()
           ..statements.addAll(
             [
-              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
-              const Code(''),
+              if (nullableFieldId) ...[
+                _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+                const Code(''),
+              ],
               _buildImplicitCopyClassListField(
                 foreignClass,
                 fieldName,
@@ -2459,13 +2506,16 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    Reference foreignClass,
-  ) {
+    Reference foreignClass, {
+    required bool nullableFieldId,
+  }) {
     return (BlockBuilder()
           ..statements.addAll(
             [
-              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
-              const Code(''),
+              if (nullableFieldId) ...[
+                _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+                const Code(''),
+              ],
               _buildCopyWithListField(
                 fieldName,
                 foreignKeyField,
@@ -2486,13 +2536,16 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    String className,
-  ) {
+    String className, {
+    required bool nullableClassFieldId,
+  }) {
     return (BlockBuilder()
           ..statements.addAll(
             [
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
-              const Code(''),
+              if (nullableClassFieldId) ...[
+                _buildCodeBlockThrowIfIdIsNull(classFieldName),
+                const Code(''),
+              ],
               _buildCopyWithSingleField(
                 classFieldName,
                 foreignKeyField,
@@ -2513,8 +2566,10 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    Reference foreignClass,
-  ) {
+    Reference foreignClass, {
+    required bool nullableFieldId,
+    required bool nullableClassFieldId,
+  }) {
     var localCopyVariable = '\$$fieldName';
     return (BlockBuilder()
           ..statements.addAll(
@@ -2527,11 +2582,13 @@ class BuildRepositoryClass {
                 localCopyVariable,
                 '$classFieldName.$fieldName',
               ),
-              _buildCodeBlockThrowIfIdIsNull(
-                localCopyVariable,
-                '$classFieldName.$fieldName.id',
-              ),
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
+              if (nullableFieldId)
+                _buildCodeBlockThrowIfIdIsNull(
+                  localCopyVariable,
+                  '$classFieldName.$fieldName.id',
+                ),
+              if (nullableClassFieldId)
+                _buildCodeBlockThrowIfIdIsNull(classFieldName),
               const Code(''),
               _buildCopyWithSingleField(
                 localCopyVariable,
@@ -2554,13 +2611,16 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    Reference foreignClass,
-  ) {
+    Reference foreignClass, {
+    required bool nullableFieldId,
+  }) {
     return (BlockBuilder()
           ..statements.addAll(
             [
-              _buildCodeBlockThrowIfIdIsNull(fieldName),
-              const Code(''),
+              if (nullableFieldId) ...[
+                _buildCodeBlockThrowIfIdIsNull(fieldName),
+                const Code(''),
+              ],
               _buildCopyWithSingleField(
                 fieldName,
                 foreignKeyField,
@@ -2582,15 +2642,18 @@ class BuildRepositoryClass {
     String fieldName,
     String classFieldName,
     String foreignKeyField,
-    Reference foreignClass,
-  ) {
+    Reference foreignClass, {
+    required bool nullableFieldId,
+  }) {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
 
     return (BlockBuilder()
           ..statements.addAll(
             [
-              _buildCodeBlockThrowIfIdIsNull(fieldName),
-              const Code(''),
+              if (nullableFieldId) ...[
+                _buildCodeBlockThrowIfIdIsNull(fieldName),
+                const Code(''),
+              ],
               _buildImplicitCopyClassSingleField(
                 foreignClass,
                 fieldName,
