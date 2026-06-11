@@ -1056,13 +1056,19 @@ void main() async {
     test(
       'when building the server Dockerfile then the image is built successfully',
       () async {
-        // Temporarily remove the `enableWasmHeaders` parameter from server.dart
-        // because it has not been published yet and the Dockerfile won't have
-        // access to the local override. Once published, we can remove this.
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
         final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
         final serverSource = serverFile.readAsStringSync();
         const wasmHeaders = 'enableWasmHeaders: false,';
-        serverFile.writeAsStringSync(serverSource.replaceAll(wasmHeaders, ''));
+        // TODO: Remove once Session.log(metadata:) is published.
+        const alertMetadata = "metadata: {'alert': true},";
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(alertMetadata, ''),
+        );
 
         final dockerBuildProcess = await startProcess(
           'docker',
