@@ -115,7 +115,10 @@ void main() {
   });
 
   group('Given a log event flagged as an alert with copy markup', () {
+    String? previousClipboard;
+
     setUp(() {
+      previousClipboard = ClipboardManager.paste();
       ClipboardManager.copy('previous clipboard content');
       handleServerLogEvent(
         holder,
@@ -126,6 +129,11 @@ void main() {
           'metadata': {'alert': true},
         }),
       );
+    });
+
+    tearDown(() {
+      final prev = previousClipboard;
+      if (prev != null) ClipboardManager.copy(prev);
     });
 
     test('when dispatched then shows the alert with the markup stripped', () {
