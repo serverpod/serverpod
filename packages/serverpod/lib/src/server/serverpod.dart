@@ -33,6 +33,16 @@ typedef HealthCheckHandler =
       DateTime timestamp,
     );
 
+/// Replaces the default [Database] for a [Session].
+///
+/// The [inner] database is the framework-provided instance. Return a custom
+/// [Database] implementation to layer behavior on top of it.
+typedef DatabaseInterceptor =
+    Database Function(
+      Session session,
+      Database inner,
+    );
+
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
 /// [DistributedCache] and other connections through the [InsightsEndpoint].
@@ -420,6 +430,17 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// Optional interceptor that replaces the default [Database] for each session.
+  ///
+  /// Called once per session with the framework-provided [Database] as [inner].
+  /// The returned [Database] becomes [Session.db] for that session. Useful for
+  /// injecting cross-cutting behavior such as logging, tracing, metrics, tenant
+  /// scoping, policy enforcement, retries, or safety guards.
+  ///
+  /// Be aware that the [Database] class is part of the `serverpod_database`
+  /// internal package and may face breaking changes in minor version bumps.
+  final DatabaseInterceptor? databaseInterceptor;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -441,6 +462,7 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
+    this.databaseInterceptor,
   }) : serverDirectory = Directory(
          p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
        ),

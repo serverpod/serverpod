@@ -53,10 +53,12 @@ class Server implements RouterInjectable {
       throw ArgumentError('Database config not set');
     }
 
-    return DatabaseConstructor.create(
+    final inner = DatabaseConstructor.create(
       session: session,
       poolManager: databasePoolManager,
     );
+
+    return serverpod.databaseInterceptor?.call(session, inner) ?? inner;
   }
 
   /// The [SerializationManager] used by the server.
