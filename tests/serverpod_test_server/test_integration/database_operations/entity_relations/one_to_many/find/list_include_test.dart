@@ -1029,8 +1029,7 @@ void main() async {
         city.id!,
         include: City.include(
           citizens: Person.includeList(
-            orderBy: (t) => t.name,
-            orderDescending: true,
+            orderBy: (t) => t.name.desc(),
             limit: 2,
           ),
         ),

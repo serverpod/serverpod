@@ -1261,7 +1261,7 @@ void main() {
 
       var query = SelectQueryBuilder(table: citizenTable)
           .withWhereRelationInResultSet({1, 2, 3}, manyTable)
-          .withOrderBy([Order(column: citizenTable.id, orderDescending: true)])
+          .withOrderBy([citizenTable.id.desc()])
           .withLimit(10)
           .build();
 
@@ -1293,8 +1293,8 @@ void main() {
           .withSelectFields([citizenTable.id, nameColumn])
           .withWhereRelationInResultSet({1, 2, 3}, manyTable)
           .withOrderBy([
-            Order(column: nameColumn, orderDescending: false),
-            Order(column: citizenTable.id, orderDescending: true),
+            nameColumn.asc(),
+            citizenTable.id.desc(),
           ])
           .withLimit(5)
           .build();
