@@ -152,15 +152,26 @@ domain as same-site, so this works without `SameSite=None`. A config knob.
 ## Security considerations
 
 Cookie auth reintroduces CSRF (header/bearer auth is immune since the browser
-never auto-attaches it). Defenses:
+never auto-attaches it). The chosen posture is defense in depth: SameSite +
+Origin validation + a marker-header requirement, with a double-submit token held
+in reserve for `SameSite=None`. Defenses:
 
 1. SameSite on the auth cookie. `Lax` (default) blocks cross-site POST; `Strict`
    breaks link-into-authed-page and OAuth redirect returns; `None` only for
-   cross-site embedding (forces `Secure`).
-2. Origin / Referer validation on state-changing requests and the WS handshake.
-   SameSite alone does not fully cover CSWSH. The WS `Origin` check ships in
-   Phase 0.
-3. Optional double-submit CSRF token for `SameSite=None`.
+   cross-site embedding (forces `Secure`). SameSite alone does not cover a
+   same-registrable-domain sibling subdomain, which the next two layers do.
+2. Origin validation on state-changing requests and the WS handshake, against
+   `allowedOrigins`. A request whose `Origin` is present but not allow-listed is
+   rejected (403); a missing `Origin` (native / server-to-server) is allowed.
+   Both the WS handshake check and the HTTP cookie-auth check are implemented
+   (`server.dart`), independent of the browser's own CORS enforcement.
+3. Marker-header requirement: the server reads the auth cookie only when the
+   request carries `x-serverpod-auth-mode: cookie`. A cross-site form or simple
+   request cannot set a custom header without a CORS preflight, which fails for
+   non-allow-listed origins, so the ambient cookie never authenticates a
+   cross-site HTTP request. (WebSocket handshakes cannot send custom headers, so
+   the WS path relies on the Origin check in layer 2 instead.)
+4. Optional double-submit CSRF token for `SameSite=None`, deferred to Phase 3.
 
 httpOnly stops token theft but not session riding (an XSS payload can issue
 authenticated requests while the page is open); mitigate with CSP and dependency
@@ -240,7 +251,9 @@ Build order (commit per step):
 
 1. Response output API (setResponseHeader/Cookie) (+ unit tests, no behavior change).
 2. `WebAuthCookieConfig` plumbing (+ parse tests).
-3. Server cookie read for HTTP + WS (+ tests).
+3. Server cookie read for HTTP + WS (+ tests). The HTTP read is gated on the
+   `x-serverpod-auth-mode` marker and the request `Origin` (CSRF layers 2-3);
+   the WS handshake relies on its `Origin` check.
 4. CORS credentials.
 5. Auth-core sign-in/out + web client `withCredentials` + `CookieClientAuthKeyProvider`.
 6. Integration test (web sign-in sets cookie; a call authenticates via the
@@ -269,8 +282,9 @@ Cross-subdomain `Domain` config; optional double-submit CSRF token for
 3. SameSite default (`Lax`) and whether to expose `Strict` / `None`.
 4. Cookie `Domain` default (host-only) vs cross-subdomain; `secure` relaxation for
    `http://localhost`.
-5. CSRF posture for HTTP: `SameSite=Lax` + Origin check, or also a double-submit
-   token.
+5. CSRF posture for HTTP: resolved. `SameSite=Lax` + server-side Origin
+   validation + a marker-header requirement on the cookie read (layers 1-3
+   above). A double-submit token stays reserved for `SameSite=None` (Phase 3).
 6. Session TTL to cookie `Max-Age` mapping; rotation on activity.
 7. Relic sequencing: target the post-`#113` cookie API and gate cookie phases on
    that release.
