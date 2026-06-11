@@ -84,6 +84,8 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     GeneratorConfig config,
   ) {
+    var isSealed = _parseIsSealed(documentContents);
+    var extendsClass = _parseExtendsClass(documentContents);
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
       protocolSource: protocolSource,
@@ -101,6 +103,8 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) => ExceptionClassDefinition(
             className: className,
+            isSealed: isSealed,
+            extendsClass: extendsClass,
             fields: fields,
             fileName: outFileName,
             serverOnly: serverOnly,
