@@ -1,5 +1,4 @@
 @Timeout(Duration(minutes: 12))
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,7 +7,7 @@ import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:test_descriptor/test_descriptor.dart' as d;
+
 import 'package:uuid/uuid.dart';
 
 const startWatchKeywords = [
@@ -75,6 +74,7 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
 void main() async {
   group('Given a mini project', () {
     late String sandboxDir;
+    late Directory sandboxDirectory;
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     var serverDir = path.join(projectName, '${projectName}_server');
@@ -83,7 +83,11 @@ void main() async {
     KeywordSearchInStream? streamSearch;
 
     setUpAll(() async {
-      sandboxDir = d.sandbox;
+      sandboxDirectory = await Directory.systemTemp.createTemp(
+        'serverpod_cli_e2e_',
+      );
+      sandboxDir = sandboxDirectory.path;
+
       var result = await runServerpod(
         ['create', projectName, '--mini'],
         workingDirectory: sandboxDir,
@@ -93,6 +97,12 @@ void main() async {
         'Failed to create the serverpod project.',
       );
       createDynamicPortConfig(path.join(sandboxDir, serverDir));
+    });
+
+    tearDownAll(() async {
+      if (await sandboxDirectory.exists()) {
+        await sandboxDirectory.delete(recursive: true);
+      }
     });
 
     tearDown(() async {

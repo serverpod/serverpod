@@ -49,6 +49,10 @@ class DelayedListTestCall extends FutureCall<SimpleData> {
 }
 
 void main() async {
+  setUpAll(() async {
+    await IntegrationTestServer.applyMigrations();
+  });
+
   withServerpod('Given FutureCallManager', (sessionBuilder, _) {
     late FutureCallManager futureCallManager;
     late Session session;
@@ -774,6 +778,7 @@ void main() async {
         );
 
         await session.close();
+        // logSession may already be closed by the test body (to flush logs).
         await logSession.close();
         await server.shutdown(exitProcess: false);
       });
@@ -783,10 +788,33 @@ void main() async {
         'then a message is logged for the unregistered FutureCall with error level',
         () async {
           await futureCallManager.runScheduledFutureCalls();
-          await logSession.close();
 
-          final logs = await LoggingUtil.findAllLogs(session);
-          final logEntry = logs.last.logs.last;
+          // Close logSession to flush buffered logs to the database.
+          await logSession.close();
+          final sessionLogId = await LoggingUtil.findSessionLogIdForSession(
+            session,
+            logSession,
+          );
+
+          final allLogs = await LoggingUtil.findLogsForSession(
+            session,
+            sessionLogId,
+          );
+
+          expect(
+            allLogs,
+            isNotEmpty,
+            reason: 'Expected at least one log entry.',
+          );
+
+          final logEntry = allLogs.firstWhere(
+            (l) => l.message.contains(
+              'Attempted to run a FutureCall that was not registered',
+            ),
+            orElse: () => throw StateError(
+              'Log not found for sessionLogId $sessionLogId in $allLogs',
+            ),
+          );
 
           expect(logEntry.logLevel, LogLevel.error);
           expect(
@@ -795,7 +823,7 @@ void main() async {
               'Attempted to run a FutureCall that was not registered. This is likely due '
               'to changing a FutureCall method after it was scheduled, leading to an '
               'entry that no longer has a matching method. For legacy future calls, '
-              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
+              r'make sure they are registered in the server start. Entry: \{.*"name":\s*"scheduled-but-unregistered-call".*\}',
             ),
           );
         },

@@ -44,21 +44,33 @@ class FileUploader {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
           final method = _uploadDescription.method ?? 'POST';
-          final request = http.StreamedRequest(method, _uploadDescription.url);
-
-          // Apply custom headers from description, with defaults
           final headers = {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
             ..._uploadDescription.headers,
           };
-          request.headers.addAll(headers);
-          request.contentLength = length;
 
-          final (_, response) = await (
-            stream.pipe(request.sink),
-            request.send(),
-          ).wait;
+          const isWeb =
+              bool.fromEnvironment('dart.library.js_interop') ||
+              identical(0, 0.0);
+          http.StreamedResponse response;
+          if (isWeb) {
+            var request = http.Request(method, _uploadDescription.url);
+            request.headers.addAll(headers);
+            request.bodyBytes = await stream.toBytes();
+            response = await request.send();
+          } else {
+            var request = http.StreamedRequest(method, _uploadDescription.url);
+            request.headers.addAll(headers);
+            request.contentLength = length;
+
+            final (_, res) = await (
+              stream.pipe(request.sink),
+              request.send(),
+            ).wait;
+            response = res;
+          }
+
           await response.stream.drain();
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)
