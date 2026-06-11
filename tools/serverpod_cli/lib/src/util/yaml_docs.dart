@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:source_span/source_span.dart';
 
 class YamlDocumentationExtractor {
   final List<String> lines;
 
-  YamlDocumentationExtractor(String yaml) : lines = yaml.split('\n');
+  /// Splits on LF, CR, and CRLF — the same line break set `package:yaml`
+  /// (via `source_span`) uses for the line numbers in [SourceLocation],
+  /// keeping the scan index-aligned for any line ending style.
+  YamlDocumentationExtractor(String yaml)
+    : lines = const LineSplitter().convert(yaml);
 
   List<String>? getDocumentation(SourceLocation keyStart) {
     var documentation = <String>[];
