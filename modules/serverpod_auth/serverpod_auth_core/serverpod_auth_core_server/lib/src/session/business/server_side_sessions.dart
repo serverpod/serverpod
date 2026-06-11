@@ -202,12 +202,30 @@ class ServerSideSessions {
       transaction: transaction,
     );
 
+    final token = buildServerSideSessionToken(
+      secret: secret,
+      serverSideSessionId: serverSideSession.id!,
+    );
+
+    // For web cookie clients, issue the token as an HttpOnly cookie and omit it
+    // from the response body so it never reaches client-side JavaScript. A
+    // non-positive lifetime (expiry at/before now, e.g. clock skew or a
+    // backdated expiresAt) would set Max-Age<=0 and make the browser drop the
+    // cookie on receipt, so fall back to a session cookie and let the server
+    // enforce the token's real expiry.
+    final secondsUntilExpiry = effectiveExpiresAt
+        ?.difference(clock.now())
+        .inSeconds;
+    final issuedAsCookie = session.writeWebAuthCookie(
+      token,
+      maxAgeSeconds: secondsUntilExpiry != null && secondsUntilExpiry > 0
+          ? secondsUntilExpiry
+          : null,
+    );
+
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildServerSideSessionToken(
-        secret: secret,
-        serverSideSessionId: serverSideSession.id!,
-      ),
+      token: issuedAsCookie ? '' : token,
       tokenExpiresAt: effectiveExpiresAt,
       authUserId: authUserId,
       scopeNames: scopeNames,

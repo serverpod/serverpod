@@ -1,5 +1,46 @@
 import 'package:relic/relic.dart';
+import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart'
+    show webAuthModeHeaderName, webAuthModeCookie;
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+/// Web-auth-cookie helpers on [Session]: decides whether a request wants
+/// cookie-based web auth and writes/clears the auth cookie accordingly.
+extension WebAuthCookieSession on Session {
+  /// Whether the request asked for cookie-based web auth (via the
+  /// [webAuthModeHeaderName] header) and the server has a
+  /// [ServerpodConfig.authCookie] configured.
+  ///
+  /// When true the auth token should be issued as an `HttpOnly` cookie (see
+  /// [writeWebAuthCookie]) and omitted from the response body, so it never
+  /// reaches client-side JavaScript.
+  bool get isWebAuthCookieRequest {
+    if (serverpod.config.authCookie == null) return false;
+    return request?.headers[webAuthModeHeaderName]?.firstOrNull ==
+        webAuthModeCookie;
+  }
+
+  /// If [isWebAuthCookieRequest], writes [token] as the auth cookie and returns
+  /// true. Otherwise returns false and the caller should return the token in
+  /// the response body as usual. [maxAgeSeconds] sets the cookie lifetime;
+  /// omit it for a session cookie.
+  bool writeWebAuthCookie(String token, {int? maxAgeSeconds}) {
+    var authCookie = serverpod.config.authCookie;
+    if (authCookie == null || !isWebAuthCookieRequest) return false;
+    setResponseCookie(
+      authCookie.buildSetCookieHeader(token, maxAgeSeconds: maxAgeSeconds),
+    );
+    return true;
+  }
+
+  /// Clears the auth cookie when cookie auth is configured (a no-op otherwise).
+  /// Safe to call on sign-out regardless of how the client authenticated.
+  void clearWebAuthCookie() {
+    var authCookie = serverpod.config.authCookie;
+    if (authCookie == null) return;
+    setResponseCookie(authCookie.buildClearCookieHeader());
+  }
+}
 
 /// Builds the relic `Set-Cookie` headers for the web authentication cookie
 /// described by a [WebAuthCookieConfig].
