@@ -75,6 +75,29 @@ void main() {
       );
 
       test(
+        'when a field has a doc comment separated by a whitespace-only line '
+        'then the field documentation is still set.',
+        () {
+          var definition = parseClass(
+            [
+              'class: Example',
+              'fields:',
+              '  ### This is a doc comment',
+              '  ',
+              '  name: String',
+              '',
+            ],
+            eol,
+          );
+
+          expect(
+            definition.fields.first.documentation,
+            ['/// This is a doc comment'],
+          );
+        },
+      );
+
+      test(
         'when a field has a multiline doc comment '
         'then the field documentation contains all lines.',
         () {

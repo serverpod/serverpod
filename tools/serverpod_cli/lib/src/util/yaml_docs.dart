@@ -19,7 +19,11 @@ class YamlDocumentationExtractor {
       var match = docStartExp.firstMatch(line);
       if (match != null) {
         documentation.insert(0, '///${match.group(1) ?? ''}');
-      } else if (line.isNotEmpty && RegExp(r'^\ *?[^#]*$').hasMatch(line)) {
+      }
+      // Blank and whitespace-only lines continue the scan; any other
+      // line that is not part of a comment ends it.
+      else if (line.trim().isNotEmpty &&
+          RegExp(r'^\ *?[^#]*$').hasMatch(line)) {
         break;
       }
     }

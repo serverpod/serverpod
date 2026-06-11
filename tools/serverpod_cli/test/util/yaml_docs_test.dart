@@ -119,6 +119,42 @@ void main() {
     );
 
     test(
+      'when a whitespace-only line separates the doc comment from the key '
+      'then the documentation is returned.',
+      () {
+        var extractor = YamlDocumentationExtractor(
+          '  ### This is a doc comment\n'
+          '   \n'
+          '  name: String\n',
+        );
+
+        expect(
+          extractor.getDocumentation(keyAt(2, 2)),
+          ['/// This is a doc comment'],
+        );
+      },
+    );
+
+    test(
+      'when a tab-only line separates the doc comment from the key '
+      'then the documentation is returned.',
+      () {
+        // Tabs cannot appear as yaml indentation, so this case is only
+        // reachable through the extractor directly.
+        var extractor = YamlDocumentationExtractor(
+          '  ### This is a doc comment\n'
+          '\t\n'
+          '  name: String\n',
+        );
+
+        expect(
+          extractor.getDocumentation(keyAt(2, 2)),
+          ['/// This is a doc comment'],
+        );
+      },
+    );
+
+    test(
       'when a normal comment line separates the doc comment from the key '
       'then the documentation is returned.',
       () {
