@@ -46,34 +46,40 @@ void main() {
       });
     });
 
-    group('when rendering a companion file that uses slots', () {
-      test('then the server dir slot and replacements are applied', () {
+    test(
+      'when rendering a companion file that uses slots '
+      'then the server dir slot and replacements are applied',
+      () {
         final rendered = ide.render(
           '"dart": "{serverDirRelative}"',
           serverDirRelative: 'my_app_server',
         );
 
         expect(rendered, '"dart-mcp-server": "my_app_server"');
-      });
-    });
+      },
+    );
   });
 
   group('Given the VS Code IDE', () {
-    group('when rendering its config', () {
-      final config = TemplateIde.vscode.effectiveConfig(
-        serverDirRelative: 'my_app_server',
-      );
+    test(
+      'when rendering its config '
+      'then the mcpServers key is replaced with servers',
+      () {
+        final config = TemplateIde.vscode.effectiveConfig(
+          serverDirRelative: 'my_app_server',
+        );
 
-      test('then the mcpServers key is replaced with servers', () {
         expect(config, contains('"servers":'));
         expect(config, isNot(contains('"mcpServers":')));
-      });
-    });
+      },
+    );
   });
 
   group('Given every IDE', () {
-    group('when rendering all of its files', () {
-      test('then no unrendered server dir slot remains', () {
+    test(
+      'when rendering all of its files '
+      'then no unrendered server dir slot remains',
+      () {
         for (final ide in TemplateIde.values) {
           final renderedFiles = [
             ide.effectiveConfig(serverDirRelative: 'my_app_server'),
@@ -89,7 +95,7 @@ void main() {
             );
           }
         }
-      });
-    });
+      },
+    );
   });
 }

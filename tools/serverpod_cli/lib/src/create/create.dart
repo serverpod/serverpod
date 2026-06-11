@@ -261,9 +261,9 @@ Future<String?> performCreate(
     });
   }
 
-  await _configureProjectMcpServers(serverpodDirs, context.ides);
-
   if (context.ides.isNotEmpty) {
+    await _configureProjectMcpServers(serverpodDirs, context.ides);
+
     await log.progress('Installing agent skills', () async {
       try {
         if (context.template != ServerpodTemplateType.module &&
@@ -367,7 +367,10 @@ Future<void> _moveDirectoryContents(
       // Never overwrite files already present at the destination, such as the
       // Antigravity plugin config written under .agents/plugins/ before this
       // move runs.
-      if (await File(newPath).exists()) continue;
+      if (await File(newPath).exists()) {
+        log.debug('Skipped moving ${entity.path}: $newPath already exists.');
+        continue;
+      }
       await entity.rename(newPath);
     } else if (entity is Directory) {
       final newDir = await Directory(newPath).create(recursive: true);
