@@ -70,6 +70,28 @@ void main() {
 
   test(
     'Given a TemplateContext, '
+    'when webapp or website value is true, '
+    'then webserver value is true',
+    () {
+      var context = TemplateContext(webapp: true, website: false);
+      expect(context.webserver, isTrue);
+      context = TemplateContext(webapp: false, website: true);
+      expect(context.webserver, isTrue);
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
+    'when both webapp and website values are false, '
+    'then webserver value is false',
+    () {
+      final context = TemplateContext(webapp: false, website: false);
+      expect(context.webserver, isFalse);
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
     'when toMustacheMap is called, '
     'then a map is returned with correct values',
     () {
@@ -77,7 +99,8 @@ void main() {
         postgres: true,
         auth: true,
         redis: true,
-        web: true,
+        webapp: true,
+        website: true,
         sqlite: true,
       );
       expect(
@@ -87,7 +110,9 @@ void main() {
           'redis': true,
           'postgres': true,
           'sqlite': true,
-          'web': true,
+          'webapp': true,
+          'website': true,
+          'webserver': true,
           'docker': true,
           'database': true,
         },

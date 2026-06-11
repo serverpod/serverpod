@@ -126,7 +126,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       auth: true,
       redis: true,
       postgres: true,
-      web: true,
+      webapp: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
@@ -143,7 +143,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
             auth: true,
             redis: true,
             postgres: true,
-            web: true,
+            webapp: true,
           ),
           requireIde: true,
         ),

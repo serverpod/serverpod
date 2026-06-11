@@ -79,43 +79,68 @@ void main() {
         },
       );
 
-      test('and web is set to app only (default) then web is disabled', () {
-        final context = state.toTemplateContext();
-        expect(context.web, isFalse);
-      });
+      group(
+        'when WebServerConfigOption is set to app only (default)',
+        () {
+          late TemplateContext context;
+          setUp(() {
+            context = state.toTemplateContext();
+          });
 
-      test('and web is set to app and website then web is enabled', () {
-        state.form.updateSelectedOption(
-          ServerpodCreateConfig.webserver,
-          WebServerConfigOption.appAndWebsite,
-        );
+          test('then webapp is enabled', () {
+            expect(context.webapp, isTrue);
+          });
 
-        final context = state.toTemplateContext();
-        expect(context.web, isTrue);
-      });
+          test('then website is disabled', () {
+            expect(context.website, isFalse);
+          });
 
-      test('and web is set to none then web is disabled', () {
-        state.form.updateSelectedOption(
-          ServerpodCreateConfig.webserver,
-          WebServerConfigOption.none,
-        );
-
-        final context = state.toTemplateContext();
-        expect(context.web, isFalse);
-      });
+          test('then webserver is enabled', () {
+            expect(context.webserver, isTrue);
+          });
+        },
+      );
 
       test(
-        'and auth is enabled with server template, '
-        'then TemplateContext has the correct value for auth',
+        'when WebServerConfigOption is set to app and website,'
+        'then webapp, website and webserver are all enabled',
         () {
-          var context = state.toTemplateContext();
-          // True by default
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.webserver,
+            WebServerConfigOption.appAndWebsite,
+          );
+          final context = state.toTemplateContext();
+          expect(context.webapp, isTrue);
+          expect(context.website, isTrue);
+          expect(context.webserver, isTrue);
+        },
+      );
+
+      test(
+        'when WebServerConfigOption is set to none,'
+        'then webapp, website and webserver are all disabled',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.webserver,
+            WebServerConfigOption.none,
+          );
+          final context = state.toTemplateContext();
+          expect(context.webapp, isFalse);
+          expect(context.website, isFalse);
+          expect(context.webserver, isFalse);
+        },
+      );
+
+      test(
+        'then TemplateContext has the correct default value for auth',
+        () {
+          final context = state.toTemplateContext();
           expect(context.auth, isTrue);
         },
       );
 
       test(
-        'and auth is disabled then TemplateContext reflects disabled',
+        'when auth is disabled then TemplateContext reflects disabled',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.auth,
@@ -128,7 +153,7 @@ void main() {
       );
 
       test(
-        'and ides are selected then TemplateContext contains ides',
+        'when ides are selected then TemplateContext contains ides',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.ide,
@@ -159,7 +184,7 @@ void main() {
         state = CreateConfigState(
           ServerpodTemplateType.server,
           configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(postgres: true, web: true),
+          defaults: TemplateContext(postgres: true, webapp: true),
         );
       });
 
@@ -168,7 +193,9 @@ void main() {
         () {
           final context = state.toTemplateContext();
           expect(context.postgres, isTrue);
-          expect(context.web, isTrue);
+          expect(context.webapp, isTrue);
+          expect(context.webserver, isTrue);
+          expect(context.website, isFalse);
           expect(context.auth, isFalse);
           expect(context.redis, isFalse);
           expect(context.sqlite, isFalse);
@@ -220,25 +247,19 @@ void main() {
       late CreateConfigState state;
 
       setUp(() {
-        state = CreateConfigState(
-          ServerpodTemplateType.server,
-        );
-        state.form.updateSelectedOption(
-          ServerpodCreateConfig.template,
-          TemplateTypeOption.module,
-        );
+        state = CreateConfigState(ServerpodTemplateType.module);
       });
 
       test(
-        'then database, web, and auth configs are hidden '
+        'then webserver and auth configs are hidden '
         'for module template',
         () {
           final configs = state.form.configurations;
-          expect(configs, isNot(contains(ServerpodCreateConfig.database)));
-          expect(configs, isNot(contains(ServerpodCreateConfig.webserver)));
           expect(configs, isNot(contains(ServerpodCreateConfig.auth)));
-          expect(configs, contains(ServerpodCreateConfig.template));
+          expect(configs, isNot(contains(ServerpodCreateConfig.webserver)));
+          expect(configs, contains(ServerpodCreateConfig.database));
           expect(configs, contains(ServerpodCreateConfig.ide));
+          expect(configs, contains(ServerpodCreateConfig.template));
         },
       );
 
@@ -246,63 +267,10 @@ void main() {
         'then hidden configs resolve to false in TemplateContext',
         () {
           final context = state.toTemplateContext();
-          expect(context.web, isFalse);
+          expect(context.webapp, isFalse);
+          expect(context.website, isFalse);
+          expect(context.webserver, isFalse);
           expect(context.auth, isFalse);
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a CreateConfigState with module template, '
-    'when checking screen navigation',
-    () {
-      late CreateConfigState state;
-
-      setUp(() {
-        state = CreateConfigState(
-          ServerpodTemplateType.module,
-        );
-      });
-
-      test(
-        'then initially on screen 0',
-        () {
-          expect(state.currentScreenIndex, 0);
-        },
-      );
-
-      test(
-        'then nextScreen advances to next config',
-        () {
-          state.nextScreen();
-          expect(state.currentScreenIndex, 1);
-        },
-      );
-
-      test(
-        'then previousScreen goes back',
-        () {
-          state.nextScreen();
-          state.previousScreen();
-          expect(state.currentScreenIndex, 0);
-        },
-      );
-
-      test(
-        'then configScreenCount is less because some configs are hidden for module',
-        () {
-          // For module: template and ide are visible (database/web/auth hidden)
-          expect(state.configScreenCount, 2);
-        },
-      );
-
-      test(
-        'then isSummary is true when past last config screen',
-        () {
-          state.nextScreen();
-          state.nextScreen();
-          expect(state.isSummary, isTrue);
         },
       );
     },

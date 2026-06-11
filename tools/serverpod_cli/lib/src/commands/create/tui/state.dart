@@ -212,8 +212,16 @@ class CreateConfigState extends TuiState {
     final selectedIdes =
         form.getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
-    final webOption = form.getSelectedOptionFor(
+    final webapp = _isOptionSelected(
       ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appOnly,
+      fallback: defaults.webapp,
+    );
+
+    final appAndWebsite = _isOptionSelected(
+      ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appAndWebsite,
+      fallback: defaults.website,
     );
 
     return TemplateContext(
@@ -233,17 +241,10 @@ class CreateConfigState extends TuiState {
         DatabaseConfigOption.database,
         fallback: defaults.postgres,
       ),
-      sqlite: false,
-      web: _getWebOption(webOption, fallback: defaults.web),
+      webapp: webapp || appAndWebsite,
+      website: appAndWebsite,
       ides: selectedIdes.toTemplateIdes,
     );
-  }
-
-  /// Returns the web bool from the given [WebServerConfigOption] option,
-  /// or [fallback] if no option is selected or config is not exposed.
-  bool _getWebOption(WebServerConfigOption? option, {required bool fallback}) {
-    if (!configs.contains(ServerpodCreateConfig.webserver)) return fallback;
-    return option == WebServerConfigOption.appAndWebsite;
   }
 
   /// Returns whether [option] is selected for [config] in the form,
