@@ -59,10 +59,15 @@ class MethodCallContext {
 /// is available.
 abstract class ServerpodClientRequestDelegate {
   /// Performs the actual request to the server and returns the response data.
+  ///
+  /// When [useCookieAuth] is true the request authenticates via an `HttpOnly`
+  /// cookie: it sends the cookie-mode marker header and (on web) makes a
+  /// credentialed request, instead of relying on [authenticationValue].
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool useCookieAuth = false,
   });
 
   /// Closes the connection to the server.
@@ -549,8 +554,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var authenticationValue = authenticated
-          ? await authKeyProvider?.authHeaderValue
+      var provider = authKeyProvider;
+      // A cookie-auth client carries the token in an HttpOnly cookie, so it
+      // sends no Authorization header and instead signals cookie mode (marker
+      // header + credentialed request) - on every call, since sign-in (an
+      // unauthenticated call) is where the server decides cookie vs body.
+      var useCookieAuth =
+          provider is CookieAuthKeyProvider && provider.usesCookies;
+      var authenticationValue = authenticated && !useCookieAuth
+          ? await provider?.authHeaderValue
           : null;
       var body = formatArgs(args);
       var url = method.isEmpty
@@ -561,6 +573,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         url,
         body: body,
         authenticationValue: authenticationValue,
+        useCookieAuth: useCookieAuth,
       );
 
       T result;

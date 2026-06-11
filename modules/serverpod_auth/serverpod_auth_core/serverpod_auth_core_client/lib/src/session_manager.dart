@@ -7,7 +7,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 /// or other methods. Please refer to the documentation to see supported
 /// methods. Session information is stored in the storage implementation provided
 /// to the session manager.
-class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
+class ClientAuthSessionManager
+    implements RefresherClientAuthKeyProvider, CookieAuthKeyProvider {
   /// The auth module's caller.
   Caller? _caller;
 
@@ -16,6 +17,11 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// The secure storage to keep user authentication info.
   final ClientAuthSuccessStorage storage;
+
+  /// Whether this client authenticates via an `HttpOnly` cookie rather than the
+  /// `Authorization` header (web cookie auth). When true the client sends no
+  /// auth header and signals cookie mode; the server issues/clears the cookie.
+  final bool cookieAuth;
 
   /// Optional callback that is invoked when the auth info changes.
   /// The new auth info is passed as a parameter to the callback.
@@ -34,6 +40,11 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     /// The storage to keep user authentication info. This is required for
     /// the platform-agnostic session manager.
     required this.storage,
+
+    /// Authenticate via an `HttpOnly` cookie instead of the `Authorization`
+    /// header. Set true for web clients using cookie-based auth (requires the
+    /// server to have `authCookie` configured).
+    this.cookieAuth = false,
 
     /// Optional callback that is invoked when the auth info changes.
     /// The new auth info value is passed as a parameter to the callback.
@@ -102,8 +113,11 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   @override
+  bool get usesCookies => cookieAuth;
+
+  @override
   Future<String?> get authHeaderValue async =>
-      authKeyProviderDelegate?.authHeaderValue;
+      cookieAuth ? null : authKeyProviderDelegate?.authHeaderValue;
 
   @override
   Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
