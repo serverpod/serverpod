@@ -193,7 +193,7 @@ dependencies:
         );
 
         expect(result.exitCode, isNot(0));
-        expect(result.stdout, contains('No scripts defined'));
+        expect(result.stderr, contains('No scripts defined'));
       },
     );
 
@@ -206,7 +206,7 @@ dependencies:
         );
 
         expect(result.exitCode, isNot(0));
-        expect(result.stdout, contains('No scripts defined'));
+        expect(result.stderr, contains('No scripts defined'));
       },
     );
 
@@ -219,7 +219,7 @@ dependencies:
         );
 
         expect(result.exitCode, isNot(0));
-        expect(result.stdout, contains('No scripts defined'));
+        expect(result.stderr, contains('No scripts defined'));
       },
     );
   });
