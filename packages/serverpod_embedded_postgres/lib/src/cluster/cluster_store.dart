@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
 import 'postgres_conf_builder.dart';
@@ -79,7 +80,7 @@ class ClusterStore {
     }
 
     try {
-      var initdb = p.join(installDir.path, 'bin', 'initdb');
+      var initdb = binExecutable(installDir, 'initdb');
       var args = [
         '--pgdata=${dataDir.path}',
         '--username=$username',

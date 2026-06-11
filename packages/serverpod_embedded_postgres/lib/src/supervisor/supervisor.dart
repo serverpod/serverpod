@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
-
+import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
 import 'log_buffer.dart';
@@ -76,7 +75,7 @@ class Supervisor implements SupervisedProcess {
     required File logFile,
     required bool detach,
   }) async {
-    var executable = p.join(installDir.path, 'bin', 'postgres');
+    var executable = binExecutable(installDir, 'postgres');
 
     _rotateLog(logFile);
     var ring = LogBuffer();

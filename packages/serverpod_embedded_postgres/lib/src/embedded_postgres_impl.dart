@@ -8,6 +8,7 @@ import 'package:serverpod_shared/process_io.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'binary/binary_store.dart';
+import 'binary/executable.dart';
 import 'binary/maven_url.dart';
 import 'cluster/cluster_store.dart';
 import 'embedded_postgres.dart';
@@ -165,7 +166,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       await repairStaleEmbeddedPostgresLocks(
         pgDataDir: pgDataDir,
         serverpodPidFile: pidFile,
-        pgCtlExecutable: File(p.join(installDir.path, 'bin', 'pg_ctl')),
+        pgCtlExecutable: File(binExecutable(installDir, 'pg_ctl')),
       );
     }
 
