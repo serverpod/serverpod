@@ -62,6 +62,7 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     required this.defaultOptions,
     this.requirements = const [],
     this.multiSelect = false,
+    this.description,
   });
 
   @override
@@ -78,6 +79,9 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 
   @override
   final bool multiSelect;
+
+  @override
+  final FormDescription? description;
 }
 
 /// [FormConfigOption] for supported databases.

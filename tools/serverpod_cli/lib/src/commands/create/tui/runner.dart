@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Creates a Serverpod project with the create TUI.
