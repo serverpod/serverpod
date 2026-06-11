@@ -49,13 +49,13 @@ class ServerTestToolsGenerator {
 
   void _addPackageDirectives(LibraryBuilder library) {
     var protocolPackageImportPath = [
-      'package:${config.name}_server',
+      'package:${config.serverPackage}',
       ...config.generatedServeModelPackagePathParts,
       'protocol.dart',
     ].join('/');
 
     var endpointsPath = [
-      'package:${config.name}_server',
+      'package:${config.serverPackage}',
       ...config.generatedServeModelPackagePathParts,
       'endpoints.dart',
     ].join('/');
