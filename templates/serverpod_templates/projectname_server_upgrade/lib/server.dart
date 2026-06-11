@@ -96,9 +96,11 @@ void _sendRegistrationCode(
   required String verificationCode,
   required Transaction? transaction,
 }) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
+  // NOTE: Here you call your mail service to send the code to the user. For
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Registration code for $email: <$verificationCode>');
 }
 
 void _sendPasswordResetCode(
@@ -108,9 +110,11 @@ void _sendPasswordResetCode(
   required String verificationCode,
   required Transaction? transaction,
 }) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+  // NOTE: Here you call your mail service to send the code to the user. For
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Password reset code for $email: <$verificationCode>');
 }
 
 // {{/auth}}

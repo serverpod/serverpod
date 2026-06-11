@@ -153,6 +153,7 @@ class SessionLogManager {
     required String message,
     String? error,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
     _triggerCleanup();
 
@@ -170,6 +171,7 @@ class SessionLogManager {
         message: message,
         error: error,
         stackTrace: stackTrace,
+        metadata: metadata,
         messageId: _session.messageId,
       ),
     );
