@@ -453,7 +453,7 @@ class Restrictions {
     }
 
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
-        parentClass is InheritanceClassDefinition &&
+        parentClass is ClassDefinition &&
         parentClass.isSealed) {
       return [
         SourceSpanSeverityException(
@@ -467,33 +467,24 @@ class Restrictions {
       documentDefinition!.className,
     );
 
-    if (currentModel is InheritanceClassDefinition) {
-      final typeName = currentModel.typeName;
-      final exception = SourceSpanSeverityException(
-        'A $typeName class can only extend another $typeName class, but got '
-        'parent class "${parentClass.className}".',
-        span,
-      );
-
-      switch (currentModel) {
-        case ModelClassDefinition() when parentClass is! ModelClassDefinition:
-          return [exception];
-        case ExceptionClassDefinition()
-            when parentClass is! ExceptionClassDefinition:
-          return [exception];
+    if (currentModel is ClassDefinition) {
+      if (currentModel.runtimeType != parentClass.runtimeType) {
+        final currentTypeName = currentModel.typeName;
+        final parentTypeName = parentClass is ClassDefinition
+            ? parentClass.typeName
+            : parentClass.runtimeType.toString();
+        return [
+          SourceSpanSeverityException(
+            'A $currentTypeName class can only extend another $currentTypeName '
+            'class, but got parent $parentTypeName class "${parentClass.className}".',
+            span,
+          ),
+        ];
       }
 
-      var ancestorServerOnlyClass = switch (currentModel) {
-        ModelClassDefinition() => _findServerOnlyClassInParentClasses(
-          currentModel,
-        ),
-        ExceptionClassDefinition() => _findServerOnlyClassInParentClasses(
-          currentModel,
-        ),
-        _ => throw StateError(
-          'Invalid inheritance class type: ${currentModel.runtimeType}',
-        ),
-      };
+      var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
+        currentModel,
+      );
 
       if (!documentDefinition!.serverOnly && ancestorServerOnlyClass != null) {
         return [
@@ -712,26 +703,26 @@ class Restrictions {
       ];
     }
 
-    if (def is InheritanceClassDefinition) {
+    if (def is ClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is InheritanceClassDefinition) {
-        var duplicateFieldErrors = switch (currentModel) {
-          ModelClassDefinition() => _validateDuplicateInheritedFieldName(
-            currentModel,
-            fieldName,
-            span,
-          ),
-          ExceptionClassDefinition() => _validateDuplicateInheritedFieldName(
-            currentModel,
-            fieldName,
-            span,
-          ),
-          _ => throw StateError(
-            'Invalid inheritance class type: ${currentModel.runtimeType}',
-          ),
-        };
-        if (duplicateFieldErrors.isNotEmpty) return duplicateFieldErrors;
+      if (currentModel is ClassDefinition) {
+        var fieldWithDuplicatedName = _findFieldWithDuplicatedName(
+          currentModel,
+          fieldName,
+        );
+        var parentClassWithDuplicatedFieldName =
+            _findAncestorWithDuplicatedFieldName(currentModel, fieldName);
+
+        if (fieldWithDuplicatedName != null &&
+            parentClassWithDuplicatedFieldName != null) {
+          return [
+            SourceSpanSeverityException(
+              'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
+              span,
+            ),
+          ];
+        }
       }
     }
 
@@ -2686,12 +2677,12 @@ class Restrictions {
     return classDefinitions;
   }
 
-  T? _getParentClass<T extends InheritanceClassDefinition<T>>(T currentClass) {
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
 
-    return (currentClass.extendsClass as ResolvedInheritanceDefinition<T>)
+    return (currentClass.extendsClass as ResolvedInheritanceDefinition)
         .classDefinition;
   }
 
@@ -2704,17 +2695,17 @@ class Restrictions {
   ///  (ClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
   /// );
   /// ```
-  R? _findInParentHierarchy<R, T extends InheritanceClassDefinition<T>>(
-    T currentModel,
-    R? Function(T) predicate,
+  T? _findInParentHierarchy<T>(
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
   ) {
-    var parentModel = _getParentClass<T>(currentModel);
+    var parentModel = _getParentClass(currentModel);
 
     while (parentModel != null) {
       var result = predicate(parentModel);
       if (result != null) return result;
 
-      parentModel = _getParentClass<T>(parentModel);
+      parentModel = _getParentClass(parentModel);
     }
 
     return null;
@@ -2725,55 +2716,29 @@ class Restrictions {
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) =>
-          ancestor.tableName != null ? ancestor : null,
+      (ancestor) =>
+          ancestor is ModelClassDefinition && ancestor.tableName != null
+          ? ancestor
+          : null,
     );
   }
 
-  T?
-  _findServerOnlyClassInParentClasses<T extends InheritanceClassDefinition<T>>(
-    T currentModel,
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (T ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  List<SourceSpanSeverityException>
-  _validateDuplicateInheritedFieldName<T extends InheritanceClassDefinition<T>>(
-    T currentModel,
-    String fieldName,
-    SourceSpan? span,
-  ) {
-    var fieldWithDuplicatedName = _findFieldWithDuplicatedName<T>(
-      currentModel,
-      fieldName,
-    );
-    var parentClassWithDuplicatedFieldName =
-        _findAncestorWithDuplicatedFieldName<T>(currentModel, fieldName);
-
-    if (fieldWithDuplicatedName != null &&
-        parentClassWithDuplicatedFieldName != null) {
-      return [
-        SourceSpanSeverityException(
-          'The field name "$fieldName" is already defined in an inherited class ("${parentClassWithDuplicatedFieldName.className}").',
-          span,
-        ),
-      ];
-    }
-
-    return [];
-  }
-
-  T?
-  _findAncestorWithDuplicatedFieldName<T extends InheritanceClassDefinition<T>>(
-    T currentModel,
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (T ancestor) {
+      (ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -2785,14 +2750,13 @@ class Restrictions {
     );
   }
 
-  SerializableModelFieldDefinition?
-  _findFieldWithDuplicatedName<T extends InheritanceClassDefinition<T>>(
-    T currentModel,
+  SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (T ancestor) {
+      (ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;
@@ -2817,14 +2781,4 @@ class Restrictions {
         .where((field) => field.jsonKey == jsonKey)
         .toList();
   }
-}
-
-extension on InheritanceClassDefinition {
-  String get typeName => switch (this) {
-    ModelClassDefinition() => 'model',
-    ExceptionClassDefinition() => 'exception',
-    _ => throw StateError(
-      'Invalid inheritance class type: $runtimeType',
-    ),
-  };
 }

@@ -67,7 +67,7 @@ class LibraryGenerator {
             .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! InheritanceClassDefinition) return true;
+      if (model is! ClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -77,7 +77,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((m) => !(m is InheritanceClassDefinition && m.isSealed))
+        .where((model) => !(model is ClassDefinition && model.isSealed))
         .toList();
 
     var hasDatabaseTablesForCurrentSide = allModels.any(
@@ -2531,24 +2531,10 @@ extension on DatabaseDefinition {
   }
 }
 
-extension on ModelClassDefinition {
+extension on ClassDefinition {
   /// Get all child classes and their children, ensuring children before parents.
-  List<ModelClassDefinition> get sortedChildClasses => childClasses
-      .whereType<ResolvedInheritanceDefinition<ModelClassDefinition>>()
-      .map(
-        (e) => [
-          ...e.classDefinition.sortedChildClasses,
-          e.classDefinition,
-        ],
-      )
-      .expand((e) => e)
-      .toList();
-}
-
-extension on ExceptionClassDefinition {
-  /// Get all child classes and their children, ensuring children before parents.
-  List<ExceptionClassDefinition> get sortedChildClasses => childClasses
-      .whereType<ResolvedInheritanceDefinition<ExceptionClassDefinition>>()
+  List<ClassDefinition> get sortedChildClasses => childClasses
+      .whereType<ResolvedInheritanceDefinition>()
       .map(
         (e) => [
           ...e.classDefinition.sortedChildClasses,
@@ -2565,13 +2551,7 @@ extension on List<SerializableModelDefinition> {
     var sorted = <SerializableModelDefinition>[];
 
     for (var model in this) {
-      if (model is ModelClassDefinition) {
-        for (var subClass in model.sortedChildClasses) {
-          if (contains(subClass) && !sorted.contains(subClass)) {
-            sorted.add(subClass);
-          }
-        }
-      } else if (model is ExceptionClassDefinition) {
+      if (model is ClassDefinition) {
         for (var subClass in model.sortedChildClasses) {
           if (contains(subClass) && !sorted.contains(subClass)) {
             sorted.add(subClass);

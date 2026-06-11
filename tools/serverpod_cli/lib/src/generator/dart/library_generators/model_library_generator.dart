@@ -57,10 +57,6 @@ class SerializableModelLibraryGenerator {
         return _generateExceptionLibrary(classDefinition);
       case ModelClassDefinition():
         return _generateModelClassLibrary(classDefinition);
-      default:
-        throw StateError(
-          'Unhandled ClassDefinition subtype: ${classDefinition.runtimeType}',
-        );
     }
   }
 
@@ -640,8 +636,8 @@ class SerializableModelLibraryGenerator {
     SerializableModelFieldDefinition field,
   ) => field.type.nullable || field.type.className == 'dynamic';
 
-  bool _shouldCreateUndefinedClass<T extends InheritanceClassDefinition<T>>(
-    T classDefinition,
+  bool _shouldCreateUndefinedClass(
+    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     if (classDefinition.sealedTopNode == null) {
@@ -856,7 +852,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldOverrideAbstractCopyWithMethod(
-    InheritanceClassDefinition classDefinition,
+    ClassDefinition classDefinition,
   ) {
     var parentClass = classDefinition.parentClass;
 
@@ -916,7 +912,7 @@ class SerializableModelLibraryGenerator {
     required bool isParentClass,
     required hasImplicitClass,
     String? tableName,
-    InheritanceClassDefinition? classDefinition,
+    ClassDefinition? classDefinition,
   }) {
     return Method(
       (m) {

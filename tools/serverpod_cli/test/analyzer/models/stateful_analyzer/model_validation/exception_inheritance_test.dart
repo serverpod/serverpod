@@ -204,7 +204,7 @@ void main() {
       expect(
         collector.errors.first.message,
         'A exception class can only extend another exception class, but got '
-        'parent class "Example".',
+        'parent model class "Example".',
       );
     },
   );
@@ -243,7 +243,7 @@ void main() {
       expect(
         collector.errors.first.message,
         'A model class can only extend another model class, but got parent '
-        'class "AppException".',
+        'exception class "AppException".',
       );
     },
   );

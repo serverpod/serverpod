@@ -37,10 +37,7 @@ class ModelAllocatorContext {
   ) {
     var entries = <ModelAllocatorEntry>[];
 
-    var sealedHierarchies = <Iterable<InheritanceClassDefinition>>[
-      ..._getSealedHierarchies<ModelClassDefinition>(models),
-      ..._getSealedHierarchies<ExceptionClassDefinition>(models),
-    ];
+    var sealedHierarchies = _getSealedHierarchies(models);
 
     for (var sealedHierarchy in sealedHierarchies) {
       var topNode = sealedHierarchy.first.sealedTopNode;
@@ -86,27 +83,25 @@ class ModelAllocatorContext {
     List<SerializableModelDefinition> models,
   ) {
     return models.where(
-      (e) => e is! InheritanceClassDefinition || e.sealedTopNode == null,
+      (e) => e is! ClassDefinition || e.sealedTopNode == null,
     );
   }
 
   /// Returns all sealed top node classes.
-  static Iterable<T>
-  _getSealedTopNodeClasses<T extends InheritanceClassDefinition<T>>(
+  static Iterable<ClassDefinition> _getSealedTopNodeClasses(
     List<SerializableModelDefinition> models,
   ) {
-    return models.whereType<T>().where(
+    return models.whereType<ClassDefinition>().where(
       (element) => element.isSealedTopNode,
     );
   }
 
   /// Returns a list of sealed hierarchies.
   /// Each hierarchy is represented by a list of classes.
-  static Iterable<Iterable<T>>
-  _getSealedHierarchies<T extends InheritanceClassDefinition<T>>(
+  static Iterable<Iterable<ClassDefinition>> _getSealedHierarchies(
     List<SerializableModelDefinition> models,
   ) {
-    var sealedClasses = _getSealedTopNodeClasses<T>(models);
+    var sealedClasses = _getSealedTopNodeClasses(models);
 
     return sealedClasses.map(
       (element) {

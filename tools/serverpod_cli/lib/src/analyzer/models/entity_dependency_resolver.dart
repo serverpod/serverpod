@@ -12,13 +12,7 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions.whereType<ModelClassDefinition>().forEach((
-      classDefinition,
-    ) {
-      _resolveInheritance(classDefinition, modelDefinitions);
-    });
-
-    modelDefinitions.whereType<ExceptionClassDefinition>().forEach((
+    modelDefinitions.whereType<ClassDefinition>().forEach((
       classDefinition,
     ) {
       _resolveInheritance(classDefinition, modelDefinitions);
@@ -33,11 +27,7 @@ class ModelDependencyResolver {
 
     // Then resolve everything else, including relations on inherited ids.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      var fields = classDefinition is InheritanceClassDefinition
-          ? classDefinition.fieldsIncludingInherited
-          : classDefinition.fields;
-
-      for (var fieldDefinition in fields) {
+      for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
         _resolveEnumType(fieldDefinition.type, modelDefinitions);
 
@@ -58,8 +48,8 @@ class ModelDependencyResolver {
     });
   }
 
-  static void _resolveInheritance<T extends InheritanceClassDefinition<T>>(
-    T classDefinition,
+  static void _resolveInheritance(
+    ClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var extendedClass = classDefinition.extendsClass;
@@ -69,11 +59,12 @@ class ModelDependencyResolver {
     var parentClassName = extendedClass.className;
 
     var parentClass = modelDefinitions
-        .whereType<T>()
+        .whereType<ClassDefinition>()
         .where((element) => element.className == parentClassName)
         .firstOrNull;
 
-    if (parentClass == null) {
+    if (parentClass == null ||
+        parentClass.runtimeType != classDefinition.runtimeType) {
       return;
     }
 

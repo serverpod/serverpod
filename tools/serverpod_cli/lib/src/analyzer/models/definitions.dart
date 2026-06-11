@@ -52,6 +52,17 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  /// If set to true the class is sealed.
+  final bool isSealed;
+
+  /// If set to [InheritanceDefinition] the class extends another class and
+  /// stores the [ClassDefinition] of its parent.
+  InheritanceDefinition? extendsClass;
+
+  /// If set to a List of [InheritanceDefinition] the class is a parent class
+  /// that stores the child classes.
+  List<InheritanceDefinition> childClasses;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -60,38 +71,26 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required this.fields,
     required super.serverOnly,
     required super.type,
+    required this.isSealed,
+    List<InheritanceDefinition>? childClasses,
+    this.extendsClass,
     super.subDirParts,
     super.sharedPackageName,
     this.documentation,
-  });
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
   }
-}
-
-/// A shared inheritance and sealed mixin on [ClassDefinition]
-mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
-    on ClassDefinition {
-  /// If set to true the class is sealed.
-  bool isSealed = false;
-
-  /// If set to [InheritanceDefinition] the class extends another class and
-  /// stores the [ClassDefinition] of its parent.
-  InheritanceDefinition? extendsClass;
-
-  /// If set to a List of [InheritanceDefinition] the class is a parent class
-  /// that stores the child classes.
-  List<InheritanceDefinition> childClasses = [];
 
   /// Returns the `ClassDefinition` of the parent class.
   /// If there is no parent class, `null` is returned.
-  T? get parentClass {
+  ClassDefinition? get parentClass {
     var extendsClass = this.extendsClass;
     if (extendsClass is! ResolvedInheritanceDefinition) return null;
 
     var classDefinition = extendsClass.classDefinition;
-    if (classDefinition is! T) return null;
+    if (classDefinition.runtimeType != runtimeType) return null;
     return classDefinition;
   }
 
@@ -114,14 +113,14 @@ mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
   /// Returns the top node of the sealed hierarchy. If the class is the top node
   /// it returns itself. If the class is not part of a sealed hierarchy, `null`
   /// is returned.
-  T? get sealedTopNode {
+  ClassDefinition? get sealedTopNode {
     final parent = parentClass;
     if (parent != null) {
       final parentsSealedTopNode = parent.sealedTopNode;
       if (parentsSealedTopNode != null) return parentsSealedTopNode;
     }
 
-    if (isSealed) return this as T;
+    if (isSealed) return this;
 
     return null;
   }
@@ -145,13 +144,13 @@ mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
   /// Returns a list of all descendant classes.
   /// This includes all child classes and their descendants.
   /// If the class has no child classes, an empty list is returned.
-  List<T> get descendantClasses {
-    List<T> descendants = [];
+  List<ClassDefinition> get descendantClasses {
+    List<ClassDefinition> descendants = [];
 
     for (var child in childClasses) {
       if (child is! ResolvedInheritanceDefinition) continue;
       var classDefinition = child.classDefinition;
-      if (classDefinition is! T) continue;
+      if (classDefinition.runtimeType != runtimeType) continue;
 
       descendants.add(classDefinition);
       descendants.addAll(classDefinition.descendantClasses);
@@ -159,11 +158,16 @@ mixin InheritanceClassDefinition<T extends InheritanceClassDefinition<T>>
 
     return descendants;
   }
+
+  /// Returns the type name used in validation messages.
+  String get typeName => switch (this) {
+    ModelClassDefinition() => 'model',
+    ExceptionClassDefinition() => 'exception',
+  };
 }
 
 /// A [ClassDefinition] specialization that represents a model class.
-final class ModelClassDefinition extends ClassDefinition
-    with InheritanceClassDefinition<ModelClassDefinition> {
+final class ModelClassDefinition extends ClassDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
@@ -195,22 +199,30 @@ final class ModelClassDefinition extends ClassDefinition
     required super.serverOnly,
     required this.manageMigration,
     required super.type,
-    required bool isSealed,
+    required super.isSealed,
     required this.isImmutable,
+    super.childClasses,
+    super.extendsClass,
     this.database = ModelDatabaseDefinition.server,
-    List<InheritanceDefinition>? childClasses,
-    InheritanceDefinition? extendsClass,
     this.tableName,
     this.serializationDataType,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
     super.sharedPackageName,
-  }) {
-    this.isSealed = isSealed;
-    this.childClasses = childClasses ?? <InheritanceDefinition>[];
-    this.extendsClass = extendsClass;
-  }
+  });
+
+  @override
+  ModelClassDefinition? get parentClass =>
+      super.parentClass as ModelClassDefinition?;
+
+  @override
+  ModelClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ModelClassDefinition?;
+
+  @override
+  List<ModelClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ModelClassDefinition>().toList();
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
   /// If the field is not present, an error is thrown.
@@ -277,8 +289,7 @@ final class ModelClassDefinition extends ClassDefinition
 }
 
 /// A [ClassDefinition] specialization that represents an exception.
-final class ExceptionClassDefinition extends ClassDefinition
-    with InheritanceClassDefinition<ExceptionClassDefinition> {
+final class ExceptionClassDefinition extends ClassDefinition {
   /// Create a new [ExceptionClassDefinition].
   ExceptionClassDefinition({
     required super.className,
@@ -287,17 +298,25 @@ final class ExceptionClassDefinition extends ClassDefinition
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
-    required bool isSealed,
-    List<InheritanceDefinition>? childClasses,
-    InheritanceDefinition? extendsClass,
+    required super.isSealed,
+    super.childClasses,
+    super.extendsClass,
     super.documentation,
     super.subDirParts,
     super.sharedPackageName,
-  }) {
-    this.isSealed = isSealed;
-    this.childClasses = childClasses ?? <InheritanceDefinition>[];
-    this.extendsClass = extendsClass;
-  }
+  });
+
+  @override
+  ExceptionClassDefinition? get parentClass =>
+      super.parentClass as ExceptionClassDefinition?;
+
+  @override
+  ExceptionClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ExceptionClassDefinition?;
+
+  @override
+  List<ExceptionClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ExceptionClassDefinition>().toList();
 }
 
 /// Describes a single field of a [ClassDefinition].
