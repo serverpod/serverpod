@@ -238,6 +238,14 @@ abstract class Session implements DatabaseSession {
       metadata: metadata,
     );
   }
+
+  /// Logs [message] as an alert. Works like [log], but the `serverpod` CLI
+  /// shows it as a copyable alert in its terminal UI. Wrap a copyable segment
+  /// in angle brackets, e.g. `'Code: <123456>'`. Other log destinations treat
+  /// it as a regular log message.
+  void alert(String message, {LogLevel? level}) {
+    log(message, level: level, metadata: {'alert': true});
+  }
 }
 
 /// A Session used internally in the [ServerPod]. Typically used to access

@@ -114,7 +114,8 @@ void main() {
     });
   });
 
-  group('Given a log event flagged as an alert with copy markup', () {
+  group('Given a log event flagged as an alert with copy markup when '
+      'dispatched', () {
     String? previousClipboard;
 
     setUp(() {
@@ -136,21 +137,22 @@ void main() {
       if (prev != null) ClipboardManager.copy(prev);
     });
 
-    test('when dispatched then shows the alert with the markup stripped', () {
+    test('then shows the alert with the markup stripped', () {
       expect(state.alert?.displayText, 'Registration code: h2k9x3mp');
     });
 
-    test('when dispatched then copies the marked segment to the clipboard', () {
+    test('then copies the marked segment to the clipboard', () {
       expect(ClipboardManager.paste(), 'h2k9x3mp');
     });
 
-    test('when dispatched then the raw log line keeps the markup', () {
+    test('then the raw log line keeps the markup', () {
       final entry = state.logHistory.first as LogEntry;
       expect(entry.message, 'Registration code: <h2k9x3mp>');
     });
   });
 
-  group('Given a log event flagged as an alert without copy markup', () {
+  group('Given a log event flagged as an alert without copy markup when '
+      'dispatched', () {
     setUp(() {
       handleServerLogEvent(
         holder,
@@ -163,16 +165,17 @@ void main() {
       );
     });
 
-    test('when dispatched then shows the alert verbatim', () {
+    test('then shows the alert verbatim', () {
       expect(state.alert?.displayText, 'Server requires a restart');
     });
 
-    test('when dispatched then the alert has no copy text', () {
+    test('then the alert has no copy text', () {
       expect(state.alert?.copyText, isNull);
     });
   });
 
-  group('Given an ordinary log event containing angle brackets', () {
+  group('Given an ordinary log event containing angle brackets when '
+      'dispatched', () {
     setUp(() {
       handleServerLogEvent(
         holder,
@@ -184,7 +187,7 @@ void main() {
       );
     });
 
-    test('when dispatched then no alert is shown', () {
+    test('then no alert is shown', () {
       expect(state.alert, isNull);
     });
 

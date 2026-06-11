@@ -1062,12 +1062,12 @@ void main() async {
         final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
         final serverSource = serverFile.readAsStringSync();
         const wasmHeaders = 'enableWasmHeaders: false,';
-        // TODO: Remove once Session.log(metadata:) is published.
-        const alertMetadata = "metadata: {'alert': true},";
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
         serverFile.writeAsStringSync(
           serverSource
               .replaceAll(wasmHeaders, '')
-              .replaceAll(alertMetadata, ''),
+              .replaceAll(sessionAlert, 'session.log('),
         );
 
         final dockerBuildProcess = await startProcess(

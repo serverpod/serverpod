@@ -97,14 +97,10 @@ void _sendRegistrationCode(
   required Transaction? transaction,
 }) {
   // NOTE: Here you call your mail service to send the code to the user. For
-  // testing, we just log it. The `alert` metadata makes the `serverpod` CLI
-  // surface this as a copyable alert in its terminal UI, with the `<...>`
-  // marking the copyable segment. Other log sinks ignore the metadata and
-  // record the message text as-is (angle brackets included).
-  session.log(
-    'Registration code for $email: <$verificationCode>',
-    metadata: {'alert': true},
-  );
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Registration code for $email: <$verificationCode>');
 }
 
 void _sendPasswordResetCode(
@@ -115,14 +111,10 @@ void _sendPasswordResetCode(
   required Transaction? transaction,
 }) {
   // NOTE: Here you call your mail service to send the code to the user. For
-  // testing, we just log it. The `alert` metadata makes the `serverpod` CLI
-  // surface this as a copyable alert in its terminal UI, with the `<...>`
-  // marking the copyable segment. Other log sinks ignore the metadata and
-  // record the message text as-is (angle brackets included).
-  session.log(
-    'Password reset code for $email: <$verificationCode>',
-    metadata: {'alert': true},
-  );
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Password reset code for $email: <$verificationCode>');
 }
 
 // {{/auth}}
