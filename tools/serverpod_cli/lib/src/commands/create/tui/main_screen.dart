@@ -2,6 +2,7 @@ import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
+import 'package:serverpod_cli/src/commands/create/tui/text_button.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 class MainScreen extends StatelessComponent {
@@ -27,67 +28,30 @@ class MainScreen extends StatelessComponent {
     final theme = ServerpodTheme.of(context);
     final state = holder.state;
     final creatingProject = state.creatingProject;
+    final showingSummary = state.isSummary;
 
-    return Focusable(
-      focused: true,
-      onKeyEvent: (event) {
-        if (state.creatingProject && event.logicalKey != LogicalKey.keyQ) {
-          return false;
-        }
-
-        switch (event.logicalKey) {
-          case LogicalKey.enter:
-            if (state.isSummary) {
-              if (state.canCreate) {
-                state.markCreatingProject();
-                holder.markDirty();
-                onCreate();
-              }
-            } else {
-              state.nextScreen();
-              holder.markDirty();
-            }
-            return true;
-
-          case LogicalKey.escape:
-            if (state.currentScreenIndex > 0) {
-              state.previousScreen();
-              holder.markDirty();
-            }
-            return true;
-
-          case LogicalKey.keyQ:
-            if (!event.isControlPressed) {
-              onQuit();
-              return true;
-            }
-            return false;
-
-          default:
-            return false;
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: BorderedBox(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(theme, state),
-                  Expanded(
-                    child: creatingProject
-                        ? _buildLogView()
-                        : _buildScreenContent(theme, state),
-                  ),
-                ],
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: BorderedBox(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(theme, state),
+                Expanded(
+                  child: creatingProject
+                      ? _buildLogView()
+                      : _buildScreenContent(theme, state),
+                ),
+                if (!creatingProject && !showingSummary)
+                  _buildScreenButtons(theme, state),
+              ],
             ),
           ),
-          _buildButtonBar(theme, state),
-        ],
-      ),
+        ),
+        _buildButtonBar(theme, state),
+      ],
     );
   }
 
@@ -101,8 +65,13 @@ class MainScreen extends StatelessComponent {
   }
 
   Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
+    final showingSummary = state.isSummary;
     final creatingProject = state.creatingProject;
-    final title = creatingProject ? 'Creating project' : 'Create new project';
+    final title = showingSummary
+        ? 'Summary'
+        : creatingProject
+        ? 'Creating project'
+        : 'Create new project';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 1),
@@ -155,6 +124,10 @@ class MainScreen extends StatelessComponent {
   ) {
     final focusedOptionIndex = state.form.getFocusedOptionIndexFor(config) ?? 0;
 
+    bool isFocused(int optionIndex) {
+      return !state.focusOnButton && focusedOptionIndex == optionIndex;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -186,14 +159,14 @@ class MainScreen extends StatelessComponent {
                             config,
                             option.$2,
                           ),
-                          focused: focusedOptionIndex == option.$1,
+                          focused: isFocused(option.$1),
                         )
                       : RadioButton(
                           label: option.$2.label,
                           value:
                               state.form.getSelectedOptionFor(config) ==
                               option.$2,
-                          focused: focusedOptionIndex == option.$1,
+                          focused: isFocused(option.$1),
                         ),
                 ),
             ],
@@ -255,10 +228,10 @@ class MainScreen extends StatelessComponent {
             for (final config in configs)
               _buildSummaryItem(theme, state, config as FormSelectionConfig),
             const SizedBox(height: 1),
-            Text(
+            const Text(
               'Press Enter to create the project.',
               style: TextStyle(
-                color: theme.brightText,
+                color: Color.defaultColor,
                 fontWeight: FontWeight.dim,
               ),
             ),
@@ -281,7 +254,6 @@ class MainScreen extends StatelessComponent {
             '${config.label}: ',
             style: const TextStyle(
               color: Color.defaultColor,
-              fontWeight: FontWeight.bold,
             ),
           ),
           Text(
@@ -295,31 +267,23 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  String _getSummaryValue(CreateConfigState state, FormSelectionConfig config) {
-    if (config == ServerpodCreateConfig.template) {
-      final option = state.form.getSelectedOptionFor(config);
-      return option?.label ?? 'None';
+  String _getSummaryValue(CreateConfigState state, FormConfig config) {
+    if (config is FormSelectionConfig) {
+      if (config.multiSelect) {
+        final options = state.form.getSelectedOptionsFor(config) ?? {};
+        final names = options.map((op) => op.label).join(', ');
+        return names.isEmpty ? 'None' : names;
+      } else {
+        final option = state.form.getSelectedOptionFor(config);
+        if (config.isBoolean) {
+          final enabled = option == BoolFormConfigOption.enabled;
+          return enabled ? 'Enabled' : 'Disabled';
+        } else {
+          return option?.label ?? 'None';
+        }
+      }
     }
-    if (config == ServerpodCreateConfig.web) {
-      final option = state.form.getSelectedOptionFor(config);
-      return option?.label ?? 'None';
-    }
-    if (config == ServerpodCreateConfig.auth) {
-      final option = state.form.getSelectedOptionFor(config);
-      final enabled = option == BoolFormConfigOption.enabled;
-      return enabled ? 'Enabled' : 'Disabled';
-    }
-    if (config == ServerpodCreateConfig.ide) {
-      final options = state.form.getSelectedOptionsFor(config) ?? <IdeOption>{};
-      final names = options.map((o) => o.label).join(', ');
-      return names.isEmpty ? 'None selected' : names;
-    }
-    if (config == ServerpodCreateConfig.database) {
-      final options =
-          state.form.getSelectedOptionsFor(config) ?? <DatabaseConfigOption>{};
-      final names = options.map((o) => o.label).join(', ');
-      return names.isEmpty ? 'None' : names;
-    }
+
     return '';
   }
 
@@ -372,13 +336,16 @@ class MainScreen extends StatelessComponent {
           onActivate: (key) {
             switch (key) {
               case LogicalKey.arrowLeft:
-                state.form.updateFocusedConfigOption(-1);
+                state.focusLeft();
                 break;
               case LogicalKey.arrowRight:
-                state.form.updateFocusedConfigOption(1);
+                state.focusRight();
                 break;
               case LogicalKey.arrowUp:
+                state.focusUp();
+                break;
               case LogicalKey.arrowDown:
+                state.focusDown();
                 break;
             }
             holder.markDirty();
@@ -390,7 +357,7 @@ class MainScreen extends StatelessComponent {
           activationChar: 'Space',
           activationKeys: const [LogicalKey.space],
           onActivate: (_) {
-            state.form.selectConfigOption();
+            state.onSelect();
             holder.markDirty();
           },
           enabled: !isSummary && !creatingProject,
@@ -402,6 +369,52 @@ class MainScreen extends StatelessComponent {
           onActivate: (_) => onQuit(),
         ),
       ],
+    );
+  }
+
+  Component _buildScreenButtons(
+    ServerpodThemeData theme,
+    CreateConfigState state,
+  ) {
+    final isFirstScreen = state.currentScreenIndex == 0;
+    final isSummary = state.isSummary;
+
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton(
+            name: 'Back',
+            activationKeys: const [LogicalKey.space],
+            onActivate: (_) {
+              state.previousScreen();
+              holder.markDirty();
+            },
+            enabled: !isFirstScreen,
+            focused: state.focusOnButton && state.focusedButtonIndex == 0,
+          ),
+          const SizedBox(width: 1),
+          TextButton(
+            name: 'Next',
+            activationKeys: const [LogicalKey.space],
+            onActivate: (_) {
+              if (isSummary) {
+                if (state.canCreate) {
+                  state.markCreatingProject();
+                  holder.markDirty();
+                  onCreate();
+                }
+              } else {
+                state.nextScreen();
+                holder.markDirty();
+              }
+            },
+            enabled: !isSummary,
+            focused: state.focusOnButton && state.focusedButtonIndex == 1,
+          ),
+        ],
+      ),
     );
   }
 

@@ -30,17 +30,11 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
           'for real-time communication.',
       spacing: 2,
     ),
-    requirements: [
-      FormRequirement<TemplateTypeOption>(
-        config: ServerpodCreateConfig.template,
-        configOption: TemplateTypeOption.server,
-      ),
-    ],
   ),
-  web<WebConfigOption>(
+  webserver<WebServerConfigOption>(
     label: 'Web server',
-    options: WebConfigOption.values,
-    defaultOptions: {WebConfigOption.appOnly},
+    options: WebServerConfigOption.values,
+    defaultOptions: {WebServerConfigOption.appOnly},
     description: FormDescription(
       label:
           'Serverpod can serve web pages (e.g., a landing page or a companion '
@@ -82,7 +76,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
           'install skills and MCP servers for your selected editors.',
       spacing: 2,
     ),
-  );
+  )
+  ;
 
   const ServerpodCreateConfig({
     required this.label,
@@ -115,7 +110,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 /// [FormConfigOption] for database & caching options.
 enum DatabaseConfigOption implements FormConfigOption {
   database('Database (recommended)'),
-  redis('Redis');
+  redis('Redis')
+  ;
 
   const DatabaseConfigOption(this.label);
 
@@ -126,7 +122,8 @@ enum DatabaseConfigOption implements FormConfigOption {
 /// [FormConfigOption] for supported template types.
 enum TemplateTypeOption implements FormConfigOption {
   server('Server & Flutter app'),
-  module('Module');
+  module('Module')
+  ;
 
   const TemplateTypeOption(this.label);
 
@@ -135,12 +132,13 @@ enum TemplateTypeOption implements FormConfigOption {
 }
 
 /// [FormConfigOption] for web server options.
-enum WebConfigOption implements FormConfigOption {
+enum WebServerConfigOption implements FormConfigOption {
   appOnly('Flutter app only (recommended)'),
   appAndWebsite('App and website'),
-  none('None');
+  none('None')
+  ;
 
-  const WebConfigOption(this.label);
+  const WebServerConfigOption(this.label);
 
   @override
   final String label;
@@ -153,7 +151,8 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code');
+  vsCode('VS Code')
+  ;
 
   const IdeOption(this.label);
 

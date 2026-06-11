@@ -3,6 +3,19 @@ import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
+/// A non-functional [FormConfig] that is used to reset
+/// all focused options.
+class _VoidFormConfig implements FormConfig {
+  @override
+  FormDescription? get description => null;
+
+  @override
+  String get label => '';
+
+  @override
+  List<FormRequirement<FormConfigOption>> get requirements => [];
+}
+
 /// Central state for [ServerpodCreateApp] rendered by nocterm.
 class CreateConfigState extends TuiState {
   CreateConfigState(
@@ -40,6 +53,73 @@ class CreateConfigState extends TuiState {
 
   int _currentScreenIndex = 0;
 
+  bool _focusOnButton = false;
+  int _focusedButtonIndex = 0;
+
+  bool get focusOnButton => _focusOnButton;
+  int get focusedButtonIndex => _focusedButtonIndex;
+
+  void _unfocusOptions() {
+    // Trick to unfocus all options is to request a config that is unknown.
+    form.requestFocus(_VoidFormConfig());
+  }
+
+  void focusBackButton() {
+    _unfocusOptions();
+    _focusOnButton = true;
+    _focusedButtonIndex = 0;
+  }
+
+  void focusNextButton() {
+    _unfocusOptions();
+    _focusOnButton = true;
+    _focusedButtonIndex = 1;
+  }
+
+  void focusDown() {
+    if (!_focusOnButton) {
+      if (isSummary || _currentScreenIndex > 0) {
+        focusBackButton();
+      } else if (!isSummary) {
+        focusNextButton();
+      }
+    }
+  }
+
+  void focusUp() {
+    if (_focusOnButton) {
+      _focusOnButton = false;
+      if (_currentScreenIndex < form.configurations.length) {
+        final config = form.configurations[_currentScreenIndex];
+        form.requestFocus(config);
+      }
+    }
+  }
+
+  void focusRight() {
+    if (_focusOnButton) {
+      if (_focusedButtonIndex == 0 && !isSummary) {
+        focusNextButton();
+      }
+    } else if (_currentScreenIndex < form.configurations.length) {
+      final config = form.configurations[_currentScreenIndex];
+      form.requestFocus(config);
+      form.updateFocusedConfigOption(1);
+    }
+  }
+
+  void focusLeft() {
+    if (_focusOnButton) {
+      if (_focusedButtonIndex == 1 && _currentScreenIndex > 0) {
+        focusBackButton();
+      }
+    } else if (_currentScreenIndex < form.configurations.length) {
+      final config = form.configurations[_currentScreenIndex];
+      form.requestFocus(config);
+      form.updateFocusedConfigOption(-1);
+    }
+  }
+
   /// Current screen index (0 = first config screen, [configScreenCount] = summary).
   int get currentScreenIndex => _currentScreenIndex;
 
@@ -51,6 +131,22 @@ class CreateConfigState extends TuiState {
 
   /// Total number of screens (config screens + summary).
   int get totalScreenCount => configScreenCount + 1;
+
+  void onSelect() {
+    if (_focusOnButton) {
+      switch (_focusedButtonIndex) {
+        case 0:
+          previousScreen();
+          break;
+        case 1:
+          nextScreen();
+          break;
+        default:
+      }
+    } else {
+      form.selectConfigOption();
+    }
+  }
 
   /// Advances to the next screen.
   void nextScreen() {
@@ -68,7 +164,9 @@ class CreateConfigState extends TuiState {
     }
   }
 
+  /// Focus form config for the current screen.
   void _updateFormFocus() {
+    _focusOnButton = false;
     if (_currentScreenIndex < form.configurations.length) {
       final config = form.configurations[_currentScreenIndex];
       form.requestFocus(config);
@@ -82,6 +180,7 @@ class CreateConfigState extends TuiState {
   /// Resets to the first screen.
   void resetScreens() {
     _currentScreenIndex = 0;
+    _focusOnButton = false;
   }
 
   @override
@@ -113,7 +212,9 @@ class CreateConfigState extends TuiState {
     final selectedIdes =
         form.getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
-    final webOption = form.getSelectedOptionFor(ServerpodCreateConfig.web);
+    final webOption = form.getSelectedOptionFor(
+      ServerpodCreateConfig.webserver,
+    );
 
     return TemplateContext(
       template: template,
@@ -138,11 +239,11 @@ class CreateConfigState extends TuiState {
     );
   }
 
-  /// Returns the web bool from the given [WebConfigOption] option,
+  /// Returns the web bool from the given [WebServerConfigOption] option,
   /// or [fallback] if no option is selected or config is not exposed.
-  bool _getWebOption(WebConfigOption? option, {required bool fallback}) {
-    if (!configs.contains(ServerpodCreateConfig.web)) return fallback;
-    return option == WebConfigOption.appAndWebsite;
+  bool _getWebOption(WebServerConfigOption? option, {required bool fallback}) {
+    if (!configs.contains(ServerpodCreateConfig.webserver)) return fallback;
+    return option == WebServerConfigOption.appAndWebsite;
   }
 
   /// Returns whether [option] is selected for [config] in the form,

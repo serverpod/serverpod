@@ -86,8 +86,8 @@ void main() {
 
       test('and web is set to app and website then web is enabled', () {
         state.form.updateSelectedOption(
-          ServerpodCreateConfig.web,
-          WebConfigOption.appAndWebsite,
+          ServerpodCreateConfig.webserver,
+          WebServerConfigOption.appAndWebsite,
         );
 
         final context = state.toTemplateContext();
@@ -96,8 +96,8 @@ void main() {
 
       test('and web is set to none then web is disabled', () {
         state.form.updateSelectedOption(
-          ServerpodCreateConfig.web,
-          WebConfigOption.none,
+          ServerpodCreateConfig.webserver,
+          WebServerConfigOption.none,
         );
 
         final context = state.toTemplateContext();
@@ -235,7 +235,7 @@ void main() {
         () {
           final configs = state.form.configurations;
           expect(configs, isNot(contains(ServerpodCreateConfig.database)));
-          expect(configs, isNot(contains(ServerpodCreateConfig.web)));
+          expect(configs, isNot(contains(ServerpodCreateConfig.webserver)));
           expect(configs, isNot(contains(ServerpodCreateConfig.auth)));
           expect(configs, contains(ServerpodCreateConfig.template));
           expect(configs, contains(ServerpodCreateConfig.ide));
