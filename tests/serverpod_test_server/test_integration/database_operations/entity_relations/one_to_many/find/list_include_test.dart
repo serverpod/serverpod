@@ -1178,9 +1178,10 @@ void main() async {
       // where the CTE's materialized order is not preserved, which is the
       // root cause of issue #4110.
       await session.db.transaction((transaction) async {
-        await session.db.unsafeExecute(
-          'SET LOCAL enable_sort = off;',
-          transaction: transaction,
+        await transaction.setRuntimeParameters(
+          (params) => [
+            MapRuntimeParameters({'enable_sort': false}),
+          ],
         );
 
         // Query pattern matching the original issue:
