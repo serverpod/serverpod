@@ -8,6 +8,18 @@ abstract interface class ClientAuthKeyProvider {
   Future<String?> get authHeaderValue;
 }
 
+/// Optional capability for a [ClientAuthKeyProvider] that authenticates via an
+/// `HttpOnly` cookie instead of the `Authorization` header.
+///
+/// When the client's provider reports [usesCookies], the client sends the
+/// cookie-mode marker header and makes credentialed (cookie-bearing) requests,
+/// rather than attaching an `Authorization` header.
+abstract interface class CookieAuthKeyProvider
+    implements ClientAuthKeyProvider {
+  /// Whether this provider authenticates via a cookie rather than a header.
+  bool get usesCookies;
+}
+
 /// Provides the authentication key for the client, with a method to refresh it.
 abstract interface class RefresherClientAuthKeyProvider
     implements ClientAuthKeyProvider {

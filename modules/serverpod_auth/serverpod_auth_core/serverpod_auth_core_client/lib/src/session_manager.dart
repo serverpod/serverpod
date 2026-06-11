@@ -7,7 +7,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 /// or other methods. Please refer to the documentation to see supported
 /// methods. Session information is stored in the storage implementation provided
 /// to the session manager.
-class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
+class ClientAuthSessionManager
+    implements RefresherClientAuthKeyProvider, CookieAuthKeyProvider {
   /// The auth module's caller.
   Caller? _caller;
 
@@ -16,6 +17,12 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// The secure storage to keep user authentication info.
   final ClientAuthSuccessStorage storage;
+
+  /// Whether this client authenticates via an `HttpOnly` cookie.
+  ///
+  /// When true the client sends no auth header and signals cookie mode.
+  /// The server issues/clears the cookie.
+  final bool cookieAuth;
 
   /// Optional callback that is invoked when the auth info changes.
   /// The new auth info is passed as a parameter to the callback.
@@ -34,6 +41,9 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     /// The storage to keep user authentication info. This is required for
     /// the platform-agnostic session manager.
     required this.storage,
+
+    /// Authenticate via an `HttpOnly` cookie.
+    this.cookieAuth = false,
 
     /// Optional callback that is invoked when the auth info changes.
     /// The new auth info value is passed as a parameter to the callback.
@@ -102,8 +112,29 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   }
 
   @override
-  Future<String?> get authHeaderValue async =>
-      authKeyProviderDelegate?.authHeaderValue;
+  bool get usesCookies => cookieAuth;
+
+  @override
+  Future<String?> get authHeaderValue async {
+    if (!cookieAuth) return authKeyProviderDelegate?.authHeaderValue;
+
+    // Cookie mode carries the credential in an `HttpOnly` cookie, so no
+    // `Authorization` header is sent. Only the opaque session (SAS) strategy is
+    // supported in cookie mode today; JWT cookie mode (access-in-memory +
+    // refresh cookie) is not implemented yet. Without this guard a JWT client
+    // built with `cookieAuth: true` would send neither a header nor a cookie
+    // and authenticate as nobody, silently. Fail loudly instead.
+    final strategy = authInfo?.authStrategy;
+    if (strategy != null &&
+        AuthStrategy.fromJson(strategy) == AuthStrategy.jwt) {
+      throw StateError(
+        'cookieAuth is not supported with the JWT auth strategy. Use the opaque '
+        'session (SAS) strategy for cookie-based web auth, or run the client in '
+        'header mode (cookieAuth: false).',
+      );
+    }
+    return null;
+  }
 
   @override
   Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
@@ -160,6 +191,17 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Updates the signed in user on the storage and for open connections.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
+    if (cookieAuth && authInfo != null && authInfo.token.isNotEmpty) {
+      // In cookie mode the server issues the token as an `HttpOnly` cookie and
+      // returns an empty `token` in the body. A non-empty token here means the
+      // server did not issue a cookie. Refuse to persist it and fail loudly so
+      // the misconfiguration surfaces.
+      throw StateError(
+        'cookieAuth is enabled but the server returned the auth token in the '
+        'response body instead of an HttpOnly cookie. Configure `authCookie` '
+        'on the server, or run the client in header mode (cookieAuth: false).',
+      );
+    }
     await storage.set(authInfo);
     _authInfo = authInfo;
     onAuthInfoChanged?.call(_authInfo);
