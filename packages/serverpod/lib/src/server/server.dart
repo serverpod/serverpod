@@ -513,11 +513,25 @@ class Server implements RouterInjectable {
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
 
-    // Fall back to the web auth cookie when configured and no header was sent
-    // (the browser carries it for cookie-based web clients).
-    authenticationKey ??= request.getAuthCookieValue(
-      serverpod.config.authCookie,
-    );
+    // Fall back to the web auth cookie for requests that opted into cookie mode
+    // via the marker header (layer 3 CSRF defense). A cross-site form or simple
+    // request cannot set this custom header without a CORS preflight, which
+    // fails for non-allow-listed origins.
+    if (authenticationKey == null &&
+        serverpod.config.authCookie != null &&
+        request.headers[webAuthModeHeaderName]?.firstOrNull ==
+            webAuthModeCookie) {
+      // Reject a cookie-mode request whose `Origin` is present but not in the
+      // allow-list (Layer 2 CSRF defense).
+      if (_isOriginDisallowed(request)) {
+        return Response.forbidden(
+          body: Body.fromString('Request origin not allowed.'),
+        );
+      }
+      authenticationKey = request.getAuthCookieValue(
+        serverpod.config.authCookie,
+      );
+    }
 
     MethodCallSession? maybeSession;
     try {
