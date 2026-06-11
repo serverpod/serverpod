@@ -53,7 +53,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     options: IdeOption.values,
     multiSelect: true,
     defaultOptions: <IdeOption>{},
-  );
+  )
+  ;
 
   const ServerpodCreateConfig({
     required this.label,
@@ -66,9 +67,6 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 
   @override
   final String label;
-
-  @override
-  FormDescription? get description => null;
 
   @override
   final List<T> options;
@@ -90,7 +88,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 enum DatabaseConfigOption implements FormConfigOption {
   postgres('Postgres'),
   sqlite('SQLite'),
-  none('None');
+  none('None')
+  ;
 
   const DatabaseConfigOption(this.label);
 
@@ -101,7 +100,8 @@ enum DatabaseConfigOption implements FormConfigOption {
 /// [FormConfigOption] for supported template types.
 enum TemplateTypeOption implements FormConfigOption {
   server('Server'),
-  module('Module');
+  module('Module')
+  ;
 
   const TemplateTypeOption(this.label);
 
@@ -116,7 +116,8 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code');
+  vsCode('VS Code')
+  ;
 
   const IdeOption(this.label);
 
