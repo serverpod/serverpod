@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -739,9 +738,6 @@ class OrderUuidAttachRepository {
     if (commentInt.any((e) => e.id == null)) {
       throw ArgumentError.notNull('commentInt.id');
     }
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
 
     var $commentInt = commentInt
         .map((e) => e.copyWith(orderId: orderUuid.id))
@@ -765,9 +761,6 @@ class OrderUuidAttachRowRepository {
     _i2.CustomerInt customer, {
     _i1.Transaction? transaction,
   }) async {
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
     if (customer.id == null) {
       throw ArgumentError.notNull('customer.id');
     }
@@ -790,9 +783,6 @@ class OrderUuidAttachRowRepository {
   }) async {
     if (commentInt.id == null) {
       throw ArgumentError.notNull('commentInt.id');
-    }
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
     }
 
     var $commentInt = commentInt.copyWith(orderId: orderUuid.id);
