@@ -233,12 +233,6 @@ class EmailIdp {
                   level: LogLevel.debug,
                 );
                 break;
-              case EmailAccountRequestAlreadyExistsException():
-                session.log(
-                  'Failed to start account registration for $email, reason: email account request already exists',
-                  level: LogLevel.debug,
-                );
-                break;
               default:
                 rethrow;
             }
