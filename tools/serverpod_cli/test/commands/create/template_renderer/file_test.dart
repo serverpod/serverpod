@@ -35,7 +35,7 @@ void main() {
     () {
       late File file;
       setUp(() async {
-        file = File(p.join(testDir.path, '{{#web}}web{{!web}}.dart'));
+        file = File(p.join(testDir.path, '{{#webapp}}web{{!webapp}}.dart'));
         await file.writeAsString('''import 'dart.io';''');
       });
 
@@ -43,7 +43,7 @@ void main() {
         'when rendering the template with a true context value, '
         'then the file name is formatted to remove the template directives',
         () async {
-          await renderTestDir(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(file.exists(), completion(false));
           await expectLater(
@@ -57,7 +57,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the file is deleted',
         () async {
-          await renderTestDir(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(file.exists(), completion(false));
           await expectLater(
@@ -88,7 +88,7 @@ void main() {
     () {
       late File file;
       setUp(() async {
-        file = File(p.join(testDir.path, '{{#web}}web{{+web}}.dart'));
+        file = File(p.join(testDir.path, '{{#webapp}}web{{+webapp}}.dart'));
         await file.writeAsString('''import 'dart.io';''');
       });
 
@@ -96,7 +96,7 @@ void main() {
         'when rendering the template with a true context value, '
         'then the file name is not formatted to remove the template directives',
         () async {
-          await renderTestDir(TemplateContext(web: true));
+          await renderTestDir(TemplateContext(webapp: true));
 
           await expectLater(file.exists(), completion(true));
           await expectLater(
@@ -110,7 +110,7 @@ void main() {
         'when rendering the template with a false context value, '
         'then the file name is not formatted to remove the template directives',
         () async {
-          await renderTestDir(TemplateContext(web: false));
+          await renderTestDir(TemplateContext(webapp: false));
 
           await expectLater(file.exists(), completion(true));
           await expectLater(
@@ -201,17 +201,17 @@ import 'dart:io';
 // {{#postgres}}
 import 'postgres.dart';
 // {{/postgres}}
-// {{#web}}
+// {{#website}}
 import 'web.dart';
-// {{/web}}
+// {{/website}}
 
 void main() {
   // {{#postgres}}
   print('postgres enabled');
   // {{/postgres}}
-  // {{#web}}
+  // {{#website}}
   print('web enabled');
-  // {{/web}}
+  // {{/website}}
 }
 ''');
       });
@@ -220,7 +220,7 @@ void main() {
         'when rendering the template with true context values, '
         'then all the sections with conditional directives are retained in the file',
         () async {
-          await renderTestDir(TemplateContext(web: true, postgres: true));
+          await renderTestDir(TemplateContext(website: true, postgres: true));
           final content = await file.readAsString();
           expect(
             content,
@@ -242,7 +242,7 @@ void main() {
         'when rendering the template with a mix of true and false context values, '
         'then only the sections with true conditional directives are retained in the file',
         () async {
-          await renderTestDir(TemplateContext(postgres: true, web: false));
+          await renderTestDir(TemplateContext(postgres: true, website: false));
           final content = await file.readAsString();
           expect(
             content,

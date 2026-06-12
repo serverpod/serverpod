@@ -18,14 +18,14 @@ insightsServer:
   publicPort: 443
   publicScheme: https
 
-# {{#web}}
+# {{#webserver}}
 # Configuration for the web server.
 webServer:
   port: 8082
   publicHost: app.examplepod.com
   publicPort: 443
   publicScheme: https
-# {{/web}}
+# {{/webserver}}
 
 # {{#database}}
 # This is the database setup for your servers. The default for the Google Cloud

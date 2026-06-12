@@ -136,7 +136,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       auth: true,
       redis: true,
       postgres: true,
-      web: true,
+      webapp: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
