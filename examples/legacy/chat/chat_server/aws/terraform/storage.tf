@@ -8,9 +8,17 @@ resource "aws_s3_bucket" "public_storage" {
   }
 }
 
-resource "aws_s3_bucket_acl" "public_storage" {
+resource "aws_s3_bucket_ownership_controls" "public_storage" {
   bucket = aws_s3_bucket.public_storage.id
-  acl    = "private"
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "public_storage" {
+  depends_on = [aws_s3_bucket_ownership_controls.public_storage]
+  bucket     = aws_s3_bucket.public_storage.id
+  acl        = "private"
 }
 
 resource "aws_s3_bucket" "private_storage" {
@@ -22,9 +30,17 @@ resource "aws_s3_bucket" "private_storage" {
   }
 }
 
-resource "aws_s3_bucket_acl" "private_storage" {
+resource "aws_s3_bucket_ownership_controls" "private_storage" {
   bucket = aws_s3_bucket.private_storage.id
-  acl    = "private"
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "private_storage" {
+  depends_on = [aws_s3_bucket_ownership_controls.private_storage]
+  bucket     = aws_s3_bucket.private_storage.id
+  acl        = "private"
 }
 
 locals {
