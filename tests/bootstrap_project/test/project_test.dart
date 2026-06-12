@@ -1095,6 +1095,85 @@ void main() async {
           ? 'Windows does not support Docker builds in GitHub Actions.'
           : null,
     );
+
+    test(
+      'when running the server Docker image it starts without GLIBC errors',
+      () async {
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(sessionAlert, 'session.log('),
+        );
+
+        final imageTag = '${projectName.toLowerCase()}_smoke';
+
+        final buildResult = await runProcess(
+          'docker',
+          [
+            'build',
+            '-t',
+            imageTag,
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await runProcess('docker', ['rmi', '-f', imageTag]);
+        });
+
+        expect(
+          buildResult.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+
+        // Run the server binary briefly with a shell timeout.
+        // A GLIBC dynamic-linker error appears before Dart starts, so if the
+        // server prints its version line ("SERVERPOD version: ..."), the binary
+        // loaded correctly. The server exits once it cannot reach the database.
+        final runResult = await runProcess(
+          'docker',
+          [
+            'run',
+            '--rm',
+            '--entrypoint',
+            'sh',
+            imageTag,
+            '-c',
+            'timeout 10 ./bin/server 2>&1; exit 0',
+          ],
+        );
+
+        final output = '${runResult.stdout}${runResult.stderr}';
+
+        expect(
+          output,
+          isNot(contains('GLIBC')),
+          reason:
+              'Production Docker image failed with a GLIBC error: $output',
+        );
+        expect(
+          output,
+          contains('SERVERPOD'),
+          reason:
+              'Server binary did not produce expected startup output: $output',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
+    );
   });
 
   group('Given a created project and a running docker environment', () {
