@@ -56,26 +56,35 @@ class CreateConfigState extends TuiState {
   bool _focusOnButton = false;
   int _focusedButtonIndex = 0;
 
+  /// Whether the Back and Next buttons are focused.
+  /// Can only be true in a multi screen flow.
   bool get focusOnButton => _focusOnButton;
+
+  /// Index of the focused button.
   int get focusedButtonIndex => _focusedButtonIndex;
 
+  /// Unfocus all form options.
   void _unfocusOptions() {
-    // Trick to unfocus all options is to request a config that is unknown.
     form.requestFocus(_VoidFormConfig());
   }
 
+  /// Move focus to the back button in a multi screen flow.
   void focusBackButton() {
     _unfocusOptions();
     _focusOnButton = true;
     _focusedButtonIndex = 0;
   }
 
+  /// Move focus to the next button in a multi screen flow.
   void focusNextButton() {
     _unfocusOptions();
     _focusOnButton = true;
     _focusedButtonIndex = 1;
   }
 
+  /// Move focus to the next element vertically.
+  /// If buttons are not in focus in multi screen flow,
+  /// then the focus is moved to the buttons.
   void focusDown() {
     if (!_focusOnButton && !hasSingleScreen) {
       if (isSummary || _currentScreenIndex > 0) {
@@ -86,8 +95,11 @@ class CreateConfigState extends TuiState {
     }
   }
 
+  /// Move focus to the previous element vertically.
+  /// If buttons are in focus in multi screen flow,
+  /// then the focus is moved to the form.
   void focusUp() {
-    if (_focusOnButton) {
+    if (_focusOnButton && !hasSingleScreen) {
       _focusOnButton = false;
       if (_currentScreenIndex < form.configurations.length) {
         final config = form.configurations[_currentScreenIndex];
@@ -96,6 +108,12 @@ class CreateConfigState extends TuiState {
     }
   }
 
+  /// Move focus to the next element horizontally.
+  /// If buttons are in focus (only true in multi screen flow),
+  /// then the focus is moved to the next button.
+  ///
+  /// If buttons are not in focus (form is focused),
+  /// the next form config option is focused.
   void focusRight() {
     if (_focusOnButton) {
       if (_focusedButtonIndex == 0 && !isSummary) {
@@ -108,6 +126,12 @@ class CreateConfigState extends TuiState {
     }
   }
 
+  /// Move focus to the previous element horizontally.
+  /// If buttons are in focus (only true in multi screen flow),
+  /// then the focus is moved to the previous button.
+  ///
+  /// If buttons are not in focus (form is focused),
+  /// the previous form config option is focused.
   void focusLeft() {
     if (_focusOnButton) {
       if (_focusedButtonIndex == 1 && _currentScreenIndex > 0) {
@@ -135,6 +159,9 @@ class CreateConfigState extends TuiState {
   /// Total number of screens (config screens + summary).
   int get totalScreenCount => configScreenCount + 1;
 
+  /// Selects a focused button and executes its callback.
+  /// If no button is focused, then the current focused option
+  /// on the form is selected.
   void onSelect() {
     if (_focusOnButton) {
       switch (_focusedButtonIndex) {
@@ -178,12 +205,6 @@ class CreateConfigState extends TuiState {
         form.updateFocusedConfigOption(-currentFocus);
       }
     }
-  }
-
-  /// Resets to the first screen.
-  void resetScreens() {
-    _currentScreenIndex = 0;
-    _focusOnButton = false;
   }
 
   @override

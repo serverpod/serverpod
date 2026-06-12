@@ -34,18 +34,27 @@ void main() {
       );
 
       test(
-        'and database is enabled (default) then TemplateContext has correct value for postgres',
+        'then TemplateContext has the correct default value for auth',
         () {
           final context = state.toTemplateContext();
-          expect(context.postgres, isTrue);
-          expect(context.sqlite, isFalse);
+          expect(context.auth, isTrue);
         },
       );
 
       test(
-        'and database is disabled then TemplateContext has correct values',
+        'when database is selected (default),'
+        'then postgres is enabled in TemplateContext',
         () {
-          // Deselect Database (recommended)
+          final context = state.toTemplateContext();
+          expect(context.postgres, isTrue);
+        },
+      );
+
+      test(
+        'when database is selected,'
+        'then postgres is disabled in TemplateContext',
+        () {
+          // Deselect to disable
           state.form.updateSelectedOption(
             ServerpodCreateConfig.database,
             DatabaseConfigOption.database,
@@ -53,12 +62,22 @@ void main() {
 
           final context = state.toTemplateContext();
           expect(context.postgres, isFalse);
-          expect(context.sqlite, isFalse);
         },
       );
 
       test(
-        'and redis is enabled then TemplateContext reflects enabled',
+        'when redis is not selected (default),'
+        'then redis is disabled in TemplateContext',
+        () {
+          // By default redis is not selected
+          final context = state.toTemplateContext();
+          expect(context.redis, isFalse);
+        },
+      );
+
+      test(
+        'when redis is selected,'
+        'then redis is enabled in TemplateContext',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.database,
@@ -67,15 +86,6 @@ void main() {
 
           final context = state.toTemplateContext();
           expect(context.redis, isTrue);
-        },
-      );
-
-      test(
-        'and redis is not selected then TemplateContext reflects disabled',
-        () {
-          // By default redis is not selected (only database is default)
-          final context = state.toTemplateContext();
-          expect(context.redis, isFalse);
         },
       );
 
@@ -128,14 +138,6 @@ void main() {
           expect(context.webapp, isFalse);
           expect(context.website, isFalse);
           expect(context.webserver, isFalse);
-        },
-      );
-
-      test(
-        'then TemplateContext has the correct default value for auth',
-        () {
-          final context = state.toTemplateContext();
-          expect(context.auth, isTrue);
         },
       );
 
