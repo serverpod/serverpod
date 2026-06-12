@@ -6,33 +6,37 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// A [GlobalCache] managed by Redis. The cache is shared by the servers in
 /// a cluster.
 class RedisCache extends GlobalCache {
-  /// Holds the Redis controller.
-  final RedisController? redisController;
+  final RedisController? _redisController;
 
   /// Creates a new RedisCache. The size of the cache and eviction policy needs
   /// to be setup manually in Redis.
   RedisCache(
     SerializationManager serializationManager,
-    this.redisController,
+    this._redisController,
   ) : super(
         -1,
         serializationManager,
       );
 
-  @override
-  Future<void> clear() async {
-    if (redisController == null) {
+  /// The [RedisController] backing this cache.
+  ///
+  /// Throws a [StateError] if Redis is not enabled for this Serverpod instance.
+  RedisController get redisController {
+    var controller = _redisController;
+    if (controller == null) {
       throw StateError('Redis is not enabled for this Serverpod instance.');
     }
-    await redisController!.clear();
+    return controller;
+  }
+
+  @override
+  Future<void> clear() async {
+    await redisController.clear();
   }
 
   @override
   Future<bool> containsKey(String key) async {
-    if (redisController == null) {
-      throw StateError('Redis is not enabled for this Serverpod instance.');
-    }
-    var data = await redisController!.get(key);
+    var data = await redisController.get(key);
 
     return data != null;
   }
@@ -42,11 +46,7 @@ class RedisCache extends GlobalCache {
     String key, [
     CacheMissHandler<T>? cacheMissHandler,
   ]) async {
-    if (redisController == null) {
-      throw StateError('Redis is not enabled for this Serverpod instance.');
-    }
-
-    var data = await redisController!.get(key);
+    var data = await redisController.get(key);
     if (data != null) {
       return serializationManager.decode<T>(data);
     }
@@ -73,10 +73,7 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> invalidateKey(String key) async {
-    if (redisController == null) {
-      throw StateError('Redis is not enabled for this Serverpod instance.');
-    }
-    await redisController!.del(key);
+    await redisController.del(key);
   }
 
   @override
@@ -98,11 +95,8 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }
 
-    if (redisController == null) {
-      throw StateError('Redis is not enabled for this Serverpod instance.');
-    }
-
+    var controller = redisController;
     var data = SerializationManager.encode(object);
-    await redisController!.set(key, data, lifetime: lifetime);
+    await controller.set(key, data, lifetime: lifetime);
   }
 }
