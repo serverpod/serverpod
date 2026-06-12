@@ -1,12 +1,31 @@
+import 'dart:collection';
 import 'dart:typed_data';
 import 'utils.dart';
 
 /// Represents a binary vector, where each element is either `true` or `false`.
-class Bit {
+class Bit extends IterableBase<bool> {
   final int _len;
   final Uint8List _data;
 
   const Bit._(this._len, this._data);
+
+  /// The number of bits in this vector.
+  @override
+  int get length => _len;
+
+  /// Returns the bit at [index].
+  ///
+  /// Throws [RangeError] if [index] is outside `0..<length`.
+  bool operator [](int index) {
+    RangeError.checkValidIndex(index, this, 'index', _len);
+    return (_data[index ~/ 8] >> (7 - (index % 8))) & 1 == 1;
+  }
+
+  @override
+  bool elementAt(int index) => this[index];
+
+  @override
+  Iterator<bool> get iterator => _BitIterator(this);
 
   /// Creates a [Bit] from a list of boolean values.
   factory Bit(List<bool> value) {
@@ -40,10 +59,11 @@ class Bit {
   }
 
   /// Returns the bit vector as a list of boolean values.
-  List<bool> toList() {
-    var vec = <bool>[];
+  @override
+  List<bool> toList({bool growable = true}) {
+    final vec = List<bool>.filled(_len, false, growable: growable);
     for (var i = 0; i < _len; i++) {
-      vec.add((_data[i ~/ 8] >> (7 - (i % 8))) & 1 == 1);
+      vec[i] = (_data[i ~/ 8] >> (7 - (i % 8))) & 1 == 1;
     }
     return vec;
   }
@@ -65,4 +85,20 @@ class Bit {
 
   @override
   int get hashCode => Object.hash(_len, _data);
+}
+
+class _BitIterator implements Iterator<bool> {
+  final Bit _bit;
+  int _index = -1;
+
+  _BitIterator(this._bit);
+
+  @override
+  bool get current => _bit[_index];
+
+  @override
+  bool moveNext() {
+    _index++;
+    return _index < _bit.length;
+  }
 }
