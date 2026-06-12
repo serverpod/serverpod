@@ -1,0 +1,10 @@
+include: package:serverpod_lints/public.yaml
+
+linter:
+  rules:
+    directives_ordering: true
+    prefer_final_in_for_each: false
+    prefer_final_locals: false
+    prefer_final_parameters: false
+    prefer_relative_imports: true
+    sort_pub_dependencies: true

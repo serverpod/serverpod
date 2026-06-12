@@ -1,9 +1,6 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/components.dart';
-import 'package:serverpod_cli/src/commands/tui/help_overlay.dart';
-import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 class MainScreen extends StatelessComponent {
   const MainScreen({
@@ -14,7 +11,6 @@ class MainScreen extends StatelessComponent {
     required this.logScrollController,
     required this.onCreate,
     required this.onQuit,
-    required this.onToggleHelp,
   });
 
   final String name;
@@ -23,61 +19,25 @@ class MainScreen extends StatelessComponent {
   final ScrollController logScrollController;
   final VoidCallback onCreate;
   final VoidCallback onQuit;
-  final VoidCallback onToggleHelp;
-
-  static const _helpBindings = [
-    (
-      'Navigation',
-      [
-        ('k', 'Scroll up'),
-        ('j', 'Scroll down'),
-        ('Shift+↑', 'Scroll up ¼ screen'),
-        ('Shift+↓', 'Scroll down ¼ screen'),
-        ('u / Ctrl+u', 'Scroll up ½ screen'),
-        ('d / Ctrl+d', 'Scroll down ½ screen'),
-        ('PgUp / b / Backspace', 'Scroll up one screen'),
-        ('PgDn / Space / f', 'Scroll down one screen'),
-        ('Home / g', 'Go to start'),
-        ('End / G', 'Go to end'),
-      ],
-    ),
-    (
-      'Actions',
-      [
-        ('Enter', 'Create Project'),
-        ('↑↓', 'Navigate Options'),
-        ('←→', 'Select Option'),
-        ('Q', 'Quit'),
-      ],
-    ),
-  ];
 
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final state = holder.state;
-    final creatingProject = state.creatingProject;
+    final creatingProject = holder.state.creatingProject;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Stack(
-            children: [
-              BorderedBox(
-                color: theme.activeTab,
-                child: Column(
-                  children: [
-                    _buildHeader(theme),
-                    Expanded(
-                      child: creatingProject
-                          ? _buildLogView()
-                          : _buildForm(theme),
-                    ),
-                  ],
+          child: BorderedBox(
+            child: Column(
+              children: [
+                _buildHeader(theme),
+                Expanded(
+                  child: creatingProject ? _buildLogView() : _buildForm(),
                 ),
-              ),
-              if (state.showHelp) const HelpOverlay(bindings: _helpBindings),
-            ],
+              ],
+            ),
           ),
         ),
         _buildButtonBar(theme),
@@ -97,8 +57,8 @@ class MainScreen extends StatelessComponent {
         children: [
           Text(
             title,
-            style: TextStyle(
-              color: theme.activeTab,
+            style: const TextStyle(
+              color: Color.defaultColor,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -107,109 +67,25 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildForm(ServerpodThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: Scrollbar(
-        controller: scrollController,
-        thumbVisibility: true,
-        child: ListView(
-          controller: scrollController,
-          children: [_buildConfigurations(theme)],
-        ),
-      ),
-    );
-  }
-
-  Component _buildConfigurations(ServerpodThemeData theme) {
+  Component _buildForm() {
     final state = holder.state;
-    final configurations = state.configValues;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final config in configurations.indexed) ...[
-          _buildConfiguration(
-            theme,
-            config.$2,
-            config.$1 == state.focusedConfigIndex,
-          ),
-          const SizedBox(height: 1),
-        ],
-      ],
-    );
-  }
-
-  Component _buildConfiguration(
-    ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool focused,
-  ) {
-    final state = holder.state;
-    final selectedOption = state.getSelectedOptionFor(config);
-
-    bool isOptionFocused(int optionIndex) {
-      return focused &&
-          state.getStateFor(config)?.focusedOptionIndex == optionIndex;
-    }
-
-    final titleColor = !state.isConfigConstrained(config)
-        ? selectedOption?.isUserDisabled ?? false
-              ? Colors.white
-              : theme.success
-        : theme.failure;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          config.label,
-          style: TextStyle(
-            color: titleColor,
-            fontWeight: focused ? FontWeight.bold : FontWeight.dim,
-          ),
-        ),
-        Row(
-          children: [
-            for (final option in config.options.indexed) ...[
-              _buildConfigurationOption(
-                theme,
-                option.$2,
-                selected: selectedOption == option.$2,
-                focused: isOptionFocused(option.$1),
-                enabled: !state.isOptionConstrained(config, option.$2),
-              ),
-              const SizedBox(width: 2),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  Component _buildConfigurationOption(
-    ServerpodThemeData theme,
-    ConfigOption option, {
-    required bool selected,
-    required bool focused,
-    required bool enabled,
-  }) {
-    return RadioButton(
-      label: option.label,
-      focused: focused,
-      value: selected,
-      enabled: enabled,
+    return Form(
+      state: state.form,
+      scrollController: scrollController,
+      rebuild: holder.markDirty,
     );
   }
 
   Component _buildButtonBar(ServerpodThemeData theme) {
     final state = holder.state;
+    final form = state.form;
     final creatingProject = state.creatingProject;
     return ButtonBar(
       buttons: [
         Button(
           name: 'Create Project',
           activationChar: 'Enter',
-          enabled: !creatingProject,
+          enabled: !creatingProject && state.canCreate,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
             state.markCreatingProject();
@@ -218,23 +94,34 @@ class MainScreen extends StatelessComponent {
           },
         ),
         Button(
-          name: 'Navigate Options',
-          activationChar: '↑↓',
+          name: 'Navigate',
+          activationChar: '←↑↓→',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowUp, LogicalKey.arrowDown],
+          activationKeys: const [
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
+            LogicalKey.arrowLeft,
+            LogicalKey.arrowRight,
+          ],
           onActivate: (key) {
             switch (key) {
+              case LogicalKey.arrowLeft:
+                form.updateFocusedConfigOption(-1);
+                break;
+              case LogicalKey.arrowRight:
+                form.updateFocusedConfigOption(1);
+                break;
               case LogicalKey.arrowUp:
-                state.updateFocusedConfig(-1);
-                if (state.focusedConfigIndex == state.maxFocusedConfigIndex) {
+                form.updateFocusedConfig(-1);
+                if (form.focusedConfigIndex == form.maxFocusedConfigIndex) {
                   scrollController.scrollToEnd();
                 } else {
                   scrollController.scrollUp(3);
                 }
                 break;
               case LogicalKey.arrowDown:
-                state.updateFocusedConfig(1);
-                if (state.focusedConfigIndex == 0) {
+                form.updateFocusedConfig(1);
+                if (form.focusedConfigIndex == 0) {
                   scrollController.scrollToStart();
                 } else {
                   scrollController.scrollDown(3);
@@ -245,28 +132,13 @@ class MainScreen extends StatelessComponent {
           },
         ),
         Button(
-          name: 'Select Option',
-          activationChar: '←→',
+          name: 'Select',
+          activationChar: 'Space',
           enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowLeft, LogicalKey.arrowRight],
-          onActivate: (key) {
-            switch (key) {
-              case LogicalKey.arrowLeft:
-                state.selectConfigOption(-1);
-                break;
-              case LogicalKey.arrowRight:
-                state.selectConfigOption(1);
-                break;
-            }
-            holder.markDirty();
-          },
-        ),
-        Button(
-          name: 'Help',
-          activationChar: 'H',
-          activationKeys: const [LogicalKey.keyH],
+          activationKeys: const [LogicalKey.space],
           onActivate: (_) {
-            onToggleHelp.call();
+            form.selectConfigOption();
+            holder.markDirty();
           },
         ),
         Button(
@@ -277,6 +149,10 @@ class MainScreen extends StatelessComponent {
             onQuit.call();
           },
         ),
+        if (state.canCreate)
+          const Tip('Click to select')
+        else
+          const Tip('Select at least one IDE'),
       ],
     );
   }
@@ -285,13 +161,7 @@ class MainScreen extends StatelessComponent {
     return LogViewerWidget(
       state: holder.state,
       scrollController: logScrollController,
+      keyboardScrollable: true,
     );
-  }
-}
-
-extension on ConfigOption {
-  bool get isUserDisabled {
-    return (this is BoolConfigOption && this == BoolConfigOption.disabled) ||
-        (this is DatabaseConfigOption && this == DatabaseConfigOption.none);
   }
 }

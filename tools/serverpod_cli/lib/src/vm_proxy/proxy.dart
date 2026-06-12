@@ -13,17 +13,22 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// are decoded as JSON-RPC where possible and dispatched to the
 /// [RpcInterceptor]. Non-JSON / binary frames are forwarded verbatim.
 ///
+/// Upstream is mutable via [setUpstream] - the proxy survives upstream
+/// restarts (pod hot restart, Flutter hot restart) without changing its
+/// own URI.
+///
+/// Upstream may also be `null`, in which case new client connections are
+/// held in a waiting queue until [setUpstream] is called with a non-null
+/// URI.
+///
 /// The proxy mints a per-instance token and accepts WebSocket upgrades only
 /// on `/<token>=/ws`, mirroring how the Dart VM service authenticates its
 /// own URI - this preserves the existing "anyone on loopback can connect
 /// only if they know the token" property when the proxy replaces the
 /// pod-side VM service URI in `vm-service-info.json`.
 class VmServiceProxy {
-  /// Upstream WebSocket URI (typically the pod's DDS `ws://.../<token>=/ws`).
-  /// Mutable so the proxy can survive pod restarts ([retarget]) without
-  /// changing its own URI - existing clients reconnect at the same
-  /// proxy URL after they observe their connection drop.
-  Uri _upstreamWs;
+  /// Upstream WebSocket URI, or `null` when no upstream is currently available.
+  Uri? _upstreamWs;
   RpcInterceptor _interceptor;
 
   /// Directions whose frames are JSON-decoded and dispatched to
@@ -35,31 +40,61 @@ class VmServiceProxy {
   /// Random token guarding the WS upgrade path.
   final String _token;
 
+  /// How long a client may wait before the proxy closes its WS.
+  final Duration _waitingClientTimeout;
+
   HttpServer? _server;
   final Set<_Pair> _pairs = {};
+  final Set<_WaitingClient> _waitingClients = {};
+
+  /// Fired the first time a client lands in the waiting queue while no
+  /// upstream is bound. Callers use it to demand-start whatever process
+  /// would provide that upstream (e.g. a Flutter app spawn triggered by
+  /// IDE attach). Fires again if the waiting queue drains to empty and
+  /// a new client arrives, so a second IDE attach after a Flutter exit
+  /// can re-spawn. Never fires while an upstream is bound.
+  final FutureOr<void> Function()? _onWaitingClientArrived;
 
   VmServiceProxy({
-    required Uri upstreamWs,
+    Uri? upstreamWs,
     RpcInterceptor? interceptor,
     Set<Direction> interceptDirections = const {Direction.clientToServer},
     String? token,
+    Duration waitingClientTimeout = const Duration(minutes: 2),
+    FutureOr<void> Function()? onWaitingClientArrived,
   }) : _upstreamWs = upstreamWs,
        _interceptor = interceptor ?? passthroughInterceptor,
        _interceptDirections = interceptDirections,
-       _token = token ?? _mintToken();
+       _token = token ?? _mintToken(),
+       _waitingClientTimeout = waitingClientTimeout,
+       _onWaitingClientArrived = onWaitingClientArrived;
 
   /// Replace the live interceptor. The next frame uses the new hook.
   @visibleForTesting
   set interceptor(RpcInterceptor i) => _interceptor = i;
 
-  /// Point future client connections at a different upstream WS URI and
-  /// drop any pairs that are still live - they belong to a now-dead pod.
-  /// Clients reconnect on their own; the proxy's published URI is stable.
-  Future<void> retarget(Uri upstreamWs) async {
+  /// The current upstream URI, or `null` if no upstream is bound.
+  Uri? get upstreamWs => _upstreamWs;
+
+  /// Point future client connections at [upstreamWs] (or unbind by passing `null`).
+  /// A re-bind to the same URI is a no-op.
+  Future<void> setUpstream(Uri? upstreamWs) async {
+    if (_upstreamWs == upstreamWs) return;
     _upstreamWs = upstreamWs;
     final live = List.of(_pairs);
     _pairs.clear();
     await [for (final p in live) p.close()].wait;
+    if (upstreamWs != null) {
+      final waiting = List.of(_waitingClients);
+      _waitingClients.clear();
+      for (final wc in waiting) {
+        wc.timer?.cancel();
+      }
+      await [
+        for (final wc in waiting)
+          _attachUpstream(wc.ws, upstreamWs, existingDownSub: wc.sub),
+      ].wait;
+    }
   }
 
   /// HTTP base URI of the proxy (e.g. `http://127.0.0.1:NNNN/<token>=/`).
@@ -100,32 +135,89 @@ class VmServiceProxy {
       return;
     }
 
+    final upstreamWs = _upstreamWs;
+    if (upstreamWs == null) {
+      _enqueueWaitingClient(downstream);
+      return;
+    }
+    await _attachUpstream(downstream, upstreamWs);
+  }
+
+  /// Holds [downstream] in the waiting queue until either [setUpstream]
+  /// is called with a non-null upstream, the client disconnects, or
+  /// [_waitingClientTimeout] elapses.
+  void _enqueueWaitingClient(WebSocket downstream) {
+    final wasEmpty = _waitingClients.isEmpty;
+    final wc = _WaitingClient(downstream);
+    _waitingClients.add(wc);
+    final cb = _onWaitingClientArrived;
+    if (wasEmpty && cb != null) {
+      // Fire-and-forget: don't block the handler on the callback's
+      // future (which may include a Flutter spawn taking 30+ seconds).
+      // The proxy keeps holding the WS; pairing happens when the
+      // callback eventually calls setUpstream. Errors are swallowed
+      // here so a failing spawn can't crash the proxy listener; the
+      // callback owns its own error reporting.
+      unawaited(Future(cb).catchError((Object _, StackTrace _) {}));
+    }
+    wc.sub = downstream.listen(
+      (_) {},
+      onDone: () {
+        if (_waitingClients.remove(wc)) wc.timer?.cancel();
+      },
+      onError: (_) {},
+    );
+    wc.timer = Timer(_waitingClientTimeout, () async {
+      if (_waitingClients.remove(wc)) {
+        await downstream.close(
+          WebSocketStatus.normalClosure,
+          'no upstream available',
+        );
+      }
+    });
+  }
+
+  Future<void> _attachUpstream(
+    WebSocket downstream,
+    Uri upstreamWs, {
+    StreamSubscription<dynamic>? existingDownSub,
+  }) async {
     WebSocket upstream;
     try {
-      upstream = await WebSocket.connect(_upstreamWs.toString());
+      upstream = await WebSocket.connect(upstreamWs.toString());
     } catch (_) {
+      await existingDownSub?.cancel();
       await downstream.close(WebSocketStatus.internalServerError);
       return;
     }
-
     final pair = _Pair(
       downstream,
       upstream,
       () => _interceptor,
       _interceptDirections,
+      existingDownSub: existingDownSub,
     );
     _pairs.add(pair);
     unawaited(pair.done.whenComplete(() => _pairs.remove(pair)));
     pair.start();
   }
 
-  /// Closes the proxy and tears down all live pairs.
+  /// Closes the proxy, tears down all live pairs, drops waiting clients.
   Future<void> close() async {
     final liveServer = _server;
     _server = null;
+    final waiting = List.of(_waitingClients);
+    _waitingClients.clear();
+    for (final wc in waiting) {
+      wc.timer?.cancel();
+    }
+    // Don't cancel waiting subs explicitly.
+    // Their onDone handlers run when ws.close completes and cleans up.
     await [
+      for (final wc in waiting)
+        wc.ws.close(WebSocketStatus.normalClosure, 'proxy shutting down'),
       ?liveServer?.close(force: true),
-      ...[for (final p in List.of(_pairs)) p.close()],
+      for (final p in List.of(_pairs)) p.close(),
     ].wait;
   }
 
@@ -147,18 +239,29 @@ class _Pair {
     this._down,
     this._up,
     this._resolveInterceptor,
-    this._interceptDirections,
-  );
+    this._interceptDirections, {
+    StreamSubscription<dynamic>? existingDownSub,
+  }) : _downSub = existingDownSub;
 
   Future<void> get done => _done.future;
 
   void start() {
-    _downSub = _down.listen(
-      (data) => _onFrame(Direction.clientToServer, data),
-      onDone: _close,
-      onError: (_) => _close(),
-      cancelOnError: false,
-    );
+    final existing = _downSub;
+    if (existing != null) {
+      // Re-aim the handlers on the pre-existing subscription from the
+      // waiting-client phase. WebSocket is single-subscription so we
+      // can't listen again.
+      existing.onData((data) => _onFrame(Direction.clientToServer, data));
+      existing.onDone(_close);
+      existing.onError((_) => _close());
+    } else {
+      _downSub = _down.listen(
+        (data) => _onFrame(Direction.clientToServer, data),
+        onDone: _close,
+        onError: (_) => _close(),
+        cancelOnError: false,
+      );
+    }
     _upSub = _up.listen(
       (data) => _onFrame(Direction.serverToClient, data),
       onDone: _close,
@@ -221,4 +324,18 @@ class _Pair {
       // Either side may already be closed by its peer
     }
   }
+}
+
+/// A client socket waiting for an upstream to become available. We
+/// hold an active subscription during the wait so dart:io's WebSocket
+/// can process control frames (close, ping) - otherwise our own
+/// timeout-close never completes the handshake. On pair-up, the
+/// subscription's handlers are re-aimed by [_Pair] via the
+/// `onData` / `onDone` / `onError` setters; the underlying single-
+/// subscription stream is never re-listened.
+class _WaitingClient {
+  _WaitingClient(this.ws);
+  final WebSocket ws;
+  StreamSubscription<dynamic>? sub;
+  Timer? timer;
 }

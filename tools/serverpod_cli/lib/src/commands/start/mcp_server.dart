@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dart_mcp/server.dart';
-import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/mcp/runner_surface.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Result of a `create_migration` MCP call. [message] is returned to the
 /// caller verbatim; [isError] marks the tool result as an error.
@@ -32,14 +33,33 @@ base class ServerpodMcpServer extends MCPServer
   Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
   onCreateMigration;
 
+  /// Callback to create a repair migration that brings the database in line
+  /// with a target migration version.
+  Future<CreateMigrationMcpResult> Function({
+    String? tag,
+    bool force,
+    String? targetMigrationVersion,
+  })?
+  onCreateRepairMigration;
+
   /// Callback to recompile and hot-reload the running server isolate.
   Future<void> Function()? onHotReload;
+
+  /// Callback to perform a full server process restart, clearing in-memory
+  /// state. Boots from the current compiled kernel; does not recompile.
+  Future<void> Function()? onHotRestart;
 
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
+  /// Returns the current Flutter raw log line snapshot.
+  List<String> Function()? getFlutterLogHistory;
+
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
+
+  /// Returns the current Flutter app DTD URI, or `null` if not yet available.
+  String? Function()? getFlutterDtdUri;
 
   StreamSubscription<void>? _vmServiceUriSub;
 
@@ -51,14 +71,18 @@ base class ServerpodMcpServer extends MCPServer
         ),
         instructions:
             'Manage a running Serverpod server process started by '
-            '`serverpod start --watch`.',
+            '`serverpod start`.',
       ) {
-    registerTool(_applyMigrationsTool, _applyMigrations);
-    registerTool(_createMigrationTool, _createMigration);
-    registerTool(_hotReloadTool, _hotReload);
-    registerTool(_tailLogsTool, _tailLogs);
+    registerTool(applyMigrationsTool, _applyMigrations);
+    registerTool(createMigrationTool, _createMigration);
+    registerTool(createRepairMigrationTool, _createRepairMigration);
+    registerTool(hotReloadTool, _hotReload);
+    registerTool(hotRestartTool, _hotRestart);
+    registerTool(tailLogsTool, _tailLogs);
+    registerTool(tailFlutterLogsTool, _tailFlutterLogs);
+    registerTool(getFlutterAppDtdTool, _getFlutterAppDtd);
 
-    addResource(_vmServiceResource, _readVmService);
+    addResource(vmServiceResource, _readVmService);
   }
 
   /// Wires a stream whose events signal that the VM service URI has changed.
@@ -67,7 +91,7 @@ base class ServerpodMcpServer extends MCPServer
   set vmServiceUriChanges(Stream<void>? stream) {
     _vmServiceUriSub?.cancel();
     _vmServiceUriSub = stream?.listen((_) {
-      if (ready) updateResource(_vmServiceResource);
+      if (ready) updateResource(vmServiceResource);
     });
   }
 
@@ -78,22 +102,10 @@ base class ServerpodMcpServer extends MCPServer
     await super.shutdown();
   }
 
-  static final _applyMigrationsTool = Tool(
-    name: 'apply_migrations',
-    description:
-        'Apply pending database migrations. The server restarts with '
-        '`--apply-migrations`. Call after `create_migration` (or '
-        '`serverpod create-migration`) has written the migration files.',
-    inputSchema: Schema.object(),
-  );
-
   Future<CallToolResult> _applyMigrations(CallToolRequest request) async {
     final callback = onApplyMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
     try {
@@ -115,40 +127,14 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _createMigrationTool = Tool(
-    name: 'create_migration',
-    description:
-        'Create a new database migration from the current model definitions. '
-        'Writes the migration files to disk; does not restart the server or '
-        'apply the migration. Follow up with `apply_migrations` to run it '
-        'against the database.',
-    inputSchema: Schema.object(
-      properties: {
-        'tag': Schema.string(
-          description: 'Optional tag appended to the migration version name.',
-        ),
-        'force': Schema.bool(
-          description:
-              'Create the migration even if warnings are present (data may '
-              'be destroyed).',
-        ),
-      },
-    ),
-  );
-
   Future<CallToolResult> _createMigration(CallToolRequest request) async {
     final callback = onCreateMigration;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
 
-    final tagArg = request.arguments?['tag'];
-    final forceArg = request.arguments?['force'];
-    final tag = tagArg is String && tagArg.isNotEmpty ? tagArg : null;
-    final force = forceArg is bool ? forceArg : false;
+    final tag = _stringArg(request, 'tag');
+    final force = _boolArg(request, 'force');
 
     try {
       final result = await callback(tag: tag, force: force);
@@ -164,15 +150,29 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _vmServiceResource = Resource(
-    uri: 'serverpod://vm-service',
-    name: 'VM service',
-    description:
-        'Dart VM service HTTP URI for the running server isolate. Stable '
-        'across hot reloads; changes on restart (apply_migrations, crash '
-        'recovery). Subscribe to be notified when the URI changes.',
-    mimeType: 'application/json',
-  );
+  Future<CallToolResult> _createRepairMigration(CallToolRequest request) async {
+    final callback = onCreateRepairMigration;
+    if (callback == null) {
+      return _notConnectedError();
+    }
+
+    try {
+      final result = await callback(
+        tag: _stringArg(request, 'tag'),
+        force: _boolArg(request, 'force'),
+        targetMigrationVersion: _stringArg(request, 'version'),
+      );
+      return CallToolResult(
+        content: [TextContent(text: result.message)],
+        isError: result.isError ? true : null,
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Failed to create repair migration: $e')],
+        isError: true,
+      );
+    }
+  }
 
   ReadResourceResult _readVmService(ReadResourceRequest request) {
     final uri = getVmServiceUri?.call();
@@ -186,21 +186,10 @@ base class ServerpodMcpServer extends MCPServer
     );
   }
 
-  static final _hotReloadTool = Tool(
-    name: 'hot_reload',
-    description:
-        'Recompile the server kernel and hot-reload the running isolate. '
-        'Falls back to a full restart if reload is not possible.',
-    inputSchema: Schema.object(),
-  );
-
   Future<CallToolResult> _hotReload(CallToolRequest request) async {
     final callback = onHotReload;
     if (callback == null) {
-      return CallToolResult(
-        content: [TextContent(text: 'Watch session not connected.')],
-        isError: true,
-      );
+      return _notConnectedError();
     }
     try {
       await callback();
@@ -215,21 +204,23 @@ base class ServerpodMcpServer extends MCPServer
     }
   }
 
-  static final _tailLogsTool = Tool(
-    name: 'tail_logs',
-    description:
-        'Return recent log entries from the running watch session '
-        '(structured log entries plus completed operations). Newest last.',
-    inputSchema: Schema.object(
-      properties: {
-        'limit': Schema.int(
-          description: 'Max entries to return (default 200, max 10000).',
-          minimum: 1,
-          maximum: 10000,
-        ),
-      },
-    ),
-  );
+  Future<CallToolResult> _hotRestart(CallToolRequest request) async {
+    final callback = onHotRestart;
+    if (callback == null) {
+      return _notConnectedError();
+    }
+    try {
+      await callback();
+      return CallToolResult(
+        content: [TextContent(text: 'Hot restart completed.')],
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Hot restart failed: $e')],
+        isError: true,
+      );
+    }
+  }
 
   Future<CallToolResult> _tailLogs(CallToolRequest request) async {
     final get = getLogHistory;
@@ -239,11 +230,7 @@ base class ServerpodMcpServer extends MCPServer
         isError: true,
       );
     }
-    final limitArg = request.arguments?['limit'];
-    final limit = switch (limitArg) {
-      int v => v.clamp(1, 10000),
-      _ => 200,
-    };
+    final limit = _tailLimit(request);
     final all = get();
     final tail = all.length <= limit ? all : all.sublist(all.length - limit);
     final encoded = tail.map(_encodeLogHistoryItem).toList();
@@ -255,6 +242,69 @@ base class ServerpodMcpServer extends MCPServer
       ],
     );
   }
+
+  Future<CallToolResult> _tailFlutterLogs(CallToolRequest request) async {
+    final get = getFlutterLogHistory;
+    if (get == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Flutter log history not available.')],
+        isError: true,
+      );
+    }
+    final limit = _tailLimit(request);
+    final all = get();
+    final tail = all.length <= limit ? all : all.sublist(all.length - limit);
+    return CallToolResult(
+      content: [TextContent(text: jsonEncode(tail))],
+    );
+  }
+
+  Future<CallToolResult> _getFlutterAppDtd(CallToolRequest request) async {
+    final get = getFlutterDtdUri;
+    if (get == null) {
+      return CallToolResult(
+        content: [TextContent(text: 'Flutter DTD not available.')],
+        isError: true,
+      );
+    }
+    return CallToolResult(
+      content: [
+        TextContent(text: jsonEncode({'uri': get()})),
+      ],
+    );
+  }
+}
+
+int _tailLimit(CallToolRequest request) {
+  final limitArg = request.arguments?['limit'];
+  return switch (limitArg) {
+    int v => v.clamp(1, 10000),
+    _ => 200,
+  };
+}
+
+/// Returns the standard error response for tools whose callback is unset
+/// because the watch session has not yet attached.
+CallToolResult _notConnectedError() => CallToolResult(
+  content: [TextContent(text: 'Watch session not connected.')],
+  isError: true,
+);
+
+/// Reads a string argument; treats missing, non-string, and empty values as
+/// `null`.
+String? _stringArg(CallToolRequest request, String name) {
+  final v = request.arguments?[name];
+  return v is String && v.isNotEmpty ? v : null;
+}
+
+/// Reads a bool argument; treats missing or non-bool values as [defaultValue].
+bool _boolArg(
+  CallToolRequest request,
+  String name, {
+  bool defaultValue = false,
+}) {
+  final v = request.arguments?[name];
+  return v is bool ? v : defaultValue;
 }
 
 Map<String, Object?> _encodeLogHistoryItem(Object item) {

@@ -1,0 +1,4 @@
+exception: SharedValidationException
+extends: SharedSealedAppException
+fields:
+  field: String

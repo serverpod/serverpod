@@ -97,6 +97,33 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
     }
   }
 
+  /// Parses Google's OAuth2 token response.
+  ///
+  /// Google returns a JSON object containing `access_token` and `id_token`
+  /// fields when the `openid` scope is requested. The `id_token` is preserved
+  /// in [OAuth2PkceTokenResponse.raw] for subsequent JWKS verification.
+  static OAuth2PkceTokenResponse parseTokenResponse(
+    final Map<String, dynamic> responseBody,
+  ) {
+    final error = responseBody['error'] as String?;
+    if (error != null) {
+      final description = responseBody['error_description'] as String?;
+      throw OAuth2InvalidResponseException(
+        'Google OAuth error: $error'
+        '${description != null ? ' - $description' : ''}',
+      );
+    }
+
+    final accessToken = responseBody['access_token'] as String?;
+    if (accessToken == null) {
+      throw const OAuth2MissingAccessTokenException(
+        'Missing access_token in Google token response',
+      );
+    }
+
+    return OAuth2PkceTokenResponse(accessToken: accessToken, raw: responseBody);
+  }
+
   @override
   GoogleIdp build({
     required final TokenManager tokenManager,
@@ -110,6 +137,18 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
       userProfiles: userProfiles,
     );
   }
+
+  /// OAuth2 PKCE server configuration for the web sign-in flow.
+  ///
+  /// Used by [GoogleIdpUtils.exchangeCodeForToken] to exchange an authorization
+  /// code received from the browser for Google access and ID tokens.
+  OAuth2PkceServerConfig get oauth2PkceServerConfig => OAuth2PkceServerConfig(
+    tokenEndpointUrl: Uri.https('oauth2.googleapis.com', '/token'),
+    clientId: clientSecret.clientId,
+    clientSecret: clientSecret.clientSecret,
+    credentialsLocation: OAuth2CredentialsLocation.body,
+    parseTokenResponse: parseTokenResponse,
+  );
 }
 
 /// Creates a new [GoogleIdpConfig] from keys on the `passwords.yaml` file.

@@ -1,0 +1,5 @@
+class: SharedObjectWithSealedException
+fields:
+  sealedField: SharedSealedAppException
+  nullableSealedField: SharedSealedAppException?
+  sealedList: List<SharedSealedAppException>

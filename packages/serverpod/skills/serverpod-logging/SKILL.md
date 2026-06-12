@@ -22,6 +22,7 @@ Uncaught endpoint exceptions are logged as session failures in `serverpod_sessio
 
 ## Destinations
 
+- Logs are readable through the `serverpod` MCP server.
 - **Database:** Tables `serverpod_log`, `serverpod_query_log`, `serverpod_session_log` (when persistent enabled)
 - **Console:** When console logging enabled (format: `text` or `json`)
 

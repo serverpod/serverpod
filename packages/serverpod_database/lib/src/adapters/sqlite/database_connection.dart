@@ -23,6 +23,7 @@ import 'package:sqlparser/sqlparser.dart'
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import '../postgres/sql_query_builder.dart';
 import 'sqlite_database_result.dart';
@@ -40,7 +41,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
   Zone? _currentTransactionParentZone;
 
-  SqliteDatabase get _db => poolManager.database;
+  Future<SqliteDatabase> get _sqliteConnection => poolManager.database;
 
   @override
   Future<bool> testConnection() async {
@@ -295,6 +296,101 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     if (result.length != 1) {
       throw _SqliteDatabaseInsertRowException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+    if (rows.length > 1) {
+      return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+        tx,
+      ) async {
+        final results = [
+          for (var row in rows)
+            ...await upsert<T>(
+              session,
+              [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              transaction: tx,
+            ),
+        ];
+
+        // NOTE: Since we transform batch inserts into multiple single-row
+        // inserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the input had duplicate rows - as happen with Postgres.
+        if (results.map((r) => r.id).toSet().length != rows.length) {
+          throw _SqliteDatabaseQueryException(
+            'ON CONFLICT DO UPDATE command cannot affect row a second time',
+            code: SqliteErrorCode.integrityConstraintViolation,
+            hint:
+                'Ensure that no rows proposed for insertion within the '
+                'same command have duplicate constrained values.',
+          );
+        }
+
+        return results;
+      });
+    }
+
+    var table = rows.first.table;
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+    ).build();
+
+    var results = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+      table: table,
+    );
+    var merged = _mergeResultsWithNonPersistedFields(rows)(results);
+    return merged.map(poolManager.serializationManager.deserialize<T>).toList();
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
+    if (result.length > 1) {
+      throw _SqliteDatabaseUpsertRowException(
+        'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
     }
 
@@ -726,7 +822,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
     // 0 rows, so we need to read the affected row count via SELECT changes().
     if (script.any((s) => s.isWriteStatement) && transaction == null) {
-      return _db.computeWithDatabase((db) async {
+      final connection = await _sqliteConnection;
+      return connection.computeWithDatabase((db) async {
         var updatedRows = 0;
         for (final statement in script) {
           db.execute(statement.text, params);
@@ -782,7 +879,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       // for concurrent reads to operate while a write lock is held. Will skip
       // assigning if already set to preserve the highest parent zone.
       _currentTransactionParentZone ??= Zone.current;
-      return await _db.writeTransaction<R>((tx) async {
+      final connection = await _sqliteConnection;
+      return await connection.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
         final result = await transactionFunction(transaction);
         if (transaction._isCancelled) {
@@ -892,9 +990,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             : await sqliteTx.execute(statement, parameters);
       } else {
         Future<ResultSet> runQuery() async {
+          final connection = await _sqliteConnection;
           return parsed.isSelectStatement
-              ? await _db.getAll(statement, parameters ?? const [])
-              : await _db.execute(statement, parameters ?? const []);
+              ? await connection.getAll(statement, parameters ?? const [])
+              : await connection.execute(statement, parameters ?? const []);
         }
 
         final transactionParentZone = _currentTransactionParentZone;
@@ -942,6 +1041,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Table table, {
     Include? include,
     bool prefixedColumns = false,
+    ColumnAliasResolver? aliasResolver,
   }) {
     if (!prefixedColumns) {
       final fieldNamedRow = table.hasColumnMapping
@@ -959,7 +1059,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     }
 
     final normalized = Map<String, dynamic>.from(row);
-    _normalizePrefixedColumns(normalized, table, include: include);
+    _normalizePrefixedColumns(
+      normalized,
+      table,
+      include: include,
+      aliasResolver:
+          aliasResolver ?? ColumnAliasResolver.forQuery(table, include),
+    );
     return normalized;
   }
 
@@ -967,12 +1073,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Map<String, dynamic> row,
     Table table, {
     Include? include,
+    required ColumnAliasResolver aliasResolver,
   }) {
     for (final column in table.columns) {
-      final key = truncateIdentifier(
-        column.fieldQueryAlias,
-        DatabaseConstants.pgsqlMaxNameLimitation,
-      );
+      final key = aliasResolver.resolve(column);
       if (row.containsKey(key)) {
         row[key] = poolManager.encoder.coerceColumnValue(
           column,
@@ -989,6 +1093,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         row,
         relationTable,
         include: relationInclude,
+        aliasResolver: aliasResolver,
       );
     });
   }
@@ -1051,12 +1156,14 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     var rows = result.map((row) => Map<String, dynamic>.from(row));
     if (table != null) {
+      var aliasResolver = ColumnAliasResolver.forQuery(table, include);
       rows = rows.map(
         (row) => _normalizeQueryResultRow(
           row,
           table,
           include: include,
           prefixedColumns: prefixedColumns,
+          aliasResolver: aliasResolver,
         ),
       );
     }
@@ -1088,6 +1195,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -1095,6 +1204,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .whereType<Map<String, dynamic>>()
@@ -1188,6 +1298,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           transaction,
         );
 
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -1195,6 +1309,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()

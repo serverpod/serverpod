@@ -1,98 +1,91 @@
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Configuration for [ServerpodCreateApp].
 /// The enum values are mapped to the configurable features
 /// for the `serverpod create` command, typically held by [TemplateContext].
-enum ServerpodCreateConfig<T extends ConfigOption> {
+enum ServerpodCreateConfig<T extends FormConfigOption>
+    implements FormSelectionConfig<T> {
   template<TemplateTypeOption>(
     label: 'Project Type',
     options: TemplateTypeOption.values,
-    defaultOption: TemplateTypeOption.server,
-    templates: ServerpodTemplateType.values,
+    defaultOptions: {TemplateTypeOption.server},
   ),
   database<DatabaseConfigOption>(
     label: 'Database',
     options: DatabaseConfigOption.values,
-    defaultOption: DatabaseConfigOption.postgres,
-    templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
+    defaultOptions: {DatabaseConfigOption.postgres},
   ),
-  redis<BoolConfigOption>(
+  redis<BoolFormConfigOption>(
     label: 'Redis (inter-server pubsub & caching)',
-    options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
-    templates: [ServerpodTemplateType.server, ServerpodTemplateType.module],
+    options: BoolFormConfigOption.values,
+    defaultOptions: {BoolFormConfigOption.enabled},
   ),
-  web<BoolConfigOption>(
+  web<BoolFormConfigOption>(
     label: 'Webserver',
-    options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
-    templates: [ServerpodTemplateType.server],
-  ),
-  auth<BoolConfigOption>(
-    label: 'Authentication (requires Postgres)',
-    options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
-    templates: [ServerpodTemplateType.server],
+    options: BoolFormConfigOption.values,
+    defaultOptions: {BoolFormConfigOption.enabled},
     requirements: [
-      ConfigRequirement(
-        requiredConfig: ServerpodCreateConfig.database,
-        requiredConfigOption: DatabaseConfigOption.postgres,
-        disabledOption: BoolConfigOption.disabled,
+      FormRequirement<TemplateTypeOption>(
+        config: ServerpodCreateConfig.template,
+        configOption: TemplateTypeOption.server,
       ),
     ],
   ),
-  skills<BoolConfigOption>(
-    label: 'Agent Skills',
-    options: BoolConfigOption.values,
-    defaultOption: BoolConfigOption.enabled,
-    templates: ServerpodTemplateType.values,
+  auth<BoolFormConfigOption>(
+    label: 'Authentication (requires Postgres)',
+    options: BoolFormConfigOption.values,
+    defaultOptions: {BoolFormConfigOption.enabled},
+    requirements: [
+      FormRequirement<TemplateTypeOption>(
+        config: ServerpodCreateConfig.template,
+        configOption: TemplateTypeOption.server,
+      ),
+      FormRequirement<DatabaseConfigOption>(
+        config: ServerpodCreateConfig.database,
+        configOption: DatabaseConfigOption.postgres,
+      ),
+    ],
+  ),
+  ide<IdeOption>(
+    label: 'IDEs',
+    options: IdeOption.values,
+    multiSelect: true,
+    defaultOptions: <IdeOption>{},
   )
   ;
 
   const ServerpodCreateConfig({
     required this.label,
     required this.options,
-    required this.defaultOption,
-    required this.templates,
+    required this.defaultOptions,
     this.requirements = const [],
+    this.multiSelect = false,
+    this.description,
   });
-
-  /// UI visible label for this config.
-  final String label;
-
-  /// Supported config options.
-  final List<T> options;
-
-  /// The default config option.
-  final T defaultOption;
-
-  /// Requirements for other related configs that must be satisfied
-  /// for this config to be enabled.
-  final List<ConfigRequirement> requirements;
-
-  /// Supported template types for this config.
-  final List<ServerpodTemplateType> templates;
-}
-
-/// A [ServerpodCreateConfig] option.
-abstract class ConfigOption {
-  String get label;
-}
-
-/// [ConfigOption] that can either be [enabled] or [disabled].
-enum BoolConfigOption implements ConfigOption {
-  enabled('Enabled'),
-  disabled('Disabled')
-  ;
-
-  const BoolConfigOption(this.label);
 
   @override
   final String label;
+
+  @override
+  final List<T> options;
+
+  @override
+  final Set<T> defaultOptions;
+
+  @override
+  final List<FormRequirement> requirements;
+
+  @override
+  final bool multiSelect;
+
+  @override
+  final FormDescription? description;
 }
 
-/// [ConfigOption] for supported databases.
-enum DatabaseConfigOption implements ConfigOption {
+/// [FormConfigOption] for supported databases.
+enum DatabaseConfigOption implements FormConfigOption {
   postgres('Postgres'),
   sqlite('SQLite'),
   none('None')
@@ -104,11 +97,10 @@ enum DatabaseConfigOption implements ConfigOption {
   final String label;
 }
 
-/// [ConfigOption] for supported template types.
-enum TemplateTypeOption implements ConfigOption {
+/// [FormConfigOption] for supported template types.
+enum TemplateTypeOption implements FormConfigOption {
   server('Server'),
-  module('Module'),
-  mini('Mini')
+  module('Module')
   ;
 
   const TemplateTypeOption(this.label);
@@ -117,28 +109,24 @@ enum TemplateTypeOption implements ConfigOption {
   final String label;
 }
 
-/// Represents a requirement for [ServerpodCreateConfig].
-class ConfigRequirement<T extends ConfigOption> {
-  const ConfigRequirement({
-    required this.requiredConfig,
-    required this.requiredConfigOption,
-    required this.disabledOption,
-  });
+/// [FormConfigOption] for supported IDEs.
+enum IdeOption implements FormConfigOption {
+  antigravity('Antigravity'),
+  codex('Codex'),
+  claude('Claude'),
+  cursor('Cursor'),
+  openCode('OpenCode'),
+  vsCode('VS Code')
+  ;
 
-  /// The required config. The selected option for this config
-  /// must be [requiredConfigOption] for the requirement to be satisfied.
-  final ServerpodCreateConfig<T> requiredConfig;
+  const IdeOption(this.label);
 
-  /// The option for [requiredConfig] that must be satisified.
-  final T requiredConfigOption;
-
-  /// Option to set if this requirement is not satisfied.
-  final ConfigOption disabledOption;
+  @override
+  final String label;
 }
 
 extension TemplateTypeOptionExtension on TemplateTypeOption {
   ServerpodTemplateType get toTemplate => switch (this) {
-    TemplateTypeOption.mini => ServerpodTemplateType.mini,
     TemplateTypeOption.server => ServerpodTemplateType.server,
     TemplateTypeOption.module => ServerpodTemplateType.module,
   };
@@ -146,8 +134,25 @@ extension TemplateTypeOptionExtension on TemplateTypeOption {
 
 extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
   TemplateTypeOption get toConfigOption => switch (this) {
-    ServerpodTemplateType.mini => TemplateTypeOption.mini,
     ServerpodTemplateType.server => TemplateTypeOption.server,
     ServerpodTemplateType.module => TemplateTypeOption.module,
+    ServerpodTemplateType.mini => throw UnsupportedError(
+      'Mini template is not supported in the config.',
+    ),
   };
+}
+
+extension IdeOptionsExtension on Set<IdeOption> {
+  List<TemplateIde> get toTemplateIdes {
+    return map((option) {
+      return switch (option) {
+        IdeOption.antigravity => TemplateIde.antigravity,
+        IdeOption.codex => TemplateIde.codex,
+        IdeOption.claude => TemplateIde.claude,
+        IdeOption.cursor => TemplateIde.cursor,
+        IdeOption.openCode => TemplateIde.openCode,
+        IdeOption.vsCode => TemplateIde.vscode,
+      };
+    }).toList();
+  }
 }

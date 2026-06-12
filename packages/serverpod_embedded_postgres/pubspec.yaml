@@ -1,0 +1,33 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_embedded_postgres
+version: 3.5.0-beta.10
+description: Runs a real PostgreSQL server as a child process for Serverpod local dev. No Docker, no port conflicts, UDS by default.
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: '^3.10.3'
+
+dependencies:
+  archive: ^4.0.0
+  config: ^0.9.0
+  crypto: ^3.0.2
+  http: '>=1.1.0 <2.0.0'
+  meta: ^1.15.0
+  path: ^1.8.3
+  postgres: ^3.4.0
+  pub_semver: ^2.1.4
+  serverpod_shared: 3.5.0-beta.10
+
+dev_dependencies:
+  serverpod_lints: 3.5.0-beta.10
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_shared:
+    path: ../serverpod_shared

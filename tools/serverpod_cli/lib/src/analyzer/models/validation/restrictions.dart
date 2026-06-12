@@ -453,11 +453,11 @@ class Restrictions {
     }
 
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
-        parentClass is ModelClassDefinition &&
+        parentClass is ClassDefinition &&
         parentClass.isSealed) {
       return [
         SourceSpanSeverityException(
-          'Can not extend a sealed model from another package.',
+          'Cannot extend a sealed ${parentClass.typeName} class from another package.',
           span,
         ),
       ];
@@ -467,7 +467,21 @@ class Restrictions {
       documentDefinition!.className,
     );
 
-    if (currentModel is ModelClassDefinition) {
+    if (currentModel is ClassDefinition) {
+      if (currentModel.runtimeType != parentClass.runtimeType) {
+        final currentTypeName = currentModel.typeName;
+        final parentTypeName = parentClass is ClassDefinition
+            ? parentClass.typeName
+            : parentClass.runtimeType.toString();
+        return [
+          SourceSpanSeverityException(
+            'A $currentTypeName class can only extend another $currentTypeName '
+            'class, but got parent $parentTypeName class "${parentClass.className}".',
+            span,
+          ),
+        ];
+      }
+
       var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
         currentModel,
       );
@@ -689,10 +703,10 @@ class Restrictions {
       ];
     }
 
-    if (def is ModelClassDefinition) {
+    if (def is ClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is ModelClassDefinition) {
+      if (currentModel is ClassDefinition) {
         var fieldWithDuplicatedName = _findFieldWithDuplicatedName(
           currentModel,
           fieldName,
@@ -2663,7 +2677,7 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
@@ -2682,8 +2696,8 @@ class Restrictions {
   /// );
   /// ```
   T? _findInParentHierarchy<T>(
-    ModelClassDefinition currentModel,
-    T? Function(ModelClassDefinition) predicate,
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
@@ -2702,27 +2716,29 @@ class Restrictions {
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) =>
-          ancestor.tableName != null ? ancestor : null,
+      (ancestor) =>
+          ancestor is ModelClassDefinition && ancestor.tableName != null
+          ? ancestor
+          : null,
     );
   }
 
-  ModelClassDefinition? _findServerOnlyClassInParentClasses(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  ModelClassDefinition? _findAncestorWithDuplicatedFieldName(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -2735,12 +2751,12 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    ModelClassDefinition currentModel,
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;

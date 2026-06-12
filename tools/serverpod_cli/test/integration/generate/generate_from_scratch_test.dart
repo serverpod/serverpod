@@ -2,31 +2,14 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_cli/src/util/file_ex.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/generator_config_builder.dart';
 import '../../test_util/endpoint_validation_helpers.dart';
-
-/// Creates a [GeneratorConfig] for a test project at [projectDir].
-GeneratorConfig _buildTestConfig(Directory projectDir) {
-  return GeneratorConfigBuilder()
-      .withName('test')
-      .withServerPackageDirectoryPathParts([projectDir.path])
-      .withRelativeDartClientPackagePathParts(['test_client'])
-      .withModules([
-        ModuleConfig(
-          type: PackageType.server,
-          name: 'test',
-          nickname: 'test',
-          migrationVersions: [],
-          serverPackageDirectoryPathParts: [projectDir.path],
-        ),
-      ])
-      .build();
-}
 
 Future<(Directory, Directory)> _buildProject() async {
   final projectDir = Directory.systemTemp.createTempSync('cli_test_');
@@ -90,7 +73,7 @@ class MyFutureCall extends FutureCall {
 }
 ''');
 
-        config = _buildTestConfig(projectDir);
+        config = buildTestServerConfig(projectDir);
         analyzers = await Analyzers.create(config);
       });
 
@@ -161,7 +144,8 @@ fields:
 
       // Endpoint that imports protocol.dart and uses the generated model.
       // With no generated files on disk, a temporary protocol.dart (model
-      // exports only) is written before analysis so the import resolves.
+      // exports and a stub Protocol class) is written before analysis so the
+      // import resolves.
       var endpointFile = File(
         path.join(
           projectDir.path,
@@ -183,7 +167,7 @@ class ItemEndpoint extends Endpoint {
 }
 ''');
 
-      config = _buildTestConfig(projectDir);
+      config = buildTestServerConfig(projectDir);
       analyzers = await Analyzers.create(config);
     });
 
@@ -216,4 +200,69 @@ class ItemEndpoint extends Endpoint {
       });
     });
   });
+
+  group(
+    'Given a model that is removed from disk when analyzers are updated incrementally',
+    () {
+      late Directory projectDir;
+      late GeneratorConfig config;
+      late Analyzers analyzers;
+      late String modelPath;
+
+      tearDownAll(() => projectDir.deleteIfExists(recursive: true));
+
+      setUpAll(() async {
+        (projectDir, _) = await _buildProject();
+        config = buildTestServerConfig(projectDir);
+        analyzers = await Analyzers.createAndUpdate(config);
+
+        modelPath = p.join(
+          projectDir.path,
+          'lib',
+          'src',
+          'models',
+          'removed_model.spy.yaml',
+        );
+        File(modelPath)
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
+class: RemovedModel
+fields:
+  name: String
+''');
+
+        await analyzers.update(
+          config: config,
+          affectedPaths: {modelPath},
+        );
+        await analyzers.performGenerate(config: config);
+      });
+
+      test(
+        'when the model is deleted '
+        'then it is no longer included in generated files',
+        () async {
+          File(modelPath).deleteSync();
+
+          await analyzers.update(
+            config: config,
+            affectedPaths: {p.absolute(modelPath)},
+            requirements: GenerationRequirements.full,
+          );
+
+          final result = await analyzers.performGenerate(
+            config: config,
+            requirements: GenerationRequirements.full,
+            affectedPaths: {p.absolute(modelPath)},
+          );
+
+          expect(result.success, isTrue);
+          expect(
+            result.generatedFiles.any((f) => f.contains('removed_model')),
+            isFalse,
+          );
+        },
+      );
+    },
+  );
 }

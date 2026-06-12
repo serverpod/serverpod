@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 
+import 'serializable_entity_field_definition_builder.dart';
 import 'type_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
@@ -12,6 +13,9 @@ class ExceptionClassDefinitionBuilder {
   bool _serverOnly;
   List<_FieldBuilder> _fields;
   List<String>? _documentation;
+  bool _isSealed;
+  InheritanceDefinition? _extendsClass;
+  List<InheritanceDefinition> _childClasses;
   String? _sharedPackageName;
   String? _typeUrl;
 
@@ -21,7 +25,9 @@ class ExceptionClassDefinitionBuilder {
       _className = 'Example',
       _fields = [],
       _subDirParts = [],
-      _serverOnly = false;
+      _serverOnly = false,
+      _isSealed = false,
+      _childClasses = [];
 
   ExceptionClassDefinition build() {
     return ExceptionClassDefinition(
@@ -31,6 +37,9 @@ class ExceptionClassDefinitionBuilder {
       fields: _fields.map((f) => f()).toList(),
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
+      isSealed: _isSealed,
+      extendsClass: _extendsClass,
+      childClasses: _childClasses,
       documentation: _documentation,
       type: TypeDefinitionBuilder()
           .withClassName(_className)
@@ -100,6 +109,50 @@ class ExceptionClassDefinitionBuilder {
 
   ExceptionClassDefinitionBuilder withTypeUrl(String? url) {
     _typeUrl = url;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withSimpleField(
+    String fieldName,
+    String type, {
+    dynamic defaultModelValue,
+    dynamic defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _fields.add(
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition(type, nullable)
+          .withDefaults(
+            defaultModelValue: defaultModelValue,
+            defaultPersistValue: defaultPersistValue,
+          )
+          .build(),
+    );
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withIsSealed(bool isSealed) {
+    _isSealed = isSealed;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withExtendsClass(
+    ExceptionClassDefinition parentClass,
+  ) {
+    _extendsClass = ResolvedInheritanceDefinition<ExceptionClassDefinition>(
+      parentClass,
+    );
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withChildClasses(
+    List<ExceptionClassDefinition> childClasses,
+  ) {
+    _childClasses = [
+      for (var child in childClasses)
+        ResolvedInheritanceDefinition<ExceptionClassDefinition>(child),
+    ];
     return this;
   }
 }

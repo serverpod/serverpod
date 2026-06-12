@@ -1,6 +1,11 @@
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -116,12 +121,42 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       }
     }
 
+    final context = TemplateContext(
+      template: template,
+      auth: true,
+      redis: true,
+      postgres: true,
+      web: true,
+      ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
+    );
+
+    final useTui = (interactive ?? true) && !ci.isCI;
+
+    if (useTui) {
+      await performCreateWithTui(
+        name,
+        force,
+        state: CreateConfigState(
+          template,
+          configs: const [ServerpodCreateConfig.ide],
+          defaults: TemplateContext(
+            auth: true,
+            redis: true,
+            postgres: true,
+            web: true,
+          ),
+          requireIde: true,
+        ),
+        interactive: true,
+      );
+      return;
+    }
+
     final projectPath = await performCreate(
       name,
-      template,
       force,
       interactive: interactive,
-      context: TemplateContext(sqlite: true, web: true, skills: true),
+      context: context,
     );
 
     if (projectPath == null) {

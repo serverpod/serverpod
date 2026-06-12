@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid.dart';
 
 import 'util.dart';
 
@@ -25,38 +24,11 @@ void main() {
     'Given a TemplateContext with redis enabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
-      );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.server,
-          false,
-          interactive: false,
-          context: TemplateContext(redis: true),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
-
-      test(
-        'then the server Dockerfile file is created',
-        () async {
-          final file = File(p.join(serverDir, 'Dockerfile'));
-          await expectLater(file.exists(), completion(true));
-        },
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          redis: true,
+        ),
       );
 
       group(
@@ -65,7 +37,9 @@ void main() {
           late File dockerComposeFile;
 
           setUp(() {
-            dockerComposeFile = File(p.join(serverDir, 'docker-compose.yaml'));
+            dockerComposeFile = File(
+              p.join(project.serverDir, 'docker-compose.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -89,7 +63,9 @@ void main() {
           late File config;
 
           setUp(() {
-            config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+            config = File(
+              p.join(project.serverDir, 'config', 'passwords.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -105,23 +81,6 @@ void main() {
           );
         },
       );
-
-      test(
-        'then the vscode tasks.json file is created',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'tasks.json'));
-          await expectLater(file.exists(), completion(true));
-        },
-      );
-
-      test(
-        'then the vscode launch.json file has prelaunch task',
-        () async {
-          final file = File(p.join(projectName, '.vscode', 'launch.json'));
-          final content = await file.readAsString();
-          expect(content, contains('"preLaunchTask": "docker_compose_up"'));
-        },
-      );
     },
   );
 
@@ -129,36 +88,19 @@ void main() {
     'Given a TemplateContext with redis disabled, '
     'when performCreate is called with the context and a server template type',
     () {
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          redis: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.server,
-          false,
-          interactive: false,
-          context: TemplateContext(redis: false),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the server passwords config file does not contain redis configurations',
         () async {
-          final config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+          final config = File(
+            p.join(project.serverDir, 'config', 'passwords.yaml'),
+          );
           final content = await config.readAsString();
           expect(content, isNot(contains('redis:')));
         },
@@ -170,31 +112,12 @@ void main() {
     'Given a TemplateContext with redis enabled, '
     'when performCreate is called with the context and a module template type',
     () {
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.module,
+          redis: true,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.module,
-          false,
-          interactive: false,
-          context: TemplateContext(redis: true),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       group(
         'then the server passwords config file',
@@ -202,7 +125,9 @@ void main() {
           late File config;
 
           setUp(() {
-            config = File(p.join(serverDir, 'config', 'passwords.yaml'));
+            config = File(
+              p.join(project.serverDir, 'config', 'passwords.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -222,7 +147,9 @@ void main() {
           late File dockerComposeFile;
 
           setUp(() {
-            dockerComposeFile = File(p.join(serverDir, 'docker-compose.yaml'));
+            dockerComposeFile = File(
+              p.join(project.serverDir, 'docker-compose.yaml'),
+            );
           });
 
           test('is created', () async {
@@ -242,36 +169,17 @@ void main() {
     'Given a TemplateContext with redis disabled, '
     'when performCreate is called with the context and a module template type',
     () {
-      final projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
-        projectName,
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.module,
+          redis: false,
+        ),
       );
-
-      setUpAll(() async {
-        setupForPerformCreateTest();
-        await performCreate(
-          projectName,
-          ServerpodTemplateType.module,
-          false,
-          interactive: false,
-          context: TemplateContext(redis: false),
-        );
-      });
-
-      tearDownAll(() {
-        final dir = Directory(projectName);
-        try {
-          dir.delete(recursive: true);
-        } on FileSystemException {
-          // Gone.
-        }
-      });
 
       test(
         'then the server config for test does not contain redis configurations',
         () async {
-          final file = File(p.join(serverDir, 'config', 'test.yaml'));
+          final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await file.readAsString();
           expect(content, isNot(contains('redis:')));
         },

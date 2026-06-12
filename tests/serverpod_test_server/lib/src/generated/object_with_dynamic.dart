@@ -38,10 +38,10 @@ abstract class ObjectWithDynamic
   factory ObjectWithDynamic.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDynamic(
       id: jsonSerialization['id'] as int?,
-      payload: _i2.Protocol().decodeDynamicFieldValue(
+      payload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['payload'],
       ),
-      jsonbPayload: _i2.Protocol().decodeDynamicFieldValue(
+      jsonbPayload: _i2.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['jsonbPayload'],
       ),
       payloadList: _i2.Protocol().deserialize<List<dynamic>>(
@@ -99,20 +99,20 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().encodeWithType(payload),
-      'jsonbPayload': _i2.Protocol().encodeWithType(jsonbPayload),
+      'payload': _i2.Protocol().dynamicFieldToJson(payload),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(jsonbPayload),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().encodeWithType(k),
-        valueToJson: (v) => _i2.Protocol().encodeWithType(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(k),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
       ),
     };
   }
@@ -122,20 +122,41 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().encodeWithTypeForProtocol(payload),
-      'jsonbPayload': _i2.Protocol().encodeWithTypeForProtocol(jsonbPayload),
+      'payload': _i2.Protocol().dynamicFieldToJson(
+        payload,
+        forProtocol: true,
+      ),
+      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(
+        jsonbPayload,
+        forProtocol: true,
+      ),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().encodeWithTypeForProtocol(k),
-        valueToJson: (v) => _i2.Protocol().encodeWithTypeForProtocol(v),
+        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(
+          k,
+          forProtocol: true,
+        ),
+        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+          v,
+          forProtocol: true,
+        ),
       ),
     };
   }
@@ -208,8 +229,8 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
   }) {
     return ObjectWithDynamic(
       id: id is int? ? id : this.id,
-      payload: payload is! _Undefined ? payload : this.payload,
-      jsonbPayload: jsonbPayload is! _Undefined
+      payload: payload != _Undefined ? payload : this.payload,
+      jsonbPayload: jsonbPayload != _Undefined
           ? jsonbPayload
           : this.jsonbPayload,
       payloadList: payloadList ?? this.payloadList.map((e0) => e0).toList(),
@@ -513,6 +534,69 @@ class ObjectWithDynamicRepository {
   }) async {
     return session.db.insertRow<ObjectWithDynamic>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ObjectWithDynamic]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ObjectWithDynamic]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectWithDynamic>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectWithDynamic> rows, {
+    required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
+    _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectWithDynamic>(
+      rows,
+      conflictColumns: conflictColumns(ObjectWithDynamic.t),
+      updateColumns: updateColumns?.call(ObjectWithDynamic.t),
+      updateWhere: updateWhere?.call(ObjectWithDynamic.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectWithDynamic] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ObjectWithDynamic] will have its `id` field set.
+  Future<ObjectWithDynamic?> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectWithDynamic row, {
+    required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
+    _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectWithDynamic>(
+      row,
+      conflictColumns: conflictColumns(ObjectWithDynamic.t),
+      updateColumns: updateColumns?.call(ObjectWithDynamic.t),
+      updateWhere: updateWhere?.call(ObjectWithDynamic.t),
       transaction: transaction,
     );
   }

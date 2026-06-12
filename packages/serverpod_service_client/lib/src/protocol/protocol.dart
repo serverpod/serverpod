@@ -82,7 +82,7 @@ class Protocol extends _i1.SerializationManager {
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -532,6 +532,12 @@ class Protocol extends _i1.SerializationManager {
       case _i32.SessionLogResult():
         return 'SessionLogResult';
     }
+    className = _i34.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
+          : 'serverpod_database.$className';
+    }
     return null;
   }
 
@@ -637,8 +643,19 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SessionLogResult') {
       return deserialize<_i32.SessionLogResult>(data['data']);
     }
+    if (dataClassName.startsWith('serverpod_database.')) {
+      data['className'] = dataClassName.substring(19);
+      return _i34.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
   }
+
+  void _registerHostProtocols() {
+    _i34.Protocol().registerHostProtocol('serverpod', this);
+  }
+
+  @override
+  String getModuleName() => 'serverpod';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///

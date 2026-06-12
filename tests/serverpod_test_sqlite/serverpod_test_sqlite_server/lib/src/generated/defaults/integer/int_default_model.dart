@@ -359,6 +359,69 @@ class IntDefaultModelRepository {
     );
   }
 
+  /// Upserts all [IntDefaultModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [IntDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<IntDefaultModel>> upsert(
+    _i1.DatabaseSession session,
+    List<IntDefaultModel> rows, {
+    required _i1.ColumnSelections<IntDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<IntDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<IntDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<IntDefaultModel>(
+      rows,
+      conflictColumns: conflictColumns(IntDefaultModel.t),
+      updateColumns: updateColumns?.call(IntDefaultModel.t),
+      updateWhere: updateWhere?.call(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [IntDefaultModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [IntDefaultModel] will have its `id` field set.
+  Future<IntDefaultModel?> upsertRow(
+    _i1.DatabaseSession session,
+    IntDefaultModel row, {
+    required _i1.ColumnSelections<IntDefaultModelTable> conflictColumns,
+    _i1.ColumnSelections<IntDefaultModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<IntDefaultModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<IntDefaultModel>(
+      row,
+      conflictColumns: conflictColumns(IntDefaultModel.t),
+      updateColumns: updateColumns?.call(IntDefaultModel.t),
+      updateWhere: updateWhere?.call(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [IntDefaultModel]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

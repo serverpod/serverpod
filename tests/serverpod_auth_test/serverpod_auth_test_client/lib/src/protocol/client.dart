@@ -22,7 +22,8 @@ import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i7;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i8;
-import 'protocol.dart' as _i9;
+import 'package:http/http.dart' as _i9;
+import 'protocol.dart' as _i10;
 
 /// Endpoint for Apple-based authentication.
 /// {@category Endpoint}
@@ -504,6 +505,28 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
     },
   );
 
+  /// Validates a Google authorization code from the web OAuth2 PKCE flow and
+  /// either logs in the associated user or creates a new account.
+  ///
+  /// This is the web counterpart of [login], which accepts an ID token directly
+  /// (used on native platforms via the `google_sign_in` package).
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> loginWithCode({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'googleAccountBackwardsCompatibilityTest',
+    'loginWithCode',
+    {
+      'code': code,
+      'codeVerifier': codeVerifier,
+      'redirectUri': redirectUri,
+    },
+  );
+
   @override
   _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'googleAccountBackwardsCompatibilityTest',
@@ -534,6 +557,28 @@ class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
     {
       'idToken': idToken,
       'accessToken': accessToken,
+    },
+  );
+
+  /// Validates a Google authorization code from the web OAuth2 PKCE flow and
+  /// either logs in the associated user or creates a new account.
+  ///
+  /// This is the web counterpart of [login], which accepts an ID token directly
+  /// (used on native platforms via the `google_sign_in` package).
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> loginWithCode({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'googleAccount',
+    'loginWithCode',
+    {
+      'code': code,
+      'codeVerifier': codeVerifier,
+      'redirectUri': redirectUri,
     },
   );
 
@@ -898,9 +943,10 @@ class Client extends _i2.ServerpodClientShared {
     onFailedCall,
     Function(_i2.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i9.Client? httpClientOverride,
   }) : super(
          host,
-         _i9.Protocol(),
+         _i10.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -908,6 +954,7 @@ class Client extends _i2.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     appleAccount = EndpointAppleAccount(this);
     authTest = EndpointAuthTest(this);

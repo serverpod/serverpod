@@ -191,7 +191,7 @@ Expression _buildFromJson(
               currentSharedPackageName: currentSharedPackageName,
             )
             .call([])
-            .property('decodeDynamicFieldValue')
+            .property('deserializeDynamicFieldValue')
             .call([valueExpression])
             .checkIfNull(type, valueExpression: valueExpression)
             .code,

@@ -93,7 +93,7 @@ WatchSession _buildSession(_FakeCompiler compiler, _FakeServer server) {
     createServer: (_) async => server,
     initialServer: server,
     generatedDirPaths: const {},
-    applyMigrationsAction: () async => const MigrationsApplied(),
+    applyMigrationsAction: () async {},
   );
 }
 
@@ -156,11 +156,14 @@ void main() {
     late StreamSubscription<void> fileSub;
     late Directory tempDir;
     late String vmServiceInfoFile;
+    late String flutterVmServiceInfoFile;
+    late _FakeProxy flutterProxy;
 
     setUp(() {
       compiler = _FakeCompiler();
       server = _FakeServer();
       proxy = _FakeProxy();
+      flutterProxy = _FakeProxy();
       mcp = _FakeMcpSocket();
       closeAnalyzersCalls = 0;
       stopDockerCalls = 0;
@@ -176,7 +179,12 @@ void main() {
 
       tempDir = Directory.systemTemp.createTempSync('watch_loop_test_');
       vmServiceInfoFile = p.join(tempDir.path, 'vm-service-info.json');
+      flutterVmServiceInfoFile = p.join(
+        tempDir.path,
+        'flutter-vm-service-info.json',
+      );
       File(vmServiceInfoFile).writeAsStringSync('{}');
+      File(flutterVmServiceInfoFile).writeAsStringSync('{}');
     });
 
     tearDown(() {
@@ -191,6 +199,7 @@ void main() {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
         proxy: proxy,
+        flutterProxy: flutterProxy,
         mcpSocket: mcp,
         fileChangeSub: fileSub,
         closeAnalyzers: () async {
@@ -202,6 +211,7 @@ void main() {
               }
             : null,
         vmServiceInfoFile: vmServiceInfoFile,
+        flutterVmServiceInfoFile: flutterVmServiceInfoFile,
       );
     }
 
@@ -285,6 +295,7 @@ void main() {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
           proxy: null,
+          flutterProxy: flutterProxy,
           mcpSocket: null,
           fileChangeSub: null,
           closeAnalyzers: () async {
@@ -292,6 +303,7 @@ void main() {
           },
           stopDocker: null,
           vmServiceInfoFile: vmServiceInfoFile,
+          flutterVmServiceInfoFile: flutterVmServiceInfoFile,
         );
 
         await ctx.dispose();

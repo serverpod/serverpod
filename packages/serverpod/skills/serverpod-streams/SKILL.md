@@ -7,6 +7,8 @@ description: Real-time streaming in Serverpod — Stream parameters and return t
 
 Endpoint methods that take or return `Stream<T>` get WebSocket-managed client stubs. Types must be serializable.
 
+It's a common use case to use streams together with server events. See [Server Events](../serverpod-server-events/SKILL.md).
+
 ## Defining a streaming method
 
 ```dart
@@ -42,6 +44,51 @@ Close the `StreamController` when done. Cancelling the subscription closes both 
 ## Error handling
 
 Throwing a serializable exception closes the stream; the client receives it in `onError`. Exceptions can flow in both directions. Define exception types in `.spy.yaml`.
+
+## Example combined with server events (simplified)
+
+```dart
+class PixelDrawingEndpoint extends Endpoint {
+  static const _channelPixelAdded = 'pixel-added';
+  final _pixelData = Uint8List(_numPixels);
+
+  Future<void> setPixel(
+    Session session, {
+    required int colorIndex,
+    required int pixelIndex,
+  }) async {
+    _pixelData[pixelIndex] = colorIndex;
+
+    // Notify all connected clients that we set a pixel, by posting a message
+    // to the _channelPixelAdded channel.
+    session.messages.postMessage(
+      _channelPixelAdded,
+      ImageUpdate(
+        pixelIndex: pixelIndex,
+        colorIndex: colorIndex,
+      ),
+    );
+  }
+
+  /// Returns a stream of image updates. The first message will always be a
+  /// `ImageData` object, which contains the full image. Sequential updates
+  /// will be `ImageUpdate` objects, which contains a single updated pixel.
+  Stream imageUpdates(Session session) async* {
+    var updateStream =
+        session.messages.createStream<ImageUpdate>(_channelPixelAdded);
+
+    yield ImageData(
+      pixels: _pixelData.buffer.asByteData(),
+      width: _imageWidth,
+      height: _imageHeight,
+    );
+
+    await for (var imageUpdate in updateStream) {
+      yield imageUpdate;
+    }
+  }
+}
+```
 
 ## Deprecated pattern
 

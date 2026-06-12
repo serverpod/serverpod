@@ -288,6 +288,19 @@ abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
     required String? accessToken,
   });
 
+  /// Validates a Google authorization code from the web OAuth2 PKCE flow and
+  /// either logs in the associated user or creates a new account.
+  ///
+  /// This is the web counterpart of [login], which accepts an ID token directly
+  /// (used on native platforms via the `google_sign_in` package).
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> loginWithCode({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+  });
+
   @override
   _i2.Future<bool> hasAccount();
 }
