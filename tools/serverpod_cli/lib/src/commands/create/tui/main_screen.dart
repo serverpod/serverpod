@@ -26,6 +26,8 @@ class MainScreen extends StatelessComponent {
     final state = holder.state;
     final creatingProject = state.creatingProject;
     final showingSummary = state.isSummary;
+    final showMultiScreenNavigationButtons =
+        !creatingProject && !showingSummary && !state.hasSingleScreen;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +43,7 @@ class MainScreen extends StatelessComponent {
                       ? _buildLogView()
                       : _buildScreenContent(theme, state),
                 ),
-                if (!creatingProject && !showingSummary)
+                if (showMultiScreenNavigationButtons)
                   _buildScreenButtons(theme, state),
               ],
             ),
@@ -291,16 +293,17 @@ class MainScreen extends StatelessComponent {
     final creatingProject = state.creatingProject;
     final isFirstScreen = state.currentScreenIndex == 0;
     final isSummary = state.isSummary;
-    final createEnabled = !isSummary || state.canCreate;
+    final hasSingleScreen = state.hasSingleScreen;
+    final createEnabled = !isSummary;
 
     return ButtonBar(
       buttons: [
         Button(
-          name: isSummary ? 'Create Project' : 'Next',
+          name: hasSingleScreen || isSummary ? 'Create Project' : 'Next',
           activationChar: 'Enter',
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
-            if (state.isSummary) {
+            if (hasSingleScreen || state.isSummary) {
               state.markCreatingProject();
               holder.markDirty();
               onCreate();
@@ -309,21 +312,24 @@ class MainScreen extends StatelessComponent {
               holder.markDirty();
             }
           },
-          enabled: createEnabled && !creatingProject,
+          enabled:
+              (hasSingleScreen ? state.canCreate : createEnabled) &&
+              !creatingProject,
         ),
-        Button(
-          name: 'Back',
-          activationChar: 'Esc',
-          activationKeys: const [LogicalKey.escape],
-          onActivate: (_) {
-            state.previousScreen();
-            holder.markDirty();
-          },
-          enabled: !isFirstScreen && !creatingProject,
-        ),
+        if (!hasSingleScreen)
+          Button(
+            name: 'Back',
+            activationChar: 'Esc',
+            activationKeys: const [LogicalKey.escape],
+            onActivate: (_) {
+              state.previousScreen();
+              holder.markDirty();
+            },
+            enabled: !isFirstScreen && !creatingProject,
+          ),
         Button(
           name: 'Navigate',
-          activationChar: '←↑↓→',
+          activationChar: hasSingleScreen ? '←→' : '←↑↓→',
           activationKeys: const [
             LogicalKey.arrowLeft,
             LogicalKey.arrowRight,

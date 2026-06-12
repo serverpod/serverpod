@@ -77,7 +77,7 @@ class CreateConfigState extends TuiState {
   }
 
   void focusDown() {
-    if (!_focusOnButton) {
+    if (!_focusOnButton && !hasSingleScreen) {
       if (isSummary || _currentScreenIndex > 0) {
         focusBackButton();
       } else if (!isSummary) {
@@ -125,6 +125,9 @@ class CreateConfigState extends TuiState {
 
   /// Number of config screens visible in the form (not counting summary).
   int get configScreenCount => form.configurations.length;
+
+  /// Whether there is only one config screen.
+  bool get hasSingleScreen => configScreenCount == 1;
 
   /// Whether the current screen is the summary screen.
   bool get isSummary => _currentScreenIndex >= configScreenCount;
