@@ -131,6 +131,10 @@ Future<CreateResult> performCreate(
   /// Identifies which command scaffolded the project (`create` or `quickstart`)
   /// for the `cli.project_created` event. Omit to skip the event.
   String? analyticsMethod,
+
+  /// Organization identifier in reverse-domain notation forwarded to
+  /// `flutter create --org` when scaffolding the companion Flutter app.
+  String? org,
 }) async {
   _errorBuffer.clear();
   // Resolve where the project will be created relative to [workingDirectory]
@@ -281,7 +285,10 @@ Future<CreateResult> performCreate(
     success &= await log.progress(
       'Creating Flutter app platform files.',
       () {
-        return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+        return CommandLineTools.flutterCreate(
+          serverpodDirs.flutterDir,
+          org: org,
+        );
       },
     );
     await log.progress('Updating Flutter app MacOS entitlements.', () {
