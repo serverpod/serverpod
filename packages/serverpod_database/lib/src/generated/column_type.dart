@@ -59,8 +59,7 @@ enum ColumnType implements _i1.SerializableModel {
   bit,
 
   /// Esp. for serializable objects as [jsonb].
-  jsonb
-  ;
+  jsonb;
 
   static ColumnType fromJson(int index) {
     switch (index) {

@@ -18,8 +18,7 @@ enum AuthenticationFailReason implements _i1.SerializableModel {
   userCreationDenied,
   internalError,
   tooManyFailedAttempts,
-  blocked
-  ;
+  blocked;
 
   static AuthenticationFailReason fromJson(int index) {
     switch (index) {

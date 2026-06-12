@@ -41,8 +41,7 @@ enum PrefetchOption<V> implements OptionDefinition<V> {
       defaultsTo: false,
       helpText: 'Show this usage information.',
     ),
-  )
-  ;
+  );
 
   const PrefetchOption(this.option);
 
