@@ -365,4 +365,19 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a TemplateContext with a module template type, '
+    'when performCreate is called, '
+    'then the server test config contains webserver configuration',
+    () async {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(template: ServerpodTemplateType.module),
+      );
+
+      final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
+      final content = await file.readAsString();
+      expect(content, contains('webServer:'));
+    },
+  );
 }
