@@ -19,6 +19,18 @@ categories:
     - tests/**
     - tools/*
 
+command:
+  bootstrap:
+    # TEMP (CI): build against the in-progress (#113) relic branch. CI clones
+    # the branch into ../relic in a workflow step *before* `melos bootstrap`
+    # (melos resolves these override paths at workspace creation, before any
+    # bootstrap lifecycle hook runs, so the clone must precede the command).
+    # Local checkouts keep their own ../relic. Remove this override once the
+    # relic release this branch consumes is published and pinned via a version
+    # bump.
+    dependencyOverridePaths:
+      - ../relic/packages/*
+
 scripts:
   lint:
     run: melos analyze --fatal-warnings --category="noTemplates"

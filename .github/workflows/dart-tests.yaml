@@ -42,7 +42,10 @@ jobs:
       - name: Run pub get
         run: dart pub get
       - name: Bootstrap
-        run: dart run melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          dart run melos bootstrap
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -63,7 +66,10 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap
       - name: Run lint
         run: melos lint_strict
 
@@ -83,7 +89,10 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap
       - name: Run lint
         run: melos lint
 
@@ -104,7 +113,10 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap
       - name: Downgrade dependencies
         run: melos downgrade
       - name: Run lint
@@ -126,7 +138,10 @@ jobs:
       - name: Install Melos
         run: dart pub global activate melos
       - name: Install dependencies
-        run: melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap
       - name: Run serverpod generate
         shell: bash
         run: |
@@ -172,7 +187,10 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
       - name: Run nonvector integration tests against embedded PG
         run: bash util/run_tests_nonvector_integration_embedded
         timeout-minutes: 10
@@ -194,7 +212,10 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
       - name: Run module integration tests against embedded PG
         run: bash util/run_tests_module_integration_embedded
         timeout-minutes: 10

@@ -47,7 +47,10 @@ jobs:
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install all dependencies
-        run: melos bootstrap
+        shell: bash
+        run: |
+          git clone --depth 1 --branch feat-rfc-compliant-headers https://github.com/nielsenko/relic.git ../relic
+          melos bootstrap
 
       - name: Activate Serverpod CLI from source
         run: |
