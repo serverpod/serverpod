@@ -506,7 +506,7 @@ void logMiniStartInstructions(String relativeProjectPath) {
     type: TextLogType.header,
   );
   log.info(
-    'If you are using VSCode or Cursor, just hit F5 to start the project!',
+    'If you are using VSCode or Cursor, just hit F5 to start the project.',
     type: TextLogType.header,
   );
   log.info(
@@ -543,7 +543,7 @@ void logStartInstructions(String relativeProjectPath) {
     type: TextLogType.header,
   );
   log.info(
-    'If you are using VSCode or Cursor, just hit F5 to start the project!',
+    'If you are using VSCode or Cursor, just hit F5 to start the project.',
     type: TextLogType.header,
   );
   log.info(
