@@ -129,6 +129,99 @@ void main() {
       timeout: const Timeout(Duration(seconds: 60)),
     );
   });
+
+  group('Given a dependency added to package_config.json', () {
+    late Directory tempDir;
+    late KernelCompiler compiler;
+    late String mainFile;
+    late String packageConfigFile;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('kernel_compiler_test_');
+      await _createMinimalDartProject(tempDir.path);
+      mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+      packageConfigFile = p.join(
+        tempDir.path,
+        '.dart_tool',
+        'package_config.json',
+      );
+
+      // A sibling package the app will import once it's mapped in
+      // package_config.json. Only the source file and the mapping matter to
+      // the Frontend Server's resolution, so no pubspec is needed.
+      File(p.join(tempDir.path, 'dep', 'lib', 'dep.dart'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync("String depGreeting() => 'hi from dep';");
+
+      compiler = KernelCompiler(
+        entryPoint: mainFile,
+        outputDill: p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'server.dill',
+        ),
+        packagesPath: packageConfigFile,
+      );
+    });
+
+    tearDown(() async {
+      await compiler.dispose();
+      await tempDir.delete(recursive: true);
+    });
+
+    test(
+      'when compile is called with invalidatePackageConfig, '
+      'then the new package resolves without a restart',
+      () async {
+        await compiler.start();
+
+        // Baseline: main does not import the new package yet.
+        expect((await compiler.compile()).errorCount, 0);
+        compiler.accept();
+
+        // The app now imports the package, but package_config.json doesn't map
+        // it yet. The resident compiler only knows the packages it read at
+        // startup, so without reloading the map the import can't resolve.
+        await File(mainFile).writeAsString(
+          "import 'package:dep/dep.dart';\n"
+          'void main() => print(depGreeting());',
+        );
+        final beforeReload = await compiler.compile(changedPaths: {mainFile});
+        expect(
+          beforeReload.errorCount,
+          greaterThan(0),
+          reason: 'package:dep is not in package_config.json yet',
+        );
+        await compiler.reject();
+
+        // Map the package in package_config.json (as `pub get` would) and
+        // recompile, invalidating the package config so the FES re-reads it.
+        await File(packageConfigFile).writeAsString('''
+{
+  "configVersion": 2,
+  "packages": [
+    { "name": "test_server", "rootUri": "..", "packageUri": "lib/" },
+    { "name": "dep", "rootUri": "../dep", "packageUri": "lib/" }
+  ]
+}
+''');
+        final afterReload = await compiler.compile(
+          changedPaths: {mainFile},
+          invalidatePackageConfig: true,
+        );
+        expect(
+          afterReload.errorCount,
+          0,
+          reason:
+              'invalidating package_config.json should reload the package map '
+              'so package:dep resolves',
+        );
+        compiler.accept();
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+  });
 }
 
 /// Creates a minimal Dart project with package_config.json for FES.

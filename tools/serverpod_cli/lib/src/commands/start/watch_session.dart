@@ -113,7 +113,7 @@ class WatchSession {
   bool get isFlutterAppRunning => _flutterProcess?.isRunning ?? false;
 
   /// (Re)launches the Flutter app: kills the running `flutter run` process (if
-  /// any) and starts a fresh one — launching it from scratch when none is
+  /// any) and starts a fresh one - launching it from scratch when none is
   /// running yet, e.g. after a `--no-flutter` start. Supplied by the
   /// orchestrator, which owns the spawn closure; `null` only when the project
   /// has no Flutter package to launch.
@@ -397,21 +397,19 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-    } else if (packageConfigChanged) {
-      // FES reads package_config.json only at startup - must restart it.
-      // After restart the FES is in initial state, so we do a full compile.
-      _pendingPaths.clear();
-      if (!compilerRestartedByHooks) await compiler.restart();
-      result = await compileWithProgress(
-        'Compiling server',
-        compiler,
-        rejectOnFailure: true,
-      );
-    } else if (changedPaths.isNotEmpty || compilerRestartedByHooks) {
+    } else if (changedPaths.isNotEmpty ||
+        packageConfigChanged ||
+        compilerRestartedByHooks) {
+      // A package_config.json change is picked up incrementally: passing its
+      // URI in the invalidated set makes the Frontend Server reload the
+      // package map in place, so no process restart is needed. (When the
+      // hooks already restarted the FES it's in initial state, so the next
+      // compile is full and reads package_config.json fresh anyway.)
       result = await compileWithProgress(
         'Compiling server',
         compiler,
         changedPaths: changedPaths,
+        invalidatePackageConfig: packageConfigChanged,
         rejectOnFailure: true,
       );
     } else {
@@ -518,7 +516,7 @@ class WatchSession {
   }
 
   /// Fully (re)launches the Flutter app: kills the running `flutter run`
-  /// process (if any) and launches a fresh one — including launching it from
+  /// process (if any) and launches a fresh one - including launching it from
   /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
   /// the Flutter hot restart bundled into [forceRestart], this only drives the
   /// Flutter process and is independent of the server's compiler, so it works

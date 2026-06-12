@@ -34,6 +34,16 @@ class KernelCompiler {
   );
   late Future<FrontendServerClient> _client;
 
+  /// The package-config URI, built the same way as the Frontend Server's
+  /// `--packages` argument (see [FrontendServerClient.start]).
+  ///
+  /// Reused verbatim when invalidating it in [compile] so the recompile
+  /// request's URI byte-matches what the CFE resolved at startup; otherwise
+  /// the package reload silently does nothing.
+  late final Uri? _packageConfigUri = packagesPath == null
+      ? null
+      : Uri.file(p.absolute(packagesPath!));
+
   bool _needsFullCompile = true;
   bool _started = false;
 
@@ -116,7 +126,15 @@ class KernelCompiler {
   /// If a full compile is needed (after [start], [reset], or [restart]),
   /// [changedPaths] is ignored and a complete kernel is produced.
   /// Otherwise, performs an incremental recompile for [changedPaths].
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  ///
+  /// When [invalidatePackageConfig] is `true`, the package-config file is
+  /// added to the invalidated set. The Frontend Server's incremental compiler
+  /// re-reads it and rebuilds its package map in place, so a `package_config`
+  /// change is picked up without restarting the process.
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
     final client = await _client;
 
     if (_needsFullCompile) {
@@ -126,8 +144,15 @@ class KernelCompiler {
       return result;
     }
 
-    log.debug('compile: $changedPaths');
-    final invalidatedUris = changedPaths.map(Uri.file).toList();
+    final packageConfigUri = invalidatePackageConfig ? _packageConfigUri : null;
+    log.debug(
+      'compile: $changedPaths'
+      '${packageConfigUri != null ? ' (+package_config.json)' : ''}',
+    );
+    final invalidatedUris = [
+      ...changedPaths.map(Uri.file),
+      ?packageConfigUri,
+    ];
     return client.compile(invalidatedUris);
   }
 
@@ -150,8 +175,12 @@ class KernelCompiler {
 
   /// Restart the Frontend Server process.
   ///
-  /// Required when package_config.json changes, since the FES reads it
-  /// only at startup. Kills the existing process and starts a fresh one.
+  /// Required when the native-assets manifest (`--native-assets`) changes,
+  /// since the FES reads that argument only at startup. Kills the existing
+  /// process and starts a fresh one.
+  ///
+  /// A `package_config.json` change does *not* need a restart - pass
+  /// `invalidatePackageConfig: true` to [compile] instead.
   Future<void> restart() async {
     await dispose();
     await start();
@@ -209,11 +238,15 @@ Future<CompileResult?> compileWithProgress(
   String message,
   KernelCompiler compiler, {
   Set<String> changedPaths = const {},
+  bool invalidatePackageConfig = false,
   bool rejectOnFailure = false,
 }) async {
   late CompileResult result;
   final success = await log.progress(message, () async {
-    result = await compiler.compile(changedPaths: changedPaths);
+    result = await compiler.compile(
+      changedPaths: changedPaths,
+      invalidatePackageConfig: invalidatePackageConfig,
+    );
     return result.errorCount == 0;
   });
 

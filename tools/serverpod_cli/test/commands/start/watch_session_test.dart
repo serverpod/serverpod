@@ -39,12 +39,16 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
+    final suffix = invalidatePackageConfig ? '+package_config' : '';
     if (changedPaths.isEmpty) {
-      calls.add('compile');
+      calls.add('compile$suffix');
       return nextCompileResult;
     }
-    calls.add('compile(changed):${changedPaths.toList()..sort()}');
+    calls.add('compile(changed):${changedPaths.toList()..sort()}$suffix');
     return nextIncrementalResult;
   }
 
@@ -502,7 +506,7 @@ void main() {
   group('Given package_config.json changed', () {
     test(
       'when dart files also changed, '
-      'then it runs codegen, restarts compiler, and does a full compile',
+      'then it recompiles incrementally and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -514,13 +518,16 @@ void main() {
         expect(generateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]+package_config',
+          'accept',
+        ]);
       },
     );
 
     test(
-      'when both package_config and model files changed, '
-      'then it runs codegen and restarts compiler',
+      'when package_config and model files changed, '
+      'then it recompiles and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {},
@@ -533,7 +540,7 @@ void main() {
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
       },
     );
   });
