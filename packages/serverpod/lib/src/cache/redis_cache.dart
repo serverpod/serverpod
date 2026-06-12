@@ -21,19 +21,17 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> clear() async {
-    assert(
-      redisController != null,
-      'Redis needs to be enabled to use this method',
-    );
+    if (redisController == null) {
+      throw StateError('Redis is not enabled for this Serverpod instance.');
+    }
     await redisController!.clear();
   }
 
   @override
   Future<bool> containsKey(String key) async {
-    assert(
-      redisController != null,
-      'Redis needs to be enabled to use this method',
-    );
+    if (redisController == null) {
+      throw StateError('Redis is not enabled for this Serverpod instance.');
+    }
     var data = await redisController!.get(key);
 
     return data != null;
@@ -44,10 +42,9 @@ class RedisCache extends GlobalCache {
     String key, [
     CacheMissHandler<T>? cacheMissHandler,
   ]) async {
-    assert(
-      redisController != null,
-      'Redis needs to be enabled to use this method',
-    );
+    if (redisController == null) {
+      throw StateError('Redis is not enabled for this Serverpod instance.');
+    }
 
     var data = await redisController!.get(key);
     if (data != null) {
@@ -76,10 +73,9 @@ class RedisCache extends GlobalCache {
 
   @override
   Future<void> invalidateKey(String key) async {
-    assert(
-      redisController != null,
-      'Redis needs to be enabled to use this method',
-    );
+    if (redisController == null) {
+      throw StateError('Redis is not enabled for this Serverpod instance.');
+    }
     await redisController!.del(key);
   }
 
@@ -102,10 +98,9 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }
 
-    assert(
-      redisController != null,
-      'Redis needs to be enabled to use this method',
-    );
+    if (redisController == null) {
+      throw StateError('Redis is not enabled for this Serverpod instance.');
+    }
 
     var data = SerializationManager.encode(object);
     await redisController!.set(key, data, lifetime: lifetime);
