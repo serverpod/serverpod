@@ -20,7 +20,9 @@ class TextButton extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
-    final bgColor = enabled && focused ? theme.activationKey : Colors.gray;
+    final bgColor = enabled && focused
+        ? theme.activationKey
+        : theme.subtleDivider;
 
     return Focusable(
       focused: enabled && focused,
@@ -46,7 +48,7 @@ class TextButton extends StatelessComponent {
           padding: const EdgeInsets.symmetric(horizontal: 1),
           child: Text(
             name,
-            style: TextStyle(color: theme.brightText),
+            style: const TextStyle(color: Color.defaultColor),
           ),
         ),
       ),
