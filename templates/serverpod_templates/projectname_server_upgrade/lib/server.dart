@@ -1,6 +1,6 @@
-// {{#web}}
+// {{#webserver}}
 import 'dart:io';
-// {{/web}}
+// {{/webserver}}
 
 import 'package:serverpod/serverpod.dart';
 // {{#auth}}
