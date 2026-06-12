@@ -59,10 +59,15 @@ class MethodCallContext {
 /// is available.
 abstract class ServerpodClientRequestDelegate {
   /// Performs the actual request to the server and returns the response data.
+  ///
+  /// When [useCookieAuth] is true the request authenticates via an `HttpOnly`
+  /// cookie: it sends the cookie-mode marker header and (on web) makes a
+  /// credentialed request, instead of relying on [authenticationValue].
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool useCookieAuth = false,
   });
 
   /// Closes the connection to the server.
@@ -113,21 +118,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
     uri = uri.replace(path: '/websocket');
     return uri;
-  }
-
-  Future<String> get _webSocketHostWithAuth async {
-    var uri = _webSocketHost;
-
-    var auth = await authKeyProvider?.authHeaderValue;
-    if (auth != null) {
-      uri = uri.replace(
-        queryParameters: {
-          // Key must be unwrapped here because the server expects it plain.
-          'auth': unwrapAuthHeaderValue(auth),
-        },
-      );
-    }
-    return uri.toString();
   }
 
   /// The [SerializationManager] used to serialize objects sent to the server.
@@ -351,9 +341,18 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       // Connect to the server.
       _firstMessageReceived = false;
-      var host = await _webSocketHostWithAuth;
-      _webSocket = WebSocketChannel.connect(Uri.parse(host));
+      _webSocket = WebSocketChannel.connect(_webSocketHost);
       await _webSocket?.ready;
+
+      // Authenticate in-band via a control message rather than a query
+      // parameter, so the token never appears in the connection URL (and
+      // therefore not in server/proxy access logs or browser history). The
+      // wrapped header value is sent as-is; the server validates and unwraps
+      // it (matching the method-stream protocol).
+      var auth = await authKeyProvider?.authHeaderValue;
+      if (auth != null) {
+        await _sendControlCommandToStream('auth', {'key': auth});
+      }
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
@@ -555,8 +554,15 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var authenticationValue = authenticated
-          ? await authKeyProvider?.authHeaderValue
+      var provider = authKeyProvider;
+      // A cookie-auth client carries the token in an HttpOnly cookie, so it
+      // sends no Authorization header and instead signals cookie mode (marker
+      // header + credentialed request) - on every call, since sign-in (an
+      // unauthenticated call) is where the server decides cookie vs body.
+      var useCookieAuth =
+          provider is CookieAuthKeyProvider && provider.usesCookies;
+      var authenticationValue = authenticated && !useCookieAuth
+          ? await provider?.authHeaderValue
           : null;
       var body = formatArgs(args);
       var url = method.isEmpty
@@ -567,6 +573,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         url,
         body: body,
         authenticationValue: authenticationValue,
+        useCookieAuth: useCookieAuth,
       );
 
       T result;

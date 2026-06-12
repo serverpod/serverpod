@@ -1,4 +1,5 @@
 import 'package:relic/relic.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Extends [Request] with useful methods.
 extension RequestExtension on Request {
@@ -48,5 +49,33 @@ extension RequestExtension on Request {
       // Returns first value if multiple Authorization headers exist (rare)
       return headers['authorization']?.firstOrNull;
     }
+  }
+
+  /// Returns the value of the cookie named [cookieName] from the request's
+  /// `Cookie` header, or null if it is absent, ambiguous, or the header is
+  /// malformed (all treated as absent rather than failing the request).
+  ///
+  /// If the `Cookie` header carries more than one cookie with [cookieName] this
+  /// returns null (fail closed) instead of trusting whichever the browser
+  /// ordered first: a sibling subdomain can plant a `Domain`-scoped duplicate
+  /// that shadows a host-only cookie, so picking the first match would let an
+  /// attacker fixate the session for a security-sensitive cookie.
+  String? getCookieValue(String cookieName) {
+    try {
+      var matching = headers.cookie?.cookies
+          .where((cookie) => cookie.name == cookieName)
+          .toList();
+      if (matching == null || matching.length != 1) return null;
+      return matching.first.value;
+    } on Exception {
+      return null;
+    }
+  }
+
+  /// Returns the web auth token carried by the configured [authCookie], or null
+  /// when cookie auth is not configured or the cookie is absent.
+  String? getAuthCookieValue(WebAuthCookieConfig? authCookie) {
+    if (authCookie == null) return null;
+    return getCookieValue(authCookie.name);
   }
 }

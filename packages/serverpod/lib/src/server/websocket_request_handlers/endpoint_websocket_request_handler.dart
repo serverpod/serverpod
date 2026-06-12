@@ -31,20 +31,32 @@ abstract class EndpointWebsocketRequestHandler {
       );
 
       var endpointDispatch = server.endpoints;
-      for (var endpointConnector in endpointDispatch.connectors.values) {
-        await _callStreamOpened(
-          session,
-          endpointConnector.endpoint.name,
-          endpointDispatch,
-        );
-      }
-      for (var module in endpointDispatch.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
+
+      // Open streams lazily on the first received message rather than at
+      // connection time. This lets a client authenticate in-band (via the
+      // 'auth' control message) before streams are opened, so each endpoint's
+      // streamOpened sees the authenticated session. Previously the auth token
+      // was available from the connection URL, so streams could open
+      // authenticated immediately; tokens are no longer accepted in the URL.
+      var streamsOpened = false;
+      Future<void> openAllStreams() async {
+        if (streamsOpened) return;
+        streamsOpened = true;
+        for (var endpointConnector in endpointDispatch.connectors.values) {
           await _callStreamOpened(
             session,
             endpointConnector.endpoint.name,
-            module,
+            endpointDispatch,
           );
+        }
+        for (var module in endpointDispatch.modules.values) {
+          for (var endpointConnector in module.connectors.values) {
+            await _callStreamOpened(
+              session,
+              endpointConnector.endpoint.name,
+              module,
+            );
+          }
         }
       }
 
@@ -67,6 +79,9 @@ abstract class EndpointWebsocketRequestHandler {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
+              // Open streams (anonymously, if no 'auth' message preceded this)
+              // before responding, so streamOpened fires once per connection.
+              await openAllStreams();
               webSocket.trySendText(
                 SerializationManager.encodeForProtocol(
                   {'command': 'pong'},
@@ -85,9 +100,20 @@ abstract class EndpointWebsocketRequestHandler {
               await session.updateAuthenticationKey(
                 unwrapAuthHeaderValue(authKey),
               );
+              // Open streams now that authentication has been applied so each
+              // endpoint's streamOpened sees the authenticated session. The
+              // 'auth' message must therefore be the first message a client
+              // sends: if a ping or endpoint message arrives first, streams open
+              // (anonymously) and streamOpened does not re-run on this later
+              // auth. The bundled client sends 'auth' before 'ping'.
+              await openAllStreams();
             }
             continue;
           }
+
+          // A message for an endpoint arrived before any ping/auth; ensure
+          // streams are open before dispatching it.
+          await openAllStreams();
 
           // Handle messages passed to endpoints.
           var endpointName = data['endpoint'] as String;
@@ -155,21 +181,26 @@ abstract class EndpointWebsocketRequestHandler {
         _reportException(server, e, s, session: session);
       }
 
+      // Only notify streamClosed for connections whose streams were opened
+      // (i.e. that sent at least one message). A connection that opened and
+      // closed without any message never fired streamOpened.
       // TODO: Possibly keep a list of open streams instead
-      for (var endpointConnector in server.endpoints.connectors.values) {
-        await _callStreamClosed(
-          session,
-          endpointConnector.endpoint.name,
-          endpointDispatch,
-        );
-      }
-      for (var module in server.endpoints.modules.values) {
-        for (var endpointConnector in module.connectors.values) {
+      if (streamsOpened) {
+        for (var endpointConnector in server.endpoints.connectors.values) {
           await _callStreamClosed(
             session,
             endpointConnector.endpoint.name,
-            module,
+            endpointDispatch,
           );
+        }
+        for (var module in server.endpoints.modules.values) {
+          for (var endpointConnector in module.connectors.values) {
+            await _callStreamClosed(
+              session,
+              endpointConnector.endpoint.name,
+              module,
+            );
+          }
         }
       }
       await session.close(error: error, stackTrace: stackTrace);

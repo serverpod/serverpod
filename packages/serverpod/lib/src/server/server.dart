@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
@@ -279,22 +280,69 @@ class Server implements RouterInjectable {
           : httpResponseHeaders;
 
       // early exit on Method.options
-      if (isOptions) return Response.ok(headers: headers);
+      if (isOptions) {
+        return Response.ok(
+          headers: _applyCredentialedCorsHeaders(headers, req),
+        );
+      }
 
       final result = await next(req);
-      return switch (result) {
-        Response() => result.copyWith(
-          headers: result.headers.isEmpty
-              ? headers
-              : result.headers.transform((mh) {
-                  for (final h in headers.entries) {
-                    mh[h.key] ??= h.value;
-                  }
-                }),
-        ),
-        _ => result,
-      };
+      if (result is! Response) return result;
+
+      // Merge default headers under any the response already set, then apply
+      // credentialed CORS to the merged result so its Origin echo / Vary land
+      // on the actual response (and append to a Vary the endpoint may have set).
+      var merged = result.headers.isEmpty
+          ? headers
+          : result.headers.transform((mh) {
+              for (final h in headers.entries) {
+                mh[h.key] ??= h.value;
+              }
+            });
+      return result.copyWith(
+        headers: _applyCredentialedCorsHeaders(merged, req),
+      );
     };
+  }
+
+  /// The trimmed `Origin` header of [req], or null if absent.
+  String? _requestOrigin(Request req) =>
+      req.headers[Headers.originHeader]?.firstOrNull?.trim();
+
+  /// When cookie-based web auth is enabled, credentialed CORS requires echoing
+  /// the specific request `Origin` (the wildcard `*` is invalid with
+  /// credentials) plus `Access-Control-Allow-Credentials: true`. Applied only
+  /// for requests whose `Origin` is in [ServerpodConfig.allowedOrigins];
+  /// otherwise [headers] is returned unchanged.
+  Headers _applyCredentialedCorsHeaders(Headers headers, Request req) {
+    if (serverpod.config.authCookie == null) return headers;
+
+    var allowedOrigins = serverpod.config.allowedOrigins;
+    var origin = _requestOrigin(req);
+    if (origin == null ||
+        allowedOrigins == null ||
+        !allowedOrigins.contains(origin)) {
+      return headers;
+    }
+
+    return headers.transform((mh) {
+      mh.accessControlAllowOrigin = AccessControlAllowOriginHeader.origin(
+        origin: Origin.parse(origin),
+      );
+      mh.accessControlAllowCredentials = true;
+      // The response varies by Origin, so caches must key on it. VaryHeader
+      // canonicalizes field names to lowercase, so membership is
+      // case-insensitive; a wildcard Vary already covers Origin.
+      var vary = mh.vary;
+      if (vary == null) {
+        mh.vary = VaryHeader.headers(fields: const [Headers.originHeader]);
+      } else if (!vary.isWildcard &&
+          !vary.fields.contains(Headers.originHeader)) {
+        mh.vary = VaryHeader.headers(
+          fields: [...vary.fields, Headers.originHeader],
+        );
+      }
+    });
   }
 
   FutureOr<Result> _cloudStorage(Request req) async {
@@ -319,6 +367,19 @@ class Server implements RouterInjectable {
     requestHandler,
   ) {
     return (req) async {
+      // Reject cross-site WebSocket handshakes when an origin allow-list is
+      // configured. Only browsers send an `Origin` header; native, mobile and
+      // server-to-server clients don't, and are always allowed.
+      var allowedOrigins = serverpod.config.allowedOrigins;
+      if (allowedOrigins != null) {
+        var origin = _requestOrigin(req);
+        if (origin != null && !allowedOrigins.contains(origin)) {
+          return Response.forbidden(
+            body: Body.fromString('WebSocket origin not allowed.'),
+          );
+        }
+      }
+
       return WebSocketUpgrade((webSocket) async {
         try {
           webSocket.pingInterval = serverpod.config.websocketPingInterval;
@@ -389,9 +450,9 @@ class Server implements RouterInjectable {
       }
     }
 
-    // Get the authentication key, if any
-    // If it is provided in the HTTP authorization header we use that,
-    // otherwise we look for it in the query parameters (the old method).
+    // Get the authentication key, if any, from the HTTP authorization header.
+    // Auth tokens are no longer accepted via the `?auth=` query parameter, so
+    // they never appear in request URLs (and thus server/proxy access logs).
     String? authenticationKey;
     String? authenticationHeaderValue;
 
@@ -399,7 +460,34 @@ class Server implements RouterInjectable {
       serverpod.config.validateHeaders,
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    authenticationKey ??= queryParameters['auth'] as String?;
+
+    // Fall back to the web auth cookie for requests that opted into cookie mode
+    // via the marker header (layer 3 CSRF defense). A cross-site form or simple
+    // request cannot set this custom header without a CORS preflight, which
+    // fails for non-allow-listed origins, so the ambient cookie never
+    // authenticates a cross-site request. The browser carries the cookie
+    // automatically for cookie-based web clients.
+    if (authenticationKey == null &&
+        serverpod.config.authCookie != null &&
+        request.headers[webAuthModeHeaderName]?.firstOrNull ==
+            webAuthModeCookie) {
+      // Layer 2 CSRF defense: independently of the browser's CORS enforcement,
+      // reject a cookie-mode request whose `Origin` is present but not in the
+      // allow-list, mirroring the WebSocket handshake check. A missing `Origin`
+      // (same-origin or non-browser) is allowed and left to the marker gate.
+      var allowedOrigins = serverpod.config.allowedOrigins;
+      var origin = _requestOrigin(request);
+      if (origin != null &&
+          allowedOrigins != null &&
+          !allowedOrigins.contains(origin)) {
+        return Response.forbidden(
+          body: Body.fromString('Request origin not allowed.'),
+        );
+      }
+      authenticationKey = request.getAuthCookieValue(
+        serverpod.config.authCookie,
+      );
+    }
 
     MethodCallSession? maybeSession;
     try {
@@ -443,12 +531,18 @@ class Server implements RouterInjectable {
           session,
           methodCallContext.arguments,
         );
-        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
-        return Response.ok(
-          body: Body.fromString(
-            SerializationManager.encodeForProtocol(result),
-            mimeType: MimeType.json,
-          ),
+        var response = methodCallContext.endpoint.sendAsRaw
+            ? _toResponse(result)
+            : Response.ok(
+                body: Body.fromString(
+                  SerializationManager.encodeForProtocol(result),
+                  mimeType: MimeType.json,
+                ),
+              );
+        return applyResponseOutput(
+          response,
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,

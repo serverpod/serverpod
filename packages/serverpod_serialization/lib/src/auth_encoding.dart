@@ -11,6 +11,14 @@ const basicAuthSchemeName = 'Basic';
 /// Note, the scheme name is case-insensitive and should be compared in a case-insensitive manner.
 const bearerAuthSchemeName = 'Bearer';
 
+/// The request header a web client sets to ask the server to issue the auth
+/// token as an `HttpOnly` cookie (in `Set-Cookie`) and omit it from the
+/// response body, instead of returning it in the body for header-based auth.
+const webAuthModeHeaderName = 'x-serverpod-auth-mode';
+
+/// The [webAuthModeHeaderName] value that selects cookie-based web auth.
+const webAuthModeCookie = 'cookie';
+
 /// Regexp for a string adhering to the RFC 4648 base64 encoding alphabet.
 const _base64RegExpStr = r'[a-zA-Z0-9+/]*=*';
 
