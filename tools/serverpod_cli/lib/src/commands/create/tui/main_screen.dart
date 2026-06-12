@@ -1,5 +1,4 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
 import 'package:serverpod_cli/src/commands/create/tui/text_button.dart';
@@ -8,7 +7,6 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 class MainScreen extends StatelessComponent {
   const MainScreen({
     super.key,
-    required this.name,
     required this.holder,
     required this.scrollController,
     required this.logScrollController,
@@ -16,7 +14,6 @@ class MainScreen extends StatelessComponent {
     required this.onQuit,
   });
 
-  final String name;
   final CreateAppStateHolder holder;
   final ScrollController scrollController;
   final ScrollController logScrollController;

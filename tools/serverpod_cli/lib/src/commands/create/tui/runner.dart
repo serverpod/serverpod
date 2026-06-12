@@ -50,7 +50,6 @@ Future<void> performCreateWithTui(
   await runTuiApp(
     backend: backend,
     ServerpodCreateApp(
-      name: name,
       holder: holder,
       onCreate: () async {
         projectPath = await performCreate(
