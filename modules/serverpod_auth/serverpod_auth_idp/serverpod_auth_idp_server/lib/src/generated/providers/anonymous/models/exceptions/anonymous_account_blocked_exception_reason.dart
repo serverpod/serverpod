@@ -20,8 +20,7 @@ enum AnonymousAccountBlockedExceptionReason implements _i1.SerializableModel {
 
   /// Exception to be thrown when the anonymous account creation request
   /// exceeds the configured throttling limits.
-  tooManyAttempts
-  ;
+  tooManyAttempts;
 
   static AnonymousAccountBlockedExceptionReason fromJson(String name) {
     switch (name) {

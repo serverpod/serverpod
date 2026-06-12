@@ -88,8 +88,17 @@ void main() {
       expect(Bit([true]).length, equals(1));
       expect(Bit([true, false, true, false]).length, equals(4));
       expect(
-        Bit([false, true, false, true, false, false, false, false, true])
-            .length,
+        Bit([
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          true,
+        ]).length,
         equals(9),
       );
     },
@@ -98,7 +107,17 @@ void main() {
   test(
     'Given Bit vector when accessing individual indices then returns correct values.',
     () {
-      final vec = Bit([false, true, false, true, false, false, false, false, true]);
+      final vec = Bit([
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+      ]);
       expect(vec[0], isFalse);
       expect(vec[8], isTrue);
       expect(vec[7], isFalse);
@@ -108,7 +127,17 @@ void main() {
   test(
     'Given Bit vector when accessing all indices then agrees with toList().',
     () {
-      final vec = Bit([false, true, false, true, false, false, false, false, true]);
+      final vec = Bit([
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+      ]);
       final list = vec.toList();
       for (var i = 0; i < vec.length; i++) {
         expect(vec[i], equals(list[i]), reason: 'index $i');

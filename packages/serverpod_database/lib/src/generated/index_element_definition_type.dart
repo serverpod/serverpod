@@ -21,8 +21,7 @@ enum IndexElementDefinitionType implements _i1.SerializableModel {
 
   /// Indicates, that the definition of an [IndexElementDefinition]
   /// is a (complex) expression.
-  expression
-  ;
+  expression;
 
   static IndexElementDefinitionType fromJson(int index) {
     switch (index) {

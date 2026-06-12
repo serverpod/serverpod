@@ -53,14 +53,20 @@ void main() {
   test(
     'Given Vector when accessing negative index then throws RangeError.',
     () {
-      expect(() => const Vector([1.0, 2.0, 3.0])[-1], throwsA(isA<RangeError>()));
+      expect(
+        () => const Vector([1.0, 2.0, 3.0])[-1],
+        throwsA(isA<RangeError>()),
+      );
     },
   );
 
   test(
     'Given Vector when accessing index equal to length then throws RangeError.',
     () {
-      expect(() => const Vector([1.0, 2.0, 3.0])[3], throwsA(isA<RangeError>()));
+      expect(
+        () => const Vector([1.0, 2.0, 3.0])[3],
+        throwsA(isA<RangeError>()),
+      );
     },
   );
 
