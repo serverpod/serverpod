@@ -180,6 +180,53 @@ void main() {
   );
 
   group(
+    'Given startOrAttach on a shared dataDir',
+    () {
+      test(
+        'when called twice on the same dataDir '
+        'then the first launches the postmaster and the second attaches to it.',
+        () async {
+          var pgDataDir = Directory(
+            p.join(tmpRoot.path, '.serverpod', 'pgdata'),
+          );
+
+          var opts = EmbeddedPostgresOptions(
+            dataDir: pgDataDir,
+            databaseName: 'projectname',
+            detach: true,
+            repairStaleLocks: true,
+          );
+
+          var first = await EmbeddedPostgres.startOrAttach(opts);
+          expect(
+            first.launched,
+            isTrue,
+            reason: 'the first caller spawns the postmaster',
+          );
+          expect(first.handle.pid, isNotNull);
+
+          var second = await EmbeddedPostgres.startOrAttach(opts);
+          expect(
+            second.launched,
+            isFalse,
+            reason:
+                'a live postmaster already owns the dataDir, so the '
+                'second caller attaches as a client',
+          );
+          expect(
+            second.handle.pid,
+            first.handle.pid,
+            reason: 'attach must re-acquire the original PID',
+          );
+
+          await second.handle.stop();
+        },
+        timeout: const Timeout(Duration(seconds: 180)),
+      );
+    },
+  );
+
+  group(
     'Given a dataDir that was never started',
     () {
       test(

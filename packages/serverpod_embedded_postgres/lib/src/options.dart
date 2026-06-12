@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 
+import 'cluster/postgres_conf_builder.dart';
 import 'transport.dart';
 
 /// Default PostgreSQL major.minor version. Tracks Serverpod Cloud and the
@@ -78,6 +79,10 @@ class EmbeddedPostgresOptions {
   /// `serverpod_cli start` wires this into the existing CLI progress UI.
   final void Function(double fraction, String stage)? onProgress;
 
+  /// The cluster's `max_connections`. Defaults to [defaultMaxConnections],
+  /// sized for parallel test suites sharing one postmaster.
+  final int maxConnections;
+
   /// Creates options for [EmbeddedPostgres.start]. Only [dataDir] and
   /// [databaseName] are required; the rest have safe dev defaults.
   EmbeddedPostgresOptions({
@@ -91,5 +96,6 @@ class EmbeddedPostgresOptions {
     this.detach = false,
     this.repairStaleLocks = false,
     this.onProgress,
+    this.maxConnections = defaultMaxConnections,
   }) : version = version ?? defaultPostgresVersion;
 }
