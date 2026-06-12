@@ -64,10 +64,10 @@ class MainScreen extends StatelessComponent {
   Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
     final showingSummary = state.isSummary;
     final creatingProject = state.creatingProject;
-    final title = showingSummary
-        ? 'Summary'
-        : creatingProject
+    final title = creatingProject
         ? 'Creating project'
+        : showingSummary
+        ? 'Summary'
         : 'Create new project';
 
     return Container(
