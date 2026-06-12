@@ -734,10 +734,17 @@ class ObjectRelationDefinition extends RelationDefinition {
   /// [parentTable].
   String parentTable;
 
-  /// Type of the primary key of the [parentTable]. It is the type that the
-  /// generator needs to build attach/detach methods. It is not the type of
+  /// Type of the primary key of the class that owns the foreign key column.
+  /// For relations where this side holds the foreign key
+  /// ([isForeignKeyOrigin] is true) this is the current class's id type,
+  /// otherwise it is the referenced class's id type. It is not the type of
   /// the [foreignFieldName].
   TypeDefinition parentTableIdType;
+
+  /// Type of the id field of the referenced class - the model on the other
+  /// side of this relation. Used to decide whether the `id == null` guards
+  /// in the generated attach/detach methods are needed.
+  TypeDefinition referenceIdType;
 
   /// References the field in the current object that points to the foreign table.
   final String fieldName;
@@ -755,6 +762,7 @@ class ObjectRelationDefinition extends RelationDefinition {
   ObjectRelationDefinition({
     String? name,
     required this.parentTableIdType,
+    required this.referenceIdType,
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
