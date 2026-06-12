@@ -247,10 +247,10 @@ class MainScreen extends StatelessComponent {
   ) {
     return Container(
       padding: const EdgeInsets.only(bottom: 1),
-      child: Row(
+      child: Wrap(
         children: [
           Text(
-            '${config.label}: ',
+            '• ${config.label}: ',
             style: const TextStyle(
               color: Color.defaultColor,
             ),
