@@ -294,7 +294,7 @@ class MainScreen extends StatelessComponent {
     final isFirstScreen = state.currentScreenIndex == 0;
     final isSummary = state.isSummary;
     final hasSingleScreen = state.hasSingleScreen;
-    final createEnabled = !isSummary;
+    final createEnabled = !isSummary || state.canCreate;
 
     return ButtonBar(
       buttons: [
