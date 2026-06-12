@@ -11,7 +11,7 @@ import 'package:serverpod_test/src/with_serverpod.dart';
 abstract interface class InternalTestEndpoints {
   /// Initializes the endpoints.
   void initialize(
-    SerializationManagerServer serializationManager,
+    DatabaseSerializationManager serializationManager,
     EndpointDispatch endpoints,
   );
 }
@@ -114,14 +114,16 @@ class TestServerpod<T extends InternalTestEndpoints> {
   TestServerpod({
     required bool? applyMigrations,
     required EndpointDispatch endpoints,
-    required SerializationManagerServer serializationManager,
+    required DatabaseSerializationManager serializationManager,
     required this.isDatabaseEnabled,
     required this.testEndpoints,
     required ServerpodLoggingMode? serverpodLoggingMode,
     required String? runMode,
     required TestServerOutputMode? testServerOutputMode,
+    Directory? serverDirectory,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    ServerpodConfig Function(ServerpodConfig)? configOverride,
   }) : testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
@@ -137,6 +139,8 @@ class TestServerpod<T extends InternalTestEndpoints> {
           ),
           serializationManager,
           endpoints,
+          serverDirectory: serverDirectory,
+          configOverride: configOverride,
           experimentalFeatures: experimentalFeatures,
           runtimeParametersBuilder: runtimeParametersBuilder,
         );

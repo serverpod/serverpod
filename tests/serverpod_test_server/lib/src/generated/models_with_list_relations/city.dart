@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -116,6 +116,7 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
@@ -125,7 +126,8 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(City.t),
       include: include,
     );
@@ -316,6 +318,7 @@ class CityIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -364,11 +367,12 @@ class CityRepository {
   /// );
   /// ```
   Future<List<City>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -380,7 +384,8 @@ class CityRepository {
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -408,10 +413,11 @@ class CityRepository {
   /// );
   /// ```
   Future<City?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
@@ -423,7 +429,8 @@ class CityRepository {
       where: where?.call(City.t),
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -434,7 +441,7 @@ class CityRepository {
 
   /// Finds a single [City] by its [id] or null if no such row exists.
   Future<City?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     CityInclude? include,
@@ -456,14 +463,20 @@ class CityRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<City>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<City> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<City>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -471,12 +484,75 @@ class CityRepository {
   ///
   /// The returned [City] will have its `id` field set.
   Future<City> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<City>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [City]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [City]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<City>> upsert(
+    _i1.DatabaseSession session,
+    List<City> rows, {
+    required _i1.ColumnSelections<CityTable> conflictColumns,
+    _i1.ColumnSelections<CityTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CityTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<City>(
+      rows,
+      conflictColumns: conflictColumns(City.t),
+      updateColumns: updateColumns?.call(City.t),
+      updateWhere: updateWhere?.call(City.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [City] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [City] will have its `id` field set.
+  Future<City?> upsertRow(
+    _i1.DatabaseSession session,
+    City row, {
+    required _i1.ColumnSelections<CityTable> conflictColumns,
+    _i1.ColumnSelections<CityTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CityTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<City>(
+      row,
+      conflictColumns: conflictColumns(City.t),
+      updateColumns: updateColumns?.call(City.t),
+      updateWhere: updateWhere?.call(City.t),
       transaction: transaction,
     );
   }
@@ -487,7 +563,7 @@ class CityRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<City>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<City> rows, {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
@@ -503,7 +579,7 @@ class CityRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<City> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City row, {
     _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
@@ -518,7 +594,7 @@ class CityRepository {
   /// Updates a single [City] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<City?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -533,13 +609,14 @@ class CityRepository {
   /// Updates all [City]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<City>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CityTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CityTable>? orderBy,
     _i1.OrderByListBuilder<CityTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -550,28 +627,41 @@ class CityRepository {
       offset: offset,
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [City]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<City>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<City> rows, {
+    _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<City>(
       rows,
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [City].
   Future<City> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City row, {
     _i1.Transaction? transaction,
   }) async {
@@ -582,13 +672,24 @@ class CityRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<City>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityTable> where,
+    _i1.OrderByBuilder<CityTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<City>(
       where: where(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -596,7 +697,7 @@ class CityRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -610,7 +711,7 @@ class CityRepository {
 
   /// Acquires row-level locks on [City] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CityTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -631,7 +732,7 @@ class CityAttachRepository {
   /// Creates a relation between this [City] and the given [Person]s
   /// by setting each [Person]'s foreign key `_cityCitizensCityId` to refer to this [City].
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City city,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
@@ -661,7 +762,7 @@ class CityAttachRepository {
   /// Creates a relation between this [City] and the given [Organization]s
   /// by setting each [Organization]'s foreign key `cityId` to refer to this [City].
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City city,
     List<_i3.Organization> organization, {
     _i1.Transaction? transaction,
@@ -690,7 +791,7 @@ class CityAttachRowRepository {
   /// Creates a relation between this [City] and the given [Person]
   /// by setting the [Person]'s foreign key `_cityCitizensCityId` to refer to this [City].
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City city,
     _i2.Person person, {
     _i1.Transaction? transaction,
@@ -716,7 +817,7 @@ class CityAttachRowRepository {
   /// Creates a relation between this [City] and the given [Organization]
   /// by setting the [Organization]'s foreign key `cityId` to refer to this [City].
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     City city,
     _i3.Organization organization, {
     _i1.Transaction? transaction,
@@ -746,7 +847,7 @@ class CityDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.Person> person, {
     _i1.Transaction? transaction,
   }) async {
@@ -775,7 +876,7 @@ class CityDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i3.Organization> organization, {
     _i1.Transaction? transaction,
   }) async {
@@ -803,7 +904,7 @@ class CityDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> citizens(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.Person person, {
     _i1.Transaction? transaction,
   }) async {
@@ -828,7 +929,7 @@ class CityDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> organizations(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i3.Organization organization, {
     _i1.Transaction? transaction,
   }) async {

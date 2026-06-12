@@ -76,11 +76,16 @@ class GitHubSignInService {
   /// The [useWebview] controls the authentication method on Linux and Windows.
   /// When set to `true`, uses the webview implementation. When set to `false`,
   /// uses an internal server approach. Defaults to `true`.
+  ///
+  /// The [additionalAuthParams] are additional authentication parameters to
+  /// include in the authorization request. These are merged with the default
+  /// parameters, with precedence given to the default parameters on conflicts.
   Future<void> ensureInitialized({
     required String clientId,
     required String redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
     if (_config != null) return;
 
@@ -89,6 +94,7 @@ class GitHubSignInService {
       clientId: clientId,
       redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
+      additionalAuthParams: additionalAuthParams,
     );
     _useWebview = useWebview;
   }
@@ -132,12 +138,17 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
   ///
+  /// [additionalAuthParams] are extra parameters merged into the authorization
+  /// URL. The service already sends `prompt: select_account` by default;
+  /// any values provided here are merged on top and will override the defaults on conflict.
+  ///
   /// The [useWebview] controls the authentication method on Linux and Windows.
   Future<void> initializeGitHubSignIn({
     String? clientId,
     String? redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
     final effectiveClientId = clientId ?? _getClientIdFromEnvVar();
     final effectiveRedirectUri = redirectUri ?? _getRedirectUriFromEnvVar();
@@ -161,6 +172,10 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
       redirectUri: effectiveRedirectUri,
       callbackUrlScheme: callbackUrlScheme,
       useWebview: useWebview,
+      additionalAuthParams: {
+        'prompt': 'select_account',
+        ...additionalAuthParams,
+      },
     );
   }
 }

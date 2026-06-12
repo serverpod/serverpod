@@ -1,6 +1,9 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+
+export 'package:serverpod_database/src/definition/default_keywords.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -49,6 +52,17 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  /// If set to true the class is sealed.
+  final bool isSealed;
+
+  /// If set to [InheritanceDefinition] the class extends another class and
+  /// stores the [ClassDefinition] of its parent.
+  InheritanceDefinition? extendsClass;
+
+  /// If set to a List of [InheritanceDefinition] the class is a parent class
+  /// that stores the child classes.
+  List<InheritanceDefinition> childClasses;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -57,14 +71,99 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required this.fields,
     required super.serverOnly,
     required super.type,
+    required this.isSealed,
+    List<InheritanceDefinition>? childClasses,
+    this.extendsClass,
     super.subDirParts,
     super.sharedPackageName,
     this.documentation,
-  });
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
   }
+
+  /// Returns the `ClassDefinition` of the parent class.
+  /// If there is no parent class, `null` is returned.
+  ClassDefinition? get parentClass {
+    var extendsClass = this.extendsClass;
+    if (extendsClass is! ResolvedInheritanceDefinition) return null;
+
+    var classDefinition = extendsClass.classDefinition;
+    if (classDefinition.runtimeType != runtimeType) return null;
+    return classDefinition;
+  }
+
+  /// Returns a list of all fields in the parent class.
+  /// If there is no parent class, an empty list is returned.
+  List<SerializableModelFieldDefinition> get inheritedFields =>
+      parentClass?.fieldsIncludingInherited.toList() ?? [];
+
+  /// Returns a list of all fields in this class, including inherited fields.
+  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+    return [
+      ...inheritedFields,
+      ...fields,
+    ];
+  }
+
+  /// Returns `true` if this class is a parent class or sealed.
+  bool get isParentClass => childClasses.isNotEmpty || isSealed;
+
+  /// Returns the top node of the sealed hierarchy. If the class is the top node
+  /// it returns itself. If the class is not part of a sealed hierarchy, `null`
+  /// is returned.
+  ClassDefinition? get sealedTopNode {
+    final parent = parentClass;
+    if (parent != null) {
+      final parentsSealedTopNode = parent.sealedTopNode;
+      if (parentsSealedTopNode != null) return parentsSealedTopNode;
+    }
+
+    if (isSealed) return this;
+
+    return null;
+  }
+
+  /// Returns `true` if this class is the top node of a sealed hierarchy.
+  bool get isSealedTopNode => identical(sealedTopNode, this);
+
+  /// Returns `true` if all parent classes are sealed.
+  /// Returns `true` if the class does not have a parent class.
+  bool get everyParentIsSealed {
+    var parent = parentClass;
+    if (parent == null) return true;
+
+    if (!parent.isSealed) {
+      return false;
+    }
+
+    return parent.everyParentIsSealed;
+  }
+
+  /// Returns a list of all descendant classes.
+  /// This includes all child classes and their descendants.
+  /// If the class has no child classes, an empty list is returned.
+  List<ClassDefinition> get descendantClasses {
+    List<ClassDefinition> descendants = [];
+
+    for (var child in childClasses) {
+      if (child is! ResolvedInheritanceDefinition) continue;
+      var classDefinition = child.classDefinition;
+      if (classDefinition.runtimeType != runtimeType) continue;
+
+      descendants.add(classDefinition);
+      descendants.addAll(classDefinition.descendantClasses);
+    }
+
+    return descendants;
+  }
+
+  /// Returns the type name used in validation messages.
+  String get typeName => switch (this) {
+    ModelClassDefinition() => 'model',
+    ExceptionClassDefinition() => 'exception',
+  };
 }
 
 /// A [ClassDefinition] specialization that represents a model class.
@@ -72,6 +171,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
+
+  /// Determines where table-backed database code should be generated.
+  final ModelDatabaseDefinition database;
 
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
@@ -81,19 +183,12 @@ final class ModelClassDefinition extends ClassDefinition {
 
   final bool manageMigration;
 
-  /// If set to true the class is sealed.
-  final bool isSealed;
-
   /// If set to true the class is immutable.
   final bool isImmutable;
 
-  /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
-  List<InheritanceDefinition> childClasses;
-
-  /// If set to [InheritanceDefinitions] the class extends another class and stores the [ClassDefinition] of it's parent.
-  InheritanceDefinition? extendsClass;
-
-  List<ModelClassDefinition>? _descendantClasses;
+  /// If set, the default data type used for serialization of the JSON columns in this class.
+  /// It can be overridden for each field.
+  final SerializationDataType? serializationDataType;
 
   /// Create a new [ModelClassDefinition].
   ModelClassDefinition({
@@ -104,46 +199,64 @@ final class ModelClassDefinition extends ClassDefinition {
     required super.serverOnly,
     required this.manageMigration,
     required super.type,
-    required this.isSealed,
+    required super.isSealed,
     required this.isImmutable,
-    List<InheritanceDefinition>? childClasses,
-    this.extendsClass,
+    super.childClasses,
+    super.extendsClass,
+    this.database = ModelDatabaseDefinition.server,
     this.tableName,
+    this.serializationDataType,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
     super.sharedPackageName,
-  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
+  });
+
+  @override
+  ModelClassDefinition? get parentClass =>
+      super.parentClass as ModelClassDefinition?;
+
+  @override
+  ModelClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ModelClassDefinition?;
+
+  @override
+  List<ModelClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ModelClassDefinition>().toList();
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
   /// If the field is not present, an error is thrown.
   SerializableModelFieldDefinition get idField =>
       findField(defaultPrimaryKeyName)!;
 
-  /// Returns the `ModelClassDefinition` of the parent class.
-  /// If there is no parent class, `null` is returned.
-  ModelClassDefinition? get parentClass {
-    var extendsClass = this.extendsClass;
-    if (extendsClass is! ResolvedInheritanceDefinition) return null;
+  /// Returns true if database code should be generated for the specified side.
+  bool shouldGenerateTableCode(bool serverCode) {
+    if (tableName == null) return false;
 
-    return extendsClass.classDefinition;
+    return switch (database) {
+      ModelDatabaseDefinition.server => serverCode,
+      ModelDatabaseDefinition.client => !serverCode,
+      ModelDatabaseDefinition.all => true,
+    };
   }
 
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   /// Excludes the id field, as it is re-declared on child classes.
-  List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited
-          .where((element) => tableName == null || element.name != 'id')
-          .toList() ??
-      [];
+  @override
+  List<SerializableModelFieldDefinition> get inheritedFields => super
+      .inheritedFields
+      .where((element) => tableName == null || element.name != 'id')
+      .toList();
 
   /// Returns `true` if the 'id' field is inherited from a parent class.
   bool get isIdInherited =>
       parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  /// It ensures that the 'id' field, if present, is always included at the
+  /// beginning of the list.
+  @override
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
     bool hasIdField = fields.any((element) => element.name == 'id');
 
@@ -173,60 +286,6 @@ final class ModelClassDefinition extends ClassDefinition {
       ...indexes,
     ];
   }
-
-  /// Returns `true` if this class is a parent class or sealed.
-  bool get isParentClass => childClasses.isNotEmpty || isSealed;
-
-  /// Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
-  /// If the class is not part of a sealed hierarchy, `null` is returned.
-  ClassDefinition? get sealedTopNode {
-    var parent = parentClass;
-    if (parent != null) {
-      var parentsSealedTopNode = parent.sealedTopNode;
-      if (parentsSealedTopNode != null) return parentsSealedTopNode;
-    }
-
-    if (isSealed) return this;
-
-    return null;
-  }
-
-  /// Returns `true` if this class is the top node of a sealed hierarchy.
-  bool get isSealedTopNode => sealedTopNode == this;
-
-  /// Returns `true` if all parent classes are sealed.
-  /// Returns `true` if the class does not have a parent class.
-  bool get everyParentIsSealed {
-    var parent = parentClass;
-    if (parent == null) return true;
-
-    if (!parent.isSealed) {
-      return false;
-    }
-
-    return parent.everyParentIsSealed;
-  }
-
-  /// Returns a list of all descendant classes.
-  /// This includes all child classes and their descendants.
-  /// If the class has no child classes, an empty list is returned.
-  List<ModelClassDefinition> get descendantClasses {
-    return _descendantClasses ??= _computeDescendantClasses();
-  }
-
-  List<ModelClassDefinition> _computeDescendantClasses() {
-    List<ModelClassDefinition> descendants = [];
-
-    var resolvedChildClasses = childClasses
-        .whereType<ResolvedInheritanceDefinition>();
-
-    for (var child in resolvedChildClasses) {
-      descendants.add(child.classDefinition);
-      descendants.addAll(child.classDefinition.descendantClasses);
-    }
-
-    return descendants;
-  }
 }
 
 /// A [ClassDefinition] specialization that represents an exception.
@@ -239,10 +298,25 @@ final class ExceptionClassDefinition extends ClassDefinition {
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
+    required super.isSealed,
+    super.childClasses,
+    super.extendsClass,
     super.documentation,
     super.subDirParts,
     super.sharedPackageName,
   });
+
+  @override
+  ExceptionClassDefinition? get parentClass =>
+      super.parentClass as ExceptionClassDefinition?;
+
+  @override
+  ExceptionClassDefinition? get sealedTopNode =>
+      super.sealedTopNode as ExceptionClassDefinition?;
+
+  @override
+  List<ExceptionClassDefinition> get descendantClasses =>
+      super.descendantClasses.cast<ExceptionClassDefinition>().toList();
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -319,6 +393,9 @@ class SerializableModelFieldDefinition {
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
+  /// Whether this field should have a unique index auto-generated for it.
+  final bool shouldCreateUniqueIndex;
+
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
     required this.name,
@@ -332,6 +409,7 @@ class SerializableModelFieldDefinition {
     this.isRequired = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
+    this.shouldCreateUniqueIndex = false,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 
@@ -359,21 +437,71 @@ class SerializableModelFieldDefinition {
   /// Returns true, if this field should be added to the serialization for the
   /// database.
   /// [serverCode] specifies if it's code on the server or client side.
-  /// This method should only be called for server side code.
   ///
   /// See also:
   /// - [shouldIncludeField]
   /// - [shouldSerializeField]
   bool shouldSerializeFieldForDatabase(bool serverCode) {
-    return shouldPersist;
+    if (serverCode) {
+      return shouldPersist;
+    }
+    if (shouldPersist && scope == ModelFieldScopeDefinition.all) {
+      return true;
+    }
+
+    // Client: one-to-many implicit "child" FKs only.
+    final relation = this.relation;
+    return shouldPersist &&
+        scope == ModelFieldScopeDefinition.none &&
+        relation is ForeignRelationDefinition &&
+        relation.containerField == null;
   }
 
-  /// Returns true, if this is serialized field that should be hidden.
-  /// [serverCode] specifies if it's code on the server or client side.
+  /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
+  /// from the wire protocol but stored in the database. On the client, implicit
+  /// one-to-many child keys are hidden.
   bool hiddenSerializableField(bool serverCode) {
-    return serverCode &&
-        shouldPersist &&
-        scope == ModelFieldScopeDefinition.none;
+    if (serverCode) {
+      return shouldPersist && scope == ModelFieldScopeDefinition.none;
+    }
+    if (!shouldPersist || scope != ModelFieldScopeDefinition.none) {
+      return false;
+    }
+    final relation = this.relation;
+    return relation is ForeignRelationDefinition &&
+        relation.containerField == null;
+  }
+
+  /// Whether code generation should emit this field on the in-memory model
+  /// and *Implicit* copy/fromJson helpers.
+  ///
+  /// On the client, [modelHasTable] must be [true] when the model class is
+  /// table-backed for this code side (e.g. [ModelClassDefinition.shouldGenerateTableCode]).
+  bool shouldIncludeHiddenFieldInModelClass(
+    bool serverCode, {
+    bool modelHasTable = true,
+  }) {
+    if (!hiddenSerializableField(serverCode)) {
+      return false;
+    }
+    if (serverCode) {
+      return true;
+    }
+    return modelHasTable;
+  }
+
+  /// When [shouldCreateUniqueIndex] is true, the btree unique index that is
+  /// auto-created for this field on [tableName]; otherwise `null`.
+  SerializableModelIndexDefinition? autoGeneratedUniqueIndexDefinition(
+    String tableName,
+  ) {
+    if (!shouldCreateUniqueIndex) return null;
+    return SerializableModelIndexDefinition(
+      name: '${tableName}__${columnName}__unique_idx',
+      type: 'btree',
+      unique: true,
+      fields: [columnName],
+    );
   }
 }
 
@@ -382,6 +510,13 @@ enum ModelFieldScopeDefinition {
   all,
   serverOnly,
   none,
+}
+
+/// The side that should generate table-backed database code for a model.
+enum ModelDatabaseDefinition {
+  server,
+  client,
+  all,
 }
 
 /// The definition of an index for a file, that is also stored in the database.
@@ -400,6 +535,9 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// The gin index operator class, if it is a gin index.
+  final GinOperatorClass? ginOperatorClass;
+
   /// The vector index distance function, if it is a vector index.
   final VectorDistanceFunction? vectorDistanceFunction;
 
@@ -412,9 +550,13 @@ class SerializableModelIndexDefinition {
     required this.type,
     required this.unique,
     required this.fields,
+    this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.parameters,
   });
+
+  /// Whether the index is of GIN type.
+  bool get isGinIndex => type == 'gin';
 
   /// Whether the index is of vector type.
   bool get isVectorIndex => VectorIndexType.values.any((e) => e.name == type);
@@ -426,6 +568,7 @@ class SerializableModelIndexDefinition {
       type: type,
       unique: unique,
       fields: fields,
+      ginOperatorClass: ginOperatorClass,
       vectorDistanceFunction: vectorDistanceFunction,
       parameters: parameters,
     );
@@ -523,8 +666,9 @@ class UnresolvedInheritanceDefinition extends InheritanceDefinition {
   UnresolvedInheritanceDefinition(this.className);
 }
 
-class ResolvedInheritanceDefinition extends InheritanceDefinition {
-  final ModelClassDefinition classDefinition;
+class ResolvedInheritanceDefinition<T extends ClassDefinition>
+    extends InheritanceDefinition {
+  final T classDefinition;
 
   ResolvedInheritanceDefinition(this.classDefinition);
 }
@@ -724,25 +868,3 @@ const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
 const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
-
-const String defaultPrimaryKeyName = 'id';
-
-/// Int for the default primary key type.
-const String defaultIntSerial = 'serial';
-
-/// DateTime
-const String defaultDateTimeValueNow = 'now';
-
-/// bool
-const String defaultBooleanTrue = 'true';
-const String defaultBooleanFalse = 'false';
-
-/// UuidValue
-const String defaultUuidValueRandom = 'random';
-const String defaultUuidValueRandomV7 = 'random_v7';
-
-/// Allowed types for vector indexes.
-enum VectorIndexType {
-  hnsw,
-  ivfflat,
-}

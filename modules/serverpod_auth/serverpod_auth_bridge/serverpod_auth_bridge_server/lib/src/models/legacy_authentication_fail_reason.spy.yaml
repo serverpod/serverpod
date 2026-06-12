@@ -1,0 +1,14 @@
+### Defines reasons for a failed legacy authentication attempt.
+enum: LegacyAuthenticationFailReason
+serialized: byIndex
+values:
+  ### Credentials did not match any account.
+  - invalidCredentials
+  ### User creation was denied by server-side policy.
+  - userCreationDenied
+  ### An unexpected server error occurred.
+  - internalError
+  ### Too many failed attempts were made in a short period.
+  - tooManyFailedAttempts
+  ### The account exists but is blocked.
+  - blocked

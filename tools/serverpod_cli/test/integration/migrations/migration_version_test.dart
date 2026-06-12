@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
-
-import '../../test_util/builders/migration_version_builder.dart';
 
 void main() {
   var testAssetsPath = path.join(
@@ -36,16 +35,30 @@ void main() {
       );
       versionDirectory.createSync(recursive: true);
 
-      var migrationVersion = MigrationVersionBuilder()
-          .withProjectDirectory(tempDirectory)
-          .withVersionName(versionName)
-          .build();
+      var artifactStore = FileSystemMigrationArtifactStore(
+        projectDirectory: tempDirectory,
+      );
+      var emptyDefinition = DatabaseDefinition(
+        moduleName: 'example_project',
+        tables: [],
+        installedModules: [],
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      );
 
-      expect(
-        () => migrationVersion.write(
-          installedModules: [],
-          removedModules: [],
-          dialect: DatabaseDialect.postgres,
+      await expectLater(
+        artifactStore.writeVersion(
+          MigrationVersionArtifacts(
+            version: versionName,
+            definitionSql: '',
+            migrationSql: '',
+            definition: emptyDefinition,
+            projectDefinition: emptyDefinition,
+            migration: DatabaseMigration(
+              actions: [],
+              warnings: [],
+              migrationApiVersion: DatabaseConstants.migrationApiVersion,
+            ),
+          ),
         ),
         throwsA(isA<MigrationVersionAlreadyExistsException>()),
       );

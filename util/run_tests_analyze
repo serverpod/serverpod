@@ -27,6 +27,8 @@ declare -a projectPaths=(
     "packages/serverpod_serialization"
     "packages/serverpod_service_client"
     "packages/serverpod_shared"
+    "packages/serverpod_database"
+    "packages/serverpod_embedded_postgres"
     "packages/serverpod_flutter"
     "packages/serverpod_test"
 
@@ -76,8 +78,10 @@ declare -a projectPaths=(
     "templates/serverpod_templates/modulename_client"
     "templates/serverpod_templates/modulename_server"
 
+    "integrations/serverpod_cloud_storage_s3_compat"
     "integrations/serverpod_cloud_storage_s3"
     "integrations/serverpod_cloud_storage_gcp"
+    "integrations/serverpod_cloud_storage_r2"
 
     "tools/serverpod_cli"
 )

@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -120,6 +120,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
@@ -129,7 +130,8 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Order.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Order.t),
       include: include,
     );
@@ -315,6 +317,7 @@ class OrderIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -359,11 +362,12 @@ class OrderRepository {
   /// );
   /// ```
   Future<List<Order>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
@@ -375,7 +379,8 @@ class OrderRepository {
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -403,10 +408,11 @@ class OrderRepository {
   /// );
   /// ```
   Future<Order?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
@@ -418,7 +424,8 @@ class OrderRepository {
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -429,7 +436,7 @@ class OrderRepository {
 
   /// Finds a single [Order] by its [id] or null if no such row exists.
   Future<Order?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     OrderInclude? include,
@@ -451,14 +458,20 @@ class OrderRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<Order>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<Order>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -466,12 +479,75 @@ class OrderRepository {
   ///
   /// The returned [Order] will have its `id` field set.
   Future<Order> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<Order>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Order]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Order]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Order>> upsert(
+    _i1.DatabaseSession session,
+    List<Order> rows, {
+    required _i1.ColumnSelections<OrderTable> conflictColumns,
+    _i1.ColumnSelections<OrderTable>? updateColumns,
+    _i1.WhereExpressionBuilder<OrderTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Order>(
+      rows,
+      conflictColumns: conflictColumns(Order.t),
+      updateColumns: updateColumns?.call(Order.t),
+      updateWhere: updateWhere?.call(Order.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Order] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Order] will have its `id` field set.
+  Future<Order?> upsertRow(
+    _i1.DatabaseSession session,
+    Order row, {
+    required _i1.ColumnSelections<OrderTable> conflictColumns,
+    _i1.ColumnSelections<OrderTable>? updateColumns,
+    _i1.WhereExpressionBuilder<OrderTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Order>(
+      row,
+      conflictColumns: conflictColumns(Order.t),
+      updateColumns: updateColumns?.call(Order.t),
+      updateWhere: updateWhere?.call(Order.t),
       transaction: transaction,
     );
   }
@@ -482,7 +558,7 @@ class OrderRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Order>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -498,7 +574,7 @@ class OrderRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Order> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -513,7 +589,7 @@ class OrderRepository {
   /// Updates a single [Order] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Order?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -528,13 +604,14 @@ class OrderRepository {
   /// Updates all [Order]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Order>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
     _i1.OrderByListBuilder<OrderTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -545,28 +622,41 @@ class OrderRepository {
       offset: offset,
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [Order]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Order>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
+    _i1.OrderByBuilder<OrderTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Order>(
       rows,
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [Order].
   Future<Order> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
@@ -577,13 +667,24 @@ class OrderRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Order>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
+    _i1.OrderByBuilder<OrderTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Order>(
       where: where(Order.t),
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -591,7 +692,7 @@ class OrderRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -605,7 +706,7 @@ class OrderRepository {
 
   /// Acquires row-level locks on [Order] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -626,7 +727,7 @@ class OrderAttachRepository {
   /// Creates a relation between this [Order] and the given [Comment]s
   /// by setting each [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     List<_i3.Comment> comment, {
     _i1.Transaction? transaction,
@@ -653,7 +754,7 @@ class OrderAttachRowRepository {
   /// Creates a relation between the given [Order] and [Customer]
   /// by setting the [Order]'s foreign key `customerId` to refer to the [Customer].
   Future<void> customer(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     _i2.Customer customer, {
     _i1.Transaction? transaction,
@@ -676,7 +777,7 @@ class OrderAttachRowRepository {
   /// Creates a relation between this [Order] and the given [Comment]
   /// by setting the [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     _i3.Comment comment, {
     _i1.Transaction? transaction,

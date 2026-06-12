@@ -19,9 +19,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
-                        .withColumnDefault(
-                          '\'2024-01-01 01:01:01\'::timestamp without time zone',
-                        )
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
                         .build(),
                   )
                   .build(),
@@ -33,7 +31,7 @@ void main() {
         expect(
           sql,
           contains(
-            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01 01:01:01\'::timestamp without time zone',
+            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01 01:01:01.000\'::timestamp without time zone',
           ),
         );
       },
@@ -82,7 +80,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
-                        .withColumnDefault('CURRENT_TIMESTAMP')
+                        .withColumnDefault('now')
                         .build(),
                   )
                   .build(),
@@ -112,9 +110,7 @@ void main() {
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
                         .withIsNullable(true)
-                        .withColumnDefault(
-                          '\'2024-01-01 01:01:01\'::timestamp without time zone',
-                        )
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
                         .build(),
                   )
                   .build(),
@@ -126,7 +122,7 @@ void main() {
         expect(
           sql,
           contains(
-            '"dateTime" timestamp without time zone DEFAULT \'2024-01-01 01:01:01\'::timestamp without time zone',
+            '"dateTime" timestamp without time zone DEFAULT \'2024-01-01 01:01:01.000\'::timestamp without time zone',
           ),
         );
       },
@@ -162,6 +158,160 @@ void main() {
           sql,
           isNot(contains('DEFAULT')),
         );
+      },
+    );
+  });
+
+  group('Given a SQLite database table definition with a DateTime column ', () {
+    test(
+      'when generating SQL with a specific timestamp default value, then the column uses INTEGER epoch milliseconds.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('dateTime')
+                        .withColumnType(ColumnType.timestampWithoutTimeZone)
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"dateTime" INTEGER NOT NULL DEFAULT (1704070861000)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the DateTime column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('dateTime')
+                        .withColumnType(ColumnType.timestampWithoutTimeZone)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"dateTime" INTEGER NOT NULL'));
+        expect(sql, isNot(contains('"dateTime" INTEGER NOT NULL DEFAULT')));
+      },
+    );
+
+    test(
+      'when generating SQL with columnDefault set to "now", then the column uses unixepoch milliseconds.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('dateTime')
+                        .withColumnType(ColumnType.timestampWithoutTimeZone)
+                        .withColumnDefault('now')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"dateTime" INTEGER NOT NULL DEFAULT (CAST(unixepoch(\'subsecond\') * 1000 AS INTEGER))',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable DateTime field and columnDefault, then the column is nullable with epoch default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('dateTime')
+                        .withColumnType(ColumnType.timestampWithoutTimeZone)
+                        .withIsNullable(true)
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"dateTime" INTEGER DEFAULT (1704070861000)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable DateTime field and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('dateTime')
+                        .withColumnType(ColumnType.timestampWithoutTimeZone)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"dateTime" INTEGER\n'));
+        expect(sql, isNot(contains('"dateTime" INTEGER DEFAULT')));
       },
     );
   });

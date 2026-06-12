@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -118,6 +118,7 @@ abstract class MigratedUser
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
@@ -127,7 +128,8 @@ abstract class MigratedUser
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(MigratedUser.t),
       include: include,
     );
@@ -295,6 +297,7 @@ class MigratedUserIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -337,11 +340,12 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<List<MigratedUser>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
@@ -353,7 +357,8 @@ class MigratedUserRepository {
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -381,10 +386,11 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<MigratedUser?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
@@ -396,7 +402,8 @@ class MigratedUserRepository {
       where: where?.call(MigratedUser.t),
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -407,7 +414,7 @@ class MigratedUserRepository {
 
   /// Finds a single [MigratedUser] by its [id] or null if no such row exists.
   Future<MigratedUser?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
@@ -429,14 +436,20 @@ class MigratedUserRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<MigratedUser>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<MigratedUser>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -444,12 +457,75 @@ class MigratedUserRepository {
   ///
   /// The returned [MigratedUser] will have its `id` field set.
   Future<MigratedUser> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<MigratedUser>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [MigratedUser]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [MigratedUser]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<MigratedUser>> upsert(
+    _i1.DatabaseSession session,
+    List<MigratedUser> rows, {
+    required _i1.ColumnSelections<MigratedUserTable> conflictColumns,
+    _i1.ColumnSelections<MigratedUserTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<MigratedUser>(
+      rows,
+      conflictColumns: conflictColumns(MigratedUser.t),
+      updateColumns: updateColumns?.call(MigratedUser.t),
+      updateWhere: updateWhere?.call(MigratedUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [MigratedUser] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [MigratedUser] will have its `id` field set.
+  Future<MigratedUser?> upsertRow(
+    _i1.DatabaseSession session,
+    MigratedUser row, {
+    required _i1.ColumnSelections<MigratedUserTable> conflictColumns,
+    _i1.ColumnSelections<MigratedUserTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<MigratedUser>(
+      row,
+      conflictColumns: conflictColumns(MigratedUser.t),
+      updateColumns: updateColumns?.call(MigratedUser.t),
+      updateWhere: updateWhere?.call(MigratedUser.t),
       transaction: transaction,
     );
   }
@@ -460,7 +536,7 @@ class MigratedUserRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MigratedUser>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.ColumnSelections<MigratedUserTable>? columns,
     _i1.Transaction? transaction,
@@ -476,7 +552,7 @@ class MigratedUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MigratedUser> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.ColumnSelections<MigratedUserTable>? columns,
     _i1.Transaction? transaction,
@@ -491,7 +567,7 @@ class MigratedUserRepository {
   /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MigratedUser?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -506,13 +582,14 @@ class MigratedUserRepository {
   /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MigratedUser>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -523,28 +600,41 @@ class MigratedUserRepository {
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [MigratedUser]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MigratedUser>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
+    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MigratedUser>(
       rows,
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [MigratedUser].
   Future<MigratedUser> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
@@ -555,13 +645,24 @@ class MigratedUserRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<MigratedUser>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<MigratedUser>(
       where: where(MigratedUser.t),
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -569,7 +670,7 @@ class MigratedUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -583,7 +684,7 @@ class MigratedUserRepository {
 
   /// Acquires row-level locks on [MigratedUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -604,7 +705,7 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [UserInfo]
   /// by setting the [MigratedUser]'s foreign key `oldUserId` to refer to the [UserInfo].
   Future<void> oldUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser migratedUser,
     _i2.UserInfo oldUser, {
     _i1.Transaction? transaction,
@@ -627,7 +728,7 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [AuthUser]
   /// by setting the [MigratedUser]'s foreign key `newAuthUserId` to refer to the [AuthUser].
   Future<void> newAuthUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser migratedUser,
     _i3.AuthUser newAuthUser, {
     _i1.Transaction? transaction,

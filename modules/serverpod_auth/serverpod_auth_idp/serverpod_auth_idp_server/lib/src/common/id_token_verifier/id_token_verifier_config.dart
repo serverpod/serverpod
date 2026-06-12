@@ -3,6 +3,9 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
     show JWTKey, RSAPublicKey;
 
+/// Default tolerance for clock skew when validating ID token timestamps.
+const defaultIdTokenClockSkewTolerance = Duration(seconds: 60);
+
 /// Abstract configuration for ID token verification.
 ///
 /// Implementations of this class define provider-specific behavior for
@@ -14,6 +17,9 @@ abstract class IdTokenVerifierConfig {
   /// Parses the response body from the certificates URL and returns
   /// an iterable of JWT keys for verification.
   Iterable<dart_jsonwebtoken.JWTKey> parseKeys(final String responseBody);
+
+  /// Tolerance for time-based claim validation to handle small clock skews.
+  Duration get clockSkewTolerance;
 
   /// Validates the issuer claim.
   ///

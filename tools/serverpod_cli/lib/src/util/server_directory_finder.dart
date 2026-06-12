@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/util/cli_tools_select.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 

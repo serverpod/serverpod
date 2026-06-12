@@ -50,12 +50,13 @@ void main() {
             migration.warnings.first.type,
             DatabaseMigrationWarningType.columnDropped,
           );
-          expect(migration.warnings.first.destrucive, isTrue);
+          expect(migration.warnings.first.destructive, isTrue);
         },
       );
 
       group('when SQL is generated', () {
         late var sql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
@@ -114,7 +115,7 @@ void main() {
             migration.warnings.first.type,
             DatabaseMigrationWarningType.columnDropped,
           );
-          expect(migration.warnings.first.destrucive, isTrue);
+          expect(migration.warnings.first.destructive, isTrue);
         },
       );
     },

@@ -6,16 +6,16 @@ description: Bootstrapping test for Serverpod projects.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 dependencies:
   http: '>=1.1.0 <2.0.0'
-  serverpod: 3.3.1
+  serverpod: 3.5.0-beta.10
   uuid: ^4.5.3
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   path: ^1.8.3
-  serverpod_cli: 3.3.1
+  serverpod_cli: 3.5.0-beta.10
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
@@ -26,6 +26,10 @@ dependency_overrides:
     path: ../../tools/serverpod_cli
   serverpod_client:
     path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:

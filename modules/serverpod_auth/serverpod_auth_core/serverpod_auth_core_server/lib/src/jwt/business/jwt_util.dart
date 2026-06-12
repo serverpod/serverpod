@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 
@@ -70,16 +71,32 @@ class JwtUtil {
     final (
       dart_jsonwebtoken.JWTKey key,
       dart_jsonwebtoken.JWTAlgorithm algorithm,
+      String? kid,
     ) = switch (_algorithm) {
+      HmacSha256JwtAlgorithmConfiguration(:final key) => (
+        key,
+        dart_jsonwebtoken.JWTAlgorithm.HS256,
+        null,
+      ),
       HmacSha512JwtAlgorithmConfiguration(:final key) => (
         key,
         dart_jsonwebtoken.JWTAlgorithm.HS512,
+        null,
       ),
-      EcdsaSha512JwtAlgorithmConfiguration(:final privateKey) => (
-        privateKey,
-        dart_jsonwebtoken.JWTAlgorithm.ES512,
-      ),
+      EcdsaSha512JwtAlgorithmConfiguration(
+        :final privateKey,
+        :final publicKey,
+      ) =>
+        (
+          privateKey,
+          dart_jsonwebtoken.JWTAlgorithm.ES512,
+          _computeKid(publicKey),
+        ),
     };
+
+    if (kid != null) {
+      jwt.header = {'kid': kid};
+    }
 
     return jwt.sign(
       key,
@@ -187,6 +204,23 @@ class JwtUtil {
     }
 
     throw firstError!;
+  }
+
+  /// Computes an RFC 7638 JWK Thumbprint for an EC public key.
+  ///
+  /// Used as the `kid` value in JWT headers for ES512 tokens so that
+  /// consumers can efficiently select the correct key from a JWKS endpoint.
+  static String _computeKid(final dart_jsonwebtoken.ECPublicKey publicKey) {
+    final jwk = publicKey.toJWK();
+    // RFC 7638 members in lexicographic order, no whitespace.
+    final input = jsonEncode({
+      'crv': jwk['crv'],
+      'kty': 'EC',
+      'x': jwk['x'],
+      'y': jwk['y'],
+    });
+    final digest = sha256.convert(utf8.encode(input));
+    return base64Url.encode(digest.bytes).replaceAll('=', '');
   }
 
   /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1

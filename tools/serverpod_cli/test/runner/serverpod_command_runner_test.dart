@@ -83,6 +83,15 @@ class MockAnalytics implements Analytics {
   void cleanUp() {
     numberOfCleanups++;
   }
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  Future<void> sendEvent({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) async {}
 }
 
 class MockCommand extends Command {
@@ -173,8 +182,8 @@ void main() {
     initializeLoggerWith(testLogger);
   });
 
-  tearDownAll(() {
-    resetLogger();
+  tearDownAll(() async {
+    await closeLogger();
   });
 
   late TestFixture fixture;

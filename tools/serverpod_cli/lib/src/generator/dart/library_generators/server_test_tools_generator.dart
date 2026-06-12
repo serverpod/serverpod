@@ -698,6 +698,29 @@ class ServerTestToolsGenerator {
       ),
       Parameter(
         (p) => p
+          ..name = 'configOverride'
+          ..named = true
+          ..type = FunctionType(
+            (f) => f
+              ..isNullable = true
+              ..returnType = TypeReference(
+                (t) => t
+                  ..symbol = 'ServerpodConfig'
+                  ..url = serverpodUrl(true)
+                  ..isNullable = false,
+              )
+              ..requiredParameters.add(
+                TypeReference(
+                  (t) => t
+                    ..symbol = 'ServerpodConfig'
+                    ..url = serverpodUrl(true)
+                    ..isNullable = false,
+                ),
+              ),
+          ),
+      ),
+      Parameter(
+        (p) => p
           ..name = 'testGroupTagsOverride'
           ..named = true
           ..type = refer('List<String>?'),
@@ -719,6 +742,12 @@ class ServerTestToolsGenerator {
           ..name = 'experimentalFeatures'
           ..named = true
           ..type = refer('ExperimentalFeatures?', serverpodUrl(true)),
+      ),
+      Parameter(
+        (p) => p
+          ..name = 'serverDirectory'
+          ..named = true
+          ..type = refer('Directory?', 'dart:io'),
       ),
       if (config.isFeatureEnabled(ServerpodFeature.database)) ...[
         Parameter(
@@ -793,7 +822,9 @@ class ServerTestToolsGenerator {
                         ),
                         'serverpodLoggingMode': refer('serverpodLoggingMode'),
                         'testServerOutputMode': refer('testServerOutputMode'),
+                        'serverDirectory': refer('serverDirectory'),
                         'experimentalFeatures': refer('experimentalFeatures'),
+                        'configOverride': refer('configOverride'),
                         if (config.isFeatureEnabled(ServerpodFeature.database))
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
@@ -935,6 +966,11 @@ extension on Expression {
           ]),
         ),
       ]);
+    }
+
+    if (returnType.isFutureType &&
+        returnType.generics.single.className == 'dynamic') {
+      return this;
     }
 
     return asA(returnType.reference(true, config: config));

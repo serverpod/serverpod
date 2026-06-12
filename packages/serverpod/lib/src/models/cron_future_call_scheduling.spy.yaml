@@ -1,0 +1,6 @@
+## A recurring future call scheduling option that uses cron expression
+class: CronFutureCallScheduling
+extends: FutureCallScheduling
+fields:
+  ### Cron expression for recurring calls
+  cron: String

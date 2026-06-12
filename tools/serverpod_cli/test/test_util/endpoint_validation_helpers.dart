@@ -1,11 +1,27 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:path/path.dart' as path;
 
-Future createTestEnvironment(
-  Directory testProjectDirectory,
-  String pathToServerpodRoot,
-) async {
+/// Resolves the absolute path to the serverpod monorepo root via the test
+/// isolate's package config. The previous `Directory('../..')` approach
+/// breaks when dart_test sandboxes [Directory.current] in concurrent runs.
+Future<String> _resolveServerpodRoot() async {
+  final uri = await Isolate.resolvePackageUri(
+    Uri.parse('package:serverpod_cli/analyzer.dart'),
+  );
+  if (uri == null) {
+    throw StateError('Could not resolve package:serverpod_cli');
+  }
+  // .../tools/serverpod_cli/lib/analyzer.dart -> 4 segments up.
+  return path.canonicalize(
+    path.join(uri.toFilePath(), '..', '..', '..', '..'),
+  );
+}
+
+Future createTestEnvironment(Directory testProjectDirectory) async {
+  final pathToServerpodRoot = await _resolveServerpodRoot();
+
   var pubspecFile = File(path.join(testProjectDirectory.path, 'pubspec.yaml'));
   pubspecFile.createSync(recursive: true);
 
@@ -34,19 +50,22 @@ dependency_overrides:
     path: $pathToServerpodRoot/packages/serverpod_lints
   serverpod_client:
     path: $pathToServerpodRoot/packages/serverpod_client
+  serverpod_database:
+    path: $pathToServerpodRoot/packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: $pathToServerpodRoot/packages/serverpod_embedded_postgres
 ''');
 
-  var result = await Process.run(
+  final result = await Process.run(
     'dart',
-    [
-      'pub',
-      'get',
-    ],
-    workingDirectory: path.join(
-      Directory.current.path,
-      testProjectDirectory.path,
-    ),
+    ['pub', 'get'],
+    workingDirectory: testProjectDirectory.absolute.path,
   );
 
-  assert(result.exitCode == 0, 'Failed to run pub get.');
+  assert(
+    result.exitCode == 0,
+    'Failed to run pub get. exit=${result.exitCode}\n'
+    'stdout: ${result.stdout}\n'
+    'stderr: ${result.stderr}',
+  );
 }

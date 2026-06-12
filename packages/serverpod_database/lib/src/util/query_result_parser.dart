@@ -1,0 +1,113 @@
+import 'package:meta/meta.dart';
+
+import '../../serverpod_database.dart';
+import 'column_alias_resolver.dart';
+
+/// Prepares a query result for serverpod serialization.
+/// This is typically only used internally by the serverpod framework.
+@internal
+Map<String, dynamic>? resolvePrefixedQueryRow(
+  Table table,
+  Map<String, dynamic> rawRow,
+  Map<String, Map<Object, List<dynamic>>> resolvedListRelations, {
+  Include? include,
+  ColumnAliasResolver? aliasResolver,
+}) {
+  // Builder and parser must resolve column aliases identically. The resolver is
+  // a pure function of (table, include), so building it here yields the same
+  // aliases the query builder emitted. Built once at the top-level call and
+  // threaded through the recursion.
+  var resolver = aliasResolver ?? ColumnAliasResolver.forQuery(table, include);
+
+  // Resolve this object.
+  var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
+    table.columns,
+    rawRow,
+    resolver,
+  );
+
+  if (resolvedTableRow.isEmpty) {
+    return null;
+  }
+
+  // Resolve all includes for the object.
+  include?.includes.forEach((relationField, relationInclude) {
+    if (relationInclude == null) return;
+
+    var relationTable = table.getRelationTable(relationField);
+    if (relationTable == null) return;
+
+    if (relationInclude is IncludeList) {
+      var primaryKey = resolvedTableRow['id'];
+      if (primaryKey == null) {
+        throw ArgumentError('Cannot resolve list relation without id.');
+      }
+
+      resolvedTableRow[relationField] = _extractRelationalList(
+        primaryKey,
+        relationTable,
+        resolvedListRelations,
+      );
+    } else {
+      resolvedTableRow[relationField] = resolvePrefixedQueryRow(
+        relationTable,
+        rawRow,
+        resolvedListRelations,
+        include: relationInclude,
+        aliasResolver: resolver,
+      );
+    }
+  });
+
+  return resolvedTableRow;
+}
+
+/// Maps a list of query results to each id of the parent table relation by
+/// the query prefix.
+@internal
+Map<String, Map<Object, List<Map<String, dynamic>>>> mapListToQueryById(
+  List<Map<String, dynamic>> resolvedList,
+  Table relativeRelationTable,
+  String foreignFieldName,
+) {
+  var mappedLists = resolvedList.fold<Map<Object, List<Map<String, dynamic>>>>(
+    {},
+    (mappedResult, row) {
+      var id = row[foreignFieldName];
+
+      mappedResult.update(
+        id,
+        (value) => [...value, row],
+        ifAbsent: () => [row],
+      );
+      return mappedResult;
+    },
+  );
+
+  return {relativeRelationTable.queryPrefix: mappedLists};
+}
+
+List<dynamic> _extractRelationalList(
+  Object primaryKey,
+  Table relationTable,
+  Map<String, Map<Object, List<dynamic>>> resolvedListRelations,
+) {
+  return resolvedListRelations[relationTable.queryPrefix]?[primaryKey] ?? [];
+}
+
+Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
+  List<Column> columns,
+  Map<String, dynamic> rawTableRow,
+  ColumnAliasResolver aliasResolver,
+) {
+  var columnMap = <String, dynamic>{};
+  for (var column in columns) {
+    var queryKey = aliasResolver.resolve(column);
+    var columnData = rawTableRow[queryKey];
+    if (columnData != null) {
+      columnMap[column.fieldName] = columnData;
+    }
+  }
+
+  return columnMap;
+}

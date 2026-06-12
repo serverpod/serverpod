@@ -15,7 +15,7 @@ dependencies:
   googleapis_auth: '>=1.6.0 <3.0.0'
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
-  jose: ^0.3.3
+  jose: ^0.3.5+2
   meta: ^1.15.0
   openid_client: ^0.4.8
   pointycastle: '>=3.7.4 <5.0.0'
@@ -31,6 +31,10 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

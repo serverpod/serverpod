@@ -13,8 +13,13 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
     'https://accounts.google.com',
   ];
 
+  @override
+  final Duration clockSkewTolerance;
+
   /// Creates a new Google ID token configuration.
-  const GoogleIdTokenConfig();
+  const GoogleIdTokenConfig({
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
+  });
 
   @override
   String get certsUrl => 'https://www.googleapis.com/oauth2/v3/certs';
@@ -83,4 +88,7 @@ class GoogleIdTokenValidationServerException implements Exception {
 
   /// Creates a new instance.
   GoogleIdTokenValidationServerException(this.message);
+
+  @override
+  String toString() => '$runtimeType: $message';
 }

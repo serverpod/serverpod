@@ -1,0 +1,6 @@
+class: StringDefaultMix
+table: string_default_mix
+fields:
+  stringDefaultAndDefaultModel: String, default='This is a default value', defaultModel='This is a default model value'
+  stringDefaultAndDefaultPersist: String, default='This is a default value', defaultPersist='This is a default persist value'
+  stringDefaultModelAndDefaultPersist: String, defaultModel='This is a default value', defaultPersist='This is a default persist value'

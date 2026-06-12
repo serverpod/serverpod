@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -21,6 +22,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefault" TEXT NOT NULL',
+          );
+        },
+      );
     });
 
     group('with "This is a default value" as default value', () {
@@ -37,7 +48,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefault" text NOT NULL DEFAULT \'This is a default value\'',
+            '"stringDefault" text NOT NULL DEFAULT \'This is a default value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefault" TEXT NOT NULL DEFAULT (\'This is a default value\')',
           );
         },
       );
@@ -57,7 +78,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefault" text NOT NULL DEFAULT \'Another default value\'',
+            '"stringDefault" text NOT NULL DEFAULT \'Another default value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefault" TEXT NOT NULL DEFAULT (\'Another default value\')',
           );
         },
       );
@@ -80,6 +111,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefault" TEXT',
+          );
+        },
+      );
     });
 
     group(
@@ -98,7 +139,17 @@ void main() {
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
-              '"stringDefault" text DEFAULT \'This is a default value\'',
+              '"stringDefault" text DEFAULT \'This is a default value\'::text',
+            );
+          },
+        );
+
+        test(
+          'when converting to SQLite SQL code, then it should be nullable with the default value',
+          () {
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"stringDefault" TEXT DEFAULT (\'This is a default value\')',
             );
           },
         );
@@ -121,7 +172,17 @@ void main() {
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
-              '"stringDefault" text DEFAULT \'Another default value\'',
+              '"stringDefault" text DEFAULT \'Another default value\'::text',
+            );
+          },
+        );
+
+        test(
+          'when converting to SQLite SQL code, then it should be nullable with the default value',
+          () {
+            expect(
+              defaultColumn.toSqlFragment(),
+              '"stringDefault" TEXT DEFAULT (\'Another default value\')',
             );
           },
         );
@@ -142,7 +203,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultSingleQuote" text NOT NULL DEFAULT \'This is a \'\'default\'\' value\'',
+            '"stringDefaultSingleQuote" text NOT NULL DEFAULT \'This is a \'\'default\'\' value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should include the single quotes in the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefaultSingleQuote" TEXT NOT NULL DEFAULT (\'This is a \'\'default\'\' value\')',
           );
         },
       );
@@ -162,7 +233,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultDoubleQuote" text NOT NULL DEFAULT \'This is a "default" value\'',
+            '"stringDefaultDoubleQuote" text NOT NULL DEFAULT \'This is a "default" value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should include the double quotes in the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefaultDoubleQuote" TEXT NOT NULL DEFAULT (\'This is a "default" value\')',
           );
         },
       );
@@ -182,7 +263,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultSingleQuote" text DEFAULT \'This is a \'\'default\'\' value\'',
+            '"stringDefaultSingleQuote" text DEFAULT \'This is a \'\'default\'\' value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable and include the single quotes in the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefaultSingleQuote" TEXT DEFAULT (\'This is a \'\'default\'\' value\')',
           );
         },
       );
@@ -202,7 +293,17 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultDoubleQuote" text DEFAULT \'This is a "default" value\'',
+            '"stringDefaultDoubleQuote" text DEFAULT \'This is a "default" value\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable and include the double quotes in the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"stringDefaultDoubleQuote" TEXT DEFAULT (\'This is a "default" value\')',
           );
         },
       );

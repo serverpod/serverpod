@@ -9,6 +9,10 @@ void main() async {
   withServerpod(
     'Given a running server',
     testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    // Disable health checks to avoid the health check updating the last database
+    // operation time and causing flakiness on the test.
+    configOverride: (config) =>
+        config.copyWith(healthCheckInterval: Duration.zero),
     enableSessionLogging: false,
     (
       sessionBuilder,

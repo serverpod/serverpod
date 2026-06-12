@@ -1,4 +1,4 @@
-import 'package:serverpod/database.dart' as db;
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -10,11 +10,11 @@ void main() async {
     tearDown(() async {
       await Member.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
       await Blocking.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
     });
 
@@ -80,14 +80,8 @@ void main() async {
         var fetchedMembers = await Member.db.find(
           session,
           orderByList: (t) => [
-            db.Order(
-              column: t.blocking.count(
-                (c) => c.blockedId.equals(member[0].id!),
-              ),
-            ),
-            db.Order(
-              column: t.name,
-            ),
+            t.blocking.count((c) => c.blockedId.equals(member[0].id!)).asc(),
+            t.name.asc(),
           ],
         );
 

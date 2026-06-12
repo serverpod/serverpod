@@ -1,0 +1,4 @@
+class: DurationDefaultPersist
+table: duration_default_persist
+fields:
+  durationDefaultPersist: Duration?, defaultPersist=1d 2h 10min 30s 100ms

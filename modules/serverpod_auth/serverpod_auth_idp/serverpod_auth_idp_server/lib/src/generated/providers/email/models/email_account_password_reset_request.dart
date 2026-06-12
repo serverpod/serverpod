@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -162,6 +162,7 @@ abstract class EmailAccountPasswordResetRequest
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     EmailAccountPasswordResetRequestInclude? include,
@@ -171,7 +172,8 @@ abstract class EmailAccountPasswordResetRequest
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
       include: include,
     );
@@ -417,6 +419,7 @@ class EmailAccountPasswordResetRequestIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -463,11 +466,12 @@ class EmailAccountPasswordResetRequestRepository {
   /// );
   /// ```
   Future<List<EmailAccountPasswordResetRequest>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -479,7 +483,8 @@ class EmailAccountPasswordResetRequestRepository {
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -507,10 +512,11 @@ class EmailAccountPasswordResetRequestRepository {
   /// );
   /// ```
   Future<EmailAccountPasswordResetRequest?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
@@ -522,7 +528,8 @@ class EmailAccountPasswordResetRequestRepository {
       where: where?.call(EmailAccountPasswordResetRequest.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -533,7 +540,7 @@ class EmailAccountPasswordResetRequestRepository {
 
   /// Finds a single [EmailAccountPasswordResetRequest] by its [id] or null if no such row exists.
   Future<EmailAccountPasswordResetRequest?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     EmailAccountPasswordResetRequestInclude? include,
@@ -555,14 +562,20 @@ class EmailAccountPasswordResetRequestRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<EmailAccountPasswordResetRequest>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<EmailAccountPasswordResetRequest>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -570,12 +583,79 @@ class EmailAccountPasswordResetRequestRepository {
   ///
   /// The returned [EmailAccountPasswordResetRequest] will have its `id` field set.
   Future<EmailAccountPasswordResetRequest> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailAccountPasswordResetRequest>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [EmailAccountPasswordResetRequest]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [EmailAccountPasswordResetRequest]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EmailAccountPasswordResetRequest>> upsert(
+    _i1.DatabaseSession session,
+    List<EmailAccountPasswordResetRequest> rows, {
+    required _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>
+    conflictColumns,
+    _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EmailAccountPasswordResetRequest>(
+      rows,
+      conflictColumns: conflictColumns(EmailAccountPasswordResetRequest.t),
+      updateColumns: updateColumns?.call(EmailAccountPasswordResetRequest.t),
+      updateWhere: updateWhere?.call(EmailAccountPasswordResetRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EmailAccountPasswordResetRequest] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [EmailAccountPasswordResetRequest] will have its `id` field set.
+  Future<EmailAccountPasswordResetRequest?> upsertRow(
+    _i1.DatabaseSession session,
+    EmailAccountPasswordResetRequest row, {
+    required _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>
+    conflictColumns,
+    _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>?
+    updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmailAccountPasswordResetRequest>(
+      row,
+      conflictColumns: conflictColumns(EmailAccountPasswordResetRequest.t),
+      updateColumns: updateColumns?.call(EmailAccountPasswordResetRequest.t),
+      updateWhere: updateWhere?.call(EmailAccountPasswordResetRequest.t),
       transaction: transaction,
     );
   }
@@ -586,7 +666,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<EmailAccountPasswordResetRequest>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
     _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -602,7 +682,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailAccountPasswordResetRequest> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest row, {
     _i1.ColumnSelections<EmailAccountPasswordResetRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -617,7 +697,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// Updates a single [EmailAccountPasswordResetRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccountPasswordResetRequest?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<
       EmailAccountPasswordResetRequestUpdateTable
@@ -637,7 +717,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// Updates all [EmailAccountPasswordResetRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequest>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
       EmailAccountPasswordResetRequestUpdateTable
     >
@@ -648,6 +728,7 @@ class EmailAccountPasswordResetRequestRepository {
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -660,28 +741,41 @@ class EmailAccountPasswordResetRequestRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [EmailAccountPasswordResetRequest]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EmailAccountPasswordResetRequest>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailAccountPasswordResetRequest>(
       rows,
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [EmailAccountPasswordResetRequest].
   Future<EmailAccountPasswordResetRequest> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest row, {
     _i1.Transaction? transaction,
   }) async {
@@ -692,14 +786,25 @@ class EmailAccountPasswordResetRequestRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<EmailAccountPasswordResetRequest>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
     where,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetRequest>(
       where: where(EmailAccountPasswordResetRequest.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -707,7 +812,7 @@ class EmailAccountPasswordResetRequestRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -721,7 +826,7 @@ class EmailAccountPasswordResetRequestRepository {
 
   /// Acquires row-level locks on [EmailAccountPasswordResetRequest] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
     where,
     required _i1.LockMode lockMode,
@@ -743,7 +848,7 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
   /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [EmailAccount]
   /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `emailAccountId` to refer to the [EmailAccount].
   Future<void> emailAccount(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest emailAccountPasswordResetRequest,
     _i2.EmailAccount emailAccount, {
     _i1.Transaction? transaction,
@@ -767,7 +872,7 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
   /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [SecretChallenge]
   /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
   Future<void> challenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest emailAccountPasswordResetRequest,
     _i3.SecretChallenge challenge, {
     _i1.Transaction? transaction,
@@ -791,7 +896,7 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
   /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [SecretChallenge]
   /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `setPasswordChallengeId` to refer to the [SecretChallenge].
   Future<void> setPasswordChallenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest emailAccountPasswordResetRequest,
     _i3.SecretChallenge setPasswordChallenge, {
     _i1.Transaction? transaction,
@@ -822,7 +927,7 @@ class EmailAccountPasswordResetRequestDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> setPasswordChallenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailAccountPasswordResetRequest emailAccountPasswordResetRequest, {
     _i1.Transaction? transaction,
   }) async {

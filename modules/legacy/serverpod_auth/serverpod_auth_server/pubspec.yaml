@@ -3,11 +3,11 @@
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 3.3.1
+version: 3.5.0-beta.10
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   crypto: ^3.0.2
@@ -16,22 +16,26 @@ dependencies:
   googleapis_auth: '>=1.6.0 <3.0.0'
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
-  jose: ^0.3.3
+  jose: ^0.3.5+2
   meta: ^1.15.0
   openid_client: ^0.4.8
   pointycastle: '>=3.7.4 <5.0.0'
-  serverpod: 3.3.1
-  serverpod_serialization: 3.3.1
-  serverpod_shared: 3.3.1
+  serverpod: 3.5.0-beta.10
+  serverpod_serialization: 3.5.0-beta.10
+  serverpod_shared: 3.5.0-beta.10
 
 dev_dependencies:
-  serverpod_lints: 3.3.1
-  serverpod_test: 3.3.1
+  serverpod_lints: 3.5.0-beta.10
+  serverpod_test: 3.5.0-beta.10
   test: ^1.25.5
 
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

@@ -1,0 +1,7 @@
+services:
+  serverpod_test_sqlite_server:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_sqlite_integration/Dockerfile
+    environment:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'

@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "serverpod_start",
+      "type": "shell",
+      "command": "serverpod",
+      "args": ["start"],
+      "options": {
+        "cwd": "${workspaceFolder}/projectname_server",
+        // {{#postgres}}
+        "env": {
+          "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
+        }
+        // {{/postgres}}
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      // The TUI captures stdout, so we can't string-match for "ready". The
+      // attach config polls vm-service-info.json for the actual readiness
+      // signal; this matcher exists only to satisfy VS Code's requirement
+      // that background tasks declare one. The pattern intentionally never
+      // matches; begin/end patterns mark the task active+ready immediately.
+      "problemMatcher": {
+        "owner": "serverpod",
+        "pattern": [
+          {
+            "regexp": "^(SERVERPOD_NEVER_MATCH):(\\d+):(.+)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "."
+        }
+      }
+    }
+  ]
+}

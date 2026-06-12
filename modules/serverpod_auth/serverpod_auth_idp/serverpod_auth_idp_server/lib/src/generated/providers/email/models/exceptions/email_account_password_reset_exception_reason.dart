@@ -31,7 +31,8 @@ enum EmailAccountPasswordResetExceptionReason implements _i1.SerializableModel {
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown;
+  unknown
+  ;
 
   static EmailAccountPasswordResetExceptionReason fromJson(String name) {
     switch (name) {

@@ -1,6 +1,6 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod/database.dart' as db;
 import 'package:test/test.dart';
 
 void main() async {
@@ -10,10 +10,10 @@ void main() async {
     tearDown(() async {
       await Player.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
-      await Team.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
-      await Arena.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Team.db.deleteWhere(session, where: (_) => Constant.bool(true));
+      await Arena.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -47,13 +47,8 @@ void main() async {
           session,
           // Order arenas by number of players in their teams and then their name.
           orderByList: (t) => [
-            db.Order(
-              column: t.team.players.count(),
-              orderDescending: true,
-            ),
-            db.Order(
-              column: t.name,
-            ),
+            t.team.players.count().desc(),
+            t.name.asc(),
           ],
         );
 
@@ -100,13 +95,8 @@ void main() async {
           session,
           // Fetch all arenas with teams that have any player with a name starting with a.
           orderByList: (t) => [
-            db.Order(
-              column: t.team.players.count((p) => p.name.ilike('a%')),
-              orderDescending: true,
-            ),
-            db.Order(
-              column: t.name,
-            ),
+            t.team.players.count((p) => p.name.ilike('a%')).desc(),
+            t.name.asc(),
           ],
         );
 

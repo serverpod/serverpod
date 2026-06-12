@@ -119,6 +119,7 @@ abstract class AuthKey
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
@@ -128,7 +129,8 @@ abstract class AuthKey
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(AuthKey.t),
       include: include,
     );
@@ -269,6 +271,7 @@ class AuthKeyIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -309,11 +312,12 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<List<AuthKey>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -324,7 +328,8 @@ class AuthKeyRepository {
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -351,10 +356,11 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<AuthKey?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
@@ -365,7 +371,8 @@ class AuthKeyRepository {
       where: where?.call(AuthKey.t),
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -375,7 +382,7 @@ class AuthKeyRepository {
 
   /// Finds a single [AuthKey] by its [id] or null if no such row exists.
   Future<AuthKey?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -395,14 +402,20 @@ class AuthKeyRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<AuthKey>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<AuthKey>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -410,12 +423,75 @@ class AuthKeyRepository {
   ///
   /// The returned [AuthKey] will have its `id` field set.
   Future<AuthKey> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<AuthKey>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [AuthKey]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [AuthKey]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<AuthKey>> upsert(
+    _i1.DatabaseSession session,
+    List<AuthKey> rows, {
+    required _i1.ColumnSelections<AuthKeyTable> conflictColumns,
+    _i1.ColumnSelections<AuthKeyTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<AuthKey>(
+      rows,
+      conflictColumns: conflictColumns(AuthKey.t),
+      updateColumns: updateColumns?.call(AuthKey.t),
+      updateWhere: updateWhere?.call(AuthKey.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [AuthKey] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [AuthKey] will have its `id` field set.
+  Future<AuthKey?> upsertRow(
+    _i1.DatabaseSession session,
+    AuthKey row, {
+    required _i1.ColumnSelections<AuthKeyTable> conflictColumns,
+    _i1.ColumnSelections<AuthKeyTable>? updateColumns,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<AuthKey>(
+      row,
+      conflictColumns: conflictColumns(AuthKey.t),
+      updateColumns: updateColumns?.call(AuthKey.t),
+      updateWhere: updateWhere?.call(AuthKey.t),
       transaction: transaction,
     );
   }
@@ -426,7 +502,7 @@ class AuthKeyRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<AuthKey>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -442,7 +518,7 @@ class AuthKeyRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<AuthKey> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -457,7 +533,7 @@ class AuthKeyRepository {
   /// Updates a single [AuthKey] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AuthKey?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -472,13 +548,14 @@ class AuthKeyRepository {
   /// Updates all [AuthKey]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AuthKey>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
     _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -489,28 +566,41 @@ class AuthKeyRepository {
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [AuthKey]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<AuthKey>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<AuthKey>(
       rows,
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [AuthKey].
   Future<AuthKey> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
@@ -521,13 +611,24 @@ class AuthKeyRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<AuthKey>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<AuthKey>(
       where: where(AuthKey.t),
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -535,7 +636,7 @@ class AuthKeyRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -549,7 +650,7 @@ class AuthKeyRepository {
 
   /// Acquires row-level locks on [AuthKey] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

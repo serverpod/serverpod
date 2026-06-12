@@ -1,3 +1,6 @@
 type: internal
 
 client_package_path: ../serverpod_service_client
+
+shared_packages:
+  - ../serverpod_database

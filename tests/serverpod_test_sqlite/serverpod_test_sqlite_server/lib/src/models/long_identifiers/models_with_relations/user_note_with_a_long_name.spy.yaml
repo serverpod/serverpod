@@ -1,0 +1,4 @@
+class: UserNoteWithALongName
+table: user_note_with_a_long_name
+fields:
+  name: String

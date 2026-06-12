@@ -8,15 +8,23 @@ on:
       - dev
       - tests
       - stable-*
+    paths-ignore:
+      # Skip CI when only Markdown files are changed.
+      - "**/*.md"
   pull_request:
     branches:
       - main
       - dev
       - stable-*
+    paths-ignore:
+      - "**/*.md"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
 
 jobs:
   dart_format:
@@ -24,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0"]
+        flutter-version: ["3.38.4"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -44,11 +52,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0"]
+        flutter-version: ["3.38.4"]
         os: [windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -64,11 +72,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4"]
+        flutter-version: ["3.41.5"]
         os: [windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -85,11 +93,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -107,11 +115,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -124,32 +132,137 @@ jobs:
         run: |
           git config core.safecrlf false
           util/run_tests_serverpod_generate
+      - name: Verify generate from scratch
+        shell: bash
+        run: |
+          rm -rf tests/serverpod_test_server/lib/src/generated
+          export SERVERPOD_HOME=$(pwd)
+          cd tests/serverpod_test_server
+          dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
 
   update_pubspecs:
     name: update pubspecs
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
+  nonvector_integration_tests_embedded:
+    name: Nonvector integration tests (embedded PG, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+      - name: Run nonvector integration tests against embedded PG
+        run: bash util/run_tests_nonvector_integration_embedded
+        timeout-minutes: 10
+
+  module_integration_tests_embedded:
+    name: Module integration tests (embedded PG, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
+      - name: Run module integration tests against embedded PG
+        run: bash util/run_tests_module_integration_embedded
+        timeout-minutes: 10
+
+  embedded_postgres_integration_tests:
+    name: serverpod_embedded_postgres integration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.41.5"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Resolve dependencies
+        run: dart pub get
+        working-directory: packages/serverpod_embedded_postgres
+      # windows-latest runs as runneradmin (elevated), but Postgres refuses
+      # to start under an Administrators-group token. Strip admin via
+      # PsExec -l. Two non-obvious bits the rest of this block handles:
+      #   - PsExec -l drops the inner process's stdout in GHA (exit code
+      #     propagates fine), so dart test redirects to a file inside
+      #     run-test.cmd and we type that file from the outer step.
+      #   - The limited token still needs read+execute on the Flutter SDK
+      #     to find dart.bat / dart.exe.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-test.cmd <<'EOF'
+          @echo off
+          dart test --tags=integration --reporter=failures-only > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+        working-directory: packages/serverpod_embedded_postgres
+      - name: Run integration tests against real Zonky PG (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-test.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
+        working-directory: packages/serverpod_embedded_postgres
+        timeout-minutes: 10
+      - name: Run integration tests against real Zonky PG
+        if: matrix.os != 'windows-latest'
+        run: dart test --tags=integration --reporter=failures-only
+        working-directory: packages/serverpod_embedded_postgres
+        timeout-minutes: 10
+
   unit_io_tests:
     name: Unit tests IO
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -162,7 +275,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -170,17 +283,17 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.38.4"
+          - flutter-version: "3.41.5"
             platform: chrome
             compiler: dart2wasm
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - uses: browser-actions/setup-chrome@v1
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
       - name: Run unit tests
         run: >-
           dart test
@@ -194,12 +307,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -212,10 +325,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -227,10 +340,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -242,11 +355,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         path: ["packages/serverpod_shared"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -260,7 +373,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         module:
           [
             "tests/serverpod_test_module/serverpod_test_module_server",
@@ -273,13 +386,13 @@ jobs:
             "modules/legacy/serverpod_auth/serverpod_auth_server",
           ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module }}
       - name: Wait for services to be ready
         run: |
@@ -304,18 +417,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
       - name: Wait for services to be ready
         run: |
@@ -345,10 +458,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -360,15 +473,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Run integration tests
         run: util/run_tests_integration_concurrently
+
+  integration_test_sqlite_server:
+    name: Serverpod SQLite integration tests (server)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.38.4", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite integration tests
+        run: util/run_tests_sqlite_integration
 
   bootstrap_tests:
     name: Bootstrap tests
@@ -376,12 +504,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [windows-latest, ubuntu-latest]
         path: ["tests/bootstrap_project"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -396,7 +524,13 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test --concurrency=1 --reporter=failures-only
+        shell: bash
+        # TODO: Switch to util/run_tests_bootstrap once we manage to run all
+        # tests in a reasonable time. Currently they take up to 40 minutes.
+        # run: cd ../.. && util/run_tests_bootstrap
+        run: |
+          export SERVERPOD_HOME="$(cd ../.. && pwd)"
+          dart test --concurrency=1 --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
@@ -404,15 +538,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
+
+  migration_e2e_tests_sqlite:
+    name: Migration e2e tests (SQLite)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.38.4", "3.41.5"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run SQLite e2e migration tests
+        run: util/run_tests_sqlite_migrations_e2e
 
   cli_e2e_tests:
     name: CLI e2e tests
@@ -420,13 +569,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.38.4"]
+        flutter-version: ["3.38.4", "3.41.5"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
@@ -454,7 +603,7 @@ jobs:
     name: Serverpod integration tests (flutter)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Run integration tests in Docker
         run: util/run_tests_flutter_integration
 
@@ -462,24 +611,114 @@ jobs:
     name: Version change test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: "3.32.0"
+          flutter-version: "3.38.4"
           cache: true
       - name: Install melos
         run: dart pub global activate melos
       - name: Run version change test
         run: util/run_tests_version_change
 
+  cloud_storage_check_secrets:
+    name: Check cloud storage secrets
+    runs-on: ubuntu-latest
+    outputs:
+      has_aws: ${{ steps.check.outputs.has_aws }}
+      has_r2: ${{ steps.check.outputs.has_r2 }}
+      has_gcp: ${{ steps.check.outputs.has_gcp }}
+      has_gcp_native: ${{ steps.check.outputs.has_gcp_native }}
+    steps:
+      - name: Check available credentials
+        id: check
+        run: |
+          echo "has_aws=${{ secrets.SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_r2=${{ secrets.SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_gcp=${{ secrets.SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_gcp_native=${{ secrets.SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON != '' }}" >> $GITHUB_OUTPUT
+
+  cloud_storage_integration_tests_aws:
+    name: Cloud Storage Integration Tests (AWS S3)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_aws == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_AWS_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_AWS_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_AWS_BUCKET: ${{ secrets.SERVERPOD_TEST_AWS_BUCKET }}
+      SERVERPOD_TEST_AWS_REGION: ${{ secrets.SERVERPOD_TEST_AWS_REGION }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_s3
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - run: dart pub get
+      - run: dart test test/integration --reporter=failures-only
+
+  cloud_storage_integration_tests_r2:
+    name: Cloud Storage Integration Tests (Cloudflare R2)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_r2 == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_R2_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_R2_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_R2_BUCKET: ${{ secrets.SERVERPOD_TEST_R2_BUCKET }}
+      SERVERPOD_TEST_R2_ACCOUNT_ID: ${{ secrets.SERVERPOD_TEST_R2_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_r2
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - run: dart pub get
+      - run: dart test test/integration --reporter=failures-only
+
+  cloud_storage_integration_tests_gcp:
+    name: Cloud Storage Integration Tests (GCP)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_gcp == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_GCP_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_GCP_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_GCP_BUCKET: ${{ secrets.SERVERPOD_TEST_GCP_BUCKET }}
+      SERVERPOD_TEST_GCP_REGION: ${{ secrets.SERVERPOD_TEST_GCP_REGION }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_gcp
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - run: dart pub get
+      - run: dart test test/integration/gcp_s3_compat_integration_test.dart --reporter=failures-only
+
+  cloud_storage_integration_tests_gcp_native:
+    name: Cloud Storage Integration Tests (GCP Native)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_gcp_native == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_gcp
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+      - run: dart pub get
+      - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
+
   publish_check:
     name: Publish check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: "3.32.0"
+          flutter-version: "3.38.4"
           cache: true
       - name: Install melos
         run: dart pub global activate melos

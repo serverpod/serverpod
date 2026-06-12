@@ -1,0 +1,366 @@
+import 'dart:async';
+
+import 'package:nocterm/nocterm.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
+
+import 'main_screen.dart';
+
+import 'state.dart';
+
+/// State holder for [ServerpodWatchApp].
+class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
+  StartAppStateHolder(this._state);
+
+  final ServerWatchState _state;
+
+  ServerpodWatchAppState? _widgetState;
+  VoidCallback? _onHotReload;
+  VoidCallback? _onHotRestart;
+  VoidCallback? _onRestartFlutterApp;
+  void Function({bool force})? _onCreateMigration;
+  void Function({bool force})? _onCreateRepairMigration;
+  VoidCallback? _onApplyMigration;
+  VoidCallback? _onQuit;
+
+  @override
+  ServerWatchState get state => _state;
+
+  @override
+  TuiAppState? get widgetState => _widgetState;
+
+  @override
+  void attach(ServerpodWatchAppState widgetState) {
+    _widgetState = widgetState;
+    widgetState.onHotReload = _onHotReload;
+    widgetState.onHotRestart = _onHotRestart;
+    widgetState.onRestartFlutterApp = _onRestartFlutterApp;
+    widgetState.onCreateMigration = _onCreateMigration;
+    widgetState.onCreateRepairMigration = _onCreateRepairMigration;
+    widgetState.onApplyMigration = _onApplyMigration;
+    widgetState.onQuit = _onQuit;
+  }
+
+  @override
+  void detach(ServerpodWatchAppState widgetState) {
+    if (_widgetState == widgetState) _widgetState = null;
+  }
+
+  set onHotReload(VoidCallback? cb) {
+    _onHotReload = cb;
+    _widgetState?.onHotReload = cb;
+  }
+
+  set onHotRestart(VoidCallback? cb) {
+    _onHotRestart = cb;
+    _widgetState?.onHotRestart = cb;
+  }
+
+  set onRestartFlutterApp(VoidCallback? cb) {
+    _onRestartFlutterApp = cb;
+    _widgetState?.onRestartFlutterApp = cb;
+  }
+
+  set onCreateMigration(void Function({bool force})? cb) {
+    _onCreateMigration = cb;
+    _widgetState?.onCreateMigration = cb;
+  }
+
+  set onCreateRepairMigration(void Function({bool force})? cb) {
+    _onCreateRepairMigration = cb;
+    _widgetState?.onCreateRepairMigration = cb;
+  }
+
+  set onApplyMigration(VoidCallback? cb) {
+    _onApplyMigration = cb;
+    _widgetState?.onApplyMigration = cb;
+  }
+
+  set onQuit(VoidCallback? cb) {
+    _onQuit = cb;
+    _widgetState?.onQuit = cb;
+  }
+}
+
+/// Root TUI component for `serverpod start`.
+class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
+  const ServerpodWatchApp({
+    super.key,
+    required super.holder,
+    required this.onReady,
+  });
+
+  final void Function(StartAppStateHolder holder) onReady;
+
+  @override
+  TuiAppState createState() => ServerpodWatchAppState();
+}
+
+class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
+  final logScrollController = ScrollController();
+  final rawScrollController = ScrollController();
+  final flutterRawScrollController = ScrollController();
+  final helpScrollController = ScrollController();
+
+  /// Callbacks wired by the backend.
+  VoidCallback? onHotReload;
+  VoidCallback? onHotRestart;
+  VoidCallback? onRestartFlutterApp;
+  void Function({bool force})? onCreateMigration;
+  void Function({bool force})? onCreateRepairMigration;
+  VoidCallback? onApplyMigration;
+  VoidCallback? onQuit;
+
+  bool _minSplashElapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    component.holder.attach(this);
+    // Keep splash visible for at least 5 seconds.
+    Timer(const Duration(seconds: 5), () {
+      _minSplashElapsed = true;
+      _tryDismissSplash();
+    });
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      component.onReady(component.holder);
+    });
+  }
+
+  @override
+  void dispose() {
+    component.holder.detach(this);
+    super.dispose();
+  }
+
+  void _tryDismissSplash() {
+    final state = component.holder.state;
+    if (_minSplashElapsed && state.showSplash) {
+      state.showSplash = false;
+      if (mounted) setState(() {});
+    }
+  }
+
+  @override
+  void rebuild() {
+    _rebuild();
+  }
+
+  void _rebuild() {
+    if (!mounted) return;
+    _tryDismissSplash();
+    _normalizeSelectedTab();
+    setState(() {});
+  }
+
+  void _normalizeSelectedTab() {
+    final state = component.holder.state;
+    if (state.selectedTab == 1 &&
+        (state.useSideBySideLayout || !state.showFlutterOutput)) {
+      state.selectedTab = 0;
+    }
+  }
+
+  void _cycleTab(int delta) {
+    final state = component.holder.state;
+    if (state.useSideBySideLayout) return;
+    final tabCount = state.showFlutterOutput ? 2 : 1;
+    state.selectedTab = (state.selectedTab + delta + tabCount) % tabCount;
+    _rebuild();
+  }
+
+  @override
+  void onExit() {
+    final quit = onQuit;
+    if (quit != null) {
+      quit();
+    } else {
+      super.onExit();
+    }
+  }
+
+  @override
+  Component buildApp(BuildContext context) {
+    final state = component.holder.state;
+
+    return Focusable(
+      focused: true,
+      onKeyEvent: _handleKeyEvent,
+      child: MainScreen(
+        state: state,
+        showSplash: state.showSplash,
+        logScrollController: logScrollController,
+        rawScrollController: rawScrollController,
+        flutterRawScrollController: flutterRawScrollController,
+        helpScrollController: helpScrollController,
+        onToggleHelp: () {
+          state.showHelp = !state.showHelp;
+          _rebuild();
+        },
+        onTabChanged: (index) {
+          state.selectedTab = index;
+          _rebuild();
+        },
+        onHotReload: onHotReload,
+        onHotRestart: onHotRestart,
+        onCreateMigration: onCreateMigration,
+        onCreateRepairMigration: onCreateRepairMigration,
+        onApplyMigration: onApplyMigration,
+        onClearLogs: () {
+          state.clearLogs();
+          _rebuild();
+        },
+        onQuit: onQuit,
+      ),
+    );
+  }
+
+  bool _handleKeyEvent(KeyboardEvent event) {
+    final state = component.holder.state;
+
+    if (state.showHelp) {
+      if (event.logicalKey == LogicalKey.escape) {
+        state.showHelp = false;
+        _rebuild();
+        return true;
+      }
+      // Let Ctrl-C bubble to the base TuiAppState so copy/exit still work.
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      // Route navigation keys to the help overlay's controller; absorb the
+      // rest so they don't fall through to tab/scroll handling underneath.
+      _handleScrollKey(helpScrollController, event);
+      return true;
+    }
+
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.period) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      _handleScrollKey(rawScrollController, event);
+      return true;
+    }
+
+    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
+    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
+    // Handled here rather than as a ButtonBar entry because the Button widget
+    // matches only plain/Shift keys. Always consumed so it never falls through
+    // to the plain-R hot reload / restart.
+    if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
+      if (state.showFlutterOutput || state.flutterRestartAvailable) {
+        onRestartFlutterApp?.call();
+      }
+      return true;
+    }
+
+    final sideBySide = state.useSideBySideLayout;
+
+    if (event.matches(LogicalKey.tab, shift: false) ||
+        event.logicalKey == LogicalKey.arrowRight) {
+      _cycleTab(1);
+      return true;
+    }
+    if (event.matches(LogicalKey.tab, shift: true) ||
+        event.logicalKey == LogicalKey.arrowLeft) {
+      _cycleTab(-1);
+      return true;
+    }
+    if (event.logicalKey == LogicalKey.digit1) {
+      state.selectedTab = 0;
+      _rebuild();
+      return true;
+    }
+    if (event.logicalKey == LogicalKey.digit2 &&
+        !sideBySide &&
+        state.showFlutterOutput) {
+      state.selectedTab = 1;
+      _rebuild();
+      return true;
+    }
+
+    if (event.logicalKey == LogicalKey.keyE && state.selectedTab == 0) {
+      state.expandStackTraces = !state.expandStackTraces;
+      _rebuild();
+      return true;
+    }
+
+    if (event.logicalKey == LogicalKey.backquote ||
+        event.logicalKey == LogicalKey.period) {
+      state.showRawServerLogs = true;
+      _rebuild();
+      return true;
+    }
+
+    final c = switch (state.selectedTab) {
+      1 => flutterRawScrollController,
+      _ => logScrollController,
+    };
+    return _handleScrollKey(c, event);
+  }
+
+  /// Handles scroll keyboard [event] for [controller].
+  ///
+  /// When the controller is in reverse mode ([controller.isReversed]),
+  /// up/down semantics are inverted.
+  bool _handleScrollKey(ScrollController controller, KeyboardEvent event) {
+    final reverse = controller.isReversed;
+    final quarter = controller.viewportDimension / 4;
+    final half = controller.viewportDimension / 2;
+
+    void up([double amount = 1.0]) =>
+        reverse ? controller.scrollDown(amount) : controller.scrollUp(amount);
+    void down([double amount = 1.0]) =>
+        reverse ? controller.scrollUp(amount) : controller.scrollDown(amount);
+    void pageUp() => reverse ? controller.pageDown() : controller.pageUp();
+    void pageDown() => reverse ? controller.pageUp() : controller.pageDown();
+    void toStart() =>
+        reverse ? controller.scrollToEnd() : controller.scrollToStart();
+    void toEnd() =>
+        reverse ? controller.scrollToStart() : controller.scrollToEnd();
+
+    switch (event.logicalKey) {
+      // Quarter screen (Shift+arrows) - before plain arrows.
+      case LogicalKey.arrowUp when event.isShiftPressed:
+        up(quarter);
+      case LogicalKey.arrowDown when event.isShiftPressed:
+        down(quarter);
+
+      // Single line
+      case LogicalKey.arrowUp || LogicalKey.keyK:
+        up();
+      case LogicalKey.arrowDown || LogicalKey.keyJ || LogicalKey.enter:
+        down();
+
+      // Half screen
+      case LogicalKey.keyU:
+        up(half);
+      case LogicalKey.keyD:
+        down(half);
+
+      // Full screen
+      case LogicalKey.pageUp || LogicalKey.backspace || LogicalKey.keyB:
+        pageUp();
+      case LogicalKey.pageDown || LogicalKey.space || LogicalKey.keyF:
+        pageDown();
+
+      // Start / end - G with shift = end, g without = start.
+      case LogicalKey.keyG when event.isShiftPressed:
+        toEnd();
+      case LogicalKey.home || LogicalKey.keyG:
+        toStart();
+      case LogicalKey.end:
+        toEnd();
+
+      default:
+        return false;
+    }
+    return true;
+  }
+}

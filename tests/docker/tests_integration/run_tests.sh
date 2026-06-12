@@ -20,10 +20,24 @@ echo ""
 echo "### Resetting database"
 env PGPASSWORD="password" psql -h postgres -U postgres -d serverpod_test -f /app/tests/docker/tests_integration/reset_db.pgsql
 
-# We apply migrations to database 
+# We apply migrations to database
 echo "### Apply migrations"
 pwd
-dart bin/main.dart -m production -r maintenance --apply-migrations
+dart run bin/main.dart -m production -r maintenance --apply-migrations
+
+# Activate the serverpod CLI so tests that spawn it as a subprocess
+# (e.g. MigrationTestUtils.createMigrationFromProtocols) can find it on PATH.
+# CI=true skips the CLI's flutter-on-PATH check (we don't need flutter in
+# this image just to run create-migration).
+echo "### Installing CLI tools"
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export CI=true
+(
+  cd /app/tools/serverpod_cli
+  dart pub global activate -s path .
+  serverpod version
+  dart pub global activate -s path .
+)
 
 # Run tests
 echo "### Running tests"

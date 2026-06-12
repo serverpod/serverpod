@@ -10,6 +10,7 @@ class FutureCallManagerBuilder {
   FutureCallSessionBuilder _sessionBuilder;
 
   Session _internalSession;
+  Session _logSession;
 
   InitializeFutureCall _initializeFutureCall =
       (
@@ -24,6 +25,8 @@ class FutureCallManagerBuilder {
     scanInterval: const Duration(milliseconds: 10),
   );
 
+  Duration? _heartbeatInterval;
+
   Protocol _protocol = Protocol();
 
   FutureCallDiagnosticsService _diagnosticsService = _MockDiagnosticsService();
@@ -31,8 +34,10 @@ class FutureCallManagerBuilder {
   FutureCallManagerBuilder({
     required FutureCallSessionBuilder sessionProvider,
     required Session internalSession,
+    Session? logSession,
   }) : _sessionBuilder = sessionProvider,
-       _internalSession = internalSession;
+       _internalSession = internalSession,
+       _logSession = logSession ?? internalSession;
 
   factory FutureCallManagerBuilder.fromTestSessionBuilder(
     TestSessionBuilder sessionBuilder,
@@ -48,8 +53,10 @@ class FutureCallManagerBuilder {
     _protocol,
     diagnosticsService: _diagnosticsService,
     internalSession: _internalSession,
+    logSession: _logSession,
     sessionProvider: _sessionBuilder,
     initializeFutureCall: _initializeFutureCall,
+    heartbeatInterval: _heartbeatInterval,
   );
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {
@@ -87,6 +94,11 @@ class FutureCallManagerBuilder {
     FutureCallSessionBuilder sessionProvider,
   ) {
     _sessionBuilder = sessionProvider;
+    return this;
+  }
+
+  FutureCallManagerBuilder withHeartbeatInterval(Duration heartbeatInterval) {
+    _heartbeatInterval = heartbeatInterval;
     return this;
   }
 }

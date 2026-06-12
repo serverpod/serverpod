@@ -173,7 +173,8 @@ class Script {
 
 enum PlatformGroup {
   windows,
-  posix;
+  posix,
+  ;
 
   static PlatformGroup get current {
     if (Platform.isWindows) return PlatformGroup.windows;

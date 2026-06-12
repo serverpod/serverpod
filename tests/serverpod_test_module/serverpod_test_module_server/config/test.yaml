@@ -1,19 +1,19 @@
 apiServer:
-  port: 8080
-  publicHost: serverpod_test_server
-  publicPort: 8080
+  port: 0
+  publicHost: localhost
+  publicPort: 0
   publicScheme: http
 
 insightsServer:
-  port: 8081
-  publicHost: serverpod_test_server
-  publicPort: 8081
+  port: 0
+  publicHost: localhost
+  publicPort: 0
   publicScheme: http
 
 webServer:
-  port: 8082
-  publicHost: serverpod_test_server
-  publicPort: 8082
+  port: 0
+  publicHost: localhost
+  publicPort: 0
   publicScheme: http
 
 database:

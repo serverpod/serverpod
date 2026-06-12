@@ -94,7 +94,8 @@ enum OpenMethodStreamResponseType {
   authorizationDeclined,
 
   /// The arguments were invalid.
-  invalidArguments;
+  invalidArguments,
+  ;
 
   /// Try to parse a [OpenMethodStreamResponseType] from a string.
   /// Throws an exception if the string is not recognized.
@@ -248,7 +249,8 @@ enum CloseReason {
   done,
 
   /// The stream was closed because an error occurred.
-  error;
+  error,
+  ;
 
   /// Try to parse a [CloseReason] from a string.
   /// Throws an exception if the string is not recognized.

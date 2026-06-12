@@ -1,0 +1,6 @@
+class: UuidDefaultMix
+table: uuid_default_mix
+fields:
+  uuidDefaultAndDefaultModel: UuidValue, default='3f2504e0-4f89-11d3-9a0c-0305e82c3301', defaultModel='550e8400-e29b-41d4-a716-446655440000'
+  uuidDefaultAndDefaultPersist: UuidValue, default='6fa459ea-ee8a-3ca4-894e-db77e160355e', defaultPersist='9e107d9d-372b-4d97-9b27-2f0907d0b1d4'
+  uuidDefaultModelAndDefaultPersist: UuidValue, defaultModel='d9428888-122b-11e1-b85c-61cd3cbb3210', defaultPersist='f47ac10b-58cc-4372-a567-0e02b2c3d479'

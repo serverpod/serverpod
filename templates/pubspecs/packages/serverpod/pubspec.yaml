@@ -20,6 +20,7 @@ environment:
 
 dependencies:
   args: ^2.7.0
+  clock: ^1.1.1
   collection: ^1.18.0
   crypto: ^3.0.2
   http: '>=1.1.0 <2.0.0'
@@ -28,8 +29,9 @@ dependencies:
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
-  relic: ^1.1.0
+  relic: ^1.2.0
   retry: ^3.1.1
+  serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
   synchronized: ^3.1.0
@@ -45,6 +47,10 @@ dev_dependencies:
   test_descriptor: ^2.0.2
 
 dependency_overrides:
+  serverpod_database:
+    path: ../serverpod_database
+  serverpod_embedded_postgres:
+    path: ../serverpod_embedded_postgres
   serverpod_lints:
     path: ../serverpod_lints
   serverpod_serialization:

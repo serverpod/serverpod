@@ -31,12 +31,12 @@ export 'session_metadata.dart';
 export 'token_metadata.dart';
 export 'user_data.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     _i2.TableDefinition(
@@ -50,7 +50,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'challenge_tracker_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'secretChallengeId',
@@ -85,19 +85,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'challenge_tracker_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'secret_challenge_id_unique_idx',
           tableSpace: null,
           elements: [
@@ -124,7 +111,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'session_metadata_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'serverSideSessionId',
@@ -171,19 +158,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'session_metadata_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'server_side_session_id_unique_idx',
           tableSpace: null,
           elements: [
@@ -210,7 +184,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'token_metadata_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'refreshTokenId',
@@ -257,19 +231,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'token_metadata_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'refresh_token_id_unique_idx',
           tableSpace: null,
           elements: [
@@ -296,7 +257,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'user_data_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -330,19 +291,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'user_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'auth_user_id_unique_idx',
           tableSpace: null,
@@ -483,29 +431,37 @@ class Protocol extends _i1.SerializationManagerServer {
       case _i11.UserData():
         return 'UserData';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod.$className';
-    }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_bridge.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_bridge.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_core.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_idp.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_migration.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_migration.$className';
     }
     className = _i7.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return className.contains('.') ? className : 'serverpod_auth.$className';
+    }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.') ? className : 'serverpod.$className';
     }
     return null;
   }
@@ -528,10 +484,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'UserData') {
       return deserialize<_i11.UserData>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
-    }
     if (dataClassName.startsWith('serverpod_auth_bridge.')) {
       data['className'] = dataClassName.substring(22);
       return _i3.Protocol().deserializeByClassName(data);
@@ -552,7 +504,19 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(15);
       return _i7.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i3.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i4.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i5.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i6.Protocol().registerHostProtocol('serverpod_auth_test', this);
+    _i7.Protocol().registerHostProtocol('serverpod_auth_test', this);
   }
 
   @override
@@ -625,8 +589,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record is ({_i12.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
-          "challenge": record.challenge,
-          "id": record.id,
+          "challenge": record.challenge.toJson(),
+          "id": record.id.toJson(),
         },
       };
     }

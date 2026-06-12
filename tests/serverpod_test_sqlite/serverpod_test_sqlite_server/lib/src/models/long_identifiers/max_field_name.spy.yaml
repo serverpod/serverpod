@@ -1,0 +1,4 @@
+class: MaxFieldName
+table: max_field_name
+fields:
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo: String

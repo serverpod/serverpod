@@ -240,8 +240,8 @@ void main() async {
           // All customers with more than one order with a description starting with 'prem'
           where: (c) => c.orders.count((o) => o.description.ilike('prem%')) > 1,
           // OrderUuid by number of orders with descriptions starting with 'basic'
-          orderBy: (t) => t.orders.count((o) => o.description.ilike('basic%')),
-          orderDescending: true,
+          orderBy: (t) =>
+              t.orders.count((o) => o.description.ilike('basic%')).desc(),
         );
 
         var customerNames = fetchedCustomers.map((e) => e.name);

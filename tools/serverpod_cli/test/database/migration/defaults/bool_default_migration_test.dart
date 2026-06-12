@@ -191,4 +191,194 @@ void main() {
       },
     );
   });
+
+  group('Given a SQLite database table definition with a boolean column ', () {
+    test(
+      'when generating SQL with boolean default TRUE, then INTEGER uses 1.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .withColumnDefault('true')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"boolDefault" INTEGER NOT NULL DEFAULT (1)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with boolean default FALSE, then INTEGER uses 0.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .withColumnDefault('false')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"boolDefault" INTEGER NOT NULL DEFAULT (0)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the boolean column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"boolDefault" INTEGER NOT NULL'));
+        expect(
+          sql,
+          isNot(contains('"boolDefault" INTEGER NOT NULL DEFAULT')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable boolean and default TRUE, then the column is nullable with 1.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .withIsNullable(true)
+                        .withColumnDefault('true')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"boolDefault" INTEGER DEFAULT (1)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable boolean and default FALSE, then the column is nullable with 0.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .withIsNullable(true)
+                        .withColumnDefault('false')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"boolDefault" INTEGER DEFAULT (0)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable boolean and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('boolDefault')
+                        .withColumnType(ColumnType.boolean)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"boolDefault" INTEGER\n'));
+        expect(sql, isNot(contains('"boolDefault" INTEGER DEFAULT')));
+      },
+    );
+  });
 }

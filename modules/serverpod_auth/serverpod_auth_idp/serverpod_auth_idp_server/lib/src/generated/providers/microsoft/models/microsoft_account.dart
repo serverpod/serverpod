@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -127,6 +127,7 @@ abstract class MicrosoftAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
@@ -136,7 +137,8 @@ abstract class MicrosoftAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(MicrosoftAccount.t),
       include: include,
     );
@@ -317,6 +319,7 @@ class MicrosoftAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -359,11 +362,12 @@ class MicrosoftAccountRepository {
   /// );
   /// ```
   Future<List<MicrosoftAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -375,7 +379,8 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -403,10 +408,11 @@ class MicrosoftAccountRepository {
   /// );
   /// ```
   Future<MicrosoftAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -418,7 +424,8 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -429,7 +436,7 @@ class MicrosoftAccountRepository {
 
   /// Finds a single [MicrosoftAccount] by its [id] or null if no such row exists.
   Future<MicrosoftAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
@@ -451,14 +458,20 @@ class MicrosoftAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<MicrosoftAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<MicrosoftAccount>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -466,12 +479,75 @@ class MicrosoftAccountRepository {
   ///
   /// The returned [MicrosoftAccount] will have its `id` field set.
   Future<MicrosoftAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MicrosoftAccount row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<MicrosoftAccount>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [MicrosoftAccount]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [MicrosoftAccount]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<MicrosoftAccount>> upsert(
+    _i1.DatabaseSession session,
+    List<MicrosoftAccount> rows, {
+    required _i1.ColumnSelections<MicrosoftAccountTable> conflictColumns,
+    _i1.ColumnSelections<MicrosoftAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<MicrosoftAccount>(
+      rows,
+      conflictColumns: conflictColumns(MicrosoftAccount.t),
+      updateColumns: updateColumns?.call(MicrosoftAccount.t),
+      updateWhere: updateWhere?.call(MicrosoftAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [MicrosoftAccount] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [MicrosoftAccount] will have its `id` field set.
+  Future<MicrosoftAccount?> upsertRow(
+    _i1.DatabaseSession session,
+    MicrosoftAccount row, {
+    required _i1.ColumnSelections<MicrosoftAccountTable> conflictColumns,
+    _i1.ColumnSelections<MicrosoftAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<MicrosoftAccount>(
+      row,
+      conflictColumns: conflictColumns(MicrosoftAccount.t),
+      updateColumns: updateColumns?.call(MicrosoftAccount.t),
+      updateWhere: updateWhere?.call(MicrosoftAccount.t),
       transaction: transaction,
     );
   }
@@ -482,7 +558,7 @@ class MicrosoftAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MicrosoftAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.ColumnSelections<MicrosoftAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -498,7 +574,7 @@ class MicrosoftAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MicrosoftAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MicrosoftAccount row, {
     _i1.ColumnSelections<MicrosoftAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -513,7 +589,7 @@ class MicrosoftAccountRepository {
   /// Updates a single [MicrosoftAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MicrosoftAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
     columnValues,
@@ -529,7 +605,7 @@ class MicrosoftAccountRepository {
   /// Updates all [MicrosoftAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MicrosoftAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
@@ -537,6 +613,7 @@ class MicrosoftAccountRepository {
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -547,28 +624,41 @@ class MicrosoftAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [MicrosoftAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MicrosoftAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
+    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MicrosoftAccount>(
       rows,
+      orderBy: orderBy?.call(MicrosoftAccount.t),
+      orderByList: orderByList?.call(MicrosoftAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [MicrosoftAccount].
   Future<MicrosoftAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MicrosoftAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -579,13 +669,24 @@ class MicrosoftAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<MicrosoftAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
+    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<MicrosoftAccount>(
       where: where(MicrosoftAccount.t),
+      orderBy: orderBy?.call(MicrosoftAccount.t),
+      orderByList: orderByList?.call(MicrosoftAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -593,7 +694,7 @@ class MicrosoftAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -607,7 +708,7 @@ class MicrosoftAccountRepository {
 
   /// Acquires row-level locks on [MicrosoftAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -628,7 +729,7 @@ class MicrosoftAccountAttachRowRepository {
   /// Creates a relation between the given [MicrosoftAccount] and [AuthUser]
   /// by setting the [MicrosoftAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MicrosoftAccount microsoftAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

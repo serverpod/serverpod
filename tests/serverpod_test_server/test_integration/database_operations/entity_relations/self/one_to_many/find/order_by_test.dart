@@ -1,6 +1,6 @@
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod/database.dart' as db;
 import 'package:test/test.dart';
 
 void main() async {
@@ -8,7 +8,7 @@ void main() async {
 
   group('Given models with one to many relation', () {
     tearDown(() async {
-      await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Cat.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -28,10 +28,9 @@ void main() async {
           session,
           // Order by number of kittens in descending order
           orderByList: (t) => [
-            db.Order(column: t.kittens.count(), orderDescending: true),
-            db.Order(column: t.name),
+            t.kittens.count().desc(),
+            t.name.asc(),
           ],
-          orderDescending: true,
         );
 
         var catNames = fetchedCats.map((e) => e.name);
@@ -56,8 +55,7 @@ void main() async {
         var fetchedCats = await Cat.db.find(
           session,
           // Order by number of kittens named Smul... in descending order
-          orderBy: (t) => t.kittens.count((k) => k.name.ilike('smul%')),
-          orderDescending: true,
+          orderBy: (t) => t.kittens.count((k) => k.name.ilike('smul%')).desc(),
         );
 
         var catNames = fetchedCats.map((e) => e.name);

@@ -127,6 +127,60 @@ void main() async {
         expect(numbers, [data[0].num, data[2].num]);
       });
     });
+
+    group('when deleting based on filter with orderBy', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderBy: (t) => t.num,
+        );
+      });
+
+      test('then removed rows are returned in ascending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [1, 2, 3]);
+      });
+    });
+
+    group('when deleting based on filter with descending orderBy', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderBy: (t) => t.num.desc(),
+        );
+      });
+
+      test('then removed rows are returned in descending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [3, 2, 1]);
+      });
+    });
+
+    group('when deleting based on filter with orderByList', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderByList: (t) => [t.num.asc()],
+        );
+      });
+
+      test('then removed rows are returned in ascending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [1, 2, 3]);
+      });
+    });
   });
 
   group(' ', () {
@@ -151,7 +205,7 @@ void main() async {
         var simpleData = SimpleData(num: 1);
         var inserted = await SimpleData.db.insertRow(session, simpleData);
 
-        var deleted = await await SimpleData.db.deleteRow(
+        var deleted = await SimpleData.db.deleteRow(
           session,
           inserted,
         );
@@ -207,6 +261,73 @@ void main() async {
 
         expect(deletedIds.first.id!, inserted.first.id);
         expect(deletedIds.last.id!, inserted.last.id);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting with orderBy then deleted rows are returned in ascending order.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderBy: (t) => t.number,
+        );
+
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [1, 2]);
+      },
+    );
+
+    test(
+      'Given two entries in the database when batch deleting with descending orderBy then deleted rows are returned in descending order.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderBy: (t) => t.number.desc(),
+        );
+
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [2, 1]);
+      },
+    );
+
+    test(
+      'Given two entries in the database with the same number when batch deleting with orderByList then deleted rows are returned in ascending order of email.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 1, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderByList: (t) => [t.number.asc(), t.email.asc()],
+        );
+
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [1, 1]);
+        expect(deleted.map((e) => e.email).toList(), [
+          'dev@serverpod.dev',
+          'info@serverpod.dev',
+        ]);
       },
     );
 

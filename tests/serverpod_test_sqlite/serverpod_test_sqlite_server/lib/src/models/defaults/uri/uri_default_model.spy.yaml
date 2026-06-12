@@ -1,0 +1,5 @@
+class: UriDefaultModel
+table: uri_default_model
+fields:
+  uriDefaultModel: Uri, defaultModel='https://serverpod.dev/defaultModel'
+  uriDefaultModelNull: Uri?, defaultModel='https://serverpod.dev/defaultModel'

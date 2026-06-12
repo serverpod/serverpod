@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/builders/database/column_definition_builder.dart';
 import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
@@ -653,6 +654,220 @@ END
             'USING hnsw ("embedding" $expectedOps);\n',
           );
         }
+      },
+    );
+  });
+
+  group('Given a table definition with a gin index', () {
+    var modelName = 'myModel';
+    var fieldName = 'jdoc';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withListField(
+            fieldName,
+            'List',
+          )
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+    var tableDefinition = databaseDefinition.tables.first;
+
+    test(
+      'when creating a gin index without an explicit operator class, then the SQL uses USING gin without an operator class suffix.',
+      () {
+        var indexName = '${modelName}_jsonb_idx';
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: fieldName,
+              ),
+            ])
+            .withType('gin')
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING gin ("$fieldName");\n',
+        );
+      },
+    );
+
+    test(
+      'when creating gin indexes with different operator classes, '
+      'then the SQL uses USING gin with the correct operator class suffix.',
+      () {
+        var operatorClasses = {
+          GinOperatorClass.arrayOps: 'array_ops',
+          GinOperatorClass.jsonbOps: 'jsonb_ops',
+          GinOperatorClass.jsonbPathOps: 'jsonb_path_ops',
+          GinOperatorClass.tsvectorOps: 'tsvector_ops',
+        };
+
+        for (var entry in operatorClasses.entries) {
+          var operatorClass = entry.key;
+          var expectedSuffix = entry.value;
+          var indexName = '${modelName}_jsonb_idx_$operatorClass';
+
+          var index = IndexDefinitionBuilder()
+              .withIndexName(indexName)
+              .withElements([
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: fieldName,
+                ),
+              ])
+              .withType('gin')
+              .withGinOperatorClass(operatorClass)
+              .withIsUnique(false)
+              .withIsPrimary(false)
+              .build();
+
+          var sql = index.toPgSql(tableName: tableDefinition.name);
+
+          expect(
+            sql,
+            'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+            'USING gin ("$fieldName" $expectedSuffix);\n',
+          );
+        }
+      },
+    );
+  });
+
+  group('Given a column migration with a type change', () {
+    test(
+      'when changing from json to jsonb, '
+      'then the SQL uses SET DATA TYPE jsonb with USING cast.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.json)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.jsonb,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(
+          sql,
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE jsonb USING "data"::jsonb;\n',
+        );
+      },
+    );
+
+    test(
+      'when changing from jsonb to json, '
+      'then the SQL uses SET DATA TYPE json with USING cast.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.jsonb)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.json,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(
+          sql,
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE json USING "data"::json;\n',
+        );
+      },
+    );
+
+    test(
+      'when no type change, '
+      'then the SQL does not contain SET DATA TYPE.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.json)
+            .withDartType('List<String>')
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: false,
+          removeNullable: false,
+          changeDefault: false,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(sql, '');
+      },
+    );
+
+    test(
+      'when changing type and nullability simultaneously, '
+      'then the SQL contains both SET DATA TYPE and DROP NOT NULL.',
+      () {
+        var columnDefinition = ColumnDefinitionBuilder()
+            .withName('data')
+            .withColumnType(ColumnType.json)
+            .withDartType('List<String>')
+            .withIsNullable(true)
+            .build();
+
+        var migration = ColumnMigration(
+          columnName: 'data',
+          addNullable: true,
+          removeNullable: false,
+          changeDefault: false,
+          newType: ColumnType.jsonb,
+        );
+
+        var sql = migration.toPgSql(
+          tableName: 'my_table',
+          columnDefinition: columnDefinition,
+        );
+
+        expect(
+          sql,
+          'ALTER TABLE "my_table" ALTER COLUMN "data" DROP NOT NULL;\n'
+          'ALTER TABLE "my_table" ALTER COLUMN "data"'
+          ' SET DATA TYPE jsonb USING "data"::jsonb;\n',
+        );
       },
     );
   });

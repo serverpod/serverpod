@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -139,15 +139,13 @@ abstract class EndpointWebsocketRequestHandler {
           }
 
           var duration = DateTime.now().difference(startTime);
-          unawaited(
-            session.logManager?.logMessage(
-              messageId: session.nextMessageId(),
-              endpointName: endpointName,
-              messageName: serialization['className'],
-              duration: duration,
-              error: messageError?.toString(),
-              stackTrace: messageStackTrace,
-            ),
+          session.logManager?.logMessage(
+            messageId: session.nextMessageId(),
+            endpointName: endpointName,
+            messageName: serialization['className'],
+            duration: duration,
+            error: messageError?.toString(),
+            stackTrace: messageStackTrace,
           );
         }
       } catch (e, s) {
@@ -236,12 +234,11 @@ abstract class EndpointWebsocketRequestHandler {
     Request? request,
     StreamingSession? session,
   }) {
-    var now = DateTime.now().toUtc();
-    if (message != null) {
-      stderr.writeln('$now ERROR: $message');
-    }
-    stderr.writeln('$now ERROR: $e');
-    stderr.writeln('$stackTrace');
+    log.error(
+      message ?? 'Unhandled exception',
+      error: e,
+      stackTrace: stackTrace,
+    );
 
     var context = session != null
         ? contextFromSession(session, request: request)

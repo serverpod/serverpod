@@ -25,7 +25,7 @@ class Protocol extends _i1.SerializationManager {
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -100,11 +100,15 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_idp.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return className.contains('.')
+          ? className
+          : 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -129,6 +133,14 @@ class Protocol extends _i1.SerializationManager {
     return super.deserializeByClassName(data);
   }
 
+  void _registerHostProtocols() {
+    _i4.Protocol().registerHostProtocol('auth', this);
+    _i5.Protocol().registerHostProtocol('auth', this);
+  }
+
+  @override
+  String getModuleName() => 'auth';
+
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
   /// Throws in case the record type is not known.
@@ -141,8 +153,8 @@ class Protocol extends _i1.SerializationManager {
     if (record is ({_i3.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
-          "challenge": record.challenge,
-          "id": record.id,
+          "challenge": record.challenge.toJson(),
+          "id": record.id.toJson(),
         },
       };
     }

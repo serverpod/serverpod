@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -21,6 +23,17 @@ typedef GetExtraMicrosoftInfoCallback =
       required Transaction? transaction,
     });
 
+/// Callback to be invoked after a new Microsoft account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterMicrosoftAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      MicrosoftAccount microsoftAccount, {
+      required Transaction? transaction,
+    });
+
 /// Configuration for the Microsoft identity provider.
 class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// The client ID from your Microsoft Entra ID (Azure AD) application.
@@ -39,6 +52,11 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   ///
   /// Defaults to `common` for multi-tenant support.
   final String tenant;
+
+  /// The authority host for the Microsoft identity provider.
+  ///
+  /// Defaults to `login.microsoftonline.com`.
+  final String authorityHost;
 
   /// Whether to automatically fetch and store user profile photos.
   ///
@@ -90,17 +108,26 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// [MicrosoftAccountDetails.userIdentifier]. Keep operations lightweight.
   final GetExtraMicrosoftInfoCallback? getExtraMicrosoftInfoCallback;
 
+  /// Callback to be invoked after a new Microsoft account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Microsoft
+  /// account has been created and linked.
+  final AfterMicrosoftAccountCreatedFunction? onAfterMicrosoftAccountCreated;
+
   /// Creates a new instance of [MicrosoftIdpConfig].
   MicrosoftIdpConfig({
     required this.clientId,
     required this.clientSecret,
     this.tenant = 'common',
+    this.authorityHost = 'login.microsoftonline.com',
     this.fetchProfilePhoto = true,
     this.microsoftAccountDetailsValidation = validateMicrosoftAccountDetails,
     this.getExtraMicrosoftInfoCallback,
+    this.onAfterMicrosoftAccountCreated,
   }) : oauth2Config = OAuth2PkceServerConfig(
          tokenEndpointUrl: Uri.https(
-           'login.microsoftonline.com',
+           authorityHost,
            '/$tenant/oauth2/v2.0/token',
          ),
          clientId: clientId,
@@ -183,6 +210,7 @@ class MicrosoftIdpConfigFromPasswords extends MicrosoftIdpConfig {
     super.fetchProfilePhoto,
     super.microsoftAccountDetailsValidation,
     super.getExtraMicrosoftInfoCallback,
+    super.onAfterMicrosoftAccountCreated,
   }) : super(
          clientId: Serverpod.instance.getPasswordOrThrow('microsoftClientId'),
          clientSecret: Serverpod.instance.getPasswordOrThrow(

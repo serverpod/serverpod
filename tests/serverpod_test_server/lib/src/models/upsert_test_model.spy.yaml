@@ -1,0 +1,13 @@
+class: UpsertTestModel
+table: upsert_test_model
+fields:
+  code: String
+  category: String
+  value: int
+indexes:
+  code_unique_idx:
+    fields: code
+    unique: true
+  category_value_unique_idx:
+    fields: category, value
+    unique: true

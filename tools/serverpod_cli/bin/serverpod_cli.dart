@@ -5,13 +5,18 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
+import 'package:serverpod_cli/src/commands/cloud.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
+import 'package:serverpod_cli/src/commands/mcp.dart';
+import 'package:serverpod_cli/src/commands/migrate.dart';
+import 'package:serverpod_cli/src/commands/quickstart.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -24,14 +29,18 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
 const _postHogApiKey = 'phc_xGBPHgcrTrDuWGtyNX3UJODXgnR684rzRPZjWRlqVxf';
 
+/// The unique user ID for the CLI. If the user ID is not available, we use
+/// 'unknown' to still collect analytics, albeit anonymously.
+final _uniqueUserId = ResourceManager().uniqueUserId ?? 'unknown';
+
 final Analytics _analytics = CompoundAnalytics([
   MixPanelAnalytics(
-    uniqueUserId: ResourceManager().uniqueUserId,
+    uniqueUserId: _uniqueUserId,
     projectToken: _mixPanelToken,
     version: templateVersion,
   ),
   PostHogAnalytics(
-    uniqueUserId: ResourceManager().uniqueUserId,
+    uniqueUserId: _uniqueUserId,
     projectApiKey: _postHogApiKey,
     version: templateVersion,
     libName: 'serverpod_cli',
@@ -41,18 +50,18 @@ final Analytics _analytics = CompoundAnalytics([
 void main(List<String> args) async {
   await runZonedGuarded(
     () async {
+      var exitCode = 0;
       try {
         await _main(args);
-        await _preExit();
       } on ExitException catch (e) {
-        await _preExit();
-        exit(e.exitCode);
+        exitCode = e.exitCode;
       } catch (error, stackTrace) {
-        // Last resort error handling.
         printInternalError(error, stackTrace);
+        exitCode = ExitException.codeError;
+      } finally {
         await _preExit();
-        exit(ExitException.codeError);
       }
+      exit(exitCode);
     },
     (error, stackTrace) async {
       printInternalError(error, stackTrace);
@@ -62,19 +71,26 @@ void main(List<String> args) async {
   );
 }
 
+/// Check the number of runs and pop the web browser on first and 20th run.
+///
+/// If the user ID is not available, we skip the welcome and check-in pages to
+/// avoid invoking the webpage every time the CLI is run if there is any
+/// configuration preventing the CLI from writing to the user home directory.
 Future<void> _main(List<String> args) async {
-  // Check the numer of runs and pop the web browser on first and 20th run.
-  final runCount = ResourceManager().runCount;
-  if (runCount == 1) {
-    final uuid = ResourceManager().uniqueUserId;
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
-    );
-  } else if (runCount == 20) {
-    final uuid = ResourceManager().uniqueUserId;
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
-    );
+  final resourceManager = ResourceManager();
+  final runCount = resourceManager.runCount;
+  final uuid = resourceManager.uniqueUserId;
+
+  if (uuid != null) {
+    if (runCount == 1) {
+      await BrowserLauncher.openUrl(
+        Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
+      );
+    } else if (runCount == 20) {
+      await BrowserLauncher.openUrl(
+        Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
+      );
+    }
   }
 
   // Need to initialize logger before building command runner because we need
@@ -98,13 +114,18 @@ ServerpodCommandRunner buildCommandRunner() {
     version,
   )..addCommands([
     AnalyzePubspecsCommand(),
+    CloudCommand(),
     CreateCommand(),
+    QuickstartCommand(),
     GenerateCommand(),
     GeneratePubspecsCommand(),
     LanguageServerCommand(),
+    McpCommand(),
     CreateMigrationCommand(),
     CreateRepairMigrationCommand(),
+    MigrateCommand(),
     RunCommand(),
+    StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
   ]);
@@ -112,5 +133,5 @@ ServerpodCommandRunner buildCommandRunner() {
 
 Future<void> _preExit() async {
   _analytics.cleanUp();
-  await log.flush();
+  await closeLogger();
 }

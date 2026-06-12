@@ -14,4 +14,8 @@ set -e
 
 cd tests/docker/tests_integration
 
-docker compose --profile concurrency_one up --abort-on-container-exit --exit-code-from serverpod_test_server --build --remove-orphans
+docker compose --progress quiet --profile concurrency_one up \
+  --abort-on-container-exit \
+  --exit-code-from serverpod_test_server \
+  --build \
+  --remove-orphans

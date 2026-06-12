@@ -44,6 +44,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -87,6 +88,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -168,6 +170,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -292,6 +295,20 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
+
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
             path.join(tempPath, serverDir, 'pubspec.yaml'),
@@ -320,6 +337,85 @@ void main() async {
             reason: 'Root pubspec.lock file does not exist.',
           );
         });
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
       });
     });
   });
@@ -338,6 +434,7 @@ void main() async {
           projectName,
           '-v',
           '--no-analytics',
+          '--no-interactive',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,
@@ -374,6 +471,7 @@ void main() async {
             '.',
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: path.join(tempPath, serverDir),
@@ -432,6 +530,7 @@ void main() async {
           projectName,
           '-v',
           '--no-analytics',
+          '--no-interactive',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,
@@ -464,6 +563,7 @@ void main() async {
               '.',
               '-v',
               '--no-analytics',
+              '--no-interactive',
             ],
             rootPath: rootPath,
             workingDirectory: path.join(tempPath, serverDir),
@@ -687,6 +787,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -710,6 +811,7 @@ void main() async {
             '.',
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: path.join(tempPath, serverDir),
@@ -784,6 +886,7 @@ void main() async {
           projectName,
           '-v',
           '--no-analytics',
+          '--no-interactive',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,

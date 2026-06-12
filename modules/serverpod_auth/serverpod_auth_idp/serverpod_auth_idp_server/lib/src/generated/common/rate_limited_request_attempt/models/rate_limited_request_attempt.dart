@@ -133,6 +133,7 @@ abstract class RateLimitedRequestAttempt
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
@@ -142,7 +143,8 @@ abstract class RateLimitedRequestAttempt
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
       include: include,
     );
@@ -330,6 +332,7 @@ class RateLimitedRequestAttemptIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -370,11 +373,12 @@ class RateLimitedRequestAttemptRepository {
   /// );
   /// ```
   Future<List<RateLimitedRequestAttempt>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
@@ -385,7 +389,8 @@ class RateLimitedRequestAttemptRepository {
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -412,10 +417,11 @@ class RateLimitedRequestAttemptRepository {
   /// );
   /// ```
   Future<RateLimitedRequestAttempt?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
@@ -426,7 +432,8 @@ class RateLimitedRequestAttemptRepository {
       where: where?.call(RateLimitedRequestAttempt.t),
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -436,7 +443,7 @@ class RateLimitedRequestAttemptRepository {
 
   /// Finds a single [RateLimitedRequestAttempt] by its [id] or null if no such row exists.
   Future<RateLimitedRequestAttempt?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -456,14 +463,20 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<RateLimitedRequestAttempt>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<RateLimitedRequestAttempt>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -471,12 +484,77 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// The returned [RateLimitedRequestAttempt] will have its `id` field set.
   Future<RateLimitedRequestAttempt> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RateLimitedRequestAttempt row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<RateLimitedRequestAttempt>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [RateLimitedRequestAttempt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [RateLimitedRequestAttempt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<RateLimitedRequestAttempt>> upsert(
+    _i1.DatabaseSession session,
+    List<RateLimitedRequestAttempt> rows, {
+    required _i1.ColumnSelections<RateLimitedRequestAttemptTable>
+    conflictColumns,
+    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<RateLimitedRequestAttempt>(
+      rows,
+      conflictColumns: conflictColumns(RateLimitedRequestAttempt.t),
+      updateColumns: updateColumns?.call(RateLimitedRequestAttempt.t),
+      updateWhere: updateWhere?.call(RateLimitedRequestAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [RateLimitedRequestAttempt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [RateLimitedRequestAttempt] will have its `id` field set.
+  Future<RateLimitedRequestAttempt?> upsertRow(
+    _i1.DatabaseSession session,
+    RateLimitedRequestAttempt row, {
+    required _i1.ColumnSelections<RateLimitedRequestAttemptTable>
+    conflictColumns,
+    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RateLimitedRequestAttempt>(
+      row,
+      conflictColumns: conflictColumns(RateLimitedRequestAttempt.t),
+      updateColumns: updateColumns?.call(RateLimitedRequestAttempt.t),
+      updateWhere: updateWhere?.call(RateLimitedRequestAttempt.t),
       transaction: transaction,
     );
   }
@@ -487,7 +565,7 @@ class RateLimitedRequestAttemptRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<RateLimitedRequestAttempt>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
     _i1.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
     _i1.Transaction? transaction,
@@ -503,7 +581,7 @@ class RateLimitedRequestAttemptRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RateLimitedRequestAttempt> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RateLimitedRequestAttempt row, {
     _i1.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
     _i1.Transaction? transaction,
@@ -518,7 +596,7 @@ class RateLimitedRequestAttemptRepository {
   /// Updates a single [RateLimitedRequestAttempt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RateLimitedRequestAttempt?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
     columnValues,
@@ -534,7 +612,7 @@ class RateLimitedRequestAttemptRepository {
   /// Updates all [RateLimitedRequestAttempt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RateLimitedRequestAttempt>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
@@ -542,6 +620,7 @@ class RateLimitedRequestAttemptRepository {
     int? offset,
     _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -552,28 +631,41 @@ class RateLimitedRequestAttemptRepository {
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [RateLimitedRequestAttempt]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RateLimitedRequestAttempt>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
+    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RateLimitedRequestAttempt>(
       rows,
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [RateLimitedRequestAttempt].
   Future<RateLimitedRequestAttempt> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RateLimitedRequestAttempt row, {
     _i1.Transaction? transaction,
   }) async {
@@ -584,13 +676,24 @@ class RateLimitedRequestAttemptRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<RateLimitedRequestAttempt>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
+    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<RateLimitedRequestAttempt>(
       where: where(RateLimitedRequestAttempt.t),
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -598,7 +701,7 @@ class RateLimitedRequestAttemptRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -612,7 +715,7 @@ class RateLimitedRequestAttemptRepository {
 
   /// Acquires row-level locks on [RateLimitedRequestAttempt] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

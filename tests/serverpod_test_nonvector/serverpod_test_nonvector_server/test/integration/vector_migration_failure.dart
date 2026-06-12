@@ -1,9 +1,8 @@
 @Timeout(Duration(minutes: 5))
 import 'package:test/test.dart';
 
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 const serviceServerUrl = 'http://localhost:8081/';
@@ -15,15 +14,6 @@ void main() {
     'Given a database without pgvector extension',
     runMode: 'production',
     (sessionBuilder, endpoints) {
-      var serviceClient = Client(
-        serviceServerUrl,
-        // ignore: deprecated_member_use
-        authenticationKeyManager: TestServiceKeyManager(
-          '0',
-          'super_SECRET_password',
-        ),
-      );
-
       group('when applying a migration with no vector columns', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(

@@ -9,6 +9,115 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 void main() {
   group(
     'Given two tables with a foreign key relation '
+    'when the referenced table is dropped and the foreign key column is removed from the other table',
+    () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder().withName('child_entity').build(),
+          )
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('parent_entity')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('childEntityId')
+                      .withColumnType(ColumnType.bigint)
+                      .withIsNullable(true)
+                      .build(),
+                )
+                .withForeignKey(
+                  ForeignKeyDefinition(
+                    constraintName: 'parent_entity_fk_0',
+                    columns: ['childEntityId'],
+                    referenceTable: 'child_entity',
+                    referenceTableSchema: 'public',
+                    referenceColumns: ['id'],
+                    onUpdate: ForeignKeyAction.noAction,
+                    onDelete: ForeignKeyAction.noAction,
+                    matchType: null,
+                  ),
+                )
+                .build(),
+          )
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('parent_entity')
+                // childEntityId column and foreign key removed
+                .build(),
+          )
+          // child_entity table removed
+          .build();
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
+
+      test(
+        'then the generated SQL should contain DROP TABLE child_entity CASCADE.',
+        () {
+          expect(psql, contains('DROP TABLE "child_entity" CASCADE'));
+        },
+      );
+
+      test(
+        'then the generated SQL uses DROP CONSTRAINT IF EXISTS to avoid a hard '
+        'failure for already removed constraints after DROP TABLE CASCADE.',
+        () {
+          expect(
+            psql,
+            contains(
+              'ALTER TABLE "parent_entity" DROP CONSTRAINT IF EXISTS "parent_entity_fk_0"',
+            ),
+            reason:
+                'DROP CONSTRAINT IF EXISTS is used to avoid a hard failure '
+                'for already removed constraints after DROP TABLE CASCADE.',
+          );
+        },
+      );
+
+      test(
+        'then the generated SQL should still DROP COLUMN for the foreign key column.',
+        () {
+          expect(psql, contains('DROP COLUMN "childEntityId"'));
+        },
+      );
+
+      test(
+        'then DROP TABLE CASCADE should appear before DROP COLUMN in the generated SQL.',
+        () {
+          var dropTableIndex = psql.indexOf(
+            'DROP TABLE "child_entity" CASCADE',
+          );
+          var dropColumnIndex = psql.indexOf('DROP COLUMN "childEntityId"');
+
+          expect(dropTableIndex, greaterThanOrEqualTo(0));
+          expect(dropColumnIndex, greaterThanOrEqualTo(0));
+          expect(
+            dropTableIndex,
+            lessThan(dropColumnIndex),
+            reason:
+                'DROP TABLE CASCADE must precede DROP COLUMN so that the column '
+                'can be safely dropped after the FK constraint is removed.',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given two tables with a foreign key relation '
     'when the referenced table and the foreign key pointing to it are removed',
     () {
       var sourceDefinition = DatabaseDefinitionBuilder()
@@ -135,7 +244,8 @@ void main() {
       );
 
       test(
-        'then the alter action for grant_allowance should drop the foreign key.',
+        'then the alter action for grant_allowance should list the foreign key '
+        'to drop so each dialect can react accordingly.',
         () {
           var alterAction = migration.actions.firstWhere(
             (action) =>
@@ -472,6 +582,173 @@ void main() {
             reason:
                 'alterTable should add a foreign key with constraintName main_table_fk_0 referencing table_c',
           );
+        },
+      );
+
+      test(
+        'then the generated SQL should use IF EXISTS when dropping main_table_fk_0 '
+        'after DROP TABLE table_b CASCADE.',
+        () {
+          var psql = migration.toPgSql(
+            databaseDefinition: targetDefinition,
+            installedModules: [],
+            removedModules: [],
+          );
+
+          expect(
+            psql,
+            contains(
+              'ALTER TABLE "main_table" DROP CONSTRAINT IF EXISTS "main_table_fk_0"',
+            ),
+          );
+          expect(psql, contains('DROP TABLE "table_b" CASCADE'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a table that references another table by foreign key, '
+    'when the referenced table is dropped and replaced by a new table and the '
+    'referencing table uses a new column while reusing the same constraint name,',
+    () {
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder().withName('old_server_settings').build(),
+          )
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('global_settings')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('jdfServerSettingsId')
+                      .withColumnType(ColumnType.bigint)
+                      .withIsNullable(true)
+                      .build(),
+                )
+                .withForeignKey(
+                  ForeignKeyDefinition(
+                    constraintName: 'global_settings_fk_0',
+                    columns: ['jdfServerSettingsId'],
+                    referenceTable: 'old_server_settings',
+                    referenceTableSchema: 'public',
+                    referenceColumns: ['id'],
+                    onUpdate: ForeignKeyAction.noAction,
+                    onDelete: ForeignKeyAction.noAction,
+                    matchType: null,
+                  ),
+                )
+                .build(),
+          )
+          .build();
+
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder().withName('new_server_settings').build(),
+          )
+          .withTable(
+            TableDefinitionBuilder()
+                .withName('global_settings')
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName('globalServerSettingsId')
+                      .withColumnType(ColumnType.bigint)
+                      .withIsNullable(true)
+                      .build(),
+                )
+                .withForeignKey(
+                  ForeignKeyDefinition(
+                    constraintName: 'global_settings_fk_0',
+                    columns: ['globalServerSettingsId'],
+                    referenceTable: 'new_server_settings',
+                    referenceTableSchema: 'public',
+                    referenceColumns: ['id'],
+                    onUpdate: ForeignKeyAction.noAction,
+                    onDelete: ForeignKeyAction.noAction,
+                    matchType: null,
+                  ),
+                )
+                .build(),
+          )
+          .build();
+
+      late var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test(
+        'then the alter action for global_settings lists the old foreign key '
+        'so SQLite can apply the schema change.',
+        () {
+          var alterAction = migration.actions.firstWhere(
+            (action) =>
+                action.type == DatabaseMigrationActionType.alterTable &&
+                action.alterTable?.name == 'global_settings',
+            orElse: () => DatabaseMigrationAction(
+              type: DatabaseMigrationActionType.createTable,
+            ),
+          );
+
+          expect(
+            alterAction.alterTable?.deleteForeignKeys,
+            contains('global_settings_fk_0'),
+          );
+        },
+      );
+
+      test(
+        'then the generated SQL uses DROP CONSTRAINT IF EXISTS for '
+        'global_settings_fk_0 after DROP TABLE old_server_settings CASCADE.',
+        () {
+          var psql = migration.toPgSql(
+            databaseDefinition: targetDefinition,
+            installedModules: [],
+            removedModules: [],
+          );
+
+          expect(
+            psql,
+            contains(
+              'ALTER TABLE "global_settings" DROP CONSTRAINT IF EXISTS '
+              '"global_settings_fk_0"',
+            ),
+          );
+          expect(psql, contains('DROP TABLE "old_server_settings" CASCADE'));
+          expect(psql, contains('CREATE TABLE "new_server_settings"'));
+          expect(
+            psql,
+            contains(
+              'ADD CONSTRAINT "global_settings_fk_0"',
+            ),
+          );
+          expect(
+            psql,
+            contains('REFERENCES "new_server_settings"("id")'),
+          );
+        },
+      );
+
+      test(
+        'then DROP TABLE old_server_settings CASCADE must appear before '
+        'ALTER TABLE global_settings.',
+        () {
+          var psql = migration.toPgSql(
+            databaseDefinition: targetDefinition,
+            installedModules: [],
+            removedModules: [],
+          );
+
+          var dropOldIndex = psql.indexOf(
+            'DROP TABLE "old_server_settings" CASCADE',
+          );
+          var alterGlobalIndex = psql.indexOf('ALTER TABLE "global_settings"');
+
+          expect(dropOldIndex, greaterThanOrEqualTo(0));
+          expect(alterGlobalIndex, greaterThanOrEqualTo(0));
+          expect(dropOldIndex, lessThan(alterGlobalIndex));
         },
       );
     },

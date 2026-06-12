@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -21,6 +22,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"bigint" TEXT NOT NULL',
+          );
+        },
+      );
     });
 
     group('with a specific BigInt string as default value', () {
@@ -28,7 +39,7 @@ void main() {
         name: 'bigint',
         columnType: ColumnType.text,
         isNullable: false,
-        columnDefault: "'-13837646363612912343'::text",
+        columnDefault: "'-13837646363612912343'",
         dartType: 'BigInt',
       );
 
@@ -38,6 +49,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"bigint" text NOT NULL DEFAULT \'-13837646363612912343\'::text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"bigint" TEXT NOT NULL DEFAULT (\'-13837646363612912343\')',
           );
         },
       );
@@ -57,6 +78,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"bigint" text',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"bigint" TEXT',
           );
         },
       );

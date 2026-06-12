@@ -21,7 +21,8 @@ enum AuthStrategy implements _i1.SerializableModel {
   jwt,
 
   /// Session-based authentication
-  session;
+  session
+  ;
 
   static AuthStrategy fromJson(String name) {
     switch (name) {

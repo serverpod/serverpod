@@ -46,6 +46,13 @@ Type getType<T>() => T;
 /// serialization, but also for serializing objects. This class is typically
 /// extended by generated code.
 abstract class SerializationManager {
+  /// The name of the module that defines the serialization.
+  ///
+  /// This method will be implemented by the generated code.
+  String getModuleName() {
+    throw UnimplementedError('This protocol does not have a module name.');
+  }
+
   /// Decodes the provided json [String] to an object of type [t] or [T].
   T decode<T>(String data, [Type? t]) {
     return deserialize<T>(jsonDecode(data), t);
@@ -151,39 +158,66 @@ abstract class SerializationManager {
   /// Deserialize the provided json [data] by using the className stored in the [data].
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     var className = data['className'];
+    var raw = data['data'];
     switch (className) {
       case 'null':
         return null;
       case 'int':
-        return deserialize<int>(data['data']);
+        return deserialize<int>(raw);
       case 'double':
-        return deserialize<double>(data['data']);
+        return deserialize<double>(raw);
       case 'String':
-        return deserialize<String>(data['data']);
+        return deserialize<String>(raw);
       case 'bool':
-        return deserialize<bool>(data['data']);
+        return deserialize<bool>(raw);
       case 'DateTime':
-        return deserialize<DateTime>(data['data']);
+        return deserialize<DateTime>(raw);
       case 'ByteData':
-        return deserialize<ByteData>(data['data']);
+        return deserialize<ByteData>(raw);
       case 'Duration':
-        return deserialize<Duration>(data['data']);
+        return deserialize<Duration>(raw);
       case 'UuidValue':
-        return deserialize<UuidValue>(data['data']);
+        return deserialize<UuidValue>(raw);
       case 'Uri':
-        return deserialize<Uri>(data['data']);
+        return deserialize<Uri>(raw);
       case 'BigInt':
-        return deserialize<BigInt>(data['data']);
+        return deserialize<BigInt>(raw);
       case 'Vector':
-        return deserialize<Vector>(data['data']);
+        return deserialize<Vector>(raw);
       case 'HalfVector':
-        return deserialize<HalfVector>(data['data']);
+        return deserialize<HalfVector>(raw);
       case 'SparseVector':
-        return deserialize<SparseVector>(data['data']);
+        return deserialize<SparseVector>(raw);
       case 'Bit':
-        return deserialize<Bit>(data['data']);
+        return deserialize<Bit>(raw);
+      case 'List' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toList();
+      case 'Set' when raw is List:
+        return raw.map(deserializeDynamicFieldValue).toSet();
+      case 'Map' when raw is Map<String, dynamic>:
+        return raw.map((k, v) => MapEntry(k, deserializeDynamicFieldValue(v)));
+      case 'Map' when raw is List:
+        return Map<dynamic, dynamic>.fromEntries(
+          raw.cast<Map<String, dynamic>>().map(
+            (e) => MapEntry(
+              deserializeDynamicFieldValue(e['k']),
+              deserializeDynamicFieldValue(e['v']),
+            ),
+          ),
+        );
     }
     throw FormatException('No deserialization found for type named $className');
+  }
+
+  /// Decodes a value for a `dynamic` model field: a JSON object ([Map]) with
+  /// `className` and `data` (see [dynamicFieldToJson]).
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return deserializeByClassName(value);
+    throw FormatException(
+      'Dynamic fields are encoded as a Map with className and data, but got '
+      '${value.runtimeType} instead.',
+    );
   }
 
   /// Wraps serialized data with its class name so that it can be deserialized
@@ -313,6 +347,62 @@ abstract class SerializationManager {
       formatted: formatted,
       encodeForProtocol: true,
     );
+  }
+
+  /// Returns a JSON-encodable structure for a `dynamic` model field.
+  ///
+  /// Recursively encodes [List], [Set], and [Map] children so each element
+  /// keeps type information via `className` / `data` wrappers.
+  ///
+  /// When [forProtocol] is true, nested [ProtocolSerialization] values use
+  /// [ProtocolSerialization.toJsonForProtocol].
+  ///
+  /// Module and shared package protocols override this method to resolve host
+  /// project types via registered host protocols.
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
+    return switch (object) {
+      List() => {
+        'className': 'List',
+        'data': [
+          for (final e in object)
+            dynamicFieldToJson(e, forProtocol: forProtocol),
+        ],
+      },
+      Set() => {
+        'className': 'Set',
+        'data': [
+          for (final e in object)
+            dynamicFieldToJson(e, forProtocol: forProtocol),
+        ],
+      },
+      Map()
+          when object is Map<String, dynamic> ||
+              object.keys.every((k) => k is String) =>
+        {
+          'className': 'Map',
+          'data': {
+            for (final e in object.entries)
+              e.key as String: dynamicFieldToJson(
+                e.value,
+                forProtocol: forProtocol,
+              ),
+          },
+        },
+      Map() => {
+        'className': 'Map',
+        'data': [
+          for (final e in object.entries)
+            {
+              'k': dynamicFieldToJson(e.key, forProtocol: forProtocol),
+              'v': dynamicFieldToJson(e.value, forProtocol: forProtocol),
+            },
+        ],
+      },
+      _ => _toEncodable(wrapWithClassName(object), forProtocol),
+    };
   }
 }
 

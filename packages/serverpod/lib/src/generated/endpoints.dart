@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/insights.dart' as _i2;
 import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
 import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
-import 'package:serverpod/src/generated/database/filter/filter.dart' as _i5;
+import 'package:serverpod_database/src/generated/filter/filter.dart' as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -213,6 +213,31 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
                   .getLiveDatabaseDefinition(session),
+        ),
+        'applyMigrations': _i1.MethodConnector(
+          name: 'applyMigrations',
+          params: {
+            'applyRepairMigration': _i1.ParameterDescription(
+              name: 'applyRepairMigration',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+            'applyMigrations': _i1.ParameterDescription(
+              name: 'applyMigrations',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .applyMigrations(
+                    session,
+                    applyRepairMigration: params['applyRepairMigration'],
+                    applyMigrations: params['applyMigrations'],
+                  ),
         ),
         'getDatabaseDefinitions': _i1.MethodConnector(
           name: 'getDatabaseDefinitions',

@@ -1,0 +1,3 @@
+class: NonTableParentClass
+fields:
+  nonTableParentField: String, column=non_table_parent_field

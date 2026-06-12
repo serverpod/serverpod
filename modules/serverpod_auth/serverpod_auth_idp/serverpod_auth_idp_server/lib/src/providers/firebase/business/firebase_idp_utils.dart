@@ -110,6 +110,13 @@ class FirebaseIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterFirebaseAccountCreated?.call(
+        session,
+        authUser,
+        firebaseAccount,
+        transaction: transaction,
+      );
     }
 
     return (
@@ -132,7 +139,10 @@ class FirebaseIdpUtils {
     try {
       data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
-        config: FirebaseIdTokenConfig(projectId: projectId),
+        config: FirebaseIdTokenConfig(
+          projectId: projectId,
+          clockSkewTolerance: config.clockSkewTolerance,
+        ),
         audience: projectId,
       );
     } catch (e, stackTrace) {

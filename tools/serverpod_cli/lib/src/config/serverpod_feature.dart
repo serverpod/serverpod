@@ -1,5 +1,6 @@
 enum ServerpodFeature {
-  database(defaultValue: true, missingFileDefault: false);
+  database(defaultValue: true, missingFileDefault: false),
+  ;
 
   const ServerpodFeature({
     required this.defaultValue,

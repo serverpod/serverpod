@@ -1,19 +1,26 @@
+// {{#web}}
 import 'dart:io';
+// {{/web}}
 
 import 'package:serverpod/serverpod.dart';
+// {{#auth}}
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+// {{/auth}}
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+// {{#web}}
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
+// {{/web}}
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(args, Protocol(), Endpoints());
 
+  // {{#auth}}
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,
   // and the identity providers will be the authentication options available for users.
@@ -30,7 +37,9 @@ void run(List<String> args) async {
       ),
     ],
   );
+  // {{/auth}}
 
+  // {{#web}}
   // Setup a default page at the web root.
   // These are used by the default page.
   pod.webServer.addRoute(RootRoute(), '/');
@@ -55,9 +64,10 @@ void run(List<String> args) async {
     // Serve the flutter web app under the /app path.
     pod.webServer.addRoute(
       FlutterRoute(
-        Directory(
-          Uri(path: 'web/app').toFilePath(),
-        ),
+        appDir,
+        // If building the Flutter app with WASM, set the below parameter to
+        // true and add the --wasm flag to the flutter build command.
+        enableWasmHeaders: false,
       ),
       '/app',
     );
@@ -72,11 +82,13 @@ void run(List<String> args) async {
       '/app/**',
     );
   }
+  // {{/web}}
 
   // Start the server.
   await pod.start();
 }
 
+// {{#auth}}
 void _sendRegistrationCode(
   Session session, {
   required String email,
@@ -84,9 +96,11 @@ void _sendRegistrationCode(
   required String verificationCode,
   required Transaction? transaction,
 }) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
+  // NOTE: Here you call your mail service to send the code to the user. For
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Registration code for $email: <$verificationCode>');
 }
 
 void _sendPasswordResetCode(
@@ -96,7 +110,11 @@ void _sendPasswordResetCode(
   required String verificationCode,
   required Transaction? transaction,
 }) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+  // NOTE: Here you call your mail service to send the code to the user. For
+  // testing, we just log it. `session.alert` shows this as a copyable alert in
+  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
+  // the clipboard. Other log destinations treat it as a regular log message.
+  session.alert('Password reset code for $email: <$verificationCode>');
 }
+
+// {{/auth}}

@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 
 import 'future_call_diagnostics_service.dart';
 
@@ -68,7 +68,7 @@ class FutureCallScanner {
     try {
       final now = DateTime.now().toUtc();
 
-      final entries = await FutureCallEntry.db.deleteWhere(
+      final entries = await FutureCallEntry.db.find(
         _internalSession,
         where: (row) => row.time <= now,
       );
@@ -87,11 +87,11 @@ class FutureCallScanner {
         message: message,
       );
 
-      stderr.writeln('${DateTime.now().toUtc()} $message');
-      stderr.writeln('$error');
-      stderr.writeln('$stackTrace');
-      stderr.writeln('Local stacktrace:');
-      stderr.writeln('${StackTrace.current}');
+      log.error(
+        message,
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
 
     _scanCompleter.complete();

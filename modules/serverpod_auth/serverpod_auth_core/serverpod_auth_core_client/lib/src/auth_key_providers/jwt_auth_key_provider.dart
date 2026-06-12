@@ -15,11 +15,16 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// The endpoint to use for refreshing the token.
     required EndpointRefreshJwtTokens refreshEndpoint,
 
+    /// Optional function to invalidate the cached authentication info before
+    /// refreshing the token.
+    Future<void> Function()? invalidateCachedAuthInfo,
+
     /// Tolerance to add to the token expiration time before refreshing.
     Duration refreshJwtTokenBefore = const Duration(seconds: 30),
   }) : super(
          _JwtAuthKeyProviderDelegate(
            getAuthInfo: getAuthInfo,
+           invalidateCachedAuthInfo: invalidateCachedAuthInfo,
            onRefreshAuthInfo: onRefreshAuthInfo,
            refreshEndpoint: refreshEndpoint,
            refreshJwtTokenBefore: refreshJwtTokenBefore,
@@ -29,12 +34,14 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
 
 class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   final Future<AuthSuccess?> Function() getAuthInfo;
+  final Future<void> Function()? invalidateCachedAuthInfo;
   final Future<void> Function(AuthSuccess authSuccess) onRefreshAuthInfo;
   final EndpointRefreshJwtTokens refreshEndpoint;
   final Duration refreshJwtTokenBefore;
 
   _JwtAuthKeyProviderDelegate({
     required this.getAuthInfo,
+    required this.invalidateCachedAuthInfo,
     required this.onRefreshAuthInfo,
     required this.refreshEndpoint,
     required this.refreshJwtTokenBefore,
@@ -51,6 +58,7 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   /// about to expire within the configured tolerance. Otherwise, returns skipped.
   @override
   Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    await invalidateCachedAuthInfo?.call();
     final currentAuthInfo = await getAuthInfo();
     final currentExpiresAt = currentAuthInfo?.tokenExpiresAt;
     final refreshToken = currentAuthInfo?.refreshToken;

@@ -5,12 +5,12 @@ name: chat_server
 description: Starting point for a Serverpod server.
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 3.3.1
-  serverpod_auth_server: 3.3.1
-  serverpod_chat_server: 3.3.1
+  serverpod: 3.5.0-beta.10
+  serverpod_auth_server: 3.5.0-beta.10
+  serverpod_chat_server: 3.5.0-beta.10
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
@@ -22,6 +22,10 @@ dependency_overrides:
     path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_chat_server:
     path: ../../../../modules/legacy/serverpod_chat/serverpod_chat_server
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../../../packages/serverpod_serialization
   serverpod_shared:

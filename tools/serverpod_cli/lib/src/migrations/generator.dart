@@ -1,44 +1,63 @@
 import 'dart:io';
 
-import 'package:cli_tools/cli_tools.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_cli/src/migrations/migration_registry.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/database/sql_generator.dart';
+import 'package:serverpod_cli/src/migrations/client_side/client_migration_artifact_store.dart';
+import 'package:serverpod_cli/src/migrations/context.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+// This is a temporary internal import since the normalize functions are not
+// meant to be exported from the database package. It will be removed once the
+// [MigrationGenerator] gets moved to the database package.
+// ignore: implementation_imports
+import 'package:serverpod_database/src/definition/definition_normalizer.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
     required this.projectName,
+    this.serverCode = true,
   });
 
   final Directory directory;
   final String projectName;
+  final bool serverCode;
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
     var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
-    if (tag != null) {
+    if (tag != null && tag.isNotEmpty) {
+      if (!RegExp(r'^[a-zA-Z0-9_-\s.]+$').hasMatch(tag)) {
+        throw FormatException(
+          'Invalid migration tag: "$tag". Only characters that are supported '
+          'in file names are allowed.',
+        );
+      }
       versionName += '-$tag';
     }
     return versionName;
   }
 
+  late final _artifactStore = serverCode
+      ? FileSystemMigrationArtifactStore(projectDirectory: directory)
+      : ClientMigrationArtifactStore(clientPackageRoot: directory);
+
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
   /// warnings.
+  /// If [empty] is true, the migration will be created even if there are no
+  /// database changes.
   /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// A [precomputedVersion] can be provided to skip the version name creation.
   ///
   /// Returns the migration version, or null if no migration was created.
   ///
@@ -48,37 +67,32 @@ class MigrationGenerator {
   /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
-  Future<MigrationVersion?> createMigration({
+  Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
+    String? precomputedVersion,
+    bool empty = false,
     required bool force,
     required GeneratorConfig config,
+    MigrationGenerationContext? context,
     bool write = true,
   }) async {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
+    var versions = await _artifactStore.listVersions();
+    var latestVersion = versions.lastOrNull;
 
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       projectName,
-      migrationRegistry.getLatest(),
+      latestVersion,
     );
 
-    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
-      config,
-    );
-    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
-      collector.printErrors();
-
-      if (collector.hasSevereErrors) {
-        throw GenerateMigrationDatabaseDefinitionException();
-      }
-    }).validateAll();
+    var modelDefinitions =
+        (context ?? await MigrationGenerationContext.load(config))
+            .modelDefinitions;
 
     var databaseDefinitionProject = createDatabaseDefinitionFromModels(
       modelDefinitions,
       config.name,
       config.modulesAll,
-      dialect: config.databaseDialect,
+      serverCode: serverCode,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -86,8 +100,8 @@ class MigrationGenerator {
       directory,
     );
 
-    var versionName = createVersionName(tag);
-    var nextMigrationVersion = DatabaseMigrationVersion(
+    var versionName = precomputedVersion ?? createVersionName(tag);
+    var nextMigrationVersion = DatabaseMigrationVersionModel(
       module: projectName,
       version: versionName,
     );
@@ -104,45 +118,56 @@ class MigrationGenerator {
     );
 
     var warnings = migration.warnings;
-    _printWarnings(warnings);
+    _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      log.info('Migration aborted. Use --force to ignore warnings.');
       throw const MigrationAbortedException();
     }
 
-    if (migration.isEmpty) {
-      log.info(
-        'No changes detected.',
-      );
+    if (migration.isEmpty && !empty) {
       return null;
     }
 
-    var migrationVersion = MigrationVersion(
-      moduleName: projectName,
-      projectDirectory: directory,
-      versionName: versionName,
+    final dialect = serverCode
+        ? config.databaseDialect
+        : DatabaseDialect.sqlite;
+
+    var sqlGenerator = SqlGenerator.forDialect(dialect);
+
+    // Filter the elements here to keep the definition files complete. Only
+    // the migration and definition SQL will be filtered by the dialect.
+    var databaseDefinitionNextForDialect = databaseDefinitionNext.forDialect(
+      dialect,
+      logWarnings: log.warning,
+    );
+
+    var artifacts = MigrationVersionArtifacts(
+      version: versionName,
+      definitionSql: sqlGenerator.generateDatabaseDefinitionSql(
+        databaseDefinitionNextForDialect,
+        installedModules: databaseDefinitionNext.installedModules,
+      ),
+      migrationSql: sqlGenerator.generateDatabaseMigrationSql(
+        migration,
+        databaseDefinitionNextForDialect,
+        installedModules: databaseDefinitionNext.installedModules,
+        removedModules: _removedModulesDiff(
+          databaseDefinitionLatest.installedModules,
+          databaseDefinitionNext.installedModules,
+        ),
+      ),
+      definition: databaseDefinitionNext,
+      projectDefinition: databaseDefinitionProject,
       migration: migration,
-      databaseDefinitionProject: databaseDefinitionProject,
-      databaseDefinitionFull: databaseDefinitionNext,
     );
 
     if (write) {
-      var removedModules = _removedModulesDiff(
-        databaseDefinitionLatest.installedModules,
-        databaseDefinitionNext.installedModules,
-      );
-
-      await migrationVersion.write(
-        installedModules: databaseDefinitionNext.installedModules,
-        removedModules: removedModules,
-        dialect: config.databaseDialect,
-      );
-      migrationRegistry.add(versionName);
-      await migrationRegistry.write();
+      await _artifactStore.writeVersion(artifacts);
+      versions.add(versionName);
+      await _artifactStore.writeVersionRegistry(versions);
     }
 
-    return migrationVersion;
+    return artifacts;
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
@@ -153,7 +178,7 @@ class MigrationGenerator {
       modules,
       directory: projectFolder,
     );
-    return versions.map((e) => e.databaseDefinitionProject);
+    return versions.map((e) => e.projectDefinition);
   }
 
   /// Creates a repair migration that will bring the database up to date with
@@ -162,8 +187,13 @@ class MigrationGenerator {
   /// If [targetMigrationVersion] is not specified, the latest migration version
   /// will be used.
   ///
-  /// Returns the repair migration file, or null if no migration was
-  /// created.
+  /// Returns the repair migration file, or `null` when no schema drift is
+  /// detected between the live database and the target version (callers can
+  /// override with [force]).
+  ///
+  /// Throws [MigrationAbortedException] when warnings are present and [force]
+  /// is false. Other typed exceptions surface specific failure modes; see the
+  /// `MigrationRepair*Exception` types.
   Future<File?> repairMigration({
     String? tag,
     required bool force,
@@ -172,19 +202,34 @@ class MigrationGenerator {
     String? targetMigrationVersion,
   }) async {
     var migrationVersion =
-        targetMigrationVersion ?? _getLatestMigrationVersion();
+        targetMigrationVersion ??
+        (await _artifactStore.listVersions()).lastOrNull;
 
-    _validateRepairMigrationVersion(migrationVersion);
+    await _validateRepairMigrationVersion(migrationVersion);
 
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
       projectName,
       migrationVersion,
     );
 
-    var client = ConfigInfo(runMode).createServiceClient();
+    // Stored artifacts use the full merged definition (same as create-migration
+    // before SQL is generated). The live database only contains objects that
+    // exist for this dialect, so we must compare against the dialect-filtered
+    // target-otherwise unsupported indexes (etc.) appear as spurious drift.
+    var dstDatabaseForDialect = dstDatabase.forDialect(
+      dialect,
+      logWarnings: log.warning,
+    );
+
+    var client = ConfigInfo(
+      runMode,
+      serverDir: path.normalize(path.absolute(directory.path)),
+    ).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
-      liveDatabase = await client.insights.getLiveDatabaseDefinition();
+      liveDatabase = normalizeDefinitionToV2(
+        await client.insights.getLiveDatabaseDefinition(),
+      );
     } catch (e) {
       throw MigrationLiveDatabaseDefinitionException(
         exception: e.toString(),
@@ -195,23 +240,19 @@ class MigrationGenerator {
 
     var migration = generateDatabaseMigration(
       databaseSource: liveDatabase,
-      databaseTarget: dstDatabase,
+      databaseTarget: dstDatabaseForDialect,
     );
 
     var warnings = migration.warnings;
-    _printWarnings(warnings);
+    _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      log.info('Migration aborted. Use --force to ignore warnings.');
-      return null;
+      throw const MigrationAbortedException();
     }
 
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
-      log.info(
-        'No changes detected. Use --force to create an empty repair migration.',
-      );
       return null;
     }
 
@@ -219,43 +260,41 @@ class MigrationGenerator {
 
     var installedModules = [
       ...dstDatabase.installedModules,
-      DatabaseMigrationVersion(
+      DatabaseMigrationVersionModel(
         module: MigrationConstants.repairMigrationModuleName,
         version: repairMigrationName,
       ),
     ];
 
-    List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
+    List<DatabaseMigrationVersionModel> removedModules = _removedModulesDiff(
       liveDatabase.installedModules,
       installedModules,
     );
 
-    return _writeRepairMigration(
+    return await _writeRepairMigration(
       repairMigrationName,
       migration,
+      dstDatabaseForDialect,
       installedModules,
       removedModules,
       dialect,
     );
   }
 
-  void _validateRepairMigrationVersion(String? migrationVersion) {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
+  Future<void> _validateRepairMigrationVersion(String? migrationVersion) async {
+    var versions = await _artifactStore.listVersions();
 
-    if (migrationVersion == null ||
-        !migrationRegistry.versions.contains(migrationVersion)) {
+    if (migrationVersion == null || !versions.contains(migrationVersion)) {
       throw MigrationRepairTargetNotFoundException(
         targetName: migrationVersion,
-        versionsFound: migrationRegistry.versions,
+        versionsFound: versions,
       );
     }
   }
 
-  List<DatabaseMigrationVersion> _removedModulesDiff(
-    List<DatabaseMigrationVersion> preInstalledModules,
-    List<DatabaseMigrationVersion> postInstalledModules,
+  List<DatabaseMigrationVersionModel> _removedModulesDiff(
+    List<DatabaseMigrationVersionModel> preInstalledModules,
+    List<DatabaseMigrationVersionModel> postInstalledModules,
   ) {
     var removedModules = preInstalledModules
         .where(
@@ -280,20 +319,26 @@ class MigrationGenerator {
       );
     }
 
-    var migrationVersion = await MigrationVersion.load(
-      moduleName: projectName,
-      versionName: migrationVersionName,
-      projectDirectory: directory,
-    );
-
-    return migrationVersion.databaseDefinitionFull;
-  }
-
-  String? _getLatestMigrationVersion() {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
-    return migrationRegistry.getLatest();
+    try {
+      var artifacts = await _artifactStore.readVersionDefinition(
+        migrationVersionName,
+      );
+      if (artifacts == null) {
+        throw MigrationVersionLoadException(
+          versionName: migrationVersionName,
+          moduleName: projectName,
+          exception: 'Migration version not found.',
+        );
+      }
+      return artifacts.definition;
+    } catch (e) {
+      if (e is MigrationVersionLoadException) rethrow;
+      throw MigrationVersionLoadException(
+        versionName: migrationVersionName,
+        moduleName: moduleName,
+        exception: e.toString(),
+      );
+    }
   }
 
   bool _moduleVersionMismatch(
@@ -325,7 +370,7 @@ class MigrationGenerator {
     return false;
   }
 
-  Future<List<MigrationVersion>> _loadMigrationVersionsFromModules(
+  Future<List<MigrationVersionDefinition>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     required Directory directory,
   }) async {
@@ -333,7 +378,7 @@ class MigrationGenerator {
       (module) => module.migrationVersions.isNotEmpty,
     );
 
-    var moduleMigrationVersions = <MigrationVersion>[];
+    var moduleMigrationArtifacts = <MigrationVersionDefinition>[];
 
     for (var module in selectedModules) {
       var versionName = module.migrationVersions.last;
@@ -341,22 +386,31 @@ class MigrationGenerator {
         scheme: 'file', // assuming the module is local
         pathSegments: module.serverPackageDirectoryPathParts,
       );
-
-      var migrationVersion = await MigrationVersion.load(
-        moduleName: module.name,
-        versionName: versionName,
+      var moduleArtifactStore = FileSystemMigrationArtifactStore(
         projectDirectory: Directory.fromUri(uri),
       );
-      moduleMigrationVersions.add(migrationVersion);
+
+      var artifacts = await moduleArtifactStore.readVersionDefinition(
+        versionName,
+      );
+      if (artifacts == null) {
+        throw MigrationVersionLoadException(
+          versionName: versionName,
+          moduleName: module.name,
+          exception: 'Migration version not found.',
+        );
+      }
+
+      moduleMigrationArtifacts.add(artifacts);
     }
 
-    return moduleMigrationVersions;
+    return moduleMigrationArtifacts;
   }
 
   DatabaseDefinition _mergeDatabaseDefinitions(
     DatabaseDefinition databaseDefinitionProject,
     Iterable<DatabaseDefinition> databaseDefinitions,
-    DatabaseMigrationVersion nextProjectMigrationVersion,
+    DatabaseMigrationVersionModel nextProjectMigrationVersion,
   ) {
     var tables = [
       ...databaseDefinitionProject.tables,
@@ -374,6 +428,7 @@ class MigrationGenerator {
     ];
 
     return DatabaseDefinition(
+      schemaVersion: currentSchemaVersion,
       moduleName: databaseDefinitionProject.moduleName,
       tables: tables,
       installedModules: installedModules,
@@ -381,220 +436,47 @@ class MigrationGenerator {
     );
   }
 
-  void _printWarnings(List<DatabaseMigrationWarning> warnings) {
+  void _logWarnings(List<DatabaseMigrationWarning> warnings) {
     if (warnings.isNotEmpty) {
-      log.warning('Migration Warnings:');
+      final databaseLabel = serverCode ? 'server' : 'client';
+      final message = StringBuffer();
+      message.writeln('\nMigration warnings ($databaseLabel database):');
       for (var warning in warnings) {
-        log.warning(
-          warning.message,
-          type: TextLogType.bullet,
-        );
+        message.writeln('  • ${warning.message}');
       }
+      log.warning(message.toString());
     }
   }
 
-  File _writeRepairMigration(
+  Future<File> _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
-    List<DatabaseMigrationVersion> installedModules,
-    List<DatabaseMigrationVersion> removedModules,
+    DatabaseDefinition databaseDefinition,
+    List<DatabaseMigrationVersionModel> installedModules,
+    List<DatabaseMigrationVersionModel> removedModules,
     DatabaseDialect dialect,
-  ) {
-    var repairMigrationSql = migration.toSql(
-      dialect: dialect,
+  ) async {
+    var sqlGenerator = SqlGenerator.forDialect(dialect);
+
+    var repairMigrationSql = sqlGenerator.generateDatabaseMigrationSql(
+      migration,
+      databaseDefinition,
       installedModules: installedModules,
       removedModules: removedModules,
     );
 
-    var repairMigrationFile = File(
+    await _artifactStore.writeRepairMigration(
+      RepairMigration(
+        version: repairMigrationName,
+        migrationSql: repairMigrationSql,
+      ),
+    );
+
+    return File(
       path.join(
         MigrationConstants.repairMigrationDirectory(directory).path,
         '$repairMigrationName.sql',
       ),
     );
-
-    var targetDirectory = MigrationConstants.repairMigrationDirectory(
-      directory,
-    );
-
-    if (targetDirectory.existsSync()) {
-      targetDirectory.deleteSync(recursive: true);
-    }
-
-    targetDirectory.createSync(recursive: true);
-
-    try {
-      repairMigrationFile.writeAsStringSync(repairMigrationSql);
-    } catch (e) {
-      throw MigrationRepairWriteException(exception: e.toString());
-    }
-
-    return repairMigrationFile;
-  }
-}
-
-class MigrationVersion {
-  MigrationVersion({
-    required this.moduleName,
-    required this.projectDirectory,
-    required this.versionName,
-    required this.migration,
-    required this.databaseDefinitionProject,
-    required this.databaseDefinitionFull,
-  });
-
-  final Directory projectDirectory;
-
-  final String moduleName;
-  final String versionName;
-  final DatabaseMigration migration;
-  final DatabaseDefinition databaseDefinitionProject;
-  final DatabaseDefinition databaseDefinitionFull;
-
-  static Future<MigrationVersion> load({
-    required String moduleName,
-    required String versionName,
-    required Directory projectDirectory,
-  }) async {
-    try {
-      // Get the serialization manager
-      var serializationManager = Protocol();
-
-      // Load the database definition
-      var databaseDefinitionProjectPath =
-          MigrationConstants.databaseDefinitionProjectJSONPath(
-            projectDirectory,
-            versionName,
-          );
-
-      var databaseDefinitionProject =
-          await _readMigrationDataFile<DatabaseDefinition>(
-            databaseDefinitionProjectPath,
-            serializationManager,
-          );
-
-      var databaseDefinitionPath =
-          MigrationConstants.databaseDefinitionJSONPath(
-            projectDirectory,
-            versionName,
-          );
-      var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
-        databaseDefinitionPath,
-        serializationManager,
-      );
-
-      // Load the migration definition
-      var migrationPath = MigrationConstants.databaseMigrationJSONPath(
-        projectDirectory,
-        versionName,
-      );
-      var migrationDefinition = await _readMigrationDataFile<DatabaseMigration>(
-        migrationPath,
-        serializationManager,
-      );
-
-      return MigrationVersion(
-        moduleName: moduleName,
-        projectDirectory: projectDirectory,
-        versionName: versionName,
-        migration: migrationDefinition,
-        databaseDefinitionProject: databaseDefinitionProject,
-        databaseDefinitionFull: databaseDefinition,
-      );
-    } catch (e) {
-      throw MigrationVersionLoadException(
-        versionName: versionName,
-        moduleName: moduleName,
-        exception: e.toString(),
-      );
-    }
-  }
-
-  static Future<T> _readMigrationDataFile<T>(
-    File definitionFile,
-    Protocol serializationManager,
-  ) async {
-    var data = await definitionFile.readAsString();
-    var content = serializationManager.decode<T>(
-      data,
-    );
-    return content;
-  }
-
-  Future<void> write({
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
-    required DatabaseDialect dialect,
-  }) async {
-    var migrationDirectory = MigrationConstants.migrationVersionDirectory(
-      projectDirectory,
-      versionName,
-    );
-
-    if (migrationDirectory.existsSync()) {
-      throw MigrationVersionAlreadyExistsException(
-        directoryPath: migrationDirectory.path,
-      );
-    }
-    await migrationDirectory.create(recursive: true);
-
-    // Create sql for definition and migration
-    var definitionSql = databaseDefinitionFull.toSql(
-      dialect: dialect,
-      installedModules: installedModules,
-    );
-
-    var migrationSql = migration.toSql(
-      dialect: dialect,
-      installedModules: installedModules,
-      removedModules: removedModules,
-    );
-
-    // Write the database definition JSON file
-    var definitionFile = MigrationConstants.databaseDefinitionProjectJSONPath(
-      projectDirectory,
-      versionName,
-    );
-    var definitionData = SerializationManager.encode(
-      databaseDefinitionProject,
-      formatted: true,
-    );
-    await definitionFile.writeAsString(definitionData);
-
-    // Write the database full definition JSON file
-    var definitionFullFile = MigrationConstants.databaseDefinitionJSONPath(
-      projectDirectory,
-      versionName,
-    );
-    var definitionFullData = SerializationManager.encode(
-      databaseDefinitionFull,
-      formatted: true,
-    );
-    await definitionFullFile.writeAsString(definitionFullData);
-
-    // Write the database definition SQL file
-    var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
-      projectDirectory,
-      versionName,
-    );
-    await definitionSqlFile.writeAsString(definitionSql);
-
-    // Write the migration definition JSON file
-    var migrationFile = MigrationConstants.databaseMigrationJSONPath(
-      projectDirectory,
-      versionName,
-    );
-    var migrationData = SerializationManager.encode(
-      migration,
-      formatted: true,
-    );
-    await migrationFile.writeAsString(migrationData);
-
-    // Write the migration definition SQL file
-    var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
-      projectDirectory,
-      versionName,
-    );
-    await migrationSqlFile.writeAsString(migrationSql);
   }
 }

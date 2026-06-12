@@ -1,0 +1,4 @@
+class: UriDefaultPersist
+table: uri_default_persist
+fields:
+  uriDefaultPersist: Uri?, defaultPersist='https://serverpod.dev/'

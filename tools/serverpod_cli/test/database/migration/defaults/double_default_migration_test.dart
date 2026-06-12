@@ -161,4 +161,161 @@ void main() {
       },
     );
   });
+
+  group('Given a SQLite database table definition with a double column ', () {
+    test(
+      'when generating SQL with a specific double default value (10.5), then REAL has numeric default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('doubleDefault')
+                        .withColumnType(ColumnType.doublePrecision)
+                        .withColumnDefault('10.5')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"doubleDefault" REAL NOT NULL DEFAULT (10.5)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with a specific double default value (20.5), then REAL has numeric default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('doubleDefault')
+                        .withColumnType(ColumnType.doublePrecision)
+                        .withColumnDefault('20.5')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"doubleDefault" REAL NOT NULL DEFAULT (20.5)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the double column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('doubleDefault')
+                        .withColumnType(ColumnType.doublePrecision)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"doubleDefault" REAL NOT NULL'));
+        expect(
+          sql,
+          isNot(contains('"doubleDefault" REAL NOT NULL DEFAULT')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable double field and columnDefault (10.5), then the column is nullable with default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('doubleDefault')
+                        .withColumnType(ColumnType.doublePrecision)
+                        .withIsNullable(true)
+                        .withColumnDefault('10.5')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"doubleDefault" REAL DEFAULT (10.5)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable double field and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('doubleDefault')
+                        .withColumnType(ColumnType.doublePrecision)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"doubleDefault" REAL\n'));
+        expect(sql, isNot(contains('"doubleDefault" REAL DEFAULT')));
+      },
+    );
+  });
 }

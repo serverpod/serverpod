@@ -60,7 +60,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "source"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
@@ -136,7 +140,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "source"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
@@ -212,7 +220,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "b"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "a"');
@@ -307,7 +319,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       expect(psql, isNot(contains('"c"'))); // C is unchanged
     },
@@ -369,16 +385,20 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf(
         'DROP TABLE "source"',
       ); // should not be dropped
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
       var dropSourceConstraint = psql.indexOf(
-        'ALTER TABLE "source" DROP CONSTRAINT "source_fk_0"',
+        'ALTER TABLE "source" DROP CONSTRAINT IF EXISTS "source_fk_0"',
       );
-      var dropSourceColumnPointingTotarget = psql.indexOf(
+      var dropSourceColumnPointingToTarget = psql.indexOf(
         'ALTER TABLE "source" DROP COLUMN "targetId"',
       );
       var createNewTargetTable = psql.indexOf('CREATE TABLE "target_new"');
@@ -386,13 +406,12 @@ fields:
       expect(dropTableSourceIndex, -1);
       expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
       expect(dropSourceConstraint, greaterThanOrEqualTo(0));
-      expect(dropSourceColumnPointingTotarget, greaterThanOrEqualTo(0));
+      expect(dropSourceColumnPointingToTarget, greaterThanOrEqualTo(0));
       expect(createNewTargetTable, greaterThanOrEqualTo(0));
 
-      expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
       expect(dropTableTargetIndex, lessThan(dropSourceConstraint));
-      expect(dropSourceConstraint, lessThan(dropSourceColumnPointingTotarget));
-      expect(dropSourceColumnPointingTotarget, lessThan(createNewTargetTable));
+      expect(dropSourceConstraint, lessThan(dropSourceColumnPointingToTarget));
+      expect(dropSourceColumnPointingToTarget, lessThan(createNewTargetTable));
     },
   );
 }

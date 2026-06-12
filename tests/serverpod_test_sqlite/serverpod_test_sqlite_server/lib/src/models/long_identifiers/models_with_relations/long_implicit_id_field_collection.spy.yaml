@@ -1,0 +1,5 @@
+class: LongImplicitIdFieldCollection
+table: long_implicit_id_field_collection
+fields:
+  name: String
+  thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: List<LongImplicitIdField>?, relation

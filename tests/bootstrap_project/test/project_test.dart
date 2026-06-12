@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 12))
+@Timeout(Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -56,6 +56,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -130,6 +131,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -167,7 +169,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 15; retries++) {
+        for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
@@ -216,6 +218,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -271,6 +274,14 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
+          );
+        });
+
+        test('has a Dockerfile', () {
+          expect(
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Server Dockerfile does not exist.',
           );
         });
 
@@ -387,30 +398,6 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server generated protocol.yaml file does not exist.',
-          );
-        });
-
-        test('has a web/app directory containing the flutter web app', () {
-          expect(
-            Directory(
-              path.join(tempPath, serverDir, 'web', 'app'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app directory does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'index.html'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/index.html file does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'main.dart.js'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/main.dart.js file does not exist.',
           );
         });
       });
@@ -655,6 +642,20 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
+
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
             path.join(tempPath, serverDir, 'pubspec.yaml'),
@@ -684,16 +685,216 @@ void main() async {
           );
         });
 
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir, flutterDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
         test(
-          'then the root pubspec contains override for flutter secure storage',
+          'then the flutter pubspec contains override for flutter secure storage',
           () {
             final pubspec = File(
-              path.join(tempPath, projectName, 'pubspec.yaml'),
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
             );
             final content = pubspec.readAsStringSync();
             expect(content, contains('flutter_secure_storage'));
           },
         );
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
+
+        test('has agent skills installed', () {
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.agents', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.claude', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
+        });
+
+        group('has Serverpod and Dart MCP servers configured', () {
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
+{
+  "mcpServers": {
+    "serverpod": {
+      "command": "serverpod",
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
+    },
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    }
+  }
+}
+''';
+
+          test('for Claude', () {
+            final claude = File(
+              path.join(tempPath, projectName, '.mcp.json'),
+            );
+            expect(claude.existsSync(), isTrue);
+            expect(claude.readAsStringSync(), genericConfig);
+          });
+
+          test('for Cursor', () {
+            final cursor = File(
+              path.join(tempPath, projectName, '.cursor/mcp.json'),
+            );
+            expect(cursor.existsSync(), isTrue);
+            expect(cursor.readAsStringSync(), genericConfig);
+          });
+
+          test('for VS Code', () {
+            final vscode = File(
+              path.join(tempPath, projectName, '.vscode/mcp.json'),
+            );
+            expect(vscode.existsSync(), isTrue);
+            expect(
+              vscode.readAsStringSync(),
+              genericConfig.replaceAll('mcpServers', 'servers'),
+            );
+          });
+        });
+      });
+
+      group('then the .vscode directory', () {
+        test('has launch.json', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.vscode',
+                'launch.json',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'launch.json does not exist.',
+          );
+        });
+
+        test('has flutter configuration as first entry', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"${projectName}_flutter"'),
+            isTrue,
+            reason: 'launch.json does not contain flutter configuration.',
+          );
+
+          // Verify flutter config appears before server config
+          final flutterIndex = launchJson.indexOf('"${projectName}_flutter"');
+          final serverIndex = launchJson.indexOf('"${projectName}_server"');
+
+          expect(
+            flutterIndex,
+            lessThan(serverIndex),
+            reason:
+                'Flutter configuration should appear before server configuration.',
+          );
+        });
+
+        test('has compound configuration for full stack', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"compounds"'),
+            isTrue,
+            reason: 'launch.json does not contain compounds section.',
+          );
+
+          expect(
+            launchJson.contains('"${projectName} (full stack)"'),
+            isTrue,
+            reason:
+                'launch.json does not contain full stack compound configuration.',
+          );
+        });
       });
     });
   });
@@ -719,6 +920,7 @@ void main() async {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
@@ -825,6 +1027,76 @@ void main() async {
     );
   });
 
+  group('Given a created project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+
+    setUp(() async {
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          projectName,
+          '--no-analytics',
+          '--no-interactive',
+        ],
+        rootPath: rootPath,
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+    });
+
+    test(
+      'when building the server Dockerfile then the image is built successfully',
+      () async {
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(sessionAlert, 'session.log('),
+        );
+
+        final dockerBuildProcess = await startProcess(
+          'docker',
+          [
+            'build',
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await dockerBuildProcess.kill();
+        });
+
+        expect(
+          await dockerBuildProcess.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
+    );
+  });
+
   group('Given a created project and a running docker environment', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
 
@@ -837,6 +1109,7 @@ void main() async {
           projectName,
           '-v',
           '--no-analytics',
+          '--no-interactive',
         ],
         rootPath: rootPath,
         workingDirectory: tempPath,

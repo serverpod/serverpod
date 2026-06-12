@@ -1,11 +1,11 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/serialization_data_type.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ClassYamlDefinition {
@@ -47,6 +47,17 @@ class ClassYamlDefinition {
         mutuallyExclusiveKeys: {
           Keyword.isSealed,
         },
+      ),
+      ValidateNode(
+        Keyword.serializationDataType,
+        valueRestriction: EnumValueRestriction(
+          enums: SerializationDataType.values,
+        ).validate,
+      ),
+      ValidateNode(
+        Keyword.database,
+        keyRestriction: restrictions.validateDatabaseKey,
+        valueRestriction: restrictions.validateDatabase,
       ),
       ValidateNode(
         Keyword.managedMigration,
@@ -156,6 +167,17 @@ class ClassYamlDefinition {
                 valueRestriction: BooleanValueRestriction().validate,
               ),
               ValidateNode(
+                Keyword.serializationDataType,
+                keyRestriction:
+                    restrictions.validateFieldSerializationDataTypeKey,
+                valueRestriction: EnumValueRestriction(
+                  enums: SerializationDataType.values,
+                ).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+              ),
+              ValidateNode(
                 Keyword.database,
                 isDeprecated: true,
                 isRemoved: true,
@@ -203,13 +225,14 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.columnKey,
                 valueRestriction: restrictions.validateColumnName,
-                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
-                  ExperimentalFeature.columnOverride,
-                ),
               ),
               ValidateNode(
                 Keyword.jsonKey,
                 valueRestriction: restrictions.validateJsonKey,
+              ),
+              ValidateNode(
+                Keyword.unique,
+                valueRestriction: BooleanValueRestriction().validate,
               ),
             },
           ),
@@ -235,6 +258,13 @@ class ClassYamlDefinition {
                 Keyword.unique,
                 keyRestriction: restrictions.validateIndexUniqueKey,
                 valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
+                Keyword.operatorClass,
+                keyRestriction: restrictions.validateIndexOperatorClassKey,
+                valueRestriction: EnumValueRestriction(
+                  enums: GinOperatorClass.values,
+                ).validate,
               ),
               ValidateNode(
                 Keyword.distanceFunction,

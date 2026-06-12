@@ -14,6 +14,7 @@ import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
+import 'localization/sign_in_localization_provider.dart';
 import 'microsoft/microsoft_sign_in_widget.dart';
 import 'providers.dart';
 
@@ -129,23 +130,34 @@ class _SignInWidgetState extends State<SignInWidget> {
 
   bool get hasAnonymous =>
       auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
+
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
+
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
+
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
+
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
+
   bool get hasMicrosoft =>
       auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
+
   bool get hasFacebook =>
       auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.basicSignInTexts;
+
     if (!auth.idp.hasAny) {
-      return Center(
-        child: Text(
-          'No authentication providers configured',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.error,
+      return Material(
+        type: MaterialType.transparency,
+        child: Center(
+          child: Text(
+            texts.noAuthenticationProvidersConfigured,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ),
       );
@@ -216,27 +228,30 @@ class _SignInWidgetState extends State<SignInWidget> {
     }
 
     // TODO: Make this adaptative.
-    return SignInWidgetsColumn(
-      spacing: 12,
-      children: [
-        if (hasEmail)
-          widget.emailSignInWidget ??
-              EmailSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
-        if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
-        ...socialProviders,
-        if (hasAnonymous) ...[
-          widget.anonymousSignInWidget ??
-              AnonymousSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
+    return Material(
+      type: MaterialType.transparency,
+      child: SignInWidgetsColumn(
+        spacing: 12,
+        children: [
+          if (hasEmail)
+            widget.emailSignInWidget ??
+                EmailSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
+          ...socialProviders,
+          if (hasAnonymous) ...[
+            widget.anonymousSignInWidget ??
+                AnonymousSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -246,6 +261,8 @@ class _SignInSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.basicSignInTexts;
+
     return Column(
       children: [
         tinyGap,
@@ -255,7 +272,7 @@ class _SignInSeparator extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'or continue with',
+                texts.orContinueWith,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(
                     context,

@@ -340,9 +340,12 @@ void main() {
         expect(table.columns.first.isNullable, false);
         expect(table.managed, true);
         expect(table.foreignKeys, hasLength(0));
-        expect(table.indexes, hasLength(1));
+        expect(table.indexes, isEmpty);
 
-        expect(tableDefinitions.every((t) => t.indexes.isNotEmpty), true);
+        expect(
+          tableDefinitions.every((t) => t.indexes.every((i) => !i.isPrimary)),
+          true,
+        );
       });
       test('contains selected tables', () async {
         var tableDefinitions = await serviceClient.insights
@@ -415,37 +418,24 @@ void main() {
           (table) => table.name == 'object_with_index',
         );
 
-        expect(table.indexes, hasLength(2));
-        expect(table.indexes[0].indexName, 'object_with_index_pkey');
-        expect(table.indexes[0].isPrimary, true);
-        expect(table.indexes[0].isUnique, true);
+        expect(table.indexes, hasLength(1));
+        expect(table.indexes[0].indexName, 'object_with_index_test_index');
+        expect(table.indexes[0].isPrimary, false);
+        expect(table.indexes[0].isUnique, false);
         expect(table.indexes[0].predicate, isNull);
         expect(table.indexes[0].tableSpace, isNull);
-        expect(table.indexes[0].type, 'btree');
-        expect(table.indexes[0].elements, hasLength(1));
+        expect(table.indexes[0].type, 'brin');
+        expect(table.indexes[0].elements, hasLength(2));
         expect(
-          table.indexes[0].elements.first.type,
+          table.indexes[0].elements[0].type,
           service.IndexElementDefinitionType.column,
         );
-        expect(table.indexes[0].elements.first.definition, 'id');
-
-        expect(table.indexes[1].indexName, 'object_with_index_test_index');
-        expect(table.indexes[1].isPrimary, false);
-        expect(table.indexes[1].isUnique, false);
-        expect(table.indexes[1].predicate, isNull);
-        expect(table.indexes[1].tableSpace, isNull);
-        expect(table.indexes[1].type, 'brin');
-        expect(table.indexes[1].elements, hasLength(2));
+        expect(table.indexes[0].elements[0].definition, 'indexed');
         expect(
-          table.indexes[1].elements[0].type,
+          table.indexes[0].elements[1].type,
           service.IndexElementDefinitionType.column,
         );
-        expect(table.indexes[1].elements[0].definition, 'indexed');
-        expect(
-          table.indexes[1].elements[1].type,
-          service.IndexElementDefinitionType.column,
-        );
-        expect(table.indexes[1].elements[1].definition, 'indexed2');
+        expect(table.indexes[0].elements[1].definition, 'indexed2');
       });
 
       test('validate dart types', () async {

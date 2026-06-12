@@ -106,6 +106,126 @@ void main() {
   );
 
   withServerpod(
+    'Given tables with existing data for related models',
+    (sessionBuilder, _) {
+      late Session session;
+      late Town town;
+      late Company company;
+      late City city;
+      late Organization organization;
+      late Person person;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        town = await Town.db.insertRow(session, Town(name: 'LockTown'));
+        company = await Company.db.insertRow(
+          session,
+          Company(name: 'LockCo', townId: town.id!),
+        );
+
+        city = await City.db.insertRow(session, City(name: 'LockCity'));
+        organization = await Organization.db.insertRow(
+          session,
+          Organization(name: 'LockOrg', cityId: city.id!),
+        );
+        person = await Person.db.insertRow(session, Person(name: 'LockPerson'));
+        await Organization.db.attach.people(session, organization, [person]);
+      });
+
+      test(
+        'when finding by id with forUpdate and object include '
+        'then the row and relation are returned.',
+        () async {
+          await session.db.transaction((transaction) async {
+            final row = await Company.db.findById(
+              session,
+              company.id!,
+              lockMode: LockMode.forUpdate,
+              transaction: transaction,
+              include: Company.include(town: Town.include()),
+            );
+
+            expect(row, isNotNull);
+            expect(row!.id, company.id);
+            expect(row.name, 'LockCo');
+            expect(row.town, isNotNull);
+            expect(row.town!.name, 'LockTown');
+          });
+        },
+      );
+
+      test(
+        'when finding rows with forUpdate and object include '
+        'then the row and relation are returned.',
+        () async {
+          await session.db.transaction((transaction) async {
+            final rows = await Company.db.find(
+              session,
+              where: (t) => t.id.equals(company.id!),
+              lockMode: LockMode.forUpdate,
+              transaction: transaction,
+              include: Company.include(town: Town.include()),
+            );
+
+            expect(rows, hasLength(1));
+            expect(rows.single.id, company.id);
+            expect(rows.single.town?.name, 'LockTown');
+          });
+        },
+      );
+
+      test(
+        'when finding first row with forUpdate and object include '
+        'then the row and relation are returned.',
+        () async {
+          await session.db.transaction((transaction) async {
+            final row = await Company.db.findFirstRow(
+              session,
+              where: (t) => t.name.equals('LockCo'),
+              lockMode: LockMode.forUpdate,
+              transaction: transaction,
+              include: Company.include(town: Town.include()),
+            );
+
+            expect(row, isNotNull);
+            expect(row!.id, company.id);
+            expect(row.town?.name, 'LockTown');
+          });
+        },
+      );
+
+      test(
+        'when finding by id with forUpdate and both object and list includes '
+        'then the row and the related objects are returned.',
+        () async {
+          await session.db.transaction((transaction) async {
+            final row = await Organization.db.findById(
+              session,
+              organization.id!,
+              lockMode: LockMode.forUpdate,
+              transaction: transaction,
+              include: Organization.include(
+                city: City.include(),
+                people: Person.includeList(),
+              ),
+            );
+
+            expect(row, isNotNull);
+            expect(row!.id, organization.id);
+            expect(row.name, 'LockOrg');
+            expect(row.city, isNotNull);
+            expect(row.city!.name, 'LockCity');
+            expect(row.people, hasLength(1));
+            expect(row.people!.single.id, person.id);
+            expect(row.people!.single.name, 'LockPerson');
+          });
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given a table with existing data and a forUpdate lock in place that holds all rows acquired using find method',
     // Concurrency tests require real parallel transactions, which are not
     // compatible with the test framework's database rollback mechanism.
@@ -301,6 +421,122 @@ void main() {
 
         expect(rows.length, 1);
         expect(rows.first.num, 2);
+      });
+    },
+  );
+
+  withServerpod(
+    'Given related tables and a forUpdate lock in place on one company row acquired using find with includes',
+    // Concurrency tests require real parallel transactions, which are not
+    // compatible with the test framework's database rollback mechanism.
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    (sessionBuilder, _) {
+      late Session session;
+      late Town town;
+      late Completer<void> lockAcquired;
+      late Completer<void> testDone;
+      late Future<void> t1;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        town = await Town.db.insertRow(session, Town(name: 'IncludeLockTown'));
+        await Company.db.insertRow(
+          session,
+          Company(name: 'LockedCo', townId: town.id!),
+        );
+        await Company.db.insertRow(
+          session,
+          Company(name: 'OtherCo', townId: town.id!),
+        );
+
+        lockAcquired = Completer<void>();
+        testDone = Completer<void>();
+
+        t1 = session.db.transaction((transaction) async {
+          await Company.db.find(
+            session,
+            where: (t) => t.name.equals('LockedCo'),
+            lockMode: LockMode.forUpdate,
+            transaction: transaction,
+            include: Company.include(town: Town.include()),
+          );
+          lockAcquired.complete();
+          await testDone.future;
+        });
+
+        await lockAcquired.future;
+      });
+
+      tearDown(() async {
+        testDone.complete();
+        await t1;
+
+        await Company.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
+        await Town.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
+      });
+
+      test('when finding matching company rows with noWait '
+          'then the operation throws due to rows being locked.', () async {
+        final t2 = session.db.transaction((transaction) async {
+          await Company.db.find(
+            session,
+            where: (t) => t.name.equals('LockedCo'),
+            lockMode: LockMode.forUpdate,
+            lockBehavior: LockBehavior.noWait,
+            transaction: transaction,
+          );
+        });
+
+        await expectLater(t2, throwsA(isA<Exception>()));
+      });
+
+      test(
+        'when finding the included town row with noWait '
+        'then the operation succeeds since related rows are not locked.',
+        () async {
+          final t2 = session.db.transaction((transaction) async {
+            return await Town.db.find(
+              session,
+              where: (t) => t.id.equals(town.id!),
+              lockMode: LockMode.forUpdate,
+              lockBehavior: LockBehavior.noWait,
+              transaction: transaction,
+            );
+          });
+
+          await expectLater(t2, completes);
+          final towns = await t2;
+
+          expect(towns, hasLength(1));
+          expect(towns.single.name, 'IncludeLockTown');
+        },
+      );
+
+      test('when finding another company sharing the town with noWait '
+          'then the rows are returned.', () async {
+        final t2 = session.db.transaction((transaction) async {
+          return await Company.db.find(
+            session,
+            where: (t) => t.name.equals('OtherCo'),
+            lockMode: LockMode.forUpdate,
+            lockBehavior: LockBehavior.noWait,
+            transaction: transaction,
+          );
+        });
+
+        await expectLater(t2, completes);
+        final rows = await t2;
+
+        expect(rows.length, 1);
+        expect(rows.single.name, 'OtherCo');
       });
     },
   );

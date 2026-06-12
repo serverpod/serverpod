@@ -182,6 +182,43 @@ void main() async {
         );
       },
     );
+
+    test(
+      'when deleting models filtered by any many relation and ordering is descending, then result is in expected order.',
+      () async {
+        var customers = await Customer.db.insert(session, [
+          Customer(name: 'Alex'),
+          Customer(name: 'Isak'),
+          Customer(name: 'Viktor'),
+        ]);
+        await Order.db.insert(session, [
+          // Alex orders
+          Order(description: 'Order 1', customerId: customers[0].id!),
+          Order(description: 'Order 2', customerId: customers[0].id!),
+          Order(description: 'Order 3', customerId: customers[0].id!),
+          // Viktor orders
+          Order(description: 'Order 4', customerId: customers[2].id!),
+          Order(description: 'Order 5', customerId: customers[2].id!),
+        ]);
+
+        var deletedCustomers = await Customer.db.deleteWhere(
+          session,
+          // All customers with any order.
+          where: (c) => c.orders.any(),
+          orderBy: (c) => c.name.desc(),
+        );
+
+        expect(deletedCustomers, hasLength(2));
+        var deletedCustomerIds = deletedCustomers.map((c) => c.id).toList();
+        expect(
+          deletedCustomerIds,
+          [
+            customers[2].id, // Viktor
+            customers[0].id, // Alex
+          ],
+        );
+      },
+    );
   });
 
   group('Given models with nested one to many relation', () {

@@ -211,6 +211,23 @@ class Restrictions {
       ];
     }
 
+    if (!(documentDefinition?.isSharedModel ?? false)) {
+      var sharedModelWithSameName = parsedModels.classNames[className]
+          ?.where((model) => model.isSharedModel)
+          .firstOrNull;
+
+      if (sharedModelWithSameName != null) {
+        return [
+          SourceSpanSeverityException(
+            'The $documentType name "$className" is already used by a model in '
+            'the shared package "${sharedModelWithSameName.sharedPackageName}". '
+            'Server and client models cannot have the same name as shared package models.',
+            span,
+          ),
+        ];
+      }
+    }
+
     return [];
   }
 
@@ -239,6 +256,73 @@ class Restrictions {
     }
 
     return [];
+  }
+
+  List<SourceSpanSeverityException> validateDatabaseKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property can only be used on classes with a "table" property.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDatabase(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var database = ModelDatabaseDefinition.values
+        .where((e) => e.name == content)
+        .firstOrNull;
+
+    if (database == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "database" property must be one of: '
+          '${ModelDatabaseDefinition.values.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition ||
+        database == ModelDatabaseDefinition.server) {
+      return [];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var invalidScopedFields = definition.fieldsIncludingInherited.where(
+      (field) =>
+          field.shouldPersist &&
+          field.scope == ModelFieldScopeDefinition.serverOnly &&
+          field.name != defaultPrimaryKeyName,
+    );
+
+    for (var field in invalidScopedFields) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field "${field.name}" must use scope "all" when the class has '
+          '"database: ${database.name}".',
+          span,
+        ),
+      );
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateTable(
@@ -369,11 +453,11 @@ class Restrictions {
     }
 
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
-        parentClass is ModelClassDefinition &&
+        parentClass is ClassDefinition &&
         parentClass.isSealed) {
       return [
         SourceSpanSeverityException(
-          'Can not extend a sealed model from another package.',
+          'Cannot extend a sealed ${parentClass.typeName} class from another package.',
           span,
         ),
       ];
@@ -383,7 +467,21 @@ class Restrictions {
       documentDefinition!.className,
     );
 
-    if (currentModel is ModelClassDefinition) {
+    if (currentModel is ClassDefinition) {
+      if (currentModel.runtimeType != parentClass.runtimeType) {
+        final currentTypeName = currentModel.typeName;
+        final parentTypeName = parentClass is ClassDefinition
+            ? parentClass.typeName
+            : parentClass.runtimeType.toString();
+        return [
+          SourceSpanSeverityException(
+            'A $currentTypeName class can only extend another $currentTypeName '
+            'class, but got parent $parentTypeName class "${parentClass.className}".',
+            span,
+          ),
+        ];
+      }
+
       var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
         currentModel,
       );
@@ -497,6 +595,20 @@ class Restrictions {
         ];
       }
 
+      var reservedIndex = parsedModels.findAutoUniqueIndexOwner(indexName);
+      if (reservedIndex != null) {
+        return [
+          SourceSpanSeverityException(
+            'The index name "$indexName" is reserved for the field '
+            '"${reservedIndex.index.fields.first}" of the model '
+            '"${reservedIndex.model.className}" marked as unique '
+            '(auto-generated). Either remove the unique modifier from the '
+            'field or use a different name for this index.',
+            span,
+          ),
+        ];
+      }
+
       if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
         var collision = parsedModels.findByIndexName(
           indexName,
@@ -591,10 +703,10 @@ class Restrictions {
       ];
     }
 
-    if (def is ModelClassDefinition) {
+    if (def is ClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is ModelClassDefinition) {
+      if (currentModel is ClassDefinition) {
         var fieldWithDuplicatedName = _findFieldWithDuplicatedName(
           currentModel,
           fieldName,
@@ -838,6 +950,30 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "unique" property cannot be used with vector indexes of '
           'type "${index.type}".',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateIndexOperatorClassKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index = definition.indexes.firstWhere(
+      (index) => index.name == parentNodeName,
+    );
+
+    if (!index.isGinIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.operatorClass}" property can only be used with gin indexes.',
           span,
         ),
       ];
@@ -1277,14 +1413,15 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (_isUnsupportedType(fieldType)) {
+    if (typeText != null &&
+        (typeText == 'dynamic?' || typeText.contains('<dynamic?>'))) {
       errors.add(
         SourceSpanSeverityException(
-          'The datatype "${fieldType.className}" is not supported in models.',
+          'The type "$typeText" contains a redundant "?" mark. Remove the "?" '
+          'mark to use the type "dynamic" instead, since it is already nullable.',
           span,
         ),
       );
-      return errors;
     }
 
     var moduleAlias = fieldType.moduleAlias;
@@ -1436,6 +1573,28 @@ class Restrictions {
       );
     }
 
+    var classWithRelation = documentDefinition;
+    if (classWithRelation is ModelClassDefinition &&
+        classWithRelation.tableName != null &&
+        referenceClass is ModelClassDefinition &&
+        referenceClass.tableName != null) {
+      var className = classWithRelation.className;
+      var classDatabase = classWithRelation.database.name;
+      var relatedDatabase = referenceClass.database;
+      if (relatedDatabase != ModelDatabaseDefinition.all &&
+          relatedDatabase != classWithRelation.database) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The class "$className" has database "$classDatabase" but the '
+            'related class "$parsedType" has database "${relatedDatabase.name}". '
+            'Relations can only be defined between tables with the same database '
+            'scope. Either use "database: all" or the same "database" for both tables.',
+            span,
+          ),
+        );
+      }
+    }
+
     return errors;
   }
 
@@ -1501,7 +1660,11 @@ class Restrictions {
         ),
     ];
 
-    return [...missingFieldErrors, ...duplicateFieldErrors, ...vectorErrors];
+    return [
+      ...missingFieldErrors,
+      ...duplicateFieldErrors,
+      ...vectorErrors,
+    ];
   }
 
   List<SourceSpanSeverityException> validateIndexDistanceFunctionValue(
@@ -1688,6 +1851,22 @@ class Restrictions {
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }
+
+      if (content == 'gin') {
+        var nonJsonbFields = indexFields
+            .where((f) => !f.type.isJsonbSerialized)
+            .map((f) => f.name)
+            .toList();
+        if (nonJsonbFields.isNotEmpty) {
+          return [
+            SourceSpanSeverityException(
+              'The "gin" index type requires all indexed fields to be stored '
+              'as jsonb columns (fields: ${nonJsonbFields.join(', ')}).',
+              span,
+            ),
+          ];
+        }
+      }
     }
 
     if (content is! String || !validIndexTypes.contains(content)) {
@@ -1826,6 +2005,45 @@ class Restrictions {
           span,
           severity: SourceSpanSeverity.hint,
           tags: [SourceSpanTag.unnecessary],
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateFieldSerializationDataTypeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
+          span,
+        ),
+      );
+    }
+
+    var field = definition.fields
+        .where((f) => f.name == parentNodeName)
+        .firstOrNull;
+    if (field != null &&
+        !field.type.isColumnSerializable &&
+        !field.type.isColumnStructured) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "${Keyword.serializationDataType}" key is only valid on serializable '
+          'field types (e.g. lists, maps, serializable models or custom classes).',
+          span,
         ),
       );
     }
@@ -2383,10 +2601,6 @@ class Restrictions {
     return valueCount;
   }
 
-  var blackListedTypes = [
-    'dynamic',
-  ];
-
   bool _isNoValidationType(String type) {
     return type.startsWith('package:') || type.startsWith('project:');
   }
@@ -2396,10 +2610,6 @@ class Restrictions {
         _isModelType(type) ||
         _isCustomType(type) ||
         _isRecordType(type);
-  }
-
-  bool _isUnsupportedType(TypeDefinition type) {
-    return blackListedTypes.contains(type.className);
   }
 
   bool _isUnresolvedModuleType(TypeDefinition type) {
@@ -2422,8 +2632,13 @@ class Restrictions {
     var referenceClasses = definitions.whereType<ClassDefinition>();
 
     if (referenceClasses.isNotEmpty) {
-      var moduleAlias = type.moduleAlias;
-      return referenceClasses.any((e) => e.type.moduleAlias == moduleAlias);
+      return referenceClasses.any(
+        (e) =>
+            e.type.moduleAlias == type.moduleAlias ||
+            // When no url specified (moduleAlias null), accept shared models
+            // since name is enforced to be unique between all models.
+            (type.moduleAlias == null && e.isSharedModel),
+      );
     }
 
     return true;
@@ -2462,7 +2677,7 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
@@ -2481,8 +2696,8 @@ class Restrictions {
   /// );
   /// ```
   T? _findInParentHierarchy<T>(
-    ModelClassDefinition currentModel,
-    T? Function(ModelClassDefinition) predicate,
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
@@ -2501,27 +2716,29 @@ class Restrictions {
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) =>
-          ancestor.tableName != null ? ancestor : null,
+      (ancestor) =>
+          ancestor is ModelClassDefinition && ancestor.tableName != null
+          ? ancestor
+          : null,
     );
   }
 
-  ModelClassDefinition? _findServerOnlyClassInParentClasses(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  ModelClassDefinition? _findAncestorWithDuplicatedFieldName(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -2534,12 +2751,12 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    ModelClassDefinition currentModel,
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;

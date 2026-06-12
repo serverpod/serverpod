@@ -134,7 +134,7 @@ void main() {
             var column = table.columns.last;
             expect(
               column.columnDefault,
-              "'byName2'::text",
+              "'byName2'",
             );
           },
         );

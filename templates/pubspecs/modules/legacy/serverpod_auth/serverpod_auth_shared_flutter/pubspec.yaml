@@ -18,7 +18,7 @@ dependencies:
     sdk: flutter
   image: ^4.0.15
   # See https://pub.dev/packages/image_cropper for installation instructions.
-  image_cropper: '>=7.0.0 <12.0.0'
+  image_cropper: '>=7.0.0 <13.0.0'
   # See https://pub.dev/packages/image_picker for installation instructions.
   image_picker: ^1.0.0
   serverpod_auth_client: SERVERPOD_VERSION

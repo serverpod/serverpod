@@ -194,7 +194,8 @@ enum Initializer {
   this_,
 
   /// The parameter is initialized with `super`.
-  super_;
+  super_,
+  ;
 
   /// Returns the token representation of the initializer.
   String toToken() {

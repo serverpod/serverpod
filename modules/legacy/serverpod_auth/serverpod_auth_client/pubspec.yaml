@@ -3,16 +3,16 @@
 
 name: serverpod_auth_client
 description: Serverpod authentication client.
-version: 3.3.1
+version: 3.5.0-beta.10
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_client: 3.3.1
+  serverpod_client: 3.5.0-beta.10
 
 dependency_overrides:
   serverpod_client:

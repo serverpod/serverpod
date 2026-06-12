@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../localization/sign_in_localization_provider.dart';
 import 'microsoft_sign_in_style.dart';
 
 /// A styled button for Microsoft Sign-In.
@@ -60,6 +61,7 @@ class MicrosoftSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.microsoftSignInTexts;
     final buttonStyle = MicrosoftSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -92,7 +94,7 @@ class MicrosoftSignInButton extends StatelessWidget {
                   alpha: 0.6,
                 ),
               ),
-              child: _buildButtonContent(buttonStyle),
+              child: _buildButtonContent(buttonStyle, texts),
             )
           : ElevatedButton(
               onPressed: isLoading || isDisabled ? null : onPressed,
@@ -111,12 +113,15 @@ class MicrosoftSignInButton extends StatelessWidget {
                   alpha: 0.6,
                 ),
               ),
-              child: _buildButtonContent(buttonStyle),
+              child: _buildButtonContent(buttonStyle, texts),
             ),
     );
   }
 
-  Widget _buildButtonContent(MicrosoftSignInStyle buttonStyle) {
+  Widget _buildButtonContent(
+    MicrosoftSignInStyle buttonStyle,
+    MicrosoftSignInTexts texts,
+  ) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -135,7 +140,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     }
 
     final textWidget = Text(
-      _getButtonText(),
+      texts.signInButton ?? _getButtonText(),
       style: TextStyle(
         fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
         color: buttonStyle.foregroundColor,

@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -23,11 +27,16 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _app = RelicApp(useHostWhenRouting: true)
+  RelicApp? _appOrNull;
+
+  RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
+    // Returns the static change counter in dev mode
+    ..get('*/__dev/version', _devStaticChangeCount)
+    // Mirrors the probes [Server] exposes on the API/insights ports
+    ..injectAt('*/', HealthRoutes(serverpod))
+    ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
-
-  RelicServer? _server;
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -50,9 +59,14 @@ class WebServer {
   }
 
   bool _running = false;
+  bool? _devModeOverride;
+  int _lastStaticChangeCount = 0;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
+
+  bool get _isDevMode =>
+      _devModeOverride ?? (_appOrNull?.developerTools.isDevMode ?? false);
 
   /// Adds [route] to the server at [path].
   ///
@@ -114,10 +128,13 @@ class WebServer {
       );
 
   /// Get access to the full [RelicRouter] for advanced use-cases.
-  RelicRouter get router => _app;
+  RelicRouter get router => _appOrNull!;
 
-  /// Returns true if the webserver has any routes registered.
-  bool get hasRoutes => !_app.isEmpty;
+  /// Whether the [RelicApp] has been created.
+  ///
+  /// The app is created lazily on first route or middleware registration.
+  /// When `true`, [start] will serve the app and [stop] will close it.
+  bool get hasApp => _appOrNull != null;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -136,7 +153,6 @@ class WebServer {
         port: _config.port,
         securityContext: _securityContext,
       );
-      _server = server;
       _actualPort = server.port;
       _running = true;
 
@@ -180,35 +196,82 @@ class WebServer {
     );
   }
 
-  /// Logs an error to stderr.
+  /// Logs an error.
   void logError(Object e, {StackTrace? stackTrace}) {
-    var now = DateTime.now().toUtc();
-    stderr.writeln('$now WebServer ERROR: $e');
-    if (stackTrace != null) {
-      stderr.writeln('$stackTrace');
+    log.error(
+      'WebServer: $e',
+      error: e is Exception ? e : null,
+      stackTrace: stackTrace,
+    );
+  }
+
+  /// Logs an info message.
+  void logInfo(String msg) {
+    log.info('WebServer: $msg');
+  }
+
+  /// Logs a debug message.
+  void logDebug(String msg) {
+    log.debug('WebServer: $msg');
+  }
+
+  FutureOr<Result> _devStaticChangeCount(Request _) {
+    if (!_isDevMode) return Response.notFound();
+    return Response.ok(
+      body: Body.fromString('${_app.developerTools.staticChangeCount}'),
+    );
+  }
+
+  /// Reloads templates from disk if static files have changed.
+  Future<void> _reloadTemplatesIfNeeded() async {
+    final currentChangeCount = _app.developerTools.staticChangeCount;
+    if (currentChangeCount != _lastStaticChangeCount) {
+      _lastStaticChangeCount = currentChangeCount;
+      templates.clear();
+      await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
     }
   }
 
-  /// Logs an info message to stdout.
-  void logInfo(String msg) {
-    var now = DateTime.now().toUtc();
-    stdout.writeln('$now WebServer  INFO: $msg');
-  }
+  Handler _devHtmlInjection(Handler next) {
+    return (req) async {
+      if (!_isDevMode) return next(req);
 
-  /// Logs a debug message to stdout.
-  void logDebug(String msg) {
-    var now = DateTime.now().toUtc();
-    stdout.writeln('$now WebServer DEBUG: $msg');
+      // Reload templates before serving so changes are picked up immediately.
+      await _reloadTemplatesIfNeeded();
+      final result = await next(req);
+      if (result is! Response || result.statusCode != 200) return result;
+
+      final mimeType = result.body.bodyType?.mimeType;
+      if (mimeType != MimeType.html) return result;
+
+      final html = await result.readAsString();
+      final injected = html.replaceFirst(
+        '</body>',
+        '$devAutoRefreshScript</body>',
+      );
+      return result.copyWith(
+        body: Body.fromString(injected, mimeType: MimeType.html),
+      );
+    };
   }
 
   /// Stops the webserver.
+  ///
+  /// Safe to call even if the server failed to start or was never started.
   Future<void> stop() async {
-    final server = _server;
-    if (server != null) {
-      _server = null;
-      await server.close();
+    if (_running) {
+      await _app.close();
+      _running = false;
     }
-    _running = false;
+  }
+
+  /// Enables or disables dev mode for testing purposes.
+  ///
+  /// When set, overrides the auto-detection of dev mode from the VM service.
+  /// Must be called before [WebServer.start].
+  @visibleForTesting
+  void setDevModeForTesting(bool devMode) {
+    _devModeOverride = devMode;
   }
 }
 
@@ -281,10 +344,7 @@ class _Deferred<T> {
   _Deferred(this._futureFactory);
 
   Future<T>? _cachedFuture;
-  Future<T> get future async {
-    _cachedFuture ??= _futureFactory();
-    return _cachedFuture!;
-  }
+  Future<T> get future => _cachedFuture ??= _futureFactory();
 
   bool get initiated => _cachedFuture != null;
 

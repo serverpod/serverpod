@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -135,6 +135,7 @@ abstract class FirebaseAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     FirebaseAccountInclude? include,
@@ -144,7 +145,8 @@ abstract class FirebaseAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FirebaseAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(FirebaseAccount.t),
       include: include,
     );
@@ -341,6 +343,7 @@ class FirebaseAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -383,11 +386,12 @@ class FirebaseAccountRepository {
   /// );
   /// ```
   Future<List<FirebaseAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FirebaseAccountTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -399,7 +403,8 @@ class FirebaseAccountRepository {
       where: where?.call(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -427,10 +432,11 @@ class FirebaseAccountRepository {
   /// );
   /// ```
   Future<FirebaseAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FirebaseAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -442,7 +448,8 @@ class FirebaseAccountRepository {
       where: where?.call(FirebaseAccount.t),
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -453,7 +460,7 @@ class FirebaseAccountRepository {
 
   /// Finds a single [FirebaseAccount] by its [id] or null if no such row exists.
   Future<FirebaseAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     FirebaseAccountInclude? include,
@@ -475,14 +482,20 @@ class FirebaseAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<FirebaseAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FirebaseAccount> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<FirebaseAccount>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -490,12 +503,75 @@ class FirebaseAccountRepository {
   ///
   /// The returned [FirebaseAccount] will have its `id` field set.
   Future<FirebaseAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FirebaseAccount row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<FirebaseAccount>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [FirebaseAccount]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [FirebaseAccount]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<FirebaseAccount>> upsert(
+    _i1.DatabaseSession session,
+    List<FirebaseAccount> rows, {
+    required _i1.ColumnSelections<FirebaseAccountTable> conflictColumns,
+    _i1.ColumnSelections<FirebaseAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<FirebaseAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<FirebaseAccount>(
+      rows,
+      conflictColumns: conflictColumns(FirebaseAccount.t),
+      updateColumns: updateColumns?.call(FirebaseAccount.t),
+      updateWhere: updateWhere?.call(FirebaseAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [FirebaseAccount] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [FirebaseAccount] will have its `id` field set.
+  Future<FirebaseAccount?> upsertRow(
+    _i1.DatabaseSession session,
+    FirebaseAccount row, {
+    required _i1.ColumnSelections<FirebaseAccountTable> conflictColumns,
+    _i1.ColumnSelections<FirebaseAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<FirebaseAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<FirebaseAccount>(
+      row,
+      conflictColumns: conflictColumns(FirebaseAccount.t),
+      updateColumns: updateColumns?.call(FirebaseAccount.t),
+      updateWhere: updateWhere?.call(FirebaseAccount.t),
       transaction: transaction,
     );
   }
@@ -506,7 +582,7 @@ class FirebaseAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<FirebaseAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FirebaseAccount> rows, {
     _i1.ColumnSelections<FirebaseAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -522,7 +598,7 @@ class FirebaseAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FirebaseAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FirebaseAccount row, {
     _i1.ColumnSelections<FirebaseAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -537,7 +613,7 @@ class FirebaseAccountRepository {
   /// Updates a single [FirebaseAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FirebaseAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<FirebaseAccountUpdateTable>
     columnValues,
@@ -553,7 +629,7 @@ class FirebaseAccountRepository {
   /// Updates all [FirebaseAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<FirebaseAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<FirebaseAccountUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<FirebaseAccountTable> where,
@@ -561,6 +637,7 @@ class FirebaseAccountRepository {
     int? offset,
     _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -571,28 +648,41 @@ class FirebaseAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [FirebaseAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FirebaseAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FirebaseAccount> rows, {
+    _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<FirebaseAccount>(
       rows,
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [FirebaseAccount].
   Future<FirebaseAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FirebaseAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -603,13 +693,24 @@ class FirebaseAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<FirebaseAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FirebaseAccountTable> where,
+    _i1.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<FirebaseAccount>(
       where: where(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -617,7 +718,7 @@ class FirebaseAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FirebaseAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -631,7 +732,7 @@ class FirebaseAccountRepository {
 
   /// Acquires row-level locks on [FirebaseAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FirebaseAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -652,7 +753,7 @@ class FirebaseAccountAttachRowRepository {
   /// Creates a relation between the given [FirebaseAccount] and [AuthUser]
   /// by setting the [FirebaseAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FirebaseAccount firebaseAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

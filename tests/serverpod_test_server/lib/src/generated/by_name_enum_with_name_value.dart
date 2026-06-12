@@ -14,7 +14,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 enum ByNameEnumWithNameValue implements _i1.SerializableModel {
   type,
-  name;
+  name
+  ;
 
   static ByNameEnumWithNameValue fromJson(String name) {
     switch (name) {

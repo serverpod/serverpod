@@ -18,8 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.8.0'
-  flutter: '^3.32.0'
+  sdk: '^3.10.3'
+  flutter: '^3.38.4'
 
 #resolution: workspace #--UNCOMMENT_LINE--#
 
@@ -29,9 +29,10 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
+  google_fonts: ^8.1.0
   projectname_client:
     path: ../projectname_client
-  serverpod_flutter: 3.3.1
+  serverpod_flutter: 3.5.0-beta.10
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'

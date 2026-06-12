@@ -43,19 +43,26 @@ class FileUploader {
     try {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
-          final request = http.StreamedRequest('POST', _uploadDescription.url);
-          request.headers.addAll({
+          final method = _uploadDescription.method ?? 'POST';
+          final request = http.StreamedRequest(method, _uploadDescription.url);
+
+          // Apply custom headers from description, with defaults
+          final headers = {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
-          });
+            ..._uploadDescription.headers,
+          };
+          request.headers.addAll(headers);
           request.contentLength = length;
+
           final (_, response) = await (
             stream.pipe(request.sink),
             request.send(),
           ).wait;
           await response.stream.drain();
 
-          return response.statusCode == 200;
+          // Accept both 200 and 204 as success (PUT uploads often return 200)
+          return response.statusCode == 200 || response.statusCode == 204;
 
         case _UploadType.multipart:
           var multipartFile = switch (length) {
@@ -100,6 +107,12 @@ class _UploadDescription {
   String? fileName;
   Map<String, String> requestFields = {};
 
+  /// HTTP method for binary uploads (defaults to POST for backwards compat).
+  String? method;
+
+  /// Custom headers for binary uploads.
+  Map<String, String> headers = {};
+
   _UploadDescription(String description) {
     var data = jsonDecode(description);
     if (data is! Map<String, dynamic>) {
@@ -119,6 +132,11 @@ class _UploadDescription {
       field = data['field'];
       fileName = data['file-name'];
       requestFields = (data['request-fields'] as Map).cast<String, String>();
+    } else if (type == _UploadType.binary) {
+      method = data['method'] as String?;
+      if (data['headers'] != null) {
+        headers = (data['headers'] as Map).cast<String, String>();
+      }
     }
   }
 }

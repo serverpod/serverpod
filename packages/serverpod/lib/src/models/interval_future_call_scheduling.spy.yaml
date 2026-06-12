@@ -1,0 +1,8 @@
+## A recurring future call scheduling option that uses a Duration interval
+class: IntervalFutureCallScheduling
+extends: FutureCallScheduling
+fields:
+  ### Interval for recurring calls
+  interval: Duration
+  ### Optional start time for the first execution
+  start: DateTime?

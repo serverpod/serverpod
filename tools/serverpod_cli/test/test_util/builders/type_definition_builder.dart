@@ -11,6 +11,7 @@ class TypeDefinitionBuilder {
   EnumDefinition? _enumDefinition;
   SerializableModelDefinition? _modelDefinition;
   int? _vectorDimension;
+  String? _recordFieldName;
 
   TypeDefinitionBuilder()
     : _className = 'DefaultClassName',
@@ -20,7 +21,8 @@ class TypeDefinitionBuilder {
       _dartType = null,
       _customClass = false,
       _modelDefinition = null,
-      _vectorDimension = null;
+      _vectorDimension = null,
+      _recordFieldName = null;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -59,6 +61,11 @@ class TypeDefinitionBuilder {
   ) {
     _className = '_Record';
     _generics.addAll(fields);
+    return this;
+  }
+
+  TypeDefinitionBuilder withRecordFieldName(String fieldName) {
+    _recordFieldName = fieldName;
     return this;
   }
 
@@ -146,6 +153,7 @@ class TypeDefinitionBuilder {
       enumDefinition: _enumDefinition,
       projectModelDefinition: _modelDefinition,
       vectorDimension: _vectorDimension,
+      recordFieldName: _recordFieldName,
     );
   }
 }

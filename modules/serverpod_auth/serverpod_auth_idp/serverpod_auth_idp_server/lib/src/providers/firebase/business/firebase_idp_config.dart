@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier_config.dart';
 import '../../../utils/get_passwords_extension.dart';
 import 'firebase_idp.dart';
 import 'firebase_idp_utils.dart';
@@ -12,6 +15,17 @@ typedef FirebaseAccountDetailsValidation =
     void Function(
       FirebaseAccountDetails accountDetails,
     );
+
+/// Callback to be invoked after a new Firebase account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterFirebaseAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      FirebaseAccount firebaseAccount, {
+      required Transaction? transaction,
+    });
 
 /// Configuration for the Firebase identity provider.
 class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
@@ -32,10 +46,22 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
   /// email or specific email domains.
   final FirebaseAccountDetailsValidation firebaseAccountDetailsValidation;
 
+  /// Callback to be invoked after a new Firebase account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Firebase
+  /// account has been created and linked.
+  final AfterFirebaseAccountCreatedFunction? onAfterFirebaseAccountCreated;
+
+  /// Tolerance for clock skew when validating Firebase ID token timestamps.
+  final Duration clockSkewTolerance;
+
   /// Creates a new instance of [FirebaseIdpConfig].
   const FirebaseIdpConfig({
     required this.credentials,
     this.firebaseAccountDetailsValidation = validateFirebaseAccountDetails,
+    this.onAfterFirebaseAccountCreated,
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
   });
 
   /// Default validation function for extracted Firebase account details.
@@ -78,6 +104,8 @@ class FirebaseIdpConfigFromPasswords extends FirebaseIdpConfig {
   /// Creates a new [FirebaseIdpConfigFromPasswords] instance.
   FirebaseIdpConfigFromPasswords({
     super.firebaseAccountDetailsValidation,
+    super.onAfterFirebaseAccountCreated,
+    super.clockSkewTolerance,
   }) : super(
          credentials: FirebaseServiceAccountCredentials.fromJsonString(
            Serverpod.instance.getPasswordOrThrow('firebaseServiceAccountKey'),

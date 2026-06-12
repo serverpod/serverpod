@@ -83,11 +83,14 @@ class GeneratorConfig implements ModelLoadConfig {
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
+    this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
+    required List<String> relativeFlutterPackagePathParts,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
+       _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
 
@@ -118,8 +121,8 @@ class GeneratorConfig implements ModelLoadConfig {
   /// True, if dart client depends on the `package:serverpod_service_client`.
   final bool dartClientDependsOnServiceClient;
 
-  /// The parts of the path where the server package is located at.
-  /// Might be relative.
+  /// The parts of the absolute, normalized path where the server package
+  /// is located. Anchored at [GeneratorConfig.load] time.
   final List<String> serverPackageDirectoryPathParts;
 
   /// The path parts to packages of shared models.
@@ -158,6 +161,16 @@ class GeneratorConfig implements ModelLoadConfig {
     ...relativeModelSourcePathParts,
   ];
 
+  /// The paths of the lib directory in shared model packages.
+  List<String> get sharedModelsLibSourcePaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+      ]),
+  ];
+
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
@@ -194,6 +207,17 @@ class GeneratorConfig implements ModelLoadConfig {
     ...generatedServeModelPackagePathParts,
   ];
 
+  /// The paths of the generated source code in shared model packages.
+  List<String> get generatedSharedModelsPaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+        ...generatedServeModelPackagePathParts,
+      ]),
+  ];
+
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
 
@@ -202,6 +226,43 @@ class GeneratorConfig implements ModelLoadConfig {
     ...serverPackageDirectoryPathParts,
     ..._relativeDartClientPackagePathParts,
   ];
+
+  /// Paths outside the source tree that may influence generated output
+  List<String> get auxiliaryInputPaths => [
+    p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
+    for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.yaml',
+      ]),
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.lock',
+      ]),
+    ],
+  ];
+
+  final List<String> _relativeFlutterPackagePathParts;
+
+  /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
+  /// before resolving against the filesystem.
+  List<String> get flutterPackagePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ..._relativeFlutterPackagePathParts,
+  ];
+
+  /// True when [flutterPackagePathParts] is a directory with `pubspec.yaml`.
+  bool get hasFlutterPackage {
+    final dirPath = p.joinAll(flutterPackagePathParts);
+    if (!Directory(dirPath).existsSync()) return false;
+    return File(p.join(dirPath, 'pubspec.yaml')).existsSync();
+  }
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
@@ -245,6 +306,10 @@ class GeneratorConfig implements ModelLoadConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Whether serializable fields default to `jsonb` instead of `json` when
+  /// stored in the database.
+  final bool serializeAsJsonbByDefault;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -298,6 +363,10 @@ class GeneratorConfig implements ModelLoadConfig {
       serverRootDir = serverDir.path;
     }
 
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    serverRootDir = p.normalize(p.absolute(serverRootDir));
+
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
@@ -336,6 +405,8 @@ class GeneratorConfig implements ModelLoadConfig {
         generatorConfig['client_package_path'],
       );
     }
+
+    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
@@ -446,18 +517,12 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseDialect = DatabaseDialect.postgres;
-    final maybeDatabaseDialect = generatorConfig['databaseDialect'];
-    if (maybeDatabaseDialect != null) {
-      if (maybeDatabaseDialect is! String ||
-          !DatabaseDialect.values.any((d) => d.name == maybeDatabaseDialect)) {
-        throw SourceSpanFormatException(
-          'Invalid database dialect: "$maybeDatabaseDialect".',
-          maybeDatabaseDialect is YamlNode ? maybeDatabaseDialect.span : null,
-        );
-      }
-      databaseDialect = DatabaseDialect.values.byName(maybeDatabaseDialect);
-    }
+    var databaseDialect = await _inferDatabaseDialectFromConfigs(serverRootDir);
+
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(
+      file,
+      generatorConfig,
+    );
 
     return GeneratorConfig(
       name: name,
@@ -469,12 +534,71 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
+      serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+  }
+
+  static bool _loadSerializeAsJsonbByDefault(
+    File file,
+    Map config,
+  ) {
+    if (!file.existsSync()) return false;
+    return config['serialize_as_jsonb_by_default'] ?? false;
+  }
+
+  static Future<DatabaseDialect> _inferDatabaseDialectFromConfigs(
+    String serverRootDir,
+  ) async {
+    final configDir = Directory(p.join(serverRootDir, 'config'));
+    if (!await configDir.exists()) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialectsByFile = <String, DatabaseDialect>{};
+    await for (final entity in configDir.list(followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (!(basename.endsWith('.yaml') || basename.endsWith('.yml')) ||
+          basename.startsWith('generator.') ||
+          basename.startsWith('passwords.')) {
+        continue;
+      }
+
+      final yamlRoot = loadYaml(await entity.readAsString());
+      if (yamlRoot == null || yamlRoot is! Map) continue;
+
+      final dialect = inferDatabaseDialectFromConfigMap(
+        Map<dynamic, dynamic>.from(yamlRoot),
+        environment: Platform.environment,
+      );
+      if (dialect != null) {
+        dialectsByFile[basename] = dialect;
+      }
+    }
+
+    if (dialectsByFile.isEmpty) {
+      return DatabaseDialect.postgres;
+    }
+
+    final dialects = dialectsByFile.values.toSet();
+    if (dialects.length > 1) {
+      final details = dialectsByFile.entries
+          .map((e) => '${e.key} (${e.value.name})')
+          .sorted()
+          .join(', ');
+      throw StateError(
+        'Inconsistent database dialects across run-mode config files: $details. '
+        'A Serverpod project must use a single database dialect in all run modes.',
+      );
+    }
+
+    return dialects.single;
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
@@ -704,4 +828,8 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+extension on Iterable<String> {
+  List<String> sorted() => toList()..sort();
 }

@@ -1,0 +1,6 @@
+class: EnumDefaultMix
+table: enum_default_mix
+fields:
+  byNameEnumDefaultAndDefaultModel: ByNameEnum, default=byName1, defaultModel=byName2
+  byNameEnumDefaultAndDefaultPersist: ByNameEnum, default=byName1, defaultPersist=byName2
+  byNameEnumDefaultModelAndDefaultPersist: ByNameEnum, defaultModel=byName1, defaultPersist=byName2

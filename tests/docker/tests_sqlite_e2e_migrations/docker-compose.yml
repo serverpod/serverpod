@@ -1,0 +1,33 @@
+# Share SQLite state between containers (same idea as Postgres e2e using one database).
+# Mount the sqlite_data/ directory (not a single .db file): SQLite WAL mode needs
+# sidecar files (.db-wal, .db-shm) beside the database; mounting only the .db file
+# leaves sidecars in each container's layer and corrupts the image.
+# Also bind migrations/ so create-migration and apply see the same tree.
+x-sqlite-data: &sqlite_data
+  type: bind
+  source: ../../serverpod_test_sqlite/serverpod_test_sqlite_server/sqlite_data
+  target: /app/tests/serverpod_test_sqlite/serverpod_test_sqlite_server/sqlite_data
+x-sqlite-migrations: &sqlite_migrations
+  type: bind
+  source: ../../serverpod_test_sqlite/serverpod_test_sqlite_server/migrations
+  target: /app/tests/serverpod_test_sqlite/serverpod_test_sqlite_server/migrations
+
+services:
+  serverpod_test_sqlite_server:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_sqlite_e2e_migrations/Dockerfile-server
+    environment:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'
+    volumes:
+      - *sqlite_data
+      - *sqlite_migrations
+  tests:
+    build:
+      context: ../../..
+      dockerfile: tests/docker/tests_sqlite_e2e_migrations/Dockerfile-tests
+    depends_on:
+      - 'serverpod_test_sqlite_server'
+    volumes:
+      - *sqlite_data
+      - *sqlite_migrations

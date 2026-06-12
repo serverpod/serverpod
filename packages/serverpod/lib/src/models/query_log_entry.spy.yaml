@@ -7,7 +7,7 @@ fields:
   serverId: String
 
   ### Id of the session this entry is associated with.
-  sessionLogId: int, relation(parent=serverpod_session_log, onDelete=Cascade)
+  sessionLogId: int, relation(name=session_log_query_logs, parent=serverpod_session_log, onDelete=Cascade)
 
   ### The id of the message this entry is associated with, if the query was
   ### executed in a streaming session.
@@ -37,4 +37,4 @@ fields:
 
 indexes:
   serverpod_query_log_sessionLogId_idx:
-    fields: sessionLogId
+    fields: sessionLogId, order

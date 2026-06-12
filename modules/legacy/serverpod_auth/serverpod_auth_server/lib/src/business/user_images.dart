@@ -73,8 +73,7 @@ class UserImages {
     var oldImageRef = await UserImage.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userId),
-      orderDescending: true,
-      orderBy: (t) => t.version,
+      orderBy: (t) => t.version.desc(),
     );
 
     // Add one to the version number or create a new version 1.

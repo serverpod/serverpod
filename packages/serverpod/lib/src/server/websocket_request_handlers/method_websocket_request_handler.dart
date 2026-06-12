@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
@@ -137,10 +137,11 @@ class MethodWebsocketRequestHandler {
       );
       if (e is! UnknownMessageException ||
           server.serverpod.runtimeSettings.logMalformedCalls) {
-        stderr.writeln(
-          '${DateTime.now().toUtc()} Method stream websocket error: $e',
+        log.error(
+          'Method stream websocket error: $e',
+          error: e,
+          stackTrace: stackTrace,
         );
-        stderr.writeln('$stackTrace');
       }
     } finally {
       server.serverpod.logVerbose(
@@ -543,8 +544,10 @@ class _WebSocketIntermediary {
         _ => throw ArgumentError.notNull('data'),
       };
     } catch (e, stackTrace) {
-      stderr.writeln(
+      log.error(
         'Error "$e", when trying to send data over websocket: $data',
+        error: e,
+        stackTrace: stackTrace,
       );
 
       MethodWebsocketRequestHandler._reportFrameworkException(

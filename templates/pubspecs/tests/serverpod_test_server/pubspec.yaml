@@ -10,8 +10,9 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: DART_VERSION
 dependencies:
+  clock: ^1.1.1
   http: '>=1.1.0 <2.0.0'
-  relic: ^1.1.0
+  relic: ^1.2.0
   serverpod: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_cloud_storage_s3: SERVERPOD_VERSION
@@ -49,6 +50,12 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_cloud_storage_s3:
     path: ../../integrations/serverpod_cloud_storage_s3
+  serverpod_cloud_storage_s3_compat:
+    path: ../../integrations/serverpod_cloud_storage_s3_compat
+  serverpod_database:
+    path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

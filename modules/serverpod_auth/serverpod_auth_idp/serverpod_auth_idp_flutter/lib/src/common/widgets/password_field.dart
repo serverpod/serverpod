@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'password_requirements.dart';
+import 'password_requirements/requirements.dart';
 
 /// A password input field with visibility toggle.
 ///

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -12,12 +11,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-var pathToServerpodRoot = Directory('../..').absolute.path;
+final config = GeneratorConfigBuilder().build();
 var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
+    await createTestEnvironment(testProjectDirectory);
   });
 
   tearDownAll(() {
@@ -47,15 +46,12 @@ abstract class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-      final parameterValidator = FutureCallMethodParameterValidator(
-        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-      );
 
-      analyzer = FutureCallsAnalyzer(
-        directory: testDirectory,
-        parameterValidator: parameterValidator,
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
       );
-      futureCallDefinitions = await analyzer.analyze(collector: collector);
     });
 
     test('then no validation errors are reported.', () {
@@ -100,15 +96,12 @@ class ConcreteFutureCall extends BaseFutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then no validation errors are reported.', () {
@@ -173,15 +166,12 @@ class ConcreteFutureCall extends BaseFutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then no validation errors are reported.', () {

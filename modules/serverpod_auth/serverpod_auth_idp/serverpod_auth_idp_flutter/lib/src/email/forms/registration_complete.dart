@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../common/widgets/buttons/text_button.dart';
+import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
 import 'widgets/set_password_form.dart';
 
@@ -20,18 +21,20 @@ class CompleteRegistrationForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return SetPasswordForm(
       controller: controller,
-      title: 'Set account password',
-      passwordLabelText: 'Password',
-      actionButtonLabel: 'Sign up',
+      title: texts.setAccountPasswordTitle,
+      passwordLabelText: texts.passwordLabel,
+      actionButtonLabel: texts.signUp,
       onActionPressed: controller.finishRegistration,
       bottomText: Center(
         child: HyperlinkTextButton(
           onPressed: () =>
               controller.navigateTo(EmailFlowScreen.startRegistration),
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          label: 'Back to sign up',
+          label: texts.backToSignUp,
         ),
       ),
     );

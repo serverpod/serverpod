@@ -136,6 +136,31 @@ void main() {
   });
 
   group(
+    'Given a class with a client database table when generating server code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withTableName(tableName)
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+      ];
+
+      late final codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      test('then a table class is not generated.', () {
+        expect(
+          codeMap[expectedFilePath],
+          isNot(contains('class ${testClassName}Table')),
+        );
+      });
+    },
+  );
+
+  group(
     'Given a class with table name and persistent field when generating code',
     () {
       var models = [

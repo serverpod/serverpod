@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -111,6 +111,7 @@ abstract class ChallengeTracker
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     ChallengeTrackerInclude? include,
@@ -120,7 +121,8 @@ abstract class ChallengeTracker
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ChallengeTracker.t),
       include: include,
     );
@@ -278,6 +280,7 @@ class ChallengeTrackerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -320,11 +323,12 @@ class ChallengeTrackerRepository {
   /// );
   /// ```
   Future<List<ChallengeTracker>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -336,7 +340,8 @@ class ChallengeTrackerRepository {
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -364,10 +369,11 @@ class ChallengeTrackerRepository {
   /// );
   /// ```
   Future<ChallengeTracker?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
@@ -379,7 +385,8 @@ class ChallengeTrackerRepository {
       where: where?.call(ChallengeTracker.t),
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -390,7 +397,7 @@ class ChallengeTrackerRepository {
 
   /// Finds a single [ChallengeTracker] by its [id] or null if no such row exists.
   Future<ChallengeTracker?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
@@ -412,14 +419,20 @@ class ChallengeTrackerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ChallengeTracker>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChallengeTracker> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ChallengeTracker>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -427,12 +440,75 @@ class ChallengeTrackerRepository {
   ///
   /// The returned [ChallengeTracker] will have its `id` field set.
   Future<ChallengeTracker> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChallengeTracker row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<ChallengeTracker>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ChallengeTracker]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChallengeTracker]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChallengeTracker>> upsert(
+    _i1.DatabaseSession session,
+    List<ChallengeTracker> rows, {
+    required _i1.ColumnSelections<ChallengeTrackerTable> conflictColumns,
+    _i1.ColumnSelections<ChallengeTrackerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChallengeTracker>(
+      rows,
+      conflictColumns: conflictColumns(ChallengeTracker.t),
+      updateColumns: updateColumns?.call(ChallengeTracker.t),
+      updateWhere: updateWhere?.call(ChallengeTracker.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChallengeTracker] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChallengeTracker] will have its `id` field set.
+  Future<ChallengeTracker?> upsertRow(
+    _i1.DatabaseSession session,
+    ChallengeTracker row, {
+    required _i1.ColumnSelections<ChallengeTrackerTable> conflictColumns,
+    _i1.ColumnSelections<ChallengeTrackerTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChallengeTracker>(
+      row,
+      conflictColumns: conflictColumns(ChallengeTracker.t),
+      updateColumns: updateColumns?.call(ChallengeTracker.t),
+      updateWhere: updateWhere?.call(ChallengeTracker.t),
       transaction: transaction,
     );
   }
@@ -443,7 +519,7 @@ class ChallengeTrackerRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ChallengeTracker>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChallengeTracker> rows, {
     _i1.ColumnSelections<ChallengeTrackerTable>? columns,
     _i1.Transaction? transaction,
@@ -459,7 +535,7 @@ class ChallengeTrackerRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChallengeTracker> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChallengeTracker row, {
     _i1.ColumnSelections<ChallengeTrackerTable>? columns,
     _i1.Transaction? transaction,
@@ -474,7 +550,7 @@ class ChallengeTrackerRepository {
   /// Updates a single [ChallengeTracker] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChallengeTracker?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
     columnValues,
@@ -490,7 +566,7 @@ class ChallengeTrackerRepository {
   /// Updates all [ChallengeTracker]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ChallengeTracker>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
@@ -498,6 +574,7 @@ class ChallengeTrackerRepository {
     int? offset,
     _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -508,28 +585,41 @@ class ChallengeTrackerRepository {
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [ChallengeTracker]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChallengeTracker>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ChallengeTracker> rows, {
+    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChallengeTracker>(
       rows,
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [ChallengeTracker].
   Future<ChallengeTracker> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChallengeTracker row, {
     _i1.Transaction? transaction,
   }) async {
@@ -540,13 +630,24 @@ class ChallengeTrackerRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ChallengeTracker>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ChallengeTracker>(
       where: where(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -554,7 +655,7 @@ class ChallengeTrackerRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -568,7 +669,7 @@ class ChallengeTrackerRepository {
 
   /// Acquires row-level locks on [ChallengeTracker] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -589,7 +690,7 @@ class ChallengeTrackerAttachRowRepository {
   /// Creates a relation between the given [ChallengeTracker] and [SecretChallenge]
   /// by setting the [ChallengeTracker]'s foreign key `secretChallengeId` to refer to the [SecretChallenge].
   Future<void> secretChallenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ChallengeTracker challengeTracker,
     _i2.SecretChallenge secretChallenge, {
     _i1.Transaction? transaction,

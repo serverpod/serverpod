@@ -1,0 +1,8 @@
+class: Citizen
+table: citizen
+database: all
+fields:
+  name: String
+  address: Address?, relation(name=citizen_address)
+  company: Company?, relation
+  oldCompany: Company?, relation(optional)

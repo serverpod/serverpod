@@ -36,9 +36,11 @@ gitHubAccount:
   - hasAccount:
 googleAccountBackwardsCompatibilityTest:
   - login:
+  - loginWithCode:
   - hasAccount:
 googleAccount:
   - login:
+  - loginWithCode:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:

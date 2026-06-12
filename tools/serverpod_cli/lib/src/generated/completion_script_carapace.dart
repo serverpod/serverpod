@@ -43,6 +43,8 @@ commands:
             tool: ["completely", "carapace"]
             write-dir: ["$directories"]
 
+  - name: cloud
+
   - name: create
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
@@ -53,10 +55,20 @@ commands:
       flag:
         template: ["mini", "server", "module"]
 
+  - name: quickstart
+    flags:
+      -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
+      -t, --template=: "Template to use when creating a new project"
+      -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
+    completion:
+      flag:
+        template: ["server", "module"]
+
   - name: generate
     flags:
       -w, --watch: "Watch for changes and continuously generate code."
       -d, --directory=: "The directory to generate code for (defaults to current directory)."
+      -f, --force: "Regenerate even when the output looks up to date. Use this to rebuild after hand-editing or reverting generated files."
 
   - name: language-server
     flags:
@@ -65,8 +77,13 @@ commands:
     exclusiveFlags:
       - [stdio, no-stdio]
 
+  - name: mcp-server
+    flags:
+      -s, --server-dir=: "Path to the server project directory (the package that contains a `serverpod` dependency). Auto-detected from the current working directory if omitted. Pass this flag explicitly in monorepos with multiple server projects."
+
   - name: create-migration
     flags:
+      --empty: "Creates the migration even if there are no database changes."
       -f, --force: "Creates the migration even if there are warnings or information that may be destroyed."
       -t, --tag=: "Add a tag to the revision to easier identify it."
 

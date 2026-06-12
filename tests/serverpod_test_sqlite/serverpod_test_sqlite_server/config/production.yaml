@@ -1,0 +1,25 @@
+apiServer:
+  port: 8080
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 8080
+  publicScheme: http
+
+insightsServer:
+  port: 8081
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 8081
+  publicScheme: http
+
+webServer:
+  port: 8082
+  publicHost: serverpod_test_sqlite_server
+  publicPort: 8082
+  publicScheme: http
+
+database:
+  # Under sqlite_data/ so Docker e2e can bind-mount on directory (db + WAL/SHM)
+  filePath: sqlite_data/serverpod_test_prod.db
+
+sessionLogs:
+  persistentEnabled: false
+  consoleEnabled: false

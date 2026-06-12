@@ -99,7 +99,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -198,7 +198,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -297,7 +297,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -356,7 +356,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -421,7 +421,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -436,6 +436,13 @@ void main() {
           expect(
             insertMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the ignoreConflicts bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool ignoreConflicts = false'),
           );
         });
       });
@@ -470,7 +477,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -485,6 +492,13 @@ void main() {
           expect(
             insertRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that does not have the ignoreConflicts param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            isNot(contains('ignoreConflicts')),
           );
         });
       });
@@ -514,7 +528,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -563,7 +577,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -607,7 +621,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -615,6 +629,27 @@ void main() {
           expect(
             deleteMethod?.parameters?.toSource(),
             contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('bool orderDescending = false'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
 
@@ -656,7 +691,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -705,7 +740,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -714,6 +749,27 @@ void main() {
           expect(
             params,
             contains('WhereExpressionBuilder<${testClassName}Table> where'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('bool orderDescending = false'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
 
@@ -755,7 +811,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             countMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -815,7 +871,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -874,7 +930,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 

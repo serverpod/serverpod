@@ -75,6 +75,15 @@ enum ServerpodEnv {
   /// The dialect of the database.
   databaseDialect,
 
+  /// The file path to the SQLite database.
+  databaseFilePath,
+
+  /// PostgreSQL cluster directory for embedded Postgres (`serverpod_embedded_postgres`).
+  ///
+  /// When set (non-empty after trim), the database pool boots a managed
+  /// postmaster before connecting. Postgres-only; ignored for SQLite.
+  databaseDataPath,
+
   /// The address to the redis broker.
   redisHost,
 
@@ -138,6 +147,12 @@ enum ServerpodEnv {
   /// Toggle to disable future call execution.
   futureCallExecutionEnabled,
 
+  /// If true, the server will check for broken future calls on startup.
+  futureCallCheckBrokenCalls,
+
+  /// If true, the server will delete broken future calls on startup.
+  futureCallDeleteBrokenCalls,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
@@ -181,7 +196,8 @@ enum ServerpodEnv {
   validateHeaders,
 
   /// The interval in seconds between websocket ping messages.
-  websocketPingInterval;
+  websocketPingInterval,
+  ;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -195,6 +211,8 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
       (ServerpodEnv.databaseMaxConnectionCount) => 'maxConnectionCount',
       (ServerpodEnv.databaseDialect) => 'dialect',
+      (ServerpodEnv.databaseFilePath) => 'filePath',
+      (ServerpodEnv.databaseDataPath) => 'dataPath',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
@@ -219,6 +237,8 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
+      (ServerpodEnv.futureCallCheckBrokenCalls) => 'checkBrokenCalls',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) => 'deleteBrokenCalls',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionLogCleanupInterval) => 'cleanupInterval',
       (ServerpodEnv.sessionLogRetentionPeriod) => 'retentionPeriod',
@@ -250,6 +270,8 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseMaxConnectionCount) =>
         'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT',
       (ServerpodEnv.databaseDialect) => 'SERVERPOD_DATABASE_DIALECT',
+      (ServerpodEnv.databaseFilePath) => 'SERVERPOD_DATABASE_FILE_PATH',
+      (ServerpodEnv.databaseDataPath) => 'SERVERPOD_DATABASE_DATA_PATH',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
@@ -277,6 +299,10 @@ enum ServerpodEnv {
         'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
       (ServerpodEnv.futureCallExecutionEnabled) =>
         'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
+      (ServerpodEnv.futureCallCheckBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_DELETE_BROKEN_CALLS',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionLogCleanupInterval) =>
@@ -311,7 +337,8 @@ enum ServerpodPassword {
   serviceSecret,
 
   /// The password for the redis broker.
-  redisPassword;
+  redisPassword,
+  ;
 
   /// The key used in the password configuration file.
   String get configKey {

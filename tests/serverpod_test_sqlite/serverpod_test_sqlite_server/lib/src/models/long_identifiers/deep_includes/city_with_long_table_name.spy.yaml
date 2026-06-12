@@ -1,0 +1,6 @@
+class: CityWithLongTableName
+table: city_with_long_table_name_that_is_still_valid
+fields:
+  name: String
+  citizens: List<PersonWithLongTableName>?, relation
+  organizations: List<OrganizationWithLongTableName>?, relation(name=city_org)

@@ -50,11 +50,17 @@ extension GenerateCode on Library {
 
     try {
       return DartFormatter(
-        languageVersion: Version(3, 8, 0),
+        languageVersion: Version(3, 10, 0),
         trailingCommas: TrailingCommas.preserve,
       ).format('$_fileHeader${ignoreForFile.isEmpty ? '\n' : ''}$code');
     } on FormatterException catch (e) {
-      log.error(e.toString());
+      const maxErrorLength = 4000;
+      final message = e.toString();
+      log.error(
+        message.length > maxErrorLength
+            ? '${message.substring(0, maxErrorLength)}\n\n... (truncated, ${message.length - maxErrorLength} more characters)'
+            : message,
+      );
     }
     return code;
   }

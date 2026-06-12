@@ -1,18 +1,18 @@
-import 'package:intl/intl.dart';
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:recase/recase.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 
-import '../../analyzer/models/utils/quote_utils.dart';
-import '../../generator/types.dart';
+// This is a temporary internal import since the normalize functions are not
+// meant to be exported from the database package. It will be removed once the
+// [PostgresSqlGenerator] gets moved to the database package.
+// ignore: implementation_imports
+import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {
   @override
   String generateDatabaseDefinitionSql(
     DatabaseDefinition databaseDefinition, {
-    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
   }) {
     return databaseDefinition.toPgSql(
       installedModules: installedModules,
@@ -21,25 +21,15 @@ class PostgresSqlGenerator implements SqlGenerator {
 
   @override
   String generateDatabaseMigrationSql(
-    DatabaseMigration databaseMigration, {
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    DatabaseMigration databaseMigration,
+    DatabaseDefinition databaseDefinition, {
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
   }) {
     return databaseMigration.toPgSql(
+      databaseDefinition: databaseDefinition,
       installedModules: installedModules,
       removedModules: removedModules,
-    );
-  }
-
-  @override
-  String? getColumnDefault(
-    TypeDefinition columnType,
-    dynamic defaultValue,
-    String tableName,
-  ) {
-    return columnType.getPgColumnDefault(
-      defaultValue,
-      tableName,
     );
   }
 }
@@ -48,7 +38,9 @@ class PostgresSqlGenerator implements SqlGenerator {
 // SQL generation
 //
 extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
+  String toPgSql({
+    required List<DatabaseMigrationVersionModel> installedModules,
+  }) {
     String out = '';
 
     var tableCreation = '';
@@ -78,7 +70,11 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
-      (t) => t.columns.any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7),
+      (t) => t.columns.any(
+        (c) =>
+            c.columnDefault == pgsqlFunctionRandomUuidV7 ||
+            c.columnDefault == defaultUuidValueRandomV7,
+      ),
     )) {
       out += _sqlUuidGenerateV7FunctionDeclaration();
       out += '\n';
@@ -121,7 +117,7 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
-      columnsPgSql.add('    ${column.toPgSqlFragment()}');
+      columnsPgSql.add('    ${column.toPgSqlFragment(tableName: name)}');
     }
     out += columnsPgSql.join(',\n');
 
@@ -167,14 +163,12 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
-  /// Whether the column is the default primary key column.
-  bool get isIdColumn => name == defaultPrimaryKeyName;
-
   /// Whether the column is a primary key of type int serial.
   bool get isIntSerialIdColumn =>
-      isIdColumn &&
+      isPrimary &&
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
-      (columnDefault?.startsWith('nextval') ?? false);
+      ((columnDefault?.startsWith('nextval') ?? false) ||
+          columnDefault == defaultIntSerial);
 
   /// Whether the column is of a vector type.
   bool get isVectorColumn =>
@@ -183,7 +177,7 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
-  String toPgSqlFragment() {
+  String toPgSqlFragment({String tableName = ''}) {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -203,6 +197,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.json:
         type = 'json';
+        break;
+      case ColumnType.jsonb:
+        type = 'jsonb';
         break;
       case ColumnType.text:
         type = 'text';
@@ -230,10 +227,15 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
     }
 
     var nullable = isNullable ? '' : ' NOT NULL';
-    var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
+    var defaultSql = columnType.getPgColumnDefault(
+      columnDefault,
+      tableName,
+    );
+
+    var defaultValue = defaultSql != null ? ' DEFAULT $defaultSql' : '';
 
     // The id column is special.
-    if (isIdColumn) {
+    if (isPrimary) {
       if (isNullable) {
         throw const FormatException('The id column must be non-nullable');
       }
@@ -262,6 +264,12 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
+    String ginOperatorClassStr = '';
+
+    if (type == 'gin' && ginOperatorClass != null) {
+      ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
+    }
+
     String distanceStr = '';
     String pgvectorParams = '';
 
@@ -277,9 +285,15 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
 
     return out;
+  }
+}
+
+extension GinIndexOperatorClass on GinOperatorClass {
+  String asOperator() {
+    return name.snakeCase;
   }
 }
 
@@ -333,8 +347,9 @@ extension on ForeignKeyAction {
 
 extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required DatabaseDefinition databaseDefinition,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
   }) {
     var out = '';
 
@@ -360,11 +375,15 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
       (e) =>
           (e.createTable != null &&
               e.createTable!.columns.any(
-                (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+                (c) =>
+                    c.columnDefault == pgsqlFunctionRandomUuidV7 ||
+                    c.columnDefault == defaultUuidValueRandomV7,
               )) ||
           (e.alterTable != null &&
               (e.alterTable!.addColumns.any(
-                    (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+                    (c) =>
+                        c.columnDefault == pgsqlFunctionRandomUuidV7 ||
+                        c.columnDefault == defaultUuidValueRandomV7,
                   ) ||
                   e.alterTable!.modifyColumns.any(
                     (c) => c.newDefault == pgsqlFunctionRandomUuidV7,
@@ -376,7 +395,7 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
 
     var foreignKeyActions = '';
     for (var action in actions) {
-      out += action.toPgSql();
+      out += action.toPgSql(databaseDefinition);
       foreignKeyActions += action.foreignRelationToSql();
     }
 
@@ -407,7 +426,7 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
 }
 
 extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
-  String toPgSql() {
+  String toPgSql(DatabaseDefinition databaseDefinition) {
     var out = '';
 
     switch (type) {
@@ -434,7 +453,9 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += '-- ACTION ALTER TABLE\n';
         out += '--\n';
-        out += alterTable!.toPgSql();
+        out += alterTable!.toPgSql(
+          databaseDefinition.findTableNamed(alterTable!.name)!.columns,
+        );
         break;
     }
 
@@ -462,7 +483,7 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
 }
 
 extension PostgresTableMigrationPgSqlGenerator on TableMigration {
-  String toPgSql() {
+  String toPgSql(List<ColumnDefinition> targetColumns) {
     var out = '';
 
     // Drop indexes
@@ -470,9 +491,10 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += 'DROP INDEX "$deleteIndex";\n';
     }
 
-    // Drop foreign keys
+    // Drop foreign keys. Uses IF EXISTS to avoid a hard failure for constraints
+    // of dropped tables or columns.
     for (var deleteKey in deleteForeignKeys) {
-      out += 'ALTER TABLE "$name" DROP CONSTRAINT "$deleteKey";\n';
+      out += 'ALTER TABLE "$name" DROP CONSTRAINT IF EXISTS "$deleteKey";\n';
     }
 
     // Drop columns
@@ -480,14 +502,29 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
       out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
     }
 
+    // Rename columns (must happen before add/modify to avoid naming conflicts)
+    for (var modifiedColumn in modifyColumns) {
+      var fromName = modifiedColumn.columnName;
+      var toName = modifiedColumn.newColumnName;
+      if (toName != null && toName != fromName) {
+        out += 'ALTER TABLE "$name" RENAME COLUMN "$fromName" TO "$toName";\n';
+      }
+    }
+
     // Add columns
     for (var addColumn in addColumns) {
-      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
+      out +=
+          'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment(tableName: name)};\n';
     }
 
     // Modify columns
     for (var alterColumn in modifyColumns) {
-      out += alterColumn.toPgSql(tableName: name);
+      out += alterColumn.toPgSql(
+        tableName: name,
+        columnDefinition: targetColumns.firstWhere(
+          (c) => c.name == alterColumn.physicalName,
+        ),
+      );
     }
 
     // Add indexes
@@ -512,30 +549,47 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 }
 
 extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
+  /// The physical name of the column to be used in the SQL statements, taking
+  /// renames into consideration. Ensure that any using statement happen after
+  /// the rename statements.
+  String get physicalName => newColumnName ?? columnName;
+
   String toPgSql({
     required String tableName,
+    required ColumnDefinition columnDefinition,
   }) {
     var out = '';
     if (addNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' DROP NOT NULL;\n';
     } else if (removeNullable) {
       out +=
-          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
           ' SET NOT NULL;\n';
     }
     if (changeDefault) {
       if (newDefault == null) {
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
       } else {
+        var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
+          newDefault,
+          tableName,
+        );
         out +=
-            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
-            ' SET DEFAULT $newDefault;\n';
+            'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
+            ' SET DEFAULT $newDefaultSql;\n';
       }
+    }
+
+    if (newType != null) {
+      var typeName = newType!.name;
+      out +=
+          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+          ' SET DATA TYPE $typeName USING "$columnName"::$typeName;\n';
     }
 
     return out;
@@ -561,7 +615,7 @@ String _sqlStoreMigrationVersion({
   return out;
 }
 
-String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
+String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersionModel> modules) {
   var moduleNames = modules.map((e) => "'${e.module}'").toList().join(', ');
   String out = '';
   out += '--\n';
@@ -663,65 +717,5 @@ extension PostgresVectorIndexDistanceFunction on VectorDistanceFunction {
   String asDistanceFunction([String vectorType = 'vector']) {
     var funcCode = (this == VectorDistanceFunction.innerProduct) ? 'ip' : name;
     return '${vectorType}_${funcCode}_ops';
-  }
-}
-
-extension PostgresTypeDefinition on TypeDefinition {
-  String? getPgColumnDefault(
-    dynamic defaultValue,
-    String tableName,
-  ) {
-    var defaultValueType = this.defaultValueType;
-    if ((defaultValue == null) || (defaultValueType == null)) return null;
-
-    switch (defaultValueType) {
-      case DefaultValueAllowedType.dateTime:
-        if (defaultValue is! String) {
-          throw StateError('Invalid DateTime default value: $defaultValue');
-        }
-
-        if (defaultValue == defaultDateTimeValueNow) {
-          return 'CURRENT_TIMESTAMP';
-        }
-
-        DateTime? dateTime = DateTime.parse(defaultValue);
-        return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
-      case DefaultValueAllowedType.bool:
-        return defaultValue;
-      case DefaultValueAllowedType.int:
-        if (defaultValue == defaultIntSerial) {
-          return "nextval('${tableName}_id_seq'::regclass)";
-        }
-        return '$defaultValue';
-      case DefaultValueAllowedType.double:
-        return '$defaultValue';
-      case DefaultValueAllowedType.string:
-        return '${escapeSqlString(defaultValue)}::text';
-      case DefaultValueAllowedType.uuidValue:
-        if (defaultUuidValueRandom == defaultValue) {
-          return 'gen_random_uuid()';
-        }
-        if (defaultUuidValueRandomV7 == defaultValue) {
-          return 'gen_random_uuid_v7()';
-        }
-        return '${escapeSqlString(defaultValue)}::uuid';
-      case DefaultValueAllowedType.uri:
-        return '${escapeSqlString(defaultValue)}::text';
-      case DefaultValueAllowedType.bigInt:
-        var parsedBigInt = BigInt.parse(defaultValue);
-        return "'${parsedBigInt.toString()}'::text";
-      case DefaultValueAllowedType.duration:
-        Duration parsedDuration = parseDuration(defaultValue);
-        return '${parsedDuration.toJson()}';
-      case DefaultValueAllowedType.isEnum:
-        var enumDefinition = this.enumDefinition;
-        if (enumDefinition == null) return null;
-        var values = enumDefinition.values;
-        return switch (enumDefinition.serialized) {
-          EnumSerialization.byIndex =>
-            '${values.indexWhere((e) => e.name == defaultValue)}',
-          EnumSerialization.byName => '\'$defaultValue\'::text',
-        };
-    }
   }
 }

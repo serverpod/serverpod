@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -114,6 +114,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
@@ -123,7 +124,8 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Post.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Post.t),
       include: include,
     );
@@ -284,6 +286,7 @@ class PostIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -328,11 +331,12 @@ class PostRepository {
   /// );
   /// ```
   Future<List<Post>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
@@ -344,7 +348,8 @@ class PostRepository {
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -372,10 +377,11 @@ class PostRepository {
   /// );
   /// ```
   Future<Post?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
@@ -387,7 +393,8 @@ class PostRepository {
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -398,7 +405,7 @@ class PostRepository {
 
   /// Finds a single [Post] by its [id] or null if no such row exists.
   Future<Post?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     PostInclude? include,
@@ -420,14 +427,20 @@ class PostRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<Post>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<Post>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -435,12 +448,75 @@ class PostRepository {
   ///
   /// The returned [Post] will have its `id` field set.
   Future<Post> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<Post>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Post]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Post]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Post>> upsert(
+    _i1.DatabaseSession session,
+    List<Post> rows, {
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Post>(
+      rows,
+      conflictColumns: conflictColumns(Post.t),
+      updateColumns: updateColumns?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Post] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Post] will have its `id` field set.
+  Future<Post?> upsertRow(
+    _i1.DatabaseSession session,
+    Post row, {
+    required _i1.ColumnSelections<PostTable> conflictColumns,
+    _i1.ColumnSelections<PostTable>? updateColumns,
+    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Post>(
+      row,
+      conflictColumns: conflictColumns(Post.t),
+      updateColumns: updateColumns?.call(Post.t),
+      updateWhere: updateWhere?.call(Post.t),
       transaction: transaction,
     );
   }
@@ -451,7 +527,7 @@ class PostRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Post>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
@@ -467,7 +543,7 @@ class PostRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Post> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post row, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
@@ -482,7 +558,7 @@ class PostRepository {
   /// Updates a single [Post] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Post?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -497,13 +573,14 @@ class PostRepository {
   /// Updates all [Post]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Post>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<PostTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
     _i1.OrderByListBuilder<PostTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -514,28 +591,41 @@ class PostRepository {
       offset: offset,
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [Post]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Post>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Post> rows, {
+    _i1.OrderByBuilder<PostTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Post>(
       rows,
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [Post].
   Future<Post> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
@@ -546,13 +636,24 @@ class PostRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Post>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
+    _i1.OrderByBuilder<PostTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Post>(
       where: where(Post.t),
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -560,7 +661,7 @@ class PostRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -574,7 +675,7 @@ class PostRepository {
 
   /// Acquires row-level locks on [Post] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -595,7 +696,7 @@ class PostAttachRowRepository {
   /// Creates a relation between the given [Post] and [Post]
   /// by setting the [Post]'s foreign key `id` to refer to the [Post].
   Future<void> previous(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post post,
     _i2.Post previous, {
     _i1.Transaction? transaction,
@@ -618,7 +719,7 @@ class PostAttachRowRepository {
   /// Creates a relation between the given [Post] and [Post]
   /// by setting the [Post]'s foreign key `nextId` to refer to the [Post].
   Future<void> next(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post post,
     _i2.Post next, {
     _i1.Transaction? transaction,
@@ -648,7 +749,7 @@ class PostDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> previous(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post post, {
     _i1.Transaction? transaction,
   }) async {
@@ -678,7 +779,7 @@ class PostDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> next(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Post post, {
     _i1.Transaction? transaction,
   }) async {

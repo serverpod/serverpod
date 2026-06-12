@@ -51,9 +51,12 @@ import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_fiel
     as _i26;
 import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
     as _i27;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/object_with_dynamic.dart'
     as _i28;
-import 'protocol.dart' as _i29;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i29;
+import 'package:http/http.dart' as _i30;
+import 'protocol.dart' as _i31;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -3922,6 +3925,13 @@ class EndpointTestTools extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Future<dynamic> echoDynamic(dynamic anything) =>
+      caller.callServerEndpoint<dynamic>(
+        'testTools',
+        'echoDynamic',
+        {'anything': anything},
+      );
+
   _i2.Future<_i9.SimpleData> echoSimpleData(_i9.SimpleData simpleData) =>
       caller.callServerEndpoint<_i9.SimpleData>(
         'testTools',
@@ -3935,6 +3945,14 @@ class EndpointTestTools extends _i1.EndpointRef {
     'testTools',
     'echoSimpleDatas',
     {'simpleDatas': simpleDatas},
+  );
+
+  _i2.Future<_i28.ObjectWithDynamic> echoObjectWithDynamic(
+    _i28.ObjectWithDynamic objectWithDynamic,
+  ) => caller.callServerEndpoint<_i28.ObjectWithDynamic>(
+    'testTools',
+    'echoObjectWithDynamic',
+    {'objectWithDynamic': objectWithDynamic},
   );
 
   _i2.Future<_i11.Types> echoTypes(_i11.Types typesModel) =>
@@ -4398,8 +4416,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
     {},
   );
 
-  _i2.Future<_i28.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i28.MyFeatureModel>(
+  _i2.Future<_i29.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i29.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -4435,9 +4453,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
+    _i30.Client? httpClientOverride,
   }) : super(
          host,
-         _i29.Protocol(),
+         _i31.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -4445,6 +4464,7 @@ class Client extends _i1.ServerpodClientShared {
          onSucceededCall: onSucceededCall,
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
+         httpClientOverride: httpClientOverride,
        ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);

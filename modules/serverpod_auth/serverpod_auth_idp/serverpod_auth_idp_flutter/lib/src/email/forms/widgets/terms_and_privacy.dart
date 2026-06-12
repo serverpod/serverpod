@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../localization/sign_in_localization_provider.dart';
 import '../../../common/widgets/buttons/text_button.dart';
 
 /// Widget to display terms and privacy text with a checkbox.
@@ -31,6 +32,7 @@ class TermsAndPrivacyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
     final onTermsAndConditionsPressed = this.onTermsAndConditionsPressed;
     final onPrivacyPolicyPressed = this.onPrivacyPolicyPressed;
 
@@ -61,25 +63,25 @@ class TermsAndPrivacyText extends StatelessWidget {
                 spacing: 2,
                 runSpacing: -6,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Text("I have read and accept the "),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(texts.termsIntro),
                   ),
                   if (onTermsAndConditionsPressed != null)
                     HyperlinkTextButton(
                       onPressed: onTermsAndConditionsPressed,
-                      label: 'Terms and Conditions',
+                      label: texts.termsAndConditions,
                     ),
                   if (onTermsAndConditionsPressed != null &&
                       onPrivacyPolicyPressed != null)
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 4),
-                      child: Text(" and "),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(texts.andText),
                     ),
                   if (onPrivacyPolicyPressed != null)
                     HyperlinkTextButton(
                       onPressed: onPrivacyPolicyPressed,
-                      label: 'Privacy Policy',
+                      label: texts.privacyPolicy,
                     ),
                   const Padding(
                     padding: EdgeInsets.only(bottom: 4),

@@ -192,4 +192,60 @@ fields:
       });
     },
   );
+
+  test(
+    'Given a parent model with a gin index with a non-default operator class and a child model with a table that extends it, '
+    'when analyzing models '
+    'then the child model inherits the index with the operator class preserved.',
+    () {
+      var jsonbConfig = GeneratorConfigBuilder().build();
+
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: ParentBase
+          fields:
+            tags: List<String>, serializationDataType=jsonb
+          indexes:
+            base_gin_index:
+              fields: tags
+              type: gin
+              operatorClass: jsonbPathOps
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('child_table').withYaml(
+          '''
+          class: ChildTable
+          table: child_table
+          extends: ParentBase
+          fields:
+            ownField: String
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        jsonbConfig,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
+
+      var childDefinition = definitions
+          .whereType<ModelClassDefinition>()
+          .firstWhere((d) => d.className == 'ChildTable');
+
+      var inheritedIndex = childDefinition.inheritedIndexes.first;
+      expect(inheritedIndex.name, 'child_table_base_gin_index');
+      expect(inheritedIndex.type, 'gin');
+      expect(inheritedIndex.ginOperatorClass?.name, 'jsonbPathOps');
+    },
+  );
 }

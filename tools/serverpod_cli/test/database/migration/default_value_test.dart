@@ -413,7 +413,7 @@ void main() {
         );
         expect(
           createActions.first.createTable!.columns.first.columnDefault,
-          'gen_random_uuid()',
+          defaultUuidValueRandom,
         );
       });
     },
@@ -460,7 +460,7 @@ void main() {
           expect(action.alterTable!.modifyColumns.first.columnName, 'id');
           expect(
             action.alterTable!.modifyColumns.first.newDefault,
-            'gen_random_uuid_v7()',
+            defaultUuidValueRandomV7,
           );
         },
       );

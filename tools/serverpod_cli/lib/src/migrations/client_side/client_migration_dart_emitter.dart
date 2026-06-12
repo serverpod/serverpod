@@ -1,0 +1,194 @@
+import 'package:code_builder/code_builder.dart';
+import 'package:dart_style/dart_style.dart';
+import 'package:pub_semver/pub_semver.dart';
+
+class ClientMigrationDartEmitter {
+  const ClientMigrationDartEmitter();
+
+  String emitPlaceholderRegistry() {
+    return _formatSource(
+      '''
+${_generateFileHeader.trim()}
+library;
+
+import 'package:serverpod_database/serverpod_database.dart';
+
+${_emitMigrationRegistryClass(const [])}
+''',
+    );
+  }
+
+  String emitRegistry(List<String> versions) {
+    final parts = versions
+        .map((version) => "part '${_partUri(version)}/migration.dart';")
+        .join('\n');
+
+    final partSection = parts.isEmpty ? '' : '$parts\n\n';
+
+    return _formatSource(
+      '''
+${_createMigrationFileHeader.trim()}
+library;
+
+import 'package:serverpod_database/serverpod_database.dart';
+
+$partSection${_emitMigrationRegistryClass(versions)}
+''',
+    );
+  }
+
+  String emitMigrationPart({
+    required String moduleName,
+    required String version,
+    required String migrationSql,
+    required String definitionSql,
+  }) {
+    final className = '_Migration${migrationClassSuffix(version)}';
+    final migrationClass = Class(
+      (classBuilder) => classBuilder
+        ..name = className
+        ..implements.add(refer('MigrationVersionSql'))
+        ..methods.addAll([
+          _stringGetter('version', version),
+          _stringGetter('moduleName', moduleName),
+          _stringGetter('migrationSql', migrationSql, rawMultiline: true),
+          _stringGetter('definitionSql', definitionSql, rawMultiline: true),
+        ]),
+    );
+
+    return _formatSource(
+      '''
+${_createMigrationFileHeader.trim()}
+part of '../migration_registry.dart';
+
+${migrationClass.accept(_emitter).toString()}
+''',
+    );
+  }
+
+  String _emitMigrationRegistryClass(List<String> versions) {
+    final registryClass = Class(
+      (classBuilder) => classBuilder
+        ..docs.addAll([
+          '/// Migration registry for the client-side database.',
+        ])
+        ..name = 'MigrationRegistry'
+        ..fields.add(
+          Field(
+            (fieldBuilder) => fieldBuilder
+              ..static = true
+              ..modifier = FieldModifier.final$
+              ..name = 'migrations'
+              ..docs.addAll([
+                '/// Ordered list of all client-side database migrations.',
+                '/// New migrations are always appended at the end.',
+              ])
+              ..type = TypeReference(
+                (typeBuilder) => typeBuilder
+                  ..symbol = 'List'
+                  ..types.add(refer('MigrationVersionSql')),
+              )
+              ..assignment = literalList([
+                for (final version in versions)
+                  refer('_Migration${migrationClassSuffix(version)}').call([]),
+              ]).code,
+          ),
+        )
+        ..methods.add(
+          Method(
+            (methodBuilder) => methodBuilder
+              ..static = true
+              ..lambda = true
+              ..type = MethodType.getter
+              ..name = 'versions'
+              ..docs.add(
+                '/// List of all client-side database migration versions.',
+              )
+              ..returns = TypeReference(
+                (typeBuilder) => typeBuilder
+                  ..symbol = 'List'
+                  ..types.add(refer('String')),
+              )
+              ..body = const Code('migrations.map((m) => m.version).toList()'),
+          ),
+        ),
+    );
+
+    return registryClass.accept(_emitter).toString();
+  }
+
+  Method _stringGetter(
+    String name,
+    String value, {
+    bool rawMultiline = false,
+  }) {
+    return Method(
+      (methodBuilder) => methodBuilder
+        ..annotations.add(refer('override'))
+        ..lambda = true
+        ..type = MethodType.getter
+        ..name = name
+        ..returns = refer('String')
+        ..body = Code(
+          rawMultiline ? _rawMultilineLiteral(value) : _stringLiteral(value),
+        ),
+    );
+  }
+
+  String _formatSource(String source) {
+    return DartFormatter(
+      languageVersion: Version(3, 8, 0),
+      trailingCommas: TrailingCommas.preserve,
+    ).format(source);
+  }
+}
+
+String migrationClassSuffix(String version) {
+  return version.replaceAllMapped(RegExp(r'[^0-9a-zA-Z]'), (_) => '_');
+}
+
+String _partUri(String version) {
+  if (version.contains('..') || version.contains(r'\')) {
+    throw ArgumentError('Invalid migration version: $version');
+  }
+
+  return version;
+}
+
+String _rawMultilineLiteral(String value) {
+  return "'''$value'''";
+}
+
+String _stringLiteral(String value) {
+  if (value.isEmpty) return "''";
+  if (!value.contains("'") &&
+      !value.contains(r'$') &&
+      !value.contains('\n') &&
+      !value.contains(r'\')) {
+    return "'$value'";
+  }
+  if (!value.contains('"') &&
+      !value.contains(r'$') &&
+      !value.contains('\n') &&
+      !value.contains(r'\')) {
+    return '"$value"';
+  }
+
+  return _rawMultilineLiteral(value);
+}
+
+const _generateFileHeader = '''
+/// AUTOGENERATED BY SERVERPOD generate - do not remove.
+/// Merging: resolve conflicts like server migration_registry.txt.
+/// Updated when you run `serverpod create-migration` for the client.
+''';
+
+const _createMigrationFileHeader = '''
+/// AUTOGENERATED BY SERVERPOD create-migration - DO NOT EDIT BY HAND
+/// Merging: resolve registry conflicts the same as migration_registry.txt.
+''';
+
+final _emitter = DartEmitter(
+  useNullSafetySyntax: true,
+  allocator: Allocator.simplePrefixing(),
+);

@@ -131,6 +131,7 @@ abstract class CloudStorageEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
@@ -140,7 +141,8 @@ abstract class CloudStorageEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CloudStorageEntry.t),
       include: include,
     );
@@ -314,6 +316,7 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -354,11 +357,12 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<List<CloudStorageEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -369,7 +373,8 @@ class CloudStorageEntryRepository {
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -396,10 +401,11 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<CloudStorageEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
@@ -410,7 +416,8 @@ class CloudStorageEntryRepository {
       where: where?.call(CloudStorageEntry.t),
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -420,7 +427,7 @@ class CloudStorageEntryRepository {
 
   /// Finds a single [CloudStorageEntry] by its [id] or null if no such row exists.
   Future<CloudStorageEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -440,14 +447,20 @@ class CloudStorageEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<CloudStorageEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<CloudStorageEntry>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -455,12 +468,75 @@ class CloudStorageEntryRepository {
   ///
   /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<CloudStorageEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [CloudStorageEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CloudStorageEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CloudStorageEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<CloudStorageEntry> rows, {
+    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CloudStorageEntry>(
+      rows,
+      conflictColumns: conflictColumns(CloudStorageEntry.t),
+      updateColumns: updateColumns?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CloudStorageEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CloudStorageEntry] will have its `id` field set.
+  Future<CloudStorageEntry?> upsertRow(
+    _i1.DatabaseSession session,
+    CloudStorageEntry row, {
+    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CloudStorageEntry>(
+      row,
+      conflictColumns: conflictColumns(CloudStorageEntry.t),
+      updateColumns: updateColumns?.call(CloudStorageEntry.t),
+      updateWhere: updateWhere?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
@@ -471,7 +547,7 @@ class CloudStorageEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CloudStorageEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CloudStorageEntry> rows, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -487,7 +563,7 @@ class CloudStorageEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CloudStorageEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CloudStorageEntry row, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -502,7 +578,7 @@ class CloudStorageEntryRepository {
   /// Updates a single [CloudStorageEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
@@ -518,7 +594,7 @@ class CloudStorageEntryRepository {
   /// Updates all [CloudStorageEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CloudStorageEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
@@ -526,6 +602,7 @@ class CloudStorageEntryRepository {
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -536,28 +613,41 @@ class CloudStorageEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [CloudStorageEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CloudStorageEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CloudStorageEntry> rows, {
+    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CloudStorageEntry>(
       rows,
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [CloudStorageEntry].
   Future<CloudStorageEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -568,13 +658,24 @@ class CloudStorageEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CloudStorageEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
+    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CloudStorageEntry>(
       where: where(CloudStorageEntry.t),
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -582,7 +683,7 @@ class CloudStorageEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -596,7 +697,7 @@ class CloudStorageEntryRepository {
 
   /// Acquires row-level locks on [CloudStorageEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

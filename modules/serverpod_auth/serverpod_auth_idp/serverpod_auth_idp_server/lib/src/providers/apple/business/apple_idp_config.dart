@@ -1,9 +1,22 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../../core.dart';
 import '../../../utils/get_passwords_extension.dart';
 import 'apple_idp.dart';
+
+/// Callback to be invoked after a new Apple account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterAppleAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      AppleAccount appleAccount, {
+      required Transaction? transaction,
+    });
 
 /// Configuration for the Apple identity provider.
 class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
@@ -32,6 +45,19 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
   /// clients.
   final String? androidPackageIdentifier;
 
+  /// The web app URL to redirect to after receiving Apple's web callback.
+  ///
+  /// Required for web Sign in with Apple to work when the server callback
+  /// route is used as Apple's redirect URI.
+  final String? webRedirectUri;
+
+  /// Callback to be invoked after a new Apple account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Apple
+  /// account has been created and linked.
+  final AfterAppleAccountCreatedFunction? onAfterAppleAccountCreated;
+
   /// Creates a new Sign in with Apple configuration.
   const AppleIdpConfig({
     required this.serviceIdentifier,
@@ -41,6 +67,8 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
     required this.keyId,
     required this.key,
     this.androidPackageIdentifier,
+    this.webRedirectUri,
+    this.onAfterAppleAccountCreated,
   });
 
   @override
@@ -63,22 +91,24 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
 /// This constructor requires that a [Serverpod] instance has already been initialized.
 class AppleIdpConfigFromPasswords extends AppleIdpConfig {
   /// Creates a new [AppleIdpConfigFromPasswords] instance.
-  AppleIdpConfigFromPasswords()
-    : super(
-        serviceIdentifier: Serverpod.instance.getPasswordOrThrow(
-          'appleServiceIdentifier',
-        ),
-        bundleIdentifier: Serverpod.instance.getPasswordOrThrow(
-          'appleBundleIdentifier',
-        ),
-        redirectUri: Serverpod.instance.getPasswordOrThrow('appleRedirectUri'),
-        teamId: Serverpod.instance.getPasswordOrThrow('appleTeamId'),
-        keyId: Serverpod.instance.getPasswordOrThrow('appleKeyId'),
-        key: Serverpod.instance.getPasswordOrThrow('appleKey'),
-        androidPackageIdentifier: Serverpod.instance.getPassword(
-          'appleAndroidPackageIdentifier',
-        ),
-      );
+  AppleIdpConfigFromPasswords({
+    super.onAfterAppleAccountCreated,
+  }) : super(
+         serviceIdentifier: Serverpod.instance.getPasswordOrThrow(
+           'appleServiceIdentifier',
+         ),
+         bundleIdentifier: Serverpod.instance.getPasswordOrThrow(
+           'appleBundleIdentifier',
+         ),
+         redirectUri: Serverpod.instance.getPasswordOrThrow('appleRedirectUri'),
+         teamId: Serverpod.instance.getPasswordOrThrow('appleTeamId'),
+         keyId: Serverpod.instance.getPasswordOrThrow('appleKeyId'),
+         key: Serverpod.instance.getPasswordOrThrow('appleKey'),
+         androidPackageIdentifier: Serverpod.instance.getPassword(
+           'appleAndroidPackageIdentifier',
+         ),
+         webRedirectUri: Serverpod.instance.getPassword('appleWebRedirectUri'),
+       );
 }
 
 /// Extension methods for [AppleIdpConfig].

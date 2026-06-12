@@ -85,6 +85,7 @@ class ParentClass extends _i1.GrandparentClass
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
@@ -94,7 +95,8 @@ class ParentClass extends _i1.GrandparentClass
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ParentClass.t),
       include: include,
     );
@@ -167,6 +169,7 @@ class ParentClassIncludeList extends _i2.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -207,11 +210,12 @@ class ParentClassRepository {
   /// );
   /// ```
   Future<List<ParentClass>> find(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -222,7 +226,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -249,10 +254,11 @@ class ParentClassRepository {
   /// );
   /// ```
   Future<ParentClass?> findFirstRow(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
@@ -263,7 +269,8 @@ class ParentClassRepository {
       where: where?.call(ParentClass.t),
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -273,7 +280,7 @@ class ParentClassRepository {
 
   /// Finds a single [ParentClass] by its [id] or null if no such row exists.
   Future<ParentClass?> findById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     int id, {
     _i2.Transaction? transaction,
     _i2.LockMode? lockMode,
@@ -293,14 +300,20 @@ class ParentClassRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ParentClass>> insert(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ParentClass>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -308,12 +321,75 @@ class ParentClassRepository {
   ///
   /// The returned [ParentClass] will have its `id` field set.
   Future<ParentClass> insertRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
     return session.db.insertRow<ParentClass>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ParentClass]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ParentClass]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ParentClass>> upsert(
+    _i2.DatabaseSession session,
+    List<ParentClass> rows, {
+    required _i2.ColumnSelections<ParentClassTable> conflictColumns,
+    _i2.ColumnSelections<ParentClassTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ParentClassTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ParentClass>(
+      rows,
+      conflictColumns: conflictColumns(ParentClass.t),
+      updateColumns: updateColumns?.call(ParentClass.t),
+      updateWhere: updateWhere?.call(ParentClass.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ParentClass] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ParentClass] will have its `id` field set.
+  Future<ParentClass?> upsertRow(
+    _i2.DatabaseSession session,
+    ParentClass row, {
+    required _i2.ColumnSelections<ParentClassTable> conflictColumns,
+    _i2.ColumnSelections<ParentClassTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ParentClassTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ParentClass>(
+      row,
+      conflictColumns: conflictColumns(ParentClass.t),
+      updateColumns: updateColumns?.call(ParentClass.t),
+      updateWhere: updateWhere?.call(ParentClass.t),
       transaction: transaction,
     );
   }
@@ -324,7 +400,7 @@ class ParentClassRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ParentClass>> update(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ParentClass> rows, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
@@ -340,7 +416,7 @@ class ParentClassRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ParentClass> updateRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ParentClass row, {
     _i2.ColumnSelections<ParentClassTable>? columns,
     _i2.Transaction? transaction,
@@ -355,7 +431,7 @@ class ParentClassRepository {
   /// Updates a single [ParentClass] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ParentClass?> updateById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     int id, {
     required _i2.ColumnValueListBuilder<ParentClassUpdateTable> columnValues,
     _i2.Transaction? transaction,
@@ -370,13 +446,14 @@ class ParentClassRepository {
   /// Updates all [ParentClass]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ParentClass>> updateWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ParentClassUpdateTable> columnValues,
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     int? limit,
     int? offset,
     _i2.OrderByBuilder<ParentClassTable>? orderBy,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
@@ -387,28 +464,41 @@ class ParentClassRepository {
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [ParentClass]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ParentClass>> delete(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ParentClass> rows, {
+    _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
     return session.db.delete<ParentClass>(
       rows,
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [ParentClass].
   Future<ParentClass> deleteRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
@@ -419,13 +509,24 @@ class ParentClassRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ParentClass>> deleteWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
+    _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ParentClass>(
       where: where(ParentClass.t),
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -433,7 +534,7 @@ class ParentClassRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     int? limit,
     _i2.Transaction? transaction,
@@ -447,7 +548,7 @@ class ParentClassRepository {
 
   /// Acquires row-level locks on [ParentClass] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
     required _i2.LockMode lockMode,
     required _i2.Transaction transaction,

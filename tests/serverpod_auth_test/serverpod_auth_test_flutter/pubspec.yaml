@@ -5,18 +5,18 @@ description: Auth module client-side tests.
 version: 0.0.1
 
 environment:
-  sdk: '^3.8.0'
-  flutter: '^3.32.0'
+  sdk: '^3.10.3'
+  flutter: '^3.38.4'
 
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_auth_bridge_flutter: 3.3.1
-  serverpod_auth_client: 3.3.1
-  serverpod_auth_core_flutter: 3.3.1
-  serverpod_auth_idp_client: 3.3.1
-  serverpod_auth_shared_flutter: 3.3.1
-  serverpod_auth_test_client: 3.3.1
+  serverpod_auth_bridge_flutter: 3.5.0-beta.10
+  serverpod_auth_client: 3.5.0-beta.10
+  serverpod_auth_core_flutter: 3.5.0-beta.10
+  serverpod_auth_idp_client: 3.5.0-beta.10
+  serverpod_auth_shared_flutter: 3.5.0-beta.10
+  serverpod_auth_test_client: 3.5.0-beta.10
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'

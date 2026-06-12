@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -89,6 +89,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
@@ -98,7 +99,8 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Arena.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(Arena.t),
       include: include,
     );
@@ -212,6 +214,7 @@ class ArenaIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -256,11 +259,12 @@ class ArenaRepository {
   /// );
   /// ```
   Future<List<Arena>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
@@ -272,7 +276,8 @@ class ArenaRepository {
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -300,10 +305,11 @@ class ArenaRepository {
   /// );
   /// ```
   Future<Arena?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
@@ -315,7 +321,8 @@ class ArenaRepository {
       where: where?.call(Arena.t),
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -326,7 +333,7 @@ class ArenaRepository {
 
   /// Finds a single [Arena] by its [id] or null if no such row exists.
   Future<Arena?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     ArenaInclude? include,
@@ -348,14 +355,20 @@ class ArenaRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<Arena>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Arena> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<Arena>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -363,12 +376,75 @@ class ArenaRepository {
   ///
   /// The returned [Arena] will have its `id` field set.
   Future<Arena> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<Arena>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [Arena]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Arena]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Arena>> upsert(
+    _i1.DatabaseSession session,
+    List<Arena> rows, {
+    required _i1.ColumnSelections<ArenaTable> conflictColumns,
+    _i1.ColumnSelections<ArenaTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ArenaTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Arena>(
+      rows,
+      conflictColumns: conflictColumns(Arena.t),
+      updateColumns: updateColumns?.call(Arena.t),
+      updateWhere: updateWhere?.call(Arena.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Arena] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Arena] will have its `id` field set.
+  Future<Arena?> upsertRow(
+    _i1.DatabaseSession session,
+    Arena row, {
+    required _i1.ColumnSelections<ArenaTable> conflictColumns,
+    _i1.ColumnSelections<ArenaTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ArenaTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Arena>(
+      row,
+      conflictColumns: conflictColumns(Arena.t),
+      updateColumns: updateColumns?.call(Arena.t),
+      updateWhere: updateWhere?.call(Arena.t),
       transaction: transaction,
     );
   }
@@ -379,7 +455,7 @@ class ArenaRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Arena>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Arena> rows, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
@@ -395,7 +471,7 @@ class ArenaRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Arena> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Arena row, {
     _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
@@ -410,7 +486,7 @@ class ArenaRepository {
   /// Updates a single [Arena] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Arena?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -425,13 +501,14 @@ class ArenaRepository {
   /// Updates all [Arena]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Arena>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ArenaTable>? orderBy,
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -442,28 +519,41 @@ class ArenaRepository {
       offset: offset,
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [Arena]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Arena>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Arena> rows, {
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Arena>(
       rows,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [Arena].
   Future<Arena> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
@@ -474,13 +564,24 @@ class ArenaRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Arena>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Arena>(
       where: where(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -488,7 +589,7 @@ class ArenaRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -502,7 +603,7 @@ class ArenaRepository {
 
   /// Acquires row-level locks on [Arena] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ArenaTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -523,7 +624,7 @@ class ArenaAttachRowRepository {
   /// Creates a relation between the given [Arena] and [Team]
   /// by setting the [Arena]'s foreign key `id` to refer to the [Team].
   Future<void> team(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Arena arena,
     _i2.Team team, {
     _i1.Transaction? transaction,
@@ -553,7 +654,7 @@ class ArenaDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> team(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Arena arena, {
     _i1.Transaction? transaction,
   }) async {

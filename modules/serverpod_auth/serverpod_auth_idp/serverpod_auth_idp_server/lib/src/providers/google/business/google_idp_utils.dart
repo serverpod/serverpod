@@ -71,6 +71,42 @@ class GoogleIdpUtils {
     required final AuthUsers authUsers,
   }) : _authUsers = authUsers;
 
+  /// Exchanges a Google authorization code for access and ID tokens.
+  ///
+  /// Used by the web OAuth2 PKCE flow initiated by `GoogleWebSignInService`.
+  /// The [codeVerifier] is the PKCE verifier, and [redirectUri] must exactly
+  /// match the URI used in the original authorization request.
+  ///
+  /// Throws [GoogleIdTokenVerificationException] if the token exchange fails
+  /// or if the response is missing the `id_token`.
+  Future<({String accessToken, String idToken})> exchangeCodeForToken(
+    final Session session, {
+    required final String code,
+    required final String codeVerifier,
+    required final String redirectUri,
+  }) async {
+    try {
+      final tokenResponse =
+          await OAuth2PkceUtil(
+            config: config.oauth2PkceServerConfig,
+          ).exchangeCodeForToken(
+            code: code,
+            codeVerifier: codeVerifier,
+            redirectUri: redirectUri,
+          );
+
+      final idToken = tokenResponse.raw['id_token'] as String?;
+      if (idToken == null) {
+        session.logAndThrow('Missing id_token in Google token response');
+      }
+
+      return (accessToken: tokenResponse.accessToken, idToken: idToken);
+    } on OAuth2Exception catch (e) {
+      session.log(e.toString(), level: LogLevel.debug);
+      throw GoogleIdTokenVerificationException();
+    }
+  }
+
   /// Authenticates a user using an access token.
   ///
   /// If the external user ID is not yet known in the system, a new `AuthUser`
@@ -116,6 +152,13 @@ class GoogleIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterGoogleAccountCreated?.call(
+        session,
+        authUser,
+        googleAccount,
+        transaction: transaction,
+      );
     }
 
     return (
@@ -139,7 +182,9 @@ class GoogleIdpUtils {
     try {
       data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
-        config: const GoogleIdTokenConfig(),
+        config: GoogleIdTokenConfig(
+          clockSkewTolerance: config.clockSkewTolerance,
+        ),
         audience: clientId,
       );
     } catch (e) {

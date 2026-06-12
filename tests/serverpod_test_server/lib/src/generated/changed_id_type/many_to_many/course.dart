@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -100,6 +100,7 @@ abstract class CourseUuid
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     CourseUuidInclude? include,
@@ -109,7 +110,8 @@ abstract class CourseUuid
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(CourseUuid.t),
       include: include,
     );
@@ -246,6 +248,7 @@ class CourseUuidIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -294,11 +297,12 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<List<CourseUuid>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -310,7 +314,8 @@ class CourseUuidRepository {
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -338,10 +343,11 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<CourseUuid?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
@@ -353,7 +359,8 @@ class CourseUuidRepository {
       where: where?.call(CourseUuid.t),
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -364,7 +371,7 @@ class CourseUuidRepository {
 
   /// Finds a single [CourseUuid] by its [id] or null if no such row exists.
   Future<CourseUuid?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
@@ -386,14 +393,20 @@ class CourseUuidRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<CourseUuid>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<CourseUuid>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -401,12 +414,75 @@ class CourseUuidRepository {
   ///
   /// The returned [CourseUuid] will have its `id` field set.
   Future<CourseUuid> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<CourseUuid>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [CourseUuid]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [CourseUuid]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CourseUuid>> upsert(
+    _i1.DatabaseSession session,
+    List<CourseUuid> rows, {
+    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
+    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CourseUuid>(
+      rows,
+      conflictColumns: conflictColumns(CourseUuid.t),
+      updateColumns: updateColumns?.call(CourseUuid.t),
+      updateWhere: updateWhere?.call(CourseUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CourseUuid] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [CourseUuid] will have its `id` field set.
+  Future<CourseUuid?> upsertRow(
+    _i1.DatabaseSession session,
+    CourseUuid row, {
+    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
+    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CourseUuid>(
+      row,
+      conflictColumns: conflictColumns(CourseUuid.t),
+      updateColumns: updateColumns?.call(CourseUuid.t),
+      updateWhere: updateWhere?.call(CourseUuid.t),
       transaction: transaction,
     );
   }
@@ -417,7 +493,7 @@ class CourseUuidRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CourseUuid>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -433,7 +509,7 @@ class CourseUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CourseUuid> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -448,7 +524,7 @@ class CourseUuidRepository {
   /// Updates a single [CourseUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CourseUuid?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -463,13 +539,14 @@ class CourseUuidRepository {
   /// Updates all [CourseUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CourseUuid>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -480,28 +557,41 @@ class CourseUuidRepository {
       offset: offset,
       orderBy: orderBy?.call(CourseUuid.t),
       orderByList: orderByList?.call(CourseUuid.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [CourseUuid]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CourseUuid>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CourseUuid>(
       rows,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [CourseUuid].
   Future<CourseUuid> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
@@ -512,13 +602,24 @@ class CourseUuidRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CourseUuid>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CourseUuid>(
       where: where(CourseUuid.t),
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -526,7 +627,7 @@ class CourseUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -540,7 +641,7 @@ class CourseUuidRepository {
 
   /// Acquires row-level locks on [CourseUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -561,7 +662,7 @@ class CourseUuidAttachRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]s
   /// by setting each [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid courseUuid,
     List<_i2.EnrollmentInt> enrollmentInt, {
     _i1.Transaction? transaction,
@@ -590,7 +691,7 @@ class CourseUuidAttachRowRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]
   /// by setting the [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid courseUuid,
     _i2.EnrollmentInt enrollmentInt, {
     _i1.Transaction? transaction,
@@ -620,7 +721,7 @@ class CourseUuidDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.EnrollmentInt> enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {
@@ -648,7 +749,7 @@ class CourseUuidDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.EnrollmentInt enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {

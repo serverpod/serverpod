@@ -461,8 +461,10 @@ testTools:
   - createSimpleDatasInsideTransactions:
   - createSimpleDataAndThrowInsideTransaction:
   - createSimpleDatasInParallelTransactionCalls:
+  - echoDynamic:
   - echoSimpleData:
   - echoSimpleDatas:
+  - echoObjectWithDynamic:
   - echoTypes:
   - echoTypesList:
   - echoModuleDatatype:

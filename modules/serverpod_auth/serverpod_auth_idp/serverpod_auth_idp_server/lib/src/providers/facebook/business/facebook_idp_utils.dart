@@ -110,6 +110,13 @@ class FacebookIdpUtils {
         accountDetails: accountDetails,
         transaction: transaction,
       );
+
+      await config.onAfterFacebookAccountCreated?.call(
+        session,
+        authUser,
+        facebookAccount,
+        transaction: transaction,
+      );
     }
 
     return (

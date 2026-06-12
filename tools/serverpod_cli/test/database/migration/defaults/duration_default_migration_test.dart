@@ -161,4 +161,161 @@ void main() {
       },
     );
   });
+
+  group('Given a SQLite database table definition with a Duration column ', () {
+    test(
+      'when generating SQL with a specific Duration default value (94230100ms), then INTEGER has numeric default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('durationDefault')
+                        .withColumnType(ColumnType.bigint)
+                        .withColumnDefault('94230100')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"durationDefault" INTEGER NOT NULL DEFAULT (94230100)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with a specific Duration default value (177640100ms), then INTEGER has numeric default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('durationDefault')
+                        .withColumnType(ColumnType.bigint)
+                        .withColumnDefault('177640100')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"durationDefault" INTEGER NOT NULL DEFAULT (177640100)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with no columnDefault, then the Duration column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('durationDefault')
+                        .withColumnType(ColumnType.bigint)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"durationDefault" INTEGER NOT NULL'));
+        expect(
+          sql,
+          isNot(contains('"durationDefault" INTEGER NOT NULL DEFAULT')),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable Duration field and columnDefault, then the column is nullable with default.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('durationDefault')
+                        .withColumnType(ColumnType.bigint)
+                        .withIsNullable(true)
+                        .withColumnDefault('94230100')
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(
+          sql,
+          contains(
+            '"durationDefault" INTEGER DEFAULT (94230100)',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when generating SQL with nullable Duration field and no columnDefault, then the column has no DEFAULT.',
+      () {
+        var databaseDefinition = DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(
+              TableDefinitionBuilder()
+                  .withName('example_table')
+                  .withColumn(
+                    ColumnDefinitionBuilder()
+                        .withName('durationDefault')
+                        .withColumnType(ColumnType.bigint)
+                        .withIsNullable(true)
+                        .build(),
+                  )
+                  .build(),
+            )
+            .build();
+
+        var sql = databaseDefinition.toSqliteSql(
+          installedModules: databaseDefinition.installedModules,
+        );
+
+        expect(sql, contains('"durationDefault" INTEGER\n'));
+        expect(sql, isNot(contains('"durationDefault" INTEGER DEFAULT')));
+      },
+    );
+  });
 }

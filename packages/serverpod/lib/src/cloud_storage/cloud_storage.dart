@@ -81,6 +81,55 @@ abstract class CloudStorage {
   });
 }
 
+/// Options for cloud storage upload operations.
+///
+/// This class is `final` so that new fields can be added in minor versions
+/// without breaking existing code.
+final class CloudStorageOptions {
+  /// When set, the implementation may use this to enforce or optimize
+  /// the upload size.
+  final int? contentLength;
+
+  /// When true, the upload should fail if an object already exists at the
+  /// given path.
+  final bool preventOverwrite;
+
+  /// Creates a new [CloudStorageOptions].
+  const CloudStorageOptions({
+    this.contentLength,
+    this.preventOverwrite = false,
+  });
+}
+
+/// Mixin for [CloudStorage] implementations that support extended options.
+///
+/// Implementations that mix this in will have their extended methods called
+/// by [StorageAccess] when callers provide [CloudStorageOptions].
+///
+/// Storage implementations that don't mix this in will simply have the
+/// options ignored — the base [CloudStorage] methods are called instead.
+mixin CloudStorageWithOptions on CloudStorage {
+  /// Like [CloudStorage.storeFile] but with additional [options].
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  });
+
+  /// Like [CloudStorage.createDirectFileUploadDescription] but with
+  /// additional [options].
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  });
+}
+
 /// Exception thrown by [CloudStorage].
 class CloudStorageException extends IOException {
   /// Description of the exception.

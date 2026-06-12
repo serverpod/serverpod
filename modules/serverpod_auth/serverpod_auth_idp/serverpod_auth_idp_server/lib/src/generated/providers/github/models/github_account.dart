@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -127,6 +127,7 @@ abstract class GitHubAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     GitHubAccountInclude? include,
@@ -136,7 +137,8 @@ abstract class GitHubAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GitHubAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(GitHubAccount.t),
       include: include,
     );
@@ -316,6 +318,7 @@ class GitHubAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -358,11 +361,12 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<List<GitHubAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -374,7 +378,8 @@ class GitHubAccountRepository {
       where: where?.call(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -402,10 +407,11 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<GitHubAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
@@ -417,7 +423,8 @@ class GitHubAccountRepository {
       where: where?.call(GitHubAccount.t),
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -428,7 +435,7 @@ class GitHubAccountRepository {
 
   /// Finds a single [GitHubAccount] by its [id] or null if no such row exists.
   Future<GitHubAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     GitHubAccountInclude? include,
@@ -450,14 +457,20 @@ class GitHubAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<GitHubAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<GitHubAccount>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -465,12 +478,75 @@ class GitHubAccountRepository {
   ///
   /// The returned [GitHubAccount] will have its `id` field set.
   Future<GitHubAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<GitHubAccount>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [GitHubAccount]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [GitHubAccount]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<GitHubAccount>> upsert(
+    _i1.DatabaseSession session,
+    List<GitHubAccount> rows, {
+    required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
+    _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<GitHubAccount>(
+      rows,
+      conflictColumns: conflictColumns(GitHubAccount.t),
+      updateColumns: updateColumns?.call(GitHubAccount.t),
+      updateWhere: updateWhere?.call(GitHubAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [GitHubAccount] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [GitHubAccount] will have its `id` field set.
+  Future<GitHubAccount?> upsertRow(
+    _i1.DatabaseSession session,
+    GitHubAccount row, {
+    required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
+    _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
+    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<GitHubAccount>(
+      row,
+      conflictColumns: conflictColumns(GitHubAccount.t),
+      updateColumns: updateColumns?.call(GitHubAccount.t),
+      updateWhere: updateWhere?.call(GitHubAccount.t),
       transaction: transaction,
     );
   }
@@ -481,7 +557,7 @@ class GitHubAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<GitHubAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
     _i1.ColumnSelections<GitHubAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -497,7 +573,7 @@ class GitHubAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GitHubAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.ColumnSelections<GitHubAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -512,7 +588,7 @@ class GitHubAccountRepository {
   /// Updates a single [GitHubAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GitHubAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -527,13 +603,14 @@ class GitHubAccountRepository {
   /// Updates all [GitHubAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<GitHubAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
     _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -544,28 +621,41 @@ class GitHubAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [GitHubAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GitHubAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
+    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<GitHubAccount>(
       rows,
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [GitHubAccount].
   Future<GitHubAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -576,13 +666,24 @@ class GitHubAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<GitHubAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
+    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<GitHubAccount>(
       where: where(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -590,7 +691,7 @@ class GitHubAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -604,7 +705,7 @@ class GitHubAccountRepository {
 
   /// Acquires row-level locks on [GitHubAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -625,7 +726,7 @@ class GitHubAccountAttachRowRepository {
   /// Creates a relation between the given [GitHubAccount] and [AuthUser]
   /// by setting the [GitHubAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount gitHubAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

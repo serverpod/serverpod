@@ -1133,4 +1133,128 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given an endpoint that returns a named record with a model type when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model';
+      var testModel = ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .build();
+      var models = [testModel];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(false)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(testModel)
+                        .withRecordFieldName('model')
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart mapRecordToJson calls .toJson() on the model field.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('record.model.toJson()'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint that returns a named record with a nullable model type when generating protocol files',
+    () {
+      var testModelName = 'TestModel';
+      var testModelFileName = 'test_model';
+      var testModel = ModelClassDefinitionBuilder()
+          .withClassName(testModelName)
+          .withFileName(testModelFileName)
+          .build();
+      var models = [testModel];
+
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('myEndpoint')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withRecordOf([
+                    TypeDefinitionBuilder()
+                        .withClassName(testModelName)
+                        .withNullable(true)
+                        .withUrl(defaultModuleAlias)
+                        .withModelDefinition(testModel)
+                        .withRecordFieldName('model')
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart mapRecordToJson calls ?.toJson() on the nullable model field.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('record.model?.toJson()'),
+          );
+        },
+      );
+    },
+  );
 }

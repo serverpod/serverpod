@@ -26,6 +26,10 @@ dependency_overrides:
     path: ../../tools/serverpod_cli
   serverpod_client:
     path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:

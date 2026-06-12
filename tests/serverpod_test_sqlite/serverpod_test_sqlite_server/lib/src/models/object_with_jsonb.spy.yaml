@@ -1,0 +1,22 @@
+class: ObjectWithJsonb
+table: object_with_jsonb
+fields:
+  notJsonb: List<String>
+  jsonb: List<String>, serializationDataType=jsonb
+  jsonbMap: Map<String, String>, serializationDataType=jsonb
+  jsonbObject: SimpleData, serializationDataType=jsonb
+  jsonbIndexed: List<String>, serializationDataType=jsonb
+  jsonbIndexedGin: List<String>, serializationDataType=jsonb
+  jsonbIndexedGinJsonbPath: List<String>, serializationDataType=jsonb
+  jsonbIndexedImplicitGin: List<String>, serializationDataType=jsonb
+  nullableJsonb: List<String>?, serializationDataType=jsonb
+indexes:
+  jsonb_index_gin:
+    fields: jsonbIndexedGin
+    type: gin
+  jsonb_index_gin_with_operator_class:
+    fields: jsonbIndexedGinJsonbPath
+    type: gin
+    operatorClass: jsonbPathOps
+  jsonb_index_implicit_gin:
+    fields: jsonbIndexedImplicitGin

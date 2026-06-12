@@ -127,14 +127,14 @@ class IdTokenVerifier {
     required final IdTokenVerifierConfig config,
     required final String? audience,
   }) {
-    final now = const Clock().now();
+    final now = clock.now();
 
     final exp = claims['exp'] as int?;
     if (exp == null) {
       throw config.createException('Missing expiry claim');
     }
     final expiry = DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
-    if (expiry.isBefore(now)) {
+    if (expiry.isBefore(now.subtract(config.clockSkewTolerance))) {
       throw config.createException('Token expired');
     }
 
@@ -146,7 +146,7 @@ class IdTokenVerifier {
       iat * 1000,
       isUtc: true,
     );
-    if (issuedAt.isAfter(now)) {
+    if (issuedAt.isAfter(now.add(config.clockSkewTolerance))) {
       throw config.createException('Invalid issued at time');
     }
 

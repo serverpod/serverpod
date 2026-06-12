@@ -1,0 +1,4 @@
+class: BigIntDefaultPersist
+table: bigint_default_persist
+fields:
+  bigIntDefaultPersistStr: BigInt?, defaultPersist=1234567890123456789099999999

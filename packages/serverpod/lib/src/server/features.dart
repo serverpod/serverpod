@@ -27,21 +27,14 @@ class Features {
 
   /// Returns true if the web server is enabled.
   static bool enableWebServer([WebServer? server]) {
-    if (server != null && !server.hasRoutes) return false;
+    if (server != null && !server.hasApp) return false;
     return _instance._config.webServer != null;
   }
 
   /// Returns true if the web server is enabled.
   static bool get enableFutureCalls => enableDatabase;
 
-  /// Returns true if the web server is enabled.
-  static bool get enableScheduledHealthChecks => enableDatabase;
-
-  /// Returns true if the web server is enabled.
-  static bool get enablePersistentLogging =>
-      _instance._config.sessionLogs.persistentEnabled;
-
-  /// Returns true if the web server is enabled.
-  static bool get enableConsoleLogging =>
-      _instance._config.sessionLogs.consoleEnabled;
+  /// Returns true if the web server is enabled and the health check interval is valid.
+  static bool get enableScheduledHealthChecks =>
+      enableDatabase && _instance._config.healthCheckInterval > Duration.zero;
 }

@@ -1,3 +1,4 @@
+import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
@@ -649,4 +650,533 @@ database:
       expect(config.maxConnectionCount, isNull);
     },
   );
+
+  test(
+    'Given a Serverpod config with database dialect postgres when loading from Map then PostgresDatabaseConfig is set.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: postgres
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database, isA<PostgresDatabaseConfig>());
+      expect(config.database!.dialect, DatabaseDialect.postgres);
+    },
+  );
+
+  group(
+    'Given a Serverpod config with database dialect sqlite and filePath when loading from Map',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+''';
+
+      late var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      test('then SqliteDatabaseConfig is set.', () {
+        expect(config.database, isA<SqliteDatabaseConfig>());
+        expect(config.database!.dialect, DatabaseDialect.sqlite);
+      });
+
+      late final sqliteConfig = config.database! as SqliteDatabaseConfig;
+
+      test('then SqliteDatabaseConfig filePath is set correctly.', () {
+        expect(sqliteConfig.filePath, '/tmp/serverpod.sqlite');
+      });
+
+      test('then SqliteDatabaseConfig maxConnectionCount uses default.', () {
+        expect(
+          sqliteConfig.maxConnectionCount,
+          DatabaseConfig.defaultMaxConnectionCount,
+        );
+      });
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect sqlite and filePath including maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is set correctly.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+  maxConnectionCount: 20
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database, isA<SqliteDatabaseConfig>());
+      final sqliteConfig = config.database! as SqliteDatabaseConfig;
+      expect(sqliteConfig.maxConnectionCount, 20);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect sqlite and filePath including zero maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is null.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+  maxConnectionCount: 0
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database, isA<SqliteDatabaseConfig>());
+      final sqliteConfig = config.database! as SqliteDatabaseConfig;
+      expect(sqliteConfig.maxConnectionCount, isNull);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect sqlite and filePath including negative maxConnectionCount when loading from Map then SqliteDatabaseConfig maxConnectionCount is null.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+  maxConnectionCount: -1
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database, isA<SqliteDatabaseConfig>());
+      final sqliteConfig = config.database! as SqliteDatabaseConfig;
+      expect(sqliteConfig.maxConnectionCount, isNull);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect sqlite but missing filePath when loading from Map then ArgumentError is thrown.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid SQLite database configuration'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect sqlite but empty filePath when loading from Map then ArgumentError is thrown.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: ''
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('Invalid SQLite database configuration'),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database filePath but no dialect when loading from Map then SqliteDatabaseConfig is used via fallback.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  filePath: /var/lib/app.db
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database, isA<SqliteDatabaseConfig>());
+      final sqliteConfig = config.database! as SqliteDatabaseConfig;
+      expect(sqliteConfig.filePath, '/var/lib/app.db');
+    },
+  );
+
+  test(
+    'Given a SqliteDatabaseConfig created directly then filePath and dialect are correct.',
+    () {
+      var config = SqliteDatabaseConfig(filePath: '/path/to/db.sqlite');
+
+      expect(config.filePath, '/path/to/db.sqlite');
+      expect(config.dialect, DatabaseDialect.sqlite);
+    },
+  );
+
+  test(
+    'Given a SqliteDatabaseConfig with custom maxConnectionCount then value is set.',
+    () {
+      var config = SqliteDatabaseConfig(
+        filePath: '/db.sqlite',
+        maxConnectionCount: 3,
+      );
+
+      expect(config.maxConnectionCount, 3);
+    },
+  );
+
+  test(
+    'Given a SqliteDatabaseConfig when calling toString then output contains filePath and dialect.',
+    () {
+      var config = SqliteDatabaseConfig(filePath: '/tmp/db.sqlite');
+      var str = config.toString();
+
+      expect(
+        str,
+        '''
+database file path: /tmp/db.sqlite
+database max connection count: ${DatabaseConfig.defaultMaxConnectionCount}
+database dialect: sqlite
+''',
+      );
+    },
+  );
+
+  test(
+    'Given a database config with both Postgres and SQLite options when loading from Map then Postgres is used by default.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  filePath: /tmp/serverpod.sqlite
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+      expect(config.database, isA<PostgresDatabaseConfig>());
+      expect(config.database!.dialect, DatabaseDialect.postgres);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database dialect invalid when loading from Map then ArgumentError is thrown.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: invalid
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'No enum value with that name',
+          ),
+        ),
+      );
+    },
+  );
+
+  group('Given a Postgres database config', () {
+    test('when dataPath is omitted then it is null.', () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      final db = config.database!;
+      expect(db, isA<PostgresDatabaseConfig>());
+      expect((db as PostgresDatabaseConfig).dataPath, isNull);
+    });
+
+    test('when dataPath is set then it is normalized on the config.', () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  dataPath: .serverpod/pgdata
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      final db = config.database! as PostgresDatabaseConfig;
+      expect(db.dataPath, p.normalize('.serverpod/pgdata'));
+    });
+
+    test(
+      'when SERVERPOD_DATABASE_DATA_PATH is set then it overrides the file.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  dataPath: .serverpod/pgdata
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+          environment: {'SERVERPOD_DATABASE_DATA_PATH': '/custom/pgdata'},
+        );
+
+        final db = config.database! as PostgresDatabaseConfig;
+        expect(db.dataPath, p.normalize('/custom/pgdata'));
+      },
+    );
+
+    test('when dataPath is only whitespace then it is treated as absent.', () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  dataPath: "   "
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      final db = config.database! as PostgresDatabaseConfig;
+      expect(db.dataPath, isNull);
+    });
+
+    test('when dataPath is non-string then ArgumentError is thrown.', () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  dataPath: true
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+      'when dataPath is present then toString includes the database data path line.',
+      () {
+        var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  dataPath: .serverpod/pgdata
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          {...passwords, 'database': 'password'},
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.database.toString(), contains('database data path:'));
+      },
+    );
+  });
+
+  test('Given a SQLite database config '
+      'when converting to string '
+      'then toString does not mention postgres data path.', () {
+    var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  dialect: sqlite
+  filePath: /tmp/serverpod.sqlite
+''';
+
+    var config = ServerpodConfig.loadFromMap(
+      runMode,
+      serverId,
+      passwords,
+      loadYaml(serverpodConfig),
+    );
+
+    expect(config.database.toString(), isNot(contains('database data path')));
+  });
 }

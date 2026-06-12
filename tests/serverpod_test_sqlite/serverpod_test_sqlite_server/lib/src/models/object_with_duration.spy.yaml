@@ -1,0 +1,4 @@
+class: ObjectWithDuration
+table: object_with_duration
+fields:
+  duration: Duration

@@ -306,6 +306,74 @@ void main() {
   );
 
   group(
+    'Given a hierarchy with a sealed parent with a nullable field and a child with no nullable fields when generating code',
+    () {
+      var parent = ModelClassDefinitionBuilder()
+          .withClassName('Event')
+          .withFileName('event')
+          .withSimpleField('description', 'String', nullable: true)
+          .withIsSealed(true)
+          .build();
+
+      var child = ModelClassDefinitionBuilder()
+          .withClassName('ClickEvent')
+          .withFileName('click_event')
+          .withSimpleField('elementId', 'String')
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      test(
+        'then ${parent.className} has a _Undefined class because descendant inherits nullable field',
+        () {
+          var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            parentCompilationUnit,
+            name: '_Undefined',
+          );
+
+          expect(
+            undefinedClass,
+            isNotNull,
+            reason:
+                '_Undefined class was not created even though the hierarchy contains a nullable inherited field',
+          );
+        },
+      );
+
+      test('then ${child.className} does NOT have a _Undefined class', () {
+        var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedClass,
+          isNull,
+          reason: '_Undefined class was created in child of a sealed class',
+        );
+      });
+    },
+  );
+
+  group(
     'Given a hierarchy with a normal parent, a sealed child and a normal grandchild when generating code',
     () {
       var grandparent = ModelClassDefinitionBuilder()

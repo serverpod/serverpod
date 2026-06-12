@@ -1,16 +1,22 @@
 import 'dart:io';
 
-import 'package:cli_tools/cli_tools.dart';
+import 'package:cli_tools/cli_tools.dart' as cli;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
+import 'package:serverpod_shared/log_io.dart';
+
+// ---------------------------------------------------------------------------
+// Singleton logger
+// ---------------------------------------------------------------------------
 
 /// Singleton instance of logger.
-Logger? _logger;
+cli.Logger? _logger;
 
 /// Replacements for emojis that are not supported on Windows.
 final Map<String, String> _windowsLoggerReplacements = {
   '🥳': '=D',
-  '✅': AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+  '✅': cli.AnsiStyle.bold.wrap(cli.AnsiStyle.lightGreen.wrap('✓')),
   '🚀': '',
   '📦': '',
 };
@@ -24,27 +30,30 @@ void initializeLogger() {
     'Only one logger initialization is allowed.',
   );
 
-  _logger = Platform.isWindows
-      ? StdOutLogger(LogLevel.info, replacements: _windowsLoggerReplacements)
-      : StdOutLogger(LogLevel.info);
+  _logger = ServerpodCliLogger(
+    IsolatedLogWriter(
+      () => StdOutLogWriter(
+        replacements: Platform.isWindows ? _windowsLoggerReplacements : null,
+      ),
+    ),
+  );
 }
 
-/// Initializer for logger singleton.
-/// Uses passed in [logger] to initialize the singleton.
-/// This should only be called once from runtime entry points.
-void initializeLoggerWith(Logger logger) {
-  assert(
-    _logger == null,
-    'Only one logger initialization is allowed.',
-  );
-
+/// Replaces the logger singleton with the given [logger].
+///
+/// Preserves the current log level if a logger was already set.
+void initializeLoggerWith(cli.Logger logger) {
+  final previous = _logger;
+  if (previous != null) {
+    logger.logLevel = previous.logLevel;
+  }
   _logger = logger;
 }
 
 /// Singleton accessor for logger.
-/// Default initializes a [StdOutLogger] if initialization is not run before
-/// this call.
-Logger get log {
+/// Default initializes a [ServerpodCliLogger] if initialization is not run
+/// before this call.
+cli.Logger get log {
   if (_logger == null) {
     initializeLogger();
   }
@@ -52,7 +61,7 @@ Logger get log {
   return _logger!;
 }
 
-extension SourceSpanExceptionLogger on Logger {
+extension SourceSpanExceptionLogger on cli.Logger {
   /// Display a [SourceSpanException] to the user.
   /// Commands should use this to log [SourceSpanException] with
   /// enhanced highlighting if possible.
@@ -60,7 +69,7 @@ extension SourceSpanExceptionLogger on Logger {
     SourceSpanException sourceSpan, {
     bool newParagraph = false,
   }) {
-    var logLevel = LogLevel.error;
+    var logLevel = cli.LogLevel.error;
     bool isHint = false;
 
     if (sourceSpan is SourceSpanSeverityException) {
@@ -82,43 +91,49 @@ extension SourceSpanExceptionLogger on Logger {
 }
 
 abstract class _SeveritySpanHelpers {
-  static LogLevel severityToLogLevel(SourceSpanSeverity severity) {
+  static cli.LogLevel severityToLogLevel(SourceSpanSeverity severity) {
     switch (severity) {
       case SourceSpanSeverity.error:
-        return LogLevel.error;
+        return cli.LogLevel.error;
       case SourceSpanSeverity.warning:
-        return LogLevel.warning;
+        return cli.LogLevel.warning;
       case SourceSpanSeverity.info:
       case SourceSpanSeverity.hint:
-        return LogLevel.info;
+        return cli.LogLevel.info;
     }
   }
 
-  static String highlightAnsiCode(LogLevel severity, bool isHint) {
-    if (severity == LogLevel.info && isHint) {
-      return AnsiStyle.cyan.ansiCode;
+  static String highlightAnsiCode(cli.LogLevel severity, bool isHint) {
+    if (severity == cli.LogLevel.info && isHint) {
+      return cli.AnsiStyle.cyan.ansiCode;
     }
 
     switch (severity) {
-      case LogLevel.nothing:
+      case cli.LogLevel.nothing:
         assert(
-          severity != LogLevel.nothing,
+          severity != cli.LogLevel.nothing,
           'Log level nothing should never be used for a log message',
         );
-        return AnsiStyle.terminalDefault.ansiCode;
-      case LogLevel.error:
-        return AnsiStyle.red.ansiCode;
-      case LogLevel.warning:
-        return AnsiStyle.yellow.ansiCode;
-      case LogLevel.info:
-        return AnsiStyle.blue.ansiCode;
-      case LogLevel.debug:
-        return AnsiStyle.cyan.ansiCode;
+        return cli.AnsiStyle.terminalDefault.ansiCode;
+      case cli.LogLevel.error:
+        return cli.AnsiStyle.red.ansiCode;
+      case cli.LogLevel.warning:
+        return cli.AnsiStyle.yellow.ansiCode;
+      case cli.LogLevel.info:
+        return cli.AnsiStyle.blue.ansiCode;
+      case cli.LogLevel.debug:
+        return cli.AnsiStyle.cyan.ansiCode;
     }
   }
 }
 
-/// Resets the logger singleton to its initial state.
-void resetLogger() {
+/// Shuts down and closes the logger, releasing any isolate resources.
+Future<void> closeLogger() async {
+  final logger = _logger;
   _logger = null;
+  if (logger == null) return;
+  await logger.flush();
+  if (logger is ServerpodCliLogger) {
+    await logger.close();
+  }
 }

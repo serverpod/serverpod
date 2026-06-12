@@ -73,11 +73,13 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -135,6 +137,10 @@ void main() {
           );
           expect(
             testToolsFile,
+            contains('\n///\n/// [configOverride] '),
+          );
+          expect(
+            testToolsFile,
             contains('\n///\n/// [testGroupTagsOverride] '),
           );
           expect(
@@ -144,6 +150,24 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [experimentalFeatures] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverDirectory] '),
+          );
+        },
+      );
+
+      test(
+        'then generated `withServerpod` declares `configOverride` as a nullable ServerpodConfig function type',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              RegExp(
+                r'_i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride',
+              ),
+            ),
           );
         },
       );
@@ -226,9 +250,11 @@ void main() {
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  String\? runMode,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -275,6 +301,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [serverpodStartTimeout] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [configOverride] '),
           );
           expect(
             testToolsFile,
@@ -344,11 +374,13 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -403,6 +435,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [serverpodStartTimeout] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [configOverride] '),
           );
           expect(
             testToolsFile,
@@ -486,11 +522,13 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -545,6 +583,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [serverpodStartTimeout] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [configOverride] '),
           );
           expect(
             testToolsFile,
@@ -1847,11 +1889,13 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -1928,11 +1972,13 @@ void main() {
               r'  String testGroupName,\n'
               r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
+              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'

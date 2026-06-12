@@ -1,19 +1,9 @@
 @Timeout(Duration(minutes: 5))
-import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
+import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var serviceClient = Client(
-    serviceServerUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestServiceKeyManager(
-      '0',
-      'super_SECRET_password',
-    ),
-  );
   group('Given database not matching latest migration', () {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -136,10 +126,10 @@ fields:
     test(
       'when creating and applying destructive repair migration to older migration then database matches older migration',
       () async {
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationRegistry.versions.length - 2;
-        var previousMigrationName =
-            migrationRegistry.versions[previousMigrationIndex];
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        var previousMigrationIndex = migrationVersions.length - 2;
+        var previousMigrationName = migrationVersions[previousMigrationIndex];
 
         var createRepairMigrationExitCode =
             await MigrationTestUtils.runCreateRepairMigration(
@@ -223,10 +213,10 @@ fields:
       test(
         'when creating and applying repair migration targeting older migration and applying migrations then database matches latest migration',
         () async {
-          var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-          var previousMigrationIndex = migrationRegistry.versions.length - 2;
-          var previousMigrationName =
-              migrationRegistry.versions[previousMigrationIndex];
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
 
           var createRepairMigrationExitCode =
               await MigrationTestUtils.runCreateRepairMigration(

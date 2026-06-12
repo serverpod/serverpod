@@ -9,8 +9,8 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
-  flutter: '^3.32.0'
+  sdk: '^3.10.3'
+  flutter: '^3.38.4'
 
 dependencies:
   cupertino_icons: ^1.0.5

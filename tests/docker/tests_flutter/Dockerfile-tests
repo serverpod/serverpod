@@ -1,12 +1,13 @@
 # Specify the Dart SDK base image version
-FROM dart:3.8.0 AS build
+FROM dart:3.10.3 AS build
 
 # Install xz
 RUN apt-get update && apt-get install -y xz-utils
 
 # Install flutter
+ENV FLUTTER_VERSION=3.38.4
 ENV FLUTTER_HOME=/opt/flutter
-ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.0-stable.tar.xz"
+ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 ENV PATH="$PATH:$FLUTTER_HOME/bin"
 
 RUN curl -o flutter.tar.xz $FLUTTER_URL \

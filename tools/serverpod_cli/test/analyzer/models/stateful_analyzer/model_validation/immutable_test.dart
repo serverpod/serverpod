@@ -231,6 +231,80 @@ void main() {
     );
 
     test(
+      'when the id field has defaultModel=random then an error is generated.',
+      () {
+        var modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          immutable: true
+          table: example
+          fields:
+            id: UuidValue, defaultModel=random
+            name: String
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          equals(
+            'The "defaultModel" value "random" is not allowed for immutable classes '
+            'because it is not a constant value. If the model is persisted to '
+            'the database, use the "defaultPersist" key instead.',
+          ),
+        );
+      },
+    );
+
+    test(
+      'when the id field has defaultModel=random_v7 then an error is generated.',
+      () {
+        var modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          immutable: true
+          table: example
+          fields:
+            id: UuidValue, defaultModel=random_v7
+            name: String
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          equals(
+            'The "defaultModel" value "random_v7" is not allowed for immutable classes '
+            'because it is not a constant value. If the model is persisted to '
+            'the database, use the "defaultPersist" key instead.',
+          ),
+        );
+      },
+    );
+
+    test(
       'when a DateTime field has a constant default value then no error is generated.',
       () {
         var modelSources = [

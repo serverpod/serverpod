@@ -32,8 +32,7 @@ void main() async {
 
       var dev = await UniqueData.db.findFirstRow(
         session,
-        orderBy: (t) => t.number,
-        orderDescending: true,
+        orderBy: (t) => t.number.desc(),
         offset: 1,
       );
 

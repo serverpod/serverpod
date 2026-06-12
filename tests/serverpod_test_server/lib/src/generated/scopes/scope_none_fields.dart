@@ -77,6 +77,7 @@ abstract class ScopeNoneFields
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
@@ -86,7 +87,8 @@ abstract class ScopeNoneFields
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ScopeNoneFields.t),
       include: include,
     );
@@ -207,6 +209,7 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -247,11 +250,12 @@ class ScopeNoneFieldsRepository {
   /// );
   /// ```
   Future<List<ScopeNoneFields>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -262,7 +266,8 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -289,10 +294,11 @@ class ScopeNoneFieldsRepository {
   /// );
   /// ```
   Future<ScopeNoneFields?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
@@ -303,7 +309,8 @@ class ScopeNoneFieldsRepository {
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -313,7 +320,7 @@ class ScopeNoneFieldsRepository {
 
   /// Finds a single [ScopeNoneFields] by its [id] or null if no such row exists.
   Future<ScopeNoneFields?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -333,14 +340,20 @@ class ScopeNoneFieldsRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ScopeNoneFields>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ScopeNoneFields>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -348,12 +361,75 @@ class ScopeNoneFieldsRepository {
   ///
   /// The returned [ScopeNoneFields] will have its `id` field set.
   Future<ScopeNoneFields> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<ScopeNoneFields>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ScopeNoneFields]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ScopeNoneFields]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ScopeNoneFields>> upsert(
+    _i1.DatabaseSession session,
+    List<ScopeNoneFields> rows, {
+    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ScopeNoneFields>(
+      rows,
+      conflictColumns: conflictColumns(ScopeNoneFields.t),
+      updateColumns: updateColumns?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ScopeNoneFields] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ScopeNoneFields] will have its `id` field set.
+  Future<ScopeNoneFields?> upsertRow(
+    _i1.DatabaseSession session,
+    ScopeNoneFields row, {
+    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ScopeNoneFields>(
+      row,
+      conflictColumns: conflictColumns(ScopeNoneFields.t),
+      updateColumns: updateColumns?.call(ScopeNoneFields.t),
+      updateWhere: updateWhere?.call(ScopeNoneFields.t),
       transaction: transaction,
     );
   }
@@ -364,7 +440,7 @@ class ScopeNoneFieldsRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ScopeNoneFields>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
@@ -380,7 +456,7 @@ class ScopeNoneFieldsRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ScopeNoneFields> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ScopeNoneFields row, {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
@@ -395,7 +471,7 @@ class ScopeNoneFieldsRepository {
   /// Updates a single [ScopeNoneFields] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ScopeNoneFields?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
     columnValues,
@@ -411,7 +487,7 @@ class ScopeNoneFieldsRepository {
   /// Updates all [ScopeNoneFields]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ScopeNoneFields>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
@@ -419,6 +495,7 @@ class ScopeNoneFieldsRepository {
     int? offset,
     _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -429,28 +506,41 @@ class ScopeNoneFieldsRepository {
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [ScopeNoneFields]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ScopeNoneFields>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ScopeNoneFields>(
       rows,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [ScopeNoneFields].
   Future<ScopeNoneFields> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
@@ -461,13 +551,24 @@ class ScopeNoneFieldsRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ScopeNoneFields>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -475,7 +576,7 @@ class ScopeNoneFieldsRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -489,7 +590,7 @@ class ScopeNoneFieldsRepository {
 
   /// Acquires row-level locks on [ScopeNoneFields] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

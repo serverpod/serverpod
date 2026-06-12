@@ -20,11 +20,9 @@ class UpgradeCommand extends ServerpodCommand {
     final Configuration commandConfig,
   ) async {
     var success = await log.progress('Updating Serverpod Cli...', () async {
-      log.debug('Running `dart pub global activate serverpod_cli`...');
+      log.debug('Running `dart install serverpod_cli`...');
       var startProcess = await Process.start('dart', [
-        'pub',
-        'global',
-        'activate',
+        'install',
         'serverpod_cli',
       ]);
       startProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);

@@ -4,15 +4,15 @@ import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
-import 'package:serverpod/src/database/interface/database_pool_manager.dart';
-import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
-import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -128,18 +128,30 @@ class Server implements RouterInjectable {
 
   @override
   void injectIn(RelicRouter router) {
+    // On hot reload, Relic replays all RouterInjectables. Re-initialize
+    // endpoints so new/changed endpoint classes and methods are picked up.
+    if (_running) {
+      endpoints.connectors.clear();
+      endpoints.modules.clear();
+      endpoints.initializeEndpoints(this);
+    }
+
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
       router.use('/', _verboseLogging);
     }
+
+    final healthRoutes = HealthRoutes(serverpod);
 
     // Register core middleware first to ensure they wrap all user middleware
     router
       ..use('/', _headers)
       ..use('/', _reportException)
-      ..get('/', _health)
-      ..get('/livez', _livez)
-      ..get('/readyz', _readyz)
-      ..get('/startupz', _startupz)
+      // Legacy `GET /` health endpoint - API/insights only; would collide
+      // with user homepage routes on the web server, so it's wired here
+      // rather than from [HealthRoutes.injectIn].
+      ..get('/', healthRoutes.legacyHealth);
+    healthRoutes.injectIn(router);
+    router
       ..get(
         '/websocket',
         _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket),
@@ -165,6 +177,7 @@ class Server implements RouterInjectable {
     required AuthenticationHandler authenticationHandler,
   }) async {
     _authenticationHandler = authenticationHandler;
+
     try {
       final server = await _app.serve(
         address: io.InternetAddress.anyIPv6,
@@ -252,86 +265,6 @@ class Server implements RouterInjectable {
         return Response.internalServerError();
       }
     };
-  }
-
-  Future<Result> _health(Request _) async {
-    final metrics = (await performHealthChecks(serverpod)).metrics;
-    final issues = metrics.where((m) => !m.isHealthy);
-    final ok = issues.isEmpty;
-    final now = DateTime.timestamp();
-    if (ok) return Response.ok(body: Body.fromString('OK $now'));
-    return Response(
-      503,
-      body: Body.fromDataStream(() async* {
-        yield utf8.encode('SADNESS $now\r\n');
-        for (final metric in issues) {
-          yield utf8.encode('${metric.name}: ${metric.value}\r\n');
-        }
-      }()),
-    );
-  }
-
-  /// Liveness probe - always returns healthy if server can respond.
-  Future<Result> _livez(Request request) async {
-    final response = await serverpod.healthCheckService.checkLiveness();
-    return _healthResponse(request, response);
-  }
-
-  /// Readiness probe - checks all readiness indicators.
-  Future<Result> _readyz(Request request) async {
-    final response = await serverpod.healthCheckService.checkReadiness();
-    return _healthResponse(request, response);
-  }
-
-  /// Startup probe - checks if startup is complete.
-  Future<Result> _startupz(Request request) async {
-    final response = await serverpod.healthCheckService.checkStartup();
-    return _healthResponse(request, response);
-  }
-
-  /// Builds the appropriate response based on authentication status.
-  Future<Result> _healthResponse(
-    Request request,
-    HealthResponse response,
-  ) async {
-    final isAuthenticated = await _isAuthenticatedHealthRequest(request);
-
-    if (isAuthenticated) {
-      return Response(
-        response.httpStatusCode,
-        body: Body.fromString(
-          jsonEncode(response.toJson()),
-          mimeType: MimeType.json,
-        ),
-      );
-    } else {
-      // Unauthenticated: status code only, no body
-      return Response(response.httpStatusCode);
-    }
-  }
-
-  /// Checks if the request has valid authentication for detailed health info.
-  Future<bool> _isAuthenticatedHealthRequest(Request request) async {
-    final authHeader = request.getAuthorizationHeaderValue(
-      serverpod.config.validateHeaders,
-    );
-    if (authHeader == null) return false;
-
-    final authKey = unwrapAuthHeaderValue(authHeader);
-    if (authKey == null) return false;
-
-    final handler = serverpod.authenticationHandler;
-    if (handler == null) return false;
-
-    try {
-      final authInfo = await handler(
-        serverpod.internalSession,
-        authKey,
-      );
-      return authInfo != null;
-    } catch (e) {
-      return false;
-    }
   }
 
   Handler _headers(Handler next) {
@@ -570,12 +503,11 @@ class Server implements RouterInjectable {
     Request? request,
     OperationType? operationType,
   }) async {
-    var now = DateTime.now().toUtc();
-    if (message != null) {
-      io.stderr.writeln('$now ERROR: $message');
-    }
-    io.stderr.writeln('$now ERROR: $e');
-    io.stderr.writeln('$stackTrace');
+    log.error(
+      message ?? 'Unhandled exception',
+      error: e,
+      stackTrace: stackTrace,
+    );
 
     var context = request != null
         ? contextFromRequest(this, request, operationType)

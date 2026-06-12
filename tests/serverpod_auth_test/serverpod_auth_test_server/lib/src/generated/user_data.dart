@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -114,6 +114,7 @@ abstract class UserData
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
@@ -123,7 +124,8 @@ abstract class UserData
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(UserData.t),
       include: include,
     );
@@ -276,6 +278,7 @@ class UserDataIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -318,11 +321,12 @@ class UserDataRepository {
   /// );
   /// ```
   Future<List<UserData>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserDataTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -334,7 +338,8 @@ class UserDataRepository {
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -362,10 +367,11 @@ class UserDataRepository {
   /// );
   /// ```
   Future<UserData?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
@@ -377,7 +383,8 @@ class UserDataRepository {
       where: where?.call(UserData.t),
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -388,7 +395,7 @@ class UserDataRepository {
 
   /// Finds a single [UserData] by its [id] or null if no such row exists.
   Future<UserData?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     UserDataInclude? include,
@@ -410,14 +417,20 @@ class UserDataRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<UserData>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserData> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<UserData>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -425,12 +438,75 @@ class UserDataRepository {
   ///
   /// The returned [UserData] will have its `id` field set.
   Future<UserData> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [UserData]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [UserData]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<UserData>> upsert(
+    _i1.DatabaseSession session,
+    List<UserData> rows, {
+    required _i1.ColumnSelections<UserDataTable> conflictColumns,
+    _i1.ColumnSelections<UserDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<UserData>(
+      rows,
+      conflictColumns: conflictColumns(UserData.t),
+      updateColumns: updateColumns?.call(UserData.t),
+      updateWhere: updateWhere?.call(UserData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [UserData] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [UserData] will have its `id` field set.
+  Future<UserData?> upsertRow(
+    _i1.DatabaseSession session,
+    UserData row, {
+    required _i1.ColumnSelections<UserDataTable> conflictColumns,
+    _i1.ColumnSelections<UserDataTable>? updateColumns,
+    _i1.WhereExpressionBuilder<UserDataTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<UserData>(
+      row,
+      conflictColumns: conflictColumns(UserData.t),
+      updateColumns: updateColumns?.call(UserData.t),
+      updateWhere: updateWhere?.call(UserData.t),
       transaction: transaction,
     );
   }
@@ -441,7 +517,7 @@ class UserDataRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<UserData>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserData> rows, {
     _i1.ColumnSelections<UserDataTable>? columns,
     _i1.Transaction? transaction,
@@ -457,7 +533,7 @@ class UserDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserData> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserData row, {
     _i1.ColumnSelections<UserDataTable>? columns,
     _i1.Transaction? transaction,
@@ -472,7 +548,7 @@ class UserDataRepository {
   /// Updates a single [UserData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserData?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -487,13 +563,14 @@ class UserDataRepository {
   /// Updates all [UserData]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserData>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<UserDataTable> where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserDataTable>? orderBy,
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -504,28 +581,41 @@ class UserDataRepository {
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [UserData]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserData>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserData> rows, {
+    _i1.OrderByBuilder<UserDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserData>(
       rows,
+      orderBy: orderBy?.call(UserData.t),
+      orderByList: orderByList?.call(UserData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [UserData].
   Future<UserData> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserData row, {
     _i1.Transaction? transaction,
   }) async {
@@ -536,13 +626,24 @@ class UserDataRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<UserData>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserDataTable> where,
+    _i1.OrderByBuilder<UserDataTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<UserData>(
       where: where(UserData.t),
+      orderBy: orderBy?.call(UserData.t),
+      orderByList: orderByList?.call(UserData.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -550,7 +651,7 @@ class UserDataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -564,7 +665,7 @@ class UserDataRepository {
 
   /// Acquires row-level locks on [UserData] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserDataTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -585,7 +686,7 @@ class UserDataAttachRowRepository {
   /// Creates a relation between the given [UserData] and [AuthUser]
   /// by setting the [UserData]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserData userData,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

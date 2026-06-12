@@ -29,6 +29,10 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

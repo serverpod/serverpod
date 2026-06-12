@@ -7,6 +7,7 @@ import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../core.dart';
 import 'apple_idp.dart';
+import 'apple_idp_config.dart';
 
 /// Details of the Apple account.
 typedef AppleAccountDetails = ({
@@ -36,12 +37,16 @@ typedef AppleAuthSuccess = ({
 /// But for most cases, the methods exposed by [AppleIdp] and [AppleIdpAdmin] should
 /// be sufficient.
 class AppleIdpUtils {
+  /// Configuration for the Apple identity provider.
+  final AppleIdpConfig? config;
+
   final TokenManager _tokenManager;
   final SignInWithApple _signInWithApple;
   final AuthUsers _authUsers;
 
   /// Creates a new instance of [AppleIdpUtils].
   AppleIdpUtils({
+    this.config,
     required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
@@ -118,6 +123,13 @@ class AppleIdpUtils {
           firstName: firstName,
           lastName: lastName,
         ),
+        transaction: transaction,
+      );
+
+      await config?.onAfterAppleAccountCreated?.call(
+        session,
+        authUser,
+        appleAccount,
         transaction: transaction,
       );
     }

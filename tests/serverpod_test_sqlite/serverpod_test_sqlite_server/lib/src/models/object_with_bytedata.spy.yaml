@@ -1,0 +1,4 @@
+class: ObjectWithByteData
+table: object_with_bytedata
+fields:
+  byteData: ByteData

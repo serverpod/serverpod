@@ -1,0 +1,18 @@
+class: SharedContainer
+fields:
+  sharedModel: SharedModel
+  sharedModelWithModuleAlias: serverpod_test_shared:SharedModel
+  sharedSubclass: SharedSubclass
+  sharedSubclassNullable: SharedSubclass?
+  sharedEnum: SharedEnum
+  sharedEnumNullable: SharedEnum?
+  sharedSealedParent: SharedSealedParent
+  sharedSealedParentNullable: SharedSealedParent?
+  sharedSealedChild: SharedSealedChild
+  sharedSealedChildNullable: SharedSealedChild?
+  sharedSealedAppException: SharedSealedAppException
+  sharedSealedAppExceptionNullable: SharedSealedAppException?
+  sharedNotFoundException: SharedNotFoundException
+  sharedNotFoundExceptionNullable: SharedNotFoundException?
+  sharedExtendedAppException: SharedExtendedAppException
+  sharedExtendedAppExceptionNullable: SharedExtendedAppException?

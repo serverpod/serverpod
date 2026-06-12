@@ -7,6 +7,14 @@ import 'package:yaml/yaml.dart';
 /// The configuration sections for the serverpod configuration file.
 typedef Convert<T> = T Function(String value);
 
+/// Parser for the database configuration.
+typedef DatabaseConfigParser =
+    DatabaseConfig Function(
+      Map<dynamic, dynamic> dbSetup,
+      Map<dynamic, dynamic> passwords,
+      String name,
+    );
+
 const int _defaultMaxRequestSize = 524288;
 
 const String _developmentRunMode = 'development';
@@ -63,7 +71,7 @@ class ServerpodConfig {
   final SessionLogConfig sessionLogs;
 
   /// Health check interval.
-  /// Default is 1 minute.
+  /// Default is 1 minute. Set to zero to disable health checks.
   final Duration healthCheckInterval;
 
   /// The timeout for the diagnostic event handlers.
@@ -118,16 +126,12 @@ class ServerpodConfig {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
-    sessionLogs?._validate(
-      databaseEnabled: database != null,
-    );
+    sessionLogs?._validate(databaseEnabled: database != null);
   }
 
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
-    return ServerpodConfig(
-      apiServer: _createDefaultApiServer(),
-    );
+    return ServerpodConfig(apiServer: _createDefaultApiServer());
   }
 
   /// Creates a new [ServerpodConfig] from a configuration Map.
@@ -163,10 +167,7 @@ class ServerpodConfig {
     var apiConfig = _apiConfigMap(configMap, environment);
 
     var apiServer = apiConfig != null
-        ? ServerConfig._fromJson(
-            apiConfig,
-            ServerpodConfigMap.apiServer,
-          )
+        ? ServerConfig._fromJson(apiConfig, ServerpodConfigMap.apiServer)
         : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
@@ -179,10 +180,7 @@ class ServerpodConfig {
 
     var webConfig = _webConfigMap(configMap, environment);
     var webServer = webConfig != null
-        ? ServerConfig._fromJson(
-            webConfig,
-            ServerpodConfigMap.webServer,
-          )
+        ? ServerConfig._fromJson(webConfig, ServerpodConfigMap.webServer)
         : null;
 
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
@@ -239,10 +237,7 @@ class ServerpodConfig {
       environment,
     );
 
-    var validateHeaders = _readValidateHeaders(
-      configMap,
-      environment,
-    );
+    var validateHeaders = _readValidateHeaders(configMap, environment);
 
     var websocketPingInterval = _readWebsocketPingInterval(
       configMap,
@@ -273,16 +268,21 @@ class ServerpodConfig {
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
+  ///
+  /// [serverDir] is the directory the `config/` folder lives under.
   factory ServerpodConfig.load(
     String runMode,
     String? serverId,
     Map<String, String> passwords, {
     Map<String, dynamic>? commandLineArgs,
+    String? serverDir,
   }) {
     dynamic doc = {};
 
-    if (isConfigAvailable(runMode)) {
-      String data = File(_createConfigPath(runMode)).readAsStringSync();
+    if (isConfigAvailable(runMode, serverDir: serverDir)) {
+      String data = File(
+        _createConfigPath(runMode, serverDir: serverDir),
+      ).readAsStringSync();
       doc = loadYaml(data);
     }
 
@@ -350,12 +350,28 @@ class ServerpodConfig {
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
-  static bool isConfigAvailable(String runMode) {
-    return File(_createConfigPath(runMode)).existsSync();
+  static bool isConfigAvailable(String runMode, {String? serverDir}) {
+    return File(
+      _createConfigPath(runMode, serverDir: serverDir),
+    ).existsSync();
   }
 
-  static String _createConfigPath(String runMode) {
-    return path.joinAll(['config', '$runMode.yaml']);
+  static String _createConfigPath(String runMode, {String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      '$runMode.yaml',
+    ]);
+  }
+
+  /// Returns the path to `config/passwords.yaml` under [serverDir]
+  /// (or cwd-relative when [serverDir] is null).
+  static String passwordsConfigPath({String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      'passwords.yaml',
+    ]);
   }
 
   @override
@@ -436,6 +452,9 @@ class ServerConfig {
 enum DatabaseDialect {
   /// PostgreSQL database.
   postgres,
+
+  /// SQLite database.
+  sqlite,
 }
 
 /// Configuration for a database.
@@ -488,7 +507,7 @@ abstract class DatabaseConfig {
     required this.requireSsl,
     required this.isUnixSocket,
     required this.searchPaths,
-    required this.maxConnectionCount,
+    this.maxConnectionCount = defaultMaxConnectionCount,
     required this.dialect,
   });
 
@@ -504,6 +523,7 @@ abstract class DatabaseConfig {
     List<String>? searchPaths,
     int? maxConnectionCount = defaultMaxConnectionCount,
     DatabaseDialect dialect = DatabaseDialect.postgres,
+    String? dataPath,
   }) => switch (dialect) {
     DatabaseDialect.postgres => PostgresDatabaseConfig(
       host: host,
@@ -515,15 +535,42 @@ abstract class DatabaseConfig {
       isUnixSocket: isUnixSocket,
       searchPaths: searchPaths,
       maxConnectionCount: maxConnectionCount,
+      dataPath: dataPath,
+    ),
+    DatabaseDialect.sqlite => SqliteDatabaseConfig(
+      filePath: host,
+      maxConnectionCount: maxConnectionCount,
     ),
   };
+
+  static DatabaseConfigParser _getParser(DatabaseDialect dialect) =>
+      switch (dialect) {
+        DatabaseDialect.postgres => PostgresDatabaseConfig._fromJson,
+        DatabaseDialect.sqlite => SqliteDatabaseConfig._fromJson,
+      };
 
   /// Parses the database configuration from the given JSON map.
   ///
   /// This method will try to parse the database configuration for all available
-  /// database dialects.
+  /// database dialects. If parsing for all dialects fails, throws the first
+  /// error (PostgreSQL by default). If the [dialect] parameter is set, only
+  /// that dialect will be tried.
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
-    return PostgresDatabaseConfig._fromJson(dbSetup, passwords, name);
+    var dialect = dbSetup[ServerpodEnv.databaseDialect.configKey];
+    if (dialect != null && dialect is String && dialect.trim().isNotEmpty) {
+      final parser = _getParser(DatabaseDialect.values.byName(dialect));
+      return parser(dbSetup, passwords, name);
+    }
+
+    Object? error;
+    for (var parser in DatabaseDialect.values.map(_getParser)) {
+      try {
+        return parser(dbSetup, passwords, name);
+      } catch (e) {
+        error ??= e;
+      }
+    }
+    throw error!;
   }
 
   @override
@@ -540,13 +587,23 @@ abstract class DatabaseConfig {
       str += 'database search path overrides: $searchPaths\n';
     }
     str += 'database max connection count: $maxConnectionCount\n';
-    str += 'database dialect: $dialect\n';
+    str += 'database dialect: ${dialect.name}\n';
     return str;
   }
 }
 
 /// PostgreSQL-specific database configuration.
 class PostgresDatabaseConfig extends DatabaseConfig {
+  /// PGDATA directory for embedded PostgreSQL (`serverpod_embedded_postgres`).
+  ///
+  /// When non-null and non-empty after trimming, [PostgresPoolManager] boots a
+  /// managed postmaster in this directory before opening connections.
+  ///
+  /// Relative paths are resolved from [Directory.current] when the pool starts
+  /// (typically the server package root). The CLI resolves relative paths
+  /// against the server directory before connecting.
+  final String? dataPath;
+
   /// Creates a new [PostgresDatabaseConfig].
   PostgresDatabaseConfig({
     required super.host,
@@ -558,6 +615,7 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     super.isUnixSocket = false,
     super.searchPaths,
     super.maxConnectionCount,
+    this.dataPath,
   }) : super._(dialect: DatabaseDialect.postgres);
 
   factory PostgresDatabaseConfig._fromJson(
@@ -593,6 +651,16 @@ class PostgresDatabaseConfig extends DatabaseConfig {
       maxConnectionCount = null;
     }
 
+    final rawDataPath = dbSetup[ServerpodEnv.databaseDataPath.configKey];
+    String? dataPath;
+    if (rawDataPath is String && rawDataPath.trim().isNotEmpty) {
+      dataPath = path.normalize(rawDataPath.trim());
+    } else if (rawDataPath != null && rawDataPath is! String) {
+      throw ArgumentError(
+        'Invalid database dataPath: $rawDataPath (expected a string).',
+      );
+    }
+
     return PostgresDatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
       port: dbSetup[ServerpodEnv.databasePort.configKey],
@@ -606,7 +674,66 @@ class PostgresDatabaseConfig extends DatabaseConfig {
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
       maxConnectionCount: maxConnectionCount,
+      dataPath: dataPath,
     );
+  }
+
+  @override
+  String toString() {
+    var str = super.toString();
+    if (dataPath != null) str += 'database data path: $dataPath\n';
+    return str;
+  }
+}
+
+/// SQLite-specific database configuration.
+class SqliteDatabaseConfig extends DatabaseConfig {
+  /// Creates a new [SqliteDatabaseConfig].
+  SqliteDatabaseConfig({required String filePath, super.maxConnectionCount})
+    : super._(
+        host: filePath,
+        port: 0,
+        user: '',
+        password: '',
+        name: '',
+        requireSsl: false,
+        isUnixSocket: false,
+        searchPaths: null,
+        dialect: DatabaseDialect.sqlite,
+      );
+
+  /// The file path to the SQLite database.
+  String get filePath => host;
+
+  factory SqliteDatabaseConfig._fromJson(
+    Map dbSetup,
+    Map passwords,
+    String name,
+  ) {
+    final path = dbSetup[ServerpodEnv.databaseFilePath.configKey];
+    if (path == null || path is! String || path.trim().isEmpty) {
+      throw ArgumentError('Invalid SQLite database configuration: $dbSetup');
+    }
+
+    int? maxConnectionCount =
+        dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey] ??
+        DatabaseConfig.defaultMaxConnectionCount;
+
+    return SqliteDatabaseConfig(
+      filePath: path,
+      maxConnectionCount: maxConnectionCount != null && maxConnectionCount > 0
+          ? maxConnectionCount
+          : null,
+    );
+  }
+
+  @override
+  String toString() {
+    var str = '';
+    str += 'database file path: $filePath\n';
+    str += 'database max connection count: $maxConnectionCount\n';
+    str += 'database dialect: ${dialect.name}\n';
+    return str;
   }
 }
 
@@ -652,9 +779,7 @@ class RedisConfig {
 
     var password = passwords[ServerpodPassword.redisPassword.configKey];
     if (password == null) {
-      throw PasswordMissingException(
-        ServerpodPassword.redisPassword.configKey,
-      );
+      throw PasswordMissingException(ServerpodPassword.redisPassword.configKey);
     }
 
     return RedisConfig(
@@ -695,12 +820,23 @@ class FutureCallConfig {
   /// How long to wait before checking the queue again.
   final Duration scanInterval;
 
+  /// If true, the server will check for broken future calls on startup.
+  /// If null, the server will check for broken future calls if there are
+  /// less than 1000 future calls in the database. This is the default behavior.
+  /// If false, the server will not check for broken future calls.
+  final bool? checkBrokenCalls;
+
+  /// If true, the server will delete broken future calls on startup.
+  final bool deleteBrokenCalls;
+
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval = const Duration(
       milliseconds: defaultFutureCallScanIntervalMs,
     ),
+    this.checkBrokenCalls,
+    this.deleteBrokenCalls = false,
   });
 
   /// The default concurrency limit for future calls.
@@ -729,6 +865,14 @@ class FutureCallConfig {
       concurrencyLimit = null;
     }
 
+    final checkBrokenCalls =
+        futureCallConfigJson[ServerpodEnv.futureCallCheckBrokenCalls.configKey];
+
+    final deleteBrokenCalls =
+        futureCallConfigJson[ServerpodEnv
+            .futureCallDeleteBrokenCalls
+            .configKey];
+
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
       concurrencyLimit: hasConcurrencyLimitKey
@@ -737,6 +881,8 @@ class FutureCallConfig {
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
+      checkBrokenCalls: checkBrokenCalls,
+      deleteBrokenCalls: deleteBrokenCalls ?? false,
     );
   }
 
@@ -747,6 +893,8 @@ class FutureCallConfig {
     output.writeln(
       'future call scan interval: ${scanInterval.inMilliseconds}ms',
     );
+    output.writeln('check broken future calls: $checkBrokenCalls');
+    output.writeln('delete broken future calls: $deleteBrokenCalls');
     return output.toString();
   }
 }
@@ -757,7 +905,8 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text;
+  text
+  ;
 
   /// Returns a list of all enum names.
   static final List<String> allEnumNames = ConsoleLogFormat.values
@@ -826,6 +975,23 @@ class SessionLogConfig {
     );
   }
 
+  /// Returns a copy of this [SessionLogConfig] with the given properties updated.
+  SessionLogConfig copyWith({
+    bool? persistentEnabled,
+    bool? consoleEnabled,
+    Duration? cleanupInterval,
+    Duration? retentionPeriod,
+    int? retentionCount,
+    ConsoleLogFormat? consoleLogFormat,
+  }) => SessionLogConfig(
+    persistentEnabled: persistentEnabled ?? this.persistentEnabled,
+    consoleEnabled: consoleEnabled ?? this.consoleEnabled,
+    cleanupInterval: cleanupInterval ?? this.cleanupInterval,
+    retentionPeriod: retentionPeriod ?? this.retentionPeriod,
+    retentionCount: retentionCount ?? this.retentionCount,
+    consoleLogFormat: consoleLogFormat ?? this.consoleLogFormat,
+  );
+
   factory SessionLogConfig._fromJson(
     Map sessionLogConfigJson,
     String name, {
@@ -871,9 +1037,7 @@ class SessionLogConfig {
     );
   }
 
-  void _validate({
-    required bool databaseEnabled,
-  }) {
+  void _validate({required bool databaseEnabled}) {
     if (persistentEnabled && !databaseEnabled) {
       throw StateError(
         'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
@@ -940,7 +1104,29 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
     (ServerpodEnv.databaseSearchPaths, null),
     (ServerpodEnv.databaseMaxConnectionCount, int.parse),
+    (ServerpodEnv.databaseDataPath, null),
   ]);
+}
+
+/// Infer the database dialect from one run-mode config map (the body of
+/// `config/<runMode>.yaml`), using the same `database` merging rules as
+/// [ServerpodConfig.loadFromMap].
+///
+/// Returns `null` when there is no database section or it is empty after
+/// merging environment variables. Uses a placeholder password so PostgreSQL
+/// configs can be parsed without a `passwords.yaml` file (for example in the
+/// CLI).
+DatabaseDialect? inferDatabaseDialectFromConfigMap(
+  Map<dynamic, dynamic> configMap, {
+  Map<String, String> environment = const {},
+}) {
+  final dbSetup = _databaseConfigMap(configMap, environment);
+  if (dbSetup == null) return null;
+  return DatabaseConfig._fromJson(
+    dbSetup,
+    {ServerpodPassword.databasePassword.configKey: '__placeholder__'},
+    ServerpodConfigMap.database,
+  ).dialect;
 }
 
 Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
@@ -997,6 +1183,8 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   return _buildConfigMap(futureCallConfig, environment, [
     (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
     (ServerpodEnv.futureCallScanInterval, int.parse),
+    (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
+    (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
   ]);
 }
 

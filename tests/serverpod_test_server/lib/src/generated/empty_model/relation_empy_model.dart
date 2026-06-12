@@ -8,7 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -87,6 +87,7 @@ abstract class RelationEmptyModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     RelationEmptyModelInclude? include,
@@ -96,7 +97,8 @@ abstract class RelationEmptyModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(RelationEmptyModel.t),
       include: include,
     );
@@ -223,6 +225,7 @@ class RelationEmptyModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -271,11 +274,12 @@ class RelationEmptyModelRepository {
   /// );
   /// ```
   Future<List<RelationEmptyModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -287,7 +291,8 @@ class RelationEmptyModelRepository {
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -315,10 +320,11 @@ class RelationEmptyModelRepository {
   /// );
   /// ```
   Future<RelationEmptyModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
@@ -330,7 +336,8 @@ class RelationEmptyModelRepository {
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -341,7 +348,7 @@ class RelationEmptyModelRepository {
 
   /// Finds a single [RelationEmptyModel] by its [id] or null if no such row exists.
   Future<RelationEmptyModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
@@ -363,14 +370,20 @@ class RelationEmptyModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<RelationEmptyModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<RelationEmptyModel>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -378,12 +391,75 @@ class RelationEmptyModelRepository {
   ///
   /// The returned [RelationEmptyModel] will have its `id` field set.
   Future<RelationEmptyModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<RelationEmptyModel>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [RelationEmptyModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [RelationEmptyModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<RelationEmptyModel>> upsert(
+    _i1.DatabaseSession session,
+    List<RelationEmptyModel> rows, {
+    required _i1.ColumnSelections<RelationEmptyModelTable> conflictColumns,
+    _i1.ColumnSelections<RelationEmptyModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<RelationEmptyModel>(
+      rows,
+      conflictColumns: conflictColumns(RelationEmptyModel.t),
+      updateColumns: updateColumns?.call(RelationEmptyModel.t),
+      updateWhere: updateWhere?.call(RelationEmptyModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [RelationEmptyModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [RelationEmptyModel] will have its `id` field set.
+  Future<RelationEmptyModel?> upsertRow(
+    _i1.DatabaseSession session,
+    RelationEmptyModel row, {
+    required _i1.ColumnSelections<RelationEmptyModelTable> conflictColumns,
+    _i1.ColumnSelections<RelationEmptyModelTable>? updateColumns,
+    _i1.WhereExpressionBuilder<RelationEmptyModelTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<RelationEmptyModel>(
+      row,
+      conflictColumns: conflictColumns(RelationEmptyModel.t),
+      updateColumns: updateColumns?.call(RelationEmptyModel.t),
+      updateWhere: updateWhere?.call(RelationEmptyModel.t),
       transaction: transaction,
     );
   }
@@ -394,7 +470,7 @@ class RelationEmptyModelRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<RelationEmptyModel>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelationEmptyModel> rows, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
@@ -410,7 +486,7 @@ class RelationEmptyModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RelationEmptyModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelationEmptyModel row, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
@@ -425,7 +501,7 @@ class RelationEmptyModelRepository {
   /// Updates a single [RelationEmptyModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RelationEmptyModel?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
     columnValues,
@@ -441,7 +517,7 @@ class RelationEmptyModelRepository {
   /// Updates all [RelationEmptyModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RelationEmptyModel>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
@@ -449,6 +525,7 @@ class RelationEmptyModelRepository {
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -459,28 +536,41 @@ class RelationEmptyModelRepository {
       offset: offset,
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [RelationEmptyModel]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RelationEmptyModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RelationEmptyModel> rows, {
+    _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RelationEmptyModel>(
       rows,
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [RelationEmptyModel].
   Future<RelationEmptyModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -491,13 +581,24 @@ class RelationEmptyModelRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<RelationEmptyModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
+    _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<RelationEmptyModel>(
       where: where(RelationEmptyModel.t),
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -505,7 +606,7 @@ class RelationEmptyModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -519,7 +620,7 @@ class RelationEmptyModelRepository {
 
   /// Acquires row-level locks on [RelationEmptyModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -540,7 +641,7 @@ class RelationEmptyModelAttachRepository {
   /// Creates a relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]s
   /// by setting each [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to refer to this [RelationEmptyModel].
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelationEmptyModel relationEmptyModel,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -580,7 +681,7 @@ class RelationEmptyModelAttachRowRepository {
   /// Creates a relation between this [RelationEmptyModel] and the given [EmptyModelRelationItem]
   /// by setting the [EmptyModelRelationItem]'s foreign key `_relationEmptyModelItemsRelationEmptyModelId` to refer to this [RelationEmptyModel].
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RelationEmptyModel relationEmptyModel,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -618,7 +719,7 @@ class RelationEmptyModelDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {
@@ -656,7 +757,7 @@ class RelationEmptyModelDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {

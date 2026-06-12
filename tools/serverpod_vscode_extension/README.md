@@ -16,6 +16,6 @@ Real-time diagnostics show errors in model files as you type.
 
 You need the Serverpod (^1.2.0) CLI installed in your path for this extension to work. Run the following command in your terminal to install it:
 
-`dart pub global activate serverpod_cli`
+`dart install serverpod_cli`
 
 Note: The Serverpod CLI requires both [Dart and Flutter](https://docs.flutter.dev/get-started/install) to be installed.

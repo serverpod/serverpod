@@ -13,4 +13,4 @@ env PGPASSWORD="password" psql -h postgres -U postgres -d serverpod_test -f /app
 # We are all set to start the server
 echo "### Starting test server"
 pwd
-dart bin/main.dart -m production --apply-migrations
+dart run bin/main.dart -m production --apply-migrations

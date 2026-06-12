@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier_config.dart';
 import '../../../utils/get_passwords_extension.dart';
 import 'google_idp.dart';
 import 'google_idp_utils.dart';
@@ -23,6 +25,17 @@ typedef GetExtraGoogleInfoCallback =
       Session session, {
       required GoogleAccountDetails accountDetails,
       required String accessToken,
+      required Transaction? transaction,
+    });
+
+/// Callback to be invoked after a new Google account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterGoogleAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      GoogleAccount googleAccount, {
       required Transaction? transaction,
     });
 
@@ -54,11 +67,23 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// information from Google APIs.
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
+  /// Callback to be invoked after a new Google account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Google
+  /// account has been created and linked.
+  final AfterGoogleAccountCreatedFunction? onAfterGoogleAccountCreated;
+
+  /// Tolerance for clock skew when validating Google ID token timestamps.
+  final Duration clockSkewTolerance;
+
   /// Creates a new instance of [GoogleIdpConfig].
   const GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,
+    this.onAfterGoogleAccountCreated,
+    this.clockSkewTolerance = defaultIdTokenClockSkewTolerance,
   });
 
   /// Default validation function for extracted Google account details.
@@ -70,6 +95,33 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
         accountDetails.verifiedEmail != true) {
       throw GoogleUserInfoMissingDataException();
     }
+  }
+
+  /// Parses Google's OAuth2 token response.
+  ///
+  /// Google returns a JSON object containing `access_token` and `id_token`
+  /// fields when the `openid` scope is requested. The `id_token` is preserved
+  /// in [OAuth2PkceTokenResponse.raw] for subsequent JWKS verification.
+  static OAuth2PkceTokenResponse parseTokenResponse(
+    final Map<String, dynamic> responseBody,
+  ) {
+    final error = responseBody['error'] as String?;
+    if (error != null) {
+      final description = responseBody['error_description'] as String?;
+      throw OAuth2InvalidResponseException(
+        'Google OAuth error: $error'
+        '${description != null ? ' - $description' : ''}',
+      );
+    }
+
+    final accessToken = responseBody['access_token'] as String?;
+    if (accessToken == null) {
+      throw const OAuth2MissingAccessTokenException(
+        'Missing access_token in Google token response',
+      );
+    }
+
+    return OAuth2PkceTokenResponse(accessToken: accessToken, raw: responseBody);
   }
 
   @override
@@ -85,6 +137,18 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
       userProfiles: userProfiles,
     );
   }
+
+  /// OAuth2 PKCE server configuration for the web sign-in flow.
+  ///
+  /// Used by [GoogleIdpUtils.exchangeCodeForToken] to exchange an authorization
+  /// code received from the browser for Google access and ID tokens.
+  OAuth2PkceServerConfig get oauth2PkceServerConfig => OAuth2PkceServerConfig(
+    tokenEndpointUrl: Uri.https('oauth2.googleapis.com', '/token'),
+    clientId: clientSecret.clientId,
+    clientSecret: clientSecret.clientSecret,
+    credentialsLocation: OAuth2CredentialsLocation.body,
+    parseTokenResponse: parseTokenResponse,
+  );
 }
 
 /// Creates a new [GoogleIdpConfig] from keys on the `passwords.yaml` file.
@@ -95,6 +159,8 @@ class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
   GoogleIdpConfigFromPasswords({
     super.googleAccountDetailsValidation,
     super.getExtraGoogleInfoCallback,
+    super.onAfterGoogleAccountCreated,
+    super.clockSkewTolerance,
   }) : super(
          clientSecret: GoogleClientSecret.fromJsonString(
            Serverpod.instance.getPasswordOrThrow('googleClientSecret'),

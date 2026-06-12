@@ -54,7 +54,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          "'550e8400-e29b-41d4-a716-446655440000'",
         );
       });
     });
@@ -157,7 +157,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          "'550e8400-e29b-41d4-a716-446655440000'",
         );
       });
 
@@ -276,7 +276,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          'gen_random_uuid()',
+          'random',
         );
       });
     });
@@ -327,7 +327,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          'gen_random_uuid_v7()',
+          'random_v7',
         );
       });
     });

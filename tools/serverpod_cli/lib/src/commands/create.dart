@@ -1,6 +1,11 @@
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
+import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -53,7 +58,8 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  );
+  )
+  ;
 
   static const _templateGroup = MutuallyExclusive(
     'Project Template',
@@ -117,18 +123,43 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
       if (!resourceManager.isTemplatesInstalled) {
         log.error(
-          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.',
+          'Could not download the required resources for Serverpod. '
+          'Make sure that you are connected to the internet and that '
+          'you are using the latest version of Serverpod.',
         );
         throw ExitException.error();
       }
     }
 
-    if (!await performCreate(
+    final context = TemplateContext(
+      template: template,
+      auth: true,
+      redis: true,
+      postgres: true,
+      web: true,
+      ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
+    );
+
+    final useTui = (interactive ?? true) && !ci.isCI;
+
+    if (useTui && !template.isMini) {
+      await performCreateWithTui(
+        name,
+        force,
+        state: CreateConfigState(template),
+        interactive: true,
+      );
+      return;
+    }
+
+    final projectPath = await performCreate(
       name,
-      template,
       force,
       interactive: interactive,
-    )) {
+      context: context,
+    );
+
+    if (projectPath == null) {
       throw ExitException.error();
     }
   }

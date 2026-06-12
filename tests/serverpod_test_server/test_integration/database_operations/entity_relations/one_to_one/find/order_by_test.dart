@@ -1,4 +1,3 @@
-import 'package:serverpod/database.dart' as db;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -89,9 +88,9 @@ void main() async {
     tearDown(() async {
       await Company.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
-      await Town.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -111,8 +110,8 @@ void main() async {
           session,
           // Order by company town name and then company name
           orderByList: (t) => [
-            db.Order(column: t.town.name),
-            db.Order(column: t.name),
+            t.town.name.asc(),
+            t.name.asc(),
           ],
         );
 
@@ -130,13 +129,13 @@ void main() async {
     tearDown(() async {
       await Citizen.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
       await Company.db.deleteWhere(
         session,
-        where: (_) => db.Constant.bool(true),
+        where: (_) => Constant.bool(true),
       );
-      await Town.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });
 
     test(
@@ -164,8 +163,8 @@ void main() async {
           session,
           // Order by citizen company town name and then citizen name
           orderByList: (t) => [
-            db.Order(column: t.company.town.name),
-            db.Order(column: t.name),
+            t.company.town.name.asc(),
+            t.name.asc(),
           ],
         );
 

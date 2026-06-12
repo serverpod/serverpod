@@ -1,0 +1,6 @@
+class: BoolDefaultMix
+table: bool_default_mix
+fields:
+  boolDefaultAndDefaultModel: bool, default=true, defaultModel=false
+  boolDefaultAndDefaultPersist: bool, default=true, defaultPersist=false
+  boolDefaultModelAndDefaultPersist: bool, defaultModel=true, defaultPersist=false

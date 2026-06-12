@@ -11,10 +11,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'legacy_authentication_fail_reason.dart' as _i2;
+import 'legacy_authentication_response.dart' as _i3;
+import 'legacy_user_info.dart' as _i4;
+import 'legacy_user_settings_config.dart' as _i5;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i2;
+    as _i6;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
+    as _i7;
+export 'legacy_authentication_fail_reason.dart';
+export 'legacy_authentication_response.dart';
+export 'legacy_user_info.dart';
+export 'legacy_user_settings_config.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -23,6 +31,15 @@ class Protocol extends _i1.SerializationManager {
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
+
+  final Set<_i1.SerializationManager> _hostProtocols = {};
+
+  void registerHostProtocol(
+    String projectName,
+    _i1.SerializationManager protocol,
+  ) {
+    _hostProtocols.add(protocol);
+  }
 
   static String? getClassNameFromObjectJson(dynamic data) {
     if (data is! Map) return null;
@@ -53,17 +70,55 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
+    if (t == _i2.LegacyAuthenticationFailReason) {
+      return _i2.LegacyAuthenticationFailReason.fromJson(data) as T;
+    }
+    if (t == _i3.LegacyAuthenticationResponse) {
+      return _i3.LegacyAuthenticationResponse.fromJson(data) as T;
+    }
+    if (t == _i4.LegacyUserInfo) {
+      return _i4.LegacyUserInfo.fromJson(data) as T;
+    }
+    if (t == _i5.LegacyUserSettingsConfig) {
+      return _i5.LegacyUserSettingsConfig.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.LegacyAuthenticationFailReason?>()) {
+      return (data != null
+              ? _i2.LegacyAuthenticationFailReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i3.LegacyAuthenticationResponse?>()) {
+      return (data != null
+              ? _i3.LegacyAuthenticationResponse.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i4.LegacyUserInfo?>()) {
+      return (data != null ? _i4.LegacyUserInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.LegacyUserSettingsConfig?>()) {
+      return (data != null ? _i5.LegacyUserSettingsConfig.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
+      return _i6.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i7.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _i2.LegacyAuthenticationFailReason => 'LegacyAuthenticationFailReason',
+      _i3.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
+      _i4.LegacyUserInfo => 'LegacyUserInfo',
+      _i5.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
       _ => null,
     };
   }
@@ -80,13 +135,15 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth_core.$className';
-    }
-    className = _i3.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth_idp.$className';
+    switch (data) {
+      case _i2.LegacyAuthenticationFailReason():
+        return 'LegacyAuthenticationFailReason';
+      case _i3.LegacyAuthenticationResponse():
+        return 'LegacyAuthenticationResponse';
+      case _i4.LegacyUserInfo():
+        return 'LegacyUserInfo';
+      case _i5.LegacyUserSettingsConfig():
+        return 'LegacyUserSettingsConfig';
     }
     return null;
   }
@@ -97,16 +154,82 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_core.')) {
-      data['className'] = dataClassName.substring(20);
-      return _i2.Protocol().deserializeByClassName(data);
+    if (dataClassName == 'LegacyAuthenticationFailReason') {
+      return deserialize<_i2.LegacyAuthenticationFailReason>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+    if (dataClassName == 'LegacyAuthenticationResponse') {
+      return deserialize<_i3.LegacyAuthenticationResponse>(data['data']);
+    }
+    if (dataClassName == 'LegacyUserInfo') {
+      return deserialize<_i4.LegacyUserInfo>(data['data']);
+    }
+    if (dataClassName == 'LegacyUserSettingsConfig') {
+      return deserialize<_i5.LegacyUserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
+
+  @override
+  Object? dynamicFieldToJson(
+    Object? object, {
+    bool forProtocol = false,
+  }) {
+    if ((object is List || object is Set || object is Map) ||
+        getClassNameForObject(object) != null) {
+      return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+    }
+    for (final protocol in _hostProtocols) {
+      final className = protocol.getClassNameForObject(object);
+      if (className == null) continue;
+      final host = protocol.getModuleName();
+      final wrapped = {
+        'className': className.contains('.') ? className : '$host.$className',
+        'data': object,
+      };
+      return forProtocol
+          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
+          : _i1.SerializationManager.toEncodable(wrapped);
+    }
+    return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+  }
+
+  @override
+  dynamic deserializeDynamicFieldValue(Object? value) {
+    if (value == null) return null;
+    if (value is! Map<String, dynamic> || value['className'] is! String) {
+      throw FormatException(
+        'Dynamic fields are encoded as a Map with className and data, but got '
+        '${value.runtimeType} instead.',
+      );
+    }
+    final className = value['className'] as String;
+    for (final protocol in _hostProtocols) {
+      final host = protocol.getModuleName();
+      final hostPrefix = '$host.';
+      if (className.startsWith(hostPrefix)) {
+        final strippedClassName = className.substring(hostPrefix.length);
+        if (strippedClassName.contains('.')) {
+          throw FormatException(
+            'Dynamic field className must not use multiple prefixes: $className',
+          );
+        }
+        final hostData = Map<String, dynamic>.from(value);
+        hostData['className'] = strippedClassName;
+        return protocol.deserializeByClassName(hostData);
+      }
+    }
+    if (className.contains('.')) {
+      for (final protocol in _hostProtocols) {
+        try {
+          return protocol.deserializeByClassName(value);
+        } on FormatException catch (_) {}
+      }
+    }
+    return deserializeByClassName(value);
+  }
+
+  @override
+  String getModuleName() => 'serverpod_auth_bridge';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
@@ -118,10 +241,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _i6.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _i7.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

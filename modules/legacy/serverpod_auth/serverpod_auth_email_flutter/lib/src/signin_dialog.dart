@@ -13,7 +13,8 @@ enum InitPage {
   signIn._(_Page.signIn),
 
   /// Use create account as the initial page.
-  createAccount._(_Page.createAccount);
+  createAccount._(_Page.createAccount),
+  ;
 
   const InitPage._(this._page);
 

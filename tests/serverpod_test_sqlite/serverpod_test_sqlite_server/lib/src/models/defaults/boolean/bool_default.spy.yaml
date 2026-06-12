@@ -1,0 +1,6 @@
+class: BoolDefault
+table: bool_default
+fields:
+  boolDefaultTrue: bool, default=true
+  boolDefaultFalse: bool, default=false
+  boolDefaultNullFalse: bool?, default=false

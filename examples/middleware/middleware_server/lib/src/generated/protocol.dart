@@ -15,7 +15,7 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'greeting.dart' as _i3;
 export 'greeting.dart';
 
-class Protocol extends _i1.SerializationManagerServer {
+class Protocol extends _i1.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
@@ -87,7 +87,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod.$className';
+      return className.contains('.') ? className : 'serverpod.$className';
     }
     return null;
   }

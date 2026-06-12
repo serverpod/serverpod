@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -21,6 +22,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL NOT NULL',
+          );
+        },
+      );
     });
 
     group('with 10.5 as default value', () {
@@ -38,6 +49,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"doubleDefault" double precision NOT NULL DEFAULT 10.5',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL NOT NULL DEFAULT (10.5)',
           );
         },
       );
@@ -61,6 +82,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL NOT NULL DEFAULT (20.5)',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -77,6 +108,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"doubleDefault" double precision',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL',
           );
         },
       );
@@ -100,6 +141,16 @@ void main() {
           );
         },
       );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL DEFAULT (10.5)',
+          );
+        },
+      );
     });
 
     group('with nullable column and 20.5 as default value', () {
@@ -117,6 +168,16 @@ void main() {
           expect(
             defaultColumn.toPgSqlFragment(),
             '"doubleDefault" double precision DEFAULT 20.5',
+          );
+        },
+      );
+
+      test(
+        'when converting to SQLite SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toSqlFragment(),
+            '"doubleDefault" REAL DEFAULT (20.5)',
           );
         },
       );

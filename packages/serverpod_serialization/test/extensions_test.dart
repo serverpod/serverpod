@@ -166,6 +166,20 @@ void main() {
   );
 
   test(
+    'Given a Uint8List, when deserialized to a UuidValue and then serialized back to a UuidValue, then it matches the original UuidValue',
+    () {
+      UuidValue uuidValue = const Uuid().v4obj();
+      Uint8List value = uuidValue.toBytes();
+      UuidValue uuidValue2 = UuidValueJsonExtension.fromJson(value);
+
+      expect(
+        uuidValue2,
+        uuidValue,
+      );
+    },
+  );
+
+  test(
     'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
     () {
       String value = 'hello world';

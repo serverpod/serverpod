@@ -15,9 +15,11 @@ class Copier {
 
   List<String> removePatterns;
 
-  List<String> ignoreFileNames;
+  Set<String> ignoreFileNames;
 
   bool processUncommentMarker;
+
+  final List<String> _writtenPaths = [];
 
   Copier({
     required this.srcDir,
@@ -25,12 +27,18 @@ class Copier {
     required this.replacements,
     required this.fileNameReplacements,
     this.removePatterns = const <String>[],
-    this.ignoreFileNames = const <String>[],
+    List<String> ignoreFileNames = const <String>[],
     this.processUncommentMarker = true,
-  });
+  }) : ignoreFileNames = ignoreFileNames.toSet()
+         // Automatically ignore files that might exist in the local clone of
+         // the Serverpod repository when using a local built CLI.
+         ..addAll(['pubspec.lock', 'pubspec_overrides.yaml']);
 
-  void copyFiles() {
+  /// Copies the template tree into [dstDir] and returns the absolute
+  /// paths of every file written.
+  List<String> copyFiles() {
     _copyDirectory(srcDir, '');
+    return _writtenPaths;
   }
 
   void _copyDirectory(Directory dir, String relativePath) {
@@ -53,6 +61,9 @@ class Copier {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
+    // Ignore melos project files.
+    if (fileName.startsWith('melos_') && fileName.endsWith('.iml')) return;
+
     var dstFileName = _replace(
       p.join(relativePath, fileName),
       fileNameReplacements,
@@ -71,6 +82,7 @@ class Copier {
     }
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
+    _writtenPaths.add(dstFile.path);
   }
 
   String _replace(String str, List<Replacement> replacements) {
@@ -116,10 +128,10 @@ class Copier {
 }
 
 class Replacement {
-  String slotName;
-  String replacement;
+  final String slotName;
+  final String replacement;
 
-  Replacement({
+  const Replacement({
     required this.slotName,
     required this.replacement,
   });

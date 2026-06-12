@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod/src/server/log_manager/log_manager.dart';
-import 'package:serverpod/src/server/log_manager/log_settings.dart';
-import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/log_manager/session_log_manager.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod_shared/log.dart' as shared show log, LogConvenience;
 
 import '../cache/caches.dart';
 
@@ -120,6 +118,11 @@ abstract class Session implements DatabaseSession {
   @override
   LogQueryFunction? get logQuery => _logManager?.logQuery;
 
+  @override
+  LogWarningFunction? get logWarning => (message) async {
+    log(message, level: LogLevel.warning);
+  };
+
   /// Endpoint that triggered this session.
   final String endpoint;
 
@@ -153,55 +156,18 @@ abstract class Session implements DatabaseSession {
     }
 
     if (enableLogging) {
-      var logWriter = _createLogWriter(
-        this,
-        server.serverpod.logSettingsManager,
-      );
       _logManager = SessionLogManager(
-        logWriter,
         session: this,
         settingsForSession: (Session session) => server
             .serverpod
             .logSettingsManager
             .getLogSettingsForSession(session),
-        disableLoggingSlowSessions: _isLongLived(this),
+        disableSlowSessionLogging: _isLongLived(this),
         serverId: server.serverId,
       );
     } else {
       _logManager = null;
     }
-  }
-
-  LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
-    var logSettings = settings.getLogSettingsForSession(session);
-
-    var logWriters = <LogWriter>[];
-
-    if (Features.enablePersistentLogging) {
-      logWriters.add(
-        DatabaseLogWriter(
-          logWriterSession: session.serverpod.internalSession,
-        ),
-      );
-    }
-
-    if (Features.enableConsoleLogging) {
-      var logFormat = session.serverpod.config.sessionLogs.consoleLogFormat;
-      var consoleLogger = switch (logFormat) {
-        ConsoleLogFormat.json => JsonStdOutLogWriter(session),
-        ConsoleLogFormat.text => TextStdOutLogWriter(session),
-      };
-      logWriters.add(consoleLogger);
-    }
-
-    if ((_isLongLived(session)) &&
-        logSettings.logStreamingSessionsContinuously) {
-      return MultipleLogWriter(logWriters);
-    }
-
-    return MultipleLogWriter(
-      logWriters.map((writer) => CachedLogWriter(writer)).toList(),
-    );
   }
 
   /// Returns the duration this session has been open.
@@ -213,13 +179,12 @@ abstract class Session implements DatabaseSession {
   /// database. After a session has been closed, you should not call any
   /// more methods on it. Optionally pass in an [error]/exception and
   /// [stackTrace] if the session ended with an error and it should be written
-  /// to the logs. Returns the session id, if the session has been logged to the
-  /// database.
-  Future<int?> close({
+  /// to the logs.
+  Future<void> close({
     dynamic error,
     StackTrace? stackTrace,
   }) async {
-    if (_closed) return null;
+    if (_closed) return;
     _closed = true;
 
     var willCloseListeners = _willCloseListeners.toList();
@@ -238,39 +203,48 @@ abstract class Session implements DatabaseSession {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      return await _logManager?.finalizeLog(
+      await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
         stackTrace: stackTrace,
         authenticatedUserId: _authenticated?.userIdentifier,
       );
     } catch (e, stackTrace) {
-      stderr.writeln('Failed to close session: $e');
-      stderr.writeln('$stackTrace');
+      shared.log.error(
+        'Failed to close session',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
-    return null;
   }
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
+  ///
+  /// [metadata] is forwarded to the CLI over the VM service stream but not
+  /// persisted to the database.
   void log(
     String message, {
     LogLevel? level,
     dynamic exception,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
-    if (_closed) {
-      throw StateError(
-        'Session is closed, and logging can no longer be performed.',
-      );
-    }
-
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
+      metadata: metadata,
     );
+  }
+
+  /// Logs [message] as an alert. Works like [log], but the `serverpod` CLI
+  /// shows it as a copyable alert in its terminal UI. Wrap a copyable segment
+  /// in angle brackets, e.g. `'Code: <123456>'`. Other log destinations treat
+  /// it as a regular log message.
+  void alert(String message, {LogLevel? level}) {
+    log(message, level: level, metadata: {'alert': true});
   }
 }
 
@@ -393,9 +367,6 @@ class StreamingSession extends Session {
   /// The underlying web socket that handles communication with the server.
   final RelicWebSocket webSocket;
 
-  /// Set if there is an open session log.
-  int? sessionLogId;
-
   String _endpoint;
 
   /// The name of the endpoint that is being called.
@@ -440,7 +411,7 @@ class FutureCallSession extends Session {
 }
 
 /// Collects methods for accessing cloud storage.
-class StorageAccess {
+final class StorageAccess {
   final Session _session;
 
   StorageAccess._(this._session);
@@ -449,18 +420,37 @@ class StorageAccess {
   /// 'private'. The public storage can be accessed through a public URL. The
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
+  ///
+  /// Set [preventOverwrite] to true to prevent overwriting existing files
+  /// (supported by some storage implementations).
   Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.storeFile(session: _session, path: path, byteData: byteData);
+    if (preventOverwrite && storage is CloudStorageWithOptions) {
+      await storage.storeFileWithOptions(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+        options: CloudStorageOptions(preventOverwrite: preventOverwrite),
+      );
+    } else {
+      await storage.storeFile(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+      );
+    }
   }
 
   /// Retrieve a file from cloud storage.
@@ -531,19 +521,43 @@ class StorageAccess {
   /// [FileUploader]. After the file has been uploaded, the
   /// [verifyDirectFileUpload] method should be called, or the file may be
   /// deleted.
+  ///
+  /// [contentLength] hints the exact upload size to the storage provider.
+  /// [preventOverwrite] prevents overwriting existing files (supported by
+  /// some storage implementations).
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-      session: _session,
-      path: path,
-    );
+    final hasOptions = contentLength != null || preventOverwrite;
+    if (hasOptions && storage is CloudStorageWithOptions) {
+      return await storage.createDirectFileUploadDescriptionWithOptions(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+        options: CloudStorageOptions(
+          contentLength: contentLength,
+          preventOverwrite: preventOverwrite,
+        ),
+      );
+    } else {
+      return await storage.createDirectFileUploadDescription(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+      );
+    }
   }
 
   /// Call this method after a file has been uploaded. It will return true

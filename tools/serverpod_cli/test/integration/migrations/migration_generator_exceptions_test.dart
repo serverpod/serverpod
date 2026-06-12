@@ -56,7 +56,7 @@ void main() {
                 .having(
                   (e) => e.exception,
                   'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'),
+                  contains('Required migration artifact is missing'),
                 ),
           ),
         );
@@ -88,7 +88,7 @@ void main() {
                 .having(
                   (e) => e.exception,
                   'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'),
+                  contains('Required migration artifact is missing'),
                 ),
           ),
         );
@@ -281,6 +281,20 @@ fields:
       );
       expect(result, isNull);
     });
+
+    test(
+      'when creating migration with empty `true` then an empty migration is returned.',
+      () async {
+        var result = await generator.createMigration(
+          empty: true,
+          force: false,
+          config: config,
+          write: false,
+        );
+        expect(result, isNotNull);
+        expect(result!.migration.isEmpty, isTrue);
+      },
+    );
   });
 }
 

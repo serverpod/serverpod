@@ -99,6 +99,7 @@ abstract class ObjectFieldPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
@@ -108,7 +109,8 @@ abstract class ObjectFieldPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       include: include,
     );
@@ -201,6 +203,7 @@ class ObjectFieldPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     super.orderDescending,
     super.orderByList,
     super.include,
@@ -241,11 +244,12 @@ class ObjectFieldPersistRepository {
   /// );
   /// ```
   Future<List<ObjectFieldPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -256,7 +260,8 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -283,10 +288,11 @@ class ObjectFieldPersistRepository {
   /// );
   /// ```
   Future<ObjectFieldPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
@@ -297,7 +303,8 @@ class ObjectFieldPersistRepository {
       where: where?.call(ObjectFieldPersist.t),
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -307,7 +314,7 @@ class ObjectFieldPersistRepository {
 
   /// Finds a single [ObjectFieldPersist] by its [id] or null if no such row exists.
   Future<ObjectFieldPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -327,14 +334,20 @@ class ObjectFieldPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ObjectFieldPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ObjectFieldPersist>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
@@ -342,12 +355,75 @@ class ObjectFieldPersistRepository {
   ///
   /// The returned [ObjectFieldPersist] will have its `id` field set.
   Future<ObjectFieldPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectFieldPersist>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ObjectFieldPersist]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ObjectFieldPersist]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectFieldPersist>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectFieldPersist> rows, {
+    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectFieldPersist>(
+      rows,
+      conflictColumns: conflictColumns(ObjectFieldPersist.t),
+      updateColumns: updateColumns?.call(ObjectFieldPersist.t),
+      updateWhere: updateWhere?.call(ObjectFieldPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectFieldPersist] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ObjectFieldPersist] will have its `id` field set.
+  Future<ObjectFieldPersist?> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectFieldPersist row, {
+    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectFieldPersist>(
+      row,
+      conflictColumns: conflictColumns(ObjectFieldPersist.t),
+      updateColumns: updateColumns?.call(ObjectFieldPersist.t),
+      updateWhere: updateWhere?.call(ObjectFieldPersist.t),
       transaction: transaction,
     );
   }
@@ -358,7 +434,7 @@ class ObjectFieldPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ObjectFieldPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -374,7 +450,7 @@ class ObjectFieldPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectFieldPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectFieldPersist row, {
     _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -389,7 +465,7 @@ class ObjectFieldPersistRepository {
   /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectFieldPersist?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
     columnValues,
@@ -405,7 +481,7 @@ class ObjectFieldPersistRepository {
   /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectFieldPersist>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
@@ -413,6 +489,7 @@ class ObjectFieldPersistRepository {
     int? offset,
     _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
@@ -423,28 +500,41 @@ class ObjectFieldPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
-      orderDescending: orderDescending,
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes all [ObjectFieldPersist]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectFieldPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
+    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectFieldPersist>(
       rows,
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
 
   /// Deletes a single [ObjectFieldPersist].
   Future<ObjectFieldPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectFieldPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -455,13 +545,24 @@ class ObjectFieldPersistRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectFieldPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
       transaction: transaction,
     );
   }
@@ -469,7 +570,7 @@ class ObjectFieldPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -483,7 +584,7 @@ class ObjectFieldPersistRepository {
 
   /// Acquires row-level locks on [ObjectFieldPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

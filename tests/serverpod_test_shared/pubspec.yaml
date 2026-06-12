@@ -8,12 +8,12 @@ description: Code shared between the test server and client
 version: 1.0.0
 
 environment:
-  sdk: '^3.8.0'
+  sdk: '^3.10.3'
 
 dependencies:
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
-  serverpod_serialization: 3.3.1
+  serverpod_serialization: 3.5.0-beta.10
 
 dev_dependencies:
   build_runner: ^2.4.1

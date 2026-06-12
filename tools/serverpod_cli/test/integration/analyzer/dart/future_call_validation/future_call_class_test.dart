@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -11,36 +10,31 @@ import 'package:test/test.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(
-  path.joinAll([
-    'test',
-    'integration',
-    'analyzer',
-    'dart',
-    'future_call_validation',
-    const Uuid().v4(),
-  ]),
-);
+final config = GeneratorConfigBuilder().build();
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+    await createTestEnvironment(testProjectDirectory);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group('Given a valid future call class when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -55,16 +49,11 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-      final parameterValidator = FutureCallMethodParameterValidator(
-        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
       );
-
-      analyzer = FutureCallsAnalyzer(
-        directory: testDirectory,
-        parameterValidator: parameterValidator,
-      );
-
-      futureCallDefinitions = await analyzer.analyze(collector: collector);
     });
 
     test('then no validation errors are reported.', () {
@@ -113,13 +102,14 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid future call with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -135,16 +125,11 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-      final parameterValidator = FutureCallMethodParameterValidator(
-        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
       );
-
-      analyzer = FutureCallsAnalyzer(
-        directory: testDirectory,
-        parameterValidator: parameterValidator,
-      );
-
-      futureCallDefinitions = await analyzer.analyze(collector: collector);
     });
 
     test('then no validation errors are reported.', () {
@@ -166,13 +151,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call class that has only the overriden invoke method',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -188,16 +173,11 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
-        );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then no validation errors are reported.', () {
@@ -214,13 +194,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a dart class that does not inherit from FutureCall when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -235,16 +215,11 @@ class ExampleFutureCall {
 }
 ''');
 
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
-        );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then no validation errors are reported.', () {
@@ -261,13 +236,13 @@ class ExampleFutureCall {
     'Given same future call class definition in multiple files when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var firstFutureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -295,16 +270,11 @@ class ExampleFutureCall extends FutureCall {
 }
 ''');
 
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
-        );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then two validation errors are reported.', () {

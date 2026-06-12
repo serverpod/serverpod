@@ -3,7 +3,7 @@ class: MessageLogEntry
 table: serverpod_message_log
 fields:
   ### Id of the session this entry is associated with.
-  sessionLogId: int, relation(parent=serverpod_session_log, onDelete=Cascade)
+  sessionLogId: int, relation(name=session_log_message_logs, parent=serverpod_session_log, onDelete=Cascade)
 
   ### The id of the server that handled the message.
   serverId: String
@@ -33,3 +33,7 @@ fields:
 
   ### Used for sorting the message log.
   order: int
+
+indexes:
+  serverpod_message_log_sessionLogId_idx:
+    fields: sessionLogId, order
