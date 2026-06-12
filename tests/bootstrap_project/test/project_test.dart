@@ -614,6 +614,22 @@ void main() async {
             reason: 'analyze.yml workflow does not exist.',
           );
         });
+
+        test('has deploy workflow', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.github',
+                'workflows',
+                'deploy.yml',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'deploy.yml workflow does not exist.',
+          );
+        });
       });
 
       group('then the workspace', () {

@@ -1,0 +1,103 @@
+name: Deploy
+
+# This workflow is triggered manually from the GitHub Actions UI.
+# To automate it on every push to main, change the trigger below to:
+#
+#   on:
+#     push:
+#       branches: [main]
+#
+# Before running, add these secrets in your GitHub repository settings
+# (Settings → Secrets and variables → Actions):
+#
+#   REGISTRY_USER   — your container registry username
+#   REGISTRY_TOKEN  — your container registry password or access token
+#
+# Then uncomment ONE of the platform-specific deploy jobs at the bottom.
+# See https://docs.serverpod.dev/deployment for full setup guides.
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/projectname-server
+
+jobs:
+  build-and-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to container registry
+        # Replace ghcr.io with your registry if needed (docker.io, gcr.io, public.ecr.aws, etc.)
+        run: |
+          echo "${{ secrets.REGISTRY_TOKEN }}" | \
+            docker login ghcr.io -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f projectname_server/Dockerfile \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
+            -t ${{ env.IMAGE }}:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
+
+  # ── Uncomment ONE of the deploy jobs below ───────────────────────────────────
+
+  # ── GCP Cloud Run ────────────────────────────────────────────────────────────
+  # Required secrets: GCP_CREDENTIALS_JSON
+  #
+  # deploy-cloud-run:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: google-github-actions/auth@v2
+  #       with:
+  #         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+  #     - uses: google-github-actions/deploy-cloudrun@v2
+  #       with:
+  #         service: projectname-server
+  #         region: us-central1
+  #         image: ghcr.io/${{ github.repository_owner }}/projectname-server:${{ github.sha }}
+  #         env_vars: runmode=production,serverid=default,logging=normal,role=monolith
+
+  # ── AWS ECS ──────────────────────────────────────────────────────────────────
+  # Required secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+  # Update MY_CLUSTER and MY_SERVICE to match your ECS cluster and service names.
+  #
+  # deploy-ecs:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
+  #     - name: Force new ECS deployment
+  #       run: |
+  #         aws ecs update-service \
+  #           --cluster MY_CLUSTER \
+  #           --service MY_SERVICE \
+  #           --force-new-deployment
+
+  # ── fly.io ───────────────────────────────────────────────────────────────────
+  # Required secrets: FLY_API_TOKEN
+  # Run `fly launch` once locally to generate fly.toml, then commit it.
+  #
+  # deploy-fly:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: superfly/flyctl-actions/setup-flyctl@master
+  #     - run: flyctl deploy --remote-only
+  #       env:
+  #         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
