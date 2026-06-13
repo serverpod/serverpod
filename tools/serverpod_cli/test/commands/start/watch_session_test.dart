@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
@@ -145,9 +146,20 @@ class _FakeFlutter extends Fake implements FlutterProcess {
   }
 }
 
+class _TestLogger extends VoidLogger {
+  final List<String> infoMessages = [];
+
+  @override
+  void info(String message, {bool newParagraph = false, LogType? type}) {
+    infoMessages.add(message);
+  }
+}
+
 void main() {
+  final testLogger = _TestLogger();
+
   setUpAll(() {
-    initializeLogger();
+    initializeLoggerWith(testLogger);
   });
 
   tearDownAll(() async {
@@ -210,6 +222,7 @@ void main() {
     generateCalls = [];
     generateSuccess = true;
     generatedFiles = {};
+    testLogger.infoMessages.clear();
 
     session = buildSession(compiler: compiler, initialServer: server);
   });
@@ -291,6 +304,23 @@ void main() {
         // The browser refresh must follow the reload so the page re-fetches
         // the newly loaded server code.
         expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
+      },
+    );
+
+    test(
+      'when the browser is refreshed, '
+      'then the success log starts with a checkmark',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(
+          testLogger.infoMessages,
+          contains('✓ Browser refresh triggered.'),
+        );
       },
     );
   });
