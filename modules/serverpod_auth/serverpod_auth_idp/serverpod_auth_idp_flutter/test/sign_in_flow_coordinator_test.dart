@@ -24,7 +24,7 @@ void main() {
             home: SignInFlowCoordinatorWidget(
               child: Builder(
                 builder: (context) {
-                  coordinator = SignInFlowCoordinator.of(context);
+                  coordinator = SignInFlowCoordinatorWidget.of(context);
                   return const SizedBox.shrink();
                 },
               ),
@@ -52,7 +52,7 @@ void main() {
             home: SignInFlowCoordinatorWidget(
               child: Builder(
                 builder: (context) {
-                  coordinator = SignInFlowCoordinator.of(context);
+                  coordinator = SignInFlowCoordinatorWidget.of(context);
                   return const SizedBox.shrink();
                 },
               ),
@@ -83,7 +83,7 @@ void main() {
             home: SignInFlowCoordinatorWidget(
               child: Builder(
                 builder: (context) {
-                  coordinator = SignInFlowCoordinator.of(context);
+                  coordinator = SignInFlowCoordinatorWidget.of(context);
                   return const SizedBox.shrink();
                 },
               ),
@@ -152,6 +152,40 @@ void main() {
         expect(signInCount, 1);
       },
     );
+
+    testWidgets(
+      'Given a locked SignInFlowCoordinatorWidget, '
+      'when the lock timeout elapses, '
+      'then the UI is unlocked without cancelling authentication.',
+      (tester) async {
+        SignInFlowCoordinatorState? coordinator;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SignInFlowCoordinatorWidget(
+              child: Builder(
+                builder: (context) {
+                  coordinator = SignInFlowCoordinatorWidget.of(context);
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        coordinator!.lockUI();
+        await tester.pump();
+
+        expect(coordinator!.isAuthenticating, isTrue);
+        expect(blockingAbsorbPointerFinder(), findsOneWidget);
+
+        await tester.pump(SignInFlowCoordinatorWidget.lockTimeout);
+        await tester.pump();
+
+        expect(coordinator!.isAuthenticating, isFalse);
+        expect(blockingAbsorbPointerFinder(), findsNothing);
+      },
+    );
   });
 }
 
@@ -170,7 +204,7 @@ class _SignInProbe extends StatefulWidget {
 
 class _SignInProbeState extends State<_SignInProbe> {
   Future<void> _signIn() async {
-    final coordinator = SignInFlowCoordinator.of(context);
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
     if (coordinator?.isAuthenticating == true) return;
 
     coordinator?.lockUI();

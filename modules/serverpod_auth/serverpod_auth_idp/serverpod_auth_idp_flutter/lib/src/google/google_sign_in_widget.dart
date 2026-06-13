@@ -256,7 +256,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
   }
 
   Future<void> _signIn() async {
-    final coordinator = SignInFlowCoordinator.of(context);
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
     if (coordinator?.isAuthenticating == true) return;
 
     coordinator?.lockUI();

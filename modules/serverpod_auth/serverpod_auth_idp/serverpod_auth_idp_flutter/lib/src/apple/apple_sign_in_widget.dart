@@ -172,7 +172,7 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
   }
 
   Future<void> _signIn() async {
-    final coordinator = SignInFlowCoordinator.of(context);
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
     if (coordinator?.isAuthenticating == true) return;
 
     coordinator?.lockUI();

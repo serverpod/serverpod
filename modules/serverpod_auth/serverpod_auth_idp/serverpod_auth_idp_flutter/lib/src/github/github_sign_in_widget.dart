@@ -163,7 +163,7 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
   }
 
   Future<void> _signIn() async {
-    final coordinator = SignInFlowCoordinator.of(context);
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
     if (coordinator?.isAuthenticating == true) return;
 
     coordinator?.lockUI();

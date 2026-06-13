@@ -138,7 +138,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
   }
 
   Future<void> _login() async {
-    final coordinator = SignInFlowCoordinator.of(context);
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
     if (coordinator?.isAuthenticating == true) return;
 
     coordinator?.lockUI();
