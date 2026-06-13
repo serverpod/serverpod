@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+import '../common/sign_in_flow_coordinator.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'anonymous_auth_controller.dart';
 import 'anonymous_sign_in_style.dart';
@@ -128,11 +129,25 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
                 borderRadius: buttonStyle.borderRadius,
               ),
             ),
-            onPressed: _controller.login,
+            onPressed: _login,
             child: Text(texts.signInButton ?? _defaultButtonText),
           ),
         );
       },
     );
+  }
+
+  Future<void> _login() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.login();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

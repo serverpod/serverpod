@@ -4,6 +4,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'github_auth_controller.dart';
 import 'github_sign_in_button.dart';
 import 'github_sign_in_style.dart';
+import '../common/sign_in_flow_coordinator.dart';
 
 export 'github_sign_in_button.dart';
 export 'github_sign_in_style.dart';
@@ -148,7 +149,7 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
   @override
   Widget build(BuildContext context) {
     return GitHubSignInButton(
-      onPressed: _controller.signIn,
+      onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isLoading,
       type: widget.type,
@@ -159,5 +160,19 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
     );
+  }
+
+  Future<void> _signIn() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.signIn();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }
