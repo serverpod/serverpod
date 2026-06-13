@@ -242,7 +242,8 @@ class _SignInWidgetState extends State<SignInWidget> {
                     onAuthenticated: widget.onAuthenticated,
                     onError: widget.onError,
                   ),
-            if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
+            if (socialProviders.isNotEmpty && hasEmail)
+              const _SignInSeparator(),
             ...socialProviders,
             if (hasAnonymous) ...[
               widget.anonymousSignInWidget ??
