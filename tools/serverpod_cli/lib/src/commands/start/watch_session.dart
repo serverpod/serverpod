@@ -343,7 +343,7 @@ class WatchSession {
     }
     try {
       await _server.notifyStaticChange();
-      log.info('Browser refresh triggered.');
+      log.info(browserRefreshTriggered);
     } catch (e) {
       log.warning('Browser refresh failed: $e');
     }
