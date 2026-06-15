@@ -286,10 +286,12 @@ class FlutterProcess {
     // detaches (its keep-alive is hardcoded to ~3000 days). 2s
     // interval + 1s timeout lets us notice within ~3s.
     //
-    // Hot restart briefly empties the isolate list - require two
-    // consecutive empty reads (~4s window at 2s interval) so we
-    // don't race-kill a healthy restart.
+    // Both paths need two consecutive bad reads before tearing down
+    // (~4s at 2s interval): hot restart briefly empties the isolate
+    // list, and a one-off getVM() failure - blip, GC pause - shouldn't
+    // race-kill a live app.
     var emptyReads = 0;
+    var failedReads = 0;
     _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
       timer,
     ) async {
@@ -299,6 +301,8 @@ class FlutterProcess {
       }
       try {
         final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        // A successful read means the connection is alive; clear failures.
+        failedReads = 0;
         if (vmInfo.isolates?.isEmpty ?? true) {
           emptyReads++;
           if (emptyReads >= 2) {
@@ -310,9 +314,12 @@ class FlutterProcess {
           emptyReads = 0;
         }
       } catch (e) {
-        timer.cancel();
-        log.info('Flutter heartbeat failed ($e); tearing down.');
-        await _onAppStop();
+        failedReads++;
+        if (failedReads >= 2) {
+          timer.cancel();
+          log.info('Flutter heartbeat failed ($e); tearing down.');
+          await _onAppStop();
+        }
       }
     });
   }
