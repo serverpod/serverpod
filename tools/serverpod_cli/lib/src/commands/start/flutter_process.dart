@@ -287,7 +287,7 @@ class FlutterProcess {
     // interval + 1s timeout lets us notice within ~3s.
     //
     // Both paths need two consecutive bad reads before tearing down
-    // (~4s at 2s interval): hot restart briefly empties the isolate
+    // (~4s at 2s interval): a hot restart briefly empties the isolate
     // list, and a one-off getVM() failure - blip, GC pause - shouldn't
     // race-kill a live app.
     var emptyReads = 0;
@@ -314,6 +314,8 @@ class FlutterProcess {
           emptyReads = 0;
         }
       } catch (e) {
+        // A failure breaks any empty-isolate streak; keep them consecutive.
+        emptyReads = 0;
         failedReads++;
         if (failedReads >= 2) {
           timer.cancel();
