@@ -136,18 +136,16 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       await performCreateWithTui(
         name,
         force,
-        state: CreateConfigState(
-          template,
-          configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(
-            auth: true,
-            redis: true,
-            postgres: true,
-            webapp: true,
-          ),
-          requireIde: true,
-        ),
+        template: template,
+        configs: const [ServerpodCreateConfig.ide],
+        requireIde: true,
         interactive: true,
+        defaultContext: TemplateContext(
+          auth: true,
+          redis: true,
+          postgres: true,
+          webapp: true,
+        ),
       );
       return;
     }

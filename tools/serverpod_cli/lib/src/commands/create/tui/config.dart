@@ -63,6 +63,10 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
         config: ServerpodCreateConfig.template,
         configOption: TemplateTypeOption.server,
       ),
+      FormRequirement<DatabaseConfigOption>(
+        config: ServerpodCreateConfig.database,
+        configOption: DatabaseConfigOption.database,
+      ),
     ],
   ),
   ide<IdeOption>(

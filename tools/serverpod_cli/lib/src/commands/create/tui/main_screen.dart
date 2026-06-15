@@ -12,6 +12,7 @@ class MainScreen extends StatelessComponent {
     required this.logScrollController,
     required this.onCreate,
     required this.onQuit,
+    required this.isUpgrade,
   });
 
   final CreateAppStateHolder holder;
@@ -19,6 +20,7 @@ class MainScreen extends StatelessComponent {
   final ScrollController logScrollController;
   final VoidCallback onCreate;
   final VoidCallback onQuit;
+  final bool isUpgrade;
 
   @override
   Component build(BuildContext context) {
@@ -49,7 +51,7 @@ class MainScreen extends StatelessComponent {
             ),
           ),
         ),
-        _buildButtonBar(theme, state),
+        _buildButtonBar(theme, state, isUpgrade: isUpgrade),
       ],
     );
   }
@@ -66,11 +68,14 @@ class MainScreen extends StatelessComponent {
   Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
     final showingSummary = state.isSummary;
     final creatingProject = state.creatingProject;
-    final title = creatingProject
-        ? 'Creating project'
-        : showingSummary
-        ? 'Summary'
-        : 'Create new project';
+
+    final title = switch (creatingProject) {
+      true => isUpgrade ? 'Upgrading project' : 'Creating project',
+      false => switch (showingSummary) {
+        true => 'Summary',
+        false => isUpgrade ? 'Upgrade project' : 'Create new project',
+      },
+    };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 1),
@@ -288,18 +293,23 @@ class MainScreen extends StatelessComponent {
 
   Component _buildButtonBar(
     ServerpodThemeData theme,
-    CreateConfigState state,
-  ) {
+    CreateConfigState state, {
+    required bool isUpgrade,
+  }) {
     final creatingProject = state.creatingProject;
     final isFirstScreen = state.currentScreenIndex == 0;
     final isSummary = state.isSummary;
     final hasSingleScreen = state.hasSingleScreen;
     final createEnabled = !isSummary || state.canCreate;
+    final enterButtonLabel = switch (hasSingleScreen || isSummary) {
+      true => isUpgrade ? 'Upgrade Project' : 'Create Project',
+      false => 'Next',
+    };
 
     return ButtonBar(
       buttons: [
         Button(
-          name: hasSingleScreen || isSummary ? 'Create Project' : 'Next',
+          name: enterButtonLabel,
           activationChar: 'Enter',
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
