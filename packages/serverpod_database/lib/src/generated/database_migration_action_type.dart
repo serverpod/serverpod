@@ -16,7 +16,8 @@ enum DatabaseMigrationActionType implements _i1.SerializableModel {
   createTable,
   createTableIfNotExists,
   deleteTable,
-  alterTable;
+  alterTable
+  ;
 
   static DatabaseMigrationActionType fromJson(String name) {
     switch (name) {

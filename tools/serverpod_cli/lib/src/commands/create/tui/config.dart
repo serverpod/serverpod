@@ -151,7 +151,8 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code');
+  vsCode('VS Code')
+  ;
 
   const IdeOption(this.label);
 

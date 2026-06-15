@@ -19,7 +19,8 @@ enum TestEnumEnhanced implements _i1.SerializableModel {
 
   /// Second Value
   two('2', 'The second value', 0),
-  three('3', 'The third value', 0);
+  three('3', 'The third value', 0)
+  ;
 
   const TestEnumEnhanced(
     this.shortName,
