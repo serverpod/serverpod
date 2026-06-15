@@ -114,10 +114,18 @@ class MainScreen extends StatelessComponent {
                                 padding: const EdgeInsets.only(left: 1),
                                 child: _buildTabBar(st, showSideBySide),
                               ),
-                              if (!showSideBySide) ?_buildFlutterStatusLine(st),
                               Expanded(
                                 child: !showSideBySide
-                                    ? _buildTabContent(state.selectedTab)
+                                    ? Column(
+                                        children: [
+                                          ?_buildFlutterStatusLine(st),
+                                          Expanded(
+                                            child: _buildTabContent(
+                                              state.selectedTab,
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                     : Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
