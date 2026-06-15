@@ -1,8 +1,9 @@
+import 'dart:collection';
 import 'dart:typed_data';
 import 'utils.dart';
 
 /// Represents a sparse vector that stores only non-zero elements.
-class SparseVector {
+class SparseVector extends IterableBase<double> {
   /// The total number of dimensions in the vector.
   final int dimensions;
 
@@ -14,6 +15,24 @@ class SparseVector {
 
   /// Creates a new [SparseVector] object.
   const SparseVector._(this.dimensions, this.indices, this.values);
+
+  @override
+  int get length => dimensions;
+
+  /// Returns the value at [index], or `0.0` if the position is not stored.
+  ///
+  /// Throws [RangeError] if [index] is outside `0..<dimensions`.
+  double operator [](int index) {
+    RangeError.checkValidIndex(index, this, 'index', dimensions);
+    final i = indices.indexOf(index);
+    return i == -1 ? 0.0 : values[i];
+  }
+
+  @override
+  double elementAt(int index) => this[index];
+
+  @override
+  Iterator<double> get iterator => toList().iterator;
 
   /// Creates a [SparseVector] from a list of doubles with all values.
   factory SparseVector(List<double> value) {
@@ -95,8 +114,9 @@ class SparseVector {
   }
 
   /// Returns the sparse vector as a dense list of double values.
-  List<double> toList() {
-    var vec = List<double>.filled(dimensions, 0.0);
+  @override
+  List<double> toList({bool growable = true}) {
+    var vec = List<double>.filled(dimensions, 0.0, growable: growable);
     for (var i = 0; i < indices.length; i++) {
       vec[indices[i]] = values[i];
     }
