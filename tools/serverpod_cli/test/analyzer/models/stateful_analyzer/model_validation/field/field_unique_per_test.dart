@@ -369,18 +369,19 @@ void main() {
   test(
     'Given a table-backed model where the auto-generated composite index name exceeds the PostgreSQL limit, '
     'when parsed, '
-    'then an error is collected.',
+    'then the name is truncated to fit while preserving the head and suffix.',
     () {
       var longName = 'a' * 20;
       var field1 = '${longName}1';
       var field2 = '${longName}2';
       var field3 = '${longName}3';
       var field4 = '${longName}4';
+      var tableName = 't' * 20;
       var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
-          table: ${'t' * 20}
+          table: $tableName
           fields:
             $field1: String
             $field2: String
@@ -396,18 +397,60 @@ void main() {
         models,
         onErrorsCollector(collector),
       );
-      analyzer.validateAll();
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ModelClassDefinition;
 
-      expect(collector.errors, isNotEmpty);
+      expect(collector.errors, isEmpty);
+      expect(definition.indexes.length, 1);
+
+      var index = definition.indexes.first;
       expect(
-        collector.errors.any(
-          (e) => e.message.contains(
-            '${DatabaseConstants.pgsqlMaxNameLimitation} character',
-          ),
-        ),
-        true,
-        reason: 'Expected error for index name length.',
+        index.name.length,
+        lessThanOrEqualTo(DatabaseConstants.pgsqlMaxNameLimitation),
       );
+      expect(index.name, startsWith('${tableName}__'));
+      expect(index.name, endsWith('__unique_idx'));
+      expect(index.fields, [field1, field2, field3, field4]);
+    },
+  );
+
+  test(
+    'Given two over-limit composite unique indexes that share a long prefix, '
+    'when parsed, '
+    'then their truncated names stay distinct via the digest.',
+    () {
+      var longName = 'a' * 20;
+      var field1 = '${longName}1';
+      var field2 = '${longName}2';
+      var tableName = 't' * 20;
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: $tableName
+          fields:
+            $field1: String
+            $field2: String
+            valueA: String, unique(per=[$field1, $field2])
+            valueB: String, unique(per=[$field1, $field2])
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ModelClassDefinition;
+
+      expect(collector.errors, isEmpty);
+
+      var names = definition.indexes.map((i) => i.name).toList();
+      expect(names.length, 2);
+      expect(names.toSet().length, 2);
     },
   );
 
