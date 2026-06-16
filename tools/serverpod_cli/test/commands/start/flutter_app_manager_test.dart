@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -135,6 +136,43 @@ dependencies:
           ).existsSync(),
           isTrue,
         );
+      },
+    );
+
+    test(
+      'when stdoutSinkFor is called then each app gets its own sink target',
+      () async {
+        final sinkLines = <String, List<String>>{
+          appA.id: [],
+          appB.id: [],
+        };
+
+        IOSink sinkFor(List<String> lines) {
+          final controller = StreamController<List<int>>();
+          controller.stream.listen((data) => lines.add(utf8.decode(data)));
+          return IOSink(controller.sink);
+        }
+
+        final routingManager = FlutterAppManager(
+          apps: [appA, appB],
+          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+          runMode: 'development',
+          flutterDevice: 'web-server',
+          flutterExtraArgs: const [],
+          onProgress: (_, _) {},
+          onReady: (_, _) {},
+          onStart: (_, _) async {},
+          onEnsureAppTab: (_) {},
+          stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
+          stderrSinkFor: (app) => sinkFor(sinkLines[app.id]!),
+        );
+
+        routingManager.stdoutSinkFor(appA).write('line-a\n');
+        routingManager.stdoutSinkFor(appB).write('line-b\n');
+        await Future<void>.delayed(Duration.zero);
+
+        expect(sinkLines[appA.id], ['line-a\n']);
+        expect(sinkLines[appB.id], ['line-b\n']);
       },
     );
 

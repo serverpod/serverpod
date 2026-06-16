@@ -8,16 +8,13 @@ const kMainArea = 'main';
 const kAppsArea = 'apps';
 
 /// A view hosted in some area. Declares which area it is pinned to and owns
-/// its content (log buffer + scroll position).
+/// its scroll position.
 abstract class PaneTab {
   /// The area this tab is pinned to; routes the tab on insert.
   String get areaId;
 
   /// Tab label shown in the strip when an area has multiple tabs.
   String get label;
-
-  /// Log lines displayed in this tab.
-  BoundedQueueList<String> get lines;
 
   /// Scroll position for this tab's content.
   ScrollController get scrollController;
@@ -26,23 +23,14 @@ abstract class PaneTab {
 /// Structured server log view pinned to [kMainArea].
 class ServerLogTab implements PaneTab {
   /// Creates a [ServerLogTab].
-  ServerLogTab({
-    BoundedQueueList<String>? lines,
-    ScrollController? scrollController,
-  }) : lines = lines ?? BoundedQueueList<String>(maxRawLines),
-       scrollController = scrollController ?? ScrollController();
-
-  /// Maximum number of raw lines to keep.
-  static const maxRawLines = 10000;
+  ServerLogTab({ScrollController? scrollController})
+    : scrollController = scrollController ?? ScrollController();
 
   @override
   String get areaId => kMainArea;
 
   @override
   String get label => 'Server logs';
-
-  @override
-  final BoundedQueueList<String> lines;
 
   @override
   final ScrollController scrollController;
@@ -83,7 +71,7 @@ class AppLogTab implements PaneTab {
   @override
   String get areaId => kAppsArea;
 
-  @override
+  /// Raw stdout/stderr lines for this app.
   final BoundedQueueList<String> lines;
 
   @override
@@ -187,14 +175,16 @@ class TabModel {
     }
   }
 
-  /// Cycles the selected tab within the focused area by [delta] positions.
+  /// Cycles the selected tab within the focused area by [delta] positions,
+  /// wrapping at the ends.
   void cycleTabInFocusedArea(int delta) {
     final area = focusedArea;
     if (area.tabs.length <= 1) return;
 
-    final next = area.selectedIndex + delta;
-    if (next < 0 || next >= area.tabs.length) return;
-    area.selectedIndex = next;
+    area.selectedIndex = (area.selectedIndex + delta) % area.tabs.length;
+    if (area.selectedIndex < 0) {
+      area.selectedIndex += area.tabs.length;
+    }
   }
 
   /// Selects the tab at [index] within the focused area.

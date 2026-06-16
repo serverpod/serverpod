@@ -1,6 +1,5 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
-import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -143,7 +142,7 @@ void main() {
     );
 
     test(
-      'when cycleTabInFocusedArea would go out of range then it is a no-op',
+      'when cycleTabInFocusedArea reaches the last tab then it wraps to the first',
       () {
         model.addTab(AppLogTab(appId: 'a', label: 'A'));
         model.addTab(AppLogTab(appId: 'b', label: 'B'));
@@ -151,6 +150,20 @@ void main() {
         appsArea.selectedIndex = 1;
 
         model.cycleTabInFocusedArea(1);
+
+        expect(appsArea.selectedIndex, 0);
+      },
+    );
+
+    test(
+      'when cycleTabInFocusedArea moves backward from the first tab then it wraps to the last',
+      () {
+        model.addTab(AppLogTab(appId: 'a', label: 'A'));
+        model.addTab(AppLogTab(appId: 'b', label: 'B'));
+        model.focusedAreaIndex = 1;
+        appsArea.selectedIndex = 0;
+
+        model.cycleTabInFocusedArea(-1);
 
         expect(appsArea.selectedIndex, 1);
       },
@@ -179,9 +192,6 @@ class _UnknownAreaTab implements PaneTab {
 
   @override
   String get label => 'Unknown';
-
-  @override
-  final lines = BoundedQueueList<String>(100);
 
   @override
   final scrollController = ScrollController();

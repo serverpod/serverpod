@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
@@ -55,6 +56,19 @@ class FlutterAppManager {
   /// Test-only override for `flutter run` arguments per app.
   final List<String>? Function(FlutterAppConfig app)? argsOverrideForTesting;
 
+  /// Test-only override for [checkDependencyChange].
+  @visibleForTesting
+  FlutterDependencyChange Function(String appId)?
+  dependencyChangeOverrideForTesting;
+
+  /// Test-only override for [restart].
+  @visibleForTesting
+  Future<void> Function(String appId)? restartOverrideForTesting;
+
+  /// Test-only override for [launch].
+  @visibleForTesting
+  Future<void> Function(String appId)? launchOverrideForTesting;
+
   final String serverpodToolDir;
   final String runMode;
   final String flutterDevice;
@@ -92,12 +106,25 @@ class FlutterAppManager {
   /// Whether [appId] has a running Flutter process.
   bool isRunning(String appId) => processFor(appId)?.isRunning ?? false;
 
+  /// Injects [process] for [appId] in tests.
+  @visibleForTesting
+  void setProcessForTesting(String appId, FlutterProcess process) {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null) {
+      throw StateError('Unknown Flutter app id: $appId');
+    }
+    runtime.process = process;
+  }
+
   /// Returns the dependency tracker for [appId], if configured.
   FlutterDependencyTracker? dependencyTrackerFor(String appId) =>
       _runtimes[appId]?.dependencyTracker;
 
   /// Checks dependency changes for [appId].
   FlutterDependencyChange checkDependencyChange(String appId) {
+    if (dependencyChangeOverrideForTesting != null) {
+      return dependencyChangeOverrideForTesting!(appId);
+    }
     return _runtimes[appId]?.dependencyTracker?.refresh() ??
         FlutterDependencyChange.none;
   }
@@ -149,6 +176,10 @@ class FlutterAppManager {
   /// Launches [appId] when not already running. No-op in non-development mode
   /// or when the app is already running.
   Future<void> launch(String appId) async {
+    if (launchOverrideForTesting != null) {
+      await launchOverrideForTesting!(appId);
+      return;
+    }
     if (runMode != 'development') return;
 
     final runtime = _runtimeFor(appId);
@@ -198,6 +229,10 @@ class FlutterAppManager {
 
   /// Stops and relaunches [appId].
   Future<void> restart(String appId) async {
+    if (restartOverrideForTesting != null) {
+      await restartOverrideForTesting!(appId);
+      return;
+    }
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
 

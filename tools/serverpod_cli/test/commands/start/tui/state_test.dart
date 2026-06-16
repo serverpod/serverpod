@@ -79,4 +79,34 @@ void main() {
       expect(state.tabs.areas.single.id, kMainArea);
     });
   });
+
+  group('Given a ServerWatchState with two companion app tabs', () {
+    late ServerWatchState state;
+
+    setUp(() {
+      state = ServerWatchState();
+    });
+
+    test(
+      'when log lines are appended per app then each tab keeps only its own lines',
+      () {
+        void appendLine({
+          required String appId,
+          required String label,
+          required String line,
+        }) {
+          state
+              .getOrCreateAppLogTab(appId: appId, label: label)
+              .lines
+              .add(line);
+        }
+
+        appendLine(appId: 'admin', label: 'Admin', line: 'admin stdout');
+        appendLine(appId: 'portal', label: 'Portal', line: 'portal stderr');
+
+        expect(state.appLogTabFor('admin')!.lines, ['admin stdout']);
+        expect(state.appLogTabFor('portal')!.lines, ['portal stderr']);
+      },
+    );
+  });
 }

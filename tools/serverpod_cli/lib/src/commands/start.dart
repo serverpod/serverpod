@@ -982,15 +982,6 @@ Future<void> _runTuiBackend({
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
     final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
 
-    void addFlutterLogLine(String line) {
-      if (config.flutterApps.isEmpty) return;
-      final app = config.flutterApps.first;
-      holder.state
-          .getOrCreateAppLogTab(appId: app.id, label: app.name)
-          .lines
-          .add(line);
-    }
-
     final result = await _setupWatchLoop(
       config: config,
       serverDir: serverDir,
@@ -1003,10 +994,20 @@ Future<void> _runTuiBackend({
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
-      flutterStdoutSinkFor: (_) =>
-          TuiLogSink(holder, addLine: addFlutterLogLine),
-      flutterStderrSinkFor: (_) =>
-          TuiLogSink(holder, addLine: addFlutterLogLine),
+      flutterStdoutSinkFor: (app) => TuiLogSink(
+        holder,
+        addLine: (line) => holder.state
+            .getOrCreateAppLogTab(appId: app.id, label: app.name)
+            .lines
+            .add(line),
+      ),
+      flutterStderrSinkFor: (app) => TuiLogSink(
+        holder,
+        addLine: (line) => holder.state
+            .getOrCreateAppLogTab(appId: app.id, label: app.name)
+            .lines
+            .add(line),
+      ),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1020,7 +1021,6 @@ Future<void> _runTuiBackend({
           label: app.name,
         );
         tab.startupStage = stage;
-        holder.state.tabs.focusTab(tab);
         holder.markDirty();
       },
       onFlutterReady: (app, url) {

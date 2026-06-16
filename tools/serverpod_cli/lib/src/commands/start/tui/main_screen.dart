@@ -486,14 +486,6 @@ class MainScreen extends StatelessComponent {
             onShiftActivate: (_) => onHotRestart?.call(),
             enabled: actionsEnabled && onHotReload != null,
           ),
-        if (state.canLaunchApps)
-          Button(
-            name: 'Launch app…',
-            activationChar: 'R',
-            activationKeys: const [LogicalKey.keyR],
-            onActivate: (_) {},
-            enabled: false,
-          ),
         Button(
           name: 'Create migration',
           activationChar: 'M',

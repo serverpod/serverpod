@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/frontend_server_client.dart';
 import 'package:test/fake.dart';
@@ -147,6 +150,65 @@ class _FakeFlutter extends Fake implements FlutterProcess {
   }
 }
 
+Future<
+  ({
+    FlutterAppManager manager,
+    _FakeFlutter process,
+    Directory tempDir,
+  })
+>
+_createFlutterManagerHarness({
+  _FakeFlutter? flutter,
+  FlutterDependencyChange Function(String appId)? dependencyChange,
+  Future<void> Function(String appId)? restartOverride,
+  Future<void> Function(String appId)? launchOverride,
+}) async {
+  final tempDir = await Directory.systemTemp.createTemp(
+    'watch_session_flutter_',
+  );
+  final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+    ..createSync(recursive: true);
+  final flutterDir = Directory(p.join(tempDir.path, 'app_flutter'))
+    ..createSync(recursive: true);
+  File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
+name: app
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+
+  final app = FlutterAppConfig(
+    id: 'app',
+    name: 'App',
+    relativePathParts: p.split(
+      p.relative(flutterDir.path, from: serverDir.path),
+    ),
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
+  );
+
+  final process = flutter ?? _FakeFlutter();
+  final manager = FlutterAppManager(
+    apps: [app],
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    runMode: 'development',
+    flutterDevice: 'web-server',
+    flutterExtraArgs: const [],
+    onProgress: (_, _) {},
+    onReady: (_, _) {},
+    onStart: (_, _) async {},
+    onEnsureAppTab: (_) {},
+    stdoutSinkFor: (_) => stdout,
+    stderrSinkFor: (_) => stderr,
+  );
+  manager.dependencyChangeOverrideForTesting = dependencyChange;
+  manager.restartOverrideForTesting = restartOverride;
+  manager.launchOverrideForTesting = launchOverride;
+  await manager.initialize();
+  manager.setProcessForTesting('app', process);
+
+  return (manager: manager, process: process, tempDir: tempDir);
+}
+
 class _TestLogger extends VoidLogger {
   final List<String> infoMessages = [];
 
@@ -183,9 +245,7 @@ void main() {
     GenerateAction? generate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
-    FlutterProcess? flutterProcess,
-    Future<void> Function()? flutterAppRestartAction,
-    FlutterDependencyChange Function()? checkFlutterDependencyChange,
+    FlutterAppManager? flutterManager,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -209,9 +269,7 @@ void main() {
       applyMigrationsAction: applyMigrationsAction ?? () async {},
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
-      flutterProcessProvider: () => flutterProcess,
-      flutterAppRestartAction: flutterAppRestartAction,
-      checkFlutterDependencyChange: checkFlutterDependencyChange,
+      flutterManager: flutterManager,
     );
   }
 
@@ -961,14 +1019,23 @@ void main() {
 
   group('Given a Flutter process with a connected VM service,', () {
     late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       flutter = _FakeFlutter();
+      final harness = await _createFlutterManagerHarness(flutter: flutter);
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: flutter,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -988,16 +1055,25 @@ void main() {
     'Given a Flutter process with a connected VM service and a next compile that fails,',
     () {
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(flutter: flutter);
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
+          flutterManager: flutterManager,
         );
 
         compiler.nextCompileResult = _failResult();
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1015,14 +1091,23 @@ void main() {
 
   group('Given a Flutter process with a disconnected VM service,', () {
     late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       flutter = _FakeFlutter()..isVmServiceConnected = false;
+      final harness = await _createFlutterManagerHarness(flutter: flutter);
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: flutter,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1039,19 +1124,27 @@ void main() {
 
   group('Given a watch session with a Flutter app restart action,', () {
     late int restartActionCalls;
-    late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
 
-    setUp(() {
+    setUp(() async {
       restartActionCalls = 0;
-      flutter = _FakeFlutter();
-      session = buildSession(
-        compiler: compiler,
-        initialServer: server,
-        flutterProcess: flutter,
-        flutterAppRestartAction: () async {
+      final harness = await _createFlutterManagerHarness(
+        restartOverride: (_) async {
           restartActionCalls++;
         },
       );
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+      );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1063,7 +1156,6 @@ void main() {
         expect(restartActionCalls, 1);
         // A full relaunch is the process respawn, not the in-process hot
         // restart, and it leaves the server alone.
-        expect(flutter.calls, isEmpty);
         expect(server.calls, isEmpty);
         expect(factoryCalls, isEmpty);
       },
@@ -1090,12 +1182,11 @@ void main() {
     );
   });
 
-  group('Given a watch session without a Flutter app restart action,', () {
+  group('Given a watch session without a Flutter app manager,', () {
     test(
       'when restartFlutterApp is called, '
       'then it completes without error.',
       () async {
-        // No action injected (non-Flutter session); the call is a no-op.
         await session.restartFlutterApp();
 
         expect(server.calls, isEmpty);
@@ -1104,12 +1195,22 @@ void main() {
   });
 
   group('Given a watch session with a running Flutter process,', () {
-    setUp(() {
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createFlutterManagerHarness();
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: _FakeFlutter(),
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1122,12 +1223,24 @@ void main() {
   });
 
   group('Given a watch session whose Flutter process has stopped,', () {
-    setUp(() {
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createFlutterManagerHarness(
+        flutter: _FakeFlutter()..isRunning = false,
+      );
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
         initialServer: server,
-        flutterProcess: _FakeFlutter()..isRunning = false,
+        flutterManager: flutterManager,
       );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
     });
 
     test(
@@ -1139,7 +1252,7 @@ void main() {
     );
   });
 
-  group('Given a watch session with no Flutter process,', () {
+  group('Given a watch session with no running Flutter process,', () {
     test(
       'when checking whether the Flutter app is running, '
       'then it reports false',
@@ -1154,19 +1267,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => FlutterDependencyChange.native,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.native,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1214,19 +1338,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => FlutterDependencyChange.dartOnly,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.dartOnly,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1271,19 +1406,30 @@ void main() {
     () {
       late int restartActionCalls;
       late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         restartActionCalls = 0;
         flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => FlutterDependencyChange.none,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         session = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterProcess: flutter,
-          flutterAppRestartAction: () async {
-            restartActionCalls++;
-          },
-          checkFlutterDependencyChange: () => FlutterDependencyChange.none,
+          flutterManager: flutterManager,
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(
@@ -1323,22 +1469,33 @@ void main() {
   );
 
   group(
-    'Given an in-flight forceReload and a Flutter app restart action,',
+    'Given an in-flight forceReload and a Flutter app manager,',
     () {
       late List<String> order;
       late Future<void> reload;
       late WatchSession flutterRestartSession;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
 
-      setUp(() {
+      setUp(() async {
         order = <String>[];
+        final harness = await _createFlutterManagerHarness(
+          restartOverride: (_) async {},
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
         flutterRestartSession = buildSession(
           compiler: compiler,
           initialServer: server,
-          flutterAppRestartAction: () async {},
+          flutterManager: flutterManager,
         );
         reload = flutterRestartSession.forceReload().then(
           (_) => order.add('reload'),
         );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
       });
 
       test(

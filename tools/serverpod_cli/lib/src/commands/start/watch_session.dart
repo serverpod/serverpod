@@ -7,7 +7,6 @@ import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -108,28 +107,10 @@ class WatchSession {
 
   final FlutterAppManager? _flutterManager;
 
-  final FlutterProcess? Function() _flutterProcessProvider;
-  FlutterProcess? get _flutterProcess => _flutterManager != null
-      ? (_flutterManager.runningAppIds.isEmpty
-            ? null
-            : _flutterManager.processFor(
-                _flutterManager.runningAppIds.first,
-              ))
-      : _flutterProcessProvider();
-
   /// Whether a Flutter app process is currently running. Used e.g. to label
   /// the Ctrl+R action as a start or a restart.
-  bool get isFlutterAppRunning => _flutterManager != null
-      ? _flutterManager.runningAppIds.isNotEmpty
-      : (_flutterProcess?.isRunning ?? false);
-
-  /// (Re)launches Flutter app(s). Supplied by the orchestrator when no
-  /// [FlutterAppManager] is wired; otherwise the manager handles launches.
-  final Future<void> Function()? _flutterAppRestartAction;
-
-  /// Classifies how a Flutter app's dependency closure changed since the last
-  /// check. Legacy single-app hook; ignored when [_flutterManager] is set.
-  final FlutterDependencyChange Function()? _checkFlutterDependencyChange;
+  bool get isFlutterAppRunning =>
+      _flutterManager?.runningAppIds.isNotEmpty ?? false;
 
   final Completer<int> _done = Completer<int>();
 
@@ -168,9 +149,6 @@ class WatchSession {
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
     FlutterAppManager? flutterManager,
-    FlutterProcess? Function()? flutterProcessProvider,
-    Future<void> Function()? flutterAppRestartAction,
-    FlutterDependencyChange Function()? checkFlutterDependencyChange,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -179,10 +157,7 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
-       _flutterManager = flutterManager,
-       _flutterProcessProvider = flutterProcessProvider ?? (() => null),
-       _flutterAppRestartAction = flutterAppRestartAction,
-       _checkFlutterDependencyChange = checkFlutterDependencyChange {
+       _flutterManager = flutterManager {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -314,24 +289,17 @@ class WatchSession {
   Future<void> _reloadOrRestartFlutterApps({
     required Iterable<String> changedPaths,
   }) async {
-    if (_flutterManager != null) {
-      final appIds = _flutterManager.appIdsForChangedPaths(changedPaths);
-      for (final appId in appIds) {
-        final change = _flutterManager.checkDependencyChange(appId);
-        if (changedPaths.isEmpty && change == FlutterDependencyChange.none) {
-          continue;
-        }
-        await _reloadOrRestartFlutterApp(change, appId: appId);
-      }
-      return;
-    }
+    final manager = _flutterManager;
+    if (manager == null) return;
 
-    final legacyChange =
-        _checkFlutterDependencyChange?.call() ?? FlutterDependencyChange.none;
-    if (changedPaths.isEmpty && legacyChange == FlutterDependencyChange.none) {
-      return;
+    final appIds = manager.appIdsForChangedPaths(changedPaths);
+    for (final appId in appIds) {
+      final change = manager.checkDependencyChange(appId);
+      if (changedPaths.isEmpty && change == FlutterDependencyChange.none) {
+        continue;
+      }
+      await _reloadOrRestartFlutterApp(change, appId: appId);
     }
-    await _reloadOrRestartFlutterApp(legacyChange);
   }
 
   /// Refreshes a Flutter app after a file change with the lightest step that
@@ -341,29 +309,17 @@ class WatchSession {
   /// [restartFlutterApp] since we are already running inside [_chain].
   Future<void> _reloadOrRestartFlutterApp(
     FlutterDependencyChange change, {
-    String? appId,
+    required String appId,
   }) async {
     switch (change) {
       case FlutterDependencyChange.native:
         log.info(flutterDependenciesChangedNative);
-        if (_flutterManager != null && appId != null) {
-          await _flutterManager.restart(appId);
-        } else {
-          await _flutterAppRestartAction?.call();
-        }
+        await _flutterManager!.restart(appId);
       case FlutterDependencyChange.dartOnly:
         log.info(flutterDependenciesChangedDart);
-        if (_flutterManager != null && appId != null) {
-          await _restartFlutter(appId);
-        } else {
-          await _restartFlutter();
-        }
+        await _restartFlutter(appId);
       case FlutterDependencyChange.none:
-        if (_flutterManager != null && appId != null) {
-          await _reloadFlutter(appId);
-        } else {
-          await _reloadFlutter();
-        }
+        await _reloadFlutter(appId);
     }
   }
 
@@ -574,7 +530,19 @@ class WatchSession {
       // The session may have been disposed while this call was queued;
       // don't respawn a Flutter process we'd immediately leak.
       if (_state == SessionState.disposed) return;
-      await _flutterAppRestartAction?.call();
+      final manager = _flutterManager;
+      if (manager == null) return;
+
+      final running = manager.runningAppIds.toList();
+      if (running.isEmpty) {
+        if (manager.apps.isNotEmpty) {
+          await manager.launch(manager.apps.first.id);
+        }
+        return;
+      }
+      for (final appId in running) {
+        await manager.restart(appId);
+      }
     });
   }
 
@@ -600,7 +568,7 @@ class WatchSession {
       try {
         await _applyMigrationsAction();
         // Migrations regen the client lib; refresh Flutter.
-        await _reloadFlutter();
+        await _reloadAllFlutterApps();
       } finally {
         if (_state == SessionState.applyingMigration) {
           _state = SessionState.idle;
@@ -652,36 +620,31 @@ class WatchSession {
     // Stop Flutter after the server: an in-flight Flutter reload
     // mustn't see a half-shut-down server VM service.
     await _flutterManager?.stopAll();
-    await _flutterProcess?.stop();
     await _compiler?.dispose();
     if (!_done.isCompleted) _done.complete(code);
   }
 
   Future<void> _restartAllFlutterApps() async {
-    if (_flutterManager != null) {
-      for (final appId in _flutterManager.runningAppIds) {
-        await _restartFlutter(appId);
-      }
-      return;
+    final manager = _flutterManager;
+    if (manager == null) return;
+
+    for (final appId in manager.runningAppIds) {
+      await _restartFlutter(appId);
     }
-    await _restartFlutter();
   }
 
   Future<void> _reloadAllFlutterApps() async {
-    if (_flutterManager != null) {
-      for (final appId in _flutterManager.runningAppIds) {
-        await _reloadFlutter(appId);
-      }
-      return;
+    final manager = _flutterManager;
+    if (manager == null) return;
+
+    for (final appId in manager.runningAppIds) {
+      await _reloadFlutter(appId);
     }
-    await _reloadFlutter();
   }
 
   /// Reloads a Flutter app and logs the outcome. Never throws.
-  Future<void> _reloadFlutter([String? appId]) async {
-    final flutter = appId != null
-        ? _flutterManager?.processFor(appId)
-        : _flutterProcess;
+  Future<void> _reloadFlutter(String appId) async {
+    final flutter = _flutterManager?.processFor(appId);
     if (flutter == null) return;
     if (!flutter.isVmServiceConnected) {
       log.debug('Flutter not ready; skipping reload.');
@@ -696,10 +659,8 @@ class WatchSession {
   }
 
   /// Hot-restarts a Flutter app and logs the outcome. Never throws.
-  Future<void> _restartFlutter([String? appId]) async {
-    final flutter = appId != null
-        ? _flutterManager?.processFor(appId)
-        : _flutterProcess;
+  Future<void> _restartFlutter(String appId) async {
+    final flutter = _flutterManager?.processFor(appId);
     if (flutter == null) return;
     if (!flutter.isVmServiceConnected) {
       log.debug('Flutter not ready; skipping restart.');

@@ -65,6 +65,9 @@ class FlutterProcess {
   /// arg list when non-null.
   final List<String>? _argsOverrideForTesting;
 
+  /// Production override for `flutter run --machine` arguments.
+  final List<String>? _machineArgsOverride;
+
   /// Test-only override for [BrowserLauncher.openUrl].
   final Future<bool> Function(Uri url)? _openBrowserForTesting;
 
@@ -114,7 +117,8 @@ class FlutterProcess {
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
-       _argsOverrideForTesting = argsOverrideForTesting ?? machineArgsOverride,
+       _machineArgsOverride = machineArgsOverride,
+       _argsOverrideForTesting = argsOverrideForTesting,
        _openBrowserForTesting = openBrowserForTesting;
 
   /// True between [start] and [stop]/exit.
@@ -152,6 +156,7 @@ class FlutterProcess {
     final device = _launchBrowser ? flutterDeviceWebServer : _device;
     final args =
         _argsOverrideForTesting ??
+        _machineArgsOverride ??
         <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
