@@ -3,7 +3,6 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
-import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -157,7 +156,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       context: context,
     );
 
-    if (projectPath == null) {
+    if (projectPath is! CreateSuccess) {
       throw ExitException.error();
     }
   }
