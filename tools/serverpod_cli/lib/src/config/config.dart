@@ -17,6 +17,7 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 import '../generator/types.dart';
+import 'flutter_app_config.dart';
 
 /// The type of the package.
 enum PackageType {
@@ -88,6 +89,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.enabledFeatures,
     required this.databaseDialect,
     required List<String> relativeFlutterPackagePathParts,
+    required this.flutterApps,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
@@ -250,19 +252,24 @@ class GeneratorConfig implements ModelLoadConfig {
 
   final List<String> _relativeFlutterPackagePathParts;
 
+  /// Configured companion Flutter apps from `generator.yaml`.
+  final List<FlutterAppConfig> flutterApps;
+
   /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
   /// before resolving against the filesystem.
-  List<String> get flutterPackagePathParts => [
-    ...serverPackageDirectoryPathParts,
-    ..._relativeFlutterPackagePathParts,
-  ];
+  @Deprecated('Use flutterApps')
+  List<String> get flutterPackagePathParts => flutterApps.isNotEmpty
+      ? flutterApps.first.pathParts
+      : [
+          ...serverPackageDirectoryPathParts,
+          ..._relativeFlutterPackagePathParts,
+        ];
 
-  /// True when [flutterPackagePathParts] is a directory with `pubspec.yaml`.
-  bool get hasFlutterPackage {
-    final dirPath = p.joinAll(flutterPackagePathParts);
-    if (!Directory(dirPath).existsSync()) return false;
-    return File(p.join(dirPath, 'pubspec.yaml')).existsSync();
-  }
+  /// True when the first configured Flutter app directory contains
+  /// `pubspec.yaml`.
+  @Deprecated('Use flutterApps')
+  bool get hasFlutterPackage =>
+      flutterApps.isNotEmpty && flutterApps.first.hasPackage;
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
@@ -407,6 +414,11 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
+    final flutterApps = loadFlutterApps(
+      generatorConfig: generatorConfig,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      projectName: name,
+    );
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
@@ -535,6 +547,7 @@ class GeneratorConfig implements ModelLoadConfig {
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
+      flutterApps: flutterApps,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
