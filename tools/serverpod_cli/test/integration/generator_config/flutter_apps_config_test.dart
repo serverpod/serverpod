@@ -89,18 +89,16 @@ type: server
       );
 
       test(
-        'when loading GeneratorConfig then deprecated hasFlutterPackage is true.',
+        'when loading GeneratorConfig then synthesized app pathParts resolve correctly.',
         () async {
           var config = await GeneratorConfig.load(
             serverRootDir: path.join(d.sandbox, _serverRootDir),
             interactive: false,
           );
 
-          // ignore: deprecated_member_use_from_same_package
-          expect(config.hasFlutterPackage, isTrue);
-          // ignore: deprecated_member_use_from_same_package
+          expect(config.flutterApps.first.hasPackage, isTrue);
           expect(
-            path.joinAll(config.flutterPackagePathParts),
+            path.joinAll(config.flutterApps.first.pathParts),
             path.join(
               path.join(d.sandbox, _serverRootDir),
               '..',
@@ -134,8 +132,6 @@ type: server
           );
 
           expect(config.flutterApps, isEmpty);
-          // ignore: deprecated_member_use_from_same_package
-          expect(config.hasFlutterPackage, isFalse);
         },
       );
     },

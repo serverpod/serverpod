@@ -37,7 +37,7 @@ class McpSocketServer {
   Future<void> Function()? _onHotReload;
   Future<void> Function()? _onHotRestart;
   List<Object> Function()? _getLogHistory;
-  List<String> Function()? _getFlutterLogHistory;
+  Map<String, List<String>> Function()? _getFlutterLogHistory;
   String? Function()? _getVmServiceUri;
   String? Function()? _getFlutterDtdUri;
   Stream<void>? _vmServiceUriChanges;
@@ -69,7 +69,7 @@ class McpSocketServer {
     Future<void> Function()? onHotReload,
     Future<void> Function()? onHotRestart,
     List<Object> Function()? getLogHistory,
-    List<String> Function()? getFlutterLogHistory,
+    Map<String, List<String>> Function()? getFlutterLogHistory,
     String? Function()? getVmServiceUri,
     String? Function()? getFlutterDtdUri,
     Stream<void>? vmServiceUriChanges,

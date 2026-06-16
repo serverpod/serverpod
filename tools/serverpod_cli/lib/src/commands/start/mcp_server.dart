@@ -52,8 +52,8 @@ base class ServerpodMcpServer extends MCPServer
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
-  /// Returns the current Flutter raw log line snapshot.
-  List<String> Function()? getFlutterLogHistory;
+  /// Returns raw Flutter log lines keyed by configured app id.
+  Map<String, List<String>> Function()? getFlutterLogHistory;
 
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
@@ -253,9 +253,26 @@ base class ServerpodMcpServer extends MCPServer
     }
     final limit = _tailLimit(request);
     final all = get();
-    final tail = all.length <= limit ? all : all.sublist(all.length - limit);
+    final appId = _stringArg(request, 'appId');
+    if (appId != null) {
+      final lines = all[appId] ?? [];
+      final tail = lines.length <= limit
+          ? lines
+          : lines.sublist(lines.length - limit);
+      return CallToolResult(
+        content: [TextContent(text: jsonEncode(tail))],
+      );
+    }
+
+    final encoded = <String, List<String>>{};
+    for (final entry in all.entries) {
+      final lines = entry.value;
+      encoded[entry.key] = lines.length <= limit
+          ? lines
+          : lines.sublist(lines.length - limit);
+    }
     return CallToolResult(
-      content: [TextContent(text: jsonEncode(tail))],
+      content: [TextContent(text: jsonEncode(encoded))],
     );
   }
 

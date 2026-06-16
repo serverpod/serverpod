@@ -106,6 +106,7 @@ In `config/generator.yaml`:
 
 - `type`: `server` (default), `module`, or `internal`
 - `client_package_path`: path to client package
+- `flutter_apps`: list of companion Flutter apps (`name` + relative `path`); when absent, defaults to `../<project>_flutter` if that directory exists
 - `modules`: map of module names + optional `nickname`
 - `server_test_tools_path`: test tools output path (remove to disable)
 - `extraClasses`: custom serializable class URIs

@@ -410,7 +410,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
-  List<String> Function()? mcpGetFlutterLogHistory,
+  Map<String, List<String>> Function()? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
@@ -1050,9 +1050,11 @@ Future<void> _runTuiBackend({
       },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
       mcpGetFlutterLogHistory: () {
-        if (config.flutterApps.isEmpty) return <String>[];
-        final tab = holder.state.appLogTabFor(config.flutterApps.first.id);
-        return tab?.lines.toList() ?? <String>[];
+        return {
+          for (final app in config.flutterApps)
+            app.id:
+                holder.state.appLogTabFor(app.id)?.lines.toList() ?? <String>[],
+        };
       },
     );
 

@@ -107,6 +107,11 @@ final Tool tailFlutterLogsTool = Tool(
         minimum: 1,
         maximum: 10000,
       ),
+      'appId': Schema.string(
+        description:
+            'Stable app id from `config/generator.yaml` `flutter_apps`. '
+            'When omitted, returns a map of app id to log lines.',
+      ),
     },
   ),
 );

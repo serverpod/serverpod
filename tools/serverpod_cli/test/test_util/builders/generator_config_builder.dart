@@ -26,7 +26,6 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  List<String> _relativeFlutterPackagePathParts;
   List<FlutterAppConfig>? _flutterApps;
 
   GeneratorConfigBuilder()
@@ -38,7 +37,6 @@ class GeneratorConfigBuilder {
       _serverPackageDirectoryPathParts = [],
       _sharedModelsSourcePathsParts = {},
       _relativeDartClientPackagePathParts = ['..', 'example_client'],
-      _relativeFlutterPackagePathParts = ['..', 'example_flutter'],
       _modules = [
         ModuleConfig(
           type: PackageType.internal,
@@ -164,14 +162,6 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withRelativeFlutterPackagePathParts(
-    List<String> relativeFlutterPackagePathParts,
-  ) {
-    _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts;
-    _flutterApps = null;
-    return this;
-  }
-
   GeneratorConfigBuilder withFlutterApps(List<FlutterAppConfig> flutterApps) {
     _flutterApps = flutterApps;
     return this;
@@ -186,7 +176,7 @@ class GeneratorConfigBuilder {
       FlutterAppConfig(
         id: _name,
         name: _name,
-        relativePathParts: _relativeFlutterPackagePathParts,
+        relativePathParts: ['..', '${_name}_flutter'],
         serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       ),
     ];
@@ -202,7 +192,6 @@ class GeneratorConfigBuilder {
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
-      relativeFlutterPackagePathParts: _relativeFlutterPackagePathParts,
       flutterApps: _buildFlutterApps(),
       modules: _modules,
       extraClasses: _extraClasses,

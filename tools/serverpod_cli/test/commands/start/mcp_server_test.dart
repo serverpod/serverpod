@@ -482,16 +482,14 @@ void main() {
         'when calling tail_flutter_logs with a callback, '
         'then it returns the most recent lines as JSON',
         () async {
-          server.getFlutterLogHistory = () => [
-            'line 1',
-            'line 2',
-            'line 3',
-          ];
+          server.getFlutterLogHistory = () => {
+            'admin': ['line 1', 'line 2', 'line 3'],
+          };
 
           final result = await connection.callTool(
             CallToolRequest(
               name: 'tail_flutter_logs',
-              arguments: {'limit': 2},
+              arguments: {'limit': 2, 'appId': 'admin'},
             ),
           );
 
@@ -502,6 +500,30 @@ void main() {
                   )
                   as List<dynamic>;
           expect(lines, ['line 2', 'line 3']);
+        },
+      );
+
+      test(
+        'when calling tail_flutter_logs without appId, '
+        'then it returns a map of app id to lines',
+        () async {
+          server.getFlutterLogHistory = () => {
+            'admin': ['a'],
+            'customer': ['b', 'c'],
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'tail_flutter_logs'),
+          );
+
+          expect(result.isError, isNull);
+          expect(
+            jsonDecode((result.content.first as TextContent).text),
+            {
+              'admin': ['a'],
+              'customer': ['b', 'c'],
+            },
+          );
         },
       );
 

@@ -88,11 +88,9 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
-    required List<String> relativeFlutterPackagePathParts,
     required this.flutterApps,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
-       _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
 
@@ -250,26 +248,8 @@ class GeneratorConfig implements ModelLoadConfig {
     ],
   ];
 
-  final List<String> _relativeFlutterPackagePathParts;
-
   /// Configured companion Flutter apps from `generator.yaml`.
   final List<FlutterAppConfig> flutterApps;
-
-  /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
-  /// before resolving against the filesystem.
-  @Deprecated('Use flutterApps')
-  List<String> get flutterPackagePathParts => flutterApps.isNotEmpty
-      ? flutterApps.first.pathParts
-      : [
-          ...serverPackageDirectoryPathParts,
-          ..._relativeFlutterPackagePathParts,
-        ];
-
-  /// True when the first configured Flutter app directory contains
-  /// `pubspec.yaml`.
-  @Deprecated('Use flutterApps')
-  bool get hasFlutterPackage =>
-      flutterApps.isNotEmpty && flutterApps.first.hasPackage;
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
@@ -413,7 +393,6 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
     final flutterApps = loadFlutterApps(
       generatorConfig: generatorConfig,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
@@ -546,7 +525,6 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
       flutterApps: flutterApps,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
