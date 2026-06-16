@@ -84,6 +84,28 @@ void main() {
       );
 
       test(
+        'then the build Flutter app page uses a non-WASM build by default',
+        () async {
+          final buildFlutterAppPage = File(
+            p.join(project.serverDir, 'web', 'pages', 'build_flutter_app.html'),
+          );
+          final content = await buildFlutterAppPage.readAsString();
+
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href /app/ '
+              '-o ../${project.name}_server/web/app',
+            ),
+          );
+          expect(
+            content,
+            isNot(contains('flutter build web --base-href /app/ --wasm')),
+          );
+        },
+      );
+
+      test(
         'then the server config for development contains webserver configurations',
         () async {
           final config = File(
@@ -178,7 +200,13 @@ void main() {
           expect(
             content,
             contains(
-              'Remove this line if you build the Flutter app with --wasm',
+              'If building the Flutter app with WASM, set the below parameter to',
+            ),
+          );
+          expect(
+            content,
+            contains(
+              'true and add the --wasm flag to the flutter build command.',
             ),
           );
           expect(content, contains('enableWasmHeaders: false'));
@@ -194,28 +222,6 @@ void main() {
 
           expect(content, contains('flutter build web --base-href /app/'));
           expect(content, isNot(contains('--wasm')));
-        },
-      );
-
-      test(
-        'then the build Flutter app page uses a non-WASM build by default',
-        () async {
-          final buildFlutterAppPage = File(
-            p.join(project.serverDir, 'web', 'pages', 'build_flutter_app.html'),
-          );
-          final content = await buildFlutterAppPage.readAsString();
-
-          expect(
-            content,
-            contains(
-              'flutter build web --base-href /app/ '
-              '-o ../${project.name}_server/web/app',
-            ),
-          );
-          expect(
-            content,
-            isNot(contains('flutter build web --base-href /app/ --wasm')),
-          );
         },
       );
 
@@ -366,18 +372,22 @@ void main() {
     },
   );
 
-  test(
+  group(
     'Given a TemplateContext with a module template type, '
-    'when performCreate is called, '
-    'then the server test config contains webserver configuration',
-    () async {
+    'when performCreate is called, ',
+    () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(template: ServerpodTemplateType.module),
       );
 
-      final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
-      final content = await file.readAsString();
-      expect(content, contains('webServer:'));
+      test(
+        'then the server test config contains webserver configuration',
+        () async {
+          final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
+          final content = await file.readAsString();
+          expect(content, contains('webServer:'));
+        },
+      );
     },
   );
 }
