@@ -20,6 +20,7 @@ export 'src/common/oauth2_pkce/oauth2_pkce_client_config.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_exception.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_result.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_util.dart';
+export 'src/common/sign_in_flow_coordinator.dart';
 export 'src/email/email_auth_controller.dart';
 export 'src/email/email_sign_in_widget.dart';
 export 'src/github/github_auth_controller.dart';
