@@ -4,6 +4,8 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -116,6 +118,15 @@ class CreateRepairMigrationCommand
         from: Directory.current.path,
       )}',
       type: TextLogType.bullet,
+    );
+    await cliAnalytics.captureMigrationCreated(
+      config: config,
+      flags: const MigrationCreatedFlags(
+        serverMigrationCreated: true,
+        clientMigrationCreated: false,
+      ),
+      isRepairMigration: true,
+      enabled: serverpodRunner.analyticsEnabled(),
     );
     log.info('Done.', type: TextLogType.success);
   }

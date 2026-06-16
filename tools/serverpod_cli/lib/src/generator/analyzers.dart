@@ -16,7 +16,11 @@ import 'dart/temp_protocol_generator.dart';
 import 'serverpod_code_generator.dart';
 
 /// Result of a code generation run.
-typedef GenerateResult = ({bool success, Set<String> generatedFiles});
+typedef GenerateResult = ({
+  bool success,
+  Set<String> generatedFiles,
+  ProtocolDefinition? protocolDefinition,
+});
 
 /// Holds the set of analyzers needed for code generation.
 ///
@@ -252,7 +256,11 @@ class Analyzers {
       }
 
       if (!requirements.generateProtocol) {
-        return (success: success, generatedFiles: generatedModelFiles.toSet());
+        return (
+          success: success,
+          generatedFiles: generatedModelFiles.toSet(),
+          protocolDefinition: null,
+        );
       }
 
       final changedFiles = requirements.generateModels
@@ -340,7 +348,11 @@ class Analyzers {
         config: config,
       );
 
-      return (success: success, generatedFiles: allGeneratedFiles);
+      return (
+        success: success,
+        generatedFiles: allGeneratedFiles,
+        protocolDefinition: protocolDefinition,
+      );
     } finally {
       // Retire still-active stubs after an interrupted, models-only, or failed
       // generation. Overlays only need to be removed; disk fallbacks restore

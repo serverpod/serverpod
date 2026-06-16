@@ -371,6 +371,7 @@ void main() {
             return (
               success: generateSuccess,
               generatedFiles: generatedFiles,
+              protocolDefinition: null,
             );
           },
       fullGenerate: fullGenerate,
@@ -2280,7 +2281,11 @@ serverpod:
           initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
-            return (success: true, generatedFiles: <String>{});
+            return (
+              success: true,
+              generatedFiles: <String>{},
+              protocolDefinition: null,
+            );
           },
           createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => false,
@@ -2346,7 +2351,11 @@ serverpod:
           initialServer: classifierServer,
           generate: (affectedPaths, requirements) async {
             classifierGenerateCalls.add(affectedPaths);
-            return (success: true, generatedFiles: <String>{});
+            return (
+              success: true,
+              generatedFiles: <String>{},
+              protocolDefinition: null,
+            );
           },
           createServer: (String? dillPath) async => classifierServer,
           classifyProtocolChange: (_) async => true,
@@ -2482,7 +2491,11 @@ class Counter {
       noCompilerSession = WatchSession(
         generate: (affectedPaths, requirements) async {
           noCompilerGenerateCalls.add(affectedPaths);
-          return (success: true, generatedFiles: noCompilerGeneratedFiles);
+          return (
+            success: true,
+            generatedFiles: noCompilerGeneratedFiles,
+            protocolDefinition: null,
+          );
         },
         createServer: (String? dillPath) async {
           noCompilerFactoryCalls.add('createServer:$dillPath');
@@ -2610,8 +2623,11 @@ class Counter {
     setUp(() {
       noFactoryServer = _FakeServer();
       noFactorySession = WatchSession(
-        generate: (affectedPaths, requirements) async =>
-            (success: true, generatedFiles: <String>{}),
+        generate: (affectedPaths, requirements) async => (
+          success: true,
+          generatedFiles: <String>{},
+          protocolDefinition: null,
+        ),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
         applyMigrationsAction: () async {},

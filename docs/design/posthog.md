@@ -12,7 +12,7 @@ These four lifecycle events add structured, privacy-safe properties at meaningfu
 
 ## Implementation status
 
-**Not implemented.** The plumbing below is a design target. Today:
+**Implemented** in `tools/serverpod_cli/lib/src/analytics/`. PostHog dashboards (step 8) are still manual follow-up work.
 
 - `PostHogAnalytics` and `MixPanelAnalytics` are wired in `tools/serverpod_cli/bin/serverpod_cli.dart` via `CompoundAnalytics`.
 - `BetterCommandRunner` emits one event per invocation (command name, or `help` / `invalid`) with masked `full_command` and `flag_*` / `option_*` properties. Those coarse events continue to both backends unchanged.
@@ -29,7 +29,7 @@ Command handler (create / generate / …)
 CliAnalytics.capture(event, serverDir, properties)
         │  1. read/update .dart_tool/serverpod/metadata.json
         │  2. build allowlisted payload (AnalyticsPayloadBuilder)
-        │  3. postHogAnalytics.track(...)   ← cli.* events only
+        │  3. analytics.track(...)   ← cli.* events only
         ▼
 PostHogAnalytics
 
@@ -287,9 +287,13 @@ Covers `serverpod start` (including `--watch` / `--no-watch`). Does **not** cove
 | `flutter_device_category` | `String?` | coarse bucket from `--flutter-device` (e.g. `chrome`, `web-server`, `mobile`, `desktop`, `headless`) |
 | `docker_flag` | `bool` | user passed `--docker` |
 | `docker_compose_present` | `bool` | `docker-compose.yaml` exists in server dir |
-| `docker_services_running` | `bool` | `docker compose ps --status running` returned containers (same probe as `_ensureDockerServices`) |
 | `num_tool_calls` | `int` | sum of `command_invocations` values in metadata |
 | `command_invocations` | `Map<String, int>` | copy of metadata histogram |
+
+Do **not** spawn a `docker compose ps` probe just for analytics — it adds a
+subprocess to every `serverpod start`. Whether Compose services were already
+running is inferable from `docker_flag` + `docker_compose_present` plus the
+existing startup logs, so it is intentionally omitted.
 
 Do **not** probe `localhost:8090` — that port is the default Flutter **web** port, not Redis or Postgres.
 

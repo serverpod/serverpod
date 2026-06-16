@@ -8,6 +8,8 @@ import 'package:config/config.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/generate_analytics.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
@@ -157,12 +159,26 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
 
+      final analyticsEnabled = serverpodRunner.analyticsEnabled();
+      // Fire-and-forget: analytics must never delay session start.
+      unawaited(
+        _captureSessionStartAnalytics(
+          config: config,
+          commandConfig: commandConfig,
+          useTui: true,
+          launchFlutterApp: launchFlutterApp,
+          flutterDevice: flutterDevice,
+          analyticsEnabled: analyticsEnabled,
+        ),
+      );
+
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
         watch: watch,
         launchFlutterApp: launchFlutterApp,
         serverArgs: argResults?.rest ?? [],
         config: config,
+        analyticsEnabled: analyticsEnabled,
       );
       if (exitCode != 0) throw ExitException(exitCode);
       return;
@@ -192,6 +208,19 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     if (await _detectExistingInstance(config)) return;
 
+    final analyticsEnabled = serverpodRunner.analyticsEnabled();
+    // Fire-and-forget: analytics must never delay session start.
+    unawaited(
+      _captureSessionStartAnalytics(
+        config: config,
+        commandConfig: commandConfig,
+        useTui: false,
+        launchFlutterApp: launchFlutterApp,
+        flutterDevice: flutterDevice,
+        analyticsEnabled: analyticsEnabled,
+      ),
+    );
+
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
     final docker = commandConfig.optionalValue(StartOption.docker);
 
@@ -217,6 +246,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         keepOpenOnFailure: watch,
         launchFlutterApp: launchFlutterApp,
         shutdown: shutdown,
+        analyticsEnabled: analyticsEnabled,
       );
       switch (result) {
         case WatchLoopAborted(:final exitCode):
@@ -270,6 +300,37 @@ Future<bool> _runHooksFor(
     case NativeAssetsApplyFailure(:final message):
       log.error(message);
       return false;
+  }
+}
+
+Future<void> _captureSessionStartAnalytics({
+  required GeneratorConfig config,
+  required Configuration<StartOption> commandConfig,
+  required bool useTui,
+  required bool launchFlutterApp,
+  required String flutterDevice,
+  required bool analyticsEnabled,
+}) async {
+  if (!analyticsEnabled) return;
+
+  try {
+    final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+    final composePresent = await File(
+      p.join(serverDir, 'docker-compose.yaml'),
+    ).exists();
+
+    await cliAnalytics.captureSessionStart(
+      config: config,
+      watchMode: commandConfig.value(StartOption.watch),
+      tuiEnabled: useTui,
+      flutterEnabled: launchFlutterApp,
+      flutterDevice: flutterDevice,
+      dockerFlag: commandConfig.value(StartOption.docker),
+      dockerComposePresent: composePresent,
+      enabled: analyticsEnabled,
+    );
+  } catch (_) {
+    // Analytics must never disrupt `serverpod start`.
   }
 }
 
@@ -436,6 +497,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required bool keepOpenOnFailure,
   required bool launchFlutterApp,
   required _ShutdownSignal shutdown,
+  required bool analyticsEnabled,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
   IOSink Function(FlutterAppConfig app)? flutterStdoutSinkFor,
@@ -536,6 +598,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         });
         return analyzers;
       },
+      analyticsEnabled: analyticsEnabled,
+      analyticsTiming: GenerateAnalyticsTiming.oneshot,
     );
   } catch (_) {
     // Tear down even when analysis/generation throws, not just on a clean
@@ -775,6 +839,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         affectedPaths: affectedPaths,
         incremental: true,
         requirements: requirements,
+        analyticsEnabled: analyticsEnabled,
+        analyticsTiming: GenerateAnalyticsTiming.watchIncremental,
       );
     },
     // Full-project regeneration for on-demand recovery from a degraded start
@@ -1122,6 +1188,7 @@ Future<int> _runWithTui({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
+  required bool analyticsEnabled,
 }) async {
   final holder = StartAppStateHolder(
     ServerWatchState()..watchModeEnabled = watch,
@@ -1159,6 +1226,7 @@ Future<int> _runWithTui({
       serverArgs: serverArgs,
       config: config,
       shutdown: shutdown,
+      analyticsEnabled: analyticsEnabled,
       onFatalError: recordFatalCrash,
     ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
   }
@@ -1222,6 +1290,7 @@ Future<void> _runTuiBackend({
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
+  required bool analyticsEnabled,
   required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
   try {
@@ -1255,6 +1324,7 @@ Future<void> _runTuiBackend({
       keepOpenOnFailure: true,
       launchFlutterApp: launchFlutterApp,
       shutdown: shutdown,
+      analyticsEnabled: analyticsEnabled,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(

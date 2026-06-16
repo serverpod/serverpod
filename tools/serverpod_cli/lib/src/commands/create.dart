@@ -238,12 +238,15 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
 
     final useTui = (interactive ?? true) && !ci.isCI;
 
+    final analyticsEnabled = serverpodRunner.analyticsEnabled();
+
     if (useTui) {
       await performCreateWithTui(
         name,
         force,
         template: template,
         interactive: true,
+        analyticsEnabled: analyticsEnabled,
       );
       return;
     }
@@ -253,6 +256,8 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       force,
       interactive: interactive,
       context: context,
+      analyticsMethod: 'create',
+      analyticsEnabled: analyticsEnabled,
     );
 
     if (result is! CreateSuccess) {

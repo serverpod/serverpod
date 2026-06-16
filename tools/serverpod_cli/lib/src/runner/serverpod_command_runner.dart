@@ -1,12 +1,17 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/update_prompt/prompt_to_update.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/version.dart' show VersionCommand;
@@ -76,6 +81,21 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
       log.info('Enabling experimental feature: ${feature.name}.');
     }
     CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+
+    final commandName = topLevelResults.command?.name;
+    final richAnalytics = cliAnalyticsOrNull;
+    if (commandName != null && analyticsEnabled() && richAnalytics != null) {
+      final serverDir = findServerDirectory(Directory.current);
+      if (serverDir != null) {
+        unawaited(
+          richAnalytics.recordCommandInvocation(
+            serverDir: serverDir.path,
+            commandName: commandName,
+            enabled: true,
+          ),
+        );
+      }
+    }
 
     await super.runCommand(topLevelResults);
   }

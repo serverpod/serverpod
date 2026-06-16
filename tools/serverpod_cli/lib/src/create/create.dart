@@ -8,6 +8,7 @@ import 'dart:math' as math;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
@@ -123,6 +124,8 @@ Future<CreateResult> performCreate(
   required bool? interactive,
   required TemplateContext context,
   Directory? workingDirectory,
+  String? analyticsMethod,
+  bool analyticsEnabled = false,
 
   /// Whether to create default migration for the upgrade path.
   bool createDefaultMigrationForUpgrade = true,
@@ -316,6 +319,17 @@ Future<CreateResult> performCreate(
     var projectDirPath = p.basename(serverpodDirs.projectDir.path);
 
     if (template.hasServer) logStartInstructions(projectDirPath);
+
+    if (analyticsMethod != null && analyticsEnabled) {
+      await cliAnalytics.captureProjectCreated(
+        serverDir: serverpodDirs.serverDir.path,
+        method: analyticsMethod,
+        template: template,
+        context: context,
+        force: force,
+        enabled: true,
+      );
+    }
 
     return CreateSuccess(
       projectDirectoryPath: projectDirPath,

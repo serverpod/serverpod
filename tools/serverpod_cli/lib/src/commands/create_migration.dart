@@ -4,6 +4,8 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/cli_analytics.dart';
+import 'package:serverpod_cli/src/analytics/migration_metrics.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -98,6 +100,15 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     _logMigrationOutcome(outcome);
     if (outcome.success) {
+      final flags = MigrationCreatedFlags.fromOutcome(outcome);
+      if (flags.serverMigrationCreated || flags.clientMigrationCreated) {
+        await cliAnalytics.captureMigrationCreated(
+          config: config,
+          flags: flags,
+          isRepairMigration: false,
+          enabled: serverpodRunner.analyticsEnabled(),
+        );
+      }
       log.info('Done.', type: TextLogType.success);
     } else {
       throw ExitException.error();
