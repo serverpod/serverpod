@@ -1019,7 +1019,8 @@ Future<int> _runWithTui({
   required GeneratorConfig config,
 }) async {
   final holder = StartAppStateHolder(
-    ServerWatchState()..watchModeEnabled = watch,
+    ServerWatchState(hasConfiguredApps: config.flutterApps.isNotEmpty)
+      ..watchModeEnabled = watch,
   );
   var backendStarted = false;
 
@@ -1121,14 +1122,18 @@ Future<void> _runTuiBackend({
 
     final stdoutSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
     final stderrSink = TuiLogSink(holder, addLine: holder.state.rawLines.add);
-    final flutterStdoutSink = TuiLogSink(
-      holder,
-      addLine: holder.state.rawFlutterLines.add,
-    );
-    final flutterStderrSink = TuiLogSink(
-      holder,
-      addLine: holder.state.rawFlutterLines.add,
-    );
+
+    void addFlutterLogLine(String line) {
+      if (config.flutterApps.isEmpty) return;
+      final app = config.flutterApps.first;
+      holder.state
+          .getOrCreateAppLogTab(appId: app.id, label: app.name)
+          .lines
+          .add(line);
+    }
+
+    final flutterStdoutSink = TuiLogSink(holder, addLine: addFlutterLogLine);
+    final flutterStderrSink = TuiLogSink(holder, addLine: addFlutterLogLine);
 
     final result = await _setupWatchLoop(
       config: config,
@@ -1145,13 +1150,25 @@ Future<void> _runTuiBackend({
       flutterStdoutSink: flutterStdoutSink,
       flutterStderrSink: flutterStderrSink,
       onFlutterProgress: (stage) {
-        holder.state.flutterStartupStage = stage;
-        holder.state.showFlutterOutput = true;
+        if (config.flutterApps.isEmpty) return;
+        final app = config.flutterApps.first;
+        final tab = holder.state.getOrCreateAppLogTab(
+          appId: app.id,
+          label: app.name,
+        );
+        tab.startupStage = stage;
+        holder.state.tabs.focusTab(tab);
         holder.markDirty();
       },
       onFlutterReady: (url) {
-        holder.state.flutterUrl = url;
-        holder.state.flutterReady = true;
+        if (config.flutterApps.isEmpty) return;
+        final app = config.flutterApps.first;
+        final tab = holder.state.getOrCreateAppLogTab(
+          appId: app.id,
+          label: app.name,
+        );
+        tab.url = url;
+        tab.ready = true;
         holder.markDirty();
       },
       onServerStart: (server) async {
@@ -1171,7 +1188,11 @@ Future<void> _runTuiBackend({
         );
       },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
-      mcpGetFlutterLogHistory: () => holder.state.rawFlutterLines.toList(),
+      mcpGetFlutterLogHistory: () {
+        if (config.flutterApps.isEmpty) return <String>[];
+        final tab = holder.state.appLogTabFor(config.flutterApps.first.id);
+        return tab?.lines.toList() ?? <String>[];
+      },
     );
 
     switch (result) {
@@ -1181,8 +1202,8 @@ Future<void> _runTuiBackend({
       case WatchLoopReady(:final ctx):
         // Offer Ctrl+R whenever a Flutter app could run here — even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
-        holder.state.flutterRestartAvailable =
-            config.hasFlutterPackage &&
+        holder.state.canLaunchApps =
+            config.flutterApps.isNotEmpty &&
             runModeFromServerArgs(serverArgs) == 'development';
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {

@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 
@@ -14,7 +15,8 @@ void main() {
       expect(state.logHistory, isEmpty);
       expect(state.rawLines, isEmpty);
       expect(state.activeOperations, isEmpty);
-      expect(state.selectedTab, 0);
+      expect(state.tabs.focusedAreaIndex, 0);
+      expect(state.tabs.areaOf(kMainArea).tabs, hasLength(1));
       expect(state.actionBusy, isFalse);
       expect(state.serverReady, isFalse);
       expect(state.showSplash, isTrue);
@@ -24,12 +26,14 @@ void main() {
 
   group('Given a ServerWatchState with entries in every log buffer', () {
     late ServerWatchState state;
+    late AppLogTab appTab;
 
     setUp(() {
       state = ServerWatchState();
+      appTab = state.getOrCreateAppLogTab(appId: 'app', label: 'App');
       state.logHistory.add('server entry');
       state.rawLines.add('raw server line');
-      state.rawFlutterLines.add('raw flutter line');
+      appTab.lines.add('raw flutter line');
     });
 
     test('when clearLogs is called then every log buffer is emptied', () {
@@ -37,7 +41,7 @@ void main() {
 
       expect(state.logHistory, isEmpty);
       expect(state.rawLines, isEmpty);
-      expect(state.rawFlutterLines, isEmpty);
+      expect(appTab.lines, isEmpty);
     });
   });
 
@@ -46,14 +50,16 @@ void main() {
     () {
       late ServerWatchState state;
       late TrackedOperation operation;
+      late AppLogTab appTab;
 
       setUp(() {
         state = ServerWatchState();
         operation = TrackedOperation(id: 'hot-reload', label: 'Hot reload');
         state.activeOperations[operation.id] = operation;
+        appTab = state.getOrCreateAppLogTab(appId: 'app', label: 'App');
         state.logHistory.add('server entry');
         state.rawLines.add('raw server line');
-        state.rawFlutterLines.add('raw flutter line');
+        appTab.lines.add('raw flutter line');
       });
 
       test('when clearLogs is called then activeOperations are preserved', () {
@@ -64,4 +70,13 @@ void main() {
       });
     },
   );
+
+  group('Given a ServerWatchState without configured apps', () {
+    test('when created then only the main area exists', () {
+      final state = ServerWatchState(hasConfiguredApps: false);
+
+      expect(state.tabs.areas, hasLength(1));
+      expect(state.tabs.areas.single.id, kMainArea);
+    });
+  });
 }

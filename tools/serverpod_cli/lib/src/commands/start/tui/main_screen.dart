@@ -4,21 +4,19 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'loading_screen.dart';
 import 'state.dart';
+import 'tab_model.dart';
 
 /// Main screen shown after startup completes.
 ///
 /// Layout:
-/// - Bordered box with tab bar + scrollable log view + pinned active operations
+/// - Bordered box with area panes + scrollable log views + pinned operations
 /// - Bottom button bar with keyboard shortcuts
 class MainScreen extends StatelessComponent {
   const MainScreen({
     super.key,
     required this.state,
-    required this.onTabChanged,
     this.showSplash = false,
-    required this.logScrollController,
     required this.rawScrollController,
-    required this.flutterRawScrollController,
     required this.helpScrollController,
     this.onToggleHelp,
     this.onHotReload,
@@ -31,11 +29,8 @@ class MainScreen extends StatelessComponent {
   });
 
   final ServerWatchState state;
-  final ValueChanged<int> onTabChanged;
   final bool showSplash;
-  final ScrollController logScrollController;
   final ScrollController rawScrollController;
-  final ScrollController flutterRawScrollController;
   final ScrollController helpScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
@@ -63,12 +58,11 @@ class MainScreen extends StatelessComponent {
       ],
     ),
     (
-      'Tabs',
+      'Panes',
       [
-        ('Tab / →', 'Next tab'),
-        ('Shift+Tab / ←', 'Previous tab'),
-        ('1', 'Server logs'),
-        ('2', 'Flutter logs'),
+        ('← / →', 'Move focus between panes'),
+        ('Tab / Shift+Tab', 'Cycle tabs in focused pane'),
+        ('1–9', 'Select tab in focused pane'),
       ],
     ),
     (
@@ -78,7 +72,7 @@ class MainScreen extends StatelessComponent {
           ('R', 'Hot restart')
         else
           ('R / Shift+R', 'Hot reload / restart'),
-        ('Ctrl+R', 'Start / restart Flutter app'),
+        if (state.canLaunchApps) ('Ctrl+R', 'Launch app…'),
         ('M / Shift+M', 'Create migration (⇧ = force)'),
         ('P / Shift+P', 'Repair migration (⇧ = force)'),
         ('A', 'Apply migrations'),
@@ -106,63 +100,57 @@ class MainScreen extends StatelessComponent {
                     : LayoutBuilder(
                         builder: (context, constraints) {
                           state.contentWidth = constraints.maxWidth;
-                          final showSideBySide = state.useSideBySideLayout;
 
                           return Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 1),
-                                child: _buildTabBar(st, showSideBySide),
-                              ),
                               Expanded(
-                                child: !showSideBySide
+                                child: state.stackAreasVertically
                                     ? Column(
                                         children: [
-                                          ?_buildFlutterStatusLine(st),
-                                          Expanded(
-                                            child: _buildTabContent(
-                                              state.selectedTab,
+                                          for (
+                                            var i = 0;
+                                            i < state.tabs.areas.length;
+                                            i++
+                                          ) ...[
+                                            if (i > 0)
+                                              Divider(color: st.subtleDivider),
+                                            Expanded(
+                                              child: _buildArea(
+                                                st,
+                                                state.tabs.areas[i],
+                                                i,
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ],
                                       )
                                     : Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
                                         children: [
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Expanded(
-                                                  child: _buildTabContent(
-                                                    state.selectedTab,
-                                                  ),
-                                                ),
-                                              ],
+                                          for (
+                                            var i = 0;
+                                            i < state.tabs.areas.length;
+                                            i++
+                                          ) ...[
+                                            if (i > 0)
+                                              VerticalDivider(
+                                                color: st.subtleDivider,
+                                                width: 1,
+                                                thickness: 1,
+                                              ),
+                                            Expanded(
+                                              flex: state.tabs.areas[i].flex,
+                                              child: _buildArea(
+                                                st,
+                                                state.tabs.areas[i],
+                                                i,
+                                              ),
                                             ),
-                                          ),
-                                          VerticalDivider(
-                                            color: st.subtleDivider,
-                                            width: 1,
-                                            thickness: 1,
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                ?_buildFlutterStatusLine(
-                                                  st,
-                                                  withTitle: false,
-                                                ),
-                                                Expanded(
-                                                  child: _buildTabContent(1),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                          ],
                                         ],
                                       ),
                               ),
-
                               if (state.activeOperations.isNotEmpty)
                                 ...state.activeOperations.values.map(
                                   (op) => TrackedOperationWidget(
@@ -170,10 +158,6 @@ class MainScreen extends StatelessComponent {
                                     operation: op,
                                   ),
                                 ),
-
-                              // Pin the alert as the last line in the panel,
-                              // set apart from the logs by a blank row and a
-                              // divider directly above it.
                               if (state.alert case final alert?) ...[
                                 const SizedBox(height: 1),
                                 Divider(color: st.subtleDivider),
@@ -198,14 +182,79 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// Breadcrumb when a Flutter app is attached: horizontal rules, muted
-  /// label, vertical divider, and value.
-  ///
-  /// Returns `null` when no Flutter app is running or starting.
-  Component? _buildFlutterStatusLine(
-    ServerpodThemeData st, {
-    bool withTitle = true,
-  }) {
+  Component _buildArea(ServerpodThemeData st, TabArea area, int areaIndex) {
+    final focused = state.tabs.focusedAreaIndex == areaIndex;
+
+    return Column(
+      children: [
+        if (area.tabs.length >= 2)
+          Padding(
+            padding: const EdgeInsets.only(left: 1),
+            child: TabBar(
+              labels: [for (final tab in area.tabs) tab.label],
+              selectedTab: area.selectedIndex,
+              onTabChanged: (index) {
+                area.selectedIndex = index;
+                state.tabs.focusedAreaIndex = areaIndex;
+              },
+            ),
+          )
+        else if (focused && area.tabs.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(left: 1, top: 1),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                area.tabs.first.label,
+                style: TextStyle(
+                  color: st.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        Expanded(
+          child: area.id == kAppsArea && area.selected == null
+              ? _buildEmptyAppsPlaceholder(st)
+              : _buildTabContent(st, area.selected!),
+        ),
+      ],
+    );
+  }
+
+  Component _buildEmptyAppsPlaceholder(ServerpodThemeData st) {
+    return Center(
+      child: Text(
+        state.canLaunchApps
+            ? 'No app running · Ctrl+R to launch'
+            : 'No app configured',
+        style: TextStyle(color: st.debugLevel, fontWeight: FontWeight.dim),
+      ),
+    );
+  }
+
+  Component _buildTabContent(ServerpodThemeData st, PaneTab tab) {
+    return switch (tab) {
+      ServerLogTab() => Column(
+        children: [
+          Expanded(child: _buildStructuredLogView(tab.scrollController)),
+        ],
+      ),
+      AppLogTab appTab => Column(
+        children: [
+          ?_buildFlutterStatusLine(st, appTab),
+          Expanded(
+            child: _buildRawOutputView(appTab.lines, appTab.scrollController),
+          ),
+        ],
+      ),
+      _ => const SizedBox.shrink(),
+    };
+  }
+
+  /// Breadcrumb for a Flutter app tab: horizontal rules, muted label, and URL
+  /// or startup stage.
+  Component? _buildFlutterStatusLine(ServerpodThemeData st, AppLogTab tab) {
     final mutedText = TextStyle(
       color: st.debugLevel,
       fontWeight: FontWeight.dim,
@@ -216,10 +265,10 @@ class MainScreen extends StatelessComponent {
     );
 
     String? value;
-    if (state.flutterReady) {
-      value = state.flutterUrl ?? 'ready';
+    if (tab.ready) {
+      value = tab.url ?? 'ready';
     } else {
-      value = state.flutterStartupStage;
+      value = tab.startupStage;
     }
     if (value == null) return null;
 
@@ -229,10 +278,8 @@ class MainScreen extends StatelessComponent {
           padding: const EdgeInsets.only(left: 1),
           child: Row(
             children: [
-              if (withTitle) ...[
-                Text(' Flutter app', style: mutedText),
-                Text(' │ ', style: separatorStyle),
-              ],
+              Text(' ${tab.label}', style: mutedText),
+              Text(' │ ', style: separatorStyle),
               Text(value, style: mutedText),
             ],
           ),
@@ -240,49 +287,6 @@ class MainScreen extends StatelessComponent {
         Divider(color: st.subtleDivider),
       ],
     );
-  }
-
-  Component _buildTabBar(ServerpodThemeData st, bool sideBySide) {
-    const serverLogs = 'Server logs';
-    const flutterLogs = 'Flutter logs';
-
-    return !sideBySide
-        ? TabBar(
-            labels: [
-              serverLogs,
-              if (state.showFlutterOutput) flutterLogs,
-            ],
-            selectedTab: state.selectedTab,
-            onTabChanged: onTabChanged,
-          )
-        : Row(
-            children: [
-              Expanded(
-                child: TabBar(
-                  labels: const [serverLogs],
-                  selectedTab: 0,
-                  onTabChanged: (_) {},
-                ),
-              ),
-              Expanded(
-                child: TabBar(
-                  labels: const [flutterLogs],
-                  selectedTab: 0,
-                  onTabChanged: (_) {},
-                ),
-              ),
-            ],
-          );
-  }
-
-  Component _buildTabContent(int index) {
-    return switch (index) {
-      1 => _buildRawOutputView(
-        state.rawFlutterLines,
-        flutterRawScrollController,
-      ),
-      _ => _buildStructuredLogView(),
-    };
   }
 
   /// The raw server logs "dev console", shown as a full-area overlay when
@@ -316,7 +320,7 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildStructuredLogView() {
+  Component _buildStructuredLogView(ScrollController logScrollController) {
     final items = state.logHistory;
 
     return SelectionArea(
@@ -408,10 +412,6 @@ class MainScreen extends StatelessComponent {
 
     return ButtonBar(
       buttons: [
-        // In watch mode the incremental compiler already hot reloads on file
-        // changes, so the manual action is a hot restart (with no shift
-        // variant, Shift+R restarts too). Without watch, R hot reloads and
-        // Shift+R hot restarts.
         if (state.watchModeEnabled)
           Button(
             name: 'Hot restart',
@@ -428,6 +428,14 @@ class MainScreen extends StatelessComponent {
             onActivate: (_) => onHotReload?.call(),
             onShiftActivate: (_) => onHotRestart?.call(),
             enabled: actionsEnabled && onHotReload != null,
+          ),
+        if (state.canLaunchApps)
+          Button(
+            name: 'Launch app…',
+            activationChar: 'R',
+            activationKeys: const [LogicalKey.keyR],
+            onActivate: (_) {},
+            enabled: false,
           ),
         Button(
           name: 'Create migration',
@@ -474,7 +482,6 @@ class MainScreen extends StatelessComponent {
             if (onQuit != null) {
               onQuit?.call();
             } else {
-              // Boot path: [onQuit] is wired only after [WatchLoopReady].
               shutdownTuiApp(0);
             }
           },

@@ -98,10 +98,10 @@ void main() {
     });
 
     test(
-      'when e is pressed on the Flutter logs tab then traces do not toggle',
+      'when e is pressed on an app log tab then traces do not toggle',
       () async {
-        state.showFlutterOutput = true;
-        state.selectedTab = 1;
+        state.getOrCreateAppLogTab(appId: 'app', label: 'App');
+        state.tabs.focusedAreaIndex = 1;
 
         await _sendKey(tester, LogicalKey.keyE);
 
@@ -154,7 +154,7 @@ void main() {
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
-      state.showFlutterOutput = true;
+      state.getOrCreateAppLogTab(appId: 'app', label: 'App');
     });
 
     test(
@@ -189,9 +189,7 @@ void main() {
       setUp(() {
         restartCalls = 0;
         holder.onRestartFlutterApp = () => restartCalls++;
-        // No Flutter tab shown yet, but the project can launch one.
-        state.showFlutterOutput = false;
-        state.flutterRestartAvailable = true;
+        state.canLaunchApps = true;
       });
 
       test(
@@ -211,7 +209,7 @@ void main() {
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
-      // Both gates default to false: no Flutter tab and nothing to launch.
+      state.canLaunchApps = false;
     });
 
     test(
