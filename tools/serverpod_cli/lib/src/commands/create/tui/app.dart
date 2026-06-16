@@ -10,10 +10,14 @@ class ServerpodCreateApp extends TuiApp<CreateAppStateHolder> {
     required super.holder,
     required this.onCreate,
     required this.onQuit,
+    this.isUpgrade = false,
   });
 
   final VoidCallback onCreate;
   final VoidCallback onQuit;
+
+  /// Whether the app was launched to upgrade a project.
+  final bool isUpgrade;
 
   @override
   TuiAppState createState() => ServerpodCreateAppState();
@@ -45,6 +49,7 @@ class ServerpodCreateAppState extends TuiAppState<ServerpodCreateApp> {
         scrollController: _scrollController,
         onCreate: component.onCreate,
         onQuit: component.onQuit,
+        isUpgrade: component.isUpgrade,
       ),
     );
   }

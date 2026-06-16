@@ -70,6 +70,23 @@ extension TemplateIdeExtension on List<TemplateIde> {
   }
 }
 
+/// Project creation result type.
+sealed class CreateResult {}
+
+/// Project creation success result type.
+final class CreateSuccess extends CreateResult {
+  CreateSuccess({
+    required this.projectDirectoryPath,
+    required this.serverDirectoryPath,
+  });
+
+  final String projectDirectoryPath;
+  final String serverDirectoryPath;
+}
+
+/// Project creation failure result type.
+final class CreateFailure extends CreateResult {}
+
 /// Holds error messages to be flushed at a later time.
 /// This is typically used to replay logs to the terminal
 /// after exiting the tui's alternate screen
@@ -89,15 +106,18 @@ void flushPerformCreateErrors() {
 }
 
 /// Creates a project for the provided [context].
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
-Future<String?> performCreate(
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
+Future<CreateResult> performCreate(
   String name,
   bool force, {
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
   Directory? workingDirectory,
+
+  /// Whether to create default migration for the upgrade path.
+  bool createDefaultMigrationForUpgrade = true,
 }) async {
   _errorBuffer.clear();
   // Resolve where the project will be created relative to [workingDirectory]
@@ -120,6 +140,7 @@ Future<String?> performCreate(
         dryRun: dryRun,
         interactive: interactive,
         context: context,
+        createDefaultMigration: createDefaultMigrationForUpgrade,
         workingDirectory: cwd,
       );
     }
@@ -134,7 +155,7 @@ Future<String?> performCreate(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return null;
+    return CreateFailure();
   }
 
   var serverpodDirs = ServerpodDirectories(
@@ -144,10 +165,15 @@ Future<String?> performCreate(
   var pubspecFile = File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'));
   if (pubspecFile.existsSync()) {
     _logError('Project $name already exists.');
-    return null;
+    return CreateFailure();
   }
 
-  if (dryRun) return p.basename(serverpodDirs.projectDir.path);
+  if (dryRun) {
+    return CreateSuccess(
+      projectDirectoryPath: p.basename(serverpodDirs.projectDir.path),
+      serverDirectoryPath: serverpodDirs.serverDir.path,
+    );
+  }
 
   final template = context.template;
   if (template == ServerpodTemplateType.module) {
@@ -261,6 +287,39 @@ Future<String?> performCreate(
     });
   }
 
+  await _configureAgentSkillsAndMcp(
+    serverpodDirs: serverpodDirs,
+    context: context,
+  );
+
+  if (success || force) {
+    log.info(
+      'Serverpod project created.',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
+
+    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
+
+    if (template == ServerpodTemplateType.server) {
+      logStartInstructions(projectDirPath);
+    } else if (template == ServerpodTemplateType.mini) {
+      logMiniStartInstructions(projectDirPath);
+    }
+
+    return CreateSuccess(
+      projectDirectoryPath: projectDirPath,
+      serverDirectoryPath: serverpodDirs.serverDir.path,
+    );
+  }
+
+  return CreateFailure();
+}
+
+Future<void> _configureAgentSkillsAndMcp({
+  required ServerpodDirectories serverpodDirs,
+  required TemplateContext context,
+}) async {
   if (context.ides.isNotEmpty) {
     await _configureProjectMcpServers(serverpodDirs, context.ides);
 
@@ -325,26 +384,6 @@ Future<String?> performCreate(
       return true;
     });
   }
-
-  if (success || force) {
-    log.info(
-      'Serverpod project created.',
-      newParagraph: true,
-      type: TextLogType.success,
-    );
-
-    var projectDirPath = p.basename(serverpodDirs.projectDir.path);
-
-    if (template == ServerpodTemplateType.server) {
-      logStartInstructions(projectDirPath);
-    } else if (template == ServerpodTemplateType.mini) {
-      logMiniStartInstructions(projectDirPath);
-    }
-
-    return projectDirPath;
-  }
-
-  return null;
 }
 
 Future<void> _moveDirectoryContents(
@@ -432,37 +471,43 @@ Future<void> _createFileAndWrite(String path, String content) async {
 }
 
 /// Upgrades a server project.
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
-Future<String?> _performUpgrade({
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
+Future<CreateResult> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
   required TemplateContext context,
+  required bool createDefaultMigration,
   Directory? workingDirectory,
 }) async {
   if (context.template != ServerpodTemplateType.server) {
     _logError('The upgrade command can only be used with server templates.');
-    return null;
+    return CreateFailure();
   }
 
   var serverDir = findServerDirectory(workingDirectory ?? Directory.current);
   if (serverDir == null) {
     _logError('Could not find a Serverpod project in the current directory.');
-    return null;
+    return CreateFailure();
   }
 
   var name = await getProjectName(serverDir);
   if (name == null) {
     _logError('Could not find a project name in the pubspec.yaml file.');
-    return null;
+    return CreateFailure();
   }
-
-  if (dryRun) return name;
 
   var serverpodDir = ServerpodDirectories(
     name: name,
     projectDir: serverDir.parent,
   );
+
+  if (dryRun) {
+    return CreateSuccess(
+      projectDirectoryPath: name,
+      serverDirectoryPath: serverpodDir.serverDir.path,
+    );
+  }
 
   final writtenPaths = <String>{};
   var success = true;
@@ -489,13 +534,20 @@ Future<String?> _performUpgrade({
     interactive: interactive,
   );
 
-  success &= await log.progress('Creating default database migration.', () {
-    return DatabaseSetup.createDefaultMigration(
-      serverpodDir.serverDir,
-      name,
-      interactive: interactive,
-    );
-  });
+  if (createDefaultMigration) {
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDir.serverDir,
+        name,
+        interactive: interactive,
+      );
+    });
+  }
+
+  await _configureAgentSkillsAndMcp(
+    serverpodDirs: serverpodDir,
+    context: context,
+  );
 
   await _configureProjectMcpServers(serverpodDir, context.ides);
 
@@ -507,10 +559,13 @@ Future<String?> _performUpgrade({
     );
 
     logStartInstructions(name);
-    return name;
+    return CreateSuccess(
+      projectDirectoryPath: name,
+      serverDirectoryPath: serverpodDir.serverDir.path,
+    );
   }
 
-  return null;
+  return CreateFailure();
 }
 
 /// Renders Mustache directives in the file paths the copiers just wrote.
