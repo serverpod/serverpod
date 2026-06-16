@@ -119,9 +119,11 @@ final Tool tailFlutterLogsTool = Tool(
 final Tool getFlutterAppDtdTool = Tool(
   name: 'get_flutter_app_dtd',
   description:
-      'Return the Dart Tooling Daemon (DTD) URI for the Flutter app started '
-      'from `serverpod start`. The URI is null until the app has published '
-      'its DTD endpoint.',
+      'Return the Dart Tooling Daemon (DTD) URI for all Flutter apps started '
+      'from `serverpod start`, keyed by the app id from the config. Apps that '
+      'have not been launched are absent from the map; apps that have not '
+      'published their DTD yet map to null; apps that have published their DTD '
+      'map to their DTD URI.',
   inputSchema: Schema.object(),
 );
 

@@ -529,9 +529,14 @@ void main() {
 
       test(
         'when calling get_flutter_app_dtd with a callback, '
-        'then it returns the URI as JSON',
+        'then it returns the map of launched apps to DTD URIs',
         () async {
-          server.getFlutterDtdUri = () => 'ws://127.0.0.1:9100/ws';
+          // Three states: "kiosk" not launched (absent), "portal" launched
+          // but not ready (null), "admin" ready (URI).
+          server.getFlutterDtdUris = () => {
+            'admin': 'ws://127.0.0.1:9100/ws',
+            'portal': null,
+          };
 
           final result = await connection.callTool(
             CallToolRequest(name: 'get_flutter_app_dtd'),
@@ -540,16 +545,15 @@ void main() {
           expect(result.isError, isNull);
           expect(
             jsonDecode((result.content.first as TextContent).text),
-            {'uri': 'ws://127.0.0.1:9100/ws'},
+            {'admin': 'ws://127.0.0.1:9100/ws', 'portal': null},
           );
         },
       );
 
       test(
-        'when calling get_flutter_app_dtd before the app publishes DTD, '
-        'then it returns a null URI',
+        'when no app has been launched then it returns an empty map',
         () async {
-          server.getFlutterDtdUri = () => null;
+          server.getFlutterDtdUris = () => {};
 
           final result = await connection.callTool(
             CallToolRequest(name: 'get_flutter_app_dtd'),
@@ -558,7 +562,7 @@ void main() {
           expect(result.isError, isNull);
           expect(
             jsonDecode((result.content.first as TextContent).text),
-            {'uri': null},
+            <String, Object?>{},
           );
         },
       );

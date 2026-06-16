@@ -58,8 +58,9 @@ base class ServerpodMcpServer extends MCPServer
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
 
-  /// Returns the current Flutter app DTD URI, or `null` if not yet available.
-  String? Function()? getFlutterDtdUri;
+  /// Returns DTD URIs keyed by launched app id. Apps not launched are absent;
+  /// a launched app that has not published its DTD yet maps to `null`.
+  Map<String, String?> Function()? getFlutterDtdUris;
 
   StreamSubscription<void>? _vmServiceUriSub;
 
@@ -277,7 +278,7 @@ base class ServerpodMcpServer extends MCPServer
   }
 
   Future<CallToolResult> _getFlutterAppDtd(CallToolRequest request) async {
-    final get = getFlutterDtdUri;
+    final get = getFlutterDtdUris;
     if (get == null) {
       return CallToolResult(
         content: [TextContent(text: 'Flutter DTD not available.')],
@@ -285,9 +286,7 @@ base class ServerpodMcpServer extends MCPServer
       );
     }
     return CallToolResult(
-      content: [
-        TextContent(text: jsonEncode({'uri': get()})),
-      ],
+      content: [TextContent(text: jsonEncode(get()))],
     );
   }
 }

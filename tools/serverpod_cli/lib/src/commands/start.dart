@@ -660,11 +660,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       getLogHistory: mcpGetLogHistory,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
-      getFlutterDtdUri: () {
-        for (final appId in flutterManager.runningAppIds) {
-          return flutterManager.processFor(appId)?.dtdUri;
-        }
-        return null;
+      getFlutterDtdUris: () => {
+        for (final appId in flutterManager.runningAppIds)
+          appId: flutterManager.processFor(appId)?.dtdUri,
       },
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
