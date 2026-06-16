@@ -195,7 +195,11 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         },
         onLaunchApp: (index) {
           onLaunchApp?.call(index);
+          // Mirror the keyboard path: a click also dismisses the panel.
+          state.showLaunchPanel = false;
+          _rebuild();
         },
+        onTabSelected: _rebuild,
         onQuit: onQuit,
       ),
     );

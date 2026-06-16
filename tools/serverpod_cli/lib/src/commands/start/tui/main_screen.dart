@@ -26,6 +26,7 @@ class MainScreen extends StatelessComponent {
     this.onApplyMigration,
     this.onClearLogs,
     this.onLaunchApp,
+    this.onTabSelected,
     this.onQuit,
   });
 
@@ -41,6 +42,9 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onApplyMigration;
   final VoidCallback? onClearLogs;
   final ValueChanged<int>? onLaunchApp;
+
+  /// Invoked after a tab is selected via mouse click so the screen redraws.
+  final VoidCallback? onTabSelected;
   final VoidCallback? onQuit;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
@@ -285,6 +289,7 @@ class MainScreen extends StatelessComponent {
             onTabChanged: (index) {
               area.selectedIndex = index;
               state.tabs.focusedAreaIndex = areaIndex;
+              onTabSelected?.call();
             },
           ),
         ),
@@ -308,7 +313,10 @@ class MainScreen extends StatelessComponent {
           child: TabBar(
             labels: [for (final tab in all) tab.label],
             selectedTab: selected,
-            onTabChanged: (index) => state.tabs.focusTab(all[index]),
+            onTabChanged: (index) {
+              state.tabs.focusTab(all[index]);
+              onTabSelected?.call();
+            },
           ),
         ),
         Expanded(child: _buildTabContent(st, all[selected])),

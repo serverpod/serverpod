@@ -25,7 +25,10 @@ Future<NoctermTester> _pump(Size size) async {
   );
   final admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
   admin.lines.add('admin-log-line');
-  state.getOrCreateAppLogTab(appId: 'portal', label: 'Portal');
+  state
+      .getOrCreateAppLogTab(appId: 'portal', label: 'Portal')
+      .lines
+      .add('portal-log-line');
   state.tabs.focusTab(admin);
 
   final holder = StartAppStateHolder(state);
@@ -73,6 +76,24 @@ void main() {
         expect(label.first.y, lessThan(logLine.first.y));
       },
     );
+
+    test(
+      'when an app tab is clicked then it is selected and the view updates',
+      () async {
+        final tester = await _pump(const Size(200, 30));
+
+        // The Admin tab is selected initially, so only its log shows.
+        expect(tester.terminalState.containsText('admin-log-line'), isTrue);
+        expect(tester.terminalState.containsText('portal-log-line'), isFalse);
+
+        final portalTab = tester.terminalState.findText('Portal').first;
+        await tester.tap(portalTab.x, portalTab.y);
+        await tester.pump();
+
+        // Clicking the Portal tab selects it and redraws with its log.
+        expect(tester.terminalState.containsText('portal-log-line'), isTrue);
+      },
+    );
   });
 
   group('Given a terminal narrower than the side-by-side cutoff', () {
@@ -92,6 +113,23 @@ void main() {
         // time): the admin tab is focused, so the server log is not visible.
         expect(ts.containsText('admin-log-line'), isTrue);
         expect(ts.containsText('server-log-line'), isFalse);
+      },
+    );
+
+    test(
+      'when a tab is clicked in the merged strip then it is selected',
+      () async {
+        final tester = await _pump(const Size(100, 24));
+
+        expect(tester.terminalState.containsText('admin-log-line'), isTrue);
+        expect(tester.terminalState.containsText('server-log-line'), isFalse);
+
+        final serverTab = tester.terminalState.findText('Server logs').first;
+        await tester.tap(serverTab.x, serverTab.y);
+        await tester.pump();
+
+        // Selecting the server tab redraws with the server log.
+        expect(tester.terminalState.containsText('server-log-line'), isTrue);
       },
     );
   });
