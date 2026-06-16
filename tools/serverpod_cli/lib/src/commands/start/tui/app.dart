@@ -290,7 +290,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         onRestartFlutterApp?.call();
       } else {
         state.showLaunchPanel = !state.showLaunchPanel;
-        if (state.showLaunchPanel) state.launchPanelIndex = 0;
+        if (state.showLaunchPanel) {
+          state.launchPanelIndex = state.activeLaunchableIndex;
+        }
         _rebuild();
       }
       return true;

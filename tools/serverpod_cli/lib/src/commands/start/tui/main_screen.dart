@@ -175,38 +175,42 @@ class MainScreen extends StatelessComponent {
     final apps = state.launchableApps;
     final isRunning = state.isAppRunning;
 
-    return Align(
-      alignment: Alignment.centerRight,
-      child: BorderedBox(
-        child: SizedBox(
-          width: 36,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 1, top: 1),
-                child: Text(
-                  'Launch app',
-                  style: TextStyle(
-                    color: st.primary,
-                    fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.only(top: 0, bottom: 1),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: BorderedBox(
+          child: SizedBox(
+            width: 30,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 1, top: 1),
+                  child: Text(
+                    'Launch app',
+                    style: TextStyle(
+                      color: st.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              Divider(color: st.subtleDivider),
-              for (var i = 0; i < apps.length; i++)
-                _buildLaunchAppRow(st, i, isRunning),
-              Padding(
-                padding: const EdgeInsets.only(left: 1, top: 1),
-                child: Text(
-                  '↑↓ enter · click · Esc',
-                  style: TextStyle(
-                    color: st.debugLevel,
-                    fontWeight: FontWeight.dim,
+                Divider(color: st.subtleDivider),
+                for (var i = 0; i < apps.length; i++)
+                  _buildLaunchAppRow(st, i, isRunning),
+                Padding(
+                  padding: const EdgeInsets.only(left: 1, top: 1),
+                  child: Text(
+                    '↑↓ enter · click · Esc',
+                    style: TextStyle(
+                      color: st.debugLevel,
+                      fontWeight: FontWeight.dim,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

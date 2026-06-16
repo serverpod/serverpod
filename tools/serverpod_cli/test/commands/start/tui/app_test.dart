@@ -390,7 +390,7 @@ void main() {
     );
 
     test(
-      'when the panel opens then the cursor starts at the first app',
+      'when no app tab is open then the panel cursor starts at the first app',
       () async {
         state.launchPanelIndex = 1;
 
@@ -398,6 +398,24 @@ void main() {
 
         expect(state.showLaunchPanel, isTrue);
         expect(state.launchPanelIndex, 0);
+      },
+    );
+
+    test(
+      'when an app tab is active then the panel cursor starts on it',
+      () async {
+        // Open the second app's tab and make it the active one.
+        final customer = state.getOrCreateAppLogTab(
+          appId: 'b',
+          label: 'Customer',
+        );
+        state.tabs.focusTab(customer);
+        state.launchPanelIndex = 0;
+
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+        expect(state.launchPanelIndex, 1);
       },
     );
 

@@ -113,6 +113,16 @@ class ServerWatchState extends TuiState {
   /// Maximum number of raw lines to keep.
   static const maxRawLines = 10000;
 
+  /// The [launchableApps] index of the currently selected app tab, or 0 when
+  /// none is open. Used to start the launch panel cursor on the active app.
+  int get activeLaunchableIndex {
+    if (!hasConfiguredApps) return 0;
+    final selected = tabs.areaOf(kAppsArea).selected;
+    if (selected is! AppLogTab) return 0;
+    final index = launchableApps.indexWhere((a) => a.id == selected.appId);
+    return index >= 0 ? index : 0;
+  }
+
   /// Returns the [AppLogTab] for [appId], or null if it is not open.
   AppLogTab? appLogTabFor(String appId) {
     if (!hasConfiguredApps) return null;
