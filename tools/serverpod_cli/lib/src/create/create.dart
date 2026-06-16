@@ -98,6 +98,7 @@ Future<String?> performCreate(
   required bool? interactive,
   required TemplateContext context,
   Directory? workingDirectory,
+  String? org,
 }) async {
   _errorBuffer.clear();
   // Resolve where the project will be created relative to [workingDirectory]
@@ -234,7 +235,7 @@ Future<String?> performCreate(
     success &= await log.progress(
       'Creating Flutter app platform files.',
       () {
-        return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+        return CommandLineTools.flutterCreate(serverpodDirs.flutterDir, org: org);
       },
     );
     await log.progress('Updating Flutter app MacOS entitlements.', () {

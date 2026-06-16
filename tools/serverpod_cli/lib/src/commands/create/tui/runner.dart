@@ -18,6 +18,7 @@ Future<void> performCreateWithTui(
   bool force, {
   required CreateConfigState state,
   required bool? interactive,
+  String? org,
 }) async {
   // Dry run to collect early errors and exit if needed.
   final dryRunProjectPath = await performCreate(
@@ -26,6 +27,7 @@ Future<void> performCreateWithTui(
     dryRun: true,
     interactive: interactive,
     context: state.toTemplateContext(),
+    org: org,
   );
 
   if (dryRunProjectPath == null) {
@@ -57,6 +59,7 @@ Future<void> performCreateWithTui(
           force,
           interactive: interactive,
           context: state.toTemplateContext(),
+          org: org,
         );
 
         final success = projectPath != null;

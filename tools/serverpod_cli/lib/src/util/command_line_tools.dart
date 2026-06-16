@@ -40,12 +40,16 @@ class CommandLineTools {
     return true;
   }
 
-  static Future<bool> flutterCreate(Directory dir) async {
+  static Future<bool> flutterCreate(Directory dir, {String? org}) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
     var exitCode = await _runProcessWithDefaultLogger(
       executable: 'flutter',
-      arguments: ['create', '.'],
+      arguments: [
+        'create',
+        if (org != null) ...['--org', org],
+        '.',
+      ],
       workingDirectory: dir.path,
     );
 
