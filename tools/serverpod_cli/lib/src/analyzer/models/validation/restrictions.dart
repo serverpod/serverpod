@@ -600,7 +600,7 @@ class Restrictions {
         return [
           SourceSpanSeverityException(
             'The index name "$indexName" is reserved for the field '
-            '"${reservedIndex.index.fields.first}" of the model '
+            '"${reservedIndex.field.name}" of the model '
             '"${reservedIndex.model.className}" marked as unique '
             '(auto-generated). Either remove the unique modifier from the '
             'field or use a different name for this index.',
@@ -1598,6 +1598,89 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateFieldUniqueValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is bool) return [];
+
+    if (content is String) {
+      if (content.toLowerCase() == 'true') return [];
+      if (content.toLowerCase() == 'false') {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must be true when specified as a string.',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (content is YamlMap) {
+      if (content.nodes.isEmpty) return [];
+
+      if (!content.containsKey(Keyword.per)) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must include a "${Keyword.per}" '
+            'key when defined as a map.',
+            span,
+          ),
+        ];
+      }
+
+      return [];
+    }
+
+    return [
+      SourceSpanSeverityException(
+        'The "${Keyword.unique}" property must be a bool or a map with a '
+        '"${Keyword.per}" key.',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validateUniquePerFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var perFields = parseUniquePerFields(content);
+    if (perFields == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must be a field name, a comma '
+          'separated list of field names, or a list of field names.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must contain at least one field. '
+          'Use bare "${Keyword.unique}" for a single-column unique index.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.contains(parentNodeName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$parentNodeName" cannot be included in its own '
+          '"${Keyword.unique}" "${Keyword.per}" list.',
+          span,
+        ),
+      ];
+    }
+
+    return _validateIndexFieldNames(perFields, span);
+  }
+
   List<SourceSpanSeverityException> validateIndexFieldsValue(
     String parentNodeName,
     dynamic content,
@@ -1612,15 +1695,24 @@ class Restrictions {
       ];
     }
 
+    return _validateIndexFieldNames(convertIndexList(content), span);
+  }
+
+  /// Validates that [indexFields] reference persisted fields of the current
+  /// model, contain no duplicates, and respect the vector-index constraints.
+  /// Shared by explicit `indexes` and the `unique(per=...)` shorthand.
+  List<SourceSpanSeverityException> _validateIndexFieldNames(
+    List<String> indexFields,
+    SourceSpan? span,
+  ) {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
     var fields = definition.fieldsIncludingInherited;
-    var indexFields = convertIndexList(content);
-
     var validDatabaseFieldNames = fields
         .where((field) => field.shouldPersist)
-        .fold(<String>{}, (output, field) => output..add(field.name));
+        .map((field) => field.name)
+        .toSet();
 
     var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
@@ -1631,13 +1723,11 @@ class Restrictions {
           ),
         );
 
-    var duplicatesCount = _duplicatesCount(indexFields);
-
-    var duplicateFieldErrors = duplicatesCount.entries
+    var duplicateFieldErrors = _duplicatesCount(indexFields).entries
         .where((entry) => entry.value > 1)
         .map(
           (entry) => SourceSpanSeverityException(
-            'Duplicated field name "name", can only reference a field once per index.',
+            'Duplicated field name "${entry.key}", can only reference a field once per index.',
             span,
           ),
         );
