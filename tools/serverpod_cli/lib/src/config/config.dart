@@ -347,9 +347,16 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The [interactive] parameter controls whether interactive prompts are enabled.
   /// Defaults to true unless running in a CI environment (detected via ci package).
   /// Explicit flag value overrides CI detection.
+  ///
+  /// The [flutterPackagePath] parameter, when provided, overrides the location
+  /// of the companion Flutter package (a path relative to the server
+  /// directory), taking precedence over the `flutter_package_path` key in
+  /// `config/generator.yaml`. This lets callers select, per invocation, which
+  /// Flutter app to launch in projects where several apps share one server.
   static Future<GeneratorConfig> load({
     String serverRootDir = '',
     required bool? interactive,
+    String? flutterPackagePath,
   }) async {
     // Auto-detect server directory if not specified
     if (serverRootDir.isEmpty) {
@@ -406,7 +413,23 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
+    // The companion Flutter package defaults to the `<name>_flutter` sibling,
+    // can be redirected with the `flutter_package_path` generator config key,
+    // and is finally overridden by an explicit [flutterPackagePath] (e.g. from
+    // `serverpod start --flutter-path`). The override comes last so that, when
+    // several Flutter apps share one server, callers can pick which app to
+    // launch per invocation.
+    var relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
+
+    if (generatorConfig['flutter_package_path'] != null) {
+      relativeFlutterPackagePathParts = p.split(
+        generatorConfig['flutter_package_path'],
+      );
+    }
+
+    if (flutterPackagePath != null) {
+      relativeFlutterPackagePathParts = p.split(flutterPackagePath);
+    }
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {

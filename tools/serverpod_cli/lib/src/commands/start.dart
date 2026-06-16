@@ -111,6 +111,18 @@ enum StartOption<V> implements OptionDefinition<V> {
       defaultsTo: [],
     ),
   ),
+  flutterPath(
+    StringOption(
+      argName: 'flutter-path',
+      defaultsTo: '',
+      helpText:
+          'Path to the companion Flutter app to launch, relative to the '
+          'server directory. Overrides the auto-detected `<name>_flutter` '
+          'sibling and the `flutter_package_path` generator config. Useful '
+          'when several Flutter apps share one server (e.g. a user app and an '
+          'admin app) and you want to pick which one to launch.',
+    ),
+  ),
   ;
 
   const StartOption(this.option);
@@ -156,6 +168,10 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
     final launchFlutterApp = commandConfig.value(StartOption.flutter);
     final flutterDevice = commandConfig.value(StartOption.flutterDevice);
+    // A custom companion Flutter app path (relative to the server directory),
+    // overriding auto-detection and the `flutter_package_path` config key.
+    final flutterPathArg = commandConfig.value(StartOption.flutterPath);
+    final flutterPackagePath = flutterPathArg.isEmpty ? null : flutterPathArg;
     // Narrow once: MultiOption.value() returns List<dynamic>.
     final flutterExtraArgs = List<String>.from(
       commandConfig.value(StartOption.flutterOption) as Iterable,
@@ -182,6 +198,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         interactive: serverpodRunner.globalConfiguration.optionalValue(
           GlobalOption.interactive,
         ),
+        flutterPackagePath: flutterPackagePath,
       );
 
       // Bail before the TUI takes over the terminal
@@ -214,6 +231,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         config = await GeneratorConfig.load(
           serverRootDir: directory,
           interactive: interactive,
+          flutterPackagePath: flutterPackagePath,
         );
         return true;
       });
