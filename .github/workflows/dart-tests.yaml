@@ -525,9 +525,7 @@ jobs:
           colima start
       - name: Run unit tests
         shell: bash
-        run: |
-          export SERVERPOD_HOME="$(cd ../.. && pwd)"
-          util/run_tests_bootstrap
+        run: util/run_tests_bootstrap
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:
