@@ -102,6 +102,7 @@ class FlutterProcess {
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    List<String>? machineArgsOverride,
     @visibleForTesting List<String>? argsOverrideForTesting,
     @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
@@ -113,7 +114,7 @@ class FlutterProcess {
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
-       _argsOverrideForTesting = argsOverrideForTesting,
+       _argsOverrideForTesting = argsOverrideForTesting ?? machineArgsOverride,
        _openBrowserForTesting = openBrowserForTesting;
 
   /// True between [start] and [stop]/exit.

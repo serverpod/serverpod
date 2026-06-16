@@ -10,7 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -23,6 +23,8 @@ import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/commands/watcher.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
@@ -32,7 +34,6 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
-import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -400,12 +401,14 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
-  IOSink? flutterStdoutSink,
-  IOSink? flutterStderrSink,
-  void Function(String stage)? onFlutterProgress,
-  void Function(String url)? onFlutterReady,
+  IOSink Function(FlutterAppConfig app)? flutterStdoutSinkFor,
+  IOSink Function(FlutterAppConfig app)? flutterStderrSinkFor,
+  void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
+  void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
+  void Function(FlutterAppConfig app, String url)? onFlutterReady,
   Future<void> Function(ServerProcess server)? onServerStart,
-  Future<void> Function(FlutterProcess flutter)? onFlutterStart,
+  Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
+  onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
   List<String> Function()? mcpGetFlutterLogHistory,
 }) async {
@@ -417,10 +420,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
-  final flutterVmServiceInfoFile = p.join(
-    serverpodToolDir,
-    'flutter-vm-service-info.json',
-  );
 
   // If a server is already running, abort so the IDE can attach to the
   // existing instance via the unchanged info file. Cheap local check; runs
@@ -549,14 +548,25 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     dartExecutable = localCompiler.dartExecutable;
   }
 
-  // IDE-facing Flutter VM-service proxy. Bound now so the info file
-  // exists at session start regardless of whether `--flutter` was
-  // passed; the upstream is set later when FlutterProcess connects.
-  Future<void> Function() spawnFlutterAppIfNeeded = () async {};
-  final flutterProxy = await _bindFlutterProxy(
-    infoFile: flutterVmServiceInfoFile,
-    onWaitingClientArrived: () => spawnFlutterAppIfNeeded(),
+  // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
+  // session start regardless of whether `--flutter` was passed.
+  final runMode = runModeFromServerArgs(serverArgs.value);
+  final flutterManager = FlutterAppManager(
+    apps: config.flutterApps,
+    serverpodToolDir: serverpodToolDir,
+    runMode: runMode,
+    flutterDevice: flutterDevice,
+    flutterExtraArgs: flutterExtraArgs,
+    onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
+    onReady: (app, url) => onFlutterReady?.call(app, url),
+    onStart: (app, process) async {
+      if (onFlutterStart != null) await onFlutterStart(app, process);
+    },
+    onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
+    stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
+    stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
   );
+  await flutterManager.initialize();
 
   // Server process factory. Invoked for the initial start and for each
   // subsequent restart driven by the WatchSession
@@ -591,126 +601,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Needed for the Flutter dev-mode gate and the migration action.
-  final runMode = runModeFromServerArgs(serverArgs.value);
-
-  // Spawn the Flutter app subprocess.
-  //
-  // Calling while previous instance is still running is a no-op.
-  FlutterProcess? flutterProcess;
-  var spawnInFlight = false;
-  // Set by the restart action when the spawn replaces a previously running
-  // app, so the progress message reads as a relaunch rather than a first run.
-  var flutterRelaunchInProgress = false;
-  spawnFlutterAppIfNeeded = () async {
-    if (runMode != 'development') return;
-    if (!config.hasFlutterPackage) {
-      log.info(flutterPackageNotFound);
-      return;
-    }
-    final existing = flutterProcess;
-    if (existing != null && existing.isRunning) return;
-    if (spawnInFlight) return;
-    spawnInFlight = true;
-    final isRelaunch = flutterRelaunchInProgress;
-    flutterRelaunchInProgress = false;
-
-    final fp = FlutterProcess(
-      flutterPackageDir: p.joinAll(config.flutterPackagePathParts),
-      device: flutterDevice,
-      extraArgs: flutterExtraArgs,
-      flutterProxy: flutterProxy,
-      stdoutSink: flutterStdoutSink,
-      stderrSink: flutterStderrSink,
-      onProgress: (stage) {
-        onFlutterProgress?.call(stage);
-        if (onFlutterProgress == null) {
-          log.info('  Flutter: $stage');
-        }
-      },
-    );
-    try {
-      await fp.start();
-    } on FlutterNotInstalledException catch (e) {
-      log.warning(e.message);
-      spawnInFlight = false;
-      return;
-    } catch (_) {
-      spawnInFlight = false;
-      rethrow;
-    }
-    flutterProcess = fp;
-    spawnInFlight = false;
-
-    // Background: Server-running shouldn't wait on Flutter launch.
-    // On `-d web-server` `launched` pends until a browser attaches.
-    unawaited(() async {
-      await log.progress(
-        isRelaunch
-            ? 'Relaunching Flutter app'
-            : 'Launching Flutter app (first run may take 30-60s)',
-        () async {
-          await fp.launched;
-          return true;
-        },
-      );
-      final url = fp.flutterAppUrl;
-      if (url != null) {
-        log.info('Flutter app running at $url');
-        onFlutterReady?.call(url);
-      }
-      await log.progress('Connecting to Flutter VM service', () async {
-        // `-d web-server` requires a human to open the URL, so the wait is unbounded.
-        await fp.connectToVmService(
-          timeout: flutterDevice == flutterDeviceWebServer
-              ? null
-              : const Duration(seconds: 30),
-        );
-        if (fp.isVmServiceConnected && onFlutterStart != null) {
-          await onFlutterStart(fp);
-        }
-        return fp.isVmServiceConnected;
-      });
-    }());
-  };
-
-  if (launchFlutterApp) {
-    await spawnFlutterAppIfNeeded();
-  }
-
-  // Track the Flutter app's resolved dependency closure so a dependency change
-  // (which a hot restart can't pick up) auto-triggers a full relaunch. Disabled
-  // when there is no Flutter package or its dependencies haven't been resolved.
-  FlutterDependencyTracker? flutterDependencyTracker;
-  if (config.hasFlutterPackage) {
-    final flutterPackageDir = p.joinAll(config.flutterPackagePathParts);
-    try {
-      final flutterPackageName = parsePubspec(
-        File(p.join(flutterPackageDir, 'pubspec.yaml')),
-      ).name;
-      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
-        flutterPackageDir,
-        flutterPackageName: flutterPackageName,
-      );
-      if (dartToolDir != null) {
-        flutterDependencyTracker = FlutterDependencyTracker(
-          dartToolDir: dartToolDir,
-          flutterPackageName: flutterPackageName,
-        );
-      } else {
-        log.debug(
-          'Flutter dependency tracking disabled: no resolution listing '
-          '$flutterPackageName found above $flutterPackageDir.',
-        );
-      }
-    } catch (e) {
-      // A malformed Flutter pubspec must not prevent the server from
-      // starting; it only disables dependency tracking.
-      log.debug(
-        'Flutter dependency tracking disabled: could not read the Flutter '
-        'package name from $flutterPackageDir ($e).',
-      );
-    }
+  // Needed for the migration action.
+  if (launchFlutterApp && config.flutterApps.isNotEmpty) {
+    await flutterManager.launch(config.flutterApps.first.id);
   }
 
   // Construct the watch session.
@@ -729,20 +622,27 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
-    flutterProcessProvider: () => flutterProcess,
-    // Kill the running Flutter app (if any) and (re)launch it. `stop` clears
-    // `isRunning`, so the (idempotent) spawn closure starts a fresh one.
-    // Wired whenever the project has a Flutter package — even after a
-    // `--no-flutter` start — so Ctrl+R doubles as a "launch the app now"
-    // button. `spawnFlutterAppIfNeeded` self-guards on development mode.
-    flutterAppRestartAction: config.hasFlutterPackage
+    flutterProcessProvider: () {
+      for (final appId in flutterManager.runningAppIds) {
+        return flutterManager.processFor(appId);
+      }
+      return null;
+    },
+    flutterAppRestartAction: config.flutterApps.isNotEmpty
         ? () async {
-            flutterRelaunchInProgress = flutterProcess != null;
-            await flutterProcess?.stop();
-            await spawnFlutterAppIfNeeded();
+            final app = config.flutterApps.first;
+            if (flutterManager.isRunning(app.id)) {
+              await flutterManager.restart(app.id);
+            } else {
+              await flutterManager.launch(app.id);
+            }
           }
         : null,
-    checkFlutterDependencyChange: flutterDependencyTracker?.refresh,
+    checkFlutterDependencyChange: config.flutterApps.isNotEmpty
+        ? () => flutterManager.checkDependencyChange(
+            config.flutterApps.first.id,
+          )
+        : null,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -780,7 +680,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       getLogHistory: mcpGetLogHistory,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
-      getFlutterDtdUri: () => flutterProcess?.dtdUri,
+      getFlutterDtdUri: () {
+        for (final appId in flutterManager.runningAppIds) {
+          return flutterManager.processFor(appId)?.dtdUri;
+        }
+        return null;
+      },
       vmServiceUriChanges: session.vmServiceUriChanges,
     );
     log.info('MCP server listening on ${mcpSocket.socketPath}');
@@ -801,13 +706,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
-        if (config.hasFlutterPackage)
-          p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
-        // The resolution's .dart_tool holds package_graph.json, watched to
-        // detect Flutter dependency changes (workspace root or, in a
-        // non-workspace project, the Flutter package's own .dart_tool).
-        if (flutterDependencyTracker != null)
-          p.absolute(flutterDependencyTracker.dartToolDir),
+        if (config.flutterApps.isNotEmpty)
+          p.absolute(
+            p.joinAll([...config.flutterApps.first.pathParts, 'lib']),
+          ),
+        for (final app in config.flutterApps)
+          if (flutterManager.dependencyTrackerFor(app.id) case final tracker?)
+            p.absolute(tracker.dartToolDir),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -819,38 +724,14 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     WatchLoopContext(
       session: session,
       proxy: proxy,
-      flutterProxy: flutterProxy,
+      flutterManager: flutterManager,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
-      flutterVmServiceInfoFile: flutterVmServiceInfoFile,
     ),
   );
-}
-
-/// Binds a [VmServiceProxy] that the Flutter app's vm-service will be
-/// attached to once it comes up.
-///
-/// Writes [infoFile] with the proxy's stable URI.
-///
-/// [onWaitingClientArrived] fires the first time a client connects
-/// while no upstream is bound.
-Future<VmServiceProxy> _bindFlutterProxy({
-  required String infoFile,
-  FutureOr<void> Function()? onWaitingClientArrived,
-}) async {
-  final proxy = VmServiceProxy(
-    upstreamWs: null,
-    onWaitingClientArrived: onWaitingClientArrived,
-  );
-  await proxy.bind();
-  await File(infoFile).writeAsString(
-    jsonEncode({'uri': proxy.httpUri.toString()}),
-  );
-  log.info('Flutter VM service proxy listening on ${proxy.httpUri}');
-  return proxy;
 }
 
 /// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
@@ -1132,9 +1013,6 @@ Future<void> _runTuiBackend({
           .add(line);
     }
 
-    final flutterStdoutSink = TuiLogSink(holder, addLine: addFlutterLogLine);
-    final flutterStderrSink = TuiLogSink(holder, addLine: addFlutterLogLine);
-
     final result = await _setupWatchLoop(
       config: config,
       serverDir: serverDir,
@@ -1147,11 +1025,16 @@ Future<void> _runTuiBackend({
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
-      flutterStdoutSink: flutterStdoutSink,
-      flutterStderrSink: flutterStderrSink,
-      onFlutterProgress: (stage) {
-        if (config.flutterApps.isEmpty) return;
-        final app = config.flutterApps.first;
+      flutterStdoutSinkFor: (_) => TuiLogSink(holder, addLine: addFlutterLogLine),
+      flutterStderrSinkFor: (_) => TuiLogSink(holder, addLine: addFlutterLogLine),
+      onEnsureFlutterAppTab: (app) {
+        final tab = holder.state.getOrCreateAppLogTab(
+          appId: app.id,
+          label: app.name,
+        );
+        holder.state.tabs.focusTab(tab);
+      },
+      onFlutterProgress: (app, stage) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
           label: app.name,
@@ -1160,9 +1043,7 @@ Future<void> _runTuiBackend({
         holder.state.tabs.focusTab(tab);
         holder.markDirty();
       },
-      onFlutterReady: (url) {
-        if (config.flutterApps.isEmpty) return;
-        final app = config.flutterApps.first;
+      onFlutterReady: (app, url) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
           label: app.name,
@@ -1179,7 +1060,7 @@ Future<void> _runTuiBackend({
           (event) => handleServerLogEvent(holder, event),
         );
       },
-      onFlutterStart: (flutter) async {
+      onFlutterStart: (app, flutter) async {
         final vmService = flutter.vmService;
         if (vmService == null) return;
         await vmService.streamListen('Extension');
@@ -1218,7 +1099,15 @@ Future<void> _runTuiBackend({
             ctx.session.isFlutterAppRunning
                 ? 'Restart Flutter app'
                 : 'Start Flutter app',
-            ctx.session.restartFlutterApp,
+            () async {
+              if (config.flutterApps.isEmpty) return;
+              final app = config.flutterApps.first;
+              if (ctx.session.isFlutterAppRunning) {
+                await ctx.flutterManager.restart(app.id);
+              } else {
+                await ctx.flutterManager.launch(app.id);
+              }
+            },
           );
         };
         holder.onCreateMigration = ({bool force = false}) {
