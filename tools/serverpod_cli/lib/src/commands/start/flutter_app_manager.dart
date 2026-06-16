@@ -102,6 +102,30 @@ class FlutterAppManager {
         FlutterDependencyChange.none;
   }
 
+  /// Returns running app ids whose `lib` directory contains any of [paths].
+  ///
+  /// When no app matches, returns every running app id so single-app behavior
+  /// is preserved for server-side or ambiguous changes.
+  Set<String> appIdsForChangedPaths(Iterable<String> paths) {
+    final running = runningAppIds.toList();
+    if (running.isEmpty) return {};
+
+    final affected = <String>{};
+    for (final appId in running) {
+      final runtime = _runtimes[appId];
+      if (runtime == null) continue;
+      final libDir = p.normalize(p.joinAll([...runtime.app.pathParts, 'lib']));
+      for (final changed in paths) {
+        if (p.isWithin(libDir, p.normalize(changed))) {
+          affected.add(appId);
+          break;
+        }
+      }
+    }
+
+    return affected.isEmpty ? running.toSet() : affected;
+  }
+
   /// Binds per-app VM-service proxies and sets up dependency trackers.
   Future<void> initialize() async {
     if (_initialized) return;

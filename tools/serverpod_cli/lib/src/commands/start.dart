@@ -622,27 +622,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
-    flutterProcessProvider: () {
-      for (final appId in flutterManager.runningAppIds) {
-        return flutterManager.processFor(appId);
-      }
-      return null;
-    },
-    flutterAppRestartAction: config.flutterApps.isNotEmpty
-        ? () async {
-            final app = config.flutterApps.first;
-            if (flutterManager.isRunning(app.id)) {
-              await flutterManager.restart(app.id);
-            } else {
-              await flutterManager.launch(app.id);
-            }
-          }
-        : null,
-    checkFlutterDependencyChange: config.flutterApps.isNotEmpty
-        ? () => flutterManager.checkDependencyChange(
-            config.flutterApps.first.id,
-          )
-        : null,
+    flutterManager: flutterManager,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -706,10 +686,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
-        if (config.flutterApps.isNotEmpty)
-          p.absolute(
-            p.joinAll([...config.flutterApps.first.pathParts, 'lib']),
-          ),
+        for (final app in config.flutterApps)
+          p.absolute(p.joinAll([...app.pathParts, 'lib'])),
         for (final app in config.flutterApps)
           if (flutterManager.dependencyTrackerFor(app.id) case final tracker?)
             p.absolute(tracker.dartToolDir),

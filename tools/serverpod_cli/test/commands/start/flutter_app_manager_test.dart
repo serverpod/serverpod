@@ -177,6 +177,20 @@ dependencies:
         expect(File(infoFile).existsSync(), isFalse);
       },
     );
+
+    test(
+      'when changed paths are under one app lib then only that app id matches',
+      () async {
+        await manager.launch(appA.id);
+        await manager.launch(appB.id);
+
+        final adminPath = p.join(flutterDirA.path, 'lib', 'main.dart');
+        expect(
+          manager.appIdsForChangedPaths([adminPath]),
+          {appA.id},
+        );
+      },
+    );
   });
 
   group('Given a FlutterAppManager with an emits_machine_events shim', () {
