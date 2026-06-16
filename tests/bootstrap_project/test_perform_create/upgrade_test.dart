@@ -24,7 +24,7 @@ void main() {
   });
 
   group(
-    'Given a mini project, '
+    'Given a project without a database, '
     'when creating CreateConfigState in the upgrade path for the TUI',
     () {
       late CreateConfigStateResult result;
