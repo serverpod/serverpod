@@ -70,8 +70,10 @@ extension TemplateIdeExtension on List<TemplateIde> {
   }
 }
 
+/// Project creation result type.
 sealed class CreateResult {}
 
+/// Project creation success result type.
 final class CreateSuccess extends CreateResult {
   CreateSuccess({
     required this.projectDirectoryPath,
@@ -82,6 +84,7 @@ final class CreateSuccess extends CreateResult {
   final String serverDirectoryPath;
 }
 
+/// Project creation failure result type.
 final class CreateFailure extends CreateResult {}
 
 /// Holds error messages to be flushed at a later time.
@@ -103,8 +106,8 @@ void flushPerformCreateErrors() {
 }
 
 /// Creates a project for the provided [context].
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
 Future<CreateResult> performCreate(
   String name,
   bool force, {
@@ -113,7 +116,7 @@ Future<CreateResult> performCreate(
   required TemplateContext context,
   Directory? workingDirectory,
 
-  /// Whether to create initial migrations for the upgrade path.
+  /// Whether to create default migration for the upgrade path.
   bool createDefaultMigrationForUpgrade = true,
 }) async {
   _errorBuffer.clear();
@@ -468,8 +471,8 @@ Future<void> _createFileAndWrite(String path, String content) async {
 }
 
 /// Upgrades a server project.
-/// If successful, a future that resolves to the project directory path
-/// is returned. Otherwise, a future that resolves to null is returned.
+/// Returns a future that resolves to [CreateSuccess] if successful.
+/// Otherwise, returns a future that resolves to [CreateFailure.
 Future<CreateResult> _performUpgrade({
   bool dryRun = false,
   required bool? interactive,
