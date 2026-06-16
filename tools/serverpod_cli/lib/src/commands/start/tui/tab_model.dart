@@ -193,4 +193,38 @@ class TabModel {
     if (index < 0 || index >= area.tabs.length) return;
     area.selectedIndex = index;
   }
+
+  /// All tabs across every area, in area order then tab order.
+  ///
+  /// Used by the single-column (narrow) layout, where every area's tabs are
+  /// merged into one tab strip.
+  List<PaneTab> get allTabs => [for (final area in areas) ...area.tabs];
+
+  /// Index of [focusedTab] within [allTabs], or `-1` when there is none.
+  int get focusedTabIndexInAll {
+    final tab = focusedTab;
+    if (tab == null) return -1;
+    return allTabs.indexOf(tab);
+  }
+
+  /// Cycles focus across [allTabs] by [delta], wrapping at the ends.
+  ///
+  /// Unlike [cycleTabInFocusedArea] this crosses area boundaries, for the
+  /// merged single-column tab strip.
+  void cycleAllTabs(int delta) {
+    final all = allTabs;
+    if (all.length <= 1) return;
+    var index = focusedTabIndexInAll;
+    if (index < 0) index = 0;
+    index = (index + delta) % all.length;
+    if (index < 0) index += all.length;
+    focusTab(all[index]);
+  }
+
+  /// Focuses the [index]th tab across [allTabs].
+  void selectAllTabs(int index) {
+    final all = allTabs;
+    if (index < 0 || index >= all.length) return;
+    focusTab(all[index]);
+  }
 }

@@ -53,12 +53,21 @@ class ServerWatchState extends TuiState {
   /// Latest measured content width from the main log area.
   double? contentWidth;
 
-  /// Below this width the areas stack vertically instead of side by side.
-  static const stackAreasMinWidth = 120.0;
+  /// Minimum content width for showing the server and apps areas side by side.
+  ///
+  /// Below this the layout collapses to a single column with one merged tab
+  /// strip (server + apps), rather than splitting a too-narrow terminal into
+  /// unreadable panes.
+  static const sideBySideMinWidth = 160.0;
 
-  /// Whether the main log area should stack areas vertically.
-  bool get stackAreasVertically =>
-      hasConfiguredApps && (contentWidth ?? 0) < stackAreasMinWidth;
+  /// Whether the server and apps areas are shown side by side, each with its
+  /// own tab strip.
+  ///
+  /// False when the project has no configured apps or the terminal is narrower
+  /// than [sideBySideMinWidth], in which case a single column with one merged
+  /// tab strip is rendered instead.
+  bool get useSideBySideLayout =>
+      hasConfiguredApps && (contentWidth ?? 0) >= sideBySideMinWidth;
 
   /// The structured server log tab in the main area.
   ServerLogTab get serverLogTab =>

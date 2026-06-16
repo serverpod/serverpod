@@ -266,30 +266,40 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
+    // In the wide layout ←/→ move focus between the server and apps panes; in
+    // the single-column layout there is one merged tab strip, so ←/→ step
+    // through every tab instead.
+    final sideBySide = state.useSideBySideLayout;
     if (event.logicalKey == LogicalKey.arrowLeft) {
-      state.tabs.focusArea(-1);
+      sideBySide ? state.tabs.focusArea(-1) : state.tabs.cycleAllTabs(-1);
       _rebuild();
       return true;
     }
     if (event.logicalKey == LogicalKey.arrowRight) {
-      state.tabs.focusArea(1);
+      sideBySide ? state.tabs.focusArea(1) : state.tabs.cycleAllTabs(1);
       _rebuild();
       return true;
     }
     if (event.matches(LogicalKey.tab, shift: false)) {
-      state.tabs.cycleTabInFocusedArea(1);
+      sideBySide
+          ? state.tabs.cycleTabInFocusedArea(1)
+          : state.tabs.cycleAllTabs(1);
       _rebuild();
       return true;
     }
     if (event.matches(LogicalKey.tab, shift: true)) {
-      state.tabs.cycleTabInFocusedArea(-1);
+      sideBySide
+          ? state.tabs.cycleTabInFocusedArea(-1)
+          : state.tabs.cycleAllTabs(-1);
       _rebuild();
       return true;
     }
 
     final digitIndex = _digitIndex(event.logicalKey);
     if (digitIndex != null) {
-      state.tabs.selectInFocusedArea(digitIndex);
+      sideBySide
+          ? state.tabs.selectInFocusedArea(digitIndex)
+          : state.tabs.selectAllTabs(digitIndex);
       _rebuild();
       return true;
     }

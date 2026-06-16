@@ -1,0 +1,97 @@
+import 'package:nocterm/nocterm.dart' hide LogEntry;
+import 'package:serverpod_cli/src/commands/start/tui/app.dart';
+import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_shared/log.dart';
+import 'package:test/test.dart';
+
+/// The heavy horizontal rule the `TabBar` draws under its labels. A plain
+/// title label does not render it, so its presence proves a real tab bar.
+const _tabBarRule = '━';
+
+/// Builds a state with a server log line and two companion app tabs (the
+/// first focused), then pumps it at [size].
+Future<NoctermTester> _pump(Size size) async {
+  final state = ServerWatchState();
+  state.showSplash = false;
+  state.serverReady = true;
+  state.logHistory.add(
+    LogEntry(
+      time: DateTime(2026),
+      level: LogLevel.info,
+      message: 'server-log-line',
+      scope: LogScope.root('server'),
+    ),
+  );
+  final admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+  admin.lines.add('admin-log-line');
+  state.getOrCreateAppLogTab(appId: 'portal', label: 'Portal');
+  state.tabs.focusTab(admin);
+
+  final holder = StartAppStateHolder(state);
+  final tester = await NoctermTester.create(size: size);
+  addTearDown(() async {
+    tester.dispose();
+    await holder.dispose();
+  });
+  await tester.pumpComponent(
+    ServerpodWatchApp(holder: holder, onReady: (_) {}),
+  );
+  await tester.pump();
+  return tester;
+}
+
+void main() {
+  group('Given a terminal at least as wide as the side-by-side cutoff', () {
+    test(
+      'when the TUI renders then both panes show with their own tab bars',
+      () async {
+        final ts = (await _pump(const Size(200, 30))).terminalState;
+
+        // Both panes render simultaneously: server content on the left, app
+        // content on the right.
+        expect(ts.containsText('server-log-line'), isTrue);
+        expect(ts.containsText('admin-log-line'), isTrue);
+        // Tab bars are rendered (not bare titles), including the apps strip.
+        expect(ts.containsText(_tabBarRule), isTrue);
+        expect(ts.containsText('Portal'), isTrue);
+      },
+    );
+
+    test(
+      'when an app tab is shown then its label sits above its log lines',
+      () async {
+        final ts = (await _pump(const Size(200, 30))).terminalState;
+
+        final label = ts.findText('Admin');
+        final logLine = ts.findText('admin-log-line');
+
+        expect(label.isNotEmpty, isTrue);
+        expect(logLine.isNotEmpty, isTrue);
+        // Regression guard: the tab title renders at the top of its pane, never
+        // below the log content.
+        expect(label.first.y, lessThan(logLine.first.y));
+      },
+    );
+  });
+
+  group('Given a terminal narrower than the side-by-side cutoff', () {
+    test(
+      'when the TUI renders then one merged tab bar lists every tab',
+      () async {
+        final ts = (await _pump(const Size(100, 24))).terminalState;
+
+        // A single tab strip merges the server and every app tab, so the
+        // Flutter apps stay reachable instead of disappearing.
+        expect(ts.containsText(_tabBarRule), isTrue);
+        expect(ts.containsText('Server logs'), isTrue);
+        expect(ts.containsText('Admin'), isTrue);
+        expect(ts.containsText('Portal'), isTrue);
+
+        // Only the focused tab's content shows (single column, one tab at a
+        // time): the admin tab is focused, so the server log is not visible.
+        expect(ts.containsText('admin-log-line'), isTrue);
+        expect(ts.containsText('server-log-line'), isFalse);
+      },
+    );
+  });
+}

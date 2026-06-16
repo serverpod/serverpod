@@ -60,11 +60,11 @@ class MainScreen extends StatelessComponent {
       ],
     ),
     (
-      'Panes',
+      'Tabs',
       [
-        ('← / →', 'Move focus between panes'),
-        ('Tab / Shift+Tab', 'Cycle tabs in focused pane'),
-        ('1–9', 'Select tab in focused pane'),
+        ('Tab / Shift+Tab', 'Next / previous tab'),
+        ('← / →', 'Switch pane (wide) / tab'),
+        ('1–9', 'Select tab'),
       ],
     ),
     (
@@ -106,27 +106,8 @@ class MainScreen extends StatelessComponent {
                           return Column(
                             children: [
                               Expanded(
-                                child: state.stackAreasVertically
-                                    ? Column(
-                                        children: [
-                                          for (
-                                            var i = 0;
-                                            i < state.tabs.areas.length;
-                                            i++
-                                          ) ...[
-                                            if (i > 0)
-                                              Divider(color: st.subtleDivider),
-                                            Expanded(
-                                              child: _buildArea(
-                                                st,
-                                                state.tabs.areas[i],
-                                                i,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      )
-                                    : Row(
+                                child: state.useSideBySideLayout
+                                    ? Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
                                         children: [
@@ -143,7 +124,7 @@ class MainScreen extends StatelessComponent {
                                               ),
                                             Expanded(
                                               flex: state.tabs.areas[i].flex,
-                                              child: _buildArea(
+                                              child: _buildAreaPane(
                                                 st,
                                                 state.tabs.areas[i],
                                                 i,
@@ -151,7 +132,8 @@ class MainScreen extends StatelessComponent {
                                             ),
                                           ],
                                         ],
-                                      ),
+                                      )
+                                    : _buildMergedColumn(st),
                               ),
                               if (state.activeOperations.isNotEmpty)
                                 ...state.activeOperations.values.map(
@@ -239,42 +221,52 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildArea(ServerpodThemeData st, TabArea area, int areaIndex) {
-    final focused = state.tabs.focusedAreaIndex == areaIndex;
+  /// A single side-by-side pane: the area's own tab strip over the selected
+  /// tab's content. Shown for each area in the wide layout.
+  Component _buildAreaPane(ServerpodThemeData st, TabArea area, int areaIndex) {
+    final selected = area.selected;
+    if (selected == null) {
+      // Apps area with nothing launched yet.
+      return _buildEmptyAppsPlaceholder(st);
+    }
 
     return Column(
       children: [
-        if (area.tabs.length >= 2)
-          Padding(
-            padding: const EdgeInsets.only(left: 1),
-            child: TabBar(
-              labels: [for (final tab in area.tabs) tab.label],
-              selectedTab: area.selectedIndex,
-              onTabChanged: (index) {
-                area.selectedIndex = index;
-                state.tabs.focusedAreaIndex = areaIndex;
-              },
-            ),
-          )
-        else if (focused && area.tabs.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: 1, top: 1),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                area.tabs.first.label,
-                style: TextStyle(
-                  color: st.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+        Padding(
+          padding: const EdgeInsets.only(left: 1),
+          child: TabBar(
+            labels: [for (final tab in area.tabs) tab.label],
+            selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
+            onTabChanged: (index) {
+              area.selectedIndex = index;
+              state.tabs.focusedAreaIndex = areaIndex;
+            },
           ),
-        Expanded(
-          child: area.id == kAppsArea && area.selected == null
-              ? _buildEmptyAppsPlaceholder(st)
-              : _buildTabContent(st, area.selected!),
         ),
+        Expanded(child: _buildTabContent(st, selected)),
+      ],
+    );
+  }
+
+  /// The single-column layout: one tab strip merging every area's tabs
+  /// (server + apps), over the focused tab's content.
+  Component _buildMergedColumn(ServerpodThemeData st) {
+    final all = state.tabs.allTabs;
+    if (all.isEmpty) return const SizedBox.shrink();
+
+    final selected = state.tabs.focusedTabIndexInAll.clamp(0, all.length - 1);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 1),
+          child: TabBar(
+            labels: [for (final tab in all) tab.label],
+            selectedTab: selected,
+            onTabChanged: (index) => state.tabs.focusTab(all[index]),
+          ),
+        ),
+        Expanded(child: _buildTabContent(st, all[selected])),
       ],
     );
   }
