@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
@@ -91,6 +92,85 @@ void main() {
         // time): the admin tab is focused, so the server log is not visible.
         expect(ts.containsText('admin-log-line'), isTrue);
         expect(ts.containsText('server-log-line'), isFalse);
+      },
+    );
+  });
+
+  group('Given the launch panel is open', () {
+    /// Pumps the launch panel with one running app (Admin) and two stopped
+    /// apps, the [focus]th row selected.
+    Future<NoctermTester> panel({required int focus}) async {
+      final state = ServerWatchState();
+      state.showSplash = false;
+      state.canLaunchApps = true;
+      state.showLaunchPanel = true;
+      state.launchPanelIndex = focus;
+      state.launchableApps = [
+        for (final name in ['Admin', 'Portal', 'Mobile'])
+          FlutterAppConfig(
+            id: name.toLowerCase(),
+            name: name,
+            relativePathParts: ['..', name.toLowerCase()],
+            serverPackageDirectoryPathParts: const [],
+          ),
+      ];
+      state.isAppRunning = (id) => id == 'admin';
+
+      final holder = StartAppStateHolder(state);
+      final tester = await NoctermTester.create(size: const Size(120, 24));
+      addTearDown(() async {
+        tester.dispose();
+        await holder.dispose();
+      });
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+      return tester;
+    }
+
+    test('then a stopped, unfocused app is dimmed', () async {
+      final ts = (await panel(focus: 0)).terminalState;
+      final mobile = ts.getStyledText().firstWhere(
+        (s) => s.text.contains('Mobile'),
+      );
+      expect(mobile.style.fontWeight, FontWeight.dim);
+    });
+
+    test(
+      'then the running marker is colored apart from stopped rows',
+      () async {
+        final ts = (await panel(focus: 0)).terminalState;
+        final marker = ts.getStyledText().firstWhere(
+          (s) => s.text.contains('●'),
+        );
+        final stopped = ts.getStyledText().firstWhere(
+          (s) => s.text.contains('Mobile'),
+        );
+        expect(marker.style.color, isNotNull);
+        expect(marker.style.color, isNot(stopped.style.color));
+        expect(marker.style.fontWeight, isNot(FontWeight.dim));
+      },
+    );
+
+    test(
+      'then the focused row is background-highlighted even when stopped',
+      () async {
+        // Portal (stopped) is focused; Mobile (stopped) is not.
+        final ts = (await panel(focus: 1)).terminalState;
+        final portal = ts.getStyledText().firstWhere(
+          (s) => s.text.contains('Portal'),
+        );
+        final mobile = ts.getStyledText().firstWhere(
+          (s) => s.text.contains('Mobile'),
+        );
+
+        expect(portal.style.fontWeight, isNot(FontWeight.dim));
+        // The focused row carries a background distinct from an unfocused row.
+        expect(
+          portal.style.backgroundColor,
+          isNot(mobile.style.backgroundColor),
+        );
       },
     );
   });

@@ -388,6 +388,47 @@ void main() {
         expect(state.showLaunchPanel, isFalse);
       },
     );
+
+    test(
+      'when the panel opens then the cursor starts at the first app',
+      () async {
+        state.launchPanelIndex = 1;
+
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+        expect(state.launchPanelIndex, 0);
+      },
+    );
+
+    test(
+      'when arrow keys are pressed then the cursor moves and wraps',
+      () async {
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 0;
+
+        await _sendKey(tester, LogicalKey.arrowDown);
+        expect(state.launchPanelIndex, 1);
+
+        await _sendKey(tester, LogicalKey.arrowDown);
+        expect(state.launchPanelIndex, 0); // wraps past the last app
+
+        await _sendKey(tester, LogicalKey.arrowUp);
+        expect(state.launchPanelIndex, 1); // wraps before the first app
+      },
+    );
+
+    test('when Enter is pressed then the focused app is launched', () async {
+      var launchIndex = -1;
+      holder.onLaunchApp = (index) => launchIndex = index;
+      state.showLaunchPanel = true;
+      state.launchPanelIndex = 1;
+
+      await _sendKey(tester, LogicalKey.enter);
+
+      expect(launchIndex, 1);
+      expect(state.showLaunchPanel, isFalse);
+    });
   });
 
   group('Given a running TUI start app with exactly one launchable app', () {

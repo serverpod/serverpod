@@ -236,16 +236,41 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
 
     if (state.showLaunchPanel) {
+      final appCount = state.launchableApps.length;
+
       if (event.logicalKey == LogicalKey.escape ||
           (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
         state.showLaunchPanel = false;
         _rebuild();
         return true;
       }
+      // Cursor navigation (arrows or vim-style j/k), wrapping at the ends.
+      if (appCount > 0 &&
+          (event.logicalKey == LogicalKey.arrowUp ||
+              event.logicalKey == LogicalKey.keyK)) {
+        state.launchPanelIndex =
+            (state.launchPanelIndex - 1 + appCount) % appCount;
+        _rebuild();
+        return true;
+      }
+      if (appCount > 0 &&
+          (event.logicalKey == LogicalKey.arrowDown ||
+              event.logicalKey == LogicalKey.keyJ)) {
+        state.launchPanelIndex = (state.launchPanelIndex + 1) % appCount;
+        _rebuild();
+        return true;
+      }
+      // Enter launches the focused row.
+      if (event.logicalKey == LogicalKey.enter &&
+          state.launchPanelIndex < appCount) {
+        onLaunchApp?.call(state.launchPanelIndex);
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      // Number keys remain shortcuts for the first nine apps.
       final digitIndex = _digitIndex(event.logicalKey);
-      if (digitIndex != null &&
-          digitIndex < state.launchableApps.length &&
-          digitIndex < 9) {
+      if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
         onLaunchApp?.call(digitIndex);
         state.showLaunchPanel = false;
         _rebuild();
@@ -261,6 +286,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         onRestartFlutterApp?.call();
       } else {
         state.showLaunchPanel = !state.showLaunchPanel;
+        if (state.showLaunchPanel) state.launchPanelIndex = 0;
         _rebuild();
       }
       return true;

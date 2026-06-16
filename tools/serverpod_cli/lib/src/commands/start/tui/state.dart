@@ -47,6 +47,9 @@ class ServerWatchState extends TuiState {
   /// Whether the right-docked launch panel is visible.
   bool showLaunchPanel = false;
 
+  /// Index of the focused row in the launch panel, driven by the cursor keys.
+  int launchPanelIndex = 0;
+
   /// Returns whether [appId] is currently running (for the launch panel).
   bool Function(String appId)? isAppRunning;
 

@@ -191,27 +191,72 @@ class MainScreen extends StatelessComponent {
               ),
               Divider(color: st.subtleDivider),
               for (var i = 0; i < apps.length; i++)
-                GestureDetector(
-                  onTap: () => onLaunchApp?.call(i),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 1),
-                    child: Text(
-                      '${i < 9 ? '${i + 1}  ' : '   '}'
-                      '${apps[i].name}  '
-                      '${isRunning != null && isRunning(apps[i].id) ? '●' : '○'}',
-                    ),
-                  ),
-                ),
+                _buildLaunchAppRow(st, i, isRunning),
               Padding(
                 padding: const EdgeInsets.only(left: 1, top: 1),
                 child: Text(
-                  apps.length <= 9
-                      ? '1–${apps.length} / click · Esc'
-                      : '1–9 / click · Esc',
+                  '↑↓ enter · click · Esc',
                   style: TextStyle(
                     color: st.debugLevel,
                     fontWeight: FontWeight.dim,
                   ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// One launch-panel row: the app's name with a running marker.
+  ///
+  /// Stopped apps are dimmed, the running marker is green, and the cursor row
+  /// gets a background highlight (matching the `serverpod create` selection
+  /// style).
+  Component _buildLaunchAppRow(
+    ServerpodThemeData st,
+    int i,
+    bool Function(String appId)? isRunning,
+  ) {
+    final apps = state.launchableApps;
+    final app = apps[i];
+    final running = isRunning?.call(app.id) ?? false;
+    final focused = i == state.launchPanelIndex.clamp(0, apps.length - 1);
+    final muted = !running && !focused;
+    final background = focused ? st.activationKey : null;
+    final weight = muted ? FontWeight.dim : FontWeight.normal;
+    final foreground = muted ? st.debugLevel : st.brightText;
+
+    return GestureDetector(
+      onTap: () => onLaunchApp?.call(i),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 1),
+        child: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: ' ${i < 9 ? '${i + 1}' : ' '}  ',
+                style: TextStyle(
+                  color: focused ? st.brightText : st.debugLevel,
+                  fontWeight: weight,
+                  backgroundColor: background,
+                ),
+              ),
+              TextSpan(
+                text: app.name,
+                style: TextStyle(
+                  color: foreground,
+                  fontWeight: weight,
+                  backgroundColor: background,
+                ),
+              ),
+              TextSpan(
+                text: '  ${running ? '●' : '○'} ',
+                style: TextStyle(
+                  color: running ? st.success : foreground,
+                  fontWeight: weight,
+                  backgroundColor: background,
                 ),
               ),
             ],
