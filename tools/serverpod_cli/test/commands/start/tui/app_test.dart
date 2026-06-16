@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
@@ -154,6 +155,15 @@ void main() {
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'app',
+          name: 'App',
+          relativePathParts: ['..', 'app'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
       state.getOrCreateAppLogTab(appId: 'app', label: 'App');
     });
 
@@ -190,6 +200,14 @@ void main() {
         restartCalls = 0;
         holder.onRestartFlutterApp = () => restartCalls++;
         state.canLaunchApps = true;
+        state.launchableApps = [
+          const FlutterAppConfig(
+            id: 'app',
+            name: 'App',
+            relativePathParts: ['..', 'app'],
+            serverPackageDirectoryPathParts: [],
+          ),
+        ];
       });
 
       test(
@@ -304,6 +322,98 @@ void main() {
         await _sendCtrlC(tester);
 
         expect(state.ctrlCHint, 'Press Ctrl-C again to exit');
+      },
+    );
+  });
+
+  group('Given a running TUI start app with multiple launchable apps', () {
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+        const FlutterAppConfig(
+          id: 'b',
+          name: 'Customer',
+          relativePathParts: ['..', 'customer'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (id) => id == 'a';
+    });
+
+    test(
+      'when Ctrl+R is pressed then the launch panel opens',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
+
+    test(
+      'when Ctrl+R is pressed twice then the launch panel closes',
+      () async {
+        await _sendCtrlR(tester);
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+
+    test(
+      'when Esc is pressed with the panel open then it closes',
+      () async {
+        state.showLaunchPanel = true;
+        await _sendKey(tester, LogicalKey.escape);
+
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+
+    test(
+      'when digit 1 is pressed with the panel open then onLaunchApp is called',
+      () async {
+        var launchIndex = -1;
+        holder.onLaunchApp = (index) => launchIndex = index;
+        state.showLaunchPanel = true;
+
+        await _sendKey(tester, LogicalKey.digit1);
+
+        expect(launchIndex, 0);
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+  });
+
+  group('Given a running TUI start app with exactly one launchable app', () {
+    late int restartCalls;
+
+    setUp(() {
+      restartCalls = 0;
+      holder.onRestartFlutterApp = () => restartCalls++;
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+    });
+
+    test(
+      'when Ctrl+R is pressed then the launch panel does not open',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isFalse);
+        expect(restartCalls, 1);
       },
     );
   });

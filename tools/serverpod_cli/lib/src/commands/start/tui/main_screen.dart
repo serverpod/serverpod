@@ -25,6 +25,7 @@ class MainScreen extends StatelessComponent {
     this.onCreateRepairMigration,
     this.onApplyMigration,
     this.onClearLogs,
+    this.onLaunchApp,
     this.onQuit,
   });
 
@@ -39,6 +40,7 @@ class MainScreen extends StatelessComponent {
   final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onClearLogs;
+  final ValueChanged<int>? onLaunchApp;
   final VoidCallback? onQuit;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
@@ -178,7 +180,62 @@ class MainScreen extends StatelessComponent {
             bindings: _helpBindings,
             controller: helpScrollController,
           ),
+        if (state.showLaunchPanel) _buildLaunchPanel(st),
       ],
+    );
+  }
+
+  Component _buildLaunchPanel(ServerpodThemeData st) {
+    final apps = state.launchableApps;
+    final isRunning = state.isAppRunning;
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: BorderedBox(
+        child: SizedBox(
+          width: 36,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 1, top: 1),
+                child: Text(
+                  'Launch app',
+                  style: TextStyle(
+                    color: st.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Divider(color: st.subtleDivider),
+              for (var i = 0; i < apps.length; i++)
+                GestureDetector(
+                  onTap: () => onLaunchApp?.call(i),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 1),
+                    child: Text(
+                      '${i < 9 ? '${i + 1}  ' : '   '}'
+                      '${apps[i].name}  '
+                      '${isRunning != null && isRunning(apps[i].id) ? '●' : '○'}',
+                    ),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.only(left: 1, top: 1),
+                child: Text(
+                  apps.length <= 9
+                      ? '1–${apps.length} / click · Esc'
+                      : '1–9 / click · Esc',
+                  style: TextStyle(
+                    color: st.debugLevel,
+                    fontWeight: FontWeight.dim,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'tab_model.dart';
@@ -39,6 +40,15 @@ class ServerWatchState extends TuiState {
   /// Whether a Flutter app can be launched or restarted from here (the project
   /// has configured apps and we're in development mode).
   bool canLaunchApps = false;
+
+  /// All configured companion apps, used by the launch panel.
+  List<FlutterAppConfig> launchableApps = const [];
+
+  /// Whether the right-docked launch panel is visible.
+  bool showLaunchPanel = false;
+
+  /// Returns whether [appId] is currently running (for the launch panel).
+  bool Function(String appId)? isAppRunning;
 
   /// Latest measured content width from the main log area.
   double? contentWidth;

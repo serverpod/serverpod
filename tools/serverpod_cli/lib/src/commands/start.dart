@@ -1003,8 +1003,10 @@ Future<void> _runTuiBackend({
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,
-      flutterStdoutSinkFor: (_) => TuiLogSink(holder, addLine: addFlutterLogLine),
-      flutterStderrSinkFor: (_) => TuiLogSink(holder, addLine: addFlutterLogLine),
+      flutterStdoutSinkFor: (_) =>
+          TuiLogSink(holder, addLine: addFlutterLogLine),
+      flutterStderrSinkFor: (_) =>
+          TuiLogSink(holder, addLine: addFlutterLogLine),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
           appId: app.id,
@@ -1064,6 +1066,20 @@ Future<void> _runTuiBackend({
         holder.state.canLaunchApps =
             config.flutterApps.isNotEmpty &&
             runModeFromServerArgs(serverArgs) == 'development';
+        holder.state.launchableApps = config.flutterApps;
+        holder.state.isAppRunning = (appId) =>
+            ctx.flutterManager.isRunning(appId);
+        holder.onLaunchApp = (index) {
+          if (index < 0 || index >= config.flutterApps.length) return;
+          final app = config.flutterApps[index];
+          if (ctx.flutterManager.isRunning(app.id)) {
+            final tab = holder.state.appLogTabFor(app.id);
+            if (tab != null) holder.state.tabs.focusTab(tab);
+            holder.markDirty();
+          } else {
+            unawaited(ctx.flutterManager.launch(app.id));
+          }
+        };
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
@@ -1078,9 +1094,9 @@ Future<void> _runTuiBackend({
                 ? 'Restart Flutter app'
                 : 'Start Flutter app',
             () async {
-              if (config.flutterApps.isEmpty) return;
+              if (config.flutterApps.length != 1) return;
               final app = config.flutterApps.first;
-              if (ctx.session.isFlutterAppRunning) {
+              if (ctx.flutterManager.isRunning(app.id)) {
                 await ctx.flutterManager.restart(app.id);
               } else {
                 await ctx.flutterManager.launch(app.id);

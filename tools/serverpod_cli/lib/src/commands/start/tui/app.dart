@@ -18,6 +18,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   VoidCallback? _onHotReload;
   VoidCallback? _onHotRestart;
   VoidCallback? _onRestartFlutterApp;
+  void Function(int index)? _onLaunchApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
@@ -35,6 +36,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onHotReload = _onHotReload;
     widgetState.onHotRestart = _onHotRestart;
     widgetState.onRestartFlutterApp = _onRestartFlutterApp;
+    widgetState.onLaunchApp = _onLaunchApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
@@ -59,6 +61,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   set onRestartFlutterApp(VoidCallback? cb) {
     _onRestartFlutterApp = cb;
     _widgetState?.onRestartFlutterApp = cb;
+  }
+
+  set onLaunchApp(void Function(int index)? cb) {
+    _onLaunchApp = cb;
+    _widgetState?.onLaunchApp = cb;
   }
 
   set onCreateMigration(void Function({bool force})? cb) {
@@ -104,6 +111,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   VoidCallback? onHotReload;
   VoidCallback? onHotRestart;
   VoidCallback? onRestartFlutterApp;
+  void Function(int index)? onLaunchApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
@@ -185,6 +193,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           state.clearLogs();
           _rebuild();
         },
+        onLaunchApp: (index) {
+          onLaunchApp?.call(index);
+        },
         onQuit: onQuit,
       ),
     );
@@ -224,11 +235,33 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Ctrl+R: full relaunch of the Flutter app (kill `flutter run`, respawn),
-    // or launch it if it isn't running yet (e.g. after a `--no-flutter` start).
+    if (state.showLaunchPanel) {
+      if (event.logicalKey == LogicalKey.escape ||
+          (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      final digitIndex = _digitIndex(event.logicalKey);
+      if (digitIndex != null &&
+          digitIndex < state.launchableApps.length &&
+          digitIndex < 9) {
+        onLaunchApp?.call(digitIndex);
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      return true;
+    }
+
+    // Ctrl+R: 0 apps inert; 1 app direct action; >1 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
-      if (state.canLaunchApps || _hasRunningAppTab(state)) {
+      if (!state.canLaunchApps) return true;
+      if (state.launchableApps.length <= 1) {
         onRestartFlutterApp?.call();
+      } else {
+        state.showLaunchPanel = !state.showLaunchPanel;
+        _rebuild();
       }
       return true;
     }
@@ -278,11 +311,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     final scrollController =
         focusedTab?.scrollController ?? state.serverLogTab.scrollController;
     return _handleScrollKey(scrollController, event);
-  }
-
-  bool _hasRunningAppTab(ServerWatchState state) {
-    if (!state.hasConfiguredApps) return false;
-    return state.tabs.areaOf(kAppsArea).tabs.isNotEmpty;
   }
 
   int? _digitIndex(LogicalKey key) {
