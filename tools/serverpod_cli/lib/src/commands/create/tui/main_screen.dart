@@ -26,6 +26,7 @@ class MainScreen extends StatelessComponent {
     final theme = ServerpodTheme.of(context);
     final state = holder.state;
     final creatingProject = state.creatingProject;
+    final summaryMessageAction = isUpgrade ? 'upgrade' : 'create';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +50,7 @@ class MainScreen extends StatelessComponent {
                           scrollController: scrollController,
                           rebuild: holder.markDirty,
                           summaryDescription:
-                              'Press Enter to create the project.',
+                              'Press Enter to $summaryMessageAction the project.',
                         ),
                 ),
               ],
