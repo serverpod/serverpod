@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:postgres/src/types/text_codec.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+import '../../concepts/columns.dart';
 import '../../interface/value_encoder.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
@@ -74,5 +75,14 @@ class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
         escapeStrings: escapeStrings,
       );
     }
+  }
+
+  @override
+  String encodeColumnValue(
+    Column column,
+    dynamic value, {
+    bool hasDefaults = false,
+  }) {
+    return convert(value, hasDefaults: hasDefaults);
   }
 }
