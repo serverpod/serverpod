@@ -251,6 +251,9 @@ void main() async {
           final content = pubspec.readAsStringSync();
           expect(content, isNot(contains('flutter_secure_storage')));
         },
+        skip:
+            'flutter_secure_storage override is now in the template '
+            'and mini template type is planned for removal',
       );
 
       test('then the flutter main.dart does not contain auth imports', () {
@@ -705,6 +708,9 @@ void main() async {
             final content = pubspec.readAsStringSync();
             expect(content, isNot(contains('flutter_secure_storage')));
           },
+          skip:
+              'flutter_secure_storage override is now in the template '
+              'and mini template type is planned for removal',
         );
 
         test('then the flutter main.dart does not contain auth imports', () {
