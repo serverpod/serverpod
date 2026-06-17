@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
@@ -473,6 +474,102 @@ void main() {
 
         expect(state.showLaunchPanel, isFalse);
         expect(restartCalls, 1);
+      },
+    );
+  });
+
+  group('Given a wide TUI with multiple app tabs open', () {
+    late AppLogTab admin;
+    late AppLogTab portal;
+
+    setUp(() async {
+      tester.dispose();
+      await holder.dispose();
+
+      state = ServerWatchState();
+      holder = StartAppStateHolder(state);
+      admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      portal = state.getOrCreateAppLogTab(appId: 'portal', label: 'Portal');
+      state.tabs.focusTab(admin);
+      state.contentWidth = 200;
+
+      tester = await NoctermTester.create(size: const Size(200, 30));
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+    });
+
+    test(
+      'when Tab is pressed from the server tab then the first app tab is focused',
+      () async {
+        state.tabs.focusedAreaIndex = 0;
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab, admin);
+      },
+    );
+
+    test(
+      'when Tab is pressed from an app tab then the next app tab is focused',
+      () async {
+        state.tabs.focusTab(admin);
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab, portal);
+      },
+    );
+
+    test(
+      'when digit 1 is pressed then the server tab is focused',
+      () async {
+        state.tabs.focusTab(portal);
+
+        await _sendKey(tester, LogicalKey.digit1);
+
+        expect(state.tabs.focusedTab, state.serverLogTab);
+      },
+    );
+
+    test(
+      'when digit 3 is pressed then the second app tab is focused',
+      () async {
+        state.tabs.focusTab(admin);
+
+        await _sendKey(tester, LogicalKey.digit3);
+
+        expect(state.tabs.focusedTab, portal);
+      },
+    );
+  });
+
+  group('Given a narrow TUI with multiple tabs open', () {
+    setUp(() async {
+      tester.dispose();
+      await holder.dispose();
+
+      state = ServerWatchState();
+      holder = StartAppStateHolder(state);
+      state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      state.contentWidth = 100;
+
+      tester = await NoctermTester.create(size: const Size(100, 24));
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+    });
+
+    test(
+      'when Tab is pressed from the server tab then the first app tab is focused',
+      () async {
+        state.tabs.focusTab(state.serverLogTab);
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab?.label, 'Admin');
       },
     );
   });

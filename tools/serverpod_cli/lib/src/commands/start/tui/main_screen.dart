@@ -66,9 +66,8 @@ class MainScreen extends StatelessComponent {
     (
       'Tabs',
       [
-        ('Tab / Shift+Tab', 'Next / previous tab'),
-        ('← / →', 'Switch pane (wide) / tab'),
-        ('1–9', 'Select tab'),
+        ('Tab / Shift+Tab / ← / →', 'Cycle tabs'),
+        ('1–9', 'Jump to tab'),
       ],
     ),
     (

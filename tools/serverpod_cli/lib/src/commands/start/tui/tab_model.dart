@@ -166,39 +166,25 @@ class TabModel {
     area.selectedIndex = index;
   }
 
-  /// Moves keyboard focus across areas by [delta] positions, wrapping around.
-  void focusArea(int delta) {
-    if (areas.isEmpty) return;
-    focusedAreaIndex = (focusedAreaIndex + delta) % areas.length;
-    if (focusedAreaIndex < 0) {
-      focusedAreaIndex += areas.length;
-    }
-  }
-
-  /// Cycles the selected tab within the focused area by [delta] positions,
-  /// wrapping at the ends.
-  void cycleTabInFocusedArea(int delta) {
-    final area = focusedArea;
-    if (area.tabs.length <= 1) return;
-
-    area.selectedIndex = (area.selectedIndex + delta) % area.tabs.length;
-    if (area.selectedIndex < 0) {
-      area.selectedIndex += area.tabs.length;
-    }
-  }
-
-  /// Selects the tab at [index] within the focused area.
-  void selectInFocusedArea(int index) {
-    final area = focusedArea;
-    if (index < 0 || index >= area.tabs.length) return;
-    area.selectedIndex = index;
-  }
-
   /// All tabs across every area, in area order then tab order.
   ///
   /// Used by the single-column (narrow) layout, where every area's tabs are
-  /// merged into one tab strip.
+  /// merged into one tab strip, and by digit shortcuts for explicit jumps.
   List<PaneTab> get allTabs => [for (final area in areas) ...area.tabs];
+
+  /// Tabs worth visiting during keyboard cycling for the current layout.
+  ///
+  /// In side-by-side mode, single-tab areas (typically the server pane) are
+  /// skipped because they stay visible and selecting them does not change the
+  /// layout. In the merged narrow layout every tab is included because only one
+  /// pane is shown at a time.
+  List<PaneTab> cyclableTabs({required bool sideBySide}) {
+    if (!sideBySide) return allTabs;
+    return [
+      for (final area in areas)
+        if (area.tabs.length > 1) ...area.tabs,
+    ];
+  }
 
   /// Index of [focusedTab] within [allTabs], or `-1` when there is none.
   int get focusedTabIndexInAll {
@@ -207,18 +193,29 @@ class TabModel {
     return allTabs.indexOf(tab);
   }
 
-  /// Cycles focus across [allTabs] by [delta], wrapping at the ends.
+  /// Cycles keyboard focus across [cyclableTabs] by [delta], wrapping at the
+  /// ends.
   ///
-  /// Unlike [cycleTabInFocusedArea] this crosses area boundaries, for the
-  /// merged single-column tab strip.
-  void cycleAllTabs(int delta) {
-    final all = allTabs;
-    if (all.length <= 1) return;
-    var index = focusedTabIndexInAll;
-    if (index < 0) index = 0;
-    index = (index + delta) % all.length;
-    if (index < 0) index += all.length;
-    focusTab(all[index]);
+  /// When the current tab is outside the cyclable set (for example the server
+  /// tab in side-by-side mode), the next forward step lands on the first
+  /// cyclable tab and the next backward step lands on the last.
+  void cycleTabs(int delta, {required bool sideBySide}) {
+    final cyclable = cyclableTabs(sideBySide: sideBySide);
+    if (cyclable.isEmpty || cyclable.length <= 1) return;
+
+    var index = _indexOfFocusedTabIn(cyclable);
+    if (index < 0) {
+      index = delta > 0 ? -1 : cyclable.length;
+    }
+    index = (index + delta) % cyclable.length;
+    if (index < 0) index += cyclable.length;
+    focusTab(cyclable[index]);
+  }
+
+  int _indexOfFocusedTabIn(List<PaneTab> tabs) {
+    final tab = focusedTab;
+    if (tab == null) return -1;
+    return tabs.indexOf(tab);
   }
 
   /// Focuses the [index]th tab across [allTabs].

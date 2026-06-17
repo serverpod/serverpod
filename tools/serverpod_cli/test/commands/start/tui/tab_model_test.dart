@@ -100,87 +100,147 @@ void main() {
     );
 
     test(
-      'when selectInFocusedArea is called then only the focused area changes',
+      'when cyclableTabs is called in side-by-side mode then single-tab areas are skipped',
       () {
+        model.addTab(ServerLogTab());
         model.addTab(AppLogTab(appId: 'a', label: 'A'));
         model.addTab(AppLogTab(appId: 'b', label: 'B'));
-        model.addTab(AppLogTab(appId: 'c', label: 'C'));
-        mainArea.selectedIndex = 0;
-        model.focusedAreaIndex = 1;
 
-        model.selectInFocusedArea(2);
+        final cyclable = model.cyclableTabs(sideBySide: true);
 
-        expect(appsArea.selectedIndex, 2);
+        expect(cyclable.map((t) => t.label), ['A', 'B']);
+      },
+    );
+
+    test(
+      'when cyclableTabs is called in merged mode then every tab is included',
+      () {
+        model.addTab(ServerLogTab());
+        model.addTab(AppLogTab(appId: 'a', label: 'A'));
+        model.addTab(AppLogTab(appId: 'b', label: 'B'));
+
+        final cyclable = model.cyclableTabs(sideBySide: false);
+
+        expect(cyclable.map((t) => t.label), ['Server logs', 'A', 'B']);
+      },
+    );
+
+    test(
+      'when cycleTabs is called in side-by-side mode from the server tab then the first app tab is focused',
+      () {
+        final appA = AppLogTab(appId: 'a', label: 'A');
+        final appB = AppLogTab(appId: 'b', label: 'B');
+        model.addTab(ServerLogTab());
+        model.addTab(appA);
+        model.addTab(appB);
+        model.focusedAreaIndex = 0;
+
+        model.cycleTabs(1, sideBySide: true);
+
+        expect(model.focusedTab, appA);
+        expect(appsArea.selectedIndex, 0);
+      },
+    );
+
+    test(
+      'when cycleTabs is called in side-by-side mode then only app tabs are visited',
+      () {
+        final appA = AppLogTab(appId: 'a', label: 'A');
+        final appB = AppLogTab(appId: 'b', label: 'B');
+        model.addTab(ServerLogTab());
+        model.addTab(appA);
+        model.addTab(appB);
+        model.focusTab(appA);
+
+        model.cycleTabs(1, sideBySide: true);
+
+        expect(model.focusedTab, appB);
+      },
+    );
+
+    test(
+      'when cycleTabs wraps in side-by-side mode then it returns to the first app tab',
+      () {
+        final appA = AppLogTab(appId: 'a', label: 'A');
+        final appB = AppLogTab(appId: 'b', label: 'B');
+        model.addTab(ServerLogTab());
+        model.addTab(appA);
+        model.addTab(appB);
+        model.focusTab(appB);
+
+        model.cycleTabs(1, sideBySide: true);
+
+        expect(model.focusedTab, appA);
+      },
+    );
+
+    test(
+      'when cycleTabs moves backward from the server tab in side-by-side mode then the last app tab is focused',
+      () {
+        final appA = AppLogTab(appId: 'a', label: 'A');
+        final appB = AppLogTab(appId: 'b', label: 'B');
+        model.addTab(ServerLogTab());
+        model.addTab(appA);
+        model.addTab(appB);
+        model.focusedAreaIndex = 0;
+
+        model.cycleTabs(-1, sideBySide: true);
+
+        expect(model.focusedTab, appB);
+      },
+    );
+
+    test(
+      'when cycleTabs is called in merged mode then the server tab is included',
+      () {
+        final serverTab = ServerLogTab();
+        final appA = AppLogTab(appId: 'a', label: 'A');
+        model.addTab(serverTab);
+        model.addTab(appA);
+        model.focusTab(serverTab);
+
+        model.cycleTabs(1, sideBySide: false);
+
+        expect(model.focusedTab, appA);
+      },
+    );
+
+    test(
+      'when only one cyclable tab exists then cycleTabs is a no-op',
+      () {
+        model.addTab(ServerLogTab());
+        model.addTab(AppLogTab(appId: 'a', label: 'A'));
+        model.focusTab(model.allTabs.last);
+
+        model.cycleTabs(1, sideBySide: true);
+
+        expect(model.focusedTab, model.allTabs.last);
+      },
+    );
+
+    test(
+      'when selectAllTabs is called then the tab at the global index is focused',
+      () {
+        model.addTab(ServerLogTab());
+        model.addTab(AppLogTab(appId: 'a', label: 'A'));
+        model.addTab(AppLogTab(appId: 'b', label: 'B'));
+
+        model.selectAllTabs(2);
+
+        expect(model.focusedTab?.label, 'B');
         expect(mainArea.selectedIndex, 0);
       },
     );
 
     test(
-      'when selectInFocusedArea is out of range then it is a no-op',
+      'when selectAllTabs is out of range then it is a no-op',
       () {
+        model.addTab(ServerLogTab());
         model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.focusedAreaIndex = 1;
 
-        model.selectInFocusedArea(5);
+        model.selectAllTabs(5);
 
-        expect(appsArea.selectedIndex, 0);
-      },
-    );
-
-    test(
-      'when cycleTabInFocusedArea is called then only the focused area cycles',
-      () {
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-        model.focusedAreaIndex = 1;
-        appsArea.selectedIndex = 0;
-
-        model.cycleTabInFocusedArea(1);
-
-        expect(appsArea.selectedIndex, 1);
-      },
-    );
-
-    test(
-      'when cycleTabInFocusedArea reaches the last tab then it wraps to the first',
-      () {
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-        model.focusedAreaIndex = 1;
-        appsArea.selectedIndex = 1;
-
-        model.cycleTabInFocusedArea(1);
-
-        expect(appsArea.selectedIndex, 0);
-      },
-    );
-
-    test(
-      'when cycleTabInFocusedArea moves backward from the first tab then it wraps to the last',
-      () {
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-        model.focusedAreaIndex = 1;
-        appsArea.selectedIndex = 0;
-
-        model.cycleTabInFocusedArea(-1);
-
-        expect(appsArea.selectedIndex, 1);
-      },
-    );
-
-    test(
-      'when focusArea is called then focus wraps across areas',
-      () {
-        model.focusedAreaIndex = 1;
-
-        model.focusArea(1);
-
-        expect(model.focusedAreaIndex, 0);
-
-        model.focusArea(-1);
-
-        expect(model.focusedAreaIndex, 1);
+        expect(model.focusedTab?.label, 'Server logs');
       },
     );
   });

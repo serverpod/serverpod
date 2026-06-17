@@ -298,40 +298,34 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // In the wide layout ←/→ move focus between the server and apps panes; in
-    // the single-column layout there is one merged tab strip, so ←/→ step
-    // through every tab instead.
+    // Tab, arrows, and digits share one global tab order. Side-by-side mode
+    // skips single-tab areas during cycling (the server pane stays visible);
+    // digit shortcuts always jump by index across every tab.
     final sideBySide = state.useSideBySideLayout;
     if (event.logicalKey == LogicalKey.arrowLeft) {
-      sideBySide ? state.tabs.focusArea(-1) : state.tabs.cycleAllTabs(-1);
+      state.tabs.cycleTabs(-1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
     if (event.logicalKey == LogicalKey.arrowRight) {
-      sideBySide ? state.tabs.focusArea(1) : state.tabs.cycleAllTabs(1);
+      state.tabs.cycleTabs(1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
     if (event.matches(LogicalKey.tab, shift: false)) {
-      sideBySide
-          ? state.tabs.cycleTabInFocusedArea(1)
-          : state.tabs.cycleAllTabs(1);
+      state.tabs.cycleTabs(1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
     if (event.matches(LogicalKey.tab, shift: true)) {
-      sideBySide
-          ? state.tabs.cycleTabInFocusedArea(-1)
-          : state.tabs.cycleAllTabs(-1);
+      state.tabs.cycleTabs(-1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
 
     final digitIndex = _digitIndex(event.logicalKey);
     if (digitIndex != null) {
-      sideBySide
-          ? state.tabs.selectInFocusedArea(digitIndex)
-          : state.tabs.selectAllTabs(digitIndex);
+      state.tabs.selectAllTabs(digitIndex);
       _rebuild();
       return true;
     }
