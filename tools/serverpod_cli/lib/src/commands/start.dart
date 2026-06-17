@@ -1027,13 +1027,16 @@ Future<void> _runTuiBackend({
         holder.onLaunchApp = (index) {
           if (index < 0 || index >= config.flutterApps.length) return;
           final app = config.flutterApps[index];
-          if (ctx.flutterManager.isRunning(app.id)) {
-            final tab = holder.state.appLogTabFor(app.id);
-            if (tab != null) holder.state.tabs.focusTab(tab);
-            holder.markDirty();
-          } else {
-            unawaited(ctx.flutterManager.launch(app.id));
-          }
+          // Selecting an already-running app relaunches it; a stopped one is
+          // launched. Either path focuses the app's tab via onEnsureAppTab.
+          final isRunning = ctx.flutterManager.isRunning(app.id);
+          runTrackedAction(
+            holder,
+            isRunning ? 'Relaunch ${app.name}' : 'Launch ${app.name}',
+            () => isRunning
+                ? ctx.flutterManager.restart(app.id)
+                : ctx.flutterManager.launch(app.id),
+          );
         };
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {

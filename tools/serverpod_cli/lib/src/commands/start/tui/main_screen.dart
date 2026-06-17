@@ -175,6 +175,15 @@ class MainScreen extends StatelessComponent {
     final apps = state.launchableApps;
     final isRunning = state.isAppRunning;
 
+    // The title tracks the highlighted row: a running app is relaunched, a
+    // stopped one is launched — matching what pressing Enter does.
+    final focusedIndex = apps.isEmpty
+        ? -1
+        : state.launchPanelIndex.clamp(0, apps.length - 1);
+    final focusedRunning =
+        focusedIndex >= 0 && (isRunning?.call(apps[focusedIndex].id) ?? false);
+    final title = focusedRunning ? 'Relaunch app' : 'Launch app';
+
     return Padding(
       padding: const EdgeInsets.only(top: 0, bottom: 1),
       child: Align(
@@ -189,7 +198,7 @@ class MainScreen extends StatelessComponent {
                 Padding(
                   padding: const EdgeInsets.only(left: 1, top: 1),
                   child: Text(
-                    'Launch app',
+                    title,
                     style: TextStyle(
                       color: st.primary,
                       fontWeight: FontWeight.bold,

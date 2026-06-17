@@ -211,5 +211,25 @@ void main() {
         );
       },
     );
+
+    test(
+      'then the title reads "Relaunch app" when a running app is focused',
+      () async {
+        // Admin (index 0) is running, so selecting it relaunches.
+        final ts = (await panel(focus: 0)).terminalState;
+        expect(ts.containsText('Relaunch app'), isTrue);
+      },
+    );
+
+    test(
+      'then the title reads "Launch app" when a stopped app is focused',
+      () async {
+        // Portal (index 1) is stopped; the title is the launch verb, not relaunch.
+        // (The "Relaunch" token only appears in the panel title, never the button
+        // bar hint, so its absence pins the launch wording.)
+        final ts = (await panel(focus: 1)).terminalState;
+        expect(ts.containsText('Relaunch'), isFalse);
+      },
+    );
   });
 }

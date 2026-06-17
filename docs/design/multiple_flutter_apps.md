@@ -119,8 +119,8 @@ more than one exists:
 - `Ctrl+R` with **0** apps: inert. With **1** app: launch / restart / focus it
   directly (today's behavior, no panel). With **>1**: toggle the panel.
 - In the panel, `1`–`N` (`N` = app count, capped at 9) or a mouse click selects
-  an app: launch it if stopped, focus its tab if already running. The tab opens
-  and the panel closes. `●` running, `○` stopped.
+  an app: launch it if stopped, **relaunch it if already running**. Either way
+  the app's tab opens/focuses and the panel closes. `●` running, `○` stopped.
 - `Esc` or a second `Ctrl+R` closes the panel.
 
 ## Architecture
@@ -464,15 +464,18 @@ come up on start; the rest are a `Ctrl+R` keystroke away. The synthesized
 default sibling app sets the flag, preserving the historical "one app comes up"
 experience for projects that don't configure `flutter_apps`.
 
-### Why the panel focuses a running app instead of restarting it
+### Why the panel relaunches a running app instead of focusing it
 
-`Ctrl+R` / `R` already restart; making panel selection *focus* a running app
-(and only launch a stopped one) avoids accidental restarts when the user just
-wants to switch tabs. A restart-from-panel affordance (e.g. `Shift+digit`) can be
-added later without changing the model.
+Selecting an app in the launch panel is an explicit "(re)start this app" gesture,
+so a running app is relaunched rather than merely focused — picking it always
+gives a fresh run, mirroring what selecting a stopped app does. The relaunch path
+focuses the app's tab anyway (via `onEnsureAppTab`), so the user still lands on
+its logs. Plain tab switching remains available through `←`/`→` and `Tab` without
+touching the running process.
 
 ## Open questions
 
-- **Restart-from-panel** — is focus-only on a running app sufficient, or should
-  the panel also offer a restart gesture (`Shift+digit`)? Deferred unless asked
-  for.
+- **Focus-without-relaunch from the panel** — selecting a running app now
+  relaunches it; if a "switch to its tab without restarting" gesture is wanted,
+  it would be a separate affordance (the arrow/`Tab` navigation already covers
+  plain switching). Deferred unless asked for.
