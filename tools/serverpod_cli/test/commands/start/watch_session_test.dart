@@ -207,6 +207,61 @@ dependencies:
   return (manager: manager, process: process, tempDir: tempDir);
 }
 
+Future<
+  ({
+    FlutterAppManager manager,
+    _FakeFlutter processA,
+    _FakeFlutter processB,
+    Directory flutterDirA,
+    Directory flutterDirB,
+    Directory tempDir,
+  })
+>
+_createTwoAppFlutterManagerHarness() async {
+  final tempDir = await Directory.systemTemp.createTemp(
+    'watch_session_multi_flutter_',
+  );
+  final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+    ..createSync(recursive: true);
+  final flutterDirA = Directory(p.join(tempDir.path, 'app_a_flutter'))
+    ..createSync(recursive: true);
+  final flutterDirB = Directory(p.join(tempDir.path, 'app_b_flutter'))
+    ..createSync(recursive: true);
+
+  FlutterAppConfig appConfig(String id, Directory dir) => FlutterAppConfig(
+    id: id,
+    name: id,
+    relativePathParts: p.split(p.relative(dir.path, from: serverDir.path)),
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
+  );
+
+  final processA = _FakeFlutter();
+  final processB = _FakeFlutter();
+  final manager = FlutterAppManager(
+    apps: [appConfig('app-a', flutterDirA), appConfig('app-b', flutterDirB)],
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    runMode: 'development',
+    onProgress: (_, _) {},
+    onReady: (_, _) {},
+    onStart: (_, _) async {},
+    onEnsureAppTab: (_) {},
+    stdoutSinkFor: (_) => stdout,
+    stderrSinkFor: (_) => stderr,
+  );
+  await manager.initialize();
+  manager.setProcessForTesting('app-a', processA);
+  manager.setProcessForTesting('app-b', processB);
+
+  return (
+    manager: manager,
+    processA: processA,
+    processB: processB,
+    flutterDirA: flutterDirA,
+    flutterDirB: flutterDirB,
+    tempDir: tempDir,
+  );
+}
+
 class _TestLogger extends VoidLogger {
   final List<String> infoMessages = [];
 
@@ -1045,6 +1100,50 @@ void main() {
         expect(server.calls, contains('stop'));
         expect(factoryCalls, ['createServer:/out.dill']);
         expect(flutter.calls, ['restart']);
+      },
+    );
+  });
+
+  group('Given two running Flutter apps with connected VM services,', () {
+    late _FakeFlutter flutterA;
+    late _FakeFlutter flutterB;
+    late Directory flutterDirA;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      final harness = await _createTwoAppFlutterManagerHarness();
+      flutterA = harness.processA;
+      flutterB = harness.processB;
+      flutterDirA = harness.flutterDirA;
+      flutterManager = harness.manager;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+        // The changed file lives in a Flutter package, not the server protocol.
+        classifyProtocolChange: (_) async => false,
+      );
+    });
+
+    tearDown(() async {
+      await flutterManager.dispose();
+      tempDir.deleteSync(recursive: true);
+    });
+
+    test(
+      'when a file under one app\'s lib changes, '
+      'then only that app is hot-reloaded',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {p.join(flutterDirA.path, 'lib', 'main.dart')},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(flutterA.calls, contains('reload'));
+        expect(flutterB.calls, isEmpty);
       },
     );
   });
