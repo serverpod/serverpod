@@ -255,41 +255,43 @@ class MainScreen extends StatelessComponent {
         ? st.warningLevel
         : running
         ? st.success
-        : foreground;
+        : st.debugLevel;
 
     return GestureDetector(
       onTap: () => onLaunchApp?.call(i),
       child: Padding(
         padding: const EdgeInsets.only(left: 1),
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: ' ${i < 9 ? '${i + 1}' : ' '}  ',
-                style: TextStyle(
-                  color: focused ? st.brightText : st.debugLevel,
-                  fontWeight: weight,
-                  backgroundColor: background,
+        child: Row(
+          children: [
+            Text(
+              '${active ? '●' : '○'} ',
+              style: TextStyle(color: markerColor, fontWeight: weight),
+            ),
+            Expanded(
+              child: Container(
+                color: background,
+                child: Row(
+                  children: [
+                    Text(
+                      ' ${i < 9 ? '${i + 1}' : ' '}  ',
+                      style: TextStyle(
+                        color: focused ? st.brightText : st.debugLevel,
+                        fontWeight: weight,
+                      ),
+                    ),
+                    Text(
+                      app.name,
+                      style: TextStyle(
+                        color: foreground,
+                        fontWeight: weight,
+                      ),
+                    ),
+                    Expanded(child: const SizedBox.shrink()),
+                  ],
                 ),
               ),
-              TextSpan(
-                text: app.name,
-                style: TextStyle(
-                  color: foreground,
-                  fontWeight: weight,
-                  backgroundColor: background,
-                ),
-              ),
-              TextSpan(
-                text: '  ${active ? '●' : '○'} ',
-                style: TextStyle(
-                  color: markerColor,
-                  fontWeight: weight,
-                  backgroundColor: background,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

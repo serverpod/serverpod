@@ -276,5 +276,54 @@ void main() {
 
       expect(launchingMarker.style.color, isNot(runningMarker.style.color));
     });
+
+    test(
+      'then a focused launching app keeps an orange marker',
+      () async {
+        final state = ServerWatchState();
+        state.showSplash = false;
+        state.canLaunchApps = true;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 1;
+        state.launchableApps = [
+          for (final name in ['Admin', 'Portal'])
+            FlutterAppConfig(
+              id: name.toLowerCase(),
+              name: name,
+              relativePathParts: ['..', name.toLowerCase()],
+              serverPackageDirectoryPathParts: const [],
+            ),
+        ];
+        state.isAppRunning = (id) => id == 'admin';
+        state.isAppLaunching = (id) => id == 'portal';
+
+        final holder = StartAppStateHolder(state);
+        final tester = await NoctermTester.create(size: const Size(120, 24));
+        addTearDown(() async {
+          tester.dispose();
+          await holder.dispose();
+        });
+        await tester.pumpComponent(
+          ServerpodWatchApp(holder: holder, onReady: (_) {}),
+        );
+        await tester.pump();
+
+        final portalMarker = tester.terminalState.getStyledText().firstWhere(
+          (s) =>
+              s.text.contains('●') &&
+              s.style.color == ServerpodThemeData.dark.warningLevel,
+        );
+
+        expect(portalMarker.style.color, ServerpodThemeData.dark.warningLevel);
+        expect(
+          portalMarker.style.color,
+          isNot(ServerpodThemeData.dark.brightText),
+        );
+        expect(
+          portalMarker.style.backgroundColor,
+          isNot(ServerpodThemeData.dark.activationKey),
+        );
+      },
+    );
   });
 }
