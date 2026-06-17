@@ -562,7 +562,23 @@ class MainScreen extends StatelessComponent {
 
     return ButtonBar(
       buttons: [
-        if (state.watchModeEnabled)
+        // Degraded start: no server is running because the project has errors.
+        // The same "R" key rebuilds and starts it once the user has fixed them.
+        // Only while degraded - during a normal startup the server is on its
+        // way, so the usual (disabled) reload/restart button is shown instead.
+        if (state.serverStartable && !state.serverReady)
+          Button(
+            name: 'Start server',
+            activationChar: 'R',
+            activationKeys: const [LogicalKey.keyR],
+            onActivate: (_) => onHotRestart?.call(),
+            enabled: !state.actionBusy && onHotRestart != null,
+          )
+        // In watch mode the incremental compiler already hot reloads on file
+        // changes, so the manual action is a hot restart (with no shift
+        // variant, Shift+R restarts too). Without watch, R hot reloads and
+        // Shift+R hot restarts.
+        else if (state.watchModeEnabled)
           Button(
             name: 'Hot restart',
             activationChar: 'R',

@@ -91,6 +91,11 @@ class ServerWatchState extends TuiState {
   /// Whether the server is running and ready for actions.
   bool serverReady = false;
 
+  /// Whether the session is degraded: no server is running because the project
+  /// failed to generate or compile, but it can be (re)built and started on
+  /// demand. Enables the "Start server" action while [serverReady] is false.
+  bool serverStartable = false;
+
   /// Whether to show the splash overlay. Starts true, set to false
   /// after 5 seconds or explicitly by the backend.
   bool showSplash = true;

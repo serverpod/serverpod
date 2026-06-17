@@ -208,7 +208,7 @@ void main() {
     WatchLoopContext build({bool startedDocker = false}) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
-        proxy: proxy,
+        proxy: () => proxy,
         flutterManager: flutterManager,
         mcpSocket: mcp,
         fileChangeSub: fileSub,
@@ -303,7 +303,7 @@ void main() {
       () async {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
-          proxy: null,
+          proxy: () => null,
           flutterManager: flutterManager,
           mcpSocket: null,
           fileChangeSub: null,

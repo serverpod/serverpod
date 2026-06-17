@@ -29,6 +29,7 @@ import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
+import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
@@ -216,6 +217,9 @@ class StartCommand extends ServerpodCommand<StartOption> {
         serverArgs: serverArgs,
         watch: watch,
         docker: docker,
+        // No TUI here, so the only recovery from a broken project is the file
+        // watcher (watch mode). Without it there is nothing to wait for.
+        keepOpenOnFailure: watch,
         launchFlutterApp: launchFlutterApp,
         shutdown: shutdown,
       );
@@ -378,6 +382,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required ServerArgsRef serverArgs,
   required bool watch,
   required bool docker,
+  // When the project fails to generate or compile: if `true`, keep the session
+  // open with no server running and recover later (the file watcher auto-boots
+  // in watch mode; [WatchSession.retryStart] boots on demand otherwise). If
+  // `false`, there is no way to recover (non-TUI `--no-watch`), so fail fast.
+  required bool keepOpenOnFailure,
   required bool launchFlutterApp,
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
@@ -476,12 +485,18 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     await rollbackStartup();
     rethrow;
   }
-  if (!genResult.success) {
+
+  // Whether the project is currently buildable. A clean generation failure no
+  // longer aborts: in a recoverable session we keep watching with no server
+  // and boot it once the user fixes the errors.
+  var buildOk = genResult.success;
+  if (!buildOk) {
     log.error('Code generation failed.');
-    await rollbackStartup();
-    return const WatchLoopAborted(1);
-  }
-  if (genResult.upToDate) {
+    if (!keepOpenOnFailure) {
+      await rollbackStartup();
+      return const WatchLoopAborted(1);
+    }
+  } else if (genResult.upToDate) {
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
@@ -533,13 +548,26 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     // Compile if the cached dill is stale. The FES starts in the background
     // (KernelCompiler gates compile/reset calls internally until start
     // completes), so if the dill is up to date we boot immediately.
-    if (!await localCompiler.compileIfNeeded(
-      config.watchPaths(includeWeb: true, includeClientPackage: true),
-    )) {
-      await localCompiler.dispose();
-      log.error('Initial compilation failed.');
-      await rollbackStartup();
-      return const WatchLoopAborted(1);
+    //
+    // Skip the compile when generation already failed - the generated code is
+    // invalid, so the compile would only fail noisily. The FES stays in its
+    // fresh post-start state, ready for the watch session to compile from
+    // scratch once the project is fixed.
+    if (buildOk) {
+      if (!await localCompiler.compileIfNeeded(
+        config.watchPaths(includeWeb: true, includeClientPackage: true),
+      )) {
+        // Reject the failed compile so the FES returns to its last accepted
+        // (empty) state, leaving it ready for a clean full compile on recovery.
+        await localCompiler.reject();
+        log.error('Initial compilation failed.');
+        buildOk = false;
+        if (!keepOpenOnFailure) {
+          await localCompiler.dispose();
+          await rollbackStartup();
+          return const WatchLoopAborted(1);
+        }
+      }
     }
 
     compiler = localCompiler;
@@ -608,12 +636,18 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return serverProcess;
   }
 
-  late final ServerProcess initialServerProcess;
-  await log.progress('Starting server', () async {
-    final initialDill = watch ? p.join(serverpodToolDir, 'server.dill') : null;
-    initialServerProcess = await serverProcessFactory(initialDill);
-    return true;
-  });
+  // Null in a degraded start: the project failed to build, so no server boots
+  // now. The watch session brings it up once the project is fixed.
+  ServerProcess? initialServerProcess;
+  if (buildOk) {
+    await log.progress('Starting server', () async {
+      final initialDill = watch ? p.join(serverpodToolDir, 'server.dill') : null;
+      initialServerProcess = await serverProcessFactory(initialDill);
+      return true;
+    });
+  } else {
+    log.warning(watch ? startBlockedByErrorsWatch : startBlockedByErrorsManual);
+  }
 
   // Construct the watch session.
   session = WatchSession(
@@ -626,6 +660,19 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         affectedPaths: affectedPaths,
         incremental: true,
         requirements: requirements,
+      );
+    },
+    // Full-project regeneration for on-demand recovery from a degraded start
+    // (retryStart), where there is no incremental change event to scope it.
+    fullGenerate: () async {
+      final allSources = await enumerateSourceFiles(config);
+      return analyzeAndGenerate(
+        analyzers: await analyzersFuture,
+        config: config,
+        affectedPaths: allSources.keys.toSet(),
+        incremental: false,
+        verifyStaleness: false,
+        sourceStats: allSources,
       );
     },
     createServer: serverProcessFactory,
@@ -733,7 +780,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   return WatchLoopReady(
     WatchLoopContext(
       session: session,
-      proxy: proxy,
+      proxy: () => proxy,
       flutterManager: flutterManager,
       mcpSocket: mcpSocket,
       fileChangeSub: fileChangeSub,
@@ -1059,6 +1106,9 @@ Future<void> _runTuiBackend({
       serverArgs: argsRef,
       watch: watch,
       docker: docker,
+      // The TUI always stays open on a broken project: in watch mode the file
+      // watcher auto-recovers; otherwise the user triggers a rebuild manually.
+      keepOpenOnFailure: true,
       launchFlutterApp: launchFlutterApp,
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
@@ -1117,6 +1167,12 @@ Future<void> _runTuiBackend({
         holder.markDirty();
       },
       onServerStart: (server) async {
+        // Fires on every server boot - the initial start, a restart, and the
+        // first boot after recovering from a degraded start. Mark the UI ready
+        // so a degraded->running transition lights up the action buttons.
+        holder.state.serverReady = true;
+        holder.state.serverStartable = false;
+        holder.markDirty();
         final vmService = server.vmService;
         if (vmService == null) return;
         await vmService.streamListen('Extension');
@@ -1180,7 +1236,15 @@ Future<void> _runTuiBackend({
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
         };
         holder.onHotRestart = () {
-          runTrackedAction(holder, 'Hot restart', ctx.session.forceRestart);
+          // While degraded (no server yet), the R action rebuilds and boots the
+          // server via retryStart; once running it is an ordinary hot restart.
+          final running = ctx.session.isRunning;
+          runTrackedAction(
+            holder,
+            running ? 'Hot restart' : 'Rebuild & start',
+            running ? ctx.session.forceRestart : ctx.session.retryStart,
+            allowWhenStartable: !running,
+          );
         };
         holder.onRestartFlutterApp = () {
           runTrackedAction(
@@ -1223,6 +1287,9 @@ Future<void> _runTuiBackend({
         };
 
         holder.state.serverReady = ctx.session.isRunning;
+        // Degraded start (no server yet): expose the manual "Start server"
+        // recovery action. The watcher also auto-recovers in watch mode.
+        holder.state.serverStartable = !ctx.session.isRunning;
         holder.markDirty();
 
         if (ctx.session.isRunning) log.info(serverRunning);

@@ -32,7 +32,11 @@ final class WatchLoopAborted extends WatchLoopSetupResult {
 /// single, idempotent [dispose] for cleanup.
 class WatchLoopContext {
   final WatchSession session;
-  final VmServiceProxy? proxy;
+
+  /// Resolves the server VM-service proxy at call time. A function rather than
+  /// a value because a degraded start has no proxy yet — it is mounted only
+  /// when the server first boots, after this context is constructed.
+  final VmServiceProxy? Function() proxy;
   final FlutterAppManager flutterManager;
   final McpSocketServer? mcpSocket;
   final StreamSubscription<void>? fileChangeSub;
@@ -62,7 +66,7 @@ class WatchLoopContext {
     await mcpSocket?.close();
     await closeAnalyzers();
     await session.dispose();
-    await proxy?.close();
+    await proxy()?.close();
     await flutterManager.dispose();
     await File(vmServiceInfoFile).deleteIfExists();
     await stopDocker?.call();
