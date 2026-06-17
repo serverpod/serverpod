@@ -98,8 +98,8 @@ final Tool tailLogsTool = Tool(
 final Tool tailFlutterLogsTool = Tool(
   name: 'tail_flutter_logs',
   description:
-      'Return recent raw stdout/stderr lines from the running Flutter app '
-      'started from `serverpod start`. Newest last.',
+      'Return recent raw stdout/stderr lines for a Flutter app started from '
+      '`serverpod start`, newest last.',
   inputSchema: Schema.object(
     properties: {
       'limit': Schema.int(
@@ -110,7 +110,9 @@ final Tool tailFlutterLogsTool = Tool(
       'appId': Schema.string(
         description:
             'Stable app id from `config/generator.yaml` `flutter_apps`. '
-            'When omitted, returns a map of app id to log lines.',
+            'Optional when only one app is configured. When multiple apps are '
+            'configured and the tool is called without `appId`, an error will '
+            'be returned reporting the available ids.',
       ),
     },
   ),

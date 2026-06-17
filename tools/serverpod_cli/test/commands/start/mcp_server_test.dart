@@ -504,8 +504,28 @@ void main() {
       );
 
       test(
-        'when calling tail_flutter_logs without appId, '
-        'then it returns a map of app id to lines',
+        'when calling tail_flutter_logs without appId and one app exists, '
+        'then it returns that app\'s lines',
+        () async {
+          server.getFlutterLogHistory = () => {
+            'admin': ['a', 'b'],
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(name: 'tail_flutter_logs'),
+          );
+
+          expect(result.isError, isNull);
+          expect(
+            jsonDecode((result.content.first as TextContent).text),
+            ['a', 'b'],
+          );
+        },
+      );
+
+      test(
+        'when calling tail_flutter_logs without appId and several apps exist, '
+        'then it errors listing the available app ids',
         () async {
           server.getFlutterLogHistory = () => {
             'admin': ['a'],
@@ -516,14 +536,34 @@ void main() {
             CallToolRequest(name: 'tail_flutter_logs'),
           );
 
-          expect(result.isError, isNull);
-          expect(
-            jsonDecode((result.content.first as TextContent).text),
-            {
-              'admin': ['a'],
-              'customer': ['b', 'c'],
-            },
+          expect(result.isError, isTrue);
+          final text = (result.content.first as TextContent).text;
+          expect(text, contains('admin'));
+          expect(text, contains('customer'));
+        },
+      );
+
+      test(
+        'when calling tail_flutter_logs with an unknown appId, '
+        'then it errors listing the available app ids',
+        () async {
+          server.getFlutterLogHistory = () => {
+            'admin': ['a'],
+            'customer': ['b'],
+          };
+
+          final result = await connection.callTool(
+            CallToolRequest(
+              name: 'tail_flutter_logs',
+              arguments: {'appId': 'nope'},
+            ),
           );
+
+          expect(result.isError, isTrue);
+          final text = (result.content.first as TextContent).text;
+          expect(text, contains('nope'));
+          expect(text, contains('admin'));
+          expect(text, contains('customer'));
         },
       );
 

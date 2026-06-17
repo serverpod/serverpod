@@ -252,28 +252,54 @@ base class ServerpodMcpServer extends MCPServer
         isError: true,
       );
     }
-    final limit = _tailLimit(request);
     final all = get();
-    final appId = _stringArg(request, 'appId');
-    if (appId != null) {
-      final lines = all[appId] ?? [];
-      final tail = lines.length <= limit
-          ? lines
-          : lines.sublist(lines.length - limit);
+    final ids = all.keys.toList();
+    if (ids.isEmpty) {
       return CallToolResult(
-        content: [TextContent(text: jsonEncode(tail))],
+        content: [TextContent(text: 'No Flutter apps are configured.')],
+        isError: true,
       );
     }
 
-    final encoded = <String, List<String>>{};
-    for (final entry in all.entries) {
-      final lines = entry.value;
-      encoded[entry.key] = lines.length <= limit
-          ? lines
-          : lines.sublist(lines.length - limit);
+    // Resolve which app to read. The result shape is always a single list of
+    // lines, so a null appId with more than one app is an explicit error that
+    // names the available ids rather than a differently-shaped payload.
+    var appId = _stringArg(request, 'appId');
+    if (appId == null) {
+      if (ids.length > 1) {
+        return CallToolResult(
+          content: [
+            TextContent(
+              text:
+                  'Multiple Flutter apps are available. Pass `appId` to '
+                  'choose one of: ${ids.join(', ')}.',
+            ),
+          ],
+          isError: true,
+        );
+      }
+      appId = ids.first;
     }
+
+    final lines = all[appId];
+    if (lines == null) {
+      return CallToolResult(
+        content: [
+          TextContent(
+            text:
+                'Unknown Flutter app id "$appId". Available: ${ids.join(', ')}.',
+          ),
+        ],
+        isError: true,
+      );
+    }
+
+    final limit = _tailLimit(request);
+    final tail = lines.length <= limit
+        ? lines
+        : lines.sublist(lines.length - limit);
     return CallToolResult(
-      content: [TextContent(text: jsonEncode(encoded))],
+      content: [TextContent(text: jsonEncode(tail))],
     );
   }
 
