@@ -109,10 +109,10 @@ final Tool tailFlutterLogsTool = Tool(
       ),
       'appId': Schema.string(
         description:
-            'Stable app id from `config/generator.yaml` `flutter_apps`. '
-            'Optional when only one app is configured. When multiple apps are '
-            'configured and the tool is called without `appId`, an error will '
-            'be returned reporting the available ids.',
+            'Stable app id from the `serverpod: flutter_apps:` map in the '
+            'server pubspec.yaml. Optional when only one app is configured. '
+            'When multiple apps are configured and the tool is called without '
+            '`appId`, an error will be returned reporting the available ids.',
       ),
     },
   ),

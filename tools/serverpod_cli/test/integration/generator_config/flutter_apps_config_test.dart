@@ -13,17 +13,17 @@ void main() {
   });
 
   group(
-    'Given a generator.yaml with two flutter_apps entries',
+    'Given a server pubspec with two serverpod/flutter_apps entries',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
-          generatorYamlContent: '''
-type: server
-flutter_apps:
-  - name: Admin
-    path: ../my_project_flutter
-  - name: Customer
-    path: ../my_project_customer_flutter
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+    Customer:
+      path: ../my_project_customer_flutter
 ''',
           includeFlutterApps: true,
         );
@@ -59,13 +59,10 @@ flutter_apps:
   );
 
   group(
-    'Given a generator.yaml without flutter_apps and an existing default Flutter package',
+    'Given a server pubspec without flutter_apps and an existing default Flutter package',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
-          generatorYamlContent: '''
-type: server
-''',
           includeDefaultFlutterApp: true,
         );
         await projectDir.create();
@@ -111,13 +108,10 @@ type: server
   );
 
   group(
-    'Given a generator.yaml without flutter_apps and no sibling Flutter package',
+    'Given a server pubspec without flutter_apps and no sibling Flutter package',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
-          generatorYamlContent: '''
-type: server
-''',
           includeDefaultFlutterApp: false,
         );
         await projectDir.create();
@@ -138,14 +132,15 @@ type: server
   );
 
   group(
-    'Given a generator.yaml with a flutter_apps entry missing path',
+    'Given a server pubspec with a flutter_apps entry missing path',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
-          generatorYamlContent: '''
-type: server
-flutter_apps:
-  - name: Admin
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      device: chrome
 ''',
         );
         await projectDir.create();
@@ -163,7 +158,7 @@ flutter_apps:
               isA<SourceSpanFormatException>().having(
                 (e) => e.message,
                 'message',
-                'Each "flutter_apps" entry must include a non-empty "path".',
+                'The "Admin" flutter app must include a non-empty "path".',
               ),
             ),
           );
@@ -173,13 +168,13 @@ flutter_apps:
   );
 
   group(
-    'Given a generator.yaml with flutter_apps that is not a list',
+    'Given a server pubspec with flutter_apps that is not a map',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
-          generatorYamlContent: '''
-type: server
-flutter_apps: not_a_list
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps: not_a_map
 ''',
         );
         await projectDir.create();
@@ -197,7 +192,8 @@ flutter_apps: not_a_list
               isA<SourceSpanFormatException>().having(
                 (e) => e.message,
                 'message',
-                'The "flutter_apps" property must be a list of app entries.',
+                'The "serverpod: flutter_apps" property must be a map of app '
+                    'alias to app properties.',
               ),
             ),
           );
@@ -209,7 +205,7 @@ flutter_apps: not_a_list
 
 d.DirectoryDescriptor _createProject({
   String projectName = 'my_project',
-  required String generatorYamlContent,
+  String pubspecServerpodSection = '',
   bool includeDefaultFlutterApp = false,
   bool includeFlutterApps = false,
 }) {
@@ -218,7 +214,7 @@ d.DirectoryDescriptor _createProject({
 name: ${projectName}_server
 dependencies:
   serverpod: ^2.0.0
-'''),
+$pubspecServerpodSection'''),
     d.dir('lib', [
       d.dir('src', [
         d.dir('protocol', []),
@@ -244,7 +240,7 @@ dependencies:
 '''),
     ]),
     d.dir('config', [
-      d.file('generator.yaml', generatorYamlContent),
+      d.file('generator.yaml', 'type: server\n'),
     ]),
   ];
 

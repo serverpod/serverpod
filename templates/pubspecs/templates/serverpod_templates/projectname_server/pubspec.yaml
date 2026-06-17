@@ -33,3 +33,10 @@ serverpod:
       posix: |
         cd ../projectname_flutter
         flutter build web --base-href /app/ --output ../projectname_server/web/app
+
+  # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed by
+  # a display alias. When this section is omitted, a sibling Flutter package is
+  # expected at `../projectname_flutter` and used automatically.
+  # flutter_apps:
+  #   Admin:
+  #     path: ../projectname_flutter

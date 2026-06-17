@@ -50,23 +50,31 @@ be renamed freely.
 
 ## Overview
 
-A project declares its apps in `config/generator.yaml`:
+> **Update:** the config moved out of `generator.yaml` into the server
+> `pubspec.yaml` under the `serverpod:` section (alongside `serverpod:
+> scripts:`), keyed by app alias rather than a list. The rest of this document
+> predates that move; treat the layout, runtime, and TUI design as
+> authoritative and the config *location/shape* as superseded by the block
+> below.
+
+A project declares its apps in the server `pubspec.yaml` under `serverpod:`:
 
 ```yaml
-flutter_apps:
-  - name: Admin
-    path: ../myproject_flutter
-  - name: Customer
-    path: ../myproject_customer_flutter
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../apps/admin
+    Portal:
+      path: ../apps/portal
 ```
 
-- The key is a **list of maps** (`name` + `path`) so per-app options can be
-  added later without a schema break (e.g. a per-app `device:`).
+- It is a **map of alias → properties** (currently just `path`) so per-app
+  options can be added later without a schema break (e.g. a per-app `device:`).
+  The alias is the app's display name.
 - When the key is **absent**, a single default entry is synthesized from the
   sibling `../<project>_flutter` (only if that directory exists). Existing
   projects therefore behave exactly as before.
-- `serverpod create` seeds the key with the default entry, so new projects show
-  it explicitly.
+- The pubspec template ships a commented example, so new projects discover it.
 
 The TUI layout is **always two-pane** (whenever ≥1 app is configured): the left
 pane is the server log, fixed; the right pane is a tab strip with one tab per

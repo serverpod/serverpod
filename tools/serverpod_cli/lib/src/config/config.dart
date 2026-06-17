@@ -393,8 +393,20 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
+    // Raw server pubspec YAML, for sections `pubspec_parse` does not model
+    // (e.g. the `serverpod:` section).
+    var pubspecYaml = loadYamlMap(
+      File(p.join(serverRootDir, 'pubspec.yaml')).readAsStringSync(),
+    );
+
+    // Flutter apps are configured under `serverpod: flutter_apps:` in the
+    // server pubspec (alongside `serverpod: scripts:`), not in generator.yaml.
+    final serverpodPubspecSection = pubspecYaml.nodes['serverpod'];
+    final flutterAppsNode = serverpodPubspecSection is YamlMap
+        ? serverpodPubspecSection.nodes['flutter_apps']
+        : null;
     final flutterApps = loadFlutterApps(
-      generatorConfig: generatorConfig,
+      flutterAppsNode: flutterAppsNode,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
       projectName: name,
     );

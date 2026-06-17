@@ -106,11 +106,26 @@ In `config/generator.yaml`:
 
 - `type`: `server` (default), `module`, or `internal`
 - `client_package_path`: path to client package
-- `flutter_apps`: list of companion Flutter apps (`name` + relative `path`); when absent, defaults to `../<project>_flutter` if that directory exists
 - `modules`: map of module names + optional `nickname`
 - `server_test_tools_path`: test tools output path (remove to disable)
 - `extraClasses`: custom serializable class URIs
 - `features`: e.g. `database: true/false`
+
+## Flutter apps (pubspec.yaml)
+
+Companion Flutter apps that `serverpod start` can launch (Ctrl+R) are declared
+in the server `pubspec.yaml` under `serverpod: flutter_apps:`, a map of display
+alias to properties (alongside `serverpod: scripts:`). When the key is absent,
+the sibling `../<project>_flutter` package is used automatically if present.
+
+```yaml
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../apps/admin
+    Portal:
+      path: ../apps/portal
+```
 
 ## Dart config override
 

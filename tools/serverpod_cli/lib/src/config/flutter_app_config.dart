@@ -6,8 +6,9 @@ import 'package:yaml/yaml.dart';
 
 /// One configured companion Flutter app.
 ///
-/// The map shape in `generator.yaml` leaves room for per-app options (e.g.
-/// `device`) without a schema break.
+/// Configured under the `serverpod: flutter_apps:` map in the server's
+/// `pubspec.yaml`, keyed by alias. The per-app property map leaves room for
+/// future options (e.g. `device`) without a schema break.
 class FlutterAppConfig {
   /// Creates a [FlutterAppConfig].
   const FlutterAppConfig({
@@ -43,13 +44,17 @@ class FlutterAppConfig {
   }
 }
 
-/// Parses `flutter_apps` from generator config, or synthesizes the default.
+/// Parses the `serverpod: flutter_apps:` map from the server pubspec, or
+/// synthesizes the default sibling app when it is absent.
+///
+/// [flutterAppsNode] is the value node of `serverpod/flutter_apps` from the
+/// server `pubspec.yaml`, or `null` when the key is not present. The map is
+/// keyed by app alias, each entry a map of properties (currently `path`).
 List<FlutterAppConfig> loadFlutterApps({
-  required YamlMap generatorConfig,
+  required YamlNode? flutterAppsNode,
   required List<String> serverPackageDirectoryPathParts,
   required String projectName,
 }) {
-  final flutterAppsNode = generatorConfig.nodes['flutter_apps'];
   if (flutterAppsNode == null) {
     return _synthesizeDefaultFlutterApps(
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
@@ -57,10 +62,10 @@ List<FlutterAppConfig> loadFlutterApps({
     );
   }
 
-  final flutterAppsValue = flutterAppsNode.value;
-  if (flutterAppsValue is! YamlList) {
+  if (flutterAppsNode is! YamlMap) {
     throw SourceSpanFormatException(
-      'The "flutter_apps" property must be a list of app entries.',
+      'The "serverpod: flutter_apps" property must be a map of app alias to '
+      'app properties.',
       flutterAppsNode.span,
     );
   }
@@ -68,39 +73,40 @@ List<FlutterAppConfig> loadFlutterApps({
   final usedIds = <String>{};
   final apps = <FlutterAppConfig>[];
 
-  for (final entry in flutterAppsValue) {
-    if (entry is! YamlMap) {
+  for (final aliasNode in flutterAppsNode.nodes.keys) {
+    final alias = (aliasNode as YamlNode).value;
+    final propsNode = flutterAppsNode.nodes[aliasNode]!;
+
+    if (alias is! String || alias.isEmpty) {
       throw SourceSpanFormatException(
-        'Each "flutter_apps" entry must be a map with "name" and "path".',
-        flutterAppsValue.span,
+        'Each "flutter_apps" key must be a non-empty app alias.',
+        aliasNode.span,
       );
     }
 
-    final pathNode = entry.nodes['path'];
+    if (propsNode is! YamlMap) {
+      throw SourceSpanFormatException(
+        'The "$alias" flutter app must be a map of properties (e.g. `path`).',
+        propsNode.span,
+      );
+    }
+
+    final pathNode = propsNode.nodes['path'];
     final pathValue = pathNode?.value;
     if (pathValue is! String || pathValue.isEmpty) {
       throw SourceSpanFormatException(
-        'Each "flutter_apps" entry must include a non-empty "path".',
-        pathNode?.span ?? entry.span,
+        'The "$alias" flutter app must include a non-empty "path".',
+        pathNode?.span ?? propsNode.span,
       );
     }
 
-    final nameNode = entry.nodes['name'];
-    final nameValue = nameNode?.value;
-    final name = nameValue is String && nameValue.isNotEmpty
-        ? nameValue
-        : p.basename(pathValue);
-
     final relativePathParts = p.split(pathValue);
-    final id = _uniqueId(
-      _slugFromName(name, relativePathParts),
-      usedIds,
-    );
+    final id = _uniqueId(_slugFromName(alias, relativePathParts), usedIds);
 
     apps.add(
       FlutterAppConfig(
         id: id,
-        name: name,
+        name: alias,
         relativePathParts: relativePathParts,
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
       ),
