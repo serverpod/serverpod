@@ -29,12 +29,6 @@ class FileUploader {
   /// Uploads a file from a [Stream], returns true if successful. The [length]
   /// of the stream is optional, but if it's not provided for a multipart upload,
   /// the entire file will be buffered in memory.
-  ///
-  /// For **binary** uploads on **web** (dart2wasm / dart2js), omitting [length]
-  /// also buffers the stream first: browser HTTP stacks need a known body size
-  /// and do not reliably support chunked request bodies. Pass [length] when you
-  /// know the byte count to avoid an extra full-buffer copy and enable true
-  /// streaming.
   Future<bool> upload(Stream<List<int>> stream, [int? length]) =>
       _upload(stream.toByteStream(), length);
 
@@ -46,62 +40,26 @@ class FileUploader {
     }
     _attemptedUpload = true;
 
-    print(
-      '[Serverpod FileUpload] Starting upload: '
-      'type=${_uploadDescription.type.name}, '
-      'url=${_uploadDescription.url}, '
-      'length=$length',
-    );
-
     try {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
           final method = _uploadDescription.method ?? 'POST';
+          final request = http.StreamedRequest(method, _uploadDescription.url);
+
           final headers = {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
             ..._uploadDescription.headers,
           };
-
-          const isWeb =
-              bool.fromEnvironment('dart.library.js_interop') ||
-              bool.fromEnvironment('dart.library.wasm');
-          var uploadStream = stream;
-          var uploadLength = length;
-          if (isWeb && length == null) {
-            final buffered = await stream.toBytes();
-            uploadStream = http.ByteStream.fromBytes(buffered);
-            uploadLength = buffered.length;
-            print(
-              '[Serverpod FileUpload] Web binary upload: buffered stream '
-              '(${uploadLength} bytes) because length was not provided',
-            );
-          }
-
-          print(
-            '[Serverpod FileUpload] Binary upload: method=$method, '
-            'contentLength=$uploadLength, isWeb=$isWeb',
-          );
-
-          var request = http.StreamedRequest(method, _uploadDescription.url);
           request.headers.addAll(headers);
-          request.contentLength = uploadLength;
+          request.contentLength = length;
+          unawaited(stream.pipe(request.sink));
 
-          final (_, response) = await (
-            uploadStream.pipe(request.sink),
-            request.send(),
-          ).wait;
-
+          var response = await request.send();
           await response.stream.drain();
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)
-          final success =
-              response.statusCode == 200 || response.statusCode == 204;
-          print(
-            '[Serverpod FileUpload] Binary upload finished: '
-            'statusCode=${response.statusCode}, success=$success',
-          );
-          return success;
+          return response.statusCode == 200 || response.statusCode == 204;
 
         case _UploadType.multipart:
           var multipartFile = switch (length) {
@@ -126,15 +84,9 @@ class FileUploader {
 
           var response = await request.send();
 
-          final success = response.statusCode == 204;
-          print(
-            '[Serverpod FileUpload] Multipart upload finished: '
-            'statusCode=${response.statusCode}, success=$success',
-          );
-          return success;
+          return response.statusCode == 204;
       }
     } catch (e) {
-      print('[Serverpod FileUpload] Upload failed with exception: $e');
       return false;
     }
   }
