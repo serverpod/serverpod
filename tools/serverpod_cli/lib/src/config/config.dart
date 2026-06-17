@@ -87,8 +87,10 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
+    required List<String> relativeFlutterPackagePathParts,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
+       _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
 
@@ -119,8 +121,8 @@ class GeneratorConfig implements ModelLoadConfig {
   /// True, if dart client depends on the `package:serverpod_service_client`.
   final bool dartClientDependsOnServiceClient;
 
-  /// The parts of the path where the server package is located at.
-  /// Might be relative.
+  /// The parts of the absolute, normalized path where the server package
+  /// is located. Anchored at [GeneratorConfig.load] time.
   final List<String> serverPackageDirectoryPathParts;
 
   /// The path parts to packages of shared models.
@@ -225,6 +227,43 @@ class GeneratorConfig implements ModelLoadConfig {
     ..._relativeDartClientPackagePathParts,
   ];
 
+  /// Paths outside the source tree that may influence generated output
+  List<String> get auxiliaryInputPaths => [
+    p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
+    p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
+    for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.yaml',
+      ]),
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'pubspec.lock',
+      ]),
+    ],
+  ];
+
+  final List<String> _relativeFlutterPackagePathParts;
+
+  /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
+  /// before resolving against the filesystem.
+  List<String> get flutterPackagePathParts => [
+    ...serverPackageDirectoryPathParts,
+    ..._relativeFlutterPackagePathParts,
+  ];
+
+  /// True when [flutterPackagePathParts] is a directory with `pubspec.yaml`.
+  bool get hasFlutterPackage {
+    final dirPath = p.joinAll(flutterPackagePathParts);
+    if (!Directory(dirPath).existsSync()) return false;
+    return File(p.join(dirPath, 'pubspec.yaml')).existsSync();
+  }
+
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
     'test',
@@ -324,6 +363,10 @@ class GeneratorConfig implements ModelLoadConfig {
       serverRootDir = serverDir.path;
     }
 
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    serverRootDir = p.normalize(p.absolute(serverRootDir));
+
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
@@ -362,6 +405,8 @@ class GeneratorConfig implements ModelLoadConfig {
         generatorConfig['client_package_path'],
       );
     }
+
+    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
@@ -489,6 +534,7 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,

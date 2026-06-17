@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
@@ -111,9 +115,52 @@ class _FakeServer extends Fake implements ServerProcess {
   }
 }
 
+class _FakeFlutter extends Fake implements FlutterProcess {
+  final List<String> calls = [];
+
+  bool _vmServiceConnected = true;
+  bool restartSuccess = true;
+
+  @override
+  bool isRunning = true;
+
+  @override
+  bool get isVmServiceConnected => _vmServiceConnected;
+  set isVmServiceConnected(bool value) => _vmServiceConnected = value;
+
+  @override
+  Future<bool> reload() async {
+    calls.add('reload');
+    return true;
+  }
+
+  @override
+  Future<bool> restart() async {
+    calls.add('restart');
+    return restartSuccess;
+  }
+
+  @override
+  Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async {
+    calls.add('stop');
+    return 0;
+  }
+}
+
+class _TestLogger extends VoidLogger {
+  final List<String> infoMessages = [];
+
+  @override
+  void info(String message, {bool newParagraph = false, LogType? type}) {
+    infoMessages.add(message);
+  }
+}
+
 void main() {
+  final testLogger = _TestLogger();
+
   setUpAll(() {
-    initializeLogger();
+    initializeLoggerWith(testLogger);
   });
 
   tearDownAll(() async {
@@ -136,6 +183,9 @@ void main() {
     GenerateAction? generate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
+    FlutterProcess? flutterProcess,
+    Future<void> Function()? flutterAppRestartAction,
+    FlutterDependencyChange Function()? checkFlutterDependencyChange,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -156,10 +206,12 @@ void main() {
           },
       initialServer: initialServer,
       generatedDirPaths: {'/generated'},
-      applyMigrationsAction:
-          applyMigrationsAction ?? () async => const MigrationsApplied(),
+      applyMigrationsAction: applyMigrationsAction ?? () async {},
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
+      flutterProcessProvider: () => flutterProcess,
+      flutterAppRestartAction: flutterAppRestartAction,
+      checkFlutterDependencyChange: checkFlutterDependencyChange,
     );
   }
 
@@ -171,6 +223,7 @@ void main() {
     generateCalls = [];
     generateSuccess = true;
     generatedFiles = {};
+    testLogger.infoMessages.clear();
 
     session = buildSession(compiler: compiler, initialServer: server);
   });
@@ -235,7 +288,27 @@ void main() {
           'compile(changed):[/lib/a.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
+      },
+    );
+
+    test(
+      'when the server hot reloads, '
+      'then the browser is refreshed after the reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        // The browser refresh must follow the reload so the page re-fetches
+        // the newly loaded server code.
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
+        expect(
+          testLogger.infoMessages,
+          contains(browserRefreshTriggered),
+        );
       },
     );
   });
@@ -331,7 +404,7 @@ void main() {
           'compile(changed):[/lib/endpoint.dart, /lib/other.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -360,7 +433,7 @@ void main() {
           'compile(changed):[/generated/user.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -410,7 +483,7 @@ void main() {
           'compile(changed):[/generated/protocol.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -439,7 +512,7 @@ void main() {
           'compile(changed):[/generated/protocol.dart, /generated/user.dart, /lib/endpoint.dart]',
           'accept',
         ]);
-        expect(server.calls, ['reload:/out.dill']);
+        expect(server.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -565,7 +638,7 @@ void main() {
         // Old server should have no new calls.
         expect(server.calls, isEmpty);
         // New server should receive the reload.
-        expect(factoryServer.calls, ['reload:/out.dill']);
+        expect(factoryServer.calls, ['reload:/out.dill', 'notifyStaticChange']);
       },
     );
   });
@@ -663,13 +736,13 @@ void main() {
   });
 
   group('Given applyMigration is called with an in-place action', () {
-    late ApplyMigrationsOutcome Function() outcomeBuilder;
+    late void Function() migrationRunner;
     late int actionCalls;
-    late Completer<ApplyMigrationsOutcome>? gate;
+    late Completer<void>? gate;
     late WatchSession inPlaceSession;
 
     setUp(() {
-      outcomeBuilder = () => const MigrationsApplied();
+      migrationRunner = () {};
       actionCalls = 0;
       gate = null;
 
@@ -680,14 +753,14 @@ void main() {
           actionCalls++;
           final localGate = gate;
           if (localGate != null) return localGate.future;
-          return outcomeBuilder();
+          return migrationRunner();
         },
       );
     });
 
     test(
       'when the action returns versions, '
-      'then it runs the action and leaves the pod alone',
+      'then it runs the action',
       () async {
         await inPlaceSession.applyMigration();
 
@@ -702,7 +775,7 @@ void main() {
       'when the action returns an empty list, '
       'then it succeeds (already up to date)',
       () async {
-        outcomeBuilder = () => const MigrationsApplied();
+        migrationRunner = () {};
 
         await inPlaceSession.applyMigration();
 
@@ -716,7 +789,7 @@ void main() {
       'when the action throws, '
       'then the error propagates and state returns to idle',
       () async {
-        outcomeBuilder = () => throw StateError('boom');
+        migrationRunner = () => throw StateError('boom');
 
         await expectLater(
           inPlaceSession.applyMigration(),
@@ -727,7 +800,7 @@ void main() {
 
         // Same session: a follow-up call must reach the action rather
         // than hit the in-flight latch.
-        outcomeBuilder = () => const MigrationsApplied();
+        migrationRunner = () {};
         await inPlaceSession.applyMigration();
         expect(actionCalls, 2);
       },
@@ -757,7 +830,7 @@ void main() {
       'when applyMigration is called twice, '
       'then the calls serialize via _pending',
       () async {
-        gate = Completer<ApplyMigrationsOutcome>();
+        gate = Completer<void>();
 
         final firstCall = inPlaceSession.applyMigration();
         // Second call queues behind the first.
@@ -767,7 +840,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(actionCalls, 1, reason: 'second call must wait for first');
 
-        gate!.complete(const MigrationsApplied());
+        gate!.complete();
         await firstCall;
         await secondCall;
 
@@ -776,25 +849,513 @@ void main() {
     );
   });
 
-  group('Given the action returns MigrationsRequirePodRestart', () {
+  group(
+    'Given a watch session with a compiler with no errors,'
+    'when force restart is called,',
+    () {
+      setUp(() async {
+        await session.forceRestart();
+      });
+
+      test('then it resets the compiler.', () {
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+      });
+
+      test('then it stops the server.', () {
+        expect(server.calls, contains('stop'));
+      });
+
+      test('then it creates a new server with the fresh full dill.', () {
+        expect(factoryCalls, ['createServer:/out.dill']);
+      });
+
+      test('then it refreshes the browser on the new server.', () {
+        expect(factoryServer.calls, contains('notifyStaticChange'));
+      });
+    },
+  );
+
+  test(
+    'Given a watch session with a compiler that fails,'
+    'when force restart is called,'
+    'then it does not stop the server or spawn a new one.',
+    () async {
+      compiler.nextCompileResult = _failResult();
+
+      await session.forceRestart();
+
+      expect(server.calls, isNot(contains('stop')));
+      expect(factoryCalls, isEmpty);
+    },
+  );
+
+  test(
+    'Given a watch session that is disposed,'
+    'when force restart is called, '
+    'then it throws a StateError.',
+    () async {
+      await session.dispose();
+
+      expect(() => session.forceRestart(), throwsStateError);
+    },
+  );
+
+  group('Given a watch session with an in-flight forceReload,', () {
+    late List<String> order;
+    late Future<void> reload;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // Both calls return immediately; we just verify ordering.
+      reload = session.forceReload().then((_) => order.add('reload'));
+    });
+
     test(
-      'when applyMigration completes, '
-      'then the pod is restarted via the factory with the compiler dill',
+      'when force restart is called, '
+      'then it runs after the reload completes',
       () async {
-        final fallbackSession = buildSession(
-          compiler: compiler,
-          initialServer: server,
-          applyMigrationsAction: () async =>
-              const MigrationsRequirePodRestart(),
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
         );
 
-        await fallbackSession.applyMigration();
+        await Future.wait([reload, restart]);
 
-        expect(server.calls, contains('stop'));
-        expect(factoryCalls, ['createServer:/tmp/fake.dill']);
+        expect(order, ['reload', 'restart']);
       },
     );
   });
+
+  group('Given a watch session with an in-flight applyMigration,', () {
+    late List<String> order;
+    late Future<void> apply;
+
+    setUp(() async {
+      order = <String>[];
+      compiler.calls.clear();
+      server.calls.clear();
+      factoryCalls.clear();
+
+      // applyMigration also queues onto [_chain], so a forceRestart issued
+      // before it returns must wait for it.
+      apply = session.applyMigration().then((_) => order.add('apply'));
+    });
+
+    test(
+      'when force restart is called, '
+      'then it runs after the applyMigration completes.',
+      () async {
+        final restart = session.forceRestart().then(
+          (_) => order.add('restart'),
+        );
+
+        await Future.wait([apply, restart]);
+
+        expect(order, ['apply', 'restart']);
+      },
+    );
+  });
+
+  group('Given a Flutter process with a connected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+    });
+
+    test(
+      'when force restart is called, '
+      'then the Flutter app is hot-restarted after the server restarts.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(flutter.calls, ['restart']);
+      },
+    );
+  });
+
+  group(
+    'Given a Flutter process with a connected VM service and a next compile that fails,',
+    () {
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+        );
+
+        compiler.nextCompileResult = _failResult();
+      });
+
+      test(
+        'when force restart is called, '
+        'then the Flutter app is not hot-restarted.',
+        () async {
+          await session.forceRestart();
+
+          expect(server.calls, isNot(contains('stop')));
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group('Given a Flutter process with a disconnected VM service,', () {
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      flutter = _FakeFlutter()..isVmServiceConnected = false;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+      );
+    });
+
+    test(
+      'when force restart is called, '
+      'then the server restarts but the Flutter app is not hot-restarted.',
+      () async {
+        await session.forceRestart();
+
+        expect(server.calls, contains('stop'));
+        expect(flutter.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given a watch session with a Flutter app restart action,', () {
+    late int restartActionCalls;
+    late _FakeFlutter flutter;
+
+    setUp(() {
+      restartActionCalls = 0;
+      flutter = _FakeFlutter();
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: flutter,
+        flutterAppRestartAction: () async {
+          restartActionCalls++;
+        },
+      );
+    });
+
+    test(
+      'when restartFlutterApp is called, '
+      'then it relaunches via the action without hot-restarting or touching the server.',
+      () async {
+        await session.restartFlutterApp();
+
+        expect(restartActionCalls, 1);
+        // A full relaunch is the process respawn, not the in-process hot
+        // restart, and it leaves the server alone.
+        expect(flutter.calls, isEmpty);
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when restartFlutterApp is called after dispose, '
+      'then it throws a StateError without invoking the action.',
+      () async {
+        await session.dispose();
+
+        expect(
+          session.restartFlutterApp,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(restartActionCalls, 0);
+      },
+    );
+  });
+
+  group('Given a watch session without a Flutter app restart action,', () {
+    test(
+      'when restartFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        // No action injected (non-Flutter session); the call is a no-op.
+        await session.restartFlutterApp();
+
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given a watch session with a running Flutter process,', () {
+    setUp(() {
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: _FakeFlutter(),
+      );
+    });
+
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports true',
+      () {
+        expect(session.isFlutterAppRunning, isTrue);
+      },
+    );
+  });
+
+  group('Given a watch session whose Flutter process has stopped,', () {
+    setUp(() {
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterProcess: _FakeFlutter()..isRunning = false,
+      );
+    });
+
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports false',
+      () {
+        expect(session.isFlutterAppRunning, isFalse);
+      },
+    );
+  });
+
+  group('Given a watch session with no Flutter process,', () {
+    test(
+      'when checking whether the Flutter app is running, '
+      'then it reports false',
+      () {
+        expect(session.isFlutterAppRunning, isFalse);
+      },
+    );
+  });
+
+  group(
+    'Given a watch session where native Flutter dependencies changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.native,
+        );
+      });
+
+      test(
+        'when only the dependencies change, '
+        'then the Flutter app is relaunched without recompiling the server.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 1);
+          // No server compile, and a full relaunch (the action) rather than
+          // the in-process hot reload or hot restart. The server stays
+          // untouched - no compile, no browser refresh.
+          expect(compiler.calls, isEmpty);
+          expect(flutter.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when dependencies and dart files change together, '
+        'then the server reloads and the app is relaunched instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(restartActionCalls, 1);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where only pure-Dart Flutter dependencies changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.dartOnly,
+        );
+      });
+
+      test(
+        'when only the dependencies change, '
+        'then the Flutter app is hot restarted without a full relaunch.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(flutter.calls, ['restart']);
+          expect(restartActionCalls, 0);
+          expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when dependencies and dart files change together, '
+        'then the server reloads and the app is hot restarted instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(flutter.calls, ['restart']);
+          expect(restartActionCalls, 0);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the Flutter dependency file changed but the closure did not,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.none,
+        );
+      });
+
+      test(
+        'when dart files also change, '
+        'then the Flutter app is hot reloaded, not relaunched.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, ['reload']);
+        },
+      );
+
+      test(
+        'when only the dependency file changed, '
+        'then nothing is relaunched, reloaded, or recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterDependenciesChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, isEmpty);
+          expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an in-flight forceReload and a Flutter app restart action,',
+    () {
+      late List<String> order;
+      late Future<void> reload;
+      late WatchSession flutterRestartSession;
+
+      setUp(() {
+        order = <String>[];
+        flutterRestartSession = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterAppRestartAction: () async {},
+        );
+        reload = flutterRestartSession.forceReload().then(
+          (_) => order.add('reload'),
+        );
+      });
+
+      test(
+        'when restartFlutterApp is called, '
+        'then it runs after the reload completes.',
+        () async {
+          final restart = flutterRestartSession.restartFlutterApp().then(
+            (_) => order.add('flutter-restart'),
+          );
+
+          await Future.wait([reload, restart]);
+
+          expect(order, ['reload', 'flutter-restart']);
+        },
+      );
+    },
+  );
 
   group('Given dispose is called', () {
     test(
@@ -860,7 +1421,10 @@ void main() {
             'compile(changed):[/lib/helper.dart]',
             'accept',
           ]);
-          expect(classifierServer.calls, ['reload:/out.dill']);
+          expect(classifierServer.calls, [
+            'reload:/out.dill',
+            'notifyStaticChange',
+          ]);
         },
       );
 
@@ -1047,7 +1611,7 @@ class Counter {
         },
         initialServer: noCompilerServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied(),
+        applyMigrationsAction: () async {},
       );
     });
 
@@ -1062,7 +1626,7 @@ class Counter {
         expect(noCompilerGenerateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(noCompilerServer.calls, ['reload:null']);
+        expect(noCompilerServer.calls, ['reload:null', 'notifyStaticChange']);
       },
     );
 
@@ -1088,7 +1652,7 @@ class Counter {
       () async {
         await noCompilerSession.forceReload();
 
-        expect(noCompilerServer.calls, ['reload:null']);
+        expect(noCompilerServer.calls, ['reload:null', 'notifyStaticChange']);
       },
     );
 
@@ -1117,6 +1681,17 @@ class Counter {
     );
 
     test(
+      'when forceRestart is called, '
+      'then it skips reload and spawns a fresh server via the factory',
+      () async {
+        await noCompilerSession.forceRestart();
+
+        expect(noCompilerServer.calls, ['stop']);
+        expect(noCompilerFactoryCalls, ['createServer:null']);
+      },
+    );
+
+    test(
       'when applyMigration is called, '
       'then it runs the in-place action and leaves the pod alone',
       () async {
@@ -1124,6 +1699,17 @@ class Counter {
 
         expect(noCompilerServer.calls, isEmpty);
         expect(noCompilerFactoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when forceRestart is called, '
+      'then it stops the server and spawns a new one with null dill',
+      () async {
+        await noCompilerSession.forceRestart();
+
+        expect(noCompilerServer.calls, contains('stop'));
+        expect(noCompilerFactoryCalls, ['createServer:null']);
       },
     );
 
@@ -1149,7 +1735,7 @@ class Counter {
             (success: true, generatedFiles: <String>{}),
         initialServer: noFactoryServer,
         generatedDirPaths: {'/generated'},
-        applyMigrationsAction: () async => const MigrationsApplied(),
+        applyMigrationsAction: () async {},
       );
     });
 
@@ -1159,7 +1745,15 @@ class Counter {
       () async {
         await noFactorySession.forceReload();
 
-        expect(noFactoryServer.calls, ['reload:null']);
+        expect(noFactoryServer.calls, ['reload:null', 'notifyStaticChange']);
+      },
+    );
+
+    test(
+      'when forceRestart is called, '
+      'then it throws a StateError',
+      () {
+        expect(() => noFactorySession.forceRestart(), throwsStateError);
       },
     );
   });

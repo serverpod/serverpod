@@ -171,6 +171,7 @@ class SessionLogEntry extends SessionEntry {
     required this.message,
     this.error,
     this.stackTrace,
+    this.metadata,
     super.messageId,
   });
 
@@ -185,6 +186,10 @@ class SessionLogEntry extends SessionEntry {
 
   /// Stack trace for [error], if any.
   final StackTrace? stackTrace;
+
+  /// Structured metadata, forwarded to the VM service stream and ignored by
+  /// the database log.
+  final Map<String, Object?>? metadata;
 
   @override
   SessionEntryKind get kind => SessionEntryKind.log;

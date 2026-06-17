@@ -295,13 +295,19 @@ void main() async {
           expect(content, contains('${projectName}_flutter'));
         });
 
-        test('has a root .gitignore that ignores workspace .dart_tool', () {
-          final rootGitignore = File(
-            path.join(tempPath, projectName, '.gitignore'),
-          );
-          expect(rootGitignore.existsSync(), isTrue);
-          expect(rootGitignore.readAsStringSync(), contains('.dart_tool/'));
-        });
+        test(
+          'has a root .gitignore that ignores workspace .dart_tool and .scloud',
+          () {
+            final rootGitignore = File(
+              path.join(tempPath, projectName, '.gitignore'),
+            );
+            expect(rootGitignore.existsSync(), isTrue);
+
+            final content = rootGitignore.readAsStringSync();
+            expect(content, contains('.dart_tool/'));
+            expect(content, contains('.scloud/'));
+          },
+        );
 
         test('server pubspec.yaml has resolution: workspace', () {
           final content = File(
@@ -332,6 +338,18 @@ void main() async {
           );
         });
 
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(
@@ -345,15 +363,23 @@ void main() async {
             ).existsSync(),
             isTrue,
           );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
         });
 
         group('has Serverpod and Dart MCP servers configured', () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -362,40 +388,6 @@ void main() async {
   }
 }
 ''';
-
-          test('for Antigravity', () {
-            final antigravity = File(
-              path.join(
-                tempPath,
-                projectName,
-                '.gemini/antigravity/mcp_config.json',
-              ),
-            );
-            expect(antigravity.existsSync(), isTrue);
-            expect(
-              antigravity.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
-
-          test('for Codex', () {
-            final codex = File(
-              path.join(tempPath, projectName, '.codex/config.toml'),
-            );
-            expect(codex.existsSync(), isTrue);
-            expect(
-              codex.readAsStringSync(),
-              '''
-[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''',
-            );
-          });
 
           test('for Claude', () {
             final claude = File(
@@ -413,7 +405,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             expect(cursor.readAsStringSync(), genericConfig);
           });
 
-          test('for VSCode', () {
+          test('for VS Code', () {
             final vscode = File(
               path.join(tempPath, projectName, '.vscode/mcp.json'),
             );
@@ -600,17 +592,6 @@ args = ["mcp-server", "--force-roots-fallback"]
             configDir,
             isTrue,
             reason: 'Config directory should exist but it was not found.',
-          );
-        });
-
-        test('then the project contains a web directory', () {
-          var webDir = Directory(
-            path.join(tempPath, serverDir, 'web'),
-          ).existsSync();
-          expect(
-            webDir,
-            isTrue,
-            reason: 'Web directory should exist but it was not found.',
           );
         });
 

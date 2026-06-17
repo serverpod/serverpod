@@ -366,16 +366,20 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when instantiating upsert query with id as conflict column then argument error is thrown.',
+      'when instantiating upsert query with id as conflict column then query is built successfully.',
       () {
         var table = PersonTable();
+        var query = InsertQueryBuilder(
+          table: table,
+          rows: [PersonClass(id: 33, name: 'Alex', age: 33)],
+          conflictColumns: [table.id],
+        ).build();
+
         expect(
-          () => InsertQueryBuilder(
-            table: table,
-            rows: [PersonClass(name: 'Alex', age: 33)],
-            conflictColumns: [table.id],
-          ),
-          throwsArgumentError,
+          query,
+          'INSERT INTO "person" ("id", "name", "age") VALUES (33, \'Alex\', 33) '
+          'ON CONFLICT ("id") DO UPDATE SET "name" = EXCLUDED."name", "age" = EXCLUDED."age" '
+          'RETURNING *',
         );
       },
     );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
@@ -30,6 +31,16 @@ typedef HealthCheckHandler =
     Future<List<internal.ServerHealthMetric>> Function(
       Serverpod pod,
       DateTime timestamp,
+    );
+
+/// Replaces the default [Database] for a [Session].
+///
+/// The [inner] database is the framework-provided instance. Return a custom
+/// [Database] implementation to layer behavior on top of it.
+typedef DatabaseInterceptor =
+    Database Function(
+      Session session,
+      Database inner,
     );
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
@@ -398,6 +409,16 @@ class Serverpod {
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
 
+  /// Directory the server package lives in. Resolved against this when
+  /// loading `config/<runMode>.yaml`, `config/passwords.yaml`, and
+  /// `migrations/<module>/...`. Captured at construction time from the
+  /// `serverDirectory` parameter, falling back to [Directory.current].
+  ///
+  /// Pass this explicitly when boot-time cwd is not the server package root
+  /// (e.g. test isolates, MCP-triggered actions, or any process whose cwd
+  /// was inherited from a parent shell).
+  final Directory serverDirectory;
+
   /// Runtime parameters builder to apply to all sessions of the connection pool.
   ///
   /// Use the callback function to discover runtime parameters:
@@ -409,6 +430,17 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// Optional interceptor that replaces the default [Database] for each session.
+  ///
+  /// Called once per session with the framework-provided [Database] as [inner].
+  /// The returned [Database] becomes [Session.db] for that session. Useful for
+  /// injecting cross-cutting behavior such as logging, tracing, metrics, tenant
+  /// scoping, policy enforcement, retries, or safety guards.
+  ///
+  /// Be aware that the [Database] class is part of the `serverpod_database`
+  /// internal package and may face breaking changes in minor version bumps.
+  final DatabaseInterceptor? databaseInterceptor;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -419,6 +451,7 @@ class Serverpod {
     List<String> args,
     this.serializationManager,
     this.endpoints, {
+    Directory? serverDirectory,
     ServerpodConfig? config,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
     this.authenticationHandler,
@@ -429,7 +462,11 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  }) : httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
+    this.databaseInterceptor,
+  }) : serverDirectory = Directory(
+         p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
+       ),
+       httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _configOverride = configOverride,
@@ -508,7 +545,9 @@ class Serverpod {
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
-    _passwords = _passwordManager.loadPasswords();
+    _passwords = _passwordManager.loadPasswords(
+      serverDir: serverDirectory.path,
+    );
 
     // Because `.copyWith` is not a real copyWith method (`null` is not a valid
     // value for any of the fields), this works due to CommandLineArgs.toMap()
@@ -533,6 +572,7 @@ class Serverpod {
             serverId,
             _passwords,
             commandLineArgs: _commandLineArgs.toMap(),
+            serverDir: serverDirectory.path,
           );
     } on ArgumentError catch (e) {
       throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
@@ -595,23 +635,12 @@ class Serverpod {
     if (Features.enableDatabase && databaseConfiguration != null) {
       final databaseDialect = databaseConfiguration.dialect;
       final databaseProvider = DatabaseProvider.forDialect(databaseDialect);
-      final databasePoolManager = databaseProvider.createPoolManager(
+      _databasePoolManager = databaseProvider.createPoolManager(
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
+        serverDirectory: serverDirectory,
       );
-
-      // ISSUE(https://github.com/serverpod/serverpod/issues/2421):
-      // Remove this when we have a better way to handle this.
-      // This is required because other operations in Serverpod assumes that
-      // the database is connected when the Serverpod is created
-      // (such as createSession(...)).
-      databasePoolManager.start();
-      _databasePoolManager = databasePoolManager;
-      // Swallow async-init failures so the pool isn't reported as an
-      // unhandled async error; awaiters of [DatabasePoolManager.started]
-      // (notably _unguardedStart) still observe the failure.
-      unawaited(databasePoolManager.started.catchError((_) {}));
     }
 
     if (Features.enableDatabase) {
@@ -766,16 +795,11 @@ class Serverpod {
       CloudStoragePublicEndpoint().register(this);
     }
 
-    // Ensure the database pool manager has started. start() is sync
-    // and idempotent on an already-running pool; after shutdown() the
-    // pool manager has reset its internal state, so this re-kicks the
-    // pool when Serverpod is started again. Awaiting [started] surfaces
-    // any failure from async init (e.g. SQLite's PRAGMA) to this caller.
-    final pool = _databasePoolManager;
-    if (pool != null) {
-      pool.start();
-      await pool.started;
-    }
+    // Ensure the database pool manager has started.
+    // The call to start() is necessary in case this method is being invoked
+    // after a shutdown. Otherwise, the pool manager won't be started again.
+    _databasePoolManager?.start();
+    await _databasePoolManager?.started;
 
     if (Features.enableMigrations) {
       int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;
@@ -808,7 +832,23 @@ class Serverpod {
     // Connect to Redis
     if (Features.enableRedis) {
       _internalLogVerbose('Connecting to Redis.');
-      await redisController?.start();
+      await redisController?.start(
+        // In local development, we want to fail fast if Redis is not available
+        // to avoid waiting for a potentially long connect timeout. This is
+        // specially important when running tests.
+        connectTimeout: runMode != ServerpodRunMode.production
+            ? const Duration(seconds: 1)
+            : null,
+        handleError: (e) {
+          if (runMode == ServerpodRunMode.production) return false;
+          log.warning(
+            'Failed to connect to Redis. Falling back to local cache.',
+          );
+          redisController = null;
+          _caches = Caches(serializationManager, config, serverId, null);
+          return true;
+        },
+      );
     } else {
       _internalLogVerbose('Redis is disabled, skipping.');
     }
@@ -832,19 +872,7 @@ class Serverpod {
             true;
       }
 
-      // Main API server.
-      serversStarted &= await server.start(
-        authenticationHandler:
-            authenticationHandler ?? defaultAuthenticationHandler,
-      );
-
-      /// Web server.
-      if (Features.enableWebServer(_webServer)) {
-        _internalLogVerbose('Starting web server.');
-        serversStarted &= await webServer.start();
-      } else {
-        _internalLogVerbose('Web server not configured, skipping.');
-      }
+      serversStarted &= await _startUserFacingServers();
 
       if (!serversStarted) {
         throw ExitException(
@@ -920,62 +948,27 @@ class Serverpod {
     required bool applyRepairMigration,
     required bool applyMigrations,
   }) async {
-    bool verified;
+    MigrationsApplyResult? result;
 
     try {
-      _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = MigrationManager.fromDirectory(
-        Directory.current,
-        runMode: runMode,
+      _internalLogVerbose(
+        'Applying migrations and verifying database integrity.',
       );
-
-      if (applyRepairMigration) {
-        _internalLogVerbose('Applying database repair migration');
-        var appliedRepairMigration = await migrationManager
-            .applyRepairMigration(internalSession);
-        if (appliedRepairMigration == null) {
-          log.error('Failed to apply database repair migration.');
-        } else {
-          _writeLifecycleMessage(
-            'Database repair migration "$appliedRepairMigration" applied.',
-          );
-        }
-      }
-
-      if (applyMigrations) {
-        _internalLogVerbose('Applying database migrations.');
-        var migrationsApplied = await migrationManager.migrateToLatest(
-          internalSession,
-        );
-
-        if (migrationsApplied == null) {
-          _writeLifecycleMessage('Latest database migration already applied.');
-        } else {
-          _writeLifecycleMessage(
-            'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
-          );
-          for (var migration in migrationsApplied) {
-            _writeLifecycleMessage(' - $migration');
-          }
-        }
-      }
-
-      _internalLogVerbose('Verifying database integrity.');
-      verified = await MigrationManager.verifyDatabaseIntegrity(
-        internalSession,
+      result = await applyMigrationsAndVerify(
+        session: internalSession,
+        projectDirectory: serverDirectory,
+        runMode: runMode,
+        applyRepairMigration: applyRepairMigration,
+        applyMigrations: applyMigrations,
       );
     } catch (e, stackTrace) {
-      verified = false;
-
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
 
-    if (!verified) {
-      _internalLogVerbose('Database integrity verification failed.');
-      if (config.runMode == ServerpodRunMode.development) {
-        throw ExitException(1);
-      }
+    final verified = result?.databaseMatchesTargetState ?? false;
+    if (!verified && config.runMode == ServerpodRunMode.development) {
+      throw ExitException(1);
     }
   }
 
@@ -1226,16 +1219,53 @@ class Serverpod {
   /// creating a [Session] you are responsible of calling the [close] method
   /// when you are done.
   Future<InternalSession> createSession({bool enableLogging = true}) async {
-    // The constructor's eager start() left _db assigned synchronously,
-    // but await [started] so callers that issue queries synchronously
-    // after createSession() returns are guaranteed any async init
-    // (SQLite PRAGMA) has completed.
-    await _databasePoolManager?.started;
     var session = InternalSession(
       server: server,
       enableLogging: enableLogging,
     );
     return session;
+  }
+
+  /// Stops accepting new requests on the user-facing servers (the API
+  /// server and, if enabled, the web server), waits for in-flight requests
+  /// to settle, runs [action], then resumes request handling.
+  ///
+  /// Used during runtime operations that require the pod to be quiescent -
+  /// e.g. applying migrations through
+  /// [InsightsEndpoint.applyMigrations] - to provide the same safety
+  /// guarantees as a pod restart.
+  ///
+  /// The operator-facing Insights server is not paused, so the call that
+  /// invoked [action] can complete and return its result.
+  Future<T> withPausedRequestHandling<T>(
+    Future<T> Function() action,
+  ) async {
+    await server.shutdown();
+    await _webServer?.stop();
+    try {
+      return await action();
+    } finally {
+      await _startUserFacingServers();
+    }
+  }
+
+  /// Starts the API server and, if configured, the web server.
+  ///
+  /// The Insights server is intentionally not included - it's started
+  /// once during pod boot and stays up across pause/resume cycles
+  /// initiated through its own endpoints (e.g. applyMigrations).
+  Future<bool> _startUserFacingServers() async {
+    var ok = await server.start(
+      authenticationHandler:
+          authenticationHandler ?? defaultAuthenticationHandler,
+    );
+    if (Features.enableWebServer(_webServer)) {
+      _internalLogVerbose('Starting web server.');
+      ok &= await webServer.start();
+    } else {
+      _internalLogVerbose('Web server not configured, skipping.');
+    }
+    return ok;
   }
 
   /// Shuts down the Serverpod and all associated servers.

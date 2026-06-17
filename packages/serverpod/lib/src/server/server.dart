@@ -7,7 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
-import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
@@ -53,10 +53,12 @@ class Server implements RouterInjectable {
       throw ArgumentError('Database config not set');
     }
 
-    return DatabaseConstructor.create(
+    final inner = DatabaseConstructor.create(
       session: session,
       poolManager: databasePoolManager,
     );
+
+    return serverpod.databaseInterceptor?.call(session, inner) ?? inner;
   }
 
   /// The [SerializationManager] used by the server.
@@ -140,14 +142,18 @@ class Server implements RouterInjectable {
       router.use('/', _verboseLogging);
     }
 
+    final healthRoutes = HealthRoutes(serverpod);
+
     // Register core middleware first to ensure they wrap all user middleware
     router
       ..use('/', _headers)
       ..use('/', _reportException)
-      ..get('/', _health)
-      ..get('/livez', _livez)
-      ..get('/readyz', _readyz)
-      ..get('/startupz', _startupz)
+      // Legacy `GET /` health endpoint - API/insights only; would collide
+      // with user homepage routes on the web server, so it's wired here
+      // rather than from [HealthRoutes.injectIn].
+      ..get('/', healthRoutes.legacyHealth);
+    healthRoutes.injectIn(router);
+    router
       ..get(
         '/websocket',
         _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket),
@@ -261,86 +267,6 @@ class Server implements RouterInjectable {
         return Response.internalServerError();
       }
     };
-  }
-
-  Future<Result> _health(Request _) async {
-    final metrics = (await performHealthChecks(serverpod)).metrics;
-    final issues = metrics.where((m) => !m.isHealthy);
-    final ok = issues.isEmpty;
-    final now = DateTime.timestamp();
-    if (ok) return Response.ok(body: Body.fromString('OK $now'));
-    return Response(
-      503,
-      body: Body.fromDataStream(() async* {
-        yield utf8.encode('SADNESS $now\r\n');
-        for (final metric in issues) {
-          yield utf8.encode('${metric.name}: ${metric.value}\r\n');
-        }
-      }()),
-    );
-  }
-
-  /// Liveness probe - always returns healthy if server can respond.
-  Future<Result> _livez(Request request) async {
-    final response = await serverpod.healthCheckService.checkLiveness();
-    return _healthResponse(request, response);
-  }
-
-  /// Readiness probe - checks all readiness indicators.
-  Future<Result> _readyz(Request request) async {
-    final response = await serverpod.healthCheckService.checkReadiness();
-    return _healthResponse(request, response);
-  }
-
-  /// Startup probe - checks if startup is complete.
-  Future<Result> _startupz(Request request) async {
-    final response = await serverpod.healthCheckService.checkStartup();
-    return _healthResponse(request, response);
-  }
-
-  /// Builds the appropriate response based on authentication status.
-  Future<Result> _healthResponse(
-    Request request,
-    HealthResponse response,
-  ) async {
-    final isAuthenticated = await _isAuthenticatedHealthRequest(request);
-
-    if (isAuthenticated) {
-      return Response(
-        response.httpStatusCode,
-        body: Body.fromString(
-          jsonEncode(response.toJson()),
-          mimeType: MimeType.json,
-        ),
-      );
-    } else {
-      // Unauthenticated: status code only, no body
-      return Response(response.httpStatusCode);
-    }
-  }
-
-  /// Checks if the request has valid authentication for detailed health info.
-  Future<bool> _isAuthenticatedHealthRequest(Request request) async {
-    final authHeader = request.getAuthorizationHeaderValue(
-      serverpod.config.validateHeaders,
-    );
-    if (authHeader == null) return false;
-
-    final authKey = unwrapAuthHeaderValue(authHeader);
-    if (authKey == null) return false;
-
-    final handler = serverpod.authenticationHandler;
-    if (handler == null) return false;
-
-    try {
-      final authInfo = await handler(
-        serverpod.internalSession,
-        authKey,
-      );
-      return authInfo != null;
-    } catch (e) {
-      return false;
-    }
   }
 
   Handler _headers(Handler next) {

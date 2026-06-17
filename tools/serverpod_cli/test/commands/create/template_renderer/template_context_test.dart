@@ -49,49 +49,72 @@ void main() {
   test(
     'Given a TemplateContext, '
     'when both auth and postgres values are true, '
-    'then toJson returns a map with auth set to true',
+    'then toMustacheMap returns a map with auth set to true',
     () {
       final context = TemplateContext(postgres: true, auth: true);
-      expect(context.toJson(), containsPair('auth', true));
+      expect(context.toMustacheMap(), containsPair('auth', true));
     },
   );
 
   test(
     'Given a TemplateContext, '
     'when auth or postgres value is false, '
-    'then toJson returns a map with auth set to false',
+    'then toMustacheMap returns a map with auth set to false',
     () {
       var context = TemplateContext(postgres: true, auth: false);
-      expect(context.toJson(), containsPair('auth', false));
+      expect(context.toMustacheMap(), containsPair('auth', false));
       context = TemplateContext(postgres: false, auth: true);
-      expect(context.toJson(), containsPair('auth', false));
+      expect(context.toMustacheMap(), containsPair('auth', false));
     },
   );
 
   test(
     'Given a TemplateContext, '
-    'when toJson is called, '
+    'when webapp or website value is true, '
+    'then webserver value is true',
+    () {
+      var context = TemplateContext(webapp: true, website: false);
+      expect(context.webserver, isTrue);
+      context = TemplateContext(webapp: false, website: true);
+      expect(context.webserver, isTrue);
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
+    'when both webapp and website values are false, '
+    'then webserver value is false',
+    () {
+      final context = TemplateContext(webapp: false, website: false);
+      expect(context.webserver, isFalse);
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
+    'when toMustacheMap is called, '
     'then a map is returned with correct values',
     () {
       final context = TemplateContext(
         postgres: true,
         auth: true,
         redis: true,
-        web: true,
+        webapp: true,
+        website: true,
         sqlite: true,
-        skills: true,
       );
       expect(
-        context.toJson(),
+        context.toMustacheMap(),
         {
           'auth': true,
           'redis': true,
           'postgres': true,
           'sqlite': true,
-          'web': true,
+          'webapp': true,
+          'website': true,
+          'webserver': true,
           'docker': true,
           'database': true,
-          'skills': true,
         },
       );
     },

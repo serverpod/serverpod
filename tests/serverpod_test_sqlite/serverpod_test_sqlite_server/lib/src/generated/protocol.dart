@@ -5139,7 +5139,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'code_unique_idx',
+          indexName: 'upsert_test_model__code__unique_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -5152,7 +5152,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'category_value_unique_idx',
+          indexName: 'upsert_test_model__category__value__unique_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -6830,7 +6830,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           as T;
     }
     if (t == dynamic) {
-      return decodeDynamicFieldValue(data) as T;
+      return deserializeDynamicFieldValue(data) as T;
     }
     if (t == List<dynamic>) {
       return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
@@ -7641,7 +7641,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod.$className';
+      return className.contains('.') ? className : 'serverpod.$className';
     }
     return null;
   }

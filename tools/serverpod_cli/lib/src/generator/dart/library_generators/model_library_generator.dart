@@ -61,31 +61,51 @@ class SerializableModelLibraryGenerator {
   }
 
   Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
-    var fields = definition.fields;
+    var fields = definition.fieldsIncludingInherited;
     var className = definition.className;
-    var needsUndefinedClass = fields
-        .where((field) => field.shouldIncludeField(serverCode))
-        .any(_fieldUsesUndefinedCopyWithSentinel);
+    var sealedTopNode = definition.sealedTopNode;
 
     return Library(
       (libraryBuilder) {
+        if (definition.isSealedTopNode) {
+          for (var child in definition.descendantClasses) {
+            var childPath = p.relative(
+              child.filePath,
+              from: p.dirname(definition.filePath),
+            );
+            libraryBuilder.directives.add(Directive.part(childPath));
+          }
+        }
+
+        if (!definition.isSealedTopNode && sealedTopNode != null) {
+          var topNodePath = p.relative(
+            sealedTopNode.filePath,
+            from: p.dirname(definition.filePath),
+          );
+          libraryBuilder.directives.add(Directive.partOf(topNodePath));
+        }
         libraryBuilder.body.addAll([
           _buildExceptionClass(
             className,
             definition,
             fields,
           ),
-          if (needsUndefinedClass) _buildUndefinedClass(),
-          _buildModelImplClass(
-            className,
-            null,
-            fields,
-            subDirParts: definition.subDirParts,
-            inheritedFields: [],
-            isParentClass: false,
-            hasImplicitClass: false,
-            isImmutable: false,
-          ),
+          // We need to generate the implementation class for the copyWith method
+          // to support differentiating between null and undefined values.
+          // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
+          if (_shouldCreateUndefinedClass(definition, fields))
+            _buildUndefinedClass(),
+          if (!definition.isParentClass)
+            _buildModelImplClass(
+              className,
+              null,
+              fields,
+              subDirParts: definition.subDirParts,
+              inheritedFields: [],
+              isParentClass: false,
+              hasImplicitClass: false,
+              isImmutable: false,
+            ),
         ]);
       },
     );
@@ -243,12 +263,27 @@ class SerializableModelLibraryGenerator {
     ExceptionClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var parentClass = classDefinition.parentClass;
     return Class((classBuilder) {
       classBuilder
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
-      classBuilder.abstract = true;
+      if (!classDefinition.isParentClass) {
+        classBuilder.abstract = true;
+      }
+
+      if (classDefinition.isSealed) {
+        classBuilder.sealed = true;
+      }
+
+      if (parentClass != null) {
+        classBuilder.extend = parentClass.type.reference(
+          serverCode,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
+        );
+      }
 
       classBuilder.implements.add(
         refer('SerializableException', serverpodUrl(serverCode)),
@@ -278,55 +313,71 @@ class SerializableModelLibraryGenerator {
         _buildModelClassConstructor(
           fields,
           null,
-          isParentClass: false,
+          isParentClass: classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
-          inheritedFields: [],
+          inheritedFields: classDefinition.inheritedFields,
           isImmutable: false,
         ),
-        _buildModelClassFactoryConstructor(
-          className,
-          fields,
-          null,
-          inheritedFields: [],
-          subDirParts: classDefinition.subDirParts,
-          isImmutable: false,
-        ),
-        _buildModelClassFromJsonConstructor(
-          className,
-          fields,
-          null,
-          subDirParts: classDefinition.subDirParts,
-          hasImplicitClass: false,
-          currentSharedPackageName: classDefinition.sharedPackageName,
-        ),
+        if (!classDefinition.isParentClass)
+          _buildModelClassFactoryConstructor(
+            className,
+            fields,
+            null,
+            inheritedFields: classDefinition.inheritedFields,
+            subDirParts: classDefinition.subDirParts,
+            isImmutable: false,
+          ),
+        if (!classDefinition.isSealed)
+          _buildModelClassFromJsonConstructor(
+            className,
+            fields,
+            null,
+            subDirParts: classDefinition.subDirParts,
+            hasImplicitClass: false,
+            currentSharedPackageName: classDefinition.sharedPackageName,
+          ),
       ]);
 
-      classBuilder.methods.add(
-        _buildAbstractCopyWithMethod(
-          className,
-          fields,
-          shouldOverrideAbstractCopyWith: () => false,
-          subDirParts: classDefinition.subDirParts,
-          inheritedFields: [],
-          isIdInherited: false,
-        ),
-      );
-
-      classBuilder.methods.add(
-        _buildModelClassToJsonMethod(
-          fields,
-          className,
-          classDefinition.sharedPackageName,
-          null,
-        ),
-      );
-
-      // Serialization for database and everything
-      if (serverCode) {
+      if (!classDefinition.isParentClass) {
         classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(
+          _buildAbstractCopyWithMethod(
+            className,
             fields,
-            classDefinition.serverOnly,
+            shouldOverrideAbstractCopyWith: () =>
+                _shouldOverrideAbstractCopyWithMethod(classDefinition),
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: false,
+          ),
+        );
+      } else if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildCopyWithMethod(
+            fields,
+            subDirParts: classDefinition.subDirParts,
+            className: className,
+            isParentClass: classDefinition.isParentClass,
+            hasImplicitClass: false,
+            tableName: null,
+            classDefinition: classDefinition,
+          ),
+        );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: false,
+          ),
+        );
+      }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildModelClassToJsonMethod(
+            fields,
             className,
             classDefinition.sharedPackageName,
             null,
@@ -334,12 +385,28 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      classBuilder.methods.add(
-        _buildExceptionToStringMethod(
-          className,
-          classDefinition.fields,
-        ),
-      );
+      // Serialization for database and everything
+      if (serverCode) {
+        if (!classDefinition.isSealed) {
+          classBuilder.methods.add(
+            _buildModelClassToJsonForProtocolMethod(
+              fields,
+              classDefinition.serverOnly,
+              className,
+              classDefinition.sharedPackageName,
+              null,
+            ),
+          );
+        }
+      }
+      if (!classDefinition.isSealed) {
+        classBuilder.methods.add(
+          _buildExceptionToStringMethod(
+            className,
+            fields,
+          ),
+        );
+      }
     });
   }
 
@@ -570,7 +637,7 @@ class SerializableModelLibraryGenerator {
   ) => field.type.nullable || field.type.className == 'dynamic';
 
   bool _shouldCreateUndefinedClass(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
     if (classDefinition.sealedTopNode == null) {
@@ -785,7 +852,7 @@ class SerializableModelLibraryGenerator {
   }
 
   bool _shouldOverrideAbstractCopyWithMethod(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
   ) {
     var parentClass = classDefinition.parentClass;
 
@@ -845,7 +912,7 @@ class SerializableModelLibraryGenerator {
     required bool isParentClass,
     required hasImplicitClass,
     String? tableName,
-    ModelClassDefinition? classDefinition,
+    ClassDefinition? classDefinition,
   }) {
     return Method(
       (m) {
@@ -944,7 +1011,7 @@ class SerializableModelLibraryGenerator {
         // Since `dynamic` also covers `_Undefined`, the check for `param`
         // must be inverted to explicitly not be `_Undefined`.
         valueDefinition = refer(field.name)
-            .isNotA(refer('_Undefined'))
+            .notEqualTo(refer('_Undefined'))
             .conditional(
               refer(field.name),
               assignment,
@@ -1624,10 +1691,10 @@ class SerializableModelLibraryGenerator {
       currentSharedPackageName: currentSharedPackageName,
     );
     if (fieldType.className == 'dynamic') {
-      var encodeMethod = methodName == _toJsonForProtocolMethodName
-          ? 'encodeWithTypeForProtocol'
-          : 'encodeWithType';
-      return protocolRef.call([]).property(encodeMethod).call([fieldRef]);
+      final methodToJson = protocolRef.call([]).property('dynamicFieldToJson');
+      return (methodName == _toJsonForProtocolMethodName)
+          ? methodToJson.call([fieldRef], {'forProtocol': literal(true)})
+          : methodToJson.call([fieldRef]);
     }
     if (fieldType.isRecordType) {
       return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
@@ -3446,6 +3513,11 @@ class SerializableModelLibraryGenerator {
   /// Generate a temporary protocol library, that just exports the models.
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
+  ///
+  /// Also includes a stub [Protocol] class extending [SerializationManager] so
+  /// generated model files that call `Protocol()` compile even before the full
+  /// protocol is written. The stub is overwritten by the real [Protocol] when
+  /// [ServerpodCodeGenerator.generateProtocolDefinition] runs.
   Library generateTemporaryProtocol({
     required List<SerializableModelDefinition> models,
   }) {
@@ -3453,13 +3525,78 @@ class SerializableModelLibraryGenerator {
 
     library.name = 'protocol';
 
+    if (serverCode) {
+      library.directives.add(
+        Directive.import(
+          'package:serverpod_serialization/serverpod_serialization.dart',
+        ),
+      );
+    }
+
     // exports
     library.directives.addAll([
       for (var classInfo in models) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
+    library.body.add(_buildTemporaryProtocolStubClass());
+
     return library.build();
+  }
+
+  /// Stub [Protocol] used only while the temporary protocol.dart is on disk.
+  ///
+  /// Extends [SerializationManager] so generated model code inherits correct
+  /// signatures for `deserialize`, `dynamicFieldToJson`, and related helpers.
+  /// Only [mapRecordToJson] and [mapContainerToJson] are declared here because
+  /// they are generated on [Protocol], not on the base class.
+  Class _buildTemporaryProtocolStubClass() {
+    return Class(
+      (c) => c
+        ..name = 'Protocol'
+        ..extend = refer('SerializationManager')
+        ..constructors.addAll([
+          Constructor(
+            (c) => c
+              ..factory = true
+              ..redirect = refer('_'),
+          ),
+          Constructor((c) => c..name = '_'),
+        ])
+        ..methods.addAll([
+          Method(
+            (m) => m
+              ..name = mapRecordToJsonFuncName
+              ..returns = TypeReference(
+                (t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([refer('String'), refer('dynamic')])
+                  ..isNullable = true,
+              )
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'record'
+                    ..type = refer('Record?'),
+                ),
+              )
+              ..body = literalNull.returned.statement,
+          ),
+          Method(
+            (m) => m
+              ..name = mapContainerToJsonFunctionName
+              ..returns = refer('Object?')
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'obj'
+                    ..type = refer('Object'),
+                ),
+              )
+              ..body = refer('obj').returned.statement,
+          ),
+        ]),
+    );
   }
 
   Reference _createSerializableFieldNameReference(

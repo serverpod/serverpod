@@ -126,16 +126,12 @@ class ServerpodConfig {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
-    sessionLogs?._validate(
-      databaseEnabled: database != null,
-    );
+    sessionLogs?._validate(databaseEnabled: database != null);
   }
 
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
-    return ServerpodConfig(
-      apiServer: _createDefaultApiServer(),
-    );
+    return ServerpodConfig(apiServer: _createDefaultApiServer());
   }
 
   /// Creates a new [ServerpodConfig] from a configuration Map.
@@ -171,10 +167,7 @@ class ServerpodConfig {
     var apiConfig = _apiConfigMap(configMap, environment);
 
     var apiServer = apiConfig != null
-        ? ServerConfig._fromJson(
-            apiConfig,
-            ServerpodConfigMap.apiServer,
-          )
+        ? ServerConfig._fromJson(apiConfig, ServerpodConfigMap.apiServer)
         : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
@@ -187,10 +180,7 @@ class ServerpodConfig {
 
     var webConfig = _webConfigMap(configMap, environment);
     var webServer = webConfig != null
-        ? ServerConfig._fromJson(
-            webConfig,
-            ServerpodConfigMap.webServer,
-          )
+        ? ServerConfig._fromJson(webConfig, ServerpodConfigMap.webServer)
         : null;
 
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
@@ -247,10 +237,7 @@ class ServerpodConfig {
       environment,
     );
 
-    var validateHeaders = _readValidateHeaders(
-      configMap,
-      environment,
-    );
+    var validateHeaders = _readValidateHeaders(configMap, environment);
 
     var websocketPingInterval = _readWebsocketPingInterval(
       configMap,
@@ -281,16 +268,21 @@ class ServerpodConfig {
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
+  ///
+  /// [serverDir] is the directory the `config/` folder lives under.
   factory ServerpodConfig.load(
     String runMode,
     String? serverId,
     Map<String, String> passwords, {
     Map<String, dynamic>? commandLineArgs,
+    String? serverDir,
   }) {
     dynamic doc = {};
 
-    if (isConfigAvailable(runMode)) {
-      String data = File(_createConfigPath(runMode)).readAsStringSync();
+    if (isConfigAvailable(runMode, serverDir: serverDir)) {
+      String data = File(
+        _createConfigPath(runMode, serverDir: serverDir),
+      ).readAsStringSync();
       doc = loadYaml(data);
     }
 
@@ -358,12 +350,28 @@ class ServerpodConfig {
   }
 
   /// Checks if a configuration file is available on disk for the given run mode.
-  static bool isConfigAvailable(String runMode) {
-    return File(_createConfigPath(runMode)).existsSync();
+  static bool isConfigAvailable(String runMode, {String? serverDir}) {
+    return File(
+      _createConfigPath(runMode, serverDir: serverDir),
+    ).existsSync();
   }
 
-  static String _createConfigPath(String runMode) {
-    return path.joinAll(['config', '$runMode.yaml']);
+  static String _createConfigPath(String runMode, {String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      '$runMode.yaml',
+    ]);
+  }
+
+  /// Returns the path to `config/passwords.yaml` under [serverDir]
+  /// (or cwd-relative when [serverDir] is null).
+  static String passwordsConfigPath({String? serverDir}) {
+    return path.joinAll([
+      ?serverDir,
+      'config',
+      'passwords.yaml',
+    ]);
   }
 
   @override
@@ -515,6 +523,7 @@ abstract class DatabaseConfig {
     List<String>? searchPaths,
     int? maxConnectionCount = defaultMaxConnectionCount,
     DatabaseDialect dialect = DatabaseDialect.postgres,
+    String? dataPath,
   }) => switch (dialect) {
     DatabaseDialect.postgres => PostgresDatabaseConfig(
       host: host,
@@ -526,6 +535,7 @@ abstract class DatabaseConfig {
       isUnixSocket: isUnixSocket,
       searchPaths: searchPaths,
       maxConnectionCount: maxConnectionCount,
+      dataPath: dataPath,
     ),
     DatabaseDialect.sqlite => SqliteDatabaseConfig(
       filePath: host,
@@ -584,6 +594,16 @@ abstract class DatabaseConfig {
 
 /// PostgreSQL-specific database configuration.
 class PostgresDatabaseConfig extends DatabaseConfig {
+  /// PGDATA directory for embedded PostgreSQL (`serverpod_embedded_postgres`).
+  ///
+  /// When non-null and non-empty after trimming, [PostgresPoolManager] boots a
+  /// managed postmaster in this directory before opening connections.
+  ///
+  /// Relative paths are resolved from [Directory.current] when the pool starts
+  /// (typically the server package root). The CLI resolves relative paths
+  /// against the server directory before connecting.
+  final String? dataPath;
+
   /// Creates a new [PostgresDatabaseConfig].
   PostgresDatabaseConfig({
     required super.host,
@@ -595,6 +615,7 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     super.isUnixSocket = false,
     super.searchPaths,
     super.maxConnectionCount,
+    this.dataPath,
   }) : super._(dialect: DatabaseDialect.postgres);
 
   factory PostgresDatabaseConfig._fromJson(
@@ -630,6 +651,16 @@ class PostgresDatabaseConfig extends DatabaseConfig {
       maxConnectionCount = null;
     }
 
+    final rawDataPath = dbSetup[ServerpodEnv.databaseDataPath.configKey];
+    String? dataPath;
+    if (rawDataPath is String && rawDataPath.trim().isNotEmpty) {
+      dataPath = path.normalize(rawDataPath.trim());
+    } else if (rawDataPath != null && rawDataPath is! String) {
+      throw ArgumentError(
+        'Invalid database dataPath: $rawDataPath (expected a string).',
+      );
+    }
+
     return PostgresDatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
       port: dbSetup[ServerpodEnv.databasePort.configKey],
@@ -643,27 +674,33 @@ class PostgresDatabaseConfig extends DatabaseConfig {
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
       maxConnectionCount: maxConnectionCount,
+      dataPath: dataPath,
     );
+  }
+
+  @override
+  String toString() {
+    var str = super.toString();
+    if (dataPath != null) str += 'database data path: $dataPath\n';
+    return str;
   }
 }
 
 /// SQLite-specific database configuration.
 class SqliteDatabaseConfig extends DatabaseConfig {
   /// Creates a new [SqliteDatabaseConfig].
-  SqliteDatabaseConfig({
-    required String filePath,
-    super.maxConnectionCount,
-  }) : super._(
-         host: filePath,
-         port: 0,
-         user: '',
-         password: '',
-         name: '',
-         requireSsl: false,
-         isUnixSocket: false,
-         searchPaths: null,
-         dialect: DatabaseDialect.sqlite,
-       );
+  SqliteDatabaseConfig({required String filePath, super.maxConnectionCount})
+    : super._(
+        host: filePath,
+        port: 0,
+        user: '',
+        password: '',
+        name: '',
+        requireSsl: false,
+        isUnixSocket: false,
+        searchPaths: null,
+        dialect: DatabaseDialect.sqlite,
+      );
 
   /// The file path to the SQLite database.
   String get filePath => host;
@@ -742,9 +779,7 @@ class RedisConfig {
 
     var password = passwords[ServerpodPassword.redisPassword.configKey];
     if (password == null) {
-      throw PasswordMissingException(
-        ServerpodPassword.redisPassword.configKey,
-      );
+      throw PasswordMissingException(ServerpodPassword.redisPassword.configKey);
     }
 
     return RedisConfig(
@@ -870,7 +905,7 @@ enum ConsoleLogFormat {
   json,
 
   /// Human-readable text format.
-  text,
+  text
   ;
 
   /// Returns a list of all enum names.
@@ -1002,9 +1037,7 @@ class SessionLogConfig {
     );
   }
 
-  void _validate({
-    required bool databaseEnabled,
-  }) {
+  void _validate({required bool databaseEnabled}) {
     if (persistentEnabled && !databaseEnabled) {
       throw StateError(
         'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
@@ -1071,6 +1104,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
     (ServerpodEnv.databaseSearchPaths, null),
     (ServerpodEnv.databaseMaxConnectionCount, int.parse),
+    (ServerpodEnv.databaseDataPath, null),
   ]);
 }
 

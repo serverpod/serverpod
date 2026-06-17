@@ -8,6 +8,29 @@ List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
+/// Parses the value of a `unique` field's `per` property into the ordered list
+/// of field names that prefix the composite unique index.
+///
+/// Accepts a real YAML list (`per: [a, b]`), a scalar field name (`per: a`), or
+/// the inline bracketed form (`per=[a, b]`, which arrives as the string
+/// `"[a, b]"`). Returns `null` when the value is not one of these supported
+/// shapes, so validation can report a type error.
+List<String>? parseUniquePerFields(dynamic perValue) {
+  switch (perValue) {
+    case YamlList list:
+      if (list.any((element) => element is! String)) return null;
+      return list.cast<String>();
+    case String value:
+      var trimmed = value.trim();
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        trimmed = trimmed.substring(1, trimmed.length - 1);
+      }
+      return convertIndexList(trimmed);
+    default:
+      return null;
+  }
+}
+
 T convertToEnum<T extends Enum>({
   required dynamic value,
   required T enumDefault,

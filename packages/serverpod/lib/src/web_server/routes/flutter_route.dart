@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 
-/// Route for serving Flutter web applications with WASM support.
+/// Route for serving Flutter web applications.
 ///
 /// Combines static file serving with automatic fallback to index.html for
-/// client-side routing, plus WASM headers (COOP/COEP) for multi-threading.
+/// client-side routing.
 ///
 /// ```dart
 /// pod.webServer.addRoute(
@@ -15,7 +15,11 @@ import 'package:serverpod/serverpod.dart';
 /// );
 /// ```
 ///
-/// ## About Caching ..
+/// This route adds the COOP/COEP headers required for Flutter WASM builds that
+/// use `SharedArrayBuffer` by default. Set [enableWasmHeaders] to `false`
+/// when serving a non-WASM build that should not use cross-origin isolation.
+///
+/// ## About Caching
 ///
 /// By default, all files are served with `private, no-cache` headers so the
 /// browser always revalidates with the server via ETag. This is the only safe
@@ -61,6 +65,12 @@ class FlutterRoute extends Route {
   /// for cache-busted assets.
   final CacheBustingConfig? cacheBustingConfig;
 
+  /// Whether to add cross-origin isolation headers for Flutter WASM builds.
+  ///
+  /// Set this to `false` when serving a non-WASM Flutter web build that does
+  /// not need cross-origin isolation. Defaults to `true`.
+  final bool enableWasmHeaders;
+
   /// Creates a new FlutterRoute.
   ///
   /// The [directory] parameter specifies the root directory containing Flutter
@@ -69,11 +79,15 @@ class FlutterRoute extends Route {
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
+  ///
+  /// Set [enableWasmHeaders] to `false` when serving a non-WASM Flutter web
+  /// build that should not use cross-origin isolation.
   FlutterRoute(
     this.directory, {
     File? indexFile,
     CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
+    this.enableWasmHeaders = true,
     super.host,
   }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        cacheControlFactory =
@@ -84,7 +98,9 @@ class FlutterRoute extends Route {
   void injectIn(RelicRouter router) {
     final subRouter = Router<Handler>();
 
-    subRouter.use('/', const WasmHeadersMiddleware().call);
+    if (enableWasmHeaders) {
+      subRouter.use('/', const WasmHeadersMiddleware().call);
+    }
 
     subRouter.use(
       '/',

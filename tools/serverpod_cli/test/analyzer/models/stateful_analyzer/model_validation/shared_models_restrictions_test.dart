@@ -221,7 +221,7 @@ fields:
 
       expect(
         collector.errors.first.message,
-        'Can not extend a sealed model from another package.',
+        'Cannot extend a sealed model class from another package.',
       );
     },
   );

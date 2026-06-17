@@ -34,6 +34,7 @@ pubspec.lock
 google_client_secret.json
 firebase_service_account_key.json
 firebase_options.dart
+temp/
 tests/temp
 templates/serverpod_templates/projectname_flutter/android
 templates/serverpod_templates/projectname_flutter/ios
@@ -52,6 +53,9 @@ templates/serverpod_templates/modulename_server/test/integration/test_tools/
 .claude
 .augment
 .openhands
+
+# Embedded PostgreSQL runtime artifacts (data dir, sockets, pidfiles)
+.serverpod/
 
 # Integration test credentials (never commit)
 integrations/.env.test

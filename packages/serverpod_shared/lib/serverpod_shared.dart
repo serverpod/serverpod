@@ -10,3 +10,6 @@ export 'src/method_streaming_exceptions.dart';
 export 'src/migration_exceptions.dart';
 export 'src/password_manager.dart';
 export 'src/util.dart';
+export 'src/utils/file_ex.dart';
+export 'src/utils/secure_directory.dart';
+export 'src/utils/unix_socket.dart';
