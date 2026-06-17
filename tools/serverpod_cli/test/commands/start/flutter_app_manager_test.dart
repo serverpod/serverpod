@@ -199,8 +199,11 @@ dependencies:
     test(
       'when launch starts then isLaunching is true',
       () async {
+        // `launch` flips the spawn-in-flight flag synchronously, before its
+        // first await, so the app reads as launching the instant the call is
+        // kicked off — no fixed wait needed. The shim never publishes a URL, so
+        // it stays launching until torn down in tearDown.
         unawaited(manager.launch(appA.id));
-        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(manager.isLaunching(appA.id), isTrue);
         expect(manager.isLaunching(appB.id), isFalse);
@@ -247,7 +250,6 @@ dependencies:
     late Directory flutterDir;
     late FlutterAppConfig app;
     late FlutterAppManager manager;
-    late String? readyUrl;
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('flutter_mgr_shim_');
@@ -268,8 +270,6 @@ dependencies:
         id: 'project',
         name: 'Project',
       );
-
-      readyUrl = null;
     });
 
     tearDown(() async {
@@ -283,12 +283,16 @@ dependencies:
         final fake = await _startFakeVmService();
         addTearDown(() => fake.server.close(force: true));
 
+        // Completed by onReady once the shim publishes its web URL, so the test
+        // waits for exactly that event rather than a fixed duration.
+        final ready = Completer<String>();
+
         manager = FlutterAppManager(
           apps: [app],
           serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
           runMode: 'development',
           onProgress: (_, _) {},
-          onReady: (_, url) => readyUrl = url,
+          onReady: (_, url) => ready.complete(url),
           onStart: (_, _) async {},
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -303,7 +307,9 @@ dependencies:
         await manager.initialize();
         await manager.launch(app.id);
 
-        await Future<void>.delayed(const Duration(seconds: 2));
+        final readyUrl = await ready.future.timeout(
+          const Duration(seconds: 30),
+        );
 
         expect(readyUrl, 'http://localhost:9999');
         expect(manager.isRunning(app.id), isTrue);
