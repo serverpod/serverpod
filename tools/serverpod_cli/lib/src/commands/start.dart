@@ -966,7 +966,10 @@ Future<void> _runTuiBackend({
           appId: app.id,
           label: app.name,
         );
+        tab.ready = false;
+        tab.url = null;
         holder.state.tabs.focusTab(tab);
+        holder.markDirty();
       },
       onFlutterProgress: (app, stage) {
         final tab = holder.state.getOrCreateAppLogTab(
@@ -1024,6 +1027,8 @@ Future<void> _runTuiBackend({
         holder.state.launchableApps = config.flutterApps;
         holder.state.isAppRunning = (appId) =>
             ctx.flutterManager.isRunning(appId);
+        holder.state.isAppLaunching = (appId) =>
+            ctx.flutterManager.isLaunching(appId);
         holder.onLaunchApp = (index) {
           if (index < 0 || index >= config.flutterApps.length) return;
           final app = config.flutterApps[index];

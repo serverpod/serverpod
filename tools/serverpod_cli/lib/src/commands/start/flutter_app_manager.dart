@@ -102,6 +102,16 @@ class FlutterAppManager {
   /// Whether [appId] has a running Flutter process.
   bool isRunning(String appId) => processFor(appId)?.isRunning ?? false;
 
+  /// Whether [appId] is starting up (spawn through URL publication).
+  bool isLaunching(String appId) {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null) return false;
+    if (runtime.spawnInFlight) return true;
+    final process = runtime.process;
+    if (process == null || !process.isRunning) return false;
+    return process.flutterAppUrl == null;
+  }
+
   /// Injects [process] for [appId] in tests.
   @visibleForTesting
   void setProcessForTesting(String appId, FlutterProcess process) {

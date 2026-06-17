@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 
 /// The heavy horizontal rule the `TabBar` draws under its labels. A plain
@@ -231,5 +232,49 @@ void main() {
         expect(ts.containsText('Relaunch'), isFalse);
       },
     );
+
+    test('then a launching app shows an orange running marker', () async {
+      final state = ServerWatchState();
+      state.showSplash = false;
+      state.canLaunchApps = true;
+      state.showLaunchPanel = true;
+      state.launchPanelIndex = 1;
+      state.launchableApps = [
+        for (final name in ['Admin', 'Portal', 'Mobile'])
+          FlutterAppConfig(
+            id: name.toLowerCase(),
+            name: name,
+            relativePathParts: ['..', name.toLowerCase()],
+            serverPackageDirectoryPathParts: const [],
+          ),
+      ];
+      state.isAppRunning = (id) => id == 'admin';
+      state.isAppLaunching = (id) => id == 'portal';
+
+      final holder = StartAppStateHolder(state);
+      final tester = await NoctermTester.create(size: const Size(120, 24));
+      addTearDown(() async {
+        tester.dispose();
+        await holder.dispose();
+      });
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+
+      final ts = tester.terminalState;
+      final launchingMarker = ts.getStyledText().firstWhere(
+        (s) =>
+            s.text.contains('●') &&
+            s.style.color == ServerpodThemeData.dark.warningLevel,
+      );
+      final runningMarker = ts.getStyledText().firstWhere(
+        (s) =>
+            s.text.contains('●') &&
+            s.style.color == ServerpodThemeData.dark.success,
+      );
+
+      expect(launchingMarker.style.color, isNot(runningMarker.style.color));
+    });
   });
 }

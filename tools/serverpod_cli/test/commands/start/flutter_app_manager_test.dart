@@ -197,6 +197,17 @@ dependencies:
     );
 
     test(
+      'when launch starts then isLaunching is true',
+      () async {
+        unawaited(manager.launch(appA.id));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(manager.isLaunching(appA.id), isTrue);
+        expect(manager.isLaunching(appB.id), isFalse);
+      },
+    );
+
+    test(
       'when stopAll is called then running apps stop and info files are removed',
       () async {
         await manager.launch(appA.id);
@@ -296,6 +307,7 @@ dependencies:
 
         expect(readyUrl, 'http://localhost:9999');
         expect(manager.isRunning(app.id), isTrue);
+        expect(manager.isLaunching(app.id), isFalse);
       },
     );
   });

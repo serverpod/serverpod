@@ -206,7 +206,12 @@ class MainScreen extends StatelessComponent {
                 ),
                 Divider(color: st.subtleDivider),
                 for (var i = 0; i < apps.length; i++)
-                  _buildLaunchAppRow(st, i, isRunning),
+                  _buildLaunchAppRow(
+                    st,
+                    i,
+                    isRunning,
+                    state.isAppLaunching,
+                  ),
                 Padding(
                   padding: const EdgeInsets.only(left: 1, top: 1),
                   child: Text(
@@ -227,22 +232,30 @@ class MainScreen extends StatelessComponent {
 
   /// One launch-panel row: the app's name with a running marker.
   ///
-  /// Stopped apps are dimmed, the running marker is green, and the cursor row
-  /// gets a background highlight (matching the `serverpod create` selection
-  /// style).
+  /// Stopped apps are dimmed, launching apps show an orange marker, running
+  /// apps show a green marker, and the cursor row gets a background highlight
+  /// (matching the `serverpod create` selection style).
   Component _buildLaunchAppRow(
     ServerpodThemeData st,
     int i,
     bool Function(String appId)? isRunning,
+    bool Function(String appId)? isLaunching,
   ) {
     final apps = state.launchableApps;
     final app = apps[i];
     final running = isRunning?.call(app.id) ?? false;
+    final launching = isLaunching?.call(app.id) ?? false;
+    final active = running || launching;
     final focused = i == state.launchPanelIndex.clamp(0, apps.length - 1);
-    final muted = !running && !focused;
+    final muted = !active && !focused;
     final background = focused ? st.activationKey : null;
     final weight = muted ? FontWeight.dim : FontWeight.normal;
     final foreground = muted ? st.debugLevel : st.brightText;
+    final markerColor = launching
+        ? st.warningLevel
+        : running
+        ? st.success
+        : foreground;
 
     return GestureDetector(
       onTap: () => onLaunchApp?.call(i),
@@ -268,9 +281,9 @@ class MainScreen extends StatelessComponent {
                 ),
               ),
               TextSpan(
-                text: '  ${running ? '●' : '○'} ',
+                text: '  ${active ? '●' : '○'} ',
                 style: TextStyle(
-                  color: running ? st.success : foreground,
+                  color: markerColor,
                   fontWeight: weight,
                   backgroundColor: background,
                 ),

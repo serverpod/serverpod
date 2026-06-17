@@ -53,6 +53,9 @@ class ServerWatchState extends TuiState {
   /// Returns whether [appId] is currently running (for the launch panel).
   bool Function(String appId)? isAppRunning;
 
+  /// Returns whether [appId] is starting up (for the launch panel).
+  bool Function(String appId)? isAppLaunching;
+
   /// Latest measured content width from the main log area.
   double? contentWidth;
 
