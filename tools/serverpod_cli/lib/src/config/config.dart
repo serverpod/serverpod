@@ -248,7 +248,8 @@ class GeneratorConfig implements ModelLoadConfig {
     ],
   ];
 
-  /// Configured companion Flutter apps from `generator.yaml`.
+  /// Configured companion Flutter apps from the server `pubspec.yaml`
+  /// `serverpod: flutter_apps:` section.
   final List<FlutterAppConfig> flutterApps;
 
   final List<String>? _relativeServerTestToolsPathParts;

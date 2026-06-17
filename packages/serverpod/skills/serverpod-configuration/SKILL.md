@@ -118,14 +118,15 @@ in the server `pubspec.yaml` under `serverpod: flutter_apps:`, a map of display
 alias to properties (alongside `serverpod: scripts:`):
 
 - `path`: path to the Flutter package, relative to the server package.
-- `auto_launch` (default `false`): launch this app automatically on
-  `serverpod start`. Apps without it are launched on demand with Ctrl+R.
+- `auto_launch`: launch this app automatically on `serverpod start`. Apps
+  without it are launched on demand with `Ctrl+R`.
 - `device`: the `flutter run -d` target. Defaults to the web server (opening a
   browser when ready) when omitted.
-- **Any other property** is forwarded to `flutter run`: `target: lib/main.dart`
-  becomes `--target=lib/main.dart`, `release: true` becomes `--release`,
-  `release: false` becomes `--no-release`, and a list value repeats the flag
-  (`dart-define: [A=1, B=2]` becomes `--dart-define=A=1 --dart-define=B=2`).
+
+**Any other property** is forwarded to `flutter run`: `target: lib/main.dart`
+becomes `--target=lib/main.dart`, `release: true` becomes `--release`,
+`release: false` becomes `--no-release`, and a list value repeats the flag
+(`dart-define: [A=1, B=2]` becomes `--dart-define=A=1 --dart-define=B=2`).
 
 When the key is absent, the sibling `../<project>_flutter` package is used
 automatically (and auto-launched) if present.
@@ -141,10 +142,6 @@ serverpod:
     Portal:
       path: ../apps/portal
 ```
-
-These replace the former `serverpod start --flutter-device` / `--flutter-option`
-flags. The only remaining Flutter flag is `--flutter` / `--no-flutter`, which
-toggles auto-launch.
 
 ## Dart config override
 

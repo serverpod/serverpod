@@ -184,6 +184,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           state.showHelp = !state.showHelp;
           _rebuild();
         },
+        onTabSelected: _rebuild,
         onHotReload: onHotReload,
         onHotRestart: onHotRestart,
         onCreateMigration: onCreateMigration,
@@ -199,7 +200,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           state.showLaunchPanel = false;
           _rebuild();
         },
-        onTabSelected: _rebuild,
         onQuit: onQuit,
       ),
     );
@@ -283,7 +283,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    // Ctrl+R: 0 apps inert; 1 app direct action; >1 toggle launch panel.
+    // Ctrl+R: full relaunch of the selected Flutter app (kill `flutter run` and
+    // re-spawn it) or launch it if it isn't running yet (e.g. after starting
+    // with `--no-flutter`). Handled here rather than as a ButtonBar entry
+    // because the Button widget matches only plain/Shift keys. Always consumed
+    // so it never falls through to the plain-R hot reload / restart.
+    // 0 apps inert; 1 app direct action; >1 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (!state.canLaunchApps) return true;
       if (state.launchableApps.length <= 1) {
