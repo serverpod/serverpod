@@ -1323,6 +1323,119 @@ void main() {
   );
 
   group(
+    'Given a watch session where the Flutter pubspec assets/fonts changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.assets,
+        );
+      });
+
+      test(
+        'when only the pubspec changed, '
+        'then the Flutter app is relaunched without recompiling the server.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(flutter.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when the pubspec and dart files change together, '
+        'then the server reloads and the app is relaunched instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(restartActionCalls, 1);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the Flutter pubspec changed but assets/fonts did not,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+
+      setUp(() {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterProcess: flutter,
+          flutterAppRestartAction: () async {
+            restartActionCalls++;
+          },
+          checkFlutterDependencyChange: () => FlutterDependencyChange.none,
+        );
+      });
+
+      test(
+        'when dart files also change, '
+        'then the Flutter app is hot reloaded, not relaunched.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, ['reload']);
+        },
+      );
+
+      test(
+        'when only the pubspec changed, '
+        'then nothing is relaunched, reloaded, or recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 0);
+          expect(flutter.calls, isEmpty);
+          expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
     'Given an in-flight forceReload and a Flutter app restart action,',
     () {
       late List<String> order;

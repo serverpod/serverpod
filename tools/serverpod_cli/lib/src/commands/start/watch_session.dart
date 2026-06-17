@@ -208,9 +208,12 @@ class WatchSession {
 
     // How the Flutter app must be refreshed after this change: dependency
     // closure changes escalate from the default hot reload to a hot restart
-    // (pure-Dart deps) or a full relaunch (native code). Checked once here
-    // since the check updates the dependency fingerprint cache.
-    final flutterDependencyChange = event.flutterDependenciesChanged
+    // (pure-Dart deps) or a full relaunch (native code/assets/fonts).
+    // Checked once here since the check updates the dependency and asset
+    // fingerprint caches.
+    final shouldCheckFlutterDeps =
+        event.flutterDependenciesChanged || event.flutterPubspecChanged;
+    final flutterDependencyChange = shouldCheckFlutterDeps
         ? (_checkFlutterDependencyChange?.call() ??
               FlutterDependencyChange.none)
         : FlutterDependencyChange.none;
@@ -317,6 +320,9 @@ class WatchSession {
     FlutterDependencyChange change,
   ) async {
     switch (change) {
+      case FlutterDependencyChange.assets:
+        log.info(flutterAssetsFontsChanged);
+        await _flutterAppRestartAction?.call();
       case FlutterDependencyChange.native:
         log.info(flutterDependenciesChangedNative);
         await _flutterAppRestartAction?.call();

@@ -696,6 +696,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         flutterDependencyTracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
           flutterPackageName: flutterPackageName,
+          flutterPackageDir: flutterPackageDir,
         );
       } else {
         log.debug(
@@ -803,6 +804,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         ),
         if (config.hasFlutterPackage)
           p.absolute(p.joinAll([...config.flutterPackagePathParts, 'lib'])),
+        // Watch the Flutter app's pubspec to detect assets and fonts changes
+        if (config.hasFlutterPackage) ...{
+          p.absolute(
+            p.joinAll([...config.flutterPackagePathParts, 'pubspec.yaml']),
+          ),
+        },
         // The resolution's .dart_tool holds package_graph.json, watched to
         // detect Flutter dependency changes (workspace root or, in a
         // non-workspace project, the Flutter package's own .dart_tool).
