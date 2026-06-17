@@ -195,9 +195,11 @@ Per-app resources:
 - **Log sinks** — each app's `stdout`/`stderr` route into its own TUI tab buffer
   (see `AppLogTab` below) instead of a shared `rawFlutterLines`.
 
-`--flutter` (default true) auto-launches **`flutterApps.first`** only; the rest
-are launched on demand from the panel. `--no-flutter` launches none, but the
-panel and `Ctrl+R` still work.
+`--flutter` (default true) auto-launches every app whose `auto_launch` property
+is true (the synthesized default sibling app is flagged, preserving the
+single-app behavior); when none opt in, nothing launches. The rest are launched
+on demand from the panel. `--no-flutter` launches none, but the panel and
+`Ctrl+R` still work.
 
 ### Watch integration
 
@@ -433,12 +435,15 @@ the multi-area layout canonical removes that coupling; the only width-driven
 behavior is the narrow-terminal fallback, which reuses the same model rather than
 forking it.
 
-### Why auto-launch only the first app
+### Why an explicit `auto_launch` flag instead of "first app"
 
 Launching every configured app on `--flutter` could spin up several heavy
-`flutter run` web builds at once and surprise users who only wanted one. Auto-
-launching `flutterApps.first` preserves the "one app comes up" experience; the
-rest are a `Ctrl+R` keystroke away.
+`flutter run` web builds at once and surprise users who only wanted one — but
+silently auto-launching just the *first* app is an opaque rule. Instead each app
+opts in via `auto_launch: true`, so the choice is explicit and any subset can
+come up on start; the rest are a `Ctrl+R` keystroke away. The synthesized
+default sibling app sets the flag, preserving the historical "one app comes up"
+experience for projects that don't configure `flutter_apps`.
 
 ### Why the panel focuses a running app instead of restarting it
 

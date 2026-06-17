@@ -16,6 +16,7 @@ class FlutterAppConfig {
     required this.name,
     required this.relativePathParts,
     required this.serverPackageDirectoryPathParts,
+    this.autoLaunch = false,
   });
 
   /// Stable slug derived from [name] or the last path segment.
@@ -23,6 +24,11 @@ class FlutterAppConfig {
 
   /// Display name used for tab labels and breadcrumbs.
   final String name;
+
+  /// Whether `serverpod start` launches this app automatically on startup
+  /// (the `auto_launch` property). Apps with this false can still be launched
+  /// on demand from the start TUI with Ctrl+R.
+  final bool autoLaunch;
 
   /// Path parts relative to the server package directory.
   final List<String> relativePathParts;
@@ -100,6 +106,15 @@ List<FlutterAppConfig> loadFlutterApps({
       );
     }
 
+    final autoLaunchNode = propsNode.nodes['auto_launch'];
+    final autoLaunchValue = autoLaunchNode?.value;
+    if (autoLaunchValue != null && autoLaunchValue is! bool) {
+      throw SourceSpanFormatException(
+        'The "$alias" flutter app "auto_launch" property must be a boolean.',
+        autoLaunchNode!.span,
+      );
+    }
+
     final relativePathParts = p.split(pathValue);
     final id = _uniqueId(_slugFromName(alias, relativePathParts), usedIds);
 
@@ -109,6 +124,7 @@ List<FlutterAppConfig> loadFlutterApps({
         name: alias,
         relativePathParts: relativePathParts,
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+        autoLaunch: autoLaunchValue ?? false,
       ),
     );
   }
@@ -126,6 +142,7 @@ List<FlutterAppConfig> _synthesizeDefaultFlutterApps({
     name: projectName,
     relativePathParts: relativePathParts,
     serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+    autoLaunch: true,
   );
 
   if (!app.hasPackage) {

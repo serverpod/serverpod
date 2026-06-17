@@ -59,6 +59,80 @@ serverpod:
   );
 
   group(
+    'Given a server pubspec with flutter_apps and auto_launch flags',
+    () {
+      setUpAll(() async {
+        var projectDir = _createProject(
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      auto_launch: true
+    Customer:
+      path: ../my_project_customer_flutter
+''',
+          includeFlutterApps: true,
+        );
+        await projectDir.create();
+      });
+
+      test(
+        'when loading GeneratorConfig then auto_launch is read per app and defaults to false.',
+        () async {
+          var config = await GeneratorConfig.load(
+            serverRootDir: path.join(d.sandbox, _serverRootDir),
+            interactive: false,
+          );
+
+          expect(config.flutterApps[0].name, 'Admin');
+          expect(config.flutterApps[0].autoLaunch, isTrue);
+          expect(config.flutterApps[1].name, 'Customer');
+          expect(config.flutterApps[1].autoLaunch, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server pubspec with a non-boolean auto_launch',
+    () {
+      setUpAll(() async {
+        var projectDir = _createProject(
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      auto_launch: yes-please
+''',
+        );
+        await projectDir.create();
+      });
+
+      test(
+        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+        () async {
+          await expectLater(
+            GeneratorConfig.load(
+              serverRootDir: path.join(d.sandbox, _serverRootDir),
+              interactive: false,
+            ),
+            throwsA(
+              isA<SourceSpanFormatException>().having(
+                (e) => e.message,
+                'message',
+                'The "Admin" flutter app "auto_launch" property must be a '
+                    'boolean.',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a server pubspec without flutter_apps and an existing default Flutter package',
     () {
       setUpAll(() async {
@@ -82,6 +156,8 @@ serverpod:
             config.flutterApps.first.relativePathParts,
             ['..', 'my_project_flutter'],
           );
+          // The synthesized default sibling app auto-launches, as before.
+          expect(config.flutterApps.first.autoLaunch, isTrue);
         },
       );
 

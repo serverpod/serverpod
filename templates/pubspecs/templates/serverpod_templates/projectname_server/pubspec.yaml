@@ -36,7 +36,9 @@ serverpod:
 
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed by
   # a display alias. When this section is omitted, a sibling Flutter package is
-  # expected at `../projectname_flutter` and used automatically.
+  # expected at `../projectname_flutter` and launched automatically. To start
+  # an app automatically, set `auto_launch: true`.
   # flutter_apps:
   #   Admin:
   #     path: ../projectname_flutter
+  #     auto_launch: true

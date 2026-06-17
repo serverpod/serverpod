@@ -115,14 +115,21 @@ In `config/generator.yaml`:
 
 Companion Flutter apps that `serverpod start` can launch (Ctrl+R) are declared
 in the server `pubspec.yaml` under `serverpod: flutter_apps:`, a map of display
-alias to properties (alongside `serverpod: scripts:`). When the key is absent,
-the sibling `../<project>_flutter` package is used automatically if present.
+alias to properties (alongside `serverpod: scripts:`):
+
+- `path`: path to the Flutter package, relative to the server package.
+- `auto_launch` (default `false`): launch this app automatically on
+  `serverpod start`. Apps without it are launched on demand with Ctrl+R.
+
+When the key is absent, the sibling `../<project>_flutter` package is used
+automatically (and auto-launched) if present.
 
 ```yaml
 serverpod:
   flutter_apps:
     Admin:
       path: ../apps/admin
+      auto_launch: true
     Portal:
       path: ../apps/portal
 ```

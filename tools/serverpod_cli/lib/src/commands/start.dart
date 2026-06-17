@@ -601,9 +601,14 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Needed for the migration action.
-  if (launchFlutterApp && config.flutterApps.isNotEmpty) {
-    await flutterManager.launch(config.flutterApps.first.id);
+  // Auto-launch every app flagged with `auto_launch` (the synthesized default
+  // sibling app is flagged, preserving the historical single-app behavior).
+  // When no app opts in, none launch — the user starts them with Ctrl+R.
+  if (launchFlutterApp) {
+    await Future.wait([
+      for (final app in config.flutterApps.where((app) => app.autoLaunch))
+        flutterManager.launch(app.id),
+    ]);
   }
 
   // Construct the watch session.
