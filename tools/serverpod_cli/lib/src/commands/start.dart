@@ -1056,15 +1056,11 @@ Future<void> _runTuiBackend({
             ctx.session.isFlutterAppRunning
                 ? 'Restart Flutter app'
                 : 'Start Flutter app',
-            () async {
-              if (config.flutterApps.length != 1) return;
-              final app = config.flutterApps.first;
-              if (ctx.flutterManager.isRunning(app.id)) {
-                await ctx.flutterManager.restart(app.id);
-              } else {
-                await ctx.flutterManager.launch(app.id);
-              }
-            },
+            // Routed through the session so the relaunch is serialized behind
+            // any in-flight reload/restart and guarded against re-spawning
+            // during shutdown. For the single-app Ctrl+R this (re)launches the
+            // one app; the launch panel drives specific apps directly.
+            ctx.session.restartFlutterApp,
           );
         };
         holder.onCreateMigration = ({bool force = false}) {
