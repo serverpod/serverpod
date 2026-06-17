@@ -36,9 +36,15 @@ serverpod:
 
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed by
   # a display alias. When this section is omitted, a sibling Flutter package is
-  # expected at `../projectname_flutter` and launched automatically. To start
-  # an app automatically, set `auto_launch: true`.
+  # expected at `../projectname_flutter` and launched automatically.
+  #
+  # Per app: `auto_launch: true` starts it with the server; `device` sets the
+  # `flutter run -d` target (defaults to the web server, opening a browser);
+  # any other property is forwarded to `flutter run` (e.g.
+  # `target: lib/main.dart` becomes `--target=lib/main.dart`).
   # flutter_apps:
   #   Admin:
   #     path: ../projectname_flutter
   #     auto_launch: true
+  #     device: chrome
+  #     target: lib/main.dart

@@ -7,8 +7,9 @@ import 'package:yaml/yaml.dart';
 /// One configured companion Flutter app.
 ///
 /// Configured under the `serverpod: flutter_apps:` map in the server's
-/// `pubspec.yaml`, keyed by alias. The per-app property map leaves room for
-/// future options (e.g. `device`) without a schema break.
+/// `pubspec.yaml`, keyed by alias. Reserved properties (`path`, `auto_launch`,
+/// `device`) are interpreted directly; any other property is forwarded to
+/// `flutter run` via [extraRunArgs].
 class FlutterAppConfig {
   /// Creates a [FlutterAppConfig].
   const FlutterAppConfig({
@@ -17,6 +18,8 @@ class FlutterAppConfig {
     required this.relativePathParts,
     required this.serverPackageDirectoryPathParts,
     this.autoLaunch = false,
+    this.device,
+    this.extraRunArgs = const [],
   });
 
   /// Stable slug derived from [name] or the last path segment.
@@ -29,6 +32,16 @@ class FlutterAppConfig {
   /// (the `auto_launch` property). Apps with this false can still be launched
   /// on demand from the start TUI with Ctrl+R.
   final bool autoLaunch;
+
+  /// Target device for `flutter run -d` (the `device` property), or `null` to
+  /// fall back to the default device when the app is launched.
+  final String? device;
+
+  /// Extra arguments forwarded verbatim to `flutter run`, derived from any
+  /// non-reserved properties on the app's entry — e.g. `target: lib/main.dart`
+  /// becomes `--target=lib/main.dart`. The reserved keys (`path`,
+  /// `auto_launch`, `device`) are excluded.
+  final List<String> extraRunArgs;
 
   /// Path parts relative to the server package directory.
   final List<String> relativePathParts;
@@ -55,7 +68,9 @@ class FlutterAppConfig {
 ///
 /// [flutterAppsNode] is the value node of `serverpod/flutter_apps` from the
 /// server `pubspec.yaml`, or `null` when the key is not present. The map is
-/// keyed by app alias, each entry a map of properties (currently `path`).
+/// keyed by app alias, each entry a map of properties. The reserved properties
+/// (`path`, `auto_launch`, `device`) are interpreted directly; every other
+/// property is forwarded to `flutter run` (see [_flutterRunArgsFromProps]).
 List<FlutterAppConfig> loadFlutterApps({
   required YamlNode? flutterAppsNode,
   required List<String> serverPackageDirectoryPathParts,
@@ -115,6 +130,16 @@ List<FlutterAppConfig> loadFlutterApps({
       );
     }
 
+    final deviceNode = propsNode.nodes['device'];
+    final deviceValue = deviceNode?.value;
+    if (deviceValue != null &&
+        (deviceValue is! String || deviceValue.isEmpty)) {
+      throw SourceSpanFormatException(
+        'The "$alias" flutter app "device" property must be a non-empty string.',
+        deviceNode!.span,
+      );
+    }
+
     final relativePathParts = p.split(pathValue);
     final id = _uniqueId(_slugFromName(alias, relativePathParts), usedIds);
 
@@ -125,6 +150,8 @@ List<FlutterAppConfig> loadFlutterApps({
         relativePathParts: relativePathParts,
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
         autoLaunch: autoLaunchValue ?? false,
+        device: deviceValue as String?,
+        extraRunArgs: _flutterRunArgsFromProps(propsNode, alias),
       ),
     );
   }
@@ -150,6 +177,83 @@ List<FlutterAppConfig> _synthesizeDefaultFlutterApps({
   }
 
   return [app];
+}
+
+/// Properties the parser interprets itself; every other key under an app's
+/// entry is forwarded to `flutter run`.
+const _reservedFlutterAppKeys = {'path', 'auto_launch', 'device'};
+
+/// Builds `flutter run` arguments from the non-reserved properties of
+/// [propsNode], preserving the order they appear in the pubspec.
+List<String> _flutterRunArgsFromProps(YamlMap propsNode, String alias) {
+  final args = <String>[];
+  for (final keyNode in propsNode.nodes.keys) {
+    final key = (keyNode as YamlNode).value;
+    if (key is! String || _reservedFlutterAppKeys.contains(key)) continue;
+    args.addAll(_flutterRunArg(key, propsNode.nodes[keyNode]!, alias));
+  }
+  return args;
+}
+
+/// Converts one `key: value` property into `flutter run` arguments:
+/// `target: lib/main.dart` -> `--target=lib/main.dart`; `release: true` ->
+/// `--release`; `release: false` -> `--no-release`; a list value repeats the
+/// flag once per item (e.g. `dart-define: [A=1, B=2]`); a map value does the
+/// same by joining each entry as `entryKey=entryValue` (e.g.
+/// `dart-define: {A: 1, B: 2}`).
+List<String> _flutterRunArg(String key, YamlNode valueNode, String alias) {
+  if (valueNode is YamlScalar) {
+    final value = valueNode.value;
+    return switch (value) {
+      null => ['--$key'],
+      bool() => [value ? '--$key' : '--no-$key'],
+      _ => ['--$key=$value'],
+    };
+  }
+
+  if (valueNode is YamlList) {
+    final args = <String>[];
+    for (final itemNode in valueNode.nodes) {
+      args.add('--$key=${_flutterRunCollectionItem(itemNode, key, alias)}');
+    }
+    return args;
+  }
+
+  if (valueNode is YamlMap) {
+    final args = <String>[];
+    for (final entryKeyNode in valueNode.nodes.keys) {
+      final entryKey = (entryKeyNode as YamlNode).value;
+      if (entryKey is! String && entryKey is! num) {
+        throw SourceSpanFormatException(
+          'The "$alias" flutter app option "$key" map keys must be strings '
+          'or numbers.',
+          entryKeyNode.span,
+        );
+      }
+      final entryValueNode = valueNode.nodes[entryKeyNode]!;
+      final entryValue = _flutterRunCollectionItem(entryValueNode, key, alias);
+      args.add('--$key=$entryKey=$entryValue');
+    }
+    return args;
+  }
+
+  throw SourceSpanFormatException(
+    'The "$alias" flutter app option "$key" must be a string, number, '
+    'boolean, list, or map of strings or numbers.',
+    valueNode.span,
+  );
+}
+
+Object _flutterRunCollectionItem(YamlNode itemNode, String key, String alias) {
+  final item = itemNode is YamlScalar ? itemNode.value : null;
+  if (item is! String && item is! num) {
+    throw SourceSpanFormatException(
+      'The "$alias" flutter app option "$key" must contain only strings '
+      'or numbers.',
+      itemNode.span,
+    );
+  }
+  return item;
 }
 
 String _slugFromName(String name, List<String> relativePathParts) {

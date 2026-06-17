@@ -191,8 +191,6 @@ dependencies:
     apps: [app],
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
     runMode: 'development',
-    flutterDevice: 'web-server',
-    flutterExtraArgs: const [],
     onProgress: (_, _) {},
     onReady: (_, _) {},
     onStart: (_, _) async {},

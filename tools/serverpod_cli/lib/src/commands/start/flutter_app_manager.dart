@@ -38,8 +38,6 @@ class FlutterAppManager {
     required List<FlutterAppConfig> apps,
     required this.serverpodToolDir,
     required this.runMode,
-    required this.flutterDevice,
-    required this.flutterExtraArgs,
     required this.onProgress,
     required this.onReady,
     required this.onStart,
@@ -71,8 +69,6 @@ class FlutterAppManager {
 
   final String serverpodToolDir;
   final String runMode;
-  final String flutterDevice;
-  final List<String> flutterExtraArgs;
   final void Function(FlutterAppConfig app, String stage) onProgress;
   final void Function(FlutterAppConfig app, String url) onReady;
   final Future<void> Function(
@@ -195,10 +191,12 @@ class FlutterAppManager {
 
     onEnsureAppTab(runtime.app);
 
+    final device = runtime.app.device ?? flutterDeviceWebServerWithBrowser;
+
     final process = FlutterProcess(
       flutterPackageDir: p.joinAll(runtime.app.pathParts),
-      device: flutterDevice,
-      extraArgs: flutterExtraArgs,
+      device: device,
+      extraArgs: runtime.app.extraRunArgs,
       flutterProxy: runtime.proxy,
       flutterExecutable: flutterExecutableForTesting ?? 'flutter',
       machineArgsOverride: argsOverrideForTesting?.call(runtime.app),
@@ -224,7 +222,14 @@ class FlutterAppManager {
     runtime.process = process;
     runtime.spawnInFlight = false;
 
-    unawaited(_connectAfterLaunch(runtime, process, isRelaunch: isRelaunch));
+    unawaited(
+      _connectAfterLaunch(
+        runtime,
+        process,
+        device: device,
+        isRelaunch: isRelaunch,
+      ),
+    );
   }
 
   /// Stops and relaunches [appId].
@@ -302,6 +307,7 @@ class FlutterAppManager {
   Future<void> _connectAfterLaunch(
     _AppRuntime runtime,
     FlutterProcess process, {
+    required String device,
     required bool isRelaunch,
   }) async {
     await log.progress(
@@ -324,7 +330,7 @@ class FlutterAppManager {
       'Connecting to ${runtime.app.name} VM service',
       () async {
         await process.connectToVmService(
-          timeout: flutterDevice == flutterDeviceWebServer
+          timeout: device == flutterDeviceWebServer
               ? null
               : const Duration(seconds: 30),
         );

@@ -95,6 +95,137 @@ serverpod:
   );
 
   group(
+    'Given a server pubspec with flutter_apps device and forwarded options',
+    () {
+      setUpAll(() async {
+        var projectDir = _createProject(
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      device: chrome
+      target: lib/main_admin.dart
+      web-port: 8090
+      release: true
+      pub: false
+      dart-define:
+        - API_URL=https://example.com
+        - FLAVOR=admin
+    Portal:
+      path: ../my_project_customer_flutter
+''',
+          includeFlutterApps: true,
+        );
+        await projectDir.create();
+      });
+
+      test(
+        'when loading GeneratorConfig then device is read and non-reserved '
+        'properties are forwarded to flutter run.',
+        () async {
+          var config = await GeneratorConfig.load(
+            serverRootDir: path.join(d.sandbox, _serverRootDir),
+            interactive: false,
+          );
+
+          expect(config.flutterApps[0].name, 'Admin');
+          expect(config.flutterApps[0].device, 'chrome');
+          expect(config.flutterApps[0].extraRunArgs, [
+            '--target=lib/main_admin.dart',
+            '--web-port=8090',
+            '--release',
+            '--no-pub',
+            '--dart-define=API_URL=https://example.com',
+            '--dart-define=FLAVOR=admin',
+          ]);
+
+          // Unset device falls back to the launch-time default (null here), and
+          // an app with no extra properties forwards nothing.
+          expect(config.flutterApps[1].name, 'Portal');
+          expect(config.flutterApps[1].device, isNull);
+          expect(config.flutterApps[1].extraRunArgs, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server pubspec with flutter_apps dart-define as a map,',
+    () {
+      setUpAll(() async {
+        var projectDir = _createProject(
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      dart-define:
+        API_URL: https://example.com
+        FLAVOR: admin
+''',
+          includeFlutterApps: true,
+        );
+        await projectDir.create();
+      });
+
+      test(
+        'when loading GeneratorConfig then map values are forwarded like list '
+        'items.',
+        () async {
+          var config = await GeneratorConfig.load(
+            serverRootDir: path.join(d.sandbox, _serverRootDir),
+            interactive: false,
+          );
+
+          expect(config.flutterApps[0].extraRunArgs, [
+            '--dart-define=API_URL=https://example.com',
+            '--dart-define=FLAVOR=admin',
+          ]);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a server pubspec with a non-string device',
+    () {
+      setUpAll(() async {
+        var projectDir = _createProject(
+          pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      device: true
+''',
+        );
+        await projectDir.create();
+      });
+
+      test(
+        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
+        () async {
+          await expectLater(
+            GeneratorConfig.load(
+              serverRootDir: path.join(d.sandbox, _serverRootDir),
+              interactive: false,
+            ),
+            throwsA(
+              isA<SourceSpanFormatException>().having(
+                (e) => e.message,
+                'message',
+                'The "Admin" flutter app "device" property must be a non-empty '
+                    'string.',
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a server pubspec with a non-boolean auto_launch',
     () {
       setUpAll(() async {

@@ -64,13 +64,20 @@ serverpod:
   flutter_apps:
     Admin:
       path: ../apps/admin
+      auto_launch: true
+      device: chrome          # flutter run -d target (default: web server)
+      target: lib/main.dart   # any other key is forwarded to `flutter run`
     Portal:
       path: ../apps/portal
 ```
 
-- It is a **map of alias → properties** (currently just `path`) so per-app
-  options can be added later without a schema break (e.g. a per-app `device:`).
-  The alias is the app's display name.
+- It is a **map of alias → properties**. The alias is the app's display name.
+  Reserved properties — `path`, `auto_launch`, and `device` — are interpreted
+  directly; **any other property is forwarded to `flutter run`** (e.g.
+  `target: lib/main.dart` → `--target=lib/main.dart`, `release: true` →
+  `--release`, list values repeat the flag). This replaces the former global
+  `--flutter-device` / `--flutter-option` flags, so each app carries its own
+  run configuration and the command is symmetric across local and remote runs.
 - When the key is **absent**, a single default entry is synthesized from the
   sibling `../<project>_flutter` (only if that directory exists). Existing
   projects therefore behave exactly as before.
@@ -404,12 +411,24 @@ public docs.
 
 ## Design decisions
 
-### Why a list of maps instead of a list of paths
+### Why a map of alias → properties instead of a list of paths
 
-`name` is needed for the tab label and breadcrumb regardless, and the map shape
-lets per-app options (a `device:` per app, build flavors, extra `flutter run`
-args) be added later without breaking the schema. A bare list of paths would
-force a second breaking change the first time an app needs an option.
+The alias is needed for the tab label and breadcrumb regardless, and the map
+shape carries per-app options — `device:`, build flavors, and arbitrary
+forwarded `flutter run` args — without a second breaking change. A bare list of
+paths would force one the first time an app needs an option.
+
+### Why per-app options instead of global `--flutter-device` / `--flutter-option`
+
+The device and extra `flutter run` args are intrinsic to *each* app (an admin
+panel might run on Chrome with one target while a kiosk runs web-server with
+another), so they belong on the app entry, not on the command. Putting them in
+config also makes `serverpod start` symmetric: the same invocation reproduces
+the same apps locally, in CI, and for agents on remote machines, with no
+per-environment flag bookkeeping. Only `--flutter` / `--no-flutter` (whether to
+auto-launch at all) remains a command flag. Unknown keys forward verbatim so the
+full `flutter run` surface stays reachable without enumerating every flag in the
+schema.
 
 ### Why the server is a pinned tab, not a hardcoded pane
 
@@ -457,6 +476,3 @@ added later without changing the model.
 - **Restart-from-panel** — is focus-only on a running app sufficient, or should
   the panel also offer a restart gesture (`Shift+digit`)? Deferred unless asked
   for.
-- **Per-app device** — the schema reserves room for a per-app `device:`, but the
-  device is currently a single global `--flutter-device`. Wiring a per-app
-  device is out of scope here and tracked as a follow-up.

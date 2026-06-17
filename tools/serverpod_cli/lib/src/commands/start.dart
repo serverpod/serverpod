@@ -87,29 +87,9 @@ enum StartOption<V> implements OptionDefinition<V> {
       argName: 'flutter',
       defaultsTo: true,
       helpText:
-          'Launch the project\'s Flutter app alongside the server when a '
-          'companion Flutter package is present. Silently skipped for '
-          'projects without one. Use --no-flutter to disable.',
-    ),
-  ),
-  flutterDevice(
-    StringOption(
-      argName: 'flutter-device',
-      defaultsTo: flutterDeviceWebServerWithBrowser,
-      helpText:
-          'Target device for `flutter run -d`. Defaults to "web-server" '
-          'and launches the default browser as soon as the app is ready.',
-    ),
-  ),
-  flutterOption(
-    MultiOption(
-      argName: 'flutter-option',
-      multiParser: MultiParser(StringParser()),
-      helpText:
-          'Extra argument forwarded to `flutter run`. Repeatable, e.g. '
-          '--flutter-option=--web-hostname=0.0.0.0 '
-          '--flutter-option=--web-port=8090.',
-      defaultsTo: [],
+          'Auto-launch the companion Flutter apps as configured on the server '
+          'pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable '
+          'auto-launch. Apps can still be started on demand from the TUI.',
     ),
   ),
   ;
@@ -156,20 +136,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
     final watch = commandConfig.value(StartOption.watch);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
     final launchFlutterApp = commandConfig.value(StartOption.flutter);
-    final flutterDevice = commandConfig.value(StartOption.flutterDevice);
-    // Narrow once: MultiOption.value() returns List<dynamic>.
-    final flutterExtraArgs = List<String>.from(
-      commandConfig.value(StartOption.flutterOption) as Iterable,
-    );
-    // Mirror serverpod -v into flutter; output flows via log.debug.
-    final verbose =
-        serverpodRunner.globalConfiguration.optionalValue(
-          GlobalOption.verbose,
-        ) ??
-        false;
-    if (verbose && !flutterExtraArgs.contains('--verbose')) {
-      flutterExtraArgs.insert(0, '--verbose');
-    }
 
     // In TUI mode, start the UI immediately and do all setup in onReady.
     // This avoids a visible delay from config loading and Docker checks.
@@ -192,8 +158,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
         commandConfig: commandConfig,
         watch: watch,
         launchFlutterApp: launchFlutterApp,
-        flutterDevice: flutterDevice,
-        flutterExtraArgs: flutterExtraArgs,
         serverArgs: argResults?.rest ?? [],
         config: config,
       );
@@ -246,8 +210,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
         watch: watch,
         docker: docker,
         launchFlutterApp: launchFlutterApp,
-        flutterDevice: flutterDevice,
-        flutterExtraArgs: flutterExtraArgs,
         shutdown: shutdown,
       );
       switch (result) {
@@ -396,8 +358,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   required bool watch,
   required bool docker,
   required bool launchFlutterApp,
-  required String flutterDevice,
-  required List<String> flutterExtraArgs,
   required _ShutdownSignal shutdown,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
@@ -555,8 +515,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     apps: config.flutterApps,
     serverpodToolDir: serverpodToolDir,
     runMode: runMode,
-    flutterDevice: flutterDevice,
-    flutterExtraArgs: flutterExtraArgs,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
     onReady: (app, url) => onFlutterReady?.call(app, url),
     onStart: (app, process) async {
@@ -875,8 +833,6 @@ Future<int> _runWithTui({
   required Configuration<StartOption> commandConfig,
   required bool watch,
   required bool launchFlutterApp,
-  required String flutterDevice,
-  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
 }) async {
@@ -914,8 +870,6 @@ Future<int> _runWithTui({
       commandConfig: commandConfig,
       watch: watch,
       launchFlutterApp: launchFlutterApp,
-      flutterDevice: flutterDevice,
-      flutterExtraArgs: flutterExtraArgs,
       serverArgs: serverArgs,
       config: config,
       shutdown: shutdown,
@@ -964,8 +918,6 @@ Future<void> _runTuiBackend({
   required Configuration<StartOption> commandConfig,
   required bool watch,
   required bool launchFlutterApp,
-  required String flutterDevice,
-  required List<String> flutterExtraArgs,
   required List<String> serverArgs,
   required GeneratorConfig config,
   required _ShutdownSignal shutdown,
@@ -992,8 +944,6 @@ Future<void> _runTuiBackend({
       watch: watch,
       docker: docker,
       launchFlutterApp: launchFlutterApp,
-      flutterDevice: flutterDevice,
-      flutterExtraArgs: flutterExtraArgs,
       shutdown: shutdown,
       serverStdoutSink: stdoutSink,
       serverStderrSink: stderrSink,

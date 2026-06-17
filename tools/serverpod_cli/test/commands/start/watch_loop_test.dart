@@ -183,8 +183,6 @@ void main() {
         apps: [],
         serverpodToolDir: tempDir.path,
         runMode: 'development',
-        flutterDevice: 'web-server',
-        flutterExtraArgs: const [],
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},

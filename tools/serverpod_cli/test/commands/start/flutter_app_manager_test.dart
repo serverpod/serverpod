@@ -42,6 +42,9 @@ FlutterAppConfig _testApp({
       p.relative(flutterDir.path, from: serverDir.path),
     ),
     serverPackageDirectoryPathParts: p.split(serverDir.path),
+    // `web-server` (no browser) so launches never spawn a real browser and the
+    // VM-service connect waits without a timeout, as the manager tests expect.
+    device: 'web-server',
   );
 }
 
@@ -92,8 +95,6 @@ dependencies:
         apps: [appA, appB],
         serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
         runMode: 'development',
-        flutterDevice: 'web-server',
-        flutterExtraArgs: const [],
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
@@ -157,8 +158,6 @@ dependencies:
           apps: [appA, appB],
           serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
           runMode: 'development',
-          flutterDevice: 'web-server',
-          flutterExtraArgs: const [],
           onProgress: (_, _) {},
           onReady: (_, _) {},
           onStart: (_, _) async {},
@@ -277,8 +276,6 @@ dependencies:
           apps: [app],
           serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
           runMode: 'development',
-          flutterDevice: 'web-server',
-          flutterExtraArgs: const [],
           onProgress: (_, _) {},
           onReady: (_, url) => readyUrl = url,
           onStart: (_, _) async {},
