@@ -635,14 +635,14 @@ class WatchSession {
     final flutter = _flutterManager?.processFor(appId);
     if (flutter == null) return;
     if (!flutter.isVmServiceConnected) {
-      log.debug('Flutter not ready; skipping reload.');
+      log.debug('Flutter app $appId not ready; skipping reload.');
       return;
     }
     final ok = await flutter.reload();
     if (ok) {
       log.info(flutterAppReloaded);
     } else {
-      log.warning('Flutter reload failed.');
+      log.warning('Flutter app $appId reload failed.');
     }
   }
 
@@ -651,14 +651,14 @@ class WatchSession {
     final flutter = _flutterManager?.processFor(appId);
     if (flutter == null) return;
     if (!flutter.isVmServiceConnected) {
-      log.debug('Flutter not ready; skipping restart.');
+      log.debug('Flutter app $appId not ready; skipping restart.');
       return;
     }
     final ok = await flutter.restart();
     if (ok) {
       log.info(flutterAppRestarted);
     } else {
-      log.warning('Flutter restart failed.');
+      log.warning('Flutter app $appId restart failed.');
     }
   }
 
