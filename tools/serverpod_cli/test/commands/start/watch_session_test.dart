@@ -1221,6 +1221,7 @@ void main() {
 
   group('Given a watch session with a Flutter app restart action,', () {
     late int restartActionCalls;
+    late _FakeFlutter flutter;
     late FlutterAppManager flutterManager;
     late Directory tempDir;
 
@@ -1232,6 +1233,7 @@ void main() {
         },
       );
       flutterManager = harness.manager;
+      flutter = harness.process;
       tempDir = harness.tempDir;
       session = buildSession(
         compiler: compiler,
@@ -1253,6 +1255,7 @@ void main() {
         expect(restartActionCalls, 1);
         // A full relaunch is the process respawn, not the in-process hot
         // restart, and it leaves the server alone.
+        expect(flutter.calls, isEmpty);
         expect(server.calls, isEmpty);
         expect(factoryCalls, isEmpty);
       },

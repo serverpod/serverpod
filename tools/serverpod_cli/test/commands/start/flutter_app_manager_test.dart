@@ -104,7 +104,6 @@ dependencies:
         flutterExecutableForTesting: _dartExecutable(),
         argsOverrideForTesting: (_) => [_shimPath('never_publishes_uri.dart')],
       );
-      await manager.initialize();
     });
 
     tearDown(() async {
@@ -114,7 +113,9 @@ dependencies:
 
     test(
       'when initialize is called then each app gets its own info file',
-      () {
+      () async {
+        await manager.initialize();
+
         expect(
           File(
             p.join(
@@ -140,153 +141,170 @@ dependencies:
       },
     );
 
+    group('that is initialized', () {
+      setUp(() async {
+        await manager.initialize();
+      });
+
+      test(
+        'when two apps are launched then both run concurrently',
+        () async {
+          await manager.launch(appA.id);
+          await manager.launch(appB.id);
+
+          expect(manager.isRunning(appA.id), isTrue);
+          expect(manager.isRunning(appB.id), isTrue);
+          expect(manager.runningAppIds, containsAll([appA.id, appB.id]));
+        },
+      );
+
+      test(
+        'when launch is called then onEnsureAppTab is invoked',
+        () async {
+          await manager.launch(appA.id);
+
+          expect(launchedAppId, appA.id);
+        },
+      );
+
+      test(
+        'when launch starts then isLaunching is true',
+        () async {
+          // `launch` flips the spawn-in-flight flag synchronously, before its
+          // first await, so the app reads as launching the instant the call is
+          // kicked off — no fixed wait needed. The shim never publishes a URL,
+          // so it stays launching until torn down in tearDown.
+          unawaited(manager.launch(appA.id));
+
+          expect(manager.isLaunching(appA.id), isTrue);
+          expect(manager.isLaunching(appB.id), isFalse);
+        },
+      );
+
+      test(
+        'when stopAll is called then running apps stop and info files are removed',
+        () async {
+          await manager.launch(appA.id);
+          final infoFile = p.join(
+            serverDir.path,
+            '.dart_tool',
+            'serverpod',
+            'flutter-vm-service-info-app-a.json',
+          );
+          expect(File(infoFile).existsSync(), isTrue);
+
+          await manager.stopAll();
+
+          expect(manager.isRunning(appA.id), isFalse);
+          expect(File(infoFile).existsSync(), isFalse);
+        },
+      );
+
+      test(
+        'when changed paths are under one app lib then only that app id matches',
+        () async {
+          await manager.launch(appA.id);
+          await manager.launch(appB.id);
+
+          final adminPath = p.join(flutterDirA.path, 'lib', 'main.dart');
+          expect(
+            manager.appIdsForChangedPaths([adminPath]),
+            {appA.id},
+          );
+        },
+      );
+    });
+  });
+
+  group('Given a FlutterAppManager wired with per-app log sinks', () {
+    late FlutterAppConfig appA;
+    late FlutterAppConfig appB;
+    late Map<String, List<String>> sinkLines;
+    late FlutterAppManager manager;
+
+    setUp(() {
+      appA = const FlutterAppConfig(
+        id: 'app-a',
+        name: 'App A',
+        relativePathParts: ['..', 'app_a_flutter'],
+        serverPackageDirectoryPathParts: [],
+      );
+      appB = const FlutterAppConfig(
+        id: 'app-b',
+        name: 'App B',
+        relativePathParts: ['..', 'app_b_flutter'],
+        serverPackageDirectoryPathParts: [],
+      );
+      sinkLines = {appA.id: [], appB.id: []};
+
+      IOSink sinkFor(List<String> lines) {
+        final controller = StreamController<List<int>>();
+        controller.stream.listen((data) => lines.add(utf8.decode(data)));
+        return IOSink(controller.sink);
+      }
+
+      manager = FlutterAppManager(
+        apps: [appA, appB],
+        serverpodToolDir: 'unused',
+        runMode: 'development',
+        onProgress: (_, _) {},
+        onReady: (_, _) {},
+        onStart: (_, _) async {},
+        onEnsureAppTab: (_) {},
+        stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
+        stderrSinkFor: (app) => sinkFor(sinkLines[app.id]!),
+      );
+    });
+
     test(
       'when stdoutSinkFor is called then each app gets its own sink target',
       () async {
-        final sinkLines = <String, List<String>>{
-          appA.id: [],
-          appB.id: [],
-        };
-
-        IOSink sinkFor(List<String> lines) {
-          final controller = StreamController<List<int>>();
-          controller.stream.listen((data) => lines.add(utf8.decode(data)));
-          return IOSink(controller.sink);
-        }
-
-        final routingManager = FlutterAppManager(
-          apps: [appA, appB],
-          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
-          runMode: 'development',
-          onProgress: (_, _) {},
-          onReady: (_, _) {},
-          onStart: (_, _) async {},
-          onEnsureAppTab: (_) {},
-          stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
-          stderrSinkFor: (app) => sinkFor(sinkLines[app.id]!),
-        );
-
-        routingManager.stdoutSinkFor(appA).write('line-a\n');
-        routingManager.stdoutSinkFor(appB).write('line-b\n');
+        manager.stdoutSinkFor(appA).write('line-a\n');
+        manager.stdoutSinkFor(appB).write('line-b\n');
         await Future<void>.delayed(Duration.zero);
 
         expect(sinkLines[appA.id], ['line-a\n']);
         expect(sinkLines[appB.id], ['line-b\n']);
       },
     );
-
-    test(
-      'when two apps are launched then both run concurrently',
-      () async {
-        await manager.launch(appA.id);
-        await manager.launch(appB.id);
-
-        expect(manager.isRunning(appA.id), isTrue);
-        expect(manager.isRunning(appB.id), isTrue);
-        expect(manager.runningAppIds, containsAll([appA.id, appB.id]));
-      },
-    );
-
-    test(
-      'when launch is called then onEnsureAppTab is invoked',
-      () async {
-        await manager.launch(appA.id);
-
-        expect(launchedAppId, appA.id);
-      },
-    );
-
-    test(
-      'when launch starts then isLaunching is true',
-      () async {
-        // `launch` flips the spawn-in-flight flag synchronously, before its
-        // first await, so the app reads as launching the instant the call is
-        // kicked off — no fixed wait needed. The shim never publishes a URL, so
-        // it stays launching until torn down in tearDown.
-        unawaited(manager.launch(appA.id));
-
-        expect(manager.isLaunching(appA.id), isTrue);
-        expect(manager.isLaunching(appB.id), isFalse);
-      },
-    );
-
-    test(
-      'when stopAll is called then running apps stop and info files are removed',
-      () async {
-        await manager.launch(appA.id);
-        final infoFile = p.join(
-          serverDir.path,
-          '.dart_tool',
-          'serverpod',
-          'flutter-vm-service-info-app-a.json',
-        );
-        expect(File(infoFile).existsSync(), isTrue);
-
-        await manager.stopAll();
-
-        expect(manager.isRunning(appA.id), isFalse);
-        expect(File(infoFile).existsSync(), isFalse);
-      },
-    );
-
-    test(
-      'when changed paths are under one app lib then only that app id matches',
-      () async {
-        await manager.launch(appA.id);
-        await manager.launch(appB.id);
-
-        final adminPath = p.join(flutterDirA.path, 'lib', 'main.dart');
-        expect(
-          manager.appIdsForChangedPaths([adminPath]),
-          {appA.id},
-        );
-      },
-    );
   });
 
-  group('Given a FlutterAppManager with an emits_machine_events shim', () {
-    late Directory tempDir;
-    late Directory serverDir;
-    late Directory flutterDir;
-    late FlutterAppConfig app;
-    late FlutterAppManager manager;
+  group(
+    'Given an initialized FlutterAppManager running the emits_machine_events shim',
+    () {
+      late Directory tempDir;
+      late Directory serverDir;
+      late Directory flutterDir;
+      late FlutterAppConfig app;
+      late FlutterAppManager manager;
+      // Completed by onReady once the shim publishes its web URL, so the test
+      // waits for exactly that event rather than a fixed duration.
+      late Completer<String> ready;
 
-    setUp(() async {
-      tempDir = await Directory.systemTemp.createTemp('flutter_mgr_shim_');
-      serverDir = Directory(p.join(tempDir.path, 'project_server'))
-        ..createSync(recursive: true);
-      flutterDir = Directory(p.join(tempDir.path, 'project_flutter'))
-        ..createSync(recursive: true);
-      File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
+      setUp(() async {
+        tempDir = await Directory.systemTemp.createTemp('flutter_mgr_shim_');
+        serverDir = Directory(p.join(tempDir.path, 'project_server'))
+          ..createSync(recursive: true);
+        flutterDir = Directory(p.join(tempDir.path, 'project_flutter'))
+          ..createSync(recursive: true);
+        File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
 name: project_flutter
 dependencies:
   flutter:
     sdk: flutter
 ''');
 
-      app = _testApp(
-        serverDir: serverDir,
-        flutterDir: flutterDir,
-        id: 'project',
-        name: 'Project',
-      );
-    });
+        app = _testApp(
+          serverDir: serverDir,
+          flutterDir: flutterDir,
+          id: 'project',
+          name: 'Project',
+        );
 
-    tearDown(() async {
-      await manager.dispose();
-      await tempDir.delete(recursive: true);
-    });
-
-    test(
-      'when launch completes then onReady receives the app URL',
-      () async {
         final fake = await _startFakeVmService();
         addTearDown(() => fake.server.close(force: true));
 
-        // Completed by onReady once the shim publishes its web URL, so the test
-        // waits for exactly that event rather than a fixed duration.
-        final ready = Completer<String>();
-
+        ready = Completer<String>();
         manager = FlutterAppManager(
           apps: [app],
           serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
@@ -305,16 +323,27 @@ dependencies:
           ],
         );
         await manager.initialize();
-        await manager.launch(app.id);
+      });
 
-        final readyUrl = await ready.future.timeout(
-          const Duration(seconds: 30),
-        );
+      tearDown(() async {
+        await manager.dispose();
+        await tempDir.delete(recursive: true);
+      });
 
-        expect(readyUrl, 'http://localhost:9999');
-        expect(manager.isRunning(app.id), isTrue);
-        expect(manager.isLaunching(app.id), isFalse);
-      },
-    );
-  });
+      test(
+        'when launch completes then onReady receives the app URL',
+        () async {
+          await manager.launch(app.id);
+
+          final readyUrl = await ready.future.timeout(
+            const Duration(seconds: 30),
+          );
+
+          expect(readyUrl, 'http://localhost:9999');
+          expect(manager.isRunning(app.id), isTrue);
+          expect(manager.isLaunching(app.id), isFalse);
+        },
+      );
+    },
+  );
 }

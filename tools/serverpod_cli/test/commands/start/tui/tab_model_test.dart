@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a TabModel with main and apps areas', () {
+  group('Given a TabModel with empty main and apps areas', () {
     late TabModel model;
     late TabArea mainArea;
     late TabArea appsArea;
@@ -36,14 +36,29 @@ void main() {
         expect(() => model.addTab(unknownTab), throwsStateError);
       },
     );
+  });
+
+  group('Given a TabModel with a server tab and two app tabs', () {
+    late TabModel model;
+    late TabArea mainArea;
+    late TabArea appsArea;
+    late AppLogTab appA;
+    late AppLogTab appB;
+
+    setUp(() {
+      mainArea = TabArea(id: kMainArea);
+      appsArea = TabArea(id: kAppsArea);
+      model = TabModel([mainArea, appsArea]);
+      appA = AppLogTab(appId: 'a', label: 'A');
+      appB = AppLogTab(appId: 'b', label: 'B');
+      model.addTab(ServerLogTab());
+      model.addTab(appA);
+      model.addTab(appB);
+    });
 
     test(
-      'when two areas have selected tabs then selectedIndex is independent',
+      'when each area sets its own selectedIndex then they stay independent',
       () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-
         appsArea.selectedIndex = 1;
         mainArea.selectedIndex = 0;
 
@@ -56,12 +71,6 @@ void main() {
     test(
       'when focusTab is called then focusedAreaIndex and selectedIndex update',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(ServerLogTab());
-        model.addTab(appA);
-        model.addTab(appB);
-
         model.focusTab(appB);
 
         expect(model.focusedAreaIndex, 1);
@@ -71,41 +80,9 @@ void main() {
     );
 
     test(
-      'when the selected tab is removed then selectedIndex is clamped',
+      'when cyclableTabs is called in side-by-side mode '
+      'then single-tab areas are skipped',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(appA);
-        model.addTab(appB);
-        appsArea.selectedIndex = 1;
-
-        model.removeTab(appB);
-
-        expect(appsArea.selectedIndex, 0);
-        expect(appsArea.selected, appA);
-      },
-    );
-
-    test(
-      'when the last tab in an area is removed then selected is null',
-      () {
-        final appTab = AppLogTab(appId: 'a', label: 'A');
-        model.addTab(appTab);
-
-        model.removeTab(appTab);
-
-        expect(appsArea.tabs.length, 0);
-        expect(appsArea.selected, isNull);
-      },
-    );
-
-    test(
-      'when cyclableTabs is called in side-by-side mode then single-tab areas are skipped',
-      () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-
         final cyclable = model.cyclableTabs(sideBySide: true);
 
         expect(cyclable.map((t) => t.label), ['A', 'B']);
@@ -115,10 +92,6 @@ void main() {
     test(
       'when cyclableTabs is called in merged mode then every tab is included',
       () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-
         final cyclable = model.cyclableTabs(sideBySide: false);
 
         expect(cyclable.map((t) => t.label), ['Server logs', 'A', 'B']);
@@ -126,13 +99,9 @@ void main() {
     );
 
     test(
-      'when cycleTabs is called in side-by-side mode from the server tab then the first app tab is focused',
+      'when cycleTabs is called in side-by-side mode from the server tab '
+      'then the first app tab is focused',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(ServerLogTab());
-        model.addTab(appA);
-        model.addTab(appB);
         model.focusedAreaIndex = 0;
 
         model.cycleTabs(1, sideBySide: true);
@@ -143,13 +112,9 @@ void main() {
     );
 
     test(
-      'when cycleTabs is called in side-by-side mode then only app tabs are visited',
+      'when cycleTabs is called in side-by-side mode from an app tab '
+      'then only app tabs are visited',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(ServerLogTab());
-        model.addTab(appA);
-        model.addTab(appB);
         model.focusTab(appA);
 
         model.cycleTabs(1, sideBySide: true);
@@ -159,13 +124,9 @@ void main() {
     );
 
     test(
-      'when cycleTabs wraps in side-by-side mode then it returns to the first app tab',
+      'when cycleTabs wraps in side-by-side mode '
+      'then it returns to the first app tab',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(ServerLogTab());
-        model.addTab(appA);
-        model.addTab(appB);
         model.focusTab(appB);
 
         model.cycleTabs(1, sideBySide: true);
@@ -175,13 +136,9 @@ void main() {
     );
 
     test(
-      'when cycleTabs moves backward from the server tab in side-by-side mode then the last app tab is focused',
+      'when cycleTabs moves backward in side-by-side mode from the server tab '
+      'then the last app tab is focused',
       () {
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        final appB = AppLogTab(appId: 'b', label: 'B');
-        model.addTab(ServerLogTab());
-        model.addTab(appA);
-        model.addTab(appB);
         model.focusedAreaIndex = 0;
 
         model.cycleTabs(-1, sideBySide: true);
@@ -191,12 +148,34 @@ void main() {
     );
 
     test(
+      'when selectAllTabs is called then the tab at the global index is focused',
+      () {
+        model.selectAllTabs(2);
+
+        expect(model.focusedTab?.label, 'B');
+        expect(mainArea.selectedIndex, 0);
+      },
+    );
+  });
+
+  group('Given a TabModel with a server tab and one app tab', () {
+    late TabModel model;
+    late ServerLogTab serverTab;
+    late AppLogTab appA;
+
+    setUp(() {
+      final mainArea = TabArea(id: kMainArea);
+      final appsArea = TabArea(id: kAppsArea);
+      model = TabModel([mainArea, appsArea]);
+      serverTab = ServerLogTab();
+      appA = AppLogTab(appId: 'a', label: 'A');
+      model.addTab(serverTab);
+      model.addTab(appA);
+    });
+
+    test(
       'when cycleTabs is called in merged mode then the server tab is included',
       () {
-        final serverTab = ServerLogTab();
-        final appA = AppLogTab(appId: 'a', label: 'A');
-        model.addTab(serverTab);
-        model.addTab(appA);
         model.focusTab(serverTab);
 
         model.cycleTabs(1, sideBySide: false);
@@ -206,41 +185,76 @@ void main() {
     );
 
     test(
-      'when only one cyclable tab exists then cycleTabs is a no-op',
+      'when cycleTabs is called in side-by-side mode then it is a no-op',
       () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.focusTab(model.allTabs.last);
+        // Each area holds a single tab, so nothing is cyclable side-by-side.
+        model.focusTab(appA);
 
         model.cycleTabs(1, sideBySide: true);
 
-        expect(model.focusedTab, model.allTabs.last);
+        expect(model.focusedTab, appA);
       },
     );
 
     test(
-      'when selectAllTabs is called then the tab at the global index is focused',
+      'when selectAllTabs is called with an out-of-range index '
+      'then it is a no-op',
       () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-        model.addTab(AppLogTab(appId: 'b', label: 'B'));
-
-        model.selectAllTabs(2);
-
-        expect(model.focusedTab?.label, 'B');
-        expect(mainArea.selectedIndex, 0);
-      },
-    );
-
-    test(
-      'when selectAllTabs is out of range then it is a no-op',
-      () {
-        model.addTab(ServerLogTab());
-        model.addTab(AppLogTab(appId: 'a', label: 'A'));
-
         model.selectAllTabs(5);
 
-        expect(model.focusedTab?.label, 'Server logs');
+        expect(model.focusedTab, serverTab);
+      },
+    );
+  });
+
+  group('Given a TabModel with two app tabs and the second selected', () {
+    late TabModel model;
+    late TabArea appsArea;
+    late AppLogTab appA;
+    late AppLogTab appB;
+
+    setUp(() {
+      final mainArea = TabArea(id: kMainArea);
+      appsArea = TabArea(id: kAppsArea);
+      model = TabModel([mainArea, appsArea]);
+      appA = AppLogTab(appId: 'a', label: 'A');
+      appB = AppLogTab(appId: 'b', label: 'B');
+      model.addTab(appA);
+      model.addTab(appB);
+      appsArea.selectedIndex = 1;
+    });
+
+    test(
+      'when the selected tab is removed then selectedIndex is clamped',
+      () {
+        model.removeTab(appB);
+
+        expect(appsArea.selectedIndex, 0);
+        expect(appsArea.selected, appA);
+      },
+    );
+  });
+
+  group('Given a TabModel with a single app tab', () {
+    late TabModel model;
+    late TabArea appsArea;
+    late AppLogTab appTab;
+
+    setUp(() {
+      final mainArea = TabArea(id: kMainArea);
+      appsArea = TabArea(id: kAppsArea);
+      model = TabModel([mainArea, appsArea]);
+      appTab = AppLogTab(appId: 'a', label: 'A');
+      model.addTab(appTab);
+    });
+
+    test(
+      'when the last tab in an area is removed then selected is null',
+      () {
+        model.removeTab(appTab);
+
+        expect(appsArea.tabs.length, 0);
+        expect(appsArea.selected, isNull);
       },
     );
   });

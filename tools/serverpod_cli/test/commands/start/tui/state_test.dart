@@ -4,14 +4,13 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ServerWatchState', () {
-    late ServerWatchState state;
+  test(
+    'Given a ServerWatchState with configured apps '
+    'when created '
+    'then defaults are correct',
+    () {
+      final state = ServerWatchState();
 
-    setUp(() {
-      state = ServerWatchState();
-    });
-
-    test('when created then defaults are correct', () {
       expect(state.logHistory, isEmpty);
       expect(state.rawLines, isEmpty);
       expect(state.activeOperations, isEmpty);
@@ -21,8 +20,8 @@ void main() {
       expect(state.serverReady, isFalse);
       expect(state.showSplash, isTrue);
       expect(state.showHelp, isFalse);
-    });
-  });
+    },
+  );
 
   group('Given a ServerWatchState with entries in every log buffer', () {
     late ServerWatchState state;
@@ -71,38 +70,35 @@ void main() {
     },
   );
 
-  group('Given a ServerWatchState without configured apps', () {
-    test('when created then only the main area exists', () {
+  test(
+    'Given a ServerWatchState without configured apps '
+    'when created '
+    'then only the main area exists',
+    () {
       final state = ServerWatchState(hasConfiguredApps: false);
 
       expect(state.tabs.areas, hasLength(1));
       expect(state.tabs.areas.single.id, kMainArea);
-    });
-  });
+    },
+  );
 
   group('Given a ServerWatchState with two companion app tabs', () {
     late ServerWatchState state;
+    late AppLogTab admin;
+    late AppLogTab portal;
 
     setUp(() {
       state = ServerWatchState();
+      admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      portal = state.getOrCreateAppLogTab(appId: 'portal', label: 'Portal');
     });
 
     test(
-      'when log lines are appended per app then each tab keeps only its own lines',
+      'when a log line is appended to each app '
+      'then each tab keeps only its own lines',
       () {
-        void appendLine({
-          required String appId,
-          required String label,
-          required String line,
-        }) {
-          state
-              .getOrCreateAppLogTab(appId: appId, label: label)
-              .lines
-              .add(line);
-        }
-
-        appendLine(appId: 'admin', label: 'Admin', line: 'admin stdout');
-        appendLine(appId: 'portal', label: 'Portal', line: 'portal stderr');
+        admin.lines.add('admin stdout');
+        portal.lines.add('portal stderr');
 
         expect(state.appLogTabFor('admin')!.lines, ['admin stdout']);
         expect(state.appLogTabFor('portal')!.lines, ['portal stderr']);
