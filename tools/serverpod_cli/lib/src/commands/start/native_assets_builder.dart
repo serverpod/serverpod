@@ -74,6 +74,43 @@ class NativeAssetsApplyFailure extends NativeAssetsApplyOutcome {
   const NativeAssetsApplyFailure(this.message);
 }
 
+/// Walks up from [fromDir] to the first pubspec that is *not* a workspace
+/// member (i.e. `resolution != 'workspace'`). The directory containing that
+/// pubspec is either the workspace root (when a workspace is in use) or the
+/// package itself (when it isn't); pub places `.dart_tool/` only there, so its
+/// `package_config.json` is the one the Frontend Server resolves for the
+/// server package.
+///
+/// Validates that `package_config.json` and `package_graph.json` exist
+/// alongside the pubspec, so callers can trust the returned root without
+/// re-checking.
+Future<String> discoverProjectRootFrom(String fromDir) async {
+  var dir = p.canonicalize(fromDir);
+  while (true) {
+    final pubspec = await tryParsePubspecAt(dir);
+    if (pubspec != null && pubspec.resolution != 'workspace') {
+      final cfg = p.join(dir, '.dart_tool', 'package_config.json');
+      final graph = p.join(dir, '.dart_tool', 'package_graph.json');
+      if (!await File(cfg).exists() || !await File(graph).exists()) {
+        throw StateError(
+          'Found project root at $dir but its .dart_tool is missing '
+          'package_config.json / package_graph.json. Run `dart pub get`.',
+        );
+      }
+      return dir;
+    }
+    final parent = p.dirname(dir);
+    if (parent == dir) {
+      throw StateError(
+        'No project root pubspec found walking up from $fromDir. '
+        'Server packages with `resolution: workspace` need a workspace '
+        'root pubspec above them.',
+      );
+    }
+    dir = parent;
+  }
+}
+
 /// Orchestrates `package:hooks_runner` on behalf of `serverpod start`.
 ///
 /// `dart compile` refuses to run build hooks, and `frontend_server` does not
@@ -131,41 +168,11 @@ class NativeAssetsBuilder {
     _lastEncodedAssets = null;
   }
 
-  /// Walks up from [serverDir] to the first pubspec that is *not* a workspace
-  /// member (i.e. `resolution != 'workspace'`). The directory containing that
-  /// pubspec is either the workspace root (when a workspace is in use) or the
-  /// package itself (when it isn't); pub places `.dart_tool/` only there.
-  ///
-  /// Validates that `package_config.json` and `package_graph.json` exist
-  /// alongside the pubspec, so callers can trust the returned root without
-  /// re-checking.
+  /// The resolution root for [serverDir] (workspace root or the package
+  /// itself), whose `.dart_tool/` holds the `package_config.json` /
+  /// `package_graph.json` this builder reads. See [discoverProjectRootFrom].
   @visibleForTesting
-  Future<String> discoverProjectRoot() async {
-    var dir = p.canonicalize(serverDir);
-    while (true) {
-      final pubspec = await tryParsePubspecAt(dir);
-      if (pubspec != null && pubspec.resolution != 'workspace') {
-        final cfg = p.join(dir, '.dart_tool', 'package_config.json');
-        final graph = p.join(dir, '.dart_tool', 'package_graph.json');
-        if (!await File(cfg).exists() || !await File(graph).exists()) {
-          throw StateError(
-            'Found project root at $dir but its .dart_tool is missing '
-            'package_config.json / package_graph.json. Run `dart pub get`.',
-          );
-        }
-        return dir;
-      }
-      final parent = p.dirname(dir);
-      if (parent == dir) {
-        throw StateError(
-          'No project root pubspec found walking up from $serverDir. '
-          'Server packages with `resolution: workspace` need a workspace '
-          'root pubspec above them.',
-        );
-      }
-      dir = parent;
-    }
-  }
+  Future<String> discoverProjectRoot() => discoverProjectRootFrom(serverDir);
 
   Future<hr.PackageLayout> _loadPackageLayout() async {
     final root = await (_projectRootFuture ??= discoverProjectRoot());

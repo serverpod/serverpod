@@ -5,12 +5,14 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
+import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
@@ -484,12 +486,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   KernelCompiler? compiler;
   NativeAssetsBuilder? nativeAssetsBuilder;
   String? dartExecutable;
+  // The resolution's `.dart_tool` whose package_config.json the FES reads;
+  // watched below so a dependency change is picked up in place.
+  String? serverDartToolDir;
   if (watch) {
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
+    // The package_config.json the Frontend Server resolves for the server
+    // package. Passed explicitly so invalidating it on a dependency change
+    // targets the exact URI the CFE loaded (see KernelCompiler).
+    final projectRoot = await discoverProjectRootFrom(serverDir);
+    serverDartToolDir = p.join(projectRoot, '.dart_tool');
+    final packageConfigPath = p.join(serverDartToolDir, 'package_config.json');
     final localCompiler = KernelCompiler(
       entryPoint: entryPoint,
       outputDill: initialDill,
+      packagesPath: packageConfigPath,
     );
 
     final localBuilder = _createNativeAssetsBuilder(
@@ -661,20 +673,30 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // serialize through session.handleFileChange via WatchSession._chain.
   StreamSubscription<void>? fileChangeSub;
   if (watch) {
+    // One tracker per Flutter app that has a resolved dependency closure. Reused
+    // both to widen the watched directories and to pin the exact pub artifacts
+    // below.
+    final flutterDependencyTrackers = [
+      for (final app in flutterApps)
+        ?flutterManager.dependencyTrackerFor(app.id),
+    ];
     final watcher = FileWatcher(
-      watchPaths: {
-        p.absolute(p.joinAll(config.libSourcePathParts)),
-        ...config.sharedModelsLibSourcePaths.map(p.absolute),
-        p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
-        p.absolute(
-          p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
-        ),
-        for (final app in flutterApps) ...[
-          p.absolute(p.joinAll([...app.pathParts, 'lib'])),
-          p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
-          if (flutterManager.dependencyTrackerFor(app.id) case final tracker?)
-            p.absolute(tracker.dartToolDir),
-        ],
+      watchPaths: buildWatchPaths(
+        config: config,
+        flutterApps: flutterApps,
+        serverDartToolDir: serverDartToolDir,
+        flutterDependencyTrackers: flutterDependencyTrackers,
+      ),
+      // Exact files so a change to one resolution's artifact never triggers the
+      // other's action (matters only in a non-workspace layout). The server has
+      // a single package_config.json; each Flutter app contributes its own
+      // package_graph.json (they collapse to one entry in a workspace layout).
+      packageConfigPath: serverDartToolDir == null
+          ? null
+          : p.join(serverDartToolDir, 'package_config.json'),
+      packageGraphPaths: {
+        for (final tracker in flutterDependencyTrackers)
+          p.join(tracker.dartToolDir, 'package_graph.json'),
       },
     );
     fileChangeSub = watcher.onFilesChanged
@@ -694,6 +716,47 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: vmServiceInfoFile,
     ),
   );
+}
+
+/// The directories the watch-mode [FileWatcher] observes: server/shared/client
+/// source, the server's web dir, each Flutter app's lib and pubspec.yaml, and
+/// the resolution `.dart_tool`(s) carrying `package_config.json` /
+/// `package_graph.json`.
+///
+/// [serverDartToolDir] is the server's resolution `.dart_tool` (workspace root
+/// or the package itself); watching it is what makes a dependency change reload
+/// the server in place. In a workspace it equals each Flutter app's
+/// [FlutterDependencyTracker.dartToolDir] and dedupes to a single watch.
+@visibleForTesting
+Set<String> buildWatchPaths({
+  required GeneratorConfig config,
+  List<FlutterAppConfig> flutterApps = const [],
+  String? serverDartToolDir,
+  Iterable<FlutterDependencyTracker> flutterDependencyTrackers = const [],
+}) {
+  return {
+    p.absolute(p.joinAll(config.libSourcePathParts)),
+    ...config.sharedModelsLibSourcePaths.map(p.absolute),
+    p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
+    p.absolute(p.joinAll([...config.serverPackageDirectoryPathParts, 'web'])),
+    for (final app in flutterApps) ...[
+      p.absolute(p.joinAll([...app.pathParts, 'lib'])),
+      // The app's pubspec.yaml, watched as an exact file (it lives in the app
+      // root, not under lib/) so an assets/fonts/dependency change triggers a
+      // full Flutter relaunch.
+      p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
+    ],
+    // The server's resolution .dart_tool, watched for package_config.json
+    // (reloaded into the FES in place) and, in a workspace, the shared
+    // package_graph.json. Dedupes against the Flutter trackers' dirs in a
+    // workspace layout.
+    if (serverDartToolDir != null) p.absolute(serverDartToolDir),
+    // Each Flutter resolution's .dart_tool holds package_graph.json, watched to
+    // detect Flutter dependency changes (workspace root or, in a non-workspace
+    // project, the Flutter package's own .dart_tool).
+    for (final tracker in flutterDependencyTrackers)
+      p.absolute(tracker.dartToolDir),
+  };
 }
 
 /// Mounts a fresh [VmServiceProxy] in front of [serverProcess] (writing
