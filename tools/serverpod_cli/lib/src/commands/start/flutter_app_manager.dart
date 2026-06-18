@@ -261,19 +261,17 @@ class FlutterAppManager {
 
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
-    for (final runtime in _runtimes.values) {
+    await _runtimes.values.map((runtime) async {
       await runtime.process?.stop();
       runtime.process = null;
       await File(runtime.infoFile).deleteIfExists();
-    }
+    }).wait;
   }
 
   /// Closes every proxy and deletes info files.
   Future<void> dispose() async {
     await stopAll();
-    for (final runtime in _runtimes.values) {
-      await runtime.proxy.close();
-    }
+    await _runtimes.values.map((runtime) => runtime.proxy.close()).wait;
   }
 
   _AppRuntime? _runtimeFor(String appId) => _runtimes[appId];

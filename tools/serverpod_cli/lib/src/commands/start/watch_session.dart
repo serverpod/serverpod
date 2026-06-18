@@ -293,13 +293,13 @@ class WatchSession {
     if (manager == null) return;
 
     final appIds = manager.appIdsForChangedPaths(changedPaths);
-    for (final appId in appIds) {
+    await appIds.map((appId) async {
       final change = manager.checkDependencyChange(appId);
       if (changedPaths.isEmpty && change == FlutterDependencyChange.none) {
-        continue;
+        return;
       }
       await _reloadOrRestartFlutterApp(change, appId: appId);
-    }
+    }).wait;
   }
 
   /// Refreshes a Flutter app after a file change with the lightest step that
@@ -540,9 +540,7 @@ class WatchSession {
         }
         return;
       }
-      for (final appId in running) {
-        await manager.restart(appId);
-      }
+      await running.map(manager.restart).wait;
     });
   }
 
@@ -625,21 +623,11 @@ class WatchSession {
   }
 
   Future<void> _restartAllFlutterApps() async {
-    final manager = _flutterManager;
-    if (manager == null) return;
-
-    for (final appId in manager.runningAppIds) {
-      await _restartFlutter(appId);
-    }
+    await _flutterManager?.runningAppIds.map(_restartFlutter).wait;
   }
 
   Future<void> _reloadAllFlutterApps() async {
-    final manager = _flutterManager;
-    if (manager == null) return;
-
-    for (final appId in manager.runningAppIds) {
-      await _reloadFlutter(appId);
-    }
+    await _flutterManager?.runningAppIds.map(_reloadFlutter).wait;
   }
 
   /// Reloads a Flutter app and logs the outcome. Never throws.
