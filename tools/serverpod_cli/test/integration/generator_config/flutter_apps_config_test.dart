@@ -44,17 +44,18 @@ serverpod:
         final apps = _loadApps();
 
         expect(apps, hasLength(2));
+        expect(apps[0].id, 'Admin');
         expect(apps[0].name, 'Admin');
         expect(
           apps[0].relativePathParts,
           ['..', 'my_project_flutter'],
         );
+        expect(apps[1].id, 'Customer');
         expect(apps[1].name, 'Customer');
         expect(
           apps[1].relativePathParts,
           ['..', 'my_project_customer_flutter'],
         );
-        expect(apps[0].id, isNot(equals(apps[1].id)));
       },
     );
   });
@@ -255,6 +256,7 @@ serverpod:
           final apps = _loadApps();
 
           expect(apps, hasLength(1));
+          expect(apps.first.id, 'my_project');
           expect(apps.first.name, 'my_project');
           expect(apps.first.relativePathParts, ['..', 'my_project_flutter']);
           // The synthesized default sibling app auto-launches, as before.
@@ -349,7 +351,7 @@ serverpod:
               (e) => e.message,
               'message',
               'The "serverpod: flutter_apps" property must be a map of app '
-                  'alias to app properties.',
+                  'id to app properties.',
             ),
           ),
         );

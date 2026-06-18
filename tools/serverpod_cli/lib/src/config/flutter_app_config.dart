@@ -9,7 +9,7 @@ import '../util/yaml_util.dart';
 /// One configured companion Flutter app.
 ///
 /// Configured under the `serverpod: flutter_apps:` map in the server's
-/// `pubspec.yaml`, keyed by alias. Reserved properties (`path`, `auto_launch`,
+/// `pubspec.yaml`, keyed by app id. Reserved properties (`path`, `auto_launch`,
 /// `device`) are interpreted directly; any other property is forwarded to
 /// `flutter run` via [extraRunArgs].
 class FlutterAppConfig {
@@ -24,7 +24,9 @@ class FlutterAppConfig {
     this.extraRunArgs = const [],
   });
 
-  /// Stable slug derived from [name] or the last path segment.
+  /// Stable app id.
+  ///
+  /// This is the key under `serverpod: flutter_apps:` in the server pubspec.
   final String id;
 
   /// Display name used for tab labels and breadcrumbs.
@@ -68,7 +70,7 @@ class FlutterAppConfig {
 /// Loads the companion Flutter apps from the server [serverPubspecFile].
 ///
 /// Apps are configured under `serverpod: flutter_apps:` (a sibling of
-/// `serverpod: scripts:`), a map keyed by app alias whose entries are maps of
+/// `serverpod: scripts:`), a map keyed by app id whose entries are maps of
 /// properties. The reserved properties (`path`, `auto_launch`, `device`) are
 /// interpreted directly; every other property is forwarded to `flutter run`
 /// (see [_flutterRunArgsFromProps]). When the section is absent the default
@@ -88,29 +90,28 @@ List<FlutterAppConfig> loadFlutterApps({
 
   if (flutterAppsNode is! YamlMap) {
     throw SourceSpanFormatException(
-      'The "serverpod: flutter_apps" property must be a map of app alias to '
+      'The "serverpod: flutter_apps" property must be a map of app id to '
       'app properties.',
       flutterAppsNode.span,
     );
   }
 
-  final usedIds = <String>{};
   final apps = <FlutterAppConfig>[];
 
-  for (final aliasNode in flutterAppsNode.nodes.keys) {
-    final alias = (aliasNode as YamlNode).value;
-    final propsNode = flutterAppsNode.nodes[aliasNode]!;
+  for (final idNode in flutterAppsNode.nodes.keys) {
+    final id = (idNode as YamlNode).value;
+    final propsNode = flutterAppsNode.nodes[idNode]!;
 
-    if (alias is! String || alias.isEmpty) {
+    if (id is! String || id.isEmpty) {
       throw SourceSpanFormatException(
-        'Each "flutter_apps" key must be a non-empty app alias.',
-        aliasNode.span,
+        'Each "flutter_apps" key must be a non-empty app id.',
+        idNode.span,
       );
     }
 
     if (propsNode is! YamlMap) {
       throw SourceSpanFormatException(
-        'The "$alias" flutter app must be a map of properties (e.g. `path`).',
+        'The "$id" flutter app must be a map of properties (e.g. `path`).',
         propsNode.span,
       );
     }
@@ -119,7 +120,7 @@ List<FlutterAppConfig> loadFlutterApps({
     final pathValue = pathNode?.value;
     if (pathValue is! String || pathValue.isEmpty) {
       throw SourceSpanFormatException(
-        'The "$alias" flutter app must include a non-empty "path".',
+        'The "$id" flutter app must include a non-empty "path".',
         pathNode?.span ?? propsNode.span,
       );
     }
@@ -128,7 +129,7 @@ List<FlutterAppConfig> loadFlutterApps({
     final autoLaunchValue = autoLaunchNode?.value;
     if (autoLaunchValue != null && autoLaunchValue is! bool) {
       throw SourceSpanFormatException(
-        'The "$alias" flutter app "auto_launch" property must be a boolean.',
+        'The "$id" flutter app "auto_launch" property must be a boolean.',
         autoLaunchNode!.span,
       );
     }
@@ -138,23 +139,22 @@ List<FlutterAppConfig> loadFlutterApps({
     if (deviceValue != null &&
         (deviceValue is! String || deviceValue.isEmpty)) {
       throw SourceSpanFormatException(
-        'The "$alias" flutter app "device" property must be a non-empty string.',
+        'The "$id" flutter app "device" property must be a non-empty string.',
         deviceNode!.span,
       );
     }
 
     final relativePathParts = p.split(pathValue);
-    final id = _uniqueId(_slugFromName(alias, relativePathParts), usedIds);
 
     apps.add(
       FlutterAppConfig(
         id: id,
-        name: alias,
+        name: id,
         relativePathParts: relativePathParts,
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
         autoLaunch: autoLaunchValue ?? false,
         device: deviceValue as String?,
-        extraRunArgs: _flutterRunArgsFromProps(propsNode, alias),
+        extraRunArgs: _flutterRunArgsFromProps(propsNode, id),
       ),
     );
   }
@@ -180,7 +180,7 @@ List<FlutterAppConfig> _synthesizeDefaultFlutterApps({
 }) {
   final relativePathParts = ['..', '${projectName}_flutter'];
   final app = FlutterAppConfig(
-    id: _slugFromName(projectName, relativePathParts),
+    id: projectName,
     name: projectName,
     relativePathParts: relativePathParts,
     serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
@@ -269,24 +269,4 @@ Object _flutterRunCollectionItem(YamlNode itemNode, String key, String alias) {
     );
   }
   return item;
-}
-
-String _slugFromName(String name, List<String> relativePathParts) {
-  final source = name.trim().isNotEmpty ? name.trim() : relativePathParts.last;
-  final slug = source
-      .toLowerCase()
-      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
-      .replaceAll(RegExp(r'^-+|-+$'), '');
-  return slug.isNotEmpty ? slug : 'app';
-}
-
-String _uniqueId(String baseId, Set<String> usedIds) {
-  var candidate = baseId;
-  var suffix = 2;
-  while (usedIds.contains(candidate)) {
-    candidate = '$baseId-$suffix';
-    suffix++;
-  }
-  usedIds.add(candidate);
-  return candidate;
 }

@@ -95,6 +95,14 @@ final Tool tailLogsTool = Tool(
   ),
 );
 
+/// Shared [`appId`] parameter description for Flutter MCP tools.
+const _flutterAppIdDescription =
+    'Which Flutter app to target. The id is the map key on the server pubspec '
+    'under `serverpod: flutter_apps:`. Ids are case-sensitive; pass the key '
+    'exactly as written. Optional when only one app is configured. When '
+    'multiple apps are configured and no `appId` is provided, the tool '
+    'returns an error listing available ids.';
+
 final Tool tailFlutterLogsTool = Tool(
   name: 'tail_flutter_logs',
   description:
@@ -108,11 +116,7 @@ final Tool tailFlutterLogsTool = Tool(
         maximum: 10000,
       ),
       'appId': Schema.string(
-        description:
-            'Stable app id from the `serverpod: flutter_apps:` map in the '
-            'server pubspec.yaml. Optional when only one app is configured. '
-            'When multiple apps are configured and the tool is called without '
-            '`appId`, an error will be returned reporting the available ids.',
+        description: _flutterAppIdDescription,
       ),
     },
   ),
@@ -126,11 +130,7 @@ final Tool spawnFlutterAppTool = Tool(
   inputSchema: Schema.object(
     properties: {
       'appId': Schema.string(
-        description:
-            'Stable app id from the `serverpod: flutter_apps:` map in the '
-            'server pubspec.yaml. Optional when only one app is configured. '
-            'When multiple apps are configured and the tool is called without '
-            '`appId`, an error will be returned reporting the available ids.',
+        description: _flutterAppIdDescription,
       ),
     },
   ),
@@ -139,11 +139,12 @@ final Tool spawnFlutterAppTool = Tool(
 final Tool getFlutterAppDtdTool = Tool(
   name: 'get_flutter_app_dtd',
   description:
-      'Return the Dart Tooling Daemon (DTD) URI for all Flutter apps started '
-      'from `serverpod start`, keyed by the app id from the config. Apps that '
-      'have not been launched are absent from the map; apps that have not '
-      'published their DTD yet map to null; apps that have published their DTD '
-      'map to their DTD URI.',
+      'Return the Dart Tooling Daemon (DTD) URI for Flutter apps started from '
+      '`serverpod start`. The JSON object is keyed by app id — the same ids '
+      'used as keys under `serverpod: flutter_apps:` in the server pubspec. '
+      'Apps that have not been launched are absent from the map; apps that '
+      'have not published their DTD yet map to null; apps that have published '
+      'their DTD map to their DTD URI.',
   inputSchema: Schema.object(),
 );
 
