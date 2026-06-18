@@ -789,6 +789,7 @@ class WatchSession {
       await _server?.stop();
       final server = await _createServer!(dillPath);
       _server = server;
+      if (_state == SessionState.restarting) _state = SessionState.idle;
       _monitorExit(server);
       _trackVmServiceUri(server);
       log.info(wasRunning ? serverRestarted : serverStarted);

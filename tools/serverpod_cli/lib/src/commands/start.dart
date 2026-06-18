@@ -641,7 +641,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   ServerProcess? initialServerProcess;
   if (buildOk) {
     await log.progress('Starting server', () async {
-      final initialDill = watch ? p.join(serverpodToolDir, 'server.dill') : null;
+      final initialDill = watch
+          ? p.join(serverpodToolDir, 'server.dill')
+          : null;
       initialServerProcess = await serverProcessFactory(initialDill);
       return true;
     });

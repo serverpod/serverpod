@@ -2653,6 +2653,21 @@ class Counter {
     );
 
     test(
+      'when the server booted from a degraded start later crashes, '
+      'then done completes with its exit code',
+      () async {
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+        expect(degradedSession.isRunning, isTrue);
+
+        factoryServer.simulateExit(7);
+
+        await expectLater(degradedSession.done, completion(7));
+      },
+    );
+
+    test(
       'when disposed, '
       'then done completes with zero without stopping a server',
       () async {
