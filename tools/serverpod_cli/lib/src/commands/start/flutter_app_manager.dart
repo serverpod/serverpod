@@ -68,6 +68,13 @@ class FlutterAppManager {
   @visibleForTesting
   Future<void> Function(String appId)? launchOverrideForTesting;
 
+  /// When set, IDE-attach auto-launch (the `onWaitingClientArrived` proxy
+  /// callback) routes through this instead of calling [launch] directly. Read
+  /// lazily when a client attaches, so it can be assigned after [initialize]
+  /// (e.g. once the owning session exists); a client arriving before then
+  /// falls back to [launch].
+  FutureOr<void> Function(String appId)? launchOnWaitingClient;
+
   final String serverpodToolDir;
   final String runMode;
   final void Function(FlutterAppConfig app, String stage) onProgress;
@@ -178,7 +185,11 @@ class FlutterAppManager {
       final infoFile = _infoFileFor(app.id);
       final proxy = await bindFlutterAppProxy(
         infoFile: infoFile,
-        onWaitingClientArrived: () => launch(app.id),
+        onWaitingClientArrived: () {
+          final launch = launchOnWaitingClient;
+          if (launch != null) return launch(app.id);
+          return this.launch(app.id);
+        },
       );
       _runtimes[app.id] = _AppRuntime(
         app: app,

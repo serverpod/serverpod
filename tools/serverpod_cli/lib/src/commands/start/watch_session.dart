@@ -129,10 +129,28 @@ class WatchSession {
   Future<void> _pending = Future.value();
 
   /// Queues [body] behind [_pending].
-  Future<void> _chain(Future<void> Function() body) {
+  Future<T> _chain<T>(Future<T> Function() body) {
     final task = _pending.then((_) => body());
-    _pending = task.catchError((_) {}); // ensure errors don't block queue..
+    _pending = task.then((_) {}, onError: (_) {}); // errors don't block queue
     return task; // .. but raise to caller
+  }
+
+  /// Queues [body] via [_chain], guarding the disposed state on both edges:
+  /// throws a [StateError] synchronously if the session is already disposed
+  /// when called, and — because the session may be disposed while the call
+  /// sits queued — returns [whenDisposed] without running [body] if disposal
+  /// happens before it reaches the front of the queue.
+  Future<T> _chainGuarded<T>(
+    Future<T> Function() body, {
+    required T Function() whenDisposed,
+  }) {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    return _chain(() async {
+      if (_state == SessionState.disposed) return whenDisposed();
+      return body();
+    });
   }
 
   final StreamController<void> _vmServiceUriChangesController =
@@ -512,6 +530,50 @@ class WatchSession {
     });
   }
 
+  /// Launches [appId] when not already running. Returns `true` when the app
+  /// was already running (no launch attempted), `false` when a launch was
+  /// attempted. Serialized behind any in-flight reload, restart, or migration
+  /// via [_chainGuarded] (which also reports `true` if the session is disposed
+  /// while queued). Throws a [StateError] if the session has been disposed.
+  Future<bool> spawnFlutterApp(String appId) {
+    return _chainGuarded(() async {
+      final manager = _flutterManager;
+      if (manager == null) return false;
+
+      final alreadyRunning = manager.isRunning(appId);
+      if (!alreadyRunning) await manager.launch(appId);
+      return alreadyRunning;
+    }, whenDisposed: () => true);
+  }
+
+  /// Relaunches [appId]: stops and restarts when running, launches when
+  /// stopped. Serialized via [_chainGuarded]. Throws a [StateError] if the
+  /// session has been disposed.
+  Future<void> relaunchFlutterApp(String appId) {
+    return _chainGuarded(() async {
+      final manager = _flutterManager;
+      if (manager == null) return;
+
+      if (manager.isRunning(appId)) {
+        await manager.restart(appId);
+      } else {
+        await manager.launch(appId);
+      }
+    }, whenDisposed: () {});
+  }
+
+  /// Stops [appId] without relaunching. No-op when [appId] is unknown or not
+  /// running. Serialized via [_chainGuarded]. Throws a [StateError] if the
+  /// session has been disposed.
+  Future<void> stopFlutterApp(String appId) {
+    return _chainGuarded(() async {
+      final manager = _flutterManager;
+      if (manager == null) return;
+      if (!manager.isRunning(appId)) return;
+      await manager.stop(appId);
+    }, whenDisposed: () {});
+  }
+
   /// Fully (re)launches the Flutter app: kills the running `flutter run`
   /// process (if any) and launches a fresh one — including launching it from
   /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
@@ -520,16 +582,11 @@ class WatchSession {
   /// in both watch and non-watch mode.
   ///
   /// No-op when the project has no Flutter package. Serialized behind any
-  /// in-flight reload, restart, or migration via [_chain]. Throws a
-  /// [StateError] if the session has been disposed.
+  /// in-flight reload, restart, or migration via [_chainGuarded]. Throws a
+  /// [StateError] if the session has been disposed. If disposal happens while
+  /// the call is queued it bails without respawning a process we'd leak.
   Future<void> restartFlutterApp() {
-    if (_state == SessionState.disposed) {
-      throw StateError('Session has been disposed.');
-    }
-    return _chain(() async {
-      // The session may have been disposed while this call was queued;
-      // don't respawn a Flutter process we'd immediately leak.
-      if (_state == SessionState.disposed) return;
+    return _chainGuarded(() async {
       final manager = _flutterManager;
       if (manager == null) return;
 
@@ -541,7 +598,7 @@ class WatchSession {
         return;
       }
       await running.map(manager.restart).wait;
-    });
+    }, whenDisposed: () {});
   }
 
   /// Applies pending database migrations.

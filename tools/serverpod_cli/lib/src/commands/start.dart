@@ -578,16 +578,6 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     return true;
   });
 
-  // Auto-launch every app flagged with `auto_launch` (the synthesized default
-  // sibling app is flagged, preserving the historical single-app behavior).
-  // When no app opts in, none launch — the user starts them with Ctrl+R.
-  if (launchFlutterApp) {
-    await Future.wait([
-      for (final app in flutterApps.where((app) => app.autoLaunch))
-        flutterManager.launch(app.id),
-    ]);
-  }
-
   // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
@@ -610,6 +600,20 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       runMode: runMode,
     ),
   );
+
+  // Route IDE attach auto-launch through the session so it serializes with
+  // reload/restart cycles.
+  flutterManager.launchOnWaitingClient = session.spawnFlutterApp;
+
+  // Auto-launch every app flagged with `auto_launch` (the synthesized default
+  // sibling app is flagged, preserving the historical single-app behavior).
+  // When no app opts in, none launch — the user starts them with Ctrl+R.
+  if (launchFlutterApp) {
+    await Future.wait([
+      for (final app in flutterApps.where((app) => app.autoLaunch))
+        session.spawnFlutterApp(app.id),
+    ]);
+  }
 
   // Forward server exit into the shutdown signal so the wait-for-exit
   // point only ever has to await [shutdown.future]
@@ -642,13 +646,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       getLogHistory: mcpGetLogHistory,
       getFlutterAppIds: mcpGetFlutterAppIds,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
-      onSpawnFlutterApp: (appId) async {
-        // Drive the manager directly, matching the launch panel: launch a
-        // stopped app, but leave a running one untouched (report it back).
-        final alreadyRunning = flutterManager.isRunning(appId);
-        if (!alreadyRunning) await flutterManager.launch(appId);
-        return alreadyRunning;
-      },
+      onSpawnFlutterApp: session.spawnFlutterApp,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       getFlutterDtdUris: () => flutterManager.dtdUris,
       vmServiceUriChanges: session.vmServiceUriChanges,
@@ -1074,21 +1072,17 @@ Future<void> _runTuiBackend({
           runTrackedAction(
             holder,
             isRunning ? 'Relaunch ${app.name}' : 'Launch ${app.name}',
-            () => isRunning
-                ? ctx.flutterManager.restart(app.id)
-                : ctx.flutterManager.launch(app.id),
+            () => ctx.session.relaunchFlutterApp(app.id),
           );
         };
         holder.onStopApp = (index) {
           if (index < 0 || index >= flutterApps.length) return;
           final app = flutterApps[index];
-          // The launch panel drives specific apps directly (matching
-          // onLaunchApp); nothing to stop when the app isn't running.
           if (!ctx.flutterManager.isRunning(app.id)) return;
           runTrackedAction(
             holder,
             'Stop ${app.name}',
-            () => ctx.flutterManager.stop(app.id),
+            () => ctx.session.stopFlutterApp(app.id),
           );
         };
         holder.onQuit = () => shutdown.complete(0);
@@ -1106,8 +1100,7 @@ Future<void> _runTuiBackend({
                 : 'Start Flutter app',
             // Routed through the session so the relaunch is serialized behind
             // any in-flight reload/restart and guarded against re-spawning
-            // during shutdown. For the single-app Ctrl+R this (re)launches the
-            // one app; the launch panel drives specific apps directly.
+            // during shutdown.
             ctx.session.restartFlutterApp,
           );
         };

@@ -1294,7 +1294,211 @@ void main() {
         expect(server.calls, isEmpty);
       },
     );
+
+    test(
+      'when spawnFlutterApp is called, '
+      'then it returns false without error.',
+      () async {
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isFalse);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        await session.relaunchFlutterApp('app');
+
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called, '
+      'then it completes without error.',
+      () async {
+        await session.stopFlutterApp('app');
+
+        expect(server.calls, isEmpty);
+      },
+    );
   });
+
+  group('Given a watch session with Flutter app session actions,', () {
+    late int launchCalls;
+    late int restartCalls;
+    late _FakeFlutter flutter;
+    late FlutterAppManager flutterManager;
+    late Directory tempDir;
+
+    setUp(() async {
+      launchCalls = 0;
+      restartCalls = 0;
+      final harness = await _createFlutterManagerHarness(
+        launchOverride: (_) async {
+          launchCalls++;
+        },
+        restartOverride: (_) async {
+          restartCalls++;
+        },
+      );
+      flutterManager = harness.manager;
+      flutter = harness.process;
+      tempDir = harness.tempDir;
+      session = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        flutterManager: flutterManager,
+      );
+    });
+
+    tearDown(() {
+      tempDir.deleteSync(recursive: true);
+    });
+
+    test(
+      'when spawnFlutterApp is called on a running app, '
+      'then it reports already running without launching.',
+      () async {
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isTrue);
+        expect(launchCalls, 0);
+      },
+    );
+
+    test(
+      'when spawnFlutterApp is called on a stopped app, '
+      'then it launches the app.',
+      () async {
+        flutter.isRunning = false;
+
+        final alreadyRunning = await session.spawnFlutterApp('app');
+
+        expect(alreadyRunning, isFalse);
+        expect(launchCalls, 1);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called on a running app, '
+      'then it restarts the app.',
+      () async {
+        await session.relaunchFlutterApp('app');
+
+        expect(restartCalls, 1);
+        expect(launchCalls, 0);
+      },
+    );
+
+    test(
+      'when relaunchFlutterApp is called on a stopped app, '
+      'then it launches the app.',
+      () async {
+        flutter.isRunning = false;
+
+        await session.relaunchFlutterApp('app');
+
+        expect(launchCalls, 1);
+        expect(restartCalls, 0);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called on a running app, '
+      'then it stops the app.',
+      () async {
+        await session.stopFlutterApp('app');
+
+        expect(flutter.calls, ['stop']);
+      },
+    );
+
+    test(
+      'when stopFlutterApp is called on a stopped app, '
+      'then it is a no-op.',
+      () async {
+        flutter.isRunning = false;
+
+        await session.stopFlutterApp('app');
+
+        expect(flutter.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when spawnFlutterApp is called after dispose, '
+      'then it throws a StateError without invoking the action.',
+      () async {
+        await session.dispose();
+
+        expect(
+          () => session.spawnFlutterApp('app'),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('disposed'),
+            ),
+          ),
+        );
+        expect(launchCalls, 0);
+      },
+    );
+  });
+
+  group(
+    'Given an in-flight forceReload and a Flutter relaunch request,',
+    () {
+      late List<String> order;
+      late Future<void> reload;
+      late WatchSession chainedSession;
+      late int restartCalls;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        order = <String>[];
+        restartCalls = 0;
+        final harness = await _createFlutterManagerHarness(
+          restartOverride: (_) async {
+            restartCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+        chainedSession = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+        );
+        reload = chainedSession.forceReload().then((_) => order.add('reload'));
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when relaunchFlutterApp is called, '
+        'then it runs after the reload completes.',
+        () async {
+          final relaunch = chainedSession
+              .relaunchFlutterApp('app')
+              .then(
+                (_) => order.add('relaunch'),
+              );
+
+          await Future.wait([reload, relaunch]);
+
+          expect(order, ['reload', 'relaunch']);
+          expect(restartCalls, 1);
+        },
+      );
+    },
+  );
 
   group('Given a watch session with a running Flutter process,', () {
     late FlutterAppManager flutterManager;
