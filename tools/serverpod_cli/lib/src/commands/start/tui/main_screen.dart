@@ -165,7 +165,13 @@ class MainScreen extends StatelessComponent {
             bindings: _helpBindings,
             controller: helpScrollController,
           ),
-        if (state.showLaunchPanel) _buildLaunchPanel(st),
+        if (state.showLaunchPanel)
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 1,
+            child: _buildLaunchPanel(st),
+          ),
       ],
     );
   }
@@ -183,47 +189,62 @@ class MainScreen extends StatelessComponent {
         focusedIndex >= 0 && (isRunning?.call(apps[focusedIndex].id) ?? false);
     final title = focusedRunning ? 'Relaunch app' : 'Launch app';
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 0, bottom: 1),
-      child: Align(
-        alignment: Alignment.topRight,
-        child: BorderedBox(
-          child: SizedBox(
-            width: 30,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 1, top: 1),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: st.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+    const legendStyle = TextStyle(fontWeight: FontWeight.dim);
+
+    return Align(
+      alignment: Alignment.topRight,
+      child: BorderedBox(
+        child: SizedBox(
+          width: 30,
+          height: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 1, top: 1),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: st.primary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Divider(color: st.subtleDivider),
-                for (var i = 0; i < apps.length; i++)
-                  _buildLaunchAppRow(
-                    st,
-                    i,
-                    isRunning,
-                    state.isAppLaunching,
-                  ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 1, top: 1),
-                  child: Text(
-                    '↑↓ enter · click · Esc',
-                    style: TextStyle(
-                      color: st.debugLevel,
-                      fontWeight: FontWeight.dim,
-                    ),
-                  ),
+              ),
+              Divider(color: st.subtleDivider),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var i = 0; i < apps.length; i++)
+                      _buildLaunchAppRow(
+                        st,
+                        i,
+                        isRunning,
+                        state.isAppLaunching,
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 1, bottom: 1),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final line in [
+                      '1–${apps.length} / click · launch app',
+                      '↑↓ · navigate',
+                      'enter · ${title.split(' ').first.toLowerCase()}',
+                      if (focusedRunning) 'x · stop app',
+                      'esc · close panel',
+                    ])
+                      Text(
+                        line,
+                        style: legendStyle.copyWith(color: st.debugLevel),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
