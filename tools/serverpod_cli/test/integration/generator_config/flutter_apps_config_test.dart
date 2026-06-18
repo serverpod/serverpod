@@ -6,11 +6,13 @@ import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
-const _serverRootDir = 'project/my_project_server';
+String _serverRoot() => path.normalize(
+  path.join(d.sandbox, 'project', 'my_project_server'),
+);
 
 /// Loads the configured Flutter apps from the sandbox server project.
 List<FlutterAppConfig> _loadApps() {
-  final serverRoot = path.normalize(path.join(d.sandbox, _serverRootDir));
+  final serverRoot = _serverRoot();
   return loadFlutterApps(
     serverPubspecFile: File(path.join(serverRoot, 'pubspec.yaml')),
     serverPackageDirectoryPathParts: path.split(serverRoot),
@@ -269,11 +271,7 @@ serverpod:
           expect(apps.first.hasPackage, isTrue);
           expect(
             path.joinAll(apps.first.pathParts),
-            path.join(
-              path.join(d.sandbox, _serverRootDir),
-              '..',
-              'my_project_flutter',
-            ),
+            path.join(_serverRoot(), '..', 'my_project_flutter'),
           );
         },
       );
