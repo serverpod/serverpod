@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-// ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -661,9 +660,6 @@ class CustomerIntAttachRepository {
     List<_i2.OrderUuid> orderUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (orderUuid.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
     if (customerInt.id == null) {
       throw ArgumentError.notNull('customerInt.id');
     }
@@ -690,9 +686,6 @@ class CustomerIntAttachRowRepository {
     _i2.OrderUuid orderUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
     if (customerInt.id == null) {
       throw ArgumentError.notNull('customerInt.id');
     }
@@ -719,10 +712,6 @@ class CustomerIntDetachRepository {
     List<_i2.OrderUuid> orderUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (orderUuid.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
-
     var $orderUuid = orderUuid
         .map((e) => e.copyWith(customerId: null))
         .toList();
@@ -747,10 +736,6 @@ class CustomerIntDetachRowRepository {
     _i2.OrderUuid orderUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (orderUuid.id == null) {
-      throw ArgumentError.notNull('orderUuid.id');
-    }
-
     var $orderUuid = orderUuid.copyWith(customerId: null);
     await session.db.updateRow<_i2.OrderUuid>(
       $orderUuid,
