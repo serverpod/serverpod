@@ -3518,18 +3518,15 @@ class SerializableModelLibraryGenerator {
 
     library.name = 'protocol';
 
-    if (serverCode) {
-      library.directives.add(
-        Directive.import(
-          'package:serverpod_serialization/serverpod_serialization.dart',
-        ),
-      );
-    }
+    library.directives.add(
+      Directive.import(
+        'package:serverpod_serialization/serverpod_serialization.dart',
+      ),
+    );
 
     // exports
     library.directives.addAll([
       for (var classInfo in models) Directive.export(classInfo.fileRef()),
-      if (!serverCode) Directive.export('client.dart'),
     ]);
 
     library.body.add(_buildTemporaryProtocolStubClass());

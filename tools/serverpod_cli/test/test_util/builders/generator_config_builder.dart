@@ -183,11 +183,15 @@ class GeneratorConfigBuilder {
 
 /// Builds a minimal server [GeneratorConfig] rooted at [projectDir], for
 /// integration tests that generate code from a temporary project.
-GeneratorConfig buildTestServerConfig(Directory projectDir) {
+GeneratorConfig buildTestServerConfig(
+  Directory projectDir, {
+  Map<String, List<String>> sharedModelsSourcePathsParts = const {},
+}) {
   return GeneratorConfigBuilder()
       .withName('test')
       .withServerPackageDirectoryPathParts([projectDir.path])
       .withRelativeDartClientPackagePathParts(['test_client'])
+      .withSharedModelsSourcePathsParts(sharedModelsSourcePathsParts)
       .withModules([
         ModuleConfig(
           type: PackageType.server,
