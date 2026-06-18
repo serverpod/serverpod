@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
-import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -26,7 +25,6 @@ class GeneratorConfigBuilder {
   DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  List<FlutterAppConfig>? _flutterApps;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -162,26 +160,6 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withFlutterApps(List<FlutterAppConfig> flutterApps) {
-    _flutterApps = flutterApps;
-    return this;
-  }
-
-  List<FlutterAppConfig> _buildFlutterApps() {
-    if (_flutterApps != null) {
-      return _flutterApps!;
-    }
-
-    return [
-      FlutterAppConfig(
-        id: _name,
-        name: _name,
-        relativePathParts: ['..', '${_name}_flutter'],
-        serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
-      ),
-    ];
-  }
-
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -192,7 +170,6 @@ class GeneratorConfigBuilder {
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
       sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
-      flutterApps: _buildFlutterApps(),
       modules: _modules,
       extraClasses: _extraClasses,
       serializeAsJsonbByDefault: _serializeAsJsonbByDefault,

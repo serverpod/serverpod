@@ -150,6 +150,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
           GlobalOption.interactive,
         ),
       );
+      final flutterApps = _loadFlutterApps(config);
 
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
@@ -160,6 +161,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         launchFlutterApp: launchFlutterApp,
         serverArgs: argResults?.rest ?? [],
         config: config,
+        flutterApps: flutterApps,
       );
       if (exitCode != 0) throw ExitException(exitCode);
       return;
@@ -190,6 +192,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     if (await _detectExistingInstance(config)) return;
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+    final flutterApps = _loadFlutterApps(config);
     final docker = commandConfig.value(StartOption.docker);
 
     // Listen for termination signals before starting any services so that
@@ -205,6 +208,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
       final result = await _setupWatchLoop(
         config: config,
+        flutterApps: flutterApps,
         serverDir: serverDir,
         serverArgs: serverArgs,
         watch: watch,
@@ -351,8 +355,20 @@ Future<void> _applyMigrationsForSession({
 }
 
 /// Runs the unified watch-loop setup shared by the TUI and non-TUI flows.
+/// Loads the companion Flutter apps from the server pubspec for the resolved
+/// project. A `serverpod start`-only concern, kept off [GeneratorConfig].
+List<FlutterAppConfig> _loadFlutterApps(GeneratorConfig config) {
+  final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+  return loadFlutterApps(
+    serverPubspecFile: File(p.join(serverDir, 'pubspec.yaml')),
+    serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
+    projectName: config.name,
+  );
+}
+
 Future<WatchLoopSetupResult> _setupWatchLoop({
   required GeneratorConfig config,
+  required List<FlutterAppConfig> flutterApps,
   required String serverDir,
   required ServerArgsRef serverArgs,
   required bool watch,
@@ -512,7 +528,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // session start regardless of whether `--flutter` was passed.
   final runMode = runModeFromServerArgs(serverArgs.value);
   final flutterManager = FlutterAppManager(
-    apps: config.flutterApps,
+    apps: flutterApps,
     serverpodToolDir: serverpodToolDir,
     runMode: runMode,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
@@ -564,7 +580,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // When no app opts in, none launch — the user starts them with Ctrl+R.
   if (launchFlutterApp) {
     await Future.wait([
-      for (final app in config.flutterApps.where((app) => app.autoLaunch))
+      for (final app in flutterApps.where((app) => app.autoLaunch))
         flutterManager.launch(app.id),
     ]);
   }
@@ -647,9 +663,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
-        for (final app in config.flutterApps)
+        for (final app in flutterApps)
           p.absolute(p.joinAll([...app.pathParts, 'lib'])),
-        for (final app in config.flutterApps)
+        for (final app in flutterApps)
           if (flutterManager.dependencyTrackerFor(app.id) case final tracker?)
             p.absolute(tracker.dartToolDir),
       },
@@ -835,9 +851,10 @@ Future<int> _runWithTui({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
+  required List<FlutterAppConfig> flutterApps,
 }) async {
   final holder = StartAppStateHolder(
-    ServerWatchState(hasConfiguredApps: config.flutterApps.isNotEmpty)
+    ServerWatchState(hasConfiguredApps: flutterApps.isNotEmpty)
       ..watchModeEnabled = watch,
   );
   var backendStarted = false;
@@ -872,6 +889,7 @@ Future<int> _runWithTui({
       launchFlutterApp: launchFlutterApp,
       serverArgs: serverArgs,
       config: config,
+      flutterApps: flutterApps,
       shutdown: shutdown,
       onFatalError: recordFatalCrash,
     ).catchError((Object e, StackTrace st) => recordFatalCrash(e, st));
@@ -920,6 +938,7 @@ Future<void> _runTuiBackend({
   required bool launchFlutterApp,
   required List<String> serverArgs,
   required GeneratorConfig config,
+  required List<FlutterAppConfig> flutterApps,
   required _ShutdownSignal shutdown,
   required void Function(Object error, StackTrace stackTrace) onFatalError,
 }) async {
@@ -939,6 +958,7 @@ Future<void> _runTuiBackend({
 
     final result = await _setupWatchLoop(
       config: config,
+      flutterApps: flutterApps,
       serverDir: serverDir,
       serverArgs: argsRef,
       watch: watch,
@@ -1007,7 +1027,7 @@ Future<void> _runTuiBackend({
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
       mcpGetFlutterLogHistory: () {
         return {
-          for (final app in config.flutterApps)
+          for (final app in flutterApps)
             app.id:
                 holder.state.appLogTabFor(app.id)?.lines.toList() ?? <String>[],
         };
@@ -1022,16 +1042,16 @@ Future<void> _runTuiBackend({
         // Offer Ctrl+R whenever a Flutter app could run here — even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
         holder.state.canLaunchApps =
-            config.flutterApps.isNotEmpty &&
+            flutterApps.isNotEmpty &&
             runModeFromServerArgs(serverArgs) == 'development';
-        holder.state.launchableApps = config.flutterApps;
+        holder.state.launchableApps = flutterApps;
         holder.state.isAppRunning = (appId) =>
             ctx.flutterManager.isRunning(appId);
         holder.state.isAppLaunching = (appId) =>
             ctx.flutterManager.isLaunching(appId);
         holder.onLaunchApp = (index) {
-          if (index < 0 || index >= config.flutterApps.length) return;
-          final app = config.flutterApps[index];
+          if (index < 0 || index >= flutterApps.length) return;
+          final app = flutterApps[index];
           // Selecting an already-running app relaunches it; a stopped one is
           // launched. Either path focuses the app's tab via onEnsureAppTab.
           final isRunning = ctx.flutterManager.isRunning(app.id);

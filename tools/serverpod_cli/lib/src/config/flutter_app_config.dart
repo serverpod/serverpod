@@ -4,6 +4,8 @@ import 'package:path/path.dart' as p;
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
+import '../util/yaml_util.dart';
+
 /// One configured companion Flutter app.
 ///
 /// Configured under the `serverpod: flutter_apps:` map in the server's
@@ -63,19 +65,20 @@ class FlutterAppConfig {
   }
 }
 
-/// Parses the `serverpod: flutter_apps:` map from the server pubspec, or
-/// synthesizes the default sibling app when it is absent.
+/// Loads the companion Flutter apps from the server [serverPubspecFile].
 ///
-/// [flutterAppsNode] is the value node of `serverpod/flutter_apps` from the
-/// server `pubspec.yaml`, or `null` when the key is not present. The map is
-/// keyed by app alias, each entry a map of properties. The reserved properties
-/// (`path`, `auto_launch`, `device`) are interpreted directly; every other
-/// property is forwarded to `flutter run` (see [_flutterRunArgsFromProps]).
+/// Apps are configured under `serverpod: flutter_apps:` (a sibling of
+/// `serverpod: scripts:`), a map keyed by app alias whose entries are maps of
+/// properties. The reserved properties (`path`, `auto_launch`, `device`) are
+/// interpreted directly; every other property is forwarded to `flutter run`
+/// (see [_flutterRunArgsFromProps]). When the section is absent the default
+/// sibling `../<projectName>_flutter` app is synthesized (only if it exists).
 List<FlutterAppConfig> loadFlutterApps({
-  required YamlNode? flutterAppsNode,
+  required File serverPubspecFile,
   required List<String> serverPackageDirectoryPathParts,
   required String projectName,
 }) {
+  final flutterAppsNode = _flutterAppsNode(serverPubspecFile);
   if (flutterAppsNode == null) {
     return _synthesizeDefaultFlutterApps(
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
@@ -157,6 +160,18 @@ List<FlutterAppConfig> loadFlutterApps({
   }
 
   return apps;
+}
+
+/// The `serverpod: flutter_apps:` value node from [serverPubspecFile], or null
+/// when the section is absent.
+///
+/// The server `pubspec.yaml` is read raw because `pubspec_parse` does not model
+/// the `serverpod:` section.
+YamlNode? _flutterAppsNode(File serverPubspecFile) {
+  final pubspecYaml = loadYamlMap(serverPubspecFile.readAsStringSync());
+  final serverpodSection = pubspecYaml.nodes['serverpod'];
+  if (serverpodSection is! YamlMap) return null;
+  return serverpodSection.nodes['flutter_apps'];
 }
 
 List<FlutterAppConfig> _synthesizeDefaultFlutterApps({

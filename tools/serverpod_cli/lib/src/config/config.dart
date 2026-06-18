@@ -17,7 +17,6 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 import '../generator/types.dart';
-import 'flutter_app_config.dart';
 
 /// The type of the package.
 enum PackageType {
@@ -88,7 +87,6 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
-    required this.flutterApps,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -248,10 +246,6 @@ class GeneratorConfig implements ModelLoadConfig {
     ],
   ];
 
-  /// Configured companion Flutter apps from the server `pubspec.yaml`
-  /// `serverpod: flutter_apps:` section.
-  final List<FlutterAppConfig> flutterApps;
-
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
     'test',
@@ -394,24 +388,6 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    // Raw server pubspec YAML, for sections `pubspec_parse` does not model
-    // (e.g. the `serverpod:` section).
-    var pubspecYaml = loadYamlMap(
-      File(p.join(serverRootDir, 'pubspec.yaml')).readAsStringSync(),
-    );
-
-    // Flutter apps are configured under `serverpod: flutter_apps:` in the
-    // server pubspec (alongside `serverpod: scripts:`), not in generator.yaml.
-    final serverpodPubspecSection = pubspecYaml.nodes['serverpod'];
-    final flutterAppsNode = serverpodPubspecSection is YamlMap
-        ? serverpodPubspecSection.nodes['flutter_apps']
-        : null;
-    final flutterApps = loadFlutterApps(
-      flutterAppsNode: flutterAppsNode,
-      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-      projectName: name,
-    );
-
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
       relativeServerTestToolsPathParts = p.split(
@@ -538,7 +514,6 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-      flutterApps: flutterApps,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,

@@ -85,7 +85,6 @@ class DartSharedCodeGenerator extends CodeGenerator {
           relativeDartClientPackagePathParts: config.clientPackagePathParts
               .skip(config.serverPackageDirectoryPathParts.length)
               .toList(),
-          flutterApps: config.flutterApps,
           extraClasses: [],
           enabledFeatures: config.enabledFeatures,
           modules: [],

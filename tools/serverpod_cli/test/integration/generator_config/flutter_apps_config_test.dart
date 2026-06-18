@@ -1,23 +1,28 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 const _serverRootDir = 'project/my_project_server';
 
-void main() {
-  setUpAll(() {
-    CommandLineExperimentalFeatures.initialize([]);
-  });
+/// Loads the configured Flutter apps from the sandbox server project.
+List<FlutterAppConfig> _loadApps() {
+  final serverRoot = path.normalize(path.join(d.sandbox, _serverRootDir));
+  return loadFlutterApps(
+    serverPubspecFile: File(path.join(serverRoot, 'pubspec.yaml')),
+    serverPackageDirectoryPathParts: path.split(serverRoot),
+    projectName: 'my_project',
+  );
+}
 
-  group(
-    'Given a server pubspec with two serverpod/flutter_apps entries',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+void main() {
+  group('Given a server pubspec with two serverpod/flutter_apps entries', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
@@ -25,45 +30,37 @@ serverpod:
     Customer:
       path: ../my_project_customer_flutter
 ''',
-          includeFlutterApps: true,
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then two FlutterAppConfigs are returned in order.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
-
-          expect(config.flutterApps, hasLength(2));
-          expect(config.flutterApps[0].name, 'Admin');
-          expect(
-            config.flutterApps[0].relativePathParts,
-            ['..', 'my_project_flutter'],
-          );
-          expect(config.flutterApps[1].name, 'Customer');
-          expect(
-            config.flutterApps[1].relativePathParts,
-            ['..', 'my_project_customer_flutter'],
-          );
-          expect(
-            config.flutterApps[0].id,
-            isNot(equals(config.flutterApps[1].id)),
-          );
-        },
+        includeFlutterApps: true,
       );
-    },
-  );
+      await projectDir.create();
+    });
 
-  group(
-    'Given a server pubspec with flutter_apps and auto_launch flags',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+    test(
+      'when loading flutter apps '
+      'then two FlutterAppConfigs are returned in order',
+      () {
+        final apps = _loadApps();
+
+        expect(apps, hasLength(2));
+        expect(apps[0].name, 'Admin');
+        expect(
+          apps[0].relativePathParts,
+          ['..', 'my_project_flutter'],
+        );
+        expect(apps[1].name, 'Customer');
+        expect(
+          apps[1].relativePathParts,
+          ['..', 'my_project_customer_flutter'],
+        );
+        expect(apps[0].id, isNot(equals(apps[1].id)));
+      },
+    );
+  });
+
+  group('Given a server pubspec with flutter_apps and auto_launch flags', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
@@ -72,27 +69,24 @@ serverpod:
     Customer:
       path: ../my_project_customer_flutter
 ''',
-          includeFlutterApps: true,
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then auto_launch is read per app and defaults to false.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
-
-          expect(config.flutterApps[0].name, 'Admin');
-          expect(config.flutterApps[0].autoLaunch, isTrue);
-          expect(config.flutterApps[1].name, 'Customer');
-          expect(config.flutterApps[1].autoLaunch, isFalse);
-        },
+        includeFlutterApps: true,
       );
-    },
-  );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then auto_launch is read per app and defaults to false',
+      () {
+        final apps = _loadApps();
+
+        expect(apps[0].name, 'Admin');
+        expect(apps[0].autoLaunch, isTrue);
+        expect(apps[1].name, 'Customer');
+        expect(apps[1].autoLaunch, isFalse);
+      },
+    );
+  });
 
   group(
     'Given a server pubspec with flutter_apps device and forwarded options',
@@ -121,17 +115,14 @@ serverpod:
       });
 
       test(
-        'when loading GeneratorConfig then device is read and non-reserved '
-        'properties are forwarded to flutter run.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
+        'when loading flutter apps '
+        'then device is read and non-reserved properties are forwarded to flutter run',
+        () {
+          final apps = _loadApps();
 
-          expect(config.flutterApps[0].name, 'Admin');
-          expect(config.flutterApps[0].device, 'chrome');
-          expect(config.flutterApps[0].extraRunArgs, [
+          expect(apps[0].name, 'Admin');
+          expect(apps[0].device, 'chrome');
+          expect(apps[0].extraRunArgs, [
             '--target=lib/main_admin.dart',
             '--web-port=8090',
             '--release',
@@ -142,20 +133,18 @@ serverpod:
 
           // Unset device falls back to the launch-time default (null here), and
           // an app with no extra properties forwards nothing.
-          expect(config.flutterApps[1].name, 'Portal');
-          expect(config.flutterApps[1].device, isNull);
-          expect(config.flutterApps[1].extraRunArgs, isEmpty);
+          expect(apps[1].name, 'Portal');
+          expect(apps[1].device, isNull);
+          expect(apps[1].extraRunArgs, isEmpty);
         },
       );
     },
   );
 
-  group(
-    'Given a server pubspec with flutter_apps dart-define as a map,',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+  group('Given a server pubspec with flutter_apps dart-define as a map', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
@@ -164,145 +153,122 @@ serverpod:
         API_URL: https://example.com
         FLAVOR: admin
 ''',
-          includeFlutterApps: true,
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then map values are forwarded like list '
-        'items.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
-
-          expect(config.flutterApps[0].extraRunArgs, [
-            '--dart-define=API_URL=https://example.com',
-            '--dart-define=FLAVOR=admin',
-          ]);
-        },
+        includeFlutterApps: true,
       );
-    },
-  );
+      await projectDir.create();
+    });
 
-  group(
-    'Given a server pubspec with a non-string device',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+    test(
+      'when loading flutter apps '
+      'then map values are forwarded like list items',
+      () {
+        final apps = _loadApps();
+
+        expect(apps[0].extraRunArgs, [
+          '--dart-define=API_URL=https://example.com',
+          '--dart-define=FLAVOR=admin',
+        ]);
+      },
+    );
+  });
+
+  group('Given a server pubspec with a non-string device', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
       path: ../my_project_flutter
       device: true
 ''',
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
-        () async {
-          await expectLater(
-            GeneratorConfig.load(
-              serverRootDir: path.join(d.sandbox, _serverRootDir),
-              interactive: false,
-            ),
-            throwsA(
-              isA<SourceSpanFormatException>().having(
-                (e) => e.message,
-                'message',
-                'The "Admin" flutter app "device" property must be a non-empty '
-                    'string.',
-              ),
-            ),
-          );
-        },
       );
-    },
-  );
+      await projectDir.create();
+    });
 
-  group(
-    'Given a server pubspec with a non-boolean auto_launch',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "Admin" flutter app "device" property must be a non-empty '
+                  'string.',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a server pubspec with a non-boolean auto_launch', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
       path: ../my_project_flutter
       auto_launch: yes-please
 ''',
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
-        () async {
-          await expectLater(
-            GeneratorConfig.load(
-              serverRootDir: path.join(d.sandbox, _serverRootDir),
-              interactive: false,
-            ),
-            throwsA(
-              isA<SourceSpanFormatException>().having(
-                (e) => e.message,
-                'message',
-                'The "Admin" flutter app "auto_launch" property must be a '
-                    'boolean.',
-              ),
-            ),
-          );
-        },
       );
-    },
-  );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "Admin" flutter app "auto_launch" property must be a '
+                  'boolean.',
+            ),
+          ),
+        );
+      },
+    );
+  });
 
   group(
     'Given a server pubspec without flutter_apps and an existing default Flutter package',
     () {
       setUpAll(() async {
-        var projectDir = _createProject(
-          includeDefaultFlutterApp: true,
-        );
+        var projectDir = _createProject(includeDefaultFlutterApp: true);
         await projectDir.create();
       });
 
       test(
-        'when loading GeneratorConfig then one synthesized FlutterAppConfig is returned.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
+        'when loading flutter apps '
+        'then one synthesized FlutterAppConfig is returned',
+        () {
+          final apps = _loadApps();
 
-          expect(config.flutterApps, hasLength(1));
-          expect(config.flutterApps.first.name, 'my_project');
-          expect(
-            config.flutterApps.first.relativePathParts,
-            ['..', 'my_project_flutter'],
-          );
+          expect(apps, hasLength(1));
+          expect(apps.first.name, 'my_project');
+          expect(apps.first.relativePathParts, ['..', 'my_project_flutter']);
           // The synthesized default sibling app auto-launches, as before.
-          expect(config.flutterApps.first.autoLaunch, isTrue);
+          expect(apps.first.autoLaunch, isTrue);
         },
       );
 
       test(
-        'when loading GeneratorConfig then synthesized app pathParts resolve correctly.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
+        'when loading flutter apps '
+        'then synthesized app pathParts resolve correctly',
+        () {
+          final apps = _loadApps();
 
-          expect(config.flutterApps.first.hasPackage, isTrue);
+          expect(apps.first.hasPackage, isTrue);
           expect(
-            path.joinAll(config.flutterApps.first.pathParts),
+            path.joinAll(apps.first.pathParts),
             path.join(
               path.join(d.sandbox, _serverRootDir),
               '..',
@@ -318,96 +284,80 @@ serverpod:
     'Given a server pubspec without flutter_apps and no sibling Flutter package',
     () {
       setUpAll(() async {
-        var projectDir = _createProject(
-          includeDefaultFlutterApp: false,
-        );
+        var projectDir = _createProject(includeDefaultFlutterApp: false);
         await projectDir.create();
       });
 
       test(
-        'when loading GeneratorConfig then flutterApps is empty.',
-        () async {
-          var config = await GeneratorConfig.load(
-            serverRootDir: path.join(d.sandbox, _serverRootDir),
-            interactive: false,
-          );
-
-          expect(config.flutterApps, isEmpty);
+        'when loading flutter apps '
+        'then the list is empty',
+        () {
+          expect(_loadApps(), isEmpty);
         },
       );
     },
   );
 
-  group(
-    'Given a server pubspec with a flutter_apps entry missing path',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+  group('Given a server pubspec with a flutter_apps entry missing path', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps:
     Admin:
       device: chrome
 ''',
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
-        () async {
-          await expectLater(
-            GeneratorConfig.load(
-              serverRootDir: path.join(d.sandbox, _serverRootDir),
-              interactive: false,
-            ),
-            throwsA(
-              isA<SourceSpanFormatException>().having(
-                (e) => e.message,
-                'message',
-                'The "Admin" flutter app must include a non-empty "path".',
-              ),
-            ),
-          );
-        },
       );
-    },
-  );
+      await projectDir.create();
+    });
 
-  group(
-    'Given a server pubspec with flutter_apps that is not a map',
-    () {
-      setUpAll(() async {
-        var projectDir = _createProject(
-          pubspecServerpodSection: '''
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "Admin" flutter app must include a non-empty "path".',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a server pubspec with flutter_apps that is not a map', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
 serverpod:
   flutter_apps: not_a_map
 ''',
-        );
-        await projectDir.create();
-      });
-
-      test(
-        'when loading GeneratorConfig then SourceSpanFormatException is thrown.',
-        () async {
-          await expectLater(
-            GeneratorConfig.load(
-              serverRootDir: path.join(d.sandbox, _serverRootDir),
-              interactive: false,
-            ),
-            throwsA(
-              isA<SourceSpanFormatException>().having(
-                (e) => e.message,
-                'message',
-                'The "serverpod: flutter_apps" property must be a map of app '
-                    'alias to app properties.',
-              ),
-            ),
-          );
-        },
       );
-    },
-  );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "serverpod: flutter_apps" property must be a map of app '
+                  'alias to app properties.',
+            ),
+          ),
+        );
+      },
+    );
+  });
 }
 
 d.DirectoryDescriptor _createProject({
@@ -427,44 +377,9 @@ $pubspecServerpodSection'''),
         d.dir('protocol', []),
       ]),
     ]),
-    d.dir('.dart_tool', [
-      d.file('package_config.json', '''
-{
-  "configVersion": 2,
-  "packages": [
-    {
-      "name": "${projectName}_server",
-      "rootUri": "../",
-      "packageUri": "lib/"
-    },
-    {
-      "name": "serverpod",
-      "rootUri": "../.pub-cache/hosted/pub.dev/serverpod-2.0.0",
-      "packageUri": "lib/"
-    }
-  ]
-}
-'''),
-    ]),
-    d.dir('config', [
-      d.file('generator.yaml', 'type: server\n'),
-    ]),
   ];
 
-  var clientDir = d.dir('${projectName}_client', [
-    d.file('pubspec.yaml', '''
-name: ${projectName}_client
-dependencies:
-  serverpod_client: ^2.0.0
-'''),
-    d.dir('lib', [
-      d.dir('src', [
-        d.dir('protocol', []),
-      ]),
-    ]),
-  ]);
-
-  var siblingDirs = <d.Descriptor>[clientDir];
+  var siblingDirs = <d.Descriptor>[];
 
   if (includeDefaultFlutterApp) {
     siblingDirs.add(
