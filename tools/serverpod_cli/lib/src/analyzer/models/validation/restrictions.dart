@@ -2584,7 +2584,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "default" key is not supported for "${field.type.className}" types',
@@ -2624,7 +2625,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultModel" key is not supported for "${field.type.className}" types',
@@ -2649,7 +2651,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" key is not supported for "${field.type.className}" types',
@@ -2693,6 +2696,22 @@ class Restrictions {
 
   bool _isNoValidationType(String type) {
     return type.startsWith('package:') || type.startsWith('project:');
+  }
+
+  /// Whether default value keys should be validated against this type.
+  ///
+  /// False for unknown/invalid types: those already get their own
+  /// "invalid datatype" (or "module not found") error, and reporting that a
+  /// default key is "not supported" for a type that does not exist is
+  /// misleading. Inline custom types ("package:"/"project:", including the
+  /// degenerate bare forms) skip type validation entirely, so default keys on
+  /// them must still be validated.
+  bool _supportsDefaultValueValidation(TypeDefinition type) {
+    var url = type.url;
+    return _isValidType(type) ||
+        url == 'package' ||
+        url == 'project' ||
+        (url != null && _isNoValidationType(url));
   }
 
   bool _isValidType(TypeDefinition type) {
