@@ -96,6 +96,14 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// The name of the serverpod project.
   ///
+  /// This is the project's protocol/module identity, emitted into generated
+  /// code (e.g. `getModuleName()`, `registerHostProtocol`) and used as the
+  /// module name of migrations. It is derived by stripping a trailing
+  /// `_server`/`_client` from the server package's pubspec name, which is a
+  /// no-op for packages that do not follow that naming convention. It must
+  /// therefore never be used to reconstruct package import urls — use
+  /// [serverPackage] or [dartClientPackage] instead.
+  ///
   /// See also:
   ///  - [serverPackage]
   ///  - [dartClientPackage]
@@ -104,7 +112,11 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The [PackageType] of the package this [GeneratorConfig] describes.
   final PackageType type;
 
-  /// The name of the server package.
+  /// The name of the server package, as declared in its pubspec.yaml.
+  ///
+  /// Always use this (never `'${name}_server'`) when emitting `package:`
+  /// import urls for the server package, since the package is not guaranteed
+  /// to be named `<name>_server`.
   ///
   /// See also:
   ///  - [dartClientPackage]
@@ -819,6 +831,10 @@ migrationVersions: $migrationVersions
 
 /// Just get the core name of a package.
 /// (without `_server` or `client`)
+///
+/// This is lossy: the input is returned unchanged when it does not end with
+/// one of the known suffixes (e.g. a server package renamed to `server`), so
+/// the result cannot be used to reconstruct the original package name.
 String _stripPackage(String package) {
   var strippedPackage = package;
   if (strippedPackage.endsWith('_server')) {
