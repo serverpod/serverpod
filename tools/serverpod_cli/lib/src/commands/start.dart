@@ -387,7 +387,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
   List<Object> Function()? mcpGetLogHistory,
-  Map<String, List<String>> Function()? mcpGetFlutterLogHistory,
+  List<String> Function()? mcpGetFlutterAppIds,
+  List<String> Function(String appId)? mcpGetFlutterLogHistory,
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
@@ -639,6 +640,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       onHotReload: session.forceReload,
       onHotRestart: session.forceRestart,
       getLogHistory: mcpGetLogHistory,
+      getFlutterAppIds: mcpGetFlutterAppIds,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
       getVmServiceUri: () => proxy?.httpUri.toString(),
       getFlutterDtdUris: () => {
@@ -1039,13 +1041,9 @@ Future<void> _runTuiBackend({
         );
       },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
-      mcpGetFlutterLogHistory: () {
-        return {
-          for (final app in flutterApps)
-            app.id:
-                holder.state.appLogTabFor(app.id)?.lines.toList() ?? <String>[],
-        };
-      },
+      mcpGetFlutterAppIds: () => [for (final app in flutterApps) app.id],
+      mcpGetFlutterLogHistory: (appId) =>
+          holder.state.appLogTabFor(appId)?.lines.toList() ?? <String>[],
     );
 
     switch (result) {

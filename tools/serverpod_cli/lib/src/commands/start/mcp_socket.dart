@@ -37,7 +37,8 @@ class McpSocketServer {
   Future<void> Function()? _onHotReload;
   Future<void> Function()? _onHotRestart;
   List<Object> Function()? _getLogHistory;
-  Map<String, List<String>> Function()? _getFlutterLogHistory;
+  List<String> Function()? _getFlutterAppIds;
+  List<String> Function(String appId)? _getFlutterLogHistory;
   String? Function()? _getVmServiceUri;
   Map<String, String?> Function()? _getFlutterDtdUris;
   Stream<void>? _vmServiceUriChanges;
@@ -69,7 +70,8 @@ class McpSocketServer {
     Future<void> Function()? onHotReload,
     Future<void> Function()? onHotRestart,
     List<Object> Function()? getLogHistory,
-    Map<String, List<String>> Function()? getFlutterLogHistory,
+    List<String> Function()? getFlutterAppIds,
+    List<String> Function(String appId)? getFlutterLogHistory,
     String? Function()? getVmServiceUri,
     Map<String, String?> Function()? getFlutterDtdUris,
     Stream<void>? vmServiceUriChanges,
@@ -80,6 +82,7 @@ class McpSocketServer {
     _onHotReload = onHotReload;
     _onHotRestart = onHotRestart;
     _getLogHistory = getLogHistory;
+    _getFlutterAppIds = getFlutterAppIds;
     _getFlutterLogHistory = getFlutterLogHistory;
     _getVmServiceUri = getVmServiceUri;
     _getFlutterDtdUris = getFlutterDtdUris;
@@ -92,6 +95,7 @@ class McpSocketServer {
       server.onHotReload = onHotReload;
       server.onHotRestart = onHotRestart;
       server.getLogHistory = getLogHistory;
+      server.getFlutterAppIds = getFlutterAppIds;
       server.getFlutterLogHistory = getFlutterLogHistory;
       server.getVmServiceUri = getVmServiceUri;
       server.getFlutterDtdUris = getFlutterDtdUris;
@@ -151,6 +155,7 @@ class McpSocketServer {
     server.onHotReload = _onHotReload;
     server.onHotRestart = _onHotRestart;
     server.getLogHistory = _getLogHistory;
+    server.getFlutterAppIds = _getFlutterAppIds;
     server.getFlutterLogHistory = _getFlutterLogHistory;
     server.getVmServiceUri = _getVmServiceUri;
     server.getFlutterDtdUris = _getFlutterDtdUris;

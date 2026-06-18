@@ -52,8 +52,11 @@ base class ServerpodMcpServer extends MCPServer
   /// Returns the current log history snapshot.
   List<Object> Function()? getLogHistory;
 
-  /// Returns raw Flutter log lines keyed by configured app id.
-  Map<String, List<String>> Function()? getFlutterLogHistory;
+  /// Returns configured Flutter app ids.
+  List<String> Function()? getFlutterAppIds;
+
+  /// Returns raw Flutter log lines for a configured app id.
+  List<String> Function(String appId)? getFlutterLogHistory;
 
   /// Returns the current HTTP VM service URI, or `null` if not yet available.
   String? Function()? getVmServiceUri;
@@ -245,15 +248,15 @@ base class ServerpodMcpServer extends MCPServer
   }
 
   Future<CallToolResult> _tailFlutterLogs(CallToolRequest request) async {
-    final get = getFlutterLogHistory;
-    if (get == null) {
+    final getIds = getFlutterAppIds;
+    final getLines = getFlutterLogHistory;
+    if (getIds == null || getLines == null) {
       return CallToolResult(
         content: [TextContent(text: 'Flutter log history not available.')],
         isError: true,
       );
     }
-    final all = get();
-    final ids = all.keys.toList();
+    final ids = getIds();
     if (ids.isEmpty) {
       return CallToolResult(
         content: [TextContent(text: 'No Flutter apps are configured.')],
@@ -281,8 +284,7 @@ base class ServerpodMcpServer extends MCPServer
       appId = ids.first;
     }
 
-    final lines = all[appId];
-    if (lines == null) {
+    if (!ids.contains(appId)) {
       return CallToolResult(
         content: [
           TextContent(
@@ -293,6 +295,8 @@ base class ServerpodMcpServer extends MCPServer
         isError: true,
       );
     }
+
+    final lines = getLines(appId);
 
     final limit = _tailLimit(request);
     final tail = lines.length <= limit

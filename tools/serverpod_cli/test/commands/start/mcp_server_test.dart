@@ -480,12 +480,14 @@ void main() {
       );
       group('with Flutter log history for one app', () {
         setUp(() {
-          server.getFlutterLogHistory = () => {
-            'admin': [
+          server.getFlutterAppIds = () => ['admin'];
+          server.getFlutterLogHistory = (appId) => switch (appId) {
+            'admin' => [
               'line 1',
               'line 2',
               'line 3',
             ],
+            _ => <String>[],
           };
         });
 
@@ -527,9 +529,11 @@ void main() {
 
       group('with Flutter log history for several apps', () {
         setUp(() {
-          server.getFlutterLogHistory = () => {
-            'admin': ['a'],
-            'customer': ['b', 'c'],
+          server.getFlutterAppIds = () => ['admin', 'customer'];
+          server.getFlutterLogHistory = (appId) => switch (appId) {
+            'admin' => ['a'],
+            'customer' => ['b', 'c'],
+            _ => <String>[],
           };
         });
 
