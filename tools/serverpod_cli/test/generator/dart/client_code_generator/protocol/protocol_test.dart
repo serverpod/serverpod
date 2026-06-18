@@ -153,7 +153,8 @@ void main() {
             matches(
               RegExp(
                 r'    \.\.\._i(\d+)\.Protocol\(\) is _i\d+\.DatabaseSerializationManager\n'
-                r'        \? _i\1\.Protocol\.targetTableDefinitions\n'
+                r'        \? \(_i\1\.Protocol\(\) as _i\d+\.DatabaseSerializationManager\)\n'
+                r'              \.getTargetTableDefinitions\(\)\n'
                 r'        : \[\],\n'
                 r'  \];',
               ),
@@ -173,8 +174,9 @@ void main() {
                 r'  @override\n'
                 r'  _i(\d+)\.Table\? getTableForType\(Type t\) \{\n'
                 r'    \{\n'
-                r'      var table = _i(\d+)\.Protocol\(\) is _i\1\.DatabaseSerializationManager\n'
-                r'          \? _i\2\.Protocol\(\).getTableForType\(t\)\n'
+                r'      var protocol = _i(\d+)\.Protocol\(\);\n'
+                r'      var table = protocol is _i\1\.DatabaseSerializationManager\n'
+                r'          \? \(protocol as _i\1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
                 r'          : null;\n'
                 r'      if \(table != null\) \{\n'
                 r'        return table;\n'
