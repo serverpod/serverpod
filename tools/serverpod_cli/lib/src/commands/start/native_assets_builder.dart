@@ -10,7 +10,6 @@ import 'package:hooks/hooks.dart';
 // the serverpod CLI [log]; there are no log calls of our own against it.
 import 'package:hooks_runner/hooks_runner.dart' as hr;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
-import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:package_config/package_config.dart' as pc;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
@@ -126,16 +125,21 @@ class NativeAssetsBuilder {
   /// Path to the dart executable (used to compile and run individual hooks).
   final String dartExecutable;
 
-  /// The server package directory. The package_config.json lives either here
-  /// (standalone) or in the workspace root above it; [discoverProjectRoot]
-  /// walks up to find it.
+  /// The server package directory. Its own `pubspec.yaml` is read to name the
+  /// root package; [projectRoot] (not necessarily this directory) holds the
+  /// `package_config.json`.
   final String serverDir;
+
+  /// The resolution root whose `.dart_tool/` holds the `package_config.json` /
+  /// `package_graph.json` (the workspace root, or [serverDir] when standalone).
+  /// Resolved once by the caller via [discoverProjectRootFrom] and passed in,
+  /// so the walk is not repeated here. Stable for the builder's lifetime.
+  final String projectRoot;
 
   /// Output directory for the assets and the manifest yaml (typically
   /// `<serverDir>/.dart_tool/serverpod/native_assets/`).
   final String outputDir;
 
-  Future<String>? _projectRootFuture;
   Future<hr.PackageLayout>? _packageLayoutFuture;
   Future<hr.NativeAssetsBuildRunner>? _runnerFuture;
   String? _lastManifestContent;
@@ -149,6 +153,7 @@ class NativeAssetsBuilder {
   NativeAssetsBuilder({
     required this.dartExecutable,
     required this.serverDir,
+    required this.projectRoot,
     required this.outputDir,
   });
 
@@ -156,28 +161,23 @@ class NativeAssetsBuilder {
   /// been written yet).
   String get manifestPath => p.join(outputDir, 'native_assets.yaml');
 
-  /// Drops every cache so the next [build] re-discovers the workspace,
-  /// reloads `package_config.json`, and treats the next manifest as freshly
-  /// generated. Call after a `pub get` or other change that adds or removes
-  /// packages with build hooks.
+  /// Drops the cached package layout and build runner so the next [build]
+  /// re-reads `package_config.json` and re-discovers build-hook packages. Call
+  /// after a `pub get` or other change that adds or removes packages with build
+  /// hooks. ([projectRoot] is stable and not re-resolved.)
+  ///
+  /// The manifest/encoded-asset caches are deliberately kept: the next [build]
+  /// re-runs the hooks and compares its result to them, so a dependency change
+  /// that leaves the native assets unchanged still reports
+  /// `manifestChanged: false` and avoids a needless FES restart.
   void reset() {
-    _projectRootFuture = null;
     _packageLayoutFuture = null;
     _runnerFuture = null;
-    _lastManifestContent = null;
-    _lastEncodedAssets = null;
   }
 
-  /// The resolution root for [serverDir] (workspace root or the package
-  /// itself), whose `.dart_tool/` holds the `package_config.json` /
-  /// `package_graph.json` this builder reads. See [discoverProjectRootFrom].
-  @visibleForTesting
-  Future<String> discoverProjectRoot() => discoverProjectRootFrom(serverDir);
-
   Future<hr.PackageLayout> _loadPackageLayout() async {
-    final root = await (_projectRootFuture ??= discoverProjectRoot());
     final pkgConfigUri = Uri.file(
-      p.join(root, '.dart_tool', 'package_config.json'),
+      p.join(projectRoot, '.dart_tool', 'package_config.json'),
     );
 
     // Run the package_config load and the server pubspec read in parallel.
@@ -200,14 +200,13 @@ class NativeAssetsBuilder {
 
   Future<hr.NativeAssetsBuildRunner> _createRunner() async {
     final layout = await (_packageLayoutFuture ??= _loadPackageLayout());
-    final root = await (_projectRootFuture ??= discoverProjectRoot());
     return hr.NativeAssetsBuildRunner(
       dartExecutable: Uri.file(dartExecutable),
       logger: _logger,
       fileSystem: _fileSystem,
       packageLayout: layout,
       userDefines: hr.UserDefines(
-        workspacePubspec: Uri.file(p.join(root, 'pubspec.yaml')),
+        workspacePubspec: Uri.file(p.join(projectRoot, 'pubspec.yaml')),
       ),
     );
   }

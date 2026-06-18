@@ -20,6 +20,7 @@ void main() {
       builder = NativeAssetsBuilder(
         dartExecutable: _dartExecutable(),
         serverDir: tempDir.path,
+        projectRoot: tempDir.path,
         outputDir: p.join(tempDir.path, '.dart_tool', 'serverpod', 'na'),
       );
     });
@@ -63,7 +64,6 @@ void main() {
 
   group('Given a workspace with the server as a member package', () {
     late Directory tempDir;
-    late NativeAssetsBuilder builder;
     late String serverDir;
 
     setUp(() async {
@@ -75,11 +75,6 @@ void main() {
         rootDir: tempDir.path,
         memberDir: serverDir,
       );
-      builder = NativeAssetsBuilder(
-        dartExecutable: _dartExecutable(),
-        serverDir: serverDir,
-        outputDir: p.join(serverDir, '.dart_tool', 'serverpod', 'na'),
-      );
     });
 
     tearDown(() async {
@@ -87,10 +82,10 @@ void main() {
     });
 
     test(
-      'when discoverProjectRoot is called from the member dir, '
+      'when discoverProjectRootFrom is called from the member dir, '
       'then it walks up to the workspace root',
       () async {
-        final root = await builder.discoverProjectRoot();
+        final root = await discoverProjectRootFrom(serverDir);
 
         expect(
           p.equals(root, tempDir.path),
@@ -121,6 +116,7 @@ void main() {
         builder = NativeAssetsBuilder(
           dartExecutable: _dartExecutable(),
           serverDir: tempDir.path,
+          projectRoot: tempDir.path,
           outputDir: p.join(tempDir.path, '.dart_tool', 'serverpod', 'na'),
         );
       });

@@ -240,12 +240,14 @@ class StartCommand extends ServerpodCommand<StartOption> {
 /// root if needed).
 NativeAssetsBuilder _createNativeAssetsBuilder({
   required String serverDir,
+  required String projectRoot,
   required String serverpodToolDir,
   required String dartExecutable,
 }) {
   return NativeAssetsBuilder(
     dartExecutable: dartExecutable,
     serverDir: serverDir,
+    projectRoot: projectRoot,
     outputDir: p.join(serverpodToolDir, 'native_assets'),
   );
 }
@@ -492,9 +494,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   if (watch) {
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
-    // The package_config.json the Frontend Server resolves for the server
-    // package. Passed explicitly so invalidating it on a dependency change
-    // targets the exact URI the CFE loaded (see KernelCompiler).
+    // Resolve the server's resolution root once and reuse it everywhere it is
+    // needed: the compiler's `--packages` (so the in-place invalidation targets
+    // the exact URI the CFE loaded, see KernelCompiler), the native-assets
+    // builder, and the watch set below. Single walk, single source of truth.
     final projectRoot = await discoverProjectRootFrom(serverDir);
     serverDartToolDir = p.join(projectRoot, '.dart_tool');
     final packageConfigPath = p.join(serverDartToolDir, 'package_config.json');
@@ -506,6 +509,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
     final localBuilder = _createNativeAssetsBuilder(
       serverDir: serverDir,
+      projectRoot: projectRoot,
       serverpodToolDir: serverpodToolDir,
       dartExecutable: localCompiler.dartExecutable,
     );
