@@ -118,6 +118,24 @@ final Tool tailFlutterLogsTool = Tool(
   ),
 );
 
+final Tool spawnFlutterAppTool = Tool(
+  name: 'spawn_flutter_app',
+  description:
+      'Start a Flutter app configured under `serverpod: flutter_apps:` in the '
+      'server pubspec.yaml. No-op if the app is already running.',
+  inputSchema: Schema.object(
+    properties: {
+      'appId': Schema.string(
+        description:
+            'Stable app id from the `serverpod: flutter_apps:` map in the '
+            'server pubspec.yaml. Optional when only one app is configured. '
+            'When multiple apps are configured and the tool is called without '
+            '`appId`, an error will be returned reporting the available ids.',
+      ),
+    },
+  ),
+);
+
 final Tool getFlutterAppDtdTool = Tool(
   name: 'get_flutter_app_dtd',
   description:
@@ -147,6 +165,7 @@ final List<Tool> runnerStaticTools = [
   hotRestartTool,
   tailLogsTool,
   tailFlutterLogsTool,
+  spawnFlutterAppTool,
   getFlutterAppDtdTool,
 ];
 

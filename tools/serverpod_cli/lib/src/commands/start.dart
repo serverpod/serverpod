@@ -642,6 +642,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       getLogHistory: mcpGetLogHistory,
       getFlutterAppIds: mcpGetFlutterAppIds,
       getFlutterLogHistory: mcpGetFlutterLogHistory,
+      onSpawnFlutterApp: (appId) async {
+        // Drive the manager directly, matching the launch panel: launch a
+        // stopped app, but leave a running one untouched (report it back).
+        final alreadyRunning = flutterManager.isRunning(appId);
+        if (!alreadyRunning) await flutterManager.launch(appId);
+        return alreadyRunning;
+      },
       getVmServiceUri: () => proxy?.httpUri.toString(),
       getFlutterDtdUris: () => flutterManager.dtdUris,
       vmServiceUriChanges: session.vmServiceUriChanges,

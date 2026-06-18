@@ -39,6 +39,7 @@ class McpSocketServer {
   List<Object> Function()? _getLogHistory;
   List<String> Function()? _getFlutterAppIds;
   List<String> Function(String appId)? _getFlutterLogHistory;
+  Future<bool> Function(String appId)? _onSpawnFlutterApp;
   String? Function()? _getVmServiceUri;
   Map<String, String?> Function()? _getFlutterDtdUris;
   Stream<void>? _vmServiceUriChanges;
@@ -72,6 +73,7 @@ class McpSocketServer {
     List<Object> Function()? getLogHistory,
     List<String> Function()? getFlutterAppIds,
     List<String> Function(String appId)? getFlutterLogHistory,
+    Future<bool> Function(String appId)? onSpawnFlutterApp,
     String? Function()? getVmServiceUri,
     Map<String, String?> Function()? getFlutterDtdUris,
     Stream<void>? vmServiceUriChanges,
@@ -84,6 +86,7 @@ class McpSocketServer {
     _getLogHistory = getLogHistory;
     _getFlutterAppIds = getFlutterAppIds;
     _getFlutterLogHistory = getFlutterLogHistory;
+    _onSpawnFlutterApp = onSpawnFlutterApp;
     _getVmServiceUri = getVmServiceUri;
     _getFlutterDtdUris = getFlutterDtdUris;
     _vmServiceUriChanges = vmServiceUriChanges;
@@ -97,6 +100,7 @@ class McpSocketServer {
       server.getLogHistory = getLogHistory;
       server.getFlutterAppIds = getFlutterAppIds;
       server.getFlutterLogHistory = getFlutterLogHistory;
+      server.onSpawnFlutterApp = onSpawnFlutterApp;
       server.getVmServiceUri = getVmServiceUri;
       server.getFlutterDtdUris = getFlutterDtdUris;
       server.vmServiceUriChanges = vmServiceUriChanges;
@@ -157,6 +161,7 @@ class McpSocketServer {
     server.getLogHistory = _getLogHistory;
     server.getFlutterAppIds = _getFlutterAppIds;
     server.getFlutterLogHistory = _getFlutterLogHistory;
+    server.onSpawnFlutterApp = _onSpawnFlutterApp;
     server.getVmServiceUri = _getVmServiceUri;
     server.getFlutterDtdUris = _getFlutterDtdUris;
     server.vmServiceUriChanges = _vmServiceUriChanges;

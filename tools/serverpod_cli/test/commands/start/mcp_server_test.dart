@@ -71,6 +71,7 @@ void main() {
             'hot_restart',
             'tail_server_logs',
             'tail_flutter_logs',
+            'spawn_flutter_app',
             'get_flutter_app_dtd',
           ]),
         );
@@ -169,6 +170,22 @@ void main() {
           expect(
             (result.content.first as TextContent).text,
             contains('Flutter DTD not available'),
+          );
+        },
+      );
+
+      test(
+        'when calling spawn_flutter_app without a callback, '
+        'then it returns an error',
+        () async {
+          final result = await connection.callTool(
+            CallToolRequest(name: 'spawn_flutter_app'),
+          );
+
+          expect(result.isError, isTrue);
+          expect(
+            (result.content.first as TextContent).text,
+            contains('Flutter app launching is not available'),
           );
         },
       );
@@ -568,6 +585,171 @@ void main() {
             expect(text, contains('nope'));
             expect(text, contains('admin'));
             expect(text, contains('customer'));
+          },
+        );
+      });
+
+      group('with spawn_flutter_app wired to a single app', () {
+        late List<String> spawnCalls;
+        late bool reportAlreadyRunning;
+
+        setUp(() {
+          spawnCalls = [];
+          reportAlreadyRunning = false;
+          server.getFlutterAppIds = () => ['admin'];
+          server.onSpawnFlutterApp = (appId) async {
+            spawnCalls.add(appId);
+            return reportAlreadyRunning;
+          };
+        });
+
+        test(
+          'when calling spawn_flutter_app without an appId, '
+          'then it launches the only configured app',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['admin']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Launching Flutter app "admin"'),
+            );
+          },
+        );
+
+        test(
+          'when the app is already running, '
+          'then it reports that without an error',
+          () async {
+            reportAlreadyRunning = true;
+
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'admin'},
+              ),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['admin']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('already running'),
+            );
+          },
+        );
+
+        test(
+          'when the launch callback throws, '
+          'then it returns an error naming the app',
+          () async {
+            server.onSpawnFlutterApp = (_) async =>
+                throw StateError('flutter missing');
+
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Failed to launch Flutter app "admin"'),
+            );
+          },
+        );
+      });
+
+      group('with spawn_flutter_app wired to several apps', () {
+        late List<String> spawnCalls;
+
+        setUp(() {
+          spawnCalls = [];
+          server.getFlutterAppIds = () => ['admin', 'customer'];
+          server.onSpawnFlutterApp = (appId) async {
+            spawnCalls.add(appId);
+            return false;
+          };
+        });
+
+        test(
+          'when calling spawn_flutter_app without an appId, '
+          'then it errors listing the available app ids and launches nothing',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+            expect(spawnCalls, isEmpty);
+          },
+        );
+
+        test(
+          'when calling spawn_flutter_app with an explicit appId, '
+          'then it launches that app',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'customer'},
+              ),
+            );
+
+            expect(result.isError, isNull);
+            expect(spawnCalls, ['customer']);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('Launching Flutter app "customer"'),
+            );
+          },
+        );
+
+        test(
+          'when calling spawn_flutter_app with an unknown appId, '
+          'then it errors listing the available app ids and launches nothing',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(
+                name: 'spawn_flutter_app',
+                arguments: {'appId': 'nope'},
+              ),
+            );
+
+            expect(result.isError, isTrue);
+            final text = (result.content.first as TextContent).text;
+            expect(text, contains('nope'));
+            expect(text, contains('admin'));
+            expect(text, contains('customer'));
+            expect(spawnCalls, isEmpty);
+          },
+        );
+      });
+
+      group('with spawn_flutter_app but no configured apps', () {
+        setUp(() {
+          server.getFlutterAppIds = () => [];
+          server.onSpawnFlutterApp = (_) async => false;
+        });
+
+        test(
+          'when calling spawn_flutter_app, '
+          'then it errors that no apps are configured',
+          () async {
+            final result = await connection.callTool(
+              CallToolRequest(name: 'spawn_flutter_app'),
+            );
+
+            expect(result.isError, isTrue);
+            expect(
+              (result.content.first as TextContent).text,
+              contains('No Flutter apps are configured'),
+            );
           },
         );
       });
