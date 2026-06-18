@@ -488,6 +488,54 @@ void main() async {
     );
   });
 
+  group('Given a row with a UUID column stored in the database', () {
+    late ObjectWithUuid existingRow;
+
+    setUp(() async {
+      var uuid = UuidValue.fromString(
+        '550e8400-e29b-41d4-a716-446655440000',
+      );
+      var uuidNullable = UuidValue.fromString(
+        '9e107d9d-372b-4d97-92b7-2f0907d0b1d4',
+      );
+
+      existingRow = await ObjectWithUuid.db.insertRow(
+        session,
+        ObjectWithUuid(uuid: uuid, uuidNullable: uuidNullable),
+      );
+    });
+
+    tearDown(() async {
+      await ObjectWithUuid.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test(
+      'when upserting the row with an updated UUID column value, '
+      'then the UUID column is updated successfully.',
+      () async {
+        var updatedUuidNullable = UuidValue.fromString(
+          'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        );
+
+        var updated = await ObjectWithUuid.db.upsertRow(
+          session,
+          ObjectWithUuid(
+            id: existingRow.id,
+            uuid: existingRow.uuid,
+            uuidNullable: updatedUuidNullable,
+          ),
+          conflictColumns: (t) => [t.id],
+        );
+
+        expect(updated, isNotNull);
+        expect(updated!.uuidNullable, updatedUuidNullable);
+      },
+    );
+  });
+
   test(
     'Given an upsert operation with column from different table '
     'when executing it '

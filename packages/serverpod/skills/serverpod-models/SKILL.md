@@ -108,6 +108,20 @@ indexes:
     unique: true
 ```
 
+Field-level `unique` auto-generates a btree unique index:
+
+```yaml
+fields:
+  tenantId: int
+  category: String
+  # single-column unique index
+  email: String, unique
+  # composite unique index on (category, value)
+  value: String, unique(per=category)
+  # composite unique index on (category, tenantId, value)
+  amount: int, unique(per=[category, tenantId])
+```
+
 ## Relations
 
 **One-to-one** (FK with unique index):
