@@ -448,6 +448,36 @@ void main() {
       expect(launchIndex, 1);
       expect(state.showLaunchPanel, isFalse);
     });
+
+    test(
+      'when x is pressed on a running app then it stops and the panel stays open',
+      () async {
+        var stopIndex = -1;
+        holder.onStopApp = (index) => stopIndex = index;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 0; // 'a' is running
+
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(stopIndex, 0);
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
+
+    test(
+      'when x is pressed on a stopped app then onStopApp is not called',
+      () async {
+        var stopCalls = 0;
+        holder.onStopApp = (_) => stopCalls++;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 1; // 'b' is not running
+
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(stopCalls, 0);
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
   });
 
   group('Given a running TUI start app with exactly one launchable app', () {

@@ -1075,6 +1075,18 @@ Future<void> _runTuiBackend({
                 : ctx.flutterManager.launch(app.id),
           );
         };
+        holder.onStopApp = (index) {
+          if (index < 0 || index >= flutterApps.length) return;
+          final app = flutterApps[index];
+          // The launch panel drives specific apps directly (matching
+          // onLaunchApp); nothing to stop when the app isn't running.
+          if (!ctx.flutterManager.isRunning(app.id)) return;
+          runTrackedAction(
+            holder,
+            'Stop ${app.name}',
+            () => ctx.flutterManager.stop(app.id),
+          );
+        };
         holder.onQuit = () => shutdown.complete(0);
         holder.onHotReload = () {
           runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);

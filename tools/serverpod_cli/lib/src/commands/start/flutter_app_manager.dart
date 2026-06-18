@@ -259,6 +259,17 @@ class FlutterAppManager {
     await launch(appId);
   }
 
+  /// Stops [appId] without relaunching it. No-op when [appId] is unknown or
+  /// not running. Unlike [stopAll] this keeps the app's VM-service info file so
+  /// it can be relaunched later (e.g. via the launch panel or Ctrl+R).
+  Future<void> stop(String appId) async {
+    final runtime = _runtimeFor(appId);
+    if (runtime == null) return;
+    runtime.relaunchInProgress = false;
+    await runtime.process?.stop();
+    runtime.process = null;
+  }
+
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {

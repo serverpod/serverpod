@@ -202,6 +202,37 @@ dependencies:
       );
 
       test(
+        'when stop is called then only that app stops and its info file remains',
+        () async {
+          await manager.launch(appA.id);
+          await manager.launch(appB.id);
+          final infoFile = p.join(
+            serverDir.path,
+            '.dart_tool',
+            'serverpod',
+            'flutter-vm-service-info-app-a.json',
+          );
+
+          await manager.stop(appA.id);
+
+          expect(manager.isRunning(appA.id), isFalse);
+          expect(manager.isRunning(appB.id), isTrue);
+          // Unlike stopAll, a single stop keeps the info file for relaunch.
+          expect(File(infoFile).existsSync(), isTrue);
+        },
+      );
+
+      test(
+        'when stop is called for an unknown or stopped app then it is a no-op',
+        () async {
+          await manager.stop('does-not-exist');
+          await manager.stop(appA.id);
+
+          expect(manager.isRunning(appA.id), isFalse);
+        },
+      );
+
+      test(
         'when changed paths are under one app lib then only that app id matches',
         () async {
           await manager.launch(appA.id);

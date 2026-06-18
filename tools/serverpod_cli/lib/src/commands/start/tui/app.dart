@@ -19,6 +19,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   VoidCallback? _onHotRestart;
   VoidCallback? _onRestartFlutterApp;
   void Function(int index)? _onLaunchApp;
+  void Function(int index)? _onStopApp;
   void Function({bool force})? _onCreateMigration;
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
@@ -37,6 +38,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onHotRestart = _onHotRestart;
     widgetState.onRestartFlutterApp = _onRestartFlutterApp;
     widgetState.onLaunchApp = _onLaunchApp;
+    widgetState.onStopApp = _onStopApp;
     widgetState.onCreateMigration = _onCreateMigration;
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
@@ -66,6 +68,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   set onLaunchApp(void Function(int index)? cb) {
     _onLaunchApp = cb;
     _widgetState?.onLaunchApp = cb;
+  }
+
+  set onStopApp(void Function(int index)? cb) {
+    _onStopApp = cb;
+    _widgetState?.onStopApp = cb;
   }
 
   set onCreateMigration(void Function({bool force})? cb) {
@@ -112,6 +119,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   VoidCallback? onHotRestart;
   VoidCallback? onRestartFlutterApp;
   void Function(int index)? onLaunchApp;
+  void Function(int index)? onStopApp;
   void Function({bool force})? onCreateMigration;
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
@@ -270,6 +278,17 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         onLaunchApp?.call(state.launchPanelIndex);
         state.showLaunchPanel = false;
         _rebuild();
+        return true;
+      }
+      // 'x' stops the focused app when it is running. The panel stays open so
+      // the row's marker flips to stopped and the app can be relaunched.
+      if (event.logicalKey == LogicalKey.keyX &&
+          state.launchPanelIndex < appCount) {
+        final app = state.launchableApps[state.launchPanelIndex];
+        if (state.isAppRunning?.call(app.id) ?? false) {
+          onStopApp?.call(state.launchPanelIndex);
+          _rebuild();
+        }
         return true;
       }
       // Number keys remain shortcuts for the first nine apps.
