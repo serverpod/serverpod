@@ -18,6 +18,20 @@ String _shimPath(String name) => p.join(
 
 String _dartExecutable() => Platform.resolvedExecutable;
 
+/// Polls [condition] until it returns true or [timeout] elapses.
+Future<void> _eventually(
+  bool Function() condition, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (!condition()) {
+    if (DateTime.now().isAfter(deadline)) {
+      throw TimeoutException('Condition not met within $timeout');
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
+}
+
 Future<({HttpServer server, String wsUri})> _startFakeVmService() async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   server.transform(WebSocketTransformer()).listen((socket) async {
@@ -233,6 +247,27 @@ dependencies:
       );
 
       test(
+        'when an app is stopped then its entry is dropped from dtdUris while '
+        'others remain',
+        () async {
+          await manager.launch(appA.id);
+          await manager.launch(appB.id);
+
+          // The never_publishes_uri shim starts the process but never emits
+          // app.dtd, so each running app maps to a null DTD URI. dtdUris backs
+          // the get_flutter_app_dtd MCP tool.
+          expect(manager.dtdUris, {appA.id: null, appB.id: null});
+
+          await manager.stop(appA.id);
+
+          // The stopped app is gone entirely, not merely mapped to null; the
+          // still-running app is untouched.
+          expect(manager.dtdUris, {appB.id: null});
+          expect(manager.dtdUris.containsKey(appA.id), isFalse);
+        },
+      );
+
+      test(
         'when changed paths are under one app lib then only that app id matches',
         () async {
           await manager.launch(appA.id);
@@ -376,6 +411,27 @@ dependencies:
           expect(readyUrl, 'http://localhost:9999');
           expect(manager.isRunning(app.id), isTrue);
           expect(manager.isLaunching(app.id), isFalse);
+        },
+      );
+
+      test(
+        'when the app is stopped then its published DTD URI is no longer '
+        'reported by dtdUris',
+        () async {
+          await manager.launch(app.id);
+          await ready.future.timeout(const Duration(seconds: 30));
+          // onReady fires on the web URL, which the shim emits before app.dtd,
+          // so wait until the DTD URI has been parsed too.
+          await _eventually(() => manager.dtdUris['project'] != null);
+
+          // The shim emits app.dtd, so the running app reports its DTD URI.
+          expect(manager.dtdUris, {'project': 'ws://127.0.0.1:9100/ws'});
+
+          await manager.stop(app.id);
+
+          // Stopping the app drops it from the map that backs the
+          // get_flutter_app_dtd MCP tool, so its DTD URI is no longer returned.
+          expect(manager.dtdUris, isEmpty);
         },
       );
     },

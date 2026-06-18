@@ -98,6 +98,14 @@ class FlutterAppManager {
     }
   }
 
+  /// DTD URIs of running apps, keyed by app id. A running app that has not
+  /// published its DTD URI yet maps to `null`. Stopped apps are omitted — this
+  /// backs the `get_flutter_app_dtd` MCP tool, so stopping an app drops it from
+  /// the tool's output.
+  Map<String, String?> get dtdUris => {
+    for (final appId in runningAppIds) appId: processFor(appId)?.dtdUri,
+  };
+
   /// Returns the [FlutterProcess] for [appId], if any.
   FlutterProcess? processFor(String appId) => _runtimes[appId]?.process;
 
