@@ -19,7 +19,7 @@ import 'package:test/test.dart';
 ///
 /// The bridge auto-connects on the first tool/resource call. The runner's
 /// static surface (apply_migrations, create_migration, hot_reload, hot_restart,
-/// tail_server_logs, tail_flutter_logs, get_flutter_app_dtd,
+/// tail_server_logs, tail_flutter_logs, spawn_flutter_app, get_flutter_app_dtd,
 /// serverpod://vm-service) is advertised
 /// upfront regardless of whether the runner is currently up.
 void main() {
@@ -70,6 +70,7 @@ void main() {
               'hot_restart',
               'tail_server_logs',
               'tail_flutter_logs',
+              'spawn_flutter_app',
               'get_flutter_app_dtd',
             }),
           );
@@ -141,6 +142,7 @@ void main() {
               'hot_restart',
               'tail_server_logs',
               'tail_flutter_logs',
+              'spawn_flutter_app',
               'get_flutter_app_dtd',
             }),
           );

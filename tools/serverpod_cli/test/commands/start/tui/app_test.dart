@@ -1,6 +1,8 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
+import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:test/test.dart';
 
@@ -98,10 +100,10 @@ void main() {
     });
 
     test(
-      'when e is pressed on the Flutter logs tab then traces do not toggle',
+      'when e is pressed on an app log tab then traces do not toggle',
       () async {
-        state.showFlutterOutput = true;
-        state.selectedTab = 1;
+        state.getOrCreateAppLogTab(appId: 'app', label: 'App');
+        state.tabs.focusedAreaIndex = 1;
 
         await _sendKey(tester, LogicalKey.keyE);
 
@@ -154,7 +156,16 @@ void main() {
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
-      state.showFlutterOutput = true;
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'app',
+          name: 'App',
+          relativePathParts: ['..', 'app'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.getOrCreateAppLogTab(appId: 'app', label: 'App');
     });
 
     test(
@@ -189,9 +200,15 @@ void main() {
       setUp(() {
         restartCalls = 0;
         holder.onRestartFlutterApp = () => restartCalls++;
-        // No Flutter tab shown yet, but the project can launch one.
-        state.showFlutterOutput = false;
-        state.flutterRestartAvailable = true;
+        state.canLaunchApps = true;
+        state.launchableApps = [
+          const FlutterAppConfig(
+            id: 'app',
+            name: 'App',
+            relativePathParts: ['..', 'app'],
+            serverPackageDirectoryPathParts: [],
+          ),
+        ];
       });
 
       test(
@@ -211,7 +228,7 @@ void main() {
     setUp(() {
       restartCalls = 0;
       holder.onRestartFlutterApp = () => restartCalls++;
-      // Both gates default to false: no Flutter tab and nothing to launch.
+      state.canLaunchApps = false;
     });
 
     test(
@@ -306,6 +323,283 @@ void main() {
         await _sendCtrlC(tester);
 
         expect(state.ctrlCHint, 'Press Ctrl-C again to exit');
+      },
+    );
+  });
+
+  group('Given a running TUI start app with multiple launchable apps', () {
+    setUp(() {
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+        const FlutterAppConfig(
+          id: 'b',
+          name: 'Customer',
+          relativePathParts: ['..', 'customer'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+      state.isAppRunning = (id) => id == 'a';
+    });
+
+    test(
+      'when Ctrl+R is pressed then the launch panel opens',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
+
+    test(
+      'when Ctrl+R is pressed twice then the launch panel closes',
+      () async {
+        await _sendCtrlR(tester);
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+
+    test(
+      'when Esc is pressed with the panel open then it closes',
+      () async {
+        state.showLaunchPanel = true;
+        await _sendKey(tester, LogicalKey.escape);
+
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+
+    test(
+      'when digit 1 is pressed with the panel open then onLaunchApp is called',
+      () async {
+        var launchIndex = -1;
+        holder.onLaunchApp = (index) => launchIndex = index;
+        state.showLaunchPanel = true;
+
+        await _sendKey(tester, LogicalKey.digit1);
+
+        expect(launchIndex, 0);
+        expect(state.showLaunchPanel, isFalse);
+      },
+    );
+
+    test(
+      'when no app tab is open then the panel cursor starts at the first app',
+      () async {
+        state.launchPanelIndex = 1;
+
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+        expect(state.launchPanelIndex, 0);
+      },
+    );
+
+    test(
+      'when an app tab is active then the panel cursor starts on it',
+      () async {
+        // Open the second app's tab and make it the active one.
+        final customer = state.getOrCreateAppLogTab(
+          appId: 'b',
+          label: 'Customer',
+        );
+        state.tabs.focusTab(customer);
+        state.launchPanelIndex = 0;
+
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isTrue);
+        expect(state.launchPanelIndex, 1);
+      },
+    );
+
+    test(
+      'when arrow keys are pressed then the cursor moves and wraps',
+      () async {
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 0;
+
+        await _sendKey(tester, LogicalKey.arrowDown);
+        expect(state.launchPanelIndex, 1);
+
+        await _sendKey(tester, LogicalKey.arrowDown);
+        expect(state.launchPanelIndex, 0); // wraps past the last app
+
+        await _sendKey(tester, LogicalKey.arrowUp);
+        expect(state.launchPanelIndex, 1); // wraps before the first app
+      },
+    );
+
+    test('when Enter is pressed then the focused app is launched', () async {
+      var launchIndex = -1;
+      holder.onLaunchApp = (index) => launchIndex = index;
+      state.showLaunchPanel = true;
+      state.launchPanelIndex = 1;
+
+      await _sendKey(tester, LogicalKey.enter);
+
+      expect(launchIndex, 1);
+      expect(state.showLaunchPanel, isFalse);
+    });
+
+    test(
+      'when x is pressed on a running app then it stops and the panel stays open',
+      () async {
+        var stopIndex = -1;
+        holder.onStopApp = (index) => stopIndex = index;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 0; // 'a' is running
+
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(stopIndex, 0);
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
+
+    test(
+      'when x is pressed on a stopped app then onStopApp is not called',
+      () async {
+        var stopCalls = 0;
+        holder.onStopApp = (_) => stopCalls++;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 1; // 'b' is not running
+
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(stopCalls, 0);
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
+  });
+
+  group('Given a running TUI start app with exactly one launchable app', () {
+    late int restartCalls;
+
+    setUp(() {
+      restartCalls = 0;
+      holder.onRestartFlutterApp = () => restartCalls++;
+      state.canLaunchApps = true;
+      state.launchableApps = [
+        const FlutterAppConfig(
+          id: 'a',
+          name: 'Admin',
+          relativePathParts: ['..', 'admin'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ];
+    });
+
+    test(
+      'when Ctrl+R is pressed then the launch panel does not open',
+      () async {
+        await _sendCtrlR(tester);
+
+        expect(state.showLaunchPanel, isFalse);
+        expect(restartCalls, 1);
+      },
+    );
+  });
+
+  group('Given a wide TUI with multiple app tabs open', () {
+    late AppLogTab admin;
+    late AppLogTab portal;
+
+    setUp(() async {
+      tester.dispose();
+      await holder.dispose();
+
+      state = ServerWatchState();
+      holder = StartAppStateHolder(state);
+      admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      portal = state.getOrCreateAppLogTab(appId: 'portal', label: 'Portal');
+      state.tabs.focusTab(admin);
+      state.contentWidth = 200;
+
+      tester = await NoctermTester.create(size: const Size(200, 30));
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+    });
+
+    test(
+      'when Tab is pressed from the server tab then the first app tab is focused',
+      () async {
+        state.tabs.focusedAreaIndex = 0;
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab, admin);
+      },
+    );
+
+    test(
+      'when Tab is pressed from an app tab then the next app tab is focused',
+      () async {
+        state.tabs.focusTab(admin);
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab, portal);
+      },
+    );
+
+    test(
+      'when digit 1 is pressed then the server tab is focused',
+      () async {
+        state.tabs.focusTab(portal);
+
+        await _sendKey(tester, LogicalKey.digit1);
+
+        expect(state.tabs.focusedTab, state.serverLogTab);
+      },
+    );
+
+    test(
+      'when digit 3 is pressed then the second app tab is focused',
+      () async {
+        state.tabs.focusTab(admin);
+
+        await _sendKey(tester, LogicalKey.digit3);
+
+        expect(state.tabs.focusedTab, portal);
+      },
+    );
+  });
+
+  group('Given a narrow TUI with multiple tabs open', () {
+    setUp(() async {
+      tester.dispose();
+      await holder.dispose();
+
+      state = ServerWatchState();
+      holder = StartAppStateHolder(state);
+      state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      state.contentWidth = 100;
+
+      tester = await NoctermTester.create(size: const Size(100, 24));
+      await tester.pumpComponent(
+        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      );
+      await tester.pump();
+    });
+
+    test(
+      'when Tab is pressed from the server tab then the first app tab is focused',
+      () async {
+        state.tabs.focusTab(state.serverLogTab);
+
+        await _sendKey(tester, LogicalKey.tab);
+
+        expect(state.tabs.focusedTab?.label, 'Admin');
       },
     );
   });
