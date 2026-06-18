@@ -63,19 +63,20 @@ final Tool createRepairMigrationTool = Tool(
 final Tool hotReloadTool = Tool(
   name: 'hot_reload',
   description:
-      'Hot-reload the running server isolate, preserving in-memory state. '
-      'Falls back to a restart if reload is not possible. In `--watch` '
-      'mode the runner auto-reloads on file changes, so this is mainly '
-      'useful with `--no-watch`.',
+      'Hot-reload the running server isolate, preserving in-memory state, '
+      'and hot-reload the Flutter app (if one is running) so it picks up '
+      'the changes. In `--watch` mode the runner auto-reloads on file '
+      'changes, so this is mainly useful with `--no-watch`.',
   inputSchema: Schema.object(),
 );
 
 final Tool hotRestartTool = Tool(
   name: 'hot_restart',
   description:
-      'Restart the running server process, dropping all in-memory state. '
-      'Use when reload would not suffice (e.g. `main()` changes) or to '
-      'recover a stuck isolate.',
+      'Restart the running server process, dropping all in-memory state, '
+      'then hot-restart the Flutter app (if one is running) so it '
+      'reconnects to the fresh server. Use when reload would not suffice '
+      '(e.g. `main()` changes) or to recover a stuck isolate.',
   inputSchema: Schema.object(),
 );
 
