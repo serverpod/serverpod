@@ -382,6 +382,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   void Function(FlutterAppConfig app)? onEnsureFlutterAppTab,
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
   void Function(FlutterAppConfig app, String url)? onFlutterReady,
+  void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
   Future<void> Function(ServerProcess server)? onServerStart,
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
@@ -536,6 +537,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onStart: (app, process) async {
       if (onFlutterStart != null) await onFlutterStart(app, process);
     },
+    onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
     stderrSinkFor: (app) => flutterStderrSinkFor?.call(app) ?? stderr,
@@ -1006,6 +1008,18 @@ Future<void> _runTuiBackend({
         );
         tab.url = url;
         tab.ready = true;
+        holder.markDirty();
+      },
+      onFlutterLaunchFailed: (app) {
+        final tab = holder.state.getOrCreateAppLogTab(
+          appId: app.id,
+          label: app.name,
+        );
+        tab.ready = false;
+        tab.url = null;
+        // Replace the breadcrumb's spinner-y "connecting" with a terminal
+        // state so it doesn't hang; the build error is in the app's log.
+        tab.startupStage = 'launch failed — see log';
         holder.markDirty();
       },
       onServerStart: (server) async {

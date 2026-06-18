@@ -41,6 +41,7 @@ class FlutterAppManager {
     required this.onProgress,
     required this.onReady,
     required this.onStart,
+    required this.onLaunchFailed,
     required this.onEnsureAppTab,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
@@ -76,6 +77,7 @@ class FlutterAppManager {
     FlutterProcess process,
   )
   onStart;
+  final void Function(FlutterAppConfig app) onLaunchFailed;
   final void Function(FlutterAppConfig app) onEnsureAppTab;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
@@ -320,15 +322,28 @@ class FlutterAppManager {
     required String device,
     required bool isRelaunch,
   }) async {
-    await log.progress(
+    final launched = await log.progress(
       isRelaunch
           ? 'Relaunching ${runtime.app.name}'
           : 'Launching ${runtime.app.name} (first run may take 30-60s)',
       () async {
         await process.launched;
-        return true;
+        // `launched` also completes when the process exits during the build
+        // (e.g. a missing asset in pubspec.yaml), so a published web URL or
+        // VM-service URI is what distinguishes a real launch from a failure.
+        return process.flutterAppUrl != null || process.vmServiceUri != null;
       },
     );
+
+    if (!launched) {
+      final code = await process.exitCode;
+      log.warning(
+        'Launching ${runtime.app.name} failed (exit code $code). '
+        'Check its log for details about the build error.',
+      );
+      onLaunchFailed(runtime.app);
+      return;
+    }
 
     final url = process.flutterAppUrl;
     if (url != null) {

@@ -98,6 +98,7 @@ dependencies:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onLaunchFailed: (_) {},
         onEnsureAppTab: (app) => launchedAppId = app.id,
         stdoutSinkFor: (_) => stdout,
         stderrSinkFor: (_) => stderr,
@@ -250,6 +251,7 @@ dependencies:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
         stderrSinkFor: (app) => sinkFor(sinkLines[app.id]!),
@@ -312,6 +314,7 @@ dependencies:
           onProgress: (_, _) {},
           onReady: (_, url) => ready.complete(url),
           onStart: (_, _) async {},
+          onLaunchFailed: (_) {},
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
           stderrSinkFor: (_) => stderr,
@@ -341,6 +344,81 @@ dependencies:
 
           expect(readyUrl, 'http://localhost:9999');
           expect(manager.isRunning(app.id), isTrue);
+          expect(manager.isLaunching(app.id), isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an initialized FlutterAppManager whose app exits during the build',
+    () {
+      late Directory tempDir;
+      late Directory serverDir;
+      late Directory flutterDir;
+      late FlutterAppConfig app;
+      late FlutterAppManager manager;
+      late Completer<FlutterAppConfig> launchFailed;
+      var readyCalls = 0;
+
+      setUp(() async {
+        tempDir = await Directory.systemTemp.createTemp('flutter_mgr_fail_');
+        serverDir = Directory(p.join(tempDir.path, 'project_server'))
+          ..createSync(recursive: true);
+        flutterDir = Directory(p.join(tempDir.path, 'project_flutter'))
+          ..createSync(recursive: true);
+        File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
+name: project_flutter
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+
+        app = _testApp(
+          serverDir: serverDir,
+          flutterDir: flutterDir,
+          id: 'project',
+          name: 'Project',
+        );
+
+        readyCalls = 0;
+        launchFailed = Completer<FlutterAppConfig>();
+        manager = FlutterAppManager(
+          apps: [app],
+          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+          runMode: 'development',
+          onProgress: (_, _) {},
+          onReady: (_, _) => readyCalls++,
+          onStart: (_, _) async {},
+          onLaunchFailed: (app) => launchFailed.complete(app),
+          onEnsureAppTab: (_) {},
+          stdoutSinkFor: (_) => stdout,
+          stderrSinkFor: (_) => stderr,
+          flutterExecutableForTesting: _dartExecutable(),
+          argsOverrideForTesting: (_) => [_shimPath('exits_during_build.dart')],
+        );
+        await manager.initialize();
+      });
+
+      tearDown(() async {
+        await manager.dispose();
+        await tempDir.delete(recursive: true);
+      });
+
+      test(
+        'when launch is attempted then onLaunchFailed fires and onReady does not',
+        () async {
+          await manager.launch(app.id);
+
+          // This future only completes when the app exits during the build and
+          // the `onLaunchFailed` callback is invoked.
+          final failedApp = await launchFailed.future.timeout(
+            const Duration(seconds: 30),
+          );
+
+          expect(failedApp.id, app.id);
+          expect(readyCalls, 0);
+          expect(manager.isRunning(app.id), isFalse);
           expect(manager.isLaunching(app.id), isFalse);
         },
       );
