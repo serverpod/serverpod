@@ -325,6 +325,33 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateTableBase(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var hasConcreteChild = definition.descendantClasses.any(
+      (c) => c.tableName != null,
+    );
+
+    if (!hasConcreteChild) {
+      return [
+        SourceSpanSeverityException(
+          'The "tableBase" class "${definition.className}" has no concrete '
+          'subclass with a "table" property defined. Relations declared on '
+          'this class will never generate a foreign key.',
+          span,
+          severity: SourceSpanSeverity.warning,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,
@@ -833,7 +860,9 @@ class Restrictions {
     var classDefinition = documentDefinition;
     if (classDefinition is! ModelClassDefinition) return [];
 
-    var foreignKeyField = classDefinition.findField(fieldName);
+    var foreignKeyField = classDefinition.fieldsIncludingInherited
+        .where((f) => f.name == fieldName)
+        .firstOrNull;
     if (foreignKeyField == null) {
       return [
         SourceSpanSeverityException(
@@ -1980,10 +2009,12 @@ class Restrictions {
 
     if (definition is! ModelClassDefinition) return [];
 
-    if (definition.tableName == null) {
+    if (definition.tableName == null && !definition.isTableBase) {
       return [
         SourceSpanSeverityException(
-          'The "table" property must be defined in the class to set a relation on a field.',
+          'The "table" property must be defined in the class to set a '
+          'relation on a field. For base classes that declare relations for '
+          'table-backed subclasses, use "tableBase: true".',
           span,
         ),
       ];
@@ -1994,6 +2025,9 @@ class Restrictions {
     if (field == null) return [];
 
     if (field.type.isListType) {
+      // Malformed List with no type parameter — other validators report this
+      if (field.type.generics.isEmpty) return [];
+
       var referenceClass = parsedModels
           .findAllByClassName(field.type.generics.first.className)
           .firstOrNull;

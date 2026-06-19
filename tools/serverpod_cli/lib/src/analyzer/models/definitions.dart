@@ -187,6 +187,10 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set to true the class is immutable.
   final bool isImmutable;
 
+  /// If set to true, this class is a base for table-backed subclasses and may
+  /// declare relations without having a table itself.
+  final bool isTableBase;
+
   /// If set, the default data type used for serialization of the JSON columns in this class.
   /// It can be overridden for each field.
   final SerializationDataType? serializationDataType;
@@ -202,6 +206,7 @@ final class ModelClassDefinition extends ClassDefinition {
     required super.type,
     required super.isSealed,
     required this.isImmutable,
+    this.isTableBase = false,
     super.childClasses,
     super.extendsClass,
     this.database = ModelDatabaseDefinition.server,

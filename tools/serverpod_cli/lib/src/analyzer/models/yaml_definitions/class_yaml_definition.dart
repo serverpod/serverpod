@@ -33,6 +33,13 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.tableBase,
+        valueRestriction: restrictions.validateTableBase,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+      ),
+      ValidateNode(
         Keyword.extendsClass,
         valueRestriction: restrictions.validateExtendingClassName,
       ),
