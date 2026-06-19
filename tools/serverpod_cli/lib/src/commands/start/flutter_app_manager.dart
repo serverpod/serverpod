@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -106,7 +107,7 @@ class FlutterAppManager {
   }
 
   /// DTD URIs of running apps, keyed by app id. A running app that has not
-  /// published its DTD URI yet maps to `null`. Stopped apps are omitted — this
+  /// published its DTD URI yet maps to `null`. Stopped apps are omitted - this
   /// backs the `get_flutter_app_dtd` MCP tool, so stopping an app drops it from
   /// the tool's output.
   Map<String, String?> get dtdUris => {
@@ -320,9 +321,9 @@ class FlutterAppManager {
       final flutterPackageName = parsePubspec(
         File(p.join(flutterPackageDir, 'pubspec.yaml')),
       ).name;
-      final dartToolDir = FlutterDependencyTracker.resolveDartToolDir(
+      final dartToolDir = PackageDependencyTracker.resolveDartToolDir(
         flutterPackageDir,
-        flutterPackageName: flutterPackageName,
+        packageName: flutterPackageName,
       );
       if (dartToolDir != null) {
         runtime.dependencyTracker = FlutterDependencyTracker(

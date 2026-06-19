@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:test/test.dart';
 
 /// Runs a real `dart pub get` in [dir]. Fixtures use only path and workspace
@@ -511,9 +512,9 @@ void main() {
     () async {
       await createWorkspaceTracker();
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         p.join(wsDir, 'app_flutter'),
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, p.join(wsDir, '.dart_tool'));
@@ -529,9 +530,9 @@ void main() {
       write(p.join(appDir, 'pubspec.yaml'), _pubspec('app_flutter'));
       await _pubGet(appDir);
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         appDir,
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, p.join(appDir, '.dart_tool'));
@@ -545,9 +546,9 @@ void main() {
     () async {
       final pkg = await Directory(p.join(tempDir.path, 'unresolved')).create();
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         pkg.path,
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, isNull);
@@ -577,9 +578,9 @@ void main() {
         'when resolving its .dart_tool, '
         'then it does not latch onto the unrelated resolution',
         () {
-          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          final resolved = PackageDependencyTracker.resolveDartToolDir(
             pkg.path,
-            flutterPackageName: 'app_flutter',
+            packageName: 'app_flutter',
           );
 
           expect(resolved, isNull);
@@ -614,9 +615,9 @@ void main() {
         'when resolving its .dart_tool, '
         'then it resolves to null',
         () {
-          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          final resolved = PackageDependencyTracker.resolveDartToolDir(
             pkg.path,
-            flutterPackageName: 'app_flutter',
+            packageName: 'app_flutter',
           );
 
           expect(resolved, isNull);

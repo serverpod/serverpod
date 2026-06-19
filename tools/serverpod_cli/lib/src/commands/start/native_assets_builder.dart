@@ -110,6 +110,19 @@ Future<String> discoverProjectRootFrom(String fromDir) async {
   }
 }
 
+/// The subset of [NativeAssetsBuilder] that [WatchSession] drives, factored out
+/// so the session can be exercised with a fake in tests. [NativeAssetsBuilder]
+/// is the only production implementation.
+abstract interface class NativeAssetsApplier {
+  /// Runs build hooks and applies the result to [compiler]. See
+  /// [NativeAssetsBuilder.applyTo].
+  Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler);
+
+  /// Drops cached package-discovery state so the next apply re-reads
+  /// `package_config.json`. See [NativeAssetsBuilder.reset].
+  void reset();
+}
+
 /// Orchestrates `package:hooks_runner` on behalf of `serverpod start`.
 ///
 /// `dart compile` refuses to run build hooks, and `frontend_server` does not
@@ -121,7 +134,7 @@ Future<String> discoverProjectRootFrom(String fromDir) async {
 /// Hook execution is internally cached by `hooks_runner` keyed on hook
 /// inputs/dependencies/environment, so re-invoking each watch cycle is cheap
 /// when nothing changed.
-class NativeAssetsBuilder {
+class NativeAssetsBuilder implements NativeAssetsApplier {
   /// Path to the dart executable (used to compile and run individual hooks).
   final String dartExecutable;
 
@@ -170,6 +183,7 @@ class NativeAssetsBuilder {
   /// re-runs the hooks and compares its result to them, so a dependency change
   /// that leaves the native assets unchanged still reports
   /// `manifestChanged: false` and avoids a needless FES restart.
+  @override
   void reset() {
     _packageLayoutFuture = null;
     _runnerFuture = null;
@@ -217,7 +231,13 @@ class NativeAssetsBuilder {
 
     final hookPackages = await runner.packagesWithBuildHooks();
     if (hookPackages.isEmpty) {
-      return const NativeAssetsBuildSkipped();
+      // No build-hook packages in the closure. If a manifest was produced
+      // earlier this session - i.e. the last native dependency was just removed
+      // - tear it down and report the change so the FES restarts without
+      // `--native-assets`; otherwise the running pod keeps loading the removed
+      // package's stale assets. With no prior manifest there is nothing to do.
+      if (_lastManifestContent == null) return const NativeAssetsBuildSkipped();
+      return _dropManifest();
     }
 
     final target = hr.Target.current;
@@ -245,23 +265,10 @@ class NativeAssetsBuilder {
 
     final encodedAssets = result.success.encodedAssets;
 
-    // No bundleable assets -> no manifest needed. Tell the caller to ensure
-    // FES is running without a --native-assets argument.
+    // Hooks ran but produced no bundleable assets -> no manifest needed. Tell
+    // the caller to ensure the FES is running without a --native-assets arg.
     if (encodedAssets.isEmpty) {
-      final changed = _lastManifestContent != null;
-      _lastManifestContent = null;
-      _lastEncodedAssets = const [];
-      // Best-effort cleanup of a stale manifest from a prior run. Avoid
-      // exists() + delete() (TOCTOU); just delete and ignore "not found".
-      try {
-        await File(manifestPath).delete();
-      } on PathNotFoundException {
-        // Already gone.
-      }
-      return NativeAssetsBuildSuccess(
-        manifestPath: null,
-        manifestChanged: changed,
-      );
+      return _dropManifest();
     }
 
     // hooks_runner caches build results internally, so the encoded asset list
@@ -304,6 +311,29 @@ class NativeAssetsBuilder {
     );
   }
 
+  /// Tears down any previously built manifest: clears the cached state and
+  /// deletes the on-disk yaml, returning a success that tells the caller to drop
+  /// the FES `--native-assets` argument. [NativeAssetsBuildSuccess.manifestChanged]
+  /// reflects whether a manifest existed before, so the caller restarts the FES
+  /// only when something actually went away. Shared by the "no build-hook
+  /// packages left" and "hooks emitted nothing" paths.
+  Future<NativeAssetsBuildSuccess> _dropManifest() async {
+    final changed = _lastManifestContent != null;
+    _lastManifestContent = null;
+    _lastEncodedAssets = const [];
+    // Best-effort cleanup of a stale manifest from a prior run. Avoid
+    // exists() + delete() (TOCTOU); just delete and ignore "not found".
+    try {
+      await File(manifestPath).delete();
+    } on PathNotFoundException {
+      // Already gone.
+    }
+    return NativeAssetsBuildSuccess(
+      manifestPath: null,
+      manifestChanged: changed,
+    );
+  }
+
   /// Runs build hooks and applies the result to [compiler]:
   ///  - `nativeAssetsPath` is updated to the freshly built manifest (if any)
   ///  - if the manifest content changed AND [compiler] has already started,
@@ -311,6 +341,7 @@ class NativeAssetsBuilder {
   ///
   /// Centralises the "did we restart?" bookkeeping that callers in the watch
   /// loop and migration path need to avoid double-restarting.
+  @override
   Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler) async {
     final outcome = await build();
     switch (outcome) {

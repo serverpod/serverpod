@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
@@ -491,6 +492,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // The resolution's `.dart_tool` whose package_config.json the FES reads;
   // watched below so a dependency change is picked up in place.
   String? serverDartToolDir;
+  // Scopes a shared (workspace) package_config.json change to the server's own
+  // dependency closure so the pod reloads only when its closure actually
+  // changed. Null disables the gate (always reload), matching prior behavior.
+  PackageDependencyTracker? serverDependencyTracker;
   if (watch) {
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
@@ -540,6 +545,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     compiler = localCompiler;
     nativeAssetsBuilder = localBuilder;
     dartExecutable = localCompiler.dartExecutable;
+
+    // Seed the closure baseline now (before any file event) so the first
+    // package_config.json change computes a real delta. resolveDartToolDir
+    // validates the resolution lists the server package; a null disables the
+    // gate. Reads the same `.dart_tool` the FES resolves, so no extra watch.
+    final serverResolutionDartTool =
+        PackageDependencyTracker.resolveDartToolDir(
+          serverDir,
+          packageName: config.serverPackage,
+        );
+    serverDependencyTracker = serverResolutionDartTool == null
+        ? null
+        : PackageDependencyTracker(
+            dartToolDir: serverResolutionDartTool,
+            packageName: config.serverPackage,
+          );
   }
 
   // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
@@ -610,6 +631,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
     generatedDirPaths: config.generatedDirPaths,
+    serverDependencyTracker: serverDependencyTracker,
     flutterManager: flutterManager,
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
@@ -623,7 +645,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
   // Auto-launch every app flagged with `auto_launch` (the synthesized default
   // sibling app is flagged, preserving the historical single-app behavior).
-  // When no app opts in, none launch — the user starts them with Ctrl+R.
+  // When no app opts in, none launch - the user starts them with Ctrl+R.
   if (launchFlutterApp) {
     await Future.wait([
       for (final app in flutterApps.where((app) => app.autoLaunch))
@@ -1091,7 +1113,7 @@ Future<void> _runTuiBackend({
         tab.url = null;
         // Replace the breadcrumb's spinner-y "connecting" with a terminal
         // state so it doesn't hang; the build error is in the app's log.
-        tab.startupStage = 'launch failed — see log';
+        tab.startupStage = 'launch failed - see log';
         holder.markDirty();
       },
       onServerStart: (server) async {
@@ -1121,7 +1143,7 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
-        // Offer Ctrl+R whenever a Flutter app could run here — even after a
+        // Offer Ctrl+R whenever a Flutter app could run here - even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
         holder.state.canLaunchApps =
             flutterApps.isNotEmpty &&
