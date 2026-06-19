@@ -55,31 +55,27 @@ void run(List<String> args) async {
 }
 
 Future<void> _populateDatabase(Serverpod pod) async {
-  // Create a session so that we can access the database.
-  var session = await pod.createSession();
+  // withSession creates a session to access the database and closes it for
+  // us when we are done, even if an error is thrown along the way.
+  await pod.withSession((session) async {
+    var numChannels = await Channel.db.count(session);
+    if (numChannels != 0) {
+      // There are already entries in the database, whe shouldn't add them again.
+      return;
+    }
 
-  var numChannels = await Channel.db.count(session);
-  if (numChannels != 0) {
-    // There are already entries in the database, whe shouldn't add them again.
-    await session.close();
-    return;
-  }
-
-  // Insert an initial set of channels.
-  await Channel.db.insertRow(
-    session,
-    Channel(name: 'General', channel: 'general'),
-  );
-  await Channel.db.insertRow(
-    session,
-    Channel(name: 'Serverpod', channel: 'serverpod'),
-  );
-  await Channel.db.insertRow(
-    session,
-    Channel(name: 'Introductions', channel: 'intros'),
-  );
-
-  // Make sure to close the session when we are done, or it will hold up
-  // resources.
-  await session.close();
+    // Insert an initial set of channels.
+    await Channel.db.insertRow(
+      session,
+      Channel(name: 'General', channel: 'general'),
+    );
+    await Channel.db.insertRow(
+      session,
+      Channel(name: 'Serverpod', channel: 'serverpod'),
+    );
+    await Channel.db.insertRow(
+      session,
+      Channel(name: 'Introductions', channel: 'intros'),
+    );
+  });
 }
