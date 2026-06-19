@@ -25,6 +25,8 @@ class ModelParser {
 
     var isImmutable = _parseIsImmutable(documentContents);
 
+    var isTableBase = _parseIsTableBase(documentContents);
+
     var extendsClass = _parseExtendsClass(documentContents);
 
     var migrationValue =
@@ -57,6 +59,7 @@ class ModelParser {
               className: className,
               isSealed: isSealed,
               isImmutable: isImmutable,
+              isTableBase: isTableBase,
               extendsClass: extendsClass,
               sourceFileName: protocolSource.yamlSourceUri.path,
               database: database,
@@ -236,6 +239,13 @@ class ModelParser {
     if (isImmutable is! bool) return false;
 
     return isImmutable;
+  }
+
+  static bool _parseIsTableBase(YamlMap documentContents) {
+    var tableBase = documentContents.nodes[Keyword.tableBase]?.value;
+    if (tableBase is! bool) return false;
+
+    return tableBase;
   }
 
   static UnresolvedInheritanceDefinition? _parseExtendsClass(
