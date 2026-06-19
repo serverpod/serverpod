@@ -669,11 +669,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
         p.absolute(
           p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
         ),
-        for (final app in flutterApps)
+        for (final app in flutterApps) ...[
           p.absolute(p.joinAll([...app.pathParts, 'lib'])),
-        for (final app in flutterApps)
+          p.absolute(p.joinAll([...app.pathParts, 'pubspec.yaml'])),
           if (flutterManager.dependencyTrackerFor(app.id) case final tracker?)
             p.absolute(tracker.dartToolDir),
+        ],
       },
     );
     fileChangeSub = watcher.onFilesChanged

@@ -1775,6 +1775,74 @@ void main() {
   );
 
   group(
+    'Given a watch session where the Flutter pubspec assets/fonts changed,',
+    () {
+      late int restartActionCalls;
+      late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        restartActionCalls = 0;
+        flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+          dependencyChange: (_) => FlutterDependencyChange.assets,
+          restartOverride: (_) async {
+            restartActionCalls++;
+          },
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+        );
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when only the pubspec changed, '
+        'then the Flutter app is relaunched without recompiling the server.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(restartActionCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(flutter.calls, isEmpty);
+          expect(server.calls, isEmpty);
+        },
+      );
+
+      test(
+        'when the pubspec and dart files change together, '
+        'then the server reloads and the app is relaunched instead of hot reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            flutterPubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(restartActionCalls, 1);
+          expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
     'Given an in-flight forceReload and a Flutter app manager,',
     () {
       late List<String> order;

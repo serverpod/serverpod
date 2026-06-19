@@ -237,4 +237,42 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a FileWatcher watching a pubspec.yaml file',
+    () {
+      late FileWatcher watcher;
+      late File pubspec;
+
+      setUp(() async {
+        final path = p.join(tempDir.path, 'pubspec.yaml');
+        pubspec = File(path);
+        await pubspec.create();
+
+        watcher = FileWatcher(
+          watchPaths: [path],
+          debounceDelay: const Duration(milliseconds: 200),
+        );
+      });
+
+      test(
+        'when the file changes, '
+        'then it emits a FileChangeEvent with only flutterPubspecChanged set',
+        () async {
+          final firstEvent = watcher.onFilesChanged.first;
+          await watcher.ready;
+
+          await pubspec.writeAsString('name: example');
+
+          final event = await firstEvent;
+
+          expect(event.flutterPubspecChanged, isTrue);
+          expect(event.flutterDependenciesChanged, isFalse);
+          expect(event.packageConfigChanged, isFalse);
+          expect(event.staticFilesChanged, isFalse);
+          expect(event.dartFiles, isEmpty);
+        },
+      );
+    },
+  );
 }

@@ -18,6 +18,10 @@ enum FlutterDependencyChange {
   /// rebuilds the native host (a hot restart would leave the new native code
   /// out of the binary, failing at runtime with a MissingPluginException).
   native,
+
+  /// Assets or fonts declared in `pubspec.yaml` changed. These are bundled at
+  /// build time so only a full process relaunch picks them up.
+  assets,
 }
 
 /// Tracks the Flutter app's dependency closure so the watcher can escalate to
@@ -51,7 +55,16 @@ class FlutterDependencyTracker {
   /// The package name of the Flutter app, as it appears in `package_graph.json`.
   final String flutterPackageName;
 
+  /// The package directory of the Flutter app, whose `pubspec.yaml` is read
+  /// to fingerprint assets and fonts so their changes trigger a full relaunch.
+  final String flutterPackageDir;
+
   Map<String, String>? _cachedClosureVersions;
+
+  /// Cached fingerprint of the Flutter app's `pubspec.yaml` assets and
+  /// fonts sections. `null` when the file could not be read or when
+  /// the sections are missing from the pubspec.
+  String? _cachedAssetFingerprint;
 
   /// Memoized native-code verdicts, keyed by `name@version`. Pub cache
   /// contents are immutable per version, so entries never invalidate.
@@ -60,8 +73,10 @@ class FlutterDependencyTracker {
   FlutterDependencyTracker({
     required this.dartToolDir,
     required this.flutterPackageName,
+    required this.flutterPackageDir,
   }) {
     _cachedClosureVersions = _computeClosureVersions();
+    _cachedAssetFingerprint = _computeAssetFingerprint();
   }
 
   /// Resolves the `.dart_tool` directory whose `package_graph.json` describes
@@ -115,14 +130,24 @@ class FlutterDependencyTracker {
     );
   }
 
-  /// Recomputes the dependency closure, compares it to the cached value, and
-  /// classifies the change. Updates the cache.
+  /// Recomputes the dependency closure and the asset/font fingerprint, compares
+  /// them to the cached values, and classifies the change. Updates the caches.
   ///
   /// A transition to or from an unreadable closure (the graph file missing or
   /// unparseable, e.g. mid-`pub get` or after `flutter clean`) is treated as
   /// [FlutterDependencyChange.none], so a transient state never triggers a
   /// restart — the next valid closure simply reseeds the cache.
   FlutterDependencyChange refresh() {
+    // Check asset/font changes first. Assets and fonts are bundled at build
+    // time so they always need a full relaunch, regardless of whether the
+    // dependency closure also changed.
+    final nextFingerprint = _computeAssetFingerprint();
+    final previousFingerprint = _cachedAssetFingerprint;
+    _cachedAssetFingerprint = nextFingerprint;
+    if (nextFingerprint != previousFingerprint) {
+      return FlutterDependencyChange.assets;
+    }
+
     final next = _computeClosureVersions();
     final previous = _cachedClosureVersions;
     if (next != null) _cachedClosureVersions = next;
@@ -195,6 +220,40 @@ class FlutterDependencyTracker {
     return {
       for (final name in closure) name: '${byName[name]?['version'] ?? ''}',
     };
+  }
+
+  /// Reads the Flutter app's `pubspec.yaml` and produces a fingerprint
+  /// of the `flutter.assets` and `flutter.fonts` sections.
+  /// Returns `null` when the file cannot be read or parsed,
+  /// or when those sections are not found in the pubspec.
+  String? _computeAssetFingerprint() {
+    final file = File(p.join(flutterPackageDir, 'pubspec.yaml'));
+    if (!file.existsSync()) return null;
+
+    final Object? pubspec;
+    try {
+      pubspec = loadYaml(file.readAsStringSync());
+    } catch (_) {
+      return null;
+    }
+    if (pubspec is! YamlMap) return null;
+
+    final flutter = _lookup(pubspec, ['flutter']);
+    if (flutter is! YamlMap) return null;
+
+    final buffer = StringBuffer();
+
+    final assets = flutter['assets'];
+    if (assets is YamlList) {
+      buffer.writeln('${assets.value}');
+    }
+
+    final fonts = flutter['fonts'];
+    if (fonts is YamlList) {
+      buffer.writeln('${fonts.value}');
+    }
+
+    return buffer.toString();
   }
 
   /// Maps each resolved package to its root directory via

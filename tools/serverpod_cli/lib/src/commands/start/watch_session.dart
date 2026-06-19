@@ -213,7 +213,7 @@ class WatchSession {
     // files specifically - a dependency-only change doesn't affect
     // server-rendered pages.
     if (!hasDartChanges) {
-      if (event.flutterDependenciesChanged) {
+      if (event.flutterDependenciesChanged || event.flutterPubspecChanged) {
         await _reloadOrRestartFlutterApps(changedPaths: const []);
       }
       if (event.staticFilesChanged) await _notifyBrowserRefresh();
@@ -330,6 +330,9 @@ class WatchSession {
     required String appId,
   }) async {
     switch (change) {
+      case FlutterDependencyChange.assets:
+        log.info(flutterAssetsFontsChanged);
+        await _flutterManager?.restart(appId);
       case FlutterDependencyChange.native:
         log.info(flutterDependenciesChangedNative);
         await _flutterManager!.restart(appId);

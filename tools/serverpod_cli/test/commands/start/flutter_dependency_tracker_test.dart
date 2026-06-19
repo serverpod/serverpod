@@ -98,7 +98,10 @@ void main() {
     );
   }
 
-  void writeAppFlutterPubspec({Map<String, String>? deps}) {
+  void writeAppFlutterPubspec({
+    Map<String, String>? deps,
+    String? flutterBlock,
+  }) {
     write(
       p.join(wsDir, 'app_flutter', 'pubspec.yaml'),
       _pubspec(
@@ -106,11 +109,14 @@ void main() {
         workspaceMember: true,
         deps: deps ?? {'app_client': '../app_client'},
         devDeps: {'dep_dev': '../../third_party/dep_dev'},
+        flutterBlock: flutterBlock,
       ),
     );
   }
 
-  Future<FlutterDependencyTracker> createWorkspaceTracker() async {
+  Future<FlutterDependencyTracker> createWorkspaceTracker({
+    String? appPubspecFlutterBlock,
+  }) async {
     wsDir = p.join(tempDir.path, 'ws');
     writeThirdParty('dep_pure');
     writeThirdParty('dep_dev');
@@ -122,7 +128,7 @@ void main() {
         workspace: ['app_flutter', 'app_client', 'app_server'],
       ),
     );
-    writeAppFlutterPubspec();
+    writeAppFlutterPubspec(flutterBlock: appPubspecFlutterBlock);
     write(
       p.join(wsDir, 'app_client', 'pubspec.yaml'),
       _pubspec(
@@ -143,6 +149,7 @@ void main() {
     return FlutterDependencyTracker(
       dartToolDir: p.join(wsDir, '.dart_tool'),
       flutterPackageName: 'app_flutter',
+      flutterPackageDir: p.join(wsDir, 'app_flutter'),
     );
   }
 
@@ -228,6 +235,140 @@ void main() {
     );
   });
 
+  group('Given a Flutter app pubspec with assets,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      tracker = await createWorkspaceTracker(
+        appPubspecFlutterBlock:
+            'flutter:\n'
+            '  assets:\n'
+            '    - assets/image.png\n',
+      );
+    });
+
+    test(
+      'when assets are unchanged, '
+      'then no change is reported',
+      () {
+        expect(tracker.refresh(), FlutterDependencyChange.none);
+      },
+    );
+
+    test(
+      'when an asset is added, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets:\n'
+              '    - assets/image.png\n'
+              '    - assets/new_asset.png\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when an asset is removed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets:\n'
+              '    - assets/other.png\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when the asset list is cleared, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets: []\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+  });
+
+  group('Given a Flutter app pubspec with fonts,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      tracker = await createWorkspaceTracker(
+        appPubspecFlutterBlock:
+            'flutter:\n'
+            '  fonts:\n'
+            '    - family: MyFont\n'
+            '      fonts:\n'
+            '        - asset: fonts/MyFont-Regular.ttf\n',
+      );
+    });
+
+    test(
+      'when fonts are unchanged, '
+      'then no change is reported',
+      () {
+        expect(tracker.refresh(), FlutterDependencyChange.none);
+      },
+    );
+
+    test(
+      'when a font family is added, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts:\n'
+              '    - family: MyFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/MyFont-Regular.ttf\n'
+              '    - family: NewFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/NewFont-Regular.ttf\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when a font asset is changed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts:\n'
+              '    - family: MyFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/MyFont-Bold.ttf\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when fonts are removed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts: []\n',
+        );
+        expect(tracker.refresh(), FlutterDependencyChange.assets);
+      },
+    );
+  });
+
   /// Resolves a standalone app depending on `dep@1.0.0` (described by
   /// [depFlutterBlock]) with a real `pub get`, bumps it to 1.0.1, re-resolves,
   /// and returns the tracker's classification of the bump.
@@ -252,6 +393,7 @@ void main() {
     final tracker = FlutterDependencyTracker(
       dartToolDir: p.join(appDir, '.dart_tool'),
       flutterPackageName: 'app_flutter',
+      flutterPackageDir: appDir,
     );
 
     writeThirdParty('dep', version: '1.0.1', flutterBlock: depFlutterBlock);
@@ -491,9 +633,13 @@ void main() {
 
   late String syntheticDartTool;
 
+  late String syntheticFlutterPkgDir;
+
   Future<void> createSyntheticDartTool() async {
     syntheticDartTool = p.join(tempDir.path, '.dart_tool');
     await Directory(syntheticDartTool).create();
+    syntheticFlutterPkgDir = p.join(tempDir.path, 'flutter_app');
+    await Directory(syntheticFlutterPkgDir).create(recursive: true);
   }
 
   void writeGraph(Map<String, dynamic> graph) {
@@ -517,6 +663,7 @@ void main() {
   }) => FlutterDependencyTracker(
     dartToolDir: syntheticDartTool,
     flutterPackageName: flutterPackageName,
+    flutterPackageDir: syntheticFlutterPkgDir,
   );
 
   group('Given a resolution whose dependency graph file is absent,', () {

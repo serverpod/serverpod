@@ -328,6 +328,7 @@ class FlutterAppManager {
         runtime.dependencyTracker = FlutterDependencyTracker(
           dartToolDir: dartToolDir,
           flutterPackageName: flutterPackageName,
+          flutterPackageDir: flutterPackageDir,
         );
       } else {
         log.debug(

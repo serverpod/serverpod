@@ -19,6 +19,11 @@ const flutterDependenciesChangedNative =
     'Relaunching the Flutter app...';
 const flutterDependenciesChangedDart =
     'Flutter dependencies changed. Hot restarting the Flutter app...';
+const flutterAssetsFontsChanged =
+    'Flutter assets or fonts changed. Relaunching the Flutter app...';
+const flutterPackageNotFound =
+    'No Flutter package found; skipping --flutter. '
+    'Pass --no-flutter to silence this notice.';
 
 // Flutter process messages
 const flutterAppLaunching = 'Launching Flutter app...';
