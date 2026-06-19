@@ -525,7 +525,8 @@ class InsertQueryBuilder {
           var values = selectedColumns
               .map((column) {
                 var unformattedValue = row[column.columnName];
-                return ValueEncoder.instance.convert(
+                return ValueEncoder.instance.encodeColumnValue(
+                  column,
                   unformattedValue,
                   hasDefaults: column.hasDefault,
                 );

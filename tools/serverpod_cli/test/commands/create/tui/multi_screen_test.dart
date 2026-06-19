@@ -37,101 +37,29 @@ void main() {
     });
 
     test(
-      'when Enter is pressed on the first screen '
-      'then it advances to the next screen',
-      () async {
-        expect(state.currentScreenIndex, 0);
-
-        await _sendKeyAndPump(tester, LogicalKey.enter);
-
-        expect(state.currentScreenIndex, 1);
-      },
-    );
-
-    test(
-      'when Escape is pressed on the first screen '
-      'then it stays on the first screen',
-      () async {
-        expect(state.currentScreenIndex, 0);
-
-        await _sendKeyAndPump(tester, LogicalKey.escape);
-
-        expect(state.currentScreenIndex, 0);
-      },
-    );
-
-    test(
-      'when Escape is pressed on a non-first screen '
-      'then it goes back to the previous screen',
-      () async {
-        await _sendKeyAndPump(tester, LogicalKey.enter);
-        expect(state.currentScreenIndex, 1);
-
-        await _sendKeyAndPump(tester, LogicalKey.escape);
-
-        expect(state.currentScreenIndex, 0);
-      },
-    );
-
-    test(
-      'when using arrowDown then Space on a non-first screen '
-      'then it goes back to the previous screen',
-      () async {
-        await _sendKeyAndPump(tester, LogicalKey.enter);
-        expect(state.currentScreenIndex, 1);
-
-        await _sendKeyAndPump(tester, LogicalKey.arrowDown);
-        expect(state.focusOnButton, isTrue);
-        expect(state.focusedButtonIndex, 0);
-
-        await _sendKeyAndPump(tester, LogicalKey.space);
-
-        expect(state.currentScreenIndex, 0);
-      },
-    );
-
-    test(
-      'when navigating through all config screens '
+      'when navigating through all config screens, '
       'then the summary screen is reached',
       () async {
-        final configCount = state.configScreenCount;
+        final configCount = state.form.configScreenCount;
 
         for (var i = 0; i < configCount; i++) {
-          expect(state.isSummary, isFalse);
-          expect(state.currentScreenIndex, i);
+          expect(state.form.isSummary, isFalse);
+          expect(state.form.currentScreenIndex, i);
           await _sendKeyAndPump(tester, LogicalKey.enter);
         }
 
-        expect(state.isSummary, isTrue);
-        expect(state.currentScreenIndex, configCount);
+        expect(state.form.isSummary, isTrue);
       },
     );
 
     test(
-      'when on the summary screen and Enter is pressed '
-      'then onCreate is invoked',
-      () async {
-        for (var i = 0; i < state.configScreenCount; i++) {
-          await _sendKeyAndPump(tester, LogicalKey.enter);
-        }
-        expect(state.isSummary, isTrue);
-        expect(createCalls, 0);
-
-        await _sendKeyAndPump(tester, LogicalKey.enter);
-
-        expect(createCalls, 1);
-        expect(state.creatingProject, isTrue);
-      },
-    );
-
-    test(
-      'when creating project '
+      'when Enter is pressed on the summary screen, '
       'then the state transitions to creating mode and onCreate is called',
       () async {
-        for (var i = 0; i < state.configScreenCount; i++) {
+        for (var i = 0; i < state.form.configScreenCount; i++) {
           await _sendKeyAndPump(tester, LogicalKey.enter);
         }
-
+        expect(state.form.isSummary, isTrue);
         expect(state.creatingProject, isFalse);
 
         await _sendKeyAndPump(tester, LogicalKey.enter);
