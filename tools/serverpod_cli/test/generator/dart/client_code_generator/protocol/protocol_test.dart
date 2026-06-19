@@ -203,6 +203,138 @@ void main() {
           );
         },
       );
+
+      test(
+        'then protocol.dart does not access module Protocol.targetTableDefinitions statically.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not call getTableForType on module Protocol without casting to DatabaseSerializationManager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a client database table and module dependencies, '
+    'when generating protocol files,',
+    () {
+      var authModulesConfig = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withAuthModule()
+          .build();
+
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withTableName('example')
+            .withDatabase(ModelDatabaseDefinition.client)
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: authModulesConfig,
+      );
+
+      test(
+        'then protocol.dart imports auth core and auth idp client packages for module table metadata.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            contains(
+              "import 'package:serverpod_auth_client/serverpod_auth_client.dart'",
+            ),
+          );
+        },
+      );
+
+      test(
+        'then targetTableDefinitions merges table definitions from each auth module protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            allOf(
+              matches(
+                RegExp(
+                  r'\.\.\._i2\.Protocol\(\) is _i1\.DatabaseSerializationManager\n'
+                  r'        \? \(_i2\.Protocol\(\) as _i1\.DatabaseSerializationManager\)\n'
+                  r'              \.getTargetTableDefinitions\(\)\n'
+                  r'        : \[\],',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then getTableForType resolves tables from each auth module protocol through DatabaseSerializationManager.',
+        () {
+          var protocol = codeMap[expectedFileName]!;
+          expect(
+            protocol,
+            allOf(
+              matches(
+                RegExp(
+                  r'var protocol = _i2\.Protocol\(\);\n'
+                  r'      var table = protocol is _i1\.DatabaseSerializationManager\n'
+                  r'          \? \(protocol as _i1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                  r'          : null;',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not access module Protocol.targetTableDefinitions statically.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then protocol.dart does not call getTableForType on module Protocol without casting to DatabaseSerializationManager.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(
+              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
+            ),
+          );
+        },
+      );
     },
   );
 
