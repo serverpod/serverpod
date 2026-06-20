@@ -131,6 +131,22 @@ void main() async {
     );
 
     test(
+      'when batch upserting with noReturn set to true '
+      'then an empty list is returned but the rows are persisted.',
+      () async {
+        var result = await UniqueData.db.upsert(
+          session,
+          [UniqueData(number: 1, email: 'a@serverpod.dev')],
+          conflictColumns: (t) => [t.email],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(1));
+      },
+    );
+
+    test(
       'when upserting a single row with upsertRow then the row is inserted.',
       () async {
         var result = (await UniqueData.db.upsertRow(
