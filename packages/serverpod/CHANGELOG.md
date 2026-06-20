@@ -1,6 +1,5 @@
 ## 3.5.0-beta.10
 
-- feat: Adds a `withSession` method to `Serverpod` that creates a session, runs a callback with it, and closes it afterwards, including on error.
 - feat: Hides the "Hot restart" action in the `start` TUI when on watch mode (default).
 - feat: Restarts the Flutter app automatically when its dependencies change.
 - feat: Adds IDE selection screen to the `quickstart` command for a complete experience.
