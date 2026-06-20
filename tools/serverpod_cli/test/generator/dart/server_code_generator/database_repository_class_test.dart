@@ -445,6 +445,13 @@ void main() {
             contains('bool ignoreConflicts = false'),
           );
         });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
+          );
+        });
       });
 
       group('has an insert row method', () {
@@ -543,6 +550,13 @@ void main() {
           expect(
             updateMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -657,6 +671,13 @@ void main() {
           expect(
             deleteMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -777,6 +798,13 @@ void main() {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            deleteWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
@@ -995,6 +1023,13 @@ void main() {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that takes the noReturn bool as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('bool noReturn = false'),
           );
         });
       });
