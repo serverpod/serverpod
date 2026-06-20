@@ -360,16 +360,22 @@ class EnumDefaultPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> insert(
     _i1.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EnumDefaultPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -403,6 +409,10 @@ class EnumDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> upsert(
     _i1.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
@@ -410,6 +420,7 @@ class EnumDefaultPersistRepository {
     _i1.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EnumDefaultPersist>(
       rows,
@@ -417,6 +428,7 @@ class EnumDefaultPersistRepository {
       updateColumns: updateColumns?.call(EnumDefaultPersist.t),
       updateWhere: updateWhere?.call(EnumDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -455,16 +467,22 @@ class EnumDefaultPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> update(
     _i1.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
     _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EnumDefaultPersist>(
       rows,
       columns: columns?.call(EnumDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -502,6 +520,10 @@ class EnumDefaultPersistRepository {
 
   /// Updates all [EnumDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
@@ -514,6 +536,7 @@ class EnumDefaultPersistRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultPersist>(
       columnValues: columnValues(EnumDefaultPersist.t.updateTable),
@@ -525,6 +548,7 @@ class EnumDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -535,6 +559,10 @@ class EnumDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
@@ -543,6 +571,7 @@ class EnumDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EnumDefaultPersist>(
       rows,
@@ -551,6 +580,7 @@ class EnumDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -570,6 +600,10 @@ class EnumDefaultPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
@@ -578,6 +612,7 @@ class EnumDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultPersist>(
       where: where(EnumDefaultPersist.t),
@@ -586,6 +621,7 @@ class EnumDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

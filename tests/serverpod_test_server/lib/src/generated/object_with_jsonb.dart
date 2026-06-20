@@ -554,16 +554,22 @@ class ObjectWithJsonbRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithJsonb>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -597,6 +603,10 @@ class ObjectWithJsonbRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
@@ -604,6 +614,7 @@ class ObjectWithJsonbRepository {
     _i1.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithJsonb>(
       rows,
@@ -611,6 +622,7 @@ class ObjectWithJsonbRepository {
       updateColumns: updateColumns?.call(ObjectWithJsonb.t),
       updateWhere: updateWhere?.call(ObjectWithJsonb.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -649,16 +661,22 @@ class ObjectWithJsonbRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> update(
     _i1.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
     _i1.ColumnSelections<ObjectWithJsonbTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithJsonb>(
       rows,
       columns: columns?.call(ObjectWithJsonb.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -696,6 +714,10 @@ class ObjectWithJsonbRepository {
 
   /// Updates all [ObjectWithJsonb]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithJsonbUpdateTable>
@@ -708,6 +730,7 @@ class ObjectWithJsonbRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithJsonb>(
       columnValues: columnValues(ObjectWithJsonb.t.updateTable),
@@ -719,6 +742,7 @@ class ObjectWithJsonbRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -729,6 +753,10 @@ class ObjectWithJsonbRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
@@ -737,6 +765,7 @@ class ObjectWithJsonbRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithJsonb>(
       rows,
@@ -745,6 +774,7 @@ class ObjectWithJsonbRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -764,6 +794,10 @@ class ObjectWithJsonbRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithJsonbTable> where,
@@ -772,6 +806,7 @@ class ObjectWithJsonbRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithJsonb>(
       where: where(ObjectWithJsonb.t),
@@ -780,6 +815,7 @@ class ObjectWithJsonbRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

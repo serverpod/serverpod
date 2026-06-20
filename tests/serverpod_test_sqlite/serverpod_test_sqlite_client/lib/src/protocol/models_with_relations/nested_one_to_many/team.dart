@@ -450,16 +450,22 @@ class TeamRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> insert(
     _i1.DatabaseSession session,
     List<Team> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Team>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -493,6 +499,10 @@ class TeamRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> upsert(
     _i1.DatabaseSession session,
     List<Team> rows, {
@@ -500,6 +510,7 @@ class TeamRepository {
     _i1.ColumnSelections<TeamTable>? updateColumns,
     _i1.WhereExpressionBuilder<TeamTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Team>(
       rows,
@@ -507,6 +518,7 @@ class TeamRepository {
       updateColumns: updateColumns?.call(Team.t),
       updateWhere: updateWhere?.call(Team.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -545,16 +557,22 @@ class TeamRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> update(
     _i1.DatabaseSession session,
     List<Team> rows, {
     _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Team>(
       rows,
       columns: columns?.call(Team.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -591,6 +609,10 @@ class TeamRepository {
 
   /// Updates all [Team]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TeamUpdateTable> columnValues,
@@ -602,6 +624,7 @@ class TeamRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Team>(
       columnValues: columnValues(Team.t.updateTable),
@@ -613,6 +636,7 @@ class TeamRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -623,6 +647,10 @@ class TeamRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> delete(
     _i1.DatabaseSession session,
     List<Team> rows, {
@@ -631,6 +659,7 @@ class TeamRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Team>(
       rows,
@@ -639,6 +668,7 @@ class TeamRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -658,6 +688,10 @@ class TeamRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Team>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TeamTable> where,
@@ -666,6 +700,7 @@ class TeamRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Team>(
       where: where(Team.t),
@@ -674,6 +709,7 @@ class TeamRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

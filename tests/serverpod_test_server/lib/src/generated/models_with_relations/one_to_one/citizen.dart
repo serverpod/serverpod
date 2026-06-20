@@ -503,16 +503,22 @@ class CitizenRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> insert(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Citizen>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -546,6 +552,10 @@ class CitizenRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> upsert(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
@@ -553,6 +563,7 @@ class CitizenRepository {
     _i1.ColumnSelections<CitizenTable>? updateColumns,
     _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Citizen>(
       rows,
@@ -560,6 +571,7 @@ class CitizenRepository {
       updateColumns: updateColumns?.call(Citizen.t),
       updateWhere: updateWhere?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -598,16 +610,22 @@ class CitizenRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> update(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Citizen>(
       rows,
       columns: columns?.call(Citizen.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -644,6 +662,10 @@ class CitizenRepository {
 
   /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
@@ -655,6 +677,7 @@ class CitizenRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Citizen>(
       columnValues: columnValues(Citizen.t.updateTable),
@@ -666,6 +689,7 @@ class CitizenRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -676,6 +700,10 @@ class CitizenRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> delete(
     _i1.DatabaseSession session,
     List<Citizen> rows, {
@@ -684,6 +712,7 @@ class CitizenRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Citizen>(
       rows,
@@ -692,6 +721,7 @@ class CitizenRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -711,6 +741,10 @@ class CitizenRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
@@ -719,6 +753,7 @@ class CitizenRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Citizen>(
       where: where(Citizen.t),
@@ -727,6 +762,7 @@ class CitizenRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

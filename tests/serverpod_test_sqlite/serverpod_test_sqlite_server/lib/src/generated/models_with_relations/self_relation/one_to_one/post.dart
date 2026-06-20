@@ -432,16 +432,22 @@ class PostRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> insert(
     _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Post>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -475,6 +481,10 @@ class PostRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> upsert(
     _i1.DatabaseSession session,
     List<Post> rows, {
@@ -482,6 +492,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? updateColumns,
     _i1.WhereExpressionBuilder<PostTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Post>(
       rows,
@@ -489,6 +500,7 @@ class PostRepository {
       updateColumns: updateColumns?.call(Post.t),
       updateWhere: updateWhere?.call(Post.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -527,16 +539,22 @@ class PostRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> update(
     _i1.DatabaseSession session,
     List<Post> rows, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -573,6 +591,10 @@ class PostRepository {
 
   /// Updates all [Post]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
@@ -584,6 +606,7 @@ class PostRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Post>(
       columnValues: columnValues(Post.t.updateTable),
@@ -595,6 +618,7 @@ class PostRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -605,6 +629,10 @@ class PostRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> delete(
     _i1.DatabaseSession session,
     List<Post> rows, {
@@ -613,6 +641,7 @@ class PostRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Post>(
       rows,
@@ -621,6 +650,7 @@ class PostRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -640,6 +670,10 @@ class PostRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PostTable> where,
@@ -648,6 +682,7 @@ class PostRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Post>(
       where: where(Post.t),
@@ -656,6 +691,7 @@ class PostRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
