@@ -1,13 +1,11 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
-import 'account_merge_config.dart';
-
 /// Management functions for merging accounts.
 ///
 /// Account merging happens in rare cases when a user adds a new sign-in method
-/// to their account, but Serverpod recognizes that as already belonging to a
-/// different, pre-existing account. At this point, application developers
+/// to their account, but Serverpod recognizes that IDP as already belonging to
+/// a different, pre-existing account. At this point, application developers
 /// should offer an account merge to the user, and, if they accept, run the
 /// [merge] method found here.
 class AccountMerger {
@@ -20,20 +18,8 @@ class AccountMerger {
 
   /// Merges the accounts of two [AuthUser]s.
   ///
-  /// This method invokes the callbacks defined in the [AccountMergeConfig].
-  ///
-  /// The order of handlers execution is as follows:
-  ///   1. [AccountMergeConfig.mergeHooks]
-  ///   2. [AccountMergeConfig.coreDataMergeHandler]
-  ///   3. [AccountMergeConfig.applicationMergeHandler]
-  ///   4. [AccountMergeConfig.mergeCleanupHandler]
-  ///
-  /// This means that [AccountMergeConfig.mergeHooks] should assume a clean slate,
-  /// while [AccountMergeConfig.applicationMergeHandler] should assume that
-  /// [AccountMergeConfig.coreDataMergeHandler] has already been executed.
-  /// [AccountMergeConfig.mergeCleanupHandler] should assume that all other merge
-  /// handlers have already been executed and that no more data still attached to
-  /// the [userToRemove] needs to be preserved.
+  /// This method invokes the callbacks defined in the
+  /// [AccountMergeConfig.mergeHooks].
   ///
   /// Throws an [AuthUserNotFoundException] if either user is not found.
   Future<void> merge(
@@ -72,27 +58,6 @@ class AccountMerger {
           transaction: transaction,
         );
       }
-
-      await _config.coreDataMergeHandler(
-        session,
-        userToKeepId: userToKeepId,
-        userToRemoveId: userToRemoveId,
-        transaction: transaction,
-      );
-
-      await _config.applicationMergeHandler(
-        session,
-        userToKeepId: userToKeepId,
-        userToRemoveId: userToRemoveId,
-        transaction: transaction,
-      );
-
-      await _config.mergeCleanupHandler(
-        session,
-        userToKeepId: userToKeepId,
-        userToRemoveId: userToRemoveId,
-        transaction: transaction,
-      );
     });
   }
 }

@@ -26,7 +26,6 @@ void main() {
             required final UuidValue userToRemoveId,
             required final transaction,
           }) async {},
-      mergeHooks: [defaultIdpMergeHook],
     ),
   );
 
@@ -532,7 +531,7 @@ void main() {
   );
 
   withServerpod(
-    'Given defaultIdpMergeHook and multiple accounts',
+    'Given active IDPs and multiple accounts',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
@@ -559,10 +558,20 @@ void main() {
           userIdentifier: 'google_123',
         );
         await GoogleAccount.db.insertRow(session, googleAccount);
+
+        // Initialize AuthServices with a dummy provider that migrates both Apple and Google accounts
+        AuthServices.set(
+          tokenManagerBuilders: [
+            ServerSideSessionsConfig(sessionKeyHashPepper: 'pepper'),
+          ],
+          identityProviderBuilders: [
+            PreBuiltIdpBuilder(TestMergeIdp()),
+          ],
+        );
       });
 
       test(
-        'when defaultIdpMergeHook is used then all accounts are migrated',
+        'when AccountMerger.merge is used then all active IDP accounts are migrated',
         () async {
           await session.db.transaction((final transaction) async {
             await accountMerger.merge(
@@ -590,4 +599,30 @@ void main() {
       );
     },
   );
+}
+
+class TestMergeIdp implements AccountMergeHandlerProvider {
+  @override
+  AccountMergeHandler get accountMergeHook =>
+      (
+        final session, {
+        required final userToKeepId,
+        required final userToRemoveId,
+        required final transaction,
+      }) async {
+        await Future.wait([
+          AppleIdp.migrate(
+            session,
+            userToKeepId: userToKeepId,
+            userToRemoveId: userToRemoveId,
+            transaction: transaction,
+          ),
+          GoogleIdp.migrate(
+            session,
+            userToKeepId: userToKeepId,
+            userToRemoveId: userToRemoveId,
+            transaction: transaction,
+          ),
+        ]);
+      };
 }

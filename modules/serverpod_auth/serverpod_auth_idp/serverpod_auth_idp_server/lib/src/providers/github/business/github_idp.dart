@@ -17,7 +17,7 @@ import 'github_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class GitHubIdp {
+class GitHubIdp implements AccountMergeHandlerProvider {
   /// The method used when authenticating with the GitHub identity provider.
   static const String method = 'github';
 
@@ -150,6 +150,9 @@ class GitHubIdp {
   /// Determines whether the current session has an associated GitHub account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  @override
+  AccountMergeHandler get accountMergeHook => migrate;
 
   /// Migrates the [GitHubAccount] from [userToRemove] to [userToKeep].
   ///

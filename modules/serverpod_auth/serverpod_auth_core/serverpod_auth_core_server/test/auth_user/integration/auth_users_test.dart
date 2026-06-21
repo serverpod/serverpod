@@ -256,26 +256,28 @@ void main() {
         () async {
           bool cleanUpCalled = false;
           final accountMerger = AccountMerger(
-            config: AccountMergeConfig(
-              applicationMergeHandler:
-                  (
-                    final session, {
-                    required final UuidValue userToKeepId,
-                    required final UuidValue userToRemoveId,
-                    required final transaction,
-                  }) {
-                    userIdToKeepFromCallback = userToKeepId;
-                    userIdToRemoveFromCallback = userToRemoveId;
-                  },
-              mergeCleanupHandler:
-                  (
-                    final session, {
-                    required final UuidValue userToKeepId,
-                    required final UuidValue userToRemoveId,
-                    required final transaction,
-                  }) {
-                    cleanUpCalled = true;
-                  },
+            config: AccountMergeConfig.custom(
+              mergeHooks: [
+                AccountMergeConfig.defaultIdpMergeHandler,
+                AccountMergeConfig.defaultCoreDataMergeHandler,
+                (
+                  final session, {
+                  required final UuidValue userToKeepId,
+                  required final UuidValue userToRemoveId,
+                  required final transaction,
+                }) {
+                  userIdToKeepFromCallback = userToKeepId;
+                  userIdToRemoveFromCallback = userToRemoveId;
+                },
+                (
+                  final session, {
+                  required final UuidValue userToKeepId,
+                  required final UuidValue userToRemoveId,
+                  required final transaction,
+                }) {
+                  cleanUpCalled = true;
+                },
+              ],
             ),
           );
 
@@ -429,18 +431,10 @@ void main() {
           AuthUserModel? handlerUserToRemove;
 
           final accountMerger = AccountMerger(
-            config: AccountMergeConfig(
-              applicationMergeHandler:
-                  (
-                    final session, {
-                    required final UuidValue userToKeepId,
-                    required final UuidValue userToRemoveId,
-                    required final transaction,
-                  }) {
-                    userIdToKeepFromCallback = userToKeepId;
-                    userIdToRemoveFromCallback = userToRemoveId;
-                  },
+            config: AccountMergeConfig.custom(
               mergeHooks: [
+                AccountMergeConfig.defaultIdpMergeHandler,
+                AccountMergeConfig.defaultCoreDataMergeHandler,
                 (
                   final session, {
                   required final UuidValue userToKeepId,
@@ -451,6 +445,16 @@ void main() {
                   handlerUserToKeep = userToKeep;
                   handlerUserToRemove = userToRemove;
                 },
+                (
+                  final session, {
+                  required final UuidValue userToKeepId,
+                  required final UuidValue userToRemoveId,
+                  required final transaction,
+                }) {
+                  userIdToKeepFromCallback = userToKeepId;
+                  userIdToRemoveFromCallback = userToRemoveId;
+                },
+                AccountMergeConfig.defaultMergeCleanupHandler,
               ],
             ),
           );

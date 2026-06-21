@@ -103,7 +103,6 @@ void run(List<String> args) async {
       passkeyIdpConfig,
     ],
     accountMergeConfig: AccountMergeConfig(
-      mergeHooks: [defaultIdpMergeHook],
       applicationMergeHandler:
           (
             Session session, {

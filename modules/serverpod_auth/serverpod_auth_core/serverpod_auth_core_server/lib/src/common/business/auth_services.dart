@@ -113,6 +113,9 @@ class AuthServices {
 
   final Map<Type, Object> _providers = {};
 
+  /// The collection of initialized identity providers.
+  Iterable<Object> get providers => _providers.values;
+
   /// Retrieves the identity provider of type [T].
   static T getIdentityProvider<T>() {
     final provider = instance._providers[T];
