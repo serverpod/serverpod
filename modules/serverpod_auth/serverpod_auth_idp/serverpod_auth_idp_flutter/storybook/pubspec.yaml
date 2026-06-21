@@ -34,8 +34,6 @@ dependency_overrides:
     path: ../../serverpod_auth_idp_client
   serverpod_auth_idp_flutter:
     path: ../
-  serverpod_auth_idp_flutter_facebook:
-    path: ../../serverpod_auth_idp_flutter_facebook
   serverpod_client:
     path: ../../../../../packages/serverpod_client
   serverpod_flutter:

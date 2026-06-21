@@ -27,9 +27,7 @@ dependencies:
   provider: ^6.1.5
   serverpod_auth_core_flutter: 3.5.0-beta.10
   serverpod_auth_idp_client: 3.5.0-beta.10
-  serverpod_auth_idp_flutter_facebook: 3.5.0-beta.10
   sign_in_with_apple: ^7.0.1
-  storybook_toolkit: 2.0.0-dev.4
 
 dev_dependencies:
   flutter_test:
