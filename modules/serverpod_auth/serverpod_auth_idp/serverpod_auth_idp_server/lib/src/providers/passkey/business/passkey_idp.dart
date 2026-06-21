@@ -9,7 +9,7 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-class PasskeyIdp {
+class PasskeyIdp implements AccountMergeHandlerProvider {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
@@ -24,6 +24,43 @@ class PasskeyIdp {
 
   final AuthUsers _authUsers;
   final TokenIssuer _tokenIssuer;
+
+  @override
+  AccountMergeHandler get accountMergeHook => migrate;
+
+  /// Migrates [PasskeyAccount]s from [userToRemoveId] to [userToKeepId].
+  ///
+  /// If the [userToKeepId] already has an associated [PasskeyAccount], the
+  /// account for [userToRemoveId] is deleted.
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await PasskeyAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await PasskeyAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await PasskeyAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 
   PasskeyIdp._(
     this.config,

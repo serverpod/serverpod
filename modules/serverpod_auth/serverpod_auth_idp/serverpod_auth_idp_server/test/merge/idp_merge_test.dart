@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
@@ -5,6 +6,11 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+
+import 'package:serverpod_auth_idp_server/providers/facebook.dart';
+import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
+import 'package:serverpod_auth_idp_server/providers/passkey.dart';
+
 import 'package:test/test.dart';
 
 import '../test_tags.dart';
@@ -559,6 +565,31 @@ void main() {
         );
         await GoogleAccount.db.insertRow(session, googleAccount);
 
+        // Facebook Account
+        final facebookAccount = FacebookAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'facebook_123',
+        );
+        await FacebookAccount.db.insertRow(session, facebookAccount);
+
+        // Microsoft Account
+        final microsoftAccount = MicrosoftAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'microsoft_123',
+        );
+        await MicrosoftAccount.db.insertRow(session, microsoftAccount);
+
+        // Passkey Account
+        final passkeyAccount = PasskeyAccount(
+          authUserId: userToRemove.id,
+          keyId: ByteData(16),
+          keyIdBase64: 'base64',
+          clientDataJSON: ByteData(16),
+          attestationObject: ByteData(16),
+          originalChallenge: ByteData(16),
+        );
+        await PasskeyAccount.db.insertRow(session, passkeyAccount);
+
         // Initialize AuthServices with a dummy provider that migrates both Apple and Google accounts
         AuthServices.set(
           tokenManagerBuilders: [
@@ -595,6 +626,276 @@ void main() {
           );
           expect(movedGoogleAccount, isNotNull);
           expect(movedGoogleAccount!.authUserId, userToKeep.id);
+
+          final movedFacebookAccount = await FacebookAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('facebook_123'),
+          );
+          expect(movedFacebookAccount, isNotNull);
+          expect(movedFacebookAccount!.authUserId, userToKeep.id);
+
+          final movedMicrosoftAccount = await MicrosoftAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.userIdentifier.equals('microsoft_123'),
+          );
+          expect(movedMicrosoftAccount, isNotNull);
+          expect(movedMicrosoftAccount!.authUserId, userToKeep.id);
+
+          final movedPasskeyAccount = await PasskeyAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.keyIdBase64.equals('base64'),
+          );
+          expect(movedPasskeyAccount, isNotNull);
+          expect(movedPasskeyAccount!.authUserId, userToKeep.id);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given FacebookAccount for userToRemove',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final account = FacebookAccount(authUserId: userToRemove.id, userIdentifier: 'facebook_123');
+        await FacebookAccount.db.insertRow(session, account);
+      });
+
+      test(
+        'when FacebookIdp.migrate is called then the FacebookAccount is moved to userToKeep',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await FacebookIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final movedAccount = await FacebookAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(movedAccount, isNotNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given FacebookAccount exists for userToKeep',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final existingAccount = FacebookAccount(authUserId: userToKeep.id, userIdentifier: 'facebook_keep');
+        await FacebookAccount.db.insertRow(session, existingAccount);
+
+        final accountToRemove = FacebookAccount(authUserId: userToRemove.id, userIdentifier: 'facebook_123');
+        await FacebookAccount.db.insertRow(session, accountToRemove);
+      });
+
+      test(
+        'when FacebookIdp.migrate is called then the FacebookAccount from userToRemove is deleted',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await FacebookIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final keptAccount = await FacebookAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(keptAccount, isNotNull);
+
+          final deletedAccount = await FacebookAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToRemove.id),
+          );
+          expect(deletedAccount, isNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given MicrosoftAccount for userToRemove',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final account = MicrosoftAccount(authUserId: userToRemove.id, userIdentifier: 'microsoft_123');
+        await MicrosoftAccount.db.insertRow(session, account);
+      });
+
+      test(
+        'when MicrosoftIdp.migrate is called then the MicrosoftAccount is moved to userToKeep',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await MicrosoftIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final movedAccount = await MicrosoftAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(movedAccount, isNotNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given MicrosoftAccount exists for userToKeep',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final existingAccount = MicrosoftAccount(authUserId: userToKeep.id, userIdentifier: 'microsoft_keep');
+        await MicrosoftAccount.db.insertRow(session, existingAccount);
+
+        final accountToRemove = MicrosoftAccount(authUserId: userToRemove.id, userIdentifier: 'microsoft_123');
+        await MicrosoftAccount.db.insertRow(session, accountToRemove);
+      });
+
+      test(
+        'when MicrosoftIdp.migrate is called then the MicrosoftAccount from userToRemove is deleted',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await MicrosoftIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final keptAccount = await MicrosoftAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(keptAccount, isNotNull);
+
+          final deletedAccount = await MicrosoftAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToRemove.id),
+          );
+          expect(deletedAccount, isNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given PasskeyAccount for userToRemove',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final account = PasskeyAccount(authUserId: userToRemove.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        await PasskeyAccount.db.insertRow(session, account);
+      });
+
+      test(
+        'when PasskeyIdp.migrate is called then the PasskeyAccount is moved to userToKeep',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await PasskeyIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final movedAccount = await PasskeyAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(movedAccount, isNotNull);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given PasskeyAccount exists for userToKeep',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        userToKeep = await authUsers.create(session);
+        userToRemove = await authUsers.create(session);
+
+        final existingAccount = PasskeyAccount(authUserId: userToKeep.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        await PasskeyAccount.db.insertRow(session, existingAccount);
+
+        final accountToRemove = PasskeyAccount(authUserId: userToRemove.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        await PasskeyAccount.db.insertRow(session, accountToRemove);
+      });
+
+      test(
+        'when PasskeyIdp.migrate is called then the PasskeyAccount from userToRemove is deleted',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await PasskeyIdp.migrate(
+              session,
+              userToKeepId: userToKeep.id,
+              userToRemoveId: userToRemove.id,
+              transaction: transaction,
+            );
+          });
+
+          final keptAccount = await PasskeyAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToKeep.id),
+          );
+          expect(keptAccount, isNotNull);
+
+          final deletedAccount = await PasskeyAccount.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(userToRemove.id),
+          );
+          expect(deletedAccount, isNull);
         },
       );
     },
@@ -618,6 +919,24 @@ class TestMergeIdp implements AccountMergeHandlerProvider {
             transaction: transaction,
           ),
           GoogleIdp.migrate(
+            session,
+            userToKeepId: userToKeepId,
+            userToRemoveId: userToRemoveId,
+            transaction: transaction,
+          ),
+          FacebookIdp.migrate(
+            session,
+            userToKeepId: userToKeepId,
+            userToRemoveId: userToRemoveId,
+            transaction: transaction,
+          ),
+          MicrosoftIdp.migrate(
+            session,
+            userToKeepId: userToKeepId,
+            userToRemoveId: userToRemoveId,
+            transaction: transaction,
+          ),
+          PasskeyIdp.migrate(
             session,
             userToKeepId: userToKeepId,
             userToRemoveId: userToRemoveId,

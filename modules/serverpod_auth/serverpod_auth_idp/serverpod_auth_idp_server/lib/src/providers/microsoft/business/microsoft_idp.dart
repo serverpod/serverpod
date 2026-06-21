@@ -17,7 +17,7 @@ import 'microsoft_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class MicrosoftIdp {
+class MicrosoftIdp implements AccountMergeHandlerProvider {
   /// The method used when authenticating with the Microsoft identity provider.
   static const String method = 'microsoft';
 
@@ -33,6 +33,43 @@ class MicrosoftIdp {
   final TokenIssuer _tokenIssuer;
 
   final UserProfiles _userProfiles;
+
+  @override
+  AccountMergeHandler get accountMergeHook => migrate;
+
+  /// Migrates [MicrosoftAccount]s from [userToRemoveId] to [userToKeepId].
+  ///
+  /// If the [userToKeepId] already has an associated [MicrosoftAccount], the
+  /// account for [userToRemoveId] is deleted.
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await MicrosoftAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await MicrosoftAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await MicrosoftAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 
   MicrosoftIdp._(
     this.config,
