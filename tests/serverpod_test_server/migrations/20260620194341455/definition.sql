@@ -21,7 +21,7 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN
     EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';
   ELSE
-    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS.';
+    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.';
   END IF;
 END
 $$;
@@ -129,6 +129,24 @@ CREATE TABLE "bigint_default_model" (
 CREATE TABLE "bigint_default_persist" (
     "id" bigserial PRIMARY KEY,
     "bigIntDefaultPersistStr" text DEFAULT '1234567890123456789099999999'::text
+);
+
+--
+-- Class BleedChild as table bleed_child
+--
+CREATE TABLE "bleed_child" (
+    "id" bigserial PRIMARY KEY,
+    "bleedingText" text
+);
+
+--
+-- Class BleedRoot as table bleed_root
+--
+CREATE TABLE "bleed_root" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "firstChildId" bigint,
+    "secondChildId" bigint
 );
 
 --
@@ -794,42 +812,6 @@ CREATE TABLE "object_with_enum_enhanced" (
 );
 
 --
--- Class ObjectWithGeographyGeometryCollection as table object_with_geography_geometry_collection
---
-CREATE TABLE "object_with_geography_geometry_collection" (
-    "id" bigserial PRIMARY KEY,
-    "collection" geography(GeometryCollection,4326) NOT NULL,
-    "collectionNullable" geography(GeometryCollection,4326)
-);
-
---
--- Class ObjectWithGeographyLineString as table object_with_geography_line_string
---
-CREATE TABLE "object_with_geography_line_string" (
-    "id" bigserial PRIMARY KEY,
-    "lineString" geography(LineString,4326) NOT NULL,
-    "lineStringNullable" geography(LineString,4326)
-);
-
---
--- Class ObjectWithGeographyPoint as table object_with_geography_point
---
-CREATE TABLE "object_with_geography_point" (
-    "id" bigserial PRIMARY KEY,
-    "location" geography(Point,4326) NOT NULL,
-    "locationNullable" geography(Point,4326)
-);
-
---
--- Class ObjectWithGeographyPolygon as table object_with_geography_polygon
---
-CREATE TABLE "object_with_geography_polygon" (
-    "id" bigserial PRIMARY KEY,
-    "polygon" geography(Polygon,4326) NOT NULL,
-    "polygonNullable" geography(Polygon,4326)
-);
-
---
 -- Class ObjectWithHalfVector as table object_with_half_vector
 --
 CREATE TABLE "object_with_half_vector" (
@@ -1304,6 +1286,10 @@ CREATE TABLE "types" (
     "aHalfVector" halfvec(3),
     "aSparseVector" sparsevec(3),
     "aBit" bit(3),
+    "aGeographyPoint" geography(Point,4326),
+    "aGeographyLineString" geography(LineString,4326),
+    "aGeographyPolygon" geography(Polygon,4326),
+    "aGeographyGeometryCollection" geography(GeometryCollection,4326),
     "anEnum" bigint,
     "aStringifiedEnum" text,
     "aList" json,
@@ -1821,6 +1807,22 @@ ALTER TABLE ONLY "address_uuid"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "bleed_root" table
+--
+ALTER TABLE ONLY "bleed_root"
+    ADD CONSTRAINT "bleed_root_fk_0"
+    FOREIGN KEY("firstChildId")
+    REFERENCES "bleed_child"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "bleed_root"
+    ADD CONSTRAINT "bleed_root_fk_1"
+    FOREIGN KEY("secondChildId")
+    REFERENCES "bleed_child"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "blocking" table
 --
 ALTER TABLE ONLY "blocking"
@@ -2303,9 +2305,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260515123529275', now())
+    VALUES ('serverpod_test', '20260620194341455', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260515123529275', "timestamp" = now();
+    DO UPDATE SET "version" = '20260620194341455', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

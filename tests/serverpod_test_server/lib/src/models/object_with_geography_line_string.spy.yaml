@@ -1,5 +1,0 @@
-class: ObjectWithGeographyLineString
-table: object_with_geography_line_string
-fields:
-  lineString: GeographyLineString
-  lineStringNullable: GeographyLineString?

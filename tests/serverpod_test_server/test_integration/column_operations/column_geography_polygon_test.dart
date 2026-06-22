@@ -3,191 +3,69 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-// Simple bounding-box polygons (closed rings: first == last point).
-final _londonBbox = GeographyPolygon(
+final london = GeographyPoint(longitude: -0.1278, latitude: 51.5074);
+final tokyo = GeographyPoint(longitude: 139.69, latitude: 35.68);
+
+// Bounding box polygon around Western Europe (excludes Tokyo).
+final westernEuropeBbox = GeographyPolygon(
   exteriorRing: [
-    GeographyPoint(longitude: -0.5, latitude: 51.3),
-    GeographyPoint(longitude: 0.3, latitude: 51.3),
-    GeographyPoint(longitude: 0.3, latitude: 51.7),
-    GeographyPoint(longitude: -0.5, latitude: 51.7),
-    GeographyPoint(longitude: -0.5, latitude: 51.3), // close
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
   ],
 );
 
-final _parisBbox = GeographyPolygon(
-  exteriorRing: [
-    GeographyPoint(longitude: 2.1, latitude: 48.7),
-    GeographyPoint(longitude: 2.6, latitude: 48.7),
-    GeographyPoint(longitude: 2.6, latitude: 49.0),
-    GeographyPoint(longitude: 2.1, latitude: 49.0),
-    GeographyPoint(longitude: 2.1, latitude: 48.7), // close
-  ],
-);
-
-// Polygon with one interior hole (donut).
-final _donut = GeographyPolygon(
-  exteriorRing: [
-    GeographyPoint(longitude: -1.0, latitude: 51.0),
-    GeographyPoint(longitude: 1.0, latitude: 51.0),
-    GeographyPoint(longitude: 1.0, latitude: 52.0),
-    GeographyPoint(longitude: -1.0, latitude: 52.0),
-    GeographyPoint(longitude: -1.0, latitude: 51.0),
-  ],
-  holes: [
-    [
-      GeographyPoint(longitude: -0.3, latitude: 51.3),
-      GeographyPoint(longitude: 0.3, latitude: 51.3),
-      GeographyPoint(longitude: 0.3, latitude: 51.7),
-      GeographyPoint(longitude: -0.3, latitude: 51.7),
-      GeographyPoint(longitude: -0.3, latitude: 51.3),
-    ],
-  ],
-);
+Future<void> _createTestDatabase(Session session) async {
+  await Types.db.insert(session, [
+    Types(aGeographyPolygon: westernEuropeBbox),
+    Types(aGeographyPolygon: null),
+  ]);
+}
 
 Future<void> _deleteAll(Session session) async {
-  await ObjectWithGeographyPolygon.db.deleteWhere(
-    session,
-    where: (_) => Constant.bool(true),
-  );
+  await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
 }
 
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  tearDown(() async => await _deleteAll(session));
+  setUpAll(() async => await _createTestDatabase(session));
+  tearDownAll(() async => await _deleteAll(session));
 
   group('Given geography polygon column in database', () {
-    test(
-      'when inserting a row then the row is returned with correct values.',
-      () async {
-        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-          session,
-          ObjectWithGeographyPolygon(polygon: _londonBbox),
-        );
-
-        expect(inserted.id, isNotNull);
-        expect(inserted.polygon, equals(_londonBbox));
-        expect(inserted.polygonNullable, isNull);
-      },
-    );
-
-    test(
-      'when inserting a row with a nullable field then it round-trips correctly.',
-      () async {
-        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-          session,
-          ObjectWithGeographyPolygon(
-            polygon: _londonBbox,
-            polygonNullable: _parisBbox,
-          ),
-        );
-
-        expect(inserted.polygon, equals(_londonBbox));
-        expect(inserted.polygonNullable, equals(_parisBbox));
-      },
-    );
-
-    test('when fetching by id then the correct row is returned.', () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(polygon: _donut),
-      );
-
-      var fetched = await ObjectWithGeographyPolygon.db.findById(
-        session,
-        inserted.id!,
-      );
-
-      expect(fetched, isNotNull);
-      // Verify hole count survived the round-trip.
-      expect(fetched!.polygon.holes.length, 1);
-    });
-
-    test('when updating a row then the new value is persisted.', () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(polygon: _londonBbox),
-      );
-
-      var updated = await ObjectWithGeographyPolygon.db.updateRow(
-        session,
-        inserted.copyWith(polygon: _parisBbox),
-      );
-
-      expect(updated.polygon, equals(_parisBbox));
-
-      var fetched = await ObjectWithGeographyPolygon.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched!.polygon, equals(_parisBbox));
-    });
-
-    test('when inserting multiple rows then all rows are returned.', () async {
-      await ObjectWithGeographyPolygon.db.insert(session, [
-        ObjectWithGeographyPolygon(polygon: _londonBbox),
-        ObjectWithGeographyPolygon(polygon: _parisBbox),
-        ObjectWithGeographyPolygon(polygon: _donut),
-      ]);
-
-      var result = await ObjectWithGeographyPolygon.db.find(
+    test('when fetching all then all rows are returned.', () async {
+      var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
       );
 
-      expect(result.length, 3);
-    });
-
-    test('when deleting a row then it is no longer in the database.', () async {
-      var inserted = await ObjectWithGeographyPolygon.db.insertRow(
-        session,
-        ObjectWithGeographyPolygon(polygon: _londonBbox),
-      );
-
-      await ObjectWithGeographyPolygon.db.deleteRow(session, inserted);
-
-      var fetched = await ObjectWithGeographyPolygon.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched, isNull);
+      expect(result.length, 2);
     });
 
     test(
-      'when filtering by equality then only matching rows are returned.',
+      'when filtering with contains for a point inside then the polygon row is returned.',
       () async {
-        await ObjectWithGeographyPolygon.db.insert(session, [
-          ObjectWithGeographyPolygon(polygon: _londonBbox),
-          ObjectWithGeographyPolygon(polygon: _parisBbox),
-        ]);
-
-        var result = await ObjectWithGeographyPolygon.db.find(
+        var result = await Types.db.find(
           session,
-          where: (t) => t.polygon.equals(_londonBbox),
+          where: (t) => t.aGeographyPolygon.contains(london),
         );
 
         expect(result.length, 1);
-        expect(result.first.polygon, equals(_londonBbox));
+        expect(result.first.aGeographyPolygon, equals(westernEuropeBbox));
       },
     );
 
     test(
-      'when updating nullable field to null then null is persisted.',
+      'when filtering with contains for a point outside then no rows are returned.',
       () async {
-        var inserted = await ObjectWithGeographyPolygon.db.insertRow(
+        var result = await Types.db.find(
           session,
-          ObjectWithGeographyPolygon(
-            polygon: _londonBbox,
-            polygonNullable: _parisBbox,
-          ),
+          where: (t) => t.aGeographyPolygon.contains(tokyo),
         );
 
-        var updated = await ObjectWithGeographyPolygon.db.updateRow(
-          session,
-          inserted.copyWith(polygonNullable: null),
-        );
-
-        expect(updated.polygonNullable, isNull);
+        expect(result, isEmpty);
       },
     );
   });

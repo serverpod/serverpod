@@ -34,6 +34,10 @@ abstract class Types implements _i1.TableRow<int?> {
     this.aHalfVector,
     this.aSparseVector,
     this.aBit,
+    this.aGeographyPoint,
+    this.aGeographyLineString,
+    this.aGeographyPolygon,
+    this.aGeographyGeometryCollection,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -58,6 +62,10 @@ abstract class Types implements _i1.TableRow<int?> {
     _i3.HalfVector? aHalfVector,
     _i3.SparseVector? aSparseVector,
     _i3.Bit? aBit,
+    _i3.GeographyPoint? aGeographyPoint,
+    _i3.GeographyLineString? aGeographyLineString,
+    _i3.GeographyPolygon? aGeographyPolygon,
+    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -109,6 +117,27 @@ abstract class Types implements _i1.TableRow<int?> {
       aBit: jsonSerialization['aBit'] == null
           ? null
           : _i3.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+      aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
+          ? null
+          : _i3.GeographyPointJsonExtension.fromJson(
+              jsonSerialization['aGeographyPoint'],
+            ),
+      aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
+          ? null
+          : _i3.GeographyLineStringJsonExtension.fromJson(
+              jsonSerialization['aGeographyLineString'],
+            ),
+      aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
+          ? null
+          : _i3.GeographyPolygonJsonExtension.fromJson(
+              jsonSerialization['aGeographyPolygon'],
+            ),
+      aGeographyGeometryCollection:
+          jsonSerialization['aGeographyGeometryCollection'] == null
+          ? null
+          : _i3.GeographyGeometryCollectionJsonExtension.fromJson(
+              jsonSerialization['aGeographyGeometryCollection'],
+            ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i4.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -171,6 +200,14 @@ abstract class Types implements _i1.TableRow<int?> {
 
   _i3.Bit? aBit;
 
+  _i3.GeographyPoint? aGeographyPoint;
+
+  _i3.GeographyLineString? aGeographyLineString;
+
+  _i3.GeographyPolygon? aGeographyPolygon;
+
+  _i3.GeographyGeometryCollection? aGeographyGeometryCollection;
+
   _i4.TestEnum? anEnum;
 
   _i5.TestEnumStringified? aStringifiedEnum;
@@ -205,6 +242,10 @@ abstract class Types implements _i1.TableRow<int?> {
     _i3.HalfVector? aHalfVector,
     _i3.SparseVector? aSparseVector,
     _i3.Bit? aBit,
+    _i3.GeographyPoint? aGeographyPoint,
+    _i3.GeographyLineString? aGeographyLineString,
+    _i3.GeographyPolygon? aGeographyPolygon,
+    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -231,6 +272,13 @@ abstract class Types implements _i1.TableRow<int?> {
       if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
       if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
       if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -292,6 +340,10 @@ class _TypesImpl extends Types {
     _i3.HalfVector? aHalfVector,
     _i3.SparseVector? aSparseVector,
     _i3.Bit? aBit,
+    _i3.GeographyPoint? aGeographyPoint,
+    _i3.GeographyLineString? aGeographyLineString,
+    _i3.GeographyPolygon? aGeographyPolygon,
+    _i3.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i4.TestEnum? anEnum,
     _i5.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -314,6 +366,10 @@ class _TypesImpl extends Types {
          aHalfVector: aHalfVector,
          aSparseVector: aSparseVector,
          aBit: aBit,
+         aGeographyPoint: aGeographyPoint,
+         aGeographyLineString: aGeographyLineString,
+         aGeographyPolygon: aGeographyPolygon,
+         aGeographyGeometryCollection: aGeographyGeometryCollection,
          anEnum: anEnum,
          aStringifiedEnum: aStringifiedEnum,
          aList: aList,
@@ -342,6 +398,10 @@ class _TypesImpl extends Types {
     Object? aHalfVector = _Undefined,
     Object? aSparseVector = _Undefined,
     Object? aBit = _Undefined,
+    Object? aGeographyPoint = _Undefined,
+    Object? aGeographyLineString = _Undefined,
+    Object? aGeographyPolygon = _Undefined,
+    Object? aGeographyGeometryCollection = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -371,6 +431,19 @@ class _TypesImpl extends Types {
           ? aSparseVector
           : this.aSparseVector?.clone(),
       aBit: aBit is _i3.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _i3.GeographyPoint?
+          ? aGeographyPoint
+          : this.aGeographyPoint,
+      aGeographyLineString: aGeographyLineString is _i3.GeographyLineString?
+          ? aGeographyLineString
+          : this.aGeographyLineString,
+      aGeographyPolygon: aGeographyPolygon is _i3.GeographyPolygon?
+          ? aGeographyPolygon
+          : this.aGeographyPolygon,
+      aGeographyGeometryCollection:
+          aGeographyGeometryCollection is _i3.GeographyGeometryCollection?
+          ? aGeographyGeometryCollection
+          : this.aGeographyGeometryCollection,
       anEnum: anEnum is _i4.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i5.TestEnumStringified?
           ? aStringifiedEnum
@@ -482,6 +555,36 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
     value,
   );
 
+  _i1.ColumnValue<_i3.GeographyPoint, _i3.GeographyPoint> aGeographyPoint(
+    _i3.GeographyPoint? value,
+  ) => _i1.ColumnValue(
+    table.aGeographyPoint,
+    value,
+  );
+
+  _i1.ColumnValue<_i3.GeographyLineString, _i3.GeographyLineString>
+  aGeographyLineString(_i3.GeographyLineString? value) => _i1.ColumnValue(
+    table.aGeographyLineString,
+    value,
+  );
+
+  _i1.ColumnValue<_i3.GeographyPolygon, _i3.GeographyPolygon> aGeographyPolygon(
+    _i3.GeographyPolygon? value,
+  ) => _i1.ColumnValue(
+    table.aGeographyPolygon,
+    value,
+  );
+
+  _i1.ColumnValue<
+    _i3.GeographyGeometryCollection,
+    _i3.GeographyGeometryCollection
+  >
+  aGeographyGeometryCollection(_i3.GeographyGeometryCollection? value) =>
+      _i1.ColumnValue(
+        table.aGeographyGeometryCollection,
+        value,
+      );
+
   _i1.ColumnValue<_i4.TestEnum, _i4.TestEnum> anEnum(_i4.TestEnum? value) =>
       _i1.ColumnValue(
         table.anEnum,
@@ -582,6 +685,22 @@ class TypesTable extends _i1.Table<int?> {
       this,
       dimension: 3,
     );
+    aGeographyPoint = _i1.ColumnGeographyPoint(
+      'aGeographyPoint',
+      this,
+    );
+    aGeographyLineString = _i1.ColumnGeographyLineString(
+      'aGeographyLineString',
+      this,
+    );
+    aGeographyPolygon = _i1.ColumnGeographyPolygon(
+      'aGeographyPolygon',
+      this,
+    );
+    aGeographyGeometryCollection = _i1.ColumnGeographyGeometryCollection(
+      'aGeographyGeometryCollection',
+      this,
+    );
     anEnum = _i1.ColumnEnum(
       'anEnum',
       this,
@@ -640,6 +759,14 @@ class TypesTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBit aBit;
 
+  late final _i1.ColumnGeographyPoint aGeographyPoint;
+
+  late final _i1.ColumnGeographyLineString aGeographyLineString;
+
+  late final _i1.ColumnGeographyPolygon aGeographyPolygon;
+
+  late final _i1.ColumnGeographyGeometryCollection aGeographyGeometryCollection;
+
   late final _i1.ColumnEnum<_i4.TestEnum> anEnum;
 
   late final _i1.ColumnEnum<_i5.TestEnumStringified> aStringifiedEnum;
@@ -669,6 +796,10 @@ class TypesTable extends _i1.Table<int?> {
     aHalfVector,
     aSparseVector,
     aBit,
+    aGeographyPoint,
+    aGeographyLineString,
+    aGeographyPolygon,
+    aGeographyGeometryCollection,
     anEnum,
     aStringifiedEnum,
     aList,

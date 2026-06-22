@@ -3,114 +3,49 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-final _routeAB = GeographyLineString(
-  points: [
-    GeographyPoint(longitude: -0.1278, latitude: 51.5074), // London
-    GeographyPoint(longitude: 2.3522, latitude: 48.8566), // Paris
+final london = GeographyPoint(longitude: -0.1278, latitude: 51.5074);
+final paris = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
+final tokyo = GeographyPoint(longitude: 139.69, latitude: 35.68);
+final osaka = GeographyPoint(longitude: 135.50, latitude: 34.69);
+
+// A line from London to Paris (Western Europe).
+final routeLondonParis = GeographyLineString(points: [london, paris]);
+
+// A line from Tokyo to Osaka (Japan).
+final routeTokyoOsaka = GeographyLineString(points: [tokyo, osaka]);
+
+// Bounding box polygon around Western Europe (excludes Japan).
+final westernEuropeBbox = GeographyPolygon(
+  exteriorRing: [
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
   ],
 );
 
-final _routeBC = GeographyLineString(
-  points: [
-    GeographyPoint(longitude: 2.3522, latitude: 48.8566), // Paris
-    GeographyPoint(longitude: 13.405, latitude: 52.52), // Berlin
-  ],
-);
-
-final _routeABC = GeographyLineString(
-  points: [
-    GeographyPoint(longitude: -0.1278, latitude: 51.5074), // London
-    GeographyPoint(longitude: 2.3522, latitude: 48.8566), // Paris
-    GeographyPoint(longitude: 13.405, latitude: 52.52), // Berlin
-  ],
-);
+Future<void> _createTestDatabase(Session session) async {
+  await Types.db.insert(session, [
+    Types(aGeographyLineString: routeLondonParis),
+    Types(aGeographyLineString: routeTokyoOsaka),
+    Types(aGeographyLineString: null),
+  ]);
+}
 
 Future<void> _deleteAll(Session session) async {
-  await ObjectWithGeographyLineString.db.deleteWhere(
-    session,
-    where: (_) => Constant.bool(true),
-  );
+  await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
 }
 
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  tearDown(() async => await _deleteAll(session));
+  setUpAll(() async => await _createTestDatabase(session));
+  tearDownAll(() async => await _deleteAll(session));
 
   group('Given geography line string column in database', () {
-    test(
-      'when inserting a row then the row is returned with correct values.',
-      () async {
-        var inserted = await ObjectWithGeographyLineString.db.insertRow(
-          session,
-          ObjectWithGeographyLineString(lineString: _routeAB),
-        );
-
-        expect(inserted.id, isNotNull);
-        expect(inserted.lineString, equals(_routeAB));
-        expect(inserted.lineStringNullable, isNull);
-      },
-    );
-
-    test(
-      'when inserting a row with a nullable field then it round-trips correctly.',
-      () async {
-        var inserted = await ObjectWithGeographyLineString.db.insertRow(
-          session,
-          ObjectWithGeographyLineString(
-            lineString: _routeAB,
-            lineStringNullable: _routeBC,
-          ),
-        );
-
-        expect(inserted.lineString, equals(_routeAB));
-        expect(inserted.lineStringNullable, equals(_routeBC));
-      },
-    );
-
-    test('when fetching by id then the correct row is returned.', () async {
-      var inserted = await ObjectWithGeographyLineString.db.insertRow(
-        session,
-        ObjectWithGeographyLineString(lineString: _routeABC),
-      );
-
-      var fetched = await ObjectWithGeographyLineString.db.findById(
-        session,
-        inserted.id!,
-      );
-
-      expect(fetched, isNotNull);
-      expect(fetched!.lineString, equals(_routeABC));
-    });
-
-    test('when updating a row then the new value is persisted.', () async {
-      var inserted = await ObjectWithGeographyLineString.db.insertRow(
-        session,
-        ObjectWithGeographyLineString(lineString: _routeAB),
-      );
-
-      var updated = await ObjectWithGeographyLineString.db.updateRow(
-        session,
-        inserted.copyWith(lineString: _routeBC),
-      );
-
-      expect(updated.lineString, equals(_routeBC));
-
-      var fetched = await ObjectWithGeographyLineString.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched!.lineString, equals(_routeBC));
-    });
-
-    test('when inserting multiple rows then all rows are returned.', () async {
-      await ObjectWithGeographyLineString.db.insert(session, [
-        ObjectWithGeographyLineString(lineString: _routeAB),
-        ObjectWithGeographyLineString(lineString: _routeBC),
-        ObjectWithGeographyLineString(lineString: _routeABC),
-      ]);
-
-      var result = await ObjectWithGeographyLineString.db.find(
+    test('when fetching all then all rows are returned.', () async {
+      var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
       );
@@ -118,78 +53,44 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when deleting a row then it is no longer in the database.', () async {
-      var inserted = await ObjectWithGeographyLineString.db.insertRow(
-        session,
-        ObjectWithGeographyLineString(lineString: _routeAB),
-      );
-
-      await ObjectWithGeographyLineString.db.deleteRow(session, inserted);
-
-      var fetched = await ObjectWithGeographyLineString.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched, isNull);
-    });
-
     test(
-      'when filtering by equality then only matching rows are returned.',
+      'when filtering with intersects then line strings overlapping the polygon are returned.',
       () async {
-        await ObjectWithGeographyLineString.db.insert(session, [
-          ObjectWithGeographyLineString(lineString: _routeAB),
-          ObjectWithGeographyLineString(lineString: _routeBC),
-        ]);
-
-        var result = await ObjectWithGeographyLineString.db.find(
+        var result = await Types.db.find(
           session,
-          where: (t) => t.lineString.equals(_routeAB),
+          where: (t) => t.aGeographyLineString.intersects(westernEuropeBbox),
         );
 
         expect(result.length, 1);
-        expect(result.first.lineString, equals(_routeAB));
+        expect(result.first.aGeographyLineString, equals(routeLondonParis));
       },
     );
 
     test(
-      'when filtering with distanceWithin then only nearby lines are returned.',
+      'when filtering with distanceWithin then line strings within the distance are returned.',
       () async {
-        // _routeAB passes through London-Paris area; _routeABC passes through London-Paris-Berlin.
-        await ObjectWithGeographyLineString.db.insert(session, [
-          ObjectWithGeographyLineString(lineString: _routeAB),
-          ObjectWithGeographyLineString(lineString: _routeBC),
-        ]);
-
-        // Point near London; _routeAB starts there, _routeBC does not.
-        final nearLondon = GeographyPoint(longitude: -0.13, latitude: 51.51);
-
-        var result = await ObjectWithGeographyLineString.db.find(
+        var result = await Types.db.find(
           session,
-          where: (t) => t.lineString.distanceWithin(nearLondon, 10000), // 10 km
+          where: (t) => t.aGeographyLineString.distanceWithin(paris, 500000),
         );
 
         expect(result.length, 1);
-        expect(result.first.lineString, equals(_routeAB));
+        expect(result.first.aGeographyLineString, equals(routeLondonParis));
       },
     );
 
     test(
-      'when updating nullable field to null then null is persisted.',
+      'when ordering by distance then closest rows are returned first.',
       () async {
-        var inserted = await ObjectWithGeographyLineString.db.insertRow(
+        var result = await Types.db.find(
           session,
-          ObjectWithGeographyLineString(
-            lineString: _routeAB,
-            lineStringNullable: _routeBC,
-          ),
+          orderBy: (t) => t.aGeographyLineString.distance(london),
         );
 
-        var updated = await ObjectWithGeographyLineString.db.updateRow(
-          session,
-          inserted.copyWith(lineStringNullable: null),
-        );
-
-        expect(updated.lineStringNullable, isNull);
+        expect(result.length, 3);
+        expect(result.first.aGeographyLineString, equals(routeLondonParis));
+        // The null value should be last when ordering by distance.
+        expect(result.last.aGeographyLineString, isNull);
       },
     );
   });

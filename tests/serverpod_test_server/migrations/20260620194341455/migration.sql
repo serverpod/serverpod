@@ -8,55 +8,26 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN
     EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';
   ELSE
-    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS.';
+    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.';
   END IF;
 END
 $$;
 
 --
--- ACTION CREATE TABLE
+-- ACTION ALTER TABLE
 --
-CREATE TABLE "object_with_geography_geometry_collection" (
-    "id" bigserial PRIMARY KEY,
-    "collection" geography(GeometryCollection,4326) NOT NULL,
-    "collectionNullable" geography(GeometryCollection,4326)
-);
-
---
--- ACTION CREATE TABLE
---
-CREATE TABLE "object_with_geography_line_string" (
-    "id" bigserial PRIMARY KEY,
-    "lineString" geography(LineString,4326) NOT NULL,
-    "lineStringNullable" geography(LineString,4326)
-);
-
---
--- ACTION CREATE TABLE
---
-CREATE TABLE "object_with_geography_point" (
-    "id" bigserial PRIMARY KEY,
-    "location" geography(Point,4326) NOT NULL,
-    "locationNullable" geography(Point,4326)
-);
-
---
--- ACTION CREATE TABLE
---
-CREATE TABLE "object_with_geography_polygon" (
-    "id" bigserial PRIMARY KEY,
-    "polygon" geography(Polygon,4326) NOT NULL,
-    "polygonNullable" geography(Polygon,4326)
-);
-
+ALTER TABLE "types" ADD COLUMN "aGeographyPoint" geography(Point,4326);
+ALTER TABLE "types" ADD COLUMN "aGeographyLineString" geography(LineString,4326);
+ALTER TABLE "types" ADD COLUMN "aGeographyPolygon" geography(Polygon,4326);
+ALTER TABLE "types" ADD COLUMN "aGeographyGeometryCollection" geography(GeometryCollection,4326);
 
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260515123529275', now())
+    VALUES ('serverpod_test', '20260620194341455', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260515123529275', "timestamp" = now();
+    DO UPDATE SET "version" = '20260620194341455', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

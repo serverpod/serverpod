@@ -16,6 +16,10 @@ fields:
   aHalfVector: HalfVector(3)?
   aSparseVector: SparseVector(3)?
   aBit: Bit(3)?
+  aGeographyPoint: GeographyPoint?
+  aGeographyLineString: GeographyLineString?
+  aGeographyPolygon: GeographyPolygon?
+  aGeographyGeometryCollection: GeographyGeometryCollection?
   anEnum: TestEnum?
   aStringifiedEnum: TestEnumStringified?
   aList: List<int>?

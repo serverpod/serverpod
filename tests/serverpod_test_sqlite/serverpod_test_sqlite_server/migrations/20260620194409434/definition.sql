@@ -780,46 +780,6 @@ CREATE TABLE "object_with_enum_enhanced" (
 
 
 --
--- Class ObjectWithGeographyGeometryCollection as table object_with_geography_geometry_collection
---
-CREATE TABLE "object_with_geography_geometry_collection" (
-    "id" INTEGER PRIMARY KEY,
-    "collection" TEXT NOT NULL,
-    "collectionNullable" TEXT
-) STRICT;
-
-
---
--- Class ObjectWithGeographyLineString as table object_with_geography_line_string
---
-CREATE TABLE "object_with_geography_line_string" (
-    "id" INTEGER PRIMARY KEY,
-    "lineString" TEXT NOT NULL,
-    "lineStringNullable" TEXT
-) STRICT;
-
-
---
--- Class ObjectWithGeographyPoint as table object_with_geography_point
---
-CREATE TABLE "object_with_geography_point" (
-    "id" INTEGER PRIMARY KEY,
-    "location" TEXT NOT NULL,
-    "locationNullable" TEXT
-) STRICT;
-
-
---
--- Class ObjectWithGeographyPolygon as table object_with_geography_polygon
---
-CREATE TABLE "object_with_geography_polygon" (
-    "id" INTEGER PRIMARY KEY,
-    "polygon" TEXT NOT NULL,
-    "polygonNullable" TEXT
-) STRICT;
-
-
---
 -- Class ObjectWithHalfVector as table object_with_half_vector
 --
 CREATE TABLE "object_with_half_vector" (
@@ -1259,6 +1219,10 @@ CREATE TABLE "types" (
     "aHalfVector" TEXT,
     "aSparseVector" TEXT,
     "aBit" TEXT,
+    "aGeographyPoint" TEXT,
+    "aGeographyLineString" TEXT,
+    "aGeographyPolygon" TEXT,
+    "aGeographyGeometryCollection" TEXT,
     "anEnum" INTEGER,
     "aStringifiedEnum" TEXT,
     "aList" TEXT,
@@ -1744,14 +1708,6 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
     ('object_with_enum', 'enumListList', 'json', NULL),
     ('object_with_enum_enhanced', 'byIndexList', 'json', NULL),
     ('object_with_enum_enhanced', 'byNameList', 'json', NULL),
-    ('object_with_geography_geometry_collection', 'collection', 'geographyGeometryCollection', NULL),
-    ('object_with_geography_geometry_collection', 'collectionNullable', 'geographyGeometryCollection', NULL),
-    ('object_with_geography_line_string', 'lineString', 'geographyLineString', NULL),
-    ('object_with_geography_line_string', 'lineStringNullable', 'geographyLineString', NULL),
-    ('object_with_geography_point', 'location', 'geography', NULL),
-    ('object_with_geography_point', 'locationNullable', 'geography', NULL),
-    ('object_with_geography_polygon', 'polygon', 'geographyPolygon', NULL),
-    ('object_with_geography_polygon', 'polygonNullable', 'geographyPolygon', NULL),
     ('object_with_half_vector', 'halfVector', 'halfvec', 512),
     ('object_with_half_vector', 'halfVectorNullable', 'halfvec', 512),
     ('object_with_half_vector', 'halfVectorIndexedHnsw', 'halfvec', 512),
@@ -1804,6 +1760,10 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
     ('types', 'aHalfVector', 'halfvec', 3),
     ('types', 'aSparseVector', 'sparsevec', 3),
     ('types', 'aBit', 'bit', 3),
+    ('types', 'aGeographyPoint', 'geography', NULL),
+    ('types', 'aGeographyLineString', 'geographyLineString', NULL),
+    ('types', 'aGeographyPolygon', 'geographyPolygon', NULL),
+    ('types', 'aGeographyGeometryCollection', 'geographyGeometryCollection', NULL),
     ('types', 'aList', 'json', NULL),
     ('types', 'aMap', 'json', NULL),
     ('types', 'aSet', 'json', NULL),
@@ -1851,9 +1811,9 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
 -- MIGRATION VERSION FOR serverpod_test_sqlite
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test_sqlite', '20260608190828197', (unixepoch('now', 'subsecond') * 1000))
+    VALUES ('serverpod_test_sqlite', '20260620194409434', (unixepoch('now', 'subsecond') * 1000))
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260608190828197', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+    DO UPDATE SET "version" = '20260620194409434', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
 
 --
 -- MIGRATION VERSION FOR serverpod

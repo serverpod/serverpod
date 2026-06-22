@@ -3,171 +3,113 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-final _london = GeographyPoint(longitude: -0.1278, latitude: 51.5074);
-final _paris = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
-final _newYork = GeographyPoint(longitude: -74.006, latitude: 40.7128);
+final london = GeographyPoint(longitude: -0.1278, latitude: 51.5074);
+final paris = GeographyPoint(longitude: 2.3522, latitude: 48.8566);
+final berlin = GeographyPoint(longitude: 13.405, latitude: 52.52);
+final tokyo = GeographyPoint(longitude: 139.69, latitude: 35.68);
+
+// Bounding box polygon around Western Europe (excludes Tokyo).
+final westernEuropeBbox = GeographyPolygon(
+  exteriorRing: [
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 35.0),
+    GeographyPoint(longitude: 25.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 60.0),
+    GeographyPoint(longitude: -10.0, latitude: 35.0),
+  ],
+);
+
+Future<void> _createTestDatabase(Session session) async {
+  await Types.db.insert(session, [
+    Types(aGeographyPoint: london),
+    Types(aGeographyPoint: paris),
+    Types(aGeographyPoint: tokyo),
+    Types(aGeographyPoint: null),
+  ]);
+}
 
 Future<void> _deleteAll(Session session) async {
-  await ObjectWithGeographyPoint.db.deleteWhere(
-    session,
-    where: (_) => Constant.bool(true),
-  );
+  await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
 }
 
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  tearDown(() async => await _deleteAll(session));
+  setUpAll(() async => await _createTestDatabase(session));
+  tearDownAll(() async => await _deleteAll(session));
 
   group('Given geography point column in database', () {
-    test(
-      'when inserting a row then the row is returned with correct values.',
-      () async {
-        var inserted = await ObjectWithGeographyPoint.db.insertRow(
-          session,
-          ObjectWithGeographyPoint(location: _london),
-        );
-
-        expect(inserted.id, isNotNull);
-        expect(inserted.location, equals(_london));
-        expect(inserted.locationNullable, isNull);
-      },
-    );
-
-    test(
-      'when inserting a row with a nullable field then it round-trips correctly.',
-      () async {
-        var inserted = await ObjectWithGeographyPoint.db.insertRow(
-          session,
-          ObjectWithGeographyPoint(
-            location: _paris,
-            locationNullable: _london,
-          ),
-        );
-
-        expect(inserted.location, equals(_paris));
-        expect(inserted.locationNullable, equals(_london));
-      },
-    );
-
-    test('when fetching by id then the correct row is returned.', () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(location: _london),
-      );
-
-      var fetched = await ObjectWithGeographyPoint.db.findById(
-        session,
-        inserted.id!,
-      );
-
-      expect(fetched, isNotNull);
-      expect(fetched!.location, equals(_london));
-    });
-
-    test('when updating a row then the new value is persisted.', () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(location: _london),
-      );
-
-      var updated = await ObjectWithGeographyPoint.db.updateRow(
-        session,
-        inserted.copyWith(location: _paris),
-      );
-
-      expect(updated.location, equals(_paris));
-
-      var fetched = await ObjectWithGeographyPoint.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched!.location, equals(_paris));
-    });
-
-    test('when inserting multiple rows then all rows are returned.', () async {
-      await ObjectWithGeographyPoint.db.insert(session, [
-        ObjectWithGeographyPoint(location: _london),
-        ObjectWithGeographyPoint(location: _paris),
-        ObjectWithGeographyPoint(location: _newYork),
-      ]);
-
-      var result = await ObjectWithGeographyPoint.db.find(
+    test('when fetching all then all rows are returned.', () async {
+      var result = await Types.db.find(
         session,
         where: (_) => Constant.bool(true),
       );
 
-      expect(result.length, 3);
-    });
-
-    test('when deleting a row then it is no longer in the database.', () async {
-      var inserted = await ObjectWithGeographyPoint.db.insertRow(
-        session,
-        ObjectWithGeographyPoint(location: _london),
-      );
-
-      await ObjectWithGeographyPoint.db.deleteRow(session, inserted);
-
-      var fetched = await ObjectWithGeographyPoint.db.findById(
-        session,
-        inserted.id!,
-      );
-      expect(fetched, isNull);
+      expect(result.length, 4);
     });
 
     test(
-      'when filtering by location equality then only matching rows are returned.',
+      'when filtering with intersects then points inside the polygon are returned.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(session, [
-          ObjectWithGeographyPoint(location: _london),
-          ObjectWithGeographyPoint(location: _paris),
-        ]);
-
-        var result = await ObjectWithGeographyPoint.db.find(
+        var result = await Types.db.find(
           session,
-          where: (t) => t.location.equals(_london),
+          where: (t) => t.aGeographyPoint.intersects(westernEuropeBbox),
         );
 
-        expect(result.length, 1);
-        expect(result.first.location, equals(_london));
+        expect(result.length, 2);
+        expect(
+          result.map((r) => r.aGeographyPoint),
+          containsAll([london, paris]),
+        );
       },
     );
 
     test(
-      'when using count with a where clause then the correct count is returned.',
+      'when filtering with distanceWithin then points within the distance are returned.',
       () async {
-        await ObjectWithGeographyPoint.db.insert(session, [
-          ObjectWithGeographyPoint(location: _london),
-          ObjectWithGeographyPoint(location: _paris),
-          ObjectWithGeographyPoint(location: _london),
-        ]);
-
-        var count = await ObjectWithGeographyPoint.db.count(
+        // London–Paris ~344 km; Tokyo is ~9700 km from Paris.
+        var result = await Types.db.find(
           session,
-          where: (t) => t.location.equals(_london),
+          where: (t) => t.aGeographyPoint.distanceWithin(paris, 500000),
         );
 
-        expect(count, 2);
+        expect(result.length, 2);
+        expect(
+          result.map((r) => r.aGeographyPoint),
+          containsAll([london, paris]),
+        );
       },
     );
 
     test(
-      'when updating nullable field to null then null is persisted.',
+      'when ordering by distance then closest rows are returned first.',
       () async {
-        var inserted = await ObjectWithGeographyPoint.db.insertRow(
+        // Distance from Berlin: Paris ~878 km, London ~931 km, Tokyo ~8900 km.
+        var result = await Types.db.find(
           session,
-          ObjectWithGeographyPoint(
-            location: _london,
-            locationNullable: _paris,
-          ),
+          orderBy: (t) => t.aGeographyPoint.distance(berlin),
         );
 
-        var updated = await ObjectWithGeographyPoint.db.updateRow(
+        expect(result.length, 4);
+        expect(result.first.aGeographyPoint, equals(paris));
+        // The null value should be last when ordering by distance.
+        expect(result.last.aGeographyPoint, isNull);
+      },
+    );
+
+    test(
+      'when filtering with within then points inside the polygon are returned.',
+      () async {
+        var result = await Types.db.find(
           session,
-          inserted.copyWith(locationNullable: null),
+          where: (t) => t.aGeographyPoint.within(westernEuropeBbox),
         );
 
-        expect(updated.locationNullable, isNull);
+        expect(result.length, 2);
+        expect(
+          result.map((r) => r.aGeographyPoint),
+          containsAll([london, paris]),
+        );
       },
     );
   });

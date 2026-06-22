@@ -3405,154 +3405,6 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
-      "name": "object_with_geography_geometry_collection",
-      "dartName": "ObjectWithGeographyGeometryCollection",
-      "module": "serverpod_test_sqlite",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "collection",
-          "fieldName": "collection",
-          "columnType": 18,
-          "isNullable": false,
-          "dartType": "GeographyGeometryCollection"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "collectionNullable",
-          "fieldName": "collectionNullable",
-          "columnType": 18,
-          "isNullable": true,
-          "dartType": "GeographyGeometryCollection?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "object_with_geography_line_string",
-      "dartName": "ObjectWithGeographyLineString",
-      "module": "serverpod_test_sqlite",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "lineString",
-          "fieldName": "lineString",
-          "columnType": 16,
-          "isNullable": false,
-          "dartType": "GeographyLineString"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "lineStringNullable",
-          "fieldName": "lineStringNullable",
-          "columnType": 16,
-          "isNullable": true,
-          "dartType": "GeographyLineString?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "object_with_geography_point",
-      "dartName": "ObjectWithGeographyPoint",
-      "module": "serverpod_test_sqlite",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "location",
-          "fieldName": "location",
-          "columnType": 15,
-          "isNullable": false,
-          "dartType": "GeographyPoint"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "locationNullable",
-          "fieldName": "locationNullable",
-          "columnType": 15,
-          "isNullable": true,
-          "dartType": "GeographyPoint?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "object_with_geography_polygon",
-      "dartName": "ObjectWithGeographyPolygon",
-      "module": "serverpod_test_sqlite",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "fieldName": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "serial",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "polygon",
-          "fieldName": "polygon",
-          "columnType": 17,
-          "isNullable": false,
-          "dartType": "GeographyPolygon"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "polygonNullable",
-          "fieldName": "polygonNullable",
-          "columnType": 17,
-          "isNullable": true,
-          "dartType": "GeographyPolygon?"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
       "name": "object_with_half_vector",
       "dartName": "ObjectWithHalfVector",
       "module": "serverpod_test_sqlite",
@@ -5885,6 +5737,38 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
+          "name": "aGeographyPoint",
+          "fieldName": "aGeographyPoint",
+          "columnType": 15,
+          "isNullable": true,
+          "dartType": "GeographyPoint?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aGeographyLineString",
+          "fieldName": "aGeographyLineString",
+          "columnType": 16,
+          "isNullable": true,
+          "dartType": "GeographyLineString?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aGeographyPolygon",
+          "fieldName": "aGeographyPolygon",
+          "columnType": 17,
+          "isNullable": true,
+          "dartType": "GeographyPolygon?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "aGeographyGeometryCollection",
+          "fieldName": "aGeographyGeometryCollection",
+          "columnType": 18,
+          "isNullable": true,
+          "dartType": "GeographyGeometryCollection?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
           "name": "anEnum",
           "fieldName": "anEnum",
           "columnType": 6,
@@ -8008,7 +7892,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersionModel",
       "module": "serverpod_test_sqlite",
-      "version": "20260608190828197"
+      "version": "20260620194409434"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

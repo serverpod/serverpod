@@ -1,5 +1,0 @@
-class: ObjectWithGeographyGeometryCollection
-table: object_with_geography_geometry_collection
-fields:
-  collection: GeographyGeometryCollection
-  collectionNullable: GeographyGeometryCollection?
