@@ -6,7 +6,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
@@ -201,7 +200,7 @@ Future<
 >
 _createFlutterManagerHarness({
   _FakeFlutter? flutter,
-  FlutterDependencyChange Function(String appId)? dependencyChange,
+  PackageDependencyChange Function(String appId)? dependencyChange,
   Future<void> Function(String appId)? restartOverride,
   Future<void> Function(String appId)? launchOverride,
 }) async {
@@ -1837,7 +1836,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.native,
+          dependencyChange: (_) => PackageDependencyChange.native,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -1908,7 +1907,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.dartOnly,
+          dependencyChange: (_) => PackageDependencyChange.dartOnly,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -1976,7 +1975,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.none,
+          dependencyChange: (_) => PackageDependencyChange.none,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -2043,7 +2042,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.assets,
+          dependencyChange: (_) => PackageDependencyChange.assets,
           restartOverride: (_) async {
             restartActionCalls++;
           },

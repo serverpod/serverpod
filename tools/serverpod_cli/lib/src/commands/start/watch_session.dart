@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
@@ -344,7 +343,7 @@ class WatchSession {
     final appIds = manager.appIdsForChangedPaths(changedPaths);
     await appIds.map((appId) async {
       final change = manager.checkDependencyChange(appId);
-      if (changedPaths.isEmpty && change == FlutterDependencyChange.none) {
+      if (changedPaths.isEmpty && change == PackageDependencyChange.none) {
         return;
       }
       await _reloadOrRestartFlutterApp(change, appId: appId);
@@ -357,20 +356,20 @@ class WatchSession {
   /// code changed. The relaunch calls the action directly rather than via
   /// [restartFlutterApp] since we are already running inside [_chain].
   Future<void> _reloadOrRestartFlutterApp(
-    FlutterDependencyChange change, {
+    PackageDependencyChange change, {
     required String appId,
   }) async {
     switch (change) {
-      case FlutterDependencyChange.assets:
+      case PackageDependencyChange.assets:
         log.info(flutterAssetsFontsChanged);
         await _flutterManager?.restart(appId);
-      case FlutterDependencyChange.native:
+      case PackageDependencyChange.native:
         log.info(flutterDependenciesChangedNative);
         await _flutterManager!.restart(appId);
-      case FlutterDependencyChange.dartOnly:
+      case PackageDependencyChange.dartOnly:
         log.info(flutterDependenciesChangedDart);
         await _restartFlutter(appId);
-      case FlutterDependencyChange.none:
+      case PackageDependencyChange.none:
         await _reloadFlutter(appId);
     }
   }

@@ -6,7 +6,9 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 /// How a package's resolved dependency closure changed, ordered by the severity
-/// of the response required to pick the change up.
+/// of the response required to pick the change up. [assets] is the one
+/// exception - a Flutter build-input change rather than a dependency change -
+/// folded in so the watcher classifies every change kind with a single type.
 enum PackageDependencyChange {
   /// No change to the closure.
   none,
@@ -16,6 +18,13 @@ enum PackageDependencyChange {
 
   /// A dependency with native code changed.
   native,
+
+  /// A Flutter app's bundled assets or fonts changed (the `flutter.assets` /
+  /// `flutter.fonts` sections of its `pubspec.yaml`). Not a dependency-closure
+  /// change, but it shares this enum so a single type covers every reason a
+  /// watched app may need to react; only the Flutter app tracker emits it, and
+  /// [refreshClosure] never returns it.
+  assets,
 }
 
 /// Tracks a package's transitive dependency closure so a watcher can react only

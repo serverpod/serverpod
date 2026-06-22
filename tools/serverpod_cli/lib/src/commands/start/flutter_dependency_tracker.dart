@@ -4,31 +4,12 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:yaml/yaml.dart';
 
-/// How the Flutter app's dependency closure changed, ordered by the severity
-/// of the response required to pick the change up.
-enum FlutterDependencyChange {
-  /// No change to the closure; source edits are covered by a hot reload.
-  none,
-
-  /// Only pure-Dart dependencies changed; a hot restart picks them up.
-  dartOnly,
-
-  /// A dependency with native code changed; only a full process relaunch
-  /// rebuilds the native host (a hot restart would leave the new native code
-  /// out of the binary, failing at runtime with a MissingPluginException).
-  native,
-
-  /// Assets or fonts declared in `pubspec.yaml` changed. These are bundled at
-  /// build time so only a full process relaunch picks them up.
-  assets,
-}
-
 /// A [PackageDependencyTracker] for a companion Flutter app, adding the
 /// asset/font fingerprint on top of the shared dependency-closure tracking.
 ///
 /// Beyond the closure (native vs. pure-Dart) classification inherited from the
 /// base, a change to the `flutter.assets` or `flutter.fonts` sections of the
-/// app's `pubspec.yaml` maps to [FlutterDependencyChange.assets]: those are
+/// app's `pubspec.yaml` maps to [PackageDependencyChange.assets]: those are
 /// bundled at build time, so only a full process relaunch picks them up.
 class FlutterDependencyTracker extends PackageDependencyTracker {
   /// The package directory of the Flutter app, whose `pubspec.yaml` is read
@@ -58,19 +39,15 @@ class FlutterDependencyTracker extends PackageDependencyTracker {
   /// Assets and fonts are checked first: they are bundled at build time so they
   /// always need a full relaunch, regardless of whether the dependency closure
   /// also changed.
-  FlutterDependencyChange refresh() {
+  PackageDependencyChange refresh() {
     final nextFingerprint = _computeAssetFingerprint();
     final previousFingerprint = _cachedAssetFingerprint;
     _cachedAssetFingerprint = nextFingerprint;
     if (nextFingerprint != previousFingerprint) {
-      return FlutterDependencyChange.assets;
+      return PackageDependencyChange.assets;
     }
 
-    return switch (refreshClosure()) {
-      PackageDependencyChange.none => FlutterDependencyChange.none,
-      PackageDependencyChange.dartOnly => FlutterDependencyChange.dartOnly,
-      PackageDependencyChange.native => FlutterDependencyChange.native,
-    };
+    return refreshClosure();
   }
 
   /// Reads the Flutter app's `pubspec.yaml` and produces a fingerprint

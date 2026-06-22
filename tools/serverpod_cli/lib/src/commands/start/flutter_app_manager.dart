@@ -58,7 +58,7 @@ class FlutterAppManager {
 
   /// Test-only override for [checkDependencyChange].
   @visibleForTesting
-  FlutterDependencyChange Function(String appId)?
+  PackageDependencyChange Function(String appId)?
   dependencyChangeOverrideForTesting;
 
   /// Test-only override for [restart].
@@ -145,12 +145,12 @@ class FlutterAppManager {
       _runtimes[appId]?.dependencyTracker;
 
   /// Checks dependency changes for [appId].
-  FlutterDependencyChange checkDependencyChange(String appId) {
+  PackageDependencyChange checkDependencyChange(String appId) {
     if (dependencyChangeOverrideForTesting != null) {
       return dependencyChangeOverrideForTesting!(appId);
     }
     return _runtimes[appId]?.dependencyTracker?.refresh() ??
-        FlutterDependencyChange.none;
+        PackageDependencyChange.none;
   }
 
   /// Returns running app ids whose `lib` directory contains any of [paths].
