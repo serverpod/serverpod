@@ -32,6 +32,13 @@ typedef GenerateAction =
 /// server via `dart run` and the VM's own kernel service drives reloads.
 typedef ServerProcessFactory = Future<ServerProcess> Function(String? dillPath);
 
+/// Runs a full code generation across the whole project (not just the changed
+/// paths), returning the result.
+///
+/// Used to recover from a degraded start via [WatchSession.retryStart], where
+/// there is no incremental change event to drive generation.
+typedef FullGenerateAction = Future<GenerateResult> Function();
+
 /// The lifecycle state of a [WatchSession].
 ///
 /// Used to suppress spurious crash detection during intentional server
@@ -96,10 +103,18 @@ typedef ApplyMigrationsAction = Future<void> Function();
 /// When [compiler] is `null`, the session runs code generation and triggers
 /// VM service reloads via the VM's built-in kernel service rather than the
 /// Frontend Server. Static file change handling is unaffected.
+///
+/// When [initialServer] is `null`, the session starts in a *degraded* state:
+/// the project failed to generate or compile at launch, so no server is
+/// running yet. The session keeps watching; the first file change that makes
+/// generation and compilation succeed boots the server (in watch mode), and
+/// [retryStart] does the same on demand (used by `--no-watch`, which has no
+/// file watcher to recover automatically).
 class WatchSession {
   final KernelCompiler? _compiler;
   final NativeAssetsApplier? _nativeAssetsBuilder;
   final GenerateAction _generate;
+  final FullGenerateAction? _fullGenerate;
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
@@ -132,7 +147,9 @@ class WatchSession {
   /// `package_config.json` write.
   bool _pendingPackageConfig = false;
 
-  ServerProcess _server;
+  /// The running server, or `null` while the session is degraded (no server
+  /// has booted yet because the project failed to build at launch).
+  ServerProcess? _server;
 
   SessionState _state = SessionState.idle;
 
@@ -173,8 +190,9 @@ class WatchSession {
     KernelCompiler? compiler,
     NativeAssetsApplier? nativeAssetsBuilder,
     required GenerateAction generate,
+    FullGenerateAction? fullGenerate,
     ServerProcessFactory? createServer,
-    required ServerProcess initialServer,
+    ServerProcess? initialServer,
     required Set<String> generatedDirPaths,
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
@@ -184,6 +202,7 @@ class WatchSession {
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
+       _fullGenerate = fullGenerate,
        _createServer = createServer,
        _server = initialServer,
        _generatedDirPaths = generatedDirPaths,
@@ -195,19 +214,26 @@ class WatchSession {
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
     );
-    _monitorExit(initialServer);
-    _trackVmServiceUri(initialServer);
+    assert(
+      initialServer != null || createServer != null,
+      'A degraded session (null initialServer) needs a createServer to boot.',
+    );
+    if (initialServer != null) {
+      _monitorExit(initialServer);
+      _trackVmServiceUri(initialServer);
+    }
   }
 
   /// Completes when the server exits unexpectedly (crash).
   Future<int> get done => _done.future;
 
-  /// Returns `true` if the server is currently running.
-  bool get isRunning => !_done.isCompleted;
+  /// Returns `true` if a server process is currently running. `false` while the
+  /// session is degraded (no server booted yet) or after it has shut down.
+  bool get isRunning => _server != null && !_done.isCompleted;
 
   /// The current HTTP VM service URI of the running server, or `null` if not
-  /// yet available.
-  String? get vmServiceUri => _server.vmServiceUri;
+  /// yet available (including while degraded).
+  String? get vmServiceUri => _server?.vmServiceUri;
 
   /// Fires each time a new server process publishes its VM service URI. The
   /// URI itself is read via [vmServiceUri]; the stream just signals "changed".
@@ -303,6 +329,18 @@ class WatchSession {
       genOutputFiles = genResult.generatedFiles;
     }
 
+    // Degraded start: no server is running yet because the project failed to
+    // build at launch. Generation just succeeded (or was unnecessary), so try
+    // a full compile and boot the server from scratch. A still-failing compile
+    // leaves the session degraded for the next change to retry.
+    if (_server == null) {
+      if (await _fullCompileAndRestart()) {
+        await _restartAllFlutterApps();
+        await _notifyBrowserRefresh();
+      }
+      return;
+    }
+
     // Without a compiler, drive a reload through the VM's own kernel
     // service instead of the FES pipeline.
     if (_compiler == null) {
@@ -383,12 +421,13 @@ class WatchSession {
   /// both for static file changes and after the server reloads new Dart code,
   /// so server-rendered web pages stay in sync.
   Future<void> _notifyBrowserRefresh() async {
-    if (!_server.isVmServiceConnected) {
+    final server = _server;
+    if (server == null || !server.isVmServiceConnected) {
       log.debug('Server VM service not connected; skipping browser refresh.');
       return;
     }
     try {
-      await _server.notifyStaticChange();
+      await server.notifyStaticChange();
       log.info(browserRefreshTriggered);
     } catch (e) {
       log.warning('Browser refresh failed: $e');
@@ -627,6 +666,42 @@ class WatchSession {
     }, whenDisposed: () {});
   }
 
+  /// Recovers from a degraded start: re-runs a full code generation and, on
+  /// success, compiles and boots the server.
+  ///
+  /// This is the manual counterpart to the automatic recovery that the file
+  /// watcher drives in watch mode — it is the recovery path for `--no-watch`,
+  /// where no watcher exists. A no-op if a server is already running (use
+  /// [forceRestart] then). Throws a [StateError] if the session has been
+  /// disposed.
+  Future<void> retryStart() {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    if (_createServer == null) {
+      throw StateError('Restart is not supported in this session.');
+    }
+    return _chain(() async {
+      // The session may have been disposed while this call was queued, or a
+      // concurrent change may have already booted the server.
+      if (_state == SessionState.disposed || _server != null) return;
+
+      final fullGenerate = _fullGenerate;
+      if (fullGenerate != null) {
+        final genResult = await fullGenerate();
+        if (!genResult.success) {
+          log.error('Code generation failed. Server not started.');
+          return;
+        }
+      }
+
+      if (await _fullCompileAndRestart()) {
+        await _restartAllFlutterApps();
+        await _notifyBrowserRefresh();
+      }
+    });
+  }
+
   /// Fully (re)launches the Flutter app: kills the running `flutter run`
   /// process (if any) and launches a fresh one - including launching it from
   /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
@@ -692,11 +767,12 @@ class WatchSession {
   /// Returns `true` on success, `false` if the VM service is not connected
   /// or the reload itself reports failure.
   Future<bool> _reload(String? dillPath) async {
-    if (!_server.isVmServiceConnected) {
+    final server = _server;
+    if (server == null || !server.isVmServiceConnected) {
       log.warning('Cannot reload: VM service not connected.');
       return false;
     }
-    final reloaded = await _server.reload(dillPath);
+    final reloaded = await server.reload(dillPath);
     if (reloaded) {
       log.info(serverReloaded);
     } else {
@@ -708,11 +784,15 @@ class WatchSession {
   Future<void> _restartServer(String? dillPath) async {
     _state = SessionState.restarting;
     try {
-      await _server.stop();
-      _server = await _createServer!(dillPath);
-      _monitorExit(_server);
-      _trackVmServiceUri(_server);
-      log.info(serverRestarted);
+      // Null while degraded: this is the first boot, not a restart.
+      final wasRunning = _server != null;
+      await _server?.stop();
+      final server = await _createServer!(dillPath);
+      _server = server;
+      if (_state == SessionState.restarting) _state = SessionState.idle;
+      _monitorExit(server);
+      _trackVmServiceUri(server);
+      log.info(wasRunning ? serverRestarted : serverStarted);
     } finally {
       if (_state == SessionState.restarting) {
         _state = SessionState.idle;
@@ -724,7 +804,8 @@ class WatchSession {
   Future<void> dispose() async {
     _state = SessionState.disposed;
     await _vmServiceUriChangesController.close();
-    final code = await _server.stop();
+    // `_server` is null when disposing a degraded session that never booted.
+    final code = await _server?.stop() ?? 0;
     // Stop Flutter after the server: an in-flight Flutter reload
     // mustn't see a half-shut-down server VM service.
     await _flutterManager?.stopAll();

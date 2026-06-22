@@ -335,10 +335,11 @@ void main() {
   late WatchSession session;
 
   WatchSession buildSession({
-    required KernelCompiler compiler,
-    required ServerProcess initialServer,
+    required KernelCompiler? compiler,
+    required ServerProcess? initialServer,
     ServerProcessFactory? createServer,
     GenerateAction? generate,
+    FullGenerateAction? fullGenerate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
     NativeAssetsApplier? nativeAssetsBuilder,
@@ -358,6 +359,7 @@ void main() {
               generatedFiles: generatedFiles,
             );
           },
+      fullGenerate: fullGenerate,
       createServer:
           createServer ??
           (String? dillPath) async {
@@ -2540,6 +2542,191 @@ class Counter {
       'then it throws a StateError',
       () {
         expect(() => noFactorySession.forceRestart(), throwsStateError);
+      },
+    );
+  });
+
+  group('Given a degraded session that booted with no server', () {
+    late int fullGenerateCalls;
+    late bool fullGenerateSuccess;
+    late WatchSession degradedSession;
+
+    setUp(() {
+      fullGenerateCalls = 0;
+      fullGenerateSuccess = true;
+      degradedSession = buildSession(
+        compiler: compiler,
+        initialServer: null,
+        fullGenerate: () async {
+          fullGenerateCalls++;
+          return (success: fullGenerateSuccess, generatedFiles: <String>{});
+        },
+      );
+    });
+
+    test(
+      'when checking its state, '
+      'then it reports not running with no VM service URI',
+      () {
+        expect(degradedSession.isRunning, isFalse);
+        expect(degradedSession.vmServiceUri, isNull);
+      },
+    );
+
+    test(
+      'when a dart file change generates and compiles successfully, '
+      'then it boots the server with a fresh full compile',
+      () async {
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        // A from-scratch full compile (reset + compile), not an incremental
+        // one, since there is no running server to hot reload into.
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(degradedSession.isRunning, isTrue);
+      },
+    );
+
+    test(
+      'when generation fails on a file change, '
+      'then it stays degraded without compiling or booting',
+      () async {
+        generateSuccess = false;
+
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(compiler.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when the compile fails on a file change, '
+      'then it stays degraded without booting',
+      () async {
+        compiler.nextCompileResult = _failResult();
+
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(compiler.calls, ['reset', 'compile', 'reject']);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when retryStart regenerates and compiles successfully, '
+      'then it boots the server',
+      () async {
+        await degradedSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(compiler.calls, ['reset', 'compile', 'accept']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(degradedSession.isRunning, isTrue);
+      },
+    );
+
+    test(
+      'when retryStart full generation fails, '
+      'then it stays degraded without compiling or booting',
+      () async {
+        fullGenerateSuccess = false;
+
+        await degradedSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+        expect(degradedSession.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when the server booted from a degraded start later crashes, '
+      'then done completes with its exit code',
+      () async {
+        await degradedSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+        expect(degradedSession.isRunning, isTrue);
+
+        factoryServer.simulateExit(7);
+
+        await expectLater(degradedSession.done, completion(7));
+      },
+    );
+
+    test(
+      'when disposed, '
+      'then done completes with zero without stopping a server',
+      () async {
+        await degradedSession.dispose();
+
+        await expectLater(degradedSession.done, completion(0));
+      },
+    );
+
+    test(
+      'when retryStart is called after dispose, '
+      'then it throws a StateError',
+      () async {
+        await degradedSession.dispose();
+
+        expect(() => degradedSession.retryStart(), throwsStateError);
+      },
+    );
+  });
+
+  group('Given a degraded session with no compiler', () {
+    late int fullGenerateCalls;
+    late WatchSession degradedNoCompilerSession;
+
+    setUp(() {
+      fullGenerateCalls = 0;
+      degradedNoCompilerSession = buildSession(
+        compiler: null,
+        initialServer: null,
+        fullGenerate: () async {
+          fullGenerateCalls++;
+          return (success: true, generatedFiles: <String>{});
+        },
+      );
+    });
+
+    test(
+      'when retryStart regenerates successfully, '
+      'then it boots the server via dart run with a null dill',
+      () async {
+        await degradedNoCompilerSession.retryStart();
+
+        expect(fullGenerateCalls, 1);
+        expect(factoryCalls, ['createServer:null']);
+        expect(degradedNoCompilerSession.isRunning, isTrue);
+      },
+    );
+  });
+
+  group('Given a running session', () {
+    test(
+      'when retryStart is called, '
+      'then it is a no-op (recovery only applies while degraded)',
+      () async {
+        await session.retryStart();
+
+        expect(factoryCalls, isEmpty);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
       },
     );
   });
