@@ -8,6 +8,7 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
 import 'common/external_idp_registry.dart';
+import 'common/sign_in_button_style.dart';
 import 'common/widgets/column.dart';
 import 'common/sign_in_flow_coordinator.dart';
 import 'common/widgets/divider.dart';
@@ -101,6 +102,12 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Microsoft sign-in.
   final MicrosoftSignInWidget? microsoftSignInWidget;
 
+  /// Shared styling applied to every sign-in button.
+  ///
+  /// Forwarded to all provider buttons — including external ones — as defaults
+  /// each widget can still override. See [SignInButtonStyle].
+  final SignInButtonStyle? buttonStyle;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -119,6 +126,7 @@ class SignInWidget extends StatefulWidget {
     this.appleSignInWidget,
     this.githubSignInWidget,
     this.microsoftSignInWidget,
+    this.buttonStyle,
     super.key,
   });
 
@@ -229,7 +237,7 @@ class _SignInWidgetState extends State<SignInWidget> {
     }
 
     // TODO: Make this adaptative.
-    return SignInFlowCoordinatorWidget(
+    Widget child = SignInFlowCoordinatorWidget(
       child: Material(
         type: MaterialType.transparency,
         child: SignInWidgetsColumn(
@@ -257,6 +265,13 @@ class _SignInWidgetState extends State<SignInWidget> {
         ),
       ),
     );
+
+    final buttonStyle = widget.buttonStyle;
+    if (buttonStyle != null) {
+      child = SignInButtonStyleProvider(style: buttonStyle, child: child);
+    }
+
+    return child;
   }
 }
 

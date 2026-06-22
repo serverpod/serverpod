@@ -35,6 +35,39 @@ void main() {
       expect(surface.clipBehavior, Clip.none);
     },
   );
+
+  testWidgets(
+    'Given a SignInWidget configured with a shared button style, '
+    'when building the available sign-in options, '
+    'then the style is exposed to the buttons through a provider.',
+    (tester) async {
+      const style = SignInButtonStyle(shape: SignInButtonShape.pill);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SignInWidget(client: _TestClient(), buttonStyle: style),
+        ),
+      );
+
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, style);
+    },
+  );
+
+  testWidgets(
+    'Given a SignInWidget configured without a shared button style, '
+    'when building the available sign-in options, '
+    'then no style provider is inserted.',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(home: SignInWidget(client: _TestClient())),
+      );
+
+      expect(find.byType(SignInButtonStyleProvider), findsNothing);
+    },
+  );
 }
 
 class _TestClient extends ServerpodClientShared {
