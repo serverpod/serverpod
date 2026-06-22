@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../common/sign_in_button_style.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'microsoft_sign_in_style.dart';
 
@@ -8,6 +9,10 @@ import 'microsoft_sign_in_style.dart';
 ///
 /// This widget renders a Microsoft-branded button with proper styling,
 /// loading states, and disabled states following Microsoft's design guidelines.
+///
+/// The [size], [text], [shape], [logoAlignment], [minimumWidth], and
+/// [textStyle] arguments fall back to the shared [SignInButtonStyle] in scope
+/// when left null, then to Microsoft's own defaults.
 class MicrosoftSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -25,21 +30,24 @@ class MicrosoftSignInButton extends StatelessWidget {
   final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
-  final MicrosoftButtonSize size;
+  final MicrosoftButtonSize? size;
 
   /// The button text.
-  final MicrosoftButtonText text;
+  final MicrosoftButtonText? text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final MicrosoftButtonShape shape;
+  final MicrosoftButtonShape? shape;
 
   /// The Microsoft logo alignment: left or center.
-  final MicrosoftButtonLogoAlignment logoAlignment;
+  final MicrosoftButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
 
   /// Creates a Microsoft Sign-In button.
   const MicrosoftSignInButton({
@@ -48,20 +56,40 @@ class MicrosoftSignInButton extends StatelessWidget {
     required this.isDisabled,
     this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size = MicrosoftButtonSize.large,
-    this.text = MicrosoftButtonText.continueWith,
-    this.shape = MicrosoftButtonShape.pill,
-    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.text,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
   @override
   Widget build(BuildContext context) {
     final texts = context.microsoftSignInTexts;
+    final shared = context.signInButtonStyle;
+
+    final size =
+        this.size ?? _toMicrosoftSize(shared.size) ?? MicrosoftButtonSize.large;
+    final shape =
+        this.shape ??
+        _toMicrosoftShape(shared.shape) ??
+        MicrosoftButtonShape.pill;
+    final text =
+        this.text ??
+        _toMicrosoftText(shared.text) ??
+        MicrosoftButtonText.continueWith;
+    final logoAlignment =
+        this.logoAlignment ??
+        _toMicrosoftLogoAlignment(shared.logoAlignment) ??
+        MicrosoftButtonLogoAlignment.center;
+    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared.textStyle;
+
     final buttonStyle = MicrosoftSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -94,7 +122,14 @@ class MicrosoftSignInButton extends StatelessWidget {
                   alpha: 0.6,
                 ),
               ),
-              child: _buildButtonContent(buttonStyle, texts),
+              child: _buildButtonContent(
+                buttonStyle,
+                texts,
+                size: size,
+                text: text,
+                logoAlignment: logoAlignment,
+                textStyle: textStyle,
+              ),
             )
           : ElevatedButton(
               onPressed: isLoading || isDisabled ? null : onPressed,
@@ -113,15 +148,26 @@ class MicrosoftSignInButton extends StatelessWidget {
                   alpha: 0.6,
                 ),
               ),
-              child: _buildButtonContent(buttonStyle, texts),
+              child: _buildButtonContent(
+                buttonStyle,
+                texts,
+                size: size,
+                text: text,
+                logoAlignment: logoAlignment,
+                textStyle: textStyle,
+              ),
             ),
     );
   }
 
   Widget _buildButtonContent(
     MicrosoftSignInStyle buttonStyle,
-    MicrosoftSignInTexts texts,
-  ) {
+    MicrosoftSignInTexts texts, {
+    required MicrosoftButtonSize size,
+    required MicrosoftButtonText text,
+    required MicrosoftButtonLogoAlignment logoAlignment,
+    required TextStyle? textStyle,
+  }) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -136,18 +182,19 @@ class MicrosoftSignInButton extends StatelessWidget {
     }
 
     if (type == MicrosoftButtonType.icon) {
-      return _buildMicrosoftLogo(buttonStyle);
+      return _buildMicrosoftLogo(buttonStyle, size);
     }
 
+    final baseTextStyle = TextStyle(
+      fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
+      color: buttonStyle.foregroundColor,
+    );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(),
-      style: TextStyle(
-        fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
-        color: buttonStyle.foregroundColor,
-      ),
+      texts.signInButton ?? _getButtonText(text),
+      style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
     );
 
-    final logo = _buildMicrosoftLogo(buttonStyle);
+    final logo = _buildMicrosoftLogo(buttonStyle, size);
 
     if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
       return Row(
@@ -183,7 +230,10 @@ class MicrosoftSignInButton extends StatelessWidget {
     );
   }
 
-  Widget _buildMicrosoftLogo(MicrosoftSignInStyle buttonStyle) {
+  Widget _buildMicrosoftLogo(
+    MicrosoftSignInStyle buttonStyle,
+    MicrosoftButtonSize size,
+  ) {
     final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
     return SizedBox.square(
@@ -199,7 +249,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText() {
+  String _getButtonText(MicrosoftButtonText text) {
     return switch (text) {
       MicrosoftButtonText.signIn => 'Sign in with Microsoft',
       MicrosoftButtonText.signUp => 'Sign up with Microsoft',
@@ -207,3 +257,38 @@ class MicrosoftSignInButton extends StatelessWidget {
     };
   }
 }
+
+// Microsoft has no small size; it falls back to medium.
+MicrosoftButtonSize? _toMicrosoftSize(SignInButtonSize? size) => switch (size) {
+  null => null,
+  SignInButtonSize.large => MicrosoftButtonSize.large,
+  SignInButtonSize.medium => MicrosoftButtonSize.medium,
+  SignInButtonSize.small => MicrosoftButtonSize.medium,
+};
+
+MicrosoftButtonShape? _toMicrosoftShape(SignInButtonShape? shape) =>
+    switch (shape) {
+      null => null,
+      SignInButtonShape.rectangular => MicrosoftButtonShape.rectangular,
+      SignInButtonShape.rounded => MicrosoftButtonShape.rounded,
+      SignInButtonShape.pill => MicrosoftButtonShape.pill,
+    };
+
+MicrosoftButtonLogoAlignment? _toMicrosoftLogoAlignment(
+  SignInButtonLogoAlignment? alignment,
+) => switch (alignment) {
+  null => null,
+  SignInButtonLogoAlignment.left => MicrosoftButtonLogoAlignment.left,
+  SignInButtonLogoAlignment.center => MicrosoftButtonLogoAlignment.center,
+};
+
+// Microsoft always appends its name, so the bare "sign in" maps to "Sign in
+// with".
+MicrosoftButtonText? _toMicrosoftText(SignInButtonTextVariant? text) =>
+    switch (text) {
+      null => null,
+      SignInButtonTextVariant.signInWith => MicrosoftButtonText.signIn,
+      SignInButtonTextVariant.signUpWith => MicrosoftButtonText.signUp,
+      SignInButtonTextVariant.continueWith => MicrosoftButtonText.continueWith,
+      SignInButtonTextVariant.signIn => MicrosoftButtonText.signIn,
+    };

@@ -72,21 +72,39 @@ class MicrosoftSignInWidget extends StatefulWidget {
   final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
-  final MicrosoftButtonSize size;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [MicrosoftButtonSize.large], when null.
+  final MicrosoftButtonSize? size;
 
   /// The button text.
-  final MicrosoftButtonText text;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [MicrosoftButtonText.continueWith], when null.
+  final MicrosoftButtonText? text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final MicrosoftButtonShape shape;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [MicrosoftButtonShape.pill], when null.
+  final MicrosoftButtonShape? shape;
 
   /// The Microsoft logo alignment: left or center.
-  final MicrosoftButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [MicrosoftButtonLogoAlignment.center], when null.
+  final MicrosoftButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a Microsoft Sign-In widget.
   const MicrosoftSignInWidget({
@@ -97,11 +115,12 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.scopes = MicrosoftAuthController.defaultScopes,
     this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size = MicrosoftButtonSize.large,
-    this.text = MicrosoftButtonText.continueWith,
-    this.shape = MicrosoftButtonShape.pill,
-    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.text,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -109,7 +128,7 @@ class MicrosoftSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
@@ -158,6 +177,7 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
       shape: widget.shape,
       logoAlignment: widget.logoAlignment,
       minimumWidth: widget.minimumWidth,
+      textStyle: widget.textStyle,
     );
   }
 
