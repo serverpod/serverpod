@@ -398,16 +398,22 @@ class DateTimeDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DateTimeDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -441,6 +447,10 @@ class DateTimeDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> upsert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
@@ -448,6 +458,7 @@ class DateTimeDefaultMixRepository {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
     _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefaultMix>(
       rows,
@@ -455,6 +466,7 @@ class DateTimeDefaultMixRepository {
       updateColumns: updateColumns?.call(DateTimeDefaultMix.t),
       updateWhere: updateWhere?.call(DateTimeDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -493,16 +505,22 @@ class DateTimeDefaultMixRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> update(
     _i1.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
     _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefaultMix>(
       rows,
       columns: columns?.call(DateTimeDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -540,6 +558,10 @@ class DateTimeDefaultMixRepository {
 
   /// Updates all [DateTimeDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
@@ -552,6 +574,7 @@ class DateTimeDefaultMixRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultMix>(
       columnValues: columnValues(DateTimeDefaultMix.t.updateTable),
@@ -563,6 +586,7 @@ class DateTimeDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -573,6 +597,10 @@ class DateTimeDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
@@ -581,6 +609,7 @@ class DateTimeDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefaultMix>(
       rows,
@@ -589,6 +618,7 @@ class DateTimeDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -608,6 +638,10 @@ class DateTimeDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
@@ -616,6 +650,7 @@ class DateTimeDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultMix>(
       where: where(DateTimeDefaultMix.t),
@@ -624,6 +659,7 @@ class DateTimeDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

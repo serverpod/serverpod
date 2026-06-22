@@ -504,16 +504,22 @@ class UserInfoRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> insert(
     _i1.DatabaseSession session,
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UserInfo>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -547,6 +553,10 @@ class UserInfoRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> upsert(
     _i1.DatabaseSession session,
     List<UserInfo> rows, {
@@ -554,6 +564,7 @@ class UserInfoRepository {
     _i1.ColumnSelections<UserInfoTable>? updateColumns,
     _i1.WhereExpressionBuilder<UserInfoTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UserInfo>(
       rows,
@@ -561,6 +572,7 @@ class UserInfoRepository {
       updateColumns: updateColumns?.call(UserInfo.t),
       updateWhere: updateWhere?.call(UserInfo.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -599,16 +611,22 @@ class UserInfoRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> update(
     _i1.DatabaseSession session,
     List<UserInfo> rows, {
     _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UserInfo>(
       rows,
       columns: columns?.call(UserInfo.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -645,6 +663,10 @@ class UserInfoRepository {
 
   /// Updates all [UserInfo]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
@@ -656,6 +678,7 @@ class UserInfoRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserInfo>(
       columnValues: columnValues(UserInfo.t.updateTable),
@@ -667,6 +690,7 @@ class UserInfoRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -677,6 +701,10 @@ class UserInfoRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> delete(
     _i1.DatabaseSession session,
     List<UserInfo> rows, {
@@ -685,6 +713,7 @@ class UserInfoRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UserInfo>(
       rows,
@@ -693,6 +722,7 @@ class UserInfoRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -712,6 +742,10 @@ class UserInfoRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
@@ -720,6 +754,7 @@ class UserInfoRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserInfo>(
       where: where(UserInfo.t),
@@ -728,6 +763,7 @@ class UserInfoRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -467,16 +467,22 @@ class RateLimitedRequestAttemptRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> insert(
     _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<RateLimitedRequestAttempt>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -510,6 +516,10 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> upsert(
     _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
@@ -518,6 +528,7 @@ class RateLimitedRequestAttemptRepository {
     _i1.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
     _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<RateLimitedRequestAttempt>(
       rows,
@@ -525,6 +536,7 @@ class RateLimitedRequestAttemptRepository {
       updateColumns: updateColumns?.call(RateLimitedRequestAttempt.t),
       updateWhere: updateWhere?.call(RateLimitedRequestAttempt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,16 +576,22 @@ class RateLimitedRequestAttemptRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> update(
     _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
     _i1.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<RateLimitedRequestAttempt>(
       rows,
       columns: columns?.call(RateLimitedRequestAttempt.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -611,6 +629,10 @@ class RateLimitedRequestAttemptRepository {
 
   /// Updates all [RateLimitedRequestAttempt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
@@ -623,6 +645,7 @@ class RateLimitedRequestAttemptRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<RateLimitedRequestAttempt>(
       columnValues: columnValues(RateLimitedRequestAttempt.t.updateTable),
@@ -634,6 +657,7 @@ class RateLimitedRequestAttemptRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -644,6 +668,10 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> delete(
     _i1.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
@@ -652,6 +680,7 @@ class RateLimitedRequestAttemptRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<RateLimitedRequestAttempt>(
       rows,
@@ -660,6 +689,7 @@ class RateLimitedRequestAttemptRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -679,6 +709,10 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
@@ -687,6 +721,7 @@ class RateLimitedRequestAttemptRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RateLimitedRequestAttempt>(
       where: where(RateLimitedRequestAttempt.t),
@@ -695,6 +730,7 @@ class RateLimitedRequestAttemptRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

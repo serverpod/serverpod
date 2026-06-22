@@ -13,6 +13,27 @@ void main() async {
   });
 
   test(
+    'Given an inserted entry '
+    'when batch updating with noReturn set to true '
+    'then an empty list is returned but the change is persisted.',
+    () async {
+      var inserted = (await UniqueData.db.insert(session, [
+        UniqueData(number: 1, email: 'a@serverpod.dev'),
+      ])).first;
+
+      var result = await UniqueData.db.update(
+        session,
+        [UniqueData(id: inserted.id, number: 99, email: 'a@serverpod.dev')],
+        noReturn: true,
+      );
+
+      expect(result, isEmpty);
+      var found = await UniqueData.db.findById(session, inserted.id!);
+      expect(found?.number, 99);
+    },
+  );
+
+  test(
     'Given a list of entries when batch updating only a single column then no other data is updated.',
     () async {
       var expectedFirstEmail = 'info@serverpod.dev';

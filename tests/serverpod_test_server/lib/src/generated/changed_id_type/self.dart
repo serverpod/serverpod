@@ -585,16 +585,22 @@ class ChangedIdTypeSelfRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> insert(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChangedIdTypeSelf>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -628,6 +634,10 @@ class ChangedIdTypeSelfRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> upsert(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
@@ -635,6 +645,7 @@ class ChangedIdTypeSelfRepository {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ChangedIdTypeSelf>(
       rows,
@@ -642,6 +653,7 @@ class ChangedIdTypeSelfRepository {
       updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
       updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -680,16 +692,22 @@ class ChangedIdTypeSelfRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> update(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChangedIdTypeSelf>(
       rows,
       columns: columns?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -727,6 +745,10 @@ class ChangedIdTypeSelfRepository {
 
   /// Updates all [ChangedIdTypeSelf]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
@@ -739,6 +761,7 @@ class ChangedIdTypeSelfRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
       columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
@@ -750,6 +773,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -760,6 +784,10 @@ class ChangedIdTypeSelfRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> delete(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
@@ -768,6 +796,7 @@ class ChangedIdTypeSelfRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChangedIdTypeSelf>(
       rows,
@@ -776,6 +805,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -795,6 +825,10 @@ class ChangedIdTypeSelfRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
@@ -803,6 +837,7 @@ class ChangedIdTypeSelfRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChangedIdTypeSelf>(
       where: where(ChangedIdTypeSelf.t),
@@ -811,6 +846,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -440,16 +440,22 @@ class MigratedUserRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> insert(
     _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<MigratedUser>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -483,6 +489,10 @@ class MigratedUserRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> upsert(
     _i1.DatabaseSession session,
     List<MigratedUser> rows, {
@@ -490,6 +500,7 @@ class MigratedUserRepository {
     _i1.ColumnSelections<MigratedUserTable>? updateColumns,
     _i1.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<MigratedUser>(
       rows,
@@ -497,6 +508,7 @@ class MigratedUserRepository {
       updateColumns: updateColumns?.call(MigratedUser.t),
       updateWhere: updateWhere?.call(MigratedUser.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -535,16 +547,22 @@ class MigratedUserRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> update(
     _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.ColumnSelections<MigratedUserTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<MigratedUser>(
       rows,
       columns: columns?.call(MigratedUser.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -581,6 +599,10 @@ class MigratedUserRepository {
 
   /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
@@ -592,6 +614,7 @@ class MigratedUserRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<MigratedUser>(
       columnValues: columnValues(MigratedUser.t.updateTable),
@@ -603,6 +626,7 @@ class MigratedUserRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -613,6 +637,10 @@ class MigratedUserRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> delete(
     _i1.DatabaseSession session,
     List<MigratedUser> rows, {
@@ -621,6 +649,7 @@ class MigratedUserRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<MigratedUser>(
       rows,
@@ -629,6 +658,7 @@ class MigratedUserRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -648,6 +678,10 @@ class MigratedUserRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
@@ -656,6 +690,7 @@ class MigratedUserRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MigratedUser>(
       where: where(MigratedUser.t),
@@ -664,6 +699,7 @@ class MigratedUserRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

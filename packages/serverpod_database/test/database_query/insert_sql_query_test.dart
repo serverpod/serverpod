@@ -693,4 +693,76 @@ SELECT * FROM insertWithIdNotNull
       },
     );
   });
+
+  group('Given noReturn is true', () {
+    test(
+      'when building insert query then the RETURNING clause is omitted.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [PersonClass(name: 'Alex', age: 33)],
+          noReturn: true,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33)',
+        );
+      },
+    );
+
+    test(
+      'when building insert query with default values then the RETURNING clause is omitted.',
+      () {
+        var query = InsertQueryBuilder(
+          table: Table<int?>(tableName: 'only_id'),
+          rows: [OnlyIdClass()],
+          noReturn: true,
+        ).build();
+
+        expect(query, 'INSERT INTO "only_id" DEFAULT VALUES');
+      },
+    );
+
+    test(
+      'when building upsert query then the RETURNING clause is omitted.',
+      () {
+        var table = PersonTable();
+        var query = InsertQueryBuilder(
+          table: table,
+          rows: [PersonClass(name: 'Alex', age: 33)],
+          conflictColumns: [table.name],
+          noReturn: true,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) '
+          'ON CONFLICT ("name") DO UPDATE SET "age" = EXCLUDED."age"',
+        );
+      },
+    );
+
+    test(
+      'when building insert query with mixed id rows then the id-null insert '
+      'runs as a data-modifying CTE without RETURNING or a wrapping SELECT.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [
+            PersonClass(id: 33, name: 'Alex', age: 33),
+            PersonClass(name: 'Isak', age: 33),
+          ],
+          noReturn: true,
+        ).build();
+
+        expect(
+          query,
+          '''
+WITH insertWithIdNull AS (INSERT INTO "person" ("name", "age") VALUES ('Isak', 33))
+INSERT INTO "person" ("id", "name", "age") VALUES (33, 'Alex', 33)''',
+        );
+      },
+    );
+  });
 }
