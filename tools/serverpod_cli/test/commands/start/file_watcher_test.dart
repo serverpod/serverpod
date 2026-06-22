@@ -390,7 +390,7 @@ void main() {
 
       test(
         'when the file changes, '
-        'then it emits a FileChangeEvent with only flutterPubspecChanged set',
+        'then it emits a FileChangeEvent with only pubspecChanged set',
         () async {
           final firstEvent = watcher.onFilesChanged.first;
           await watcher.ready;
@@ -399,7 +399,7 @@ void main() {
 
           final event = await firstEvent;
 
-          expect(event.flutterPubspecChanged, isTrue);
+          expect(event.pubspecChanged, isTrue);
           expect(event.flutterDependenciesChanged, isFalse);
           expect(event.packageConfigChanged, isFalse);
           expect(event.staticFilesChanged, isFalse);

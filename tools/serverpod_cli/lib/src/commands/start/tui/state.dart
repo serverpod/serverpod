@@ -35,7 +35,7 @@ class ServerWatchState extends TuiState {
   final TabModel tabs;
 
   /// Whether this project declares at least one companion Flutter app.
-  final bool hasConfiguredApps;
+  bool hasConfiguredApps;
 
   /// Whether a Flutter app can be launched or restarted from here (the project
   /// has configured apps and we're in development mode).

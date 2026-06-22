@@ -24,6 +24,9 @@ typedef GenerateAction =
       GenerationRequirements requirements,
     );
 
+/// Reloads the companion Flutter app configuration from the server's pubspec.
+typedef FlutterAppsLoader = Future<void> Function();
+
 /// Creates a new server process, starts it, connects VM service,
 /// and returns it ready for use.
 ///
@@ -127,6 +130,7 @@ class WatchSession {
   final PackageDependencyTracker? _serverDependencyTracker;
 
   final FlutterAppManager? _flutterManager;
+  final FlutterAppsLoader? _flutterAppsLoader;
 
   /// Whether a Flutter app process is currently running. Used e.g. to label
   /// the Ctrl+R action as a start or a restart.
@@ -199,6 +203,7 @@ class WatchSession {
     required ApplyMigrationsAction applyMigrationsAction,
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
+    FlutterAppsLoader? flutterAppsLoader,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
@@ -209,7 +214,8 @@ class WatchSession {
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
        _serverDependencyTracker = serverDependencyTracker,
-       _flutterManager = flutterManager {
+       _flutterManager = flutterManager,
+       _flutterAppsLoader = flutterAppsLoader {
     assert(
       nativeAssetsBuilder == null || compiler != null,
       'nativeAssetsBuilder requires a compiler.',
@@ -264,12 +270,16 @@ class WatchSession {
         event.modelFiles.isNotEmpty ||
         serverDepsChanged;
 
+    // Pubspec changes could be for the server.
+    // In which case, the flutter apps should be reloaded if necessary.
+    if (event.pubspecChanged) await _reloadFlutterAppsIfChanged();
+
     // Static-only changes (HTML, JS, CSS, templates) and dependency-only
     // changes: no compilation needed. The browser refresh is tied to static
     // files specifically - a dependency-only change doesn't affect
     // server-rendered pages.
     if (!hasDartChanges) {
-      if (event.flutterDependenciesChanged || event.flutterPubspecChanged) {
+      if (event.flutterDependenciesChanged || event.pubspecChanged) {
         await _reloadOrRestartFlutterApps(changedPaths: const []);
       }
       if (event.staticFilesChanged) await _notifyBrowserRefresh();
@@ -369,6 +379,24 @@ class WatchSession {
     // changed, otherwise a hot reload).
     await _reloadOrRestartFlutterApps(changedPaths: allDartChanges);
     if (reloaded) await _notifyBrowserRefresh();
+  }
+
+  /// Reloads the companion Flutter app config from the server's `pubspec.yaml`
+  /// and applies the diff (adds/removes/updates app runtimes).
+  Future<void> _reloadFlutterAppsIfChanged() async {
+    final reloadApps = _flutterAppsLoader;
+    if (reloadApps == null) return;
+
+    final manager = _flutterManager;
+    if (manager == null) return;
+
+    try {
+      if (!manager.hasServerFlutterAppsChanged()) return;
+      await reloadApps();
+      log.info(flutterAppsConfigChanged);
+    } catch (e) {
+      log.warning('Failed to reload Flutter app config: $e');
+    }
   }
 
   /// Refreshes affected running Flutter apps after a file change.

@@ -227,10 +227,20 @@ dependencies:
     serverPackageDirectoryPathParts: p.split(serverDir.path),
   );
 
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+''');
+
   final process = flutter ?? _FakeFlutter();
   final manager = FlutterAppManager(
     apps: [app],
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    serverPubspecFile: serverPubspecFile,
     runMode: 'development',
     onProgress: (_, _) {},
     onReady: (_, _) {},
@@ -277,11 +287,23 @@ _createTwoAppFlutterManagerHarness() async {
     serverPackageDirectoryPathParts: p.split(serverDir.path),
   );
 
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
+
   final processA = _FakeFlutter();
   final processB = _FakeFlutter();
   final manager = FlutterAppManager(
     apps: [appConfig('app-a', flutterDirA), appConfig('app-b', flutterDirB)],
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    serverPubspecFile: serverPubspecFile,
     runMode: 'development',
     onProgress: (_, _) {},
     onReady: (_, _) {},
@@ -345,6 +367,7 @@ void main() {
     NativeAssetsApplier? nativeAssetsBuilder,
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
+    FlutterAppsLoader? flutterAppsLoader,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -372,6 +395,7 @@ void main() {
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterManager: flutterManager,
+      flutterAppsLoader: flutterAppsLoader,
     );
   }
 
@@ -2068,7 +2092,7 @@ void main() {
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
-            flutterPubspecChanged: true,
+            pubspecChanged: true,
           );
 
           await session.handleFileChange(event);
@@ -2086,7 +2110,7 @@ void main() {
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/a.dart'},
-            flutterPubspecChanged: true,
+            pubspecChanged: true,
           );
 
           await session.handleFileChange(event);
@@ -2094,6 +2118,82 @@ void main() {
           expect(server.calls, contains('reload:/out.dill'));
           expect(restartActionCalls, 1);
           expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the server pubspec flutter_apps section changed,',
+    () {
+      late int reloadAppsCalls;
+      late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        reloadAppsCalls = 0;
+        flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+          flutterAppsLoader: () async {
+            reloadAppsCalls++;
+          },
+        );
+
+        flutterManager.serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+      device: chrome
+''');
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when pubspecChanged is set without dart changes, '
+        'then the flutter apps reload callback is invoked and server is not recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
+        },
+      );
+
+      test(
+        'when pubspecChanged and dart files change together, '
+        'then the flutter apps reload callback is invoked and the server is reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
         },
       );
     },

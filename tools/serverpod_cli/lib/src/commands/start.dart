@@ -154,10 +154,11 @@ class StartCommand extends ServerpodCommand<StartOption> {
           GlobalOption.interactive,
         ),
       );
-      final flutterApps = _loadFlutterApps(config);
 
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
+
+      final flutterApps = _loadFlutterApps(config);
 
       final exitCode = await _runWithTui(
         commandConfig: commandConfig,
@@ -400,6 +401,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   Future<void> Function(ServerProcess server)? onServerStart,
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
+  void Function(List<FlutterAppConfig>)? onFlutterAppsReloaded,
   List<Object> Function()? mcpGetLogHistory,
   List<String> Function()? mcpGetFlutterAppIds,
   List<String> Function(String appId)? mcpGetFlutterLogHistory,
@@ -594,10 +596,12 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
   // session start regardless of whether `--flutter` was passed.
   final runMode = runModeFromServerArgs(serverArgs.value);
+  final serverPubspecFile = File(p.join(serverDir, 'pubspec.yaml'));
   final flutterManager = FlutterAppManager(
     apps: flutterApps,
     serverpodToolDir: serverpodToolDir,
     runMode: runMode,
+    serverPubspecFile: serverPubspecFile,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
     onReady: (app, url) => onFlutterReady?.call(app, url),
     onStart: (app, process) async {
@@ -651,6 +655,45 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     log.warning(watch ? startBlockedByErrorsWatch : startBlockedByErrorsManual);
   }
 
+  StreamSubscription<void>? fileChangeSub;
+
+  /// Sets up single watcher across server/shared/client/web/flutter.
+  /// Changes serialize through session.handleFileChange via WatchSession._chain.
+  void setupFileWatcher() {
+    fileChangeSub?.cancel();
+    if (!watch) return;
+    final currentApps = flutterManager.apps.toList();
+    // One tracker per Flutter app that has a resolved dependency closure. Reused
+    // both to widen the watched directories and to pin the exact pub artifacts
+    // below.
+    final flutterDependencyTrackers = [
+      for (final app in currentApps)
+        ?flutterManager.dependencyTrackerFor(app.id),
+    ];
+    final watcher = FileWatcher(
+      watchPaths: buildWatchPaths(
+        config: config,
+        flutterApps: currentApps,
+        serverDartToolDir: serverDartToolDir,
+        flutterDependencyTrackers: flutterDependencyTrackers,
+      ),
+      // Exact files so a change to one resolution's artifact never triggers the
+      // other's action (matters only in a non-workspace layout). The server has
+      // a single package_config.json; each Flutter app contributes its own
+      // package_graph.json (they collapse to one entry in a workspace layout).
+      packageConfigPath: serverDartToolDir == null
+          ? null
+          : p.join(serverDartToolDir, 'package_config.json'),
+      packageGraphPaths: {
+        for (final tracker in flutterDependencyTrackers)
+          p.join(tracker.dartToolDir, 'package_graph.json'),
+      },
+    );
+    fileChangeSub = watcher.onFilesChanged
+        .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
+        .listen((_) {});
+  }
+
   // Construct the watch session.
   session = WatchSession(
     compiler: compiler,
@@ -682,6 +725,16 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     generatedDirPaths: config.generatedDirPaths,
     serverDependencyTracker: serverDependencyTracker,
     flutterManager: flutterManager,
+    flutterAppsLoader: () async {
+      final apps = loadFlutterApps(
+        serverPubspecFile: serverPubspecFile,
+        serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
+        projectName: config.name,
+      );
+      await flutterManager.reloadApps(apps);
+      onFlutterAppsReloaded?.call(apps);
+      setupFileWatcher();
+    },
     applyMigrationsAction: () => _applyMigrationsForSession(
       serverDir: serverDir,
       runMode: runMode,
@@ -744,40 +797,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
-  // Single watcher across server/shared/client/web/flutter. Changes
-  // serialize through session.handleFileChange via WatchSession._chain.
-  StreamSubscription<void>? fileChangeSub;
-  if (watch) {
-    // One tracker per Flutter app that has a resolved dependency closure. Reused
-    // both to widen the watched directories and to pin the exact pub artifacts
-    // below.
-    final flutterDependencyTrackers = [
-      for (final app in flutterApps)
-        ?flutterManager.dependencyTrackerFor(app.id),
-    ];
-    final watcher = FileWatcher(
-      watchPaths: buildWatchPaths(
-        config: config,
-        flutterApps: flutterApps,
-        serverDartToolDir: serverDartToolDir,
-        flutterDependencyTrackers: flutterDependencyTrackers,
-      ),
-      // Exact files so a change to one resolution's artifact never triggers the
-      // other's action (matters only in a non-workspace layout). The server has
-      // a single package_config.json; each Flutter app contributes its own
-      // package_graph.json (they collapse to one entry in a workspace layout).
-      packageConfigPath: serverDartToolDir == null
-          ? null
-          : p.join(serverDartToolDir, 'package_config.json'),
-      packageGraphPaths: {
-        for (final tracker in flutterDependencyTrackers)
-          p.join(tracker.dartToolDir, 'package_graph.json'),
-      },
-    );
-    fileChangeSub = watcher.onFilesChanged
-        .asyncMapBuffer((events) => session.handleFileChange(events.merge()))
-        .listen((_) {});
-  }
+  setupFileWatcher();
 
   return WatchLoopReady(
     WatchLoopContext(
@@ -785,8 +805,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       proxy: () => proxy,
       flutterManager: flutterManager,
       mcpSocket: mcpSocket,
-      fileChangeSub: fileChangeSub,
       closeAnalyzers: closeAnalyzers,
+      stopFileWatcher: () => fileChangeSub?.cancel(),
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
     ),
@@ -814,6 +834,10 @@ Set<String> buildWatchPaths({
     ...config.sharedModelsLibSourcePaths.map(p.absolute),
     p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
     p.absolute(p.joinAll([...config.serverPackageDirectoryPathParts, 'web'])),
+    // The server's pubspec.yaml watched for changes to the flutter_apps config.
+    p.absolute(
+      p.joinAll([...config.serverPackageDirectoryPathParts, 'pubspec.yaml']),
+    ),
     for (final app in flutterApps) ...[
       p.absolute(p.joinAll([...app.pathParts, 'lib'])),
       // The app's pubspec.yaml, watched as an exact file (it lives in the app
@@ -1117,17 +1141,11 @@ Future<void> _runTuiBackend({
       serverStderrSink: stderrSink,
       flutterStdoutSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state
-            .getOrCreateAppLogTab(appId: app.id, label: app.name)
-            .lines
-            .add(line),
+        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
       ),
       flutterStderrSinkFor: (app) => TuiLogSink(
         holder,
-        addLine: (line) => holder.state
-            .getOrCreateAppLogTab(appId: app.id, label: app.name)
-            .lines
-            .add(line),
+        addLine: (line) => holder.state.appLogTabFor(app.id)?.lines.add(line),
       ),
       onEnsureFlutterAppTab: (app) {
         final tab = holder.state.getOrCreateAppLogTab(
@@ -1140,33 +1158,30 @@ Future<void> _runTuiBackend({
         holder.markDirty();
       },
       onFlutterProgress: (app, stage) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.startupStage = stage;
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.startupStage = stage;
+          holder.markDirty();
+        }
       },
       onFlutterReady: (app, url) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.url = url;
-        tab.ready = true;
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.url = url;
+          tab.ready = true;
+          holder.markDirty();
+        }
       },
       onFlutterLaunchFailed: (app) {
-        final tab = holder.state.getOrCreateAppLogTab(
-          appId: app.id,
-          label: app.name,
-        );
-        tab.ready = false;
-        tab.url = null;
-        // Replace the breadcrumb's spinner-y "connecting" with a terminal
-        // state so it doesn't hang; the build error is in the app's log.
-        tab.startupStage = 'launch failed - see log';
-        holder.markDirty();
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.ready = false;
+          tab.url = null;
+          // Replace the breadcrumb's spinner-y "connecting" with a terminal
+          // state so it doesn't hang; the build error is in the app's log.
+          tab.startupStage = 'launch failed — see log';
+          holder.markDirty();
+        }
       },
       onServerStart: (server) async {
         // Fires on every server boot - the initial start, a restart, and the
@@ -1189,6 +1204,22 @@ Future<void> _runTuiBackend({
         vmService.onExtensionEvent.listen(
           (event) => handleServerLogEvent(holder, event),
         );
+      },
+      onFlutterAppsReloaded: (newApps) {
+        // Remove tabs for gone apps and update state.
+        final oldApps = holder.state.launchableApps;
+        for (final app in oldApps) {
+          late final tab = holder.state.appLogTabFor(app.id);
+          if (!newApps.any((a) => a.id == app.id) && tab != null) {
+            holder.state.tabs.removeTab(tab);
+          }
+        }
+        holder.state.hasConfiguredApps = newApps.isNotEmpty;
+        holder.state.launchableApps = newApps;
+        holder.state.canLaunchApps =
+            flutterApps.isNotEmpty &&
+            runModeFromServerArgs(serverArgs) == 'development';
+        holder.markDirty();
       },
       mcpGetLogHistory: () => holder.state.logHistory.toList(),
       mcpGetFlutterAppIds: () => [for (final app in flutterApps) app.id],

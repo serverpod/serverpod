@@ -67,6 +67,24 @@ class FlutterAppConfig {
   }
 }
 
+/// Computes a fingerprint of the `serverpod: flutter_apps:` section from
+/// [serverPubspecFile]. Consumers store the fingerprint and compare on
+/// subsequent file-change events to detect configuration changes.
+/// Returns `null` when the file cannot be read or parsed,
+/// or when flutter_apps section is not found in the pubspec.
+String? computeFlutterAppsFingerprint(File serverPubspecFile) {
+  try {
+    final pubspecYaml = loadYamlMap(serverPubspecFile.readAsStringSync());
+    final serverpodSection = pubspecYaml.nodes['serverpod'];
+    if (serverpodSection is! YamlMap) return null;
+    final flutterAppsNode = serverpodSection.nodes['flutter_apps'];
+    if (flutterAppsNode == null) return null;
+    return flutterAppsNode.value.toString();
+  } catch (_) {
+    return null;
+  }
+}
+
 /// Loads the companion Flutter apps from the server [serverPubspecFile].
 ///
 /// Apps are configured under `serverpod: flutter_apps:` (a sibling of
