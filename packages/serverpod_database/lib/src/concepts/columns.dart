@@ -468,7 +468,7 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
 ///
 /// All geography column types mix this in so that `intersects`, `distanceWithin`,
 /// `distance`, `contains`, and `within` are available on every geography column.
-mixin _GeographySpatialOperations<T> on Column<T> {
+mixin _GeographySpatialOperations<T extends Geography> on Column<T> {
   /// Returns an [Expression] that is true when this column's geometry
   /// intersects [other] — wraps `ST_Intersects`.
   Expression intersects(Geography other) => Expression(
