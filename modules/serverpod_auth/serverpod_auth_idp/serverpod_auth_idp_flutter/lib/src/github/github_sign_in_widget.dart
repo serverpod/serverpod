@@ -72,21 +72,39 @@ class GitHubSignInWidget extends StatefulWidget {
   final GitHubButtonStyle style;
 
   /// The button size (large or medium).
-  final GitHubButtonSize size;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [GitHubButtonSize.large], when null.
+  final GitHubButtonSize? size;
 
   /// The button text.
-  final GitHubButtonText text;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [GitHubButtonText.continueWith], when null.
+  final GitHubButtonText? text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final GitHubButtonShape shape;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [GitHubButtonShape.pill], when null.
+  final GitHubButtonShape? shape;
 
   /// The GitHub logo alignment: left or center.
-  final GitHubButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [GitHubButtonLogoAlignment.center], when null.
+  final GitHubButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a GitHub Sign-In widget.
   const GitHubSignInWidget({
@@ -97,11 +115,12 @@ class GitHubSignInWidget extends StatefulWidget {
     this.scopes = GitHubAuthController.defaultScopes,
     this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size = GitHubButtonSize.large,
-    this.text = GitHubButtonText.continueWith,
-    this.shape = GitHubButtonShape.pill,
-    this.logoAlignment = GitHubButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.text,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -109,7 +128,7 @@ class GitHubSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
@@ -159,6 +178,7 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 

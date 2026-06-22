@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../common/sign_in_button_style.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'github_sign_in_style.dart';
 
@@ -8,6 +9,10 @@ import 'github_sign_in_style.dart';
 ///
 /// This widget renders a GitHub-branded button with proper styling,
 /// loading states, and disabled states following GitHub's design guidelines.
+///
+/// The [size], [text], [shape], [logoAlignment], [minimumWidth], and
+/// [textStyle] arguments fall back to the shared [SignInButtonStyle] in scope
+/// when left null, then to GitHub's own defaults.
 class GitHubSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -25,21 +30,24 @@ class GitHubSignInButton extends StatelessWidget {
   final GitHubButtonStyle style;
 
   /// The button size (large or medium).
-  final GitHubButtonSize size;
+  final GitHubButtonSize? size;
 
   /// The button text.
-  final GitHubButtonText text;
+  final GitHubButtonText? text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final GitHubButtonShape shape;
+  final GitHubButtonShape? shape;
 
   /// The GitHub logo alignment: left or center.
-  final GitHubButtonLogoAlignment logoAlignment;
+  final GitHubButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  final TextStyle? textStyle;
 
   /// Creates a GitHub Sign-In button.
   const GitHubSignInButton({
@@ -48,20 +56,36 @@ class GitHubSignInButton extends StatelessWidget {
     required this.isDisabled,
     this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size = GitHubButtonSize.large,
-    this.text = GitHubButtonText.continueWith,
-    this.shape = GitHubButtonShape.pill,
-    this.logoAlignment = GitHubButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.text,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
   @override
   Widget build(BuildContext context) {
     final texts = context.githubSignInTexts;
+    final shared = context.signInButtonStyle;
+
+    final size =
+        this.size ?? _toGitHubSize(shared.size) ?? GitHubButtonSize.large;
+    final shape =
+        this.shape ?? _toGitHubShape(shared.shape) ?? GitHubButtonShape.pill;
+    final text =
+        this.text ?? _toGitHubText(shared.text) ?? GitHubButtonText.continueWith;
+    final logoAlignment =
+        this.logoAlignment ??
+        _toGitHubLogoAlignment(shared.logoAlignment) ??
+        GitHubButtonLogoAlignment.center;
+    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared.textStyle;
+
     final buttonStyle = GitHubSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -96,15 +120,26 @@ class GitHubSignInButton extends StatelessWidget {
             alpha: 0.6,
           ),
         ),
-        child: _buildButtonContent(buttonStyle, texts),
+        child: _buildButtonContent(
+          buttonStyle,
+          texts,
+          size: size,
+          text: text,
+          logoAlignment: logoAlignment,
+          textStyle: textStyle,
+        ),
       ),
     );
   }
 
   Widget _buildButtonContent(
     GitHubSignInStyle buttonStyle,
-    GitHubSignInTexts texts,
-  ) {
+    GitHubSignInTexts texts, {
+    required GitHubButtonSize size,
+    required GitHubButtonText text,
+    required GitHubButtonLogoAlignment logoAlignment,
+    required TextStyle? textStyle,
+  }) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -119,18 +154,19 @@ class GitHubSignInButton extends StatelessWidget {
     }
 
     if (type == GitHubButtonType.icon) {
-      return _buildGitHubLogo(buttonStyle);
+      return _buildGitHubLogo(buttonStyle, size);
     }
 
+    final baseTextStyle = TextStyle(
+      fontSize: size == GitHubButtonSize.large ? 16 : 14,
+      color: buttonStyle.foregroundColor,
+    );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(),
-      style: TextStyle(
-        fontSize: size == GitHubButtonSize.large ? 16 : 14,
-        color: buttonStyle.foregroundColor,
-      ),
+      texts.signInButton ?? _getButtonText(text),
+      style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
     );
 
-    final logo = _buildGitHubLogo(buttonStyle);
+    final logo = _buildGitHubLogo(buttonStyle, size);
 
     if (logoAlignment == GitHubButtonLogoAlignment.center) {
       return Row(
@@ -166,7 +202,7 @@ class GitHubSignInButton extends StatelessWidget {
     );
   }
 
-  Widget _buildGitHubLogo(GitHubSignInStyle buttonStyle) {
+  Widget _buildGitHubLogo(GitHubSignInStyle buttonStyle, GitHubButtonSize size) {
     final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
 
     // Use the appropriate SVG based on the button style
@@ -187,7 +223,7 @@ class GitHubSignInButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText() {
+  String _getButtonText(GitHubButtonText text) {
     return switch (text) {
       GitHubButtonText.signIn => 'Sign in with GitHub',
       GitHubButtonText.signUp => 'Sign up with GitHub',
@@ -195,3 +231,35 @@ class GitHubSignInButton extends StatelessWidget {
     };
   }
 }
+
+// GitHub has no small size; it falls back to medium.
+GitHubButtonSize? _toGitHubSize(SignInButtonSize? size) => switch (size) {
+  null => null,
+  SignInButtonSize.large => GitHubButtonSize.large,
+  SignInButtonSize.medium => GitHubButtonSize.medium,
+  SignInButtonSize.small => GitHubButtonSize.medium,
+};
+
+GitHubButtonShape? _toGitHubShape(SignInButtonShape? shape) => switch (shape) {
+  null => null,
+  SignInButtonShape.rectangular => GitHubButtonShape.rectangular,
+  SignInButtonShape.rounded => GitHubButtonShape.rounded,
+  SignInButtonShape.pill => GitHubButtonShape.pill,
+};
+
+GitHubButtonLogoAlignment? _toGitHubLogoAlignment(
+  SignInButtonLogoAlignment? alignment,
+) => switch (alignment) {
+  null => null,
+  SignInButtonLogoAlignment.left => GitHubButtonLogoAlignment.left,
+  SignInButtonLogoAlignment.center => GitHubButtonLogoAlignment.center,
+};
+
+// GitHub always appends its name, so the bare "sign in" maps to "Sign in with".
+GitHubButtonText? _toGitHubText(SignInButtonTextVariant? text) => switch (text) {
+  null => null,
+  SignInButtonTextVariant.signInWith => GitHubButtonText.signIn,
+  SignInButtonTextVariant.signUpWith => GitHubButtonText.signUp,
+  SignInButtonTextVariant.continueWith => GitHubButtonText.continueWith,
+  SignInButtonTextVariant.signIn => GitHubButtonText.signIn,
+};
