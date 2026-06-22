@@ -64,10 +64,12 @@ void main() {
         expect(sessionUsedByCallback, isNotNull);
       });
 
-      test('then the returned value is the value produced by the callback.',
-          () {
-        expect(result, equals('the result'));
-      });
+      test(
+        'then the returned value is the value produced by the callback.',
+        () {
+          expect(result, equals('the result'));
+        },
+      );
 
       test('then the session is closed once the callback completes.', () {
         expect(sessionWasClosed, isTrue);
