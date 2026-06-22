@@ -5,7 +5,7 @@ library;
 import 'package:serverpod_database/serverpod_database.dart';
 
 part '20260425031610501/migration.dart';
-part '20260620194409434/migration.dart';
+part '20260622105508747/migration.dart';
 
 /// Migration registry for the client-side database.
 class MigrationRegistry {
@@ -13,7 +13,7 @@ class MigrationRegistry {
   /// New migrations are always appended at the end.
   static final List<MigrationVersionSql> migrations = [
     _Migration20260425031610501(),
-    _Migration20260620194409434(),
+    _Migration20260622105508747(),
   ];
 
   /// List of all client-side database migration versions.

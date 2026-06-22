@@ -1,0 +1,105 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "upsert_test_model",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "upsert_test_model__code__unique_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "code"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "upsert_test_model__category__value__unique_idx",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "category"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "value"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "deleteIndexes": [
+          "code_unique_idx",
+          "category_value_unique_idx"
+        ],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "uniqueIndexCreated",
+            "message": "Unique index \"upsert_test_model__code__unique_idx\" is added to table \"upsert_test_model\". If there are existing rows with duplicate values, this migration will fail.",
+            "table": "upsert_test_model",
+            "columns": [
+              "code"
+            ],
+            "destrucive": false
+          },
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "uniqueIndexCreated",
+            "message": "Unique index \"upsert_test_model__category__value__unique_idx\" is added to table \"upsert_test_model\". If there are existing rows with duplicate values, this migration will fail.",
+            "table": "upsert_test_model",
+            "columns": [
+              "category",
+              "value"
+            ],
+            "destrucive": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "uniqueIndexCreated",
+      "message": "Unique index \"upsert_test_model__code__unique_idx\" is added to table \"upsert_test_model\". If there are existing rows with duplicate values, this migration will fail.",
+      "table": "upsert_test_model",
+      "columns": [
+        "code"
+      ],
+      "destrucive": false
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "uniqueIndexCreated",
+      "message": "Unique index \"upsert_test_model__category__value__unique_idx\" is added to table \"upsert_test_model\". If there are existing rows with duplicate values, this migration will fail.",
+      "table": "upsert_test_model",
+      "columns": [
+        "category",
+        "value"
+      ],
+      "destrucive": false
+    }
+  ],
+  "migrationApiVersion": 1
+}

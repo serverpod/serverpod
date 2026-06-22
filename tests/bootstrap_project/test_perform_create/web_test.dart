@@ -21,13 +21,13 @@ void main() {
   });
 
   group(
-    'Given a TemplateContext with web enabled, '
+    'Given a TemplateContext with website enabled, '
     'when performCreate is called with the context and a server template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.server,
-          web: true,
+          website: true,
         ),
       );
 
@@ -57,59 +57,29 @@ void main() {
       );
 
       test(
-        'then the server server.dart contains web imports',
+        'then the server server.dart contains correct imports',
         () async {
           final serverFile = File(
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('src/web/routes/app_config_route.dart'));
+          expect(content, contains('dart:io'));
           expect(content, contains('src/web/routes/root.dart'));
         },
       );
 
       test(
-        'then the server server.dart contains web configurations',
+        'then the server server.dart contains website configurations',
         () async {
           final serverFile = File(
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('pod.webServer.addRoute('));
+          expect(content, contains('pod.webServer.addRoute(RootRoute()'));
           expect(
             content,
-            contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+            contains('pod.webServer.addRoute(StaticRoute.directory(root))'),
           );
-        },
-      );
-
-      test(
-        'then the server server.dart disables WASM headers by default',
-        () async {
-          final serverFile = File(
-            p.join(project.serverDir, 'lib', 'server.dart'),
-          );
-          final content = await serverFile.readAsString();
-
-          expect(
-            content,
-            contains(
-              'Remove this line if you build the Flutter app with --wasm',
-            ),
-          );
-          expect(content, contains('enableWasmHeaders: false'));
-          expect(content, isNot(contains('enableWasmHeaders: true')));
-        },
-      );
-
-      test(
-        'then the server pubspec contains a Flutter build script without WASM',
-        () async {
-          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
-          final content = await pubspec.readAsString();
-
-          expect(content, contains('flutter build web --base-href /app/'));
-          expect(content, isNot(contains('--wasm')));
         },
       );
 
@@ -182,13 +152,134 @@ void main() {
   );
 
   group(
-    'Given a TemplateContext with web disabled, '
+    'Given a TemplateContext with webapp enabled, '
     'when performCreate is called with the context and a server template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
           template: ServerpodTemplateType.server,
-          web: false,
+          webapp: true,
+        ),
+      );
+
+      test(
+        'then the server server.dart contains correct imports',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('dart:io'));
+          expect(content, contains('src/web/routes/app_config_route.dart'));
+        },
+      );
+
+      test(
+        'then the server server.dart contains webapp configurations',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('pod.webServer.addRoute('));
+          expect(
+            content,
+            contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+          );
+        },
+      );
+
+      test(
+        'then the server server.dart disables WASM headers by default',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+
+          expect(
+            content,
+            contains(
+              'If building the Flutter app with WASM, set the below parameter to',
+            ),
+          );
+          expect(
+            content,
+            contains(
+              'true and add the --wasm flag to the flutter build command.',
+            ),
+          );
+          expect(content, contains('enableWasmHeaders: false'));
+          expect(content, isNot(contains('enableWasmHeaders: true')));
+        },
+      );
+
+      test(
+        'then the server pubspec contains a Flutter build script without WASM',
+        () async {
+          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /app/'));
+          expect(content, isNot(contains('--wasm')));
+        },
+      );
+
+      test(
+        'then the server config for development contains webserver configurations',
+        () async {
+          final config = File(
+            p.join(project.serverDir, 'config', 'development.yaml'),
+          );
+          final content = await config.readAsString();
+          expect(content, contains('webServer:'));
+        },
+      );
+
+      test(
+        'then the server config for staging contains webserver configurations',
+        () async {
+          final config = File(
+            p.join(project.serverDir, 'config', 'staging.yaml'),
+          );
+          final content = await config.readAsString();
+          expect(content, contains('webServer:'));
+        },
+      );
+
+      test(
+        'then the server config for production contains webserver configurations',
+        () async {
+          final config = File(
+            p.join(project.serverDir, 'config', 'production.yaml'),
+          );
+          final content = await config.readAsString();
+          expect(content, contains('webServer:'));
+        },
+      );
+
+      test(
+        'then the server config for test contains webserver configurations',
+        () async {
+          final config = File(
+            p.join(project.serverDir, 'config', 'test.yaml'),
+          );
+          final content = await config.readAsString();
+          expect(content, contains('webServer:'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a TemplateContext with webapp and website disabled, '
+    'when performCreate is called with the context and a server template type',
+    () {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          webapp: false,
+          website: false,
         ),
       );
 
@@ -282,14 +373,11 @@ void main() {
   );
 
   group(
-    'Given a TemplateContext with web enabled, '
-    'when performCreate is called with the context and a module template type',
+    'Given a TemplateContext with a module template type, '
+    'when performCreate is called, ',
     () {
       final project = setUpPerformCreateInTempDir(
-        context: TemplateContext(
-          template: ServerpodTemplateType.module,
-          web: true,
-        ),
+        context: TemplateContext(template: ServerpodTemplateType.module),
       );
 
       test(
@@ -298,28 +386,6 @@ void main() {
           final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
           final content = await file.readAsString();
           expect(content, contains('webServer:'));
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a TemplateContext with web disabled, '
-    'when performCreate is called with the context and a module template type',
-    () {
-      final project = setUpPerformCreateInTempDir(
-        context: TemplateContext(
-          template: ServerpodTemplateType.module,
-          web: false,
-        ),
-      );
-
-      test(
-        'then the server test config does not contain webserver configuration',
-        () async {
-          final file = File(p.join(project.serverDir, 'config', 'test.yaml'));
-          final content = await file.readAsString();
-          expect(content, isNot(contains('webServer:')));
         },
       );
     },

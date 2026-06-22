@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../test_util/builders/exception_class_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
@@ -67,6 +68,80 @@ void main() {
           .withClassName('ExampleChild')
           .withFileName('example_child')
           .withSimpleField('age', 'int')
+          .withExtendsClass(parent)
+          .withSharedPackageName(sharedPackageName)
+          .build();
+
+      var user = ModelClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('User')
+          .withFileName('user')
+          .withSimpleField('name', 'String')
+          .withSharedPackageName(sharedPackageName)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        parent,
+        child,
+        user,
+      ];
+
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      late var parentCompilationUnit = parseString(
+        content:
+            codeMap[getExpectedFilePath(
+              parent.fileName,
+              subDirParts: ['subdir'],
+            )]!,
+      ).unit;
+
+      test(
+        'then the ${parent.className} has a relative protocol import directive correctly generated',
+        () {
+          var protocolImport = CompilationUnitHelpers.tryFindImportDirective(
+            parentCompilationUnit,
+            uri: '../protocol.dart',
+          );
+
+          expect(protocolImport, isNotNull);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a hierarchy with a sealed parent exception that has a model and a normal child, when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('AppException')
+          .withFileName('app_exception')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('user')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('User')
+                      .withUrl(defaultModuleAlias)
+                      .build(),
+                )
+                .build(),
+          )
+          .withIsSealed(true)
+          .withSharedPackageName(sharedPackageName)
+          .build();
+
+      var child = ExceptionClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('NotFoundException')
+          .withFileName('not_found_exception')
+          .withSimpleField('code', 'int')
           .withExtendsClass(parent)
           .withSharedPackageName(sharedPackageName)
           .build();

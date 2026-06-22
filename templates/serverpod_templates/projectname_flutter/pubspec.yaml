@@ -35,9 +35,15 @@ dependencies:
   serverpod_flutter: 3.5.0-beta.10
 
 dev_dependencies:
+  # Used for agents to drive the app through the Dart MCP
+  flutter_driver:
+    sdk: flutter
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  flutter_secure_storage: ^10.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:stream_transform/stream_transform.dart';
-import 'package:watcher/watcher.dart';
+import 'package:watcher/watcher.dart' as w;
 
 /// Result of a file change batch from the watcher.
 class FileChangeEvent {
@@ -24,6 +24,11 @@ class FileChangeEvent {
   /// comparing the dependency fingerprint (see `FlutterDependencyTracker`).
   final bool flutterDependenciesChanged;
 
+  /// Whether the Flutter app's `pubspec.yaml` was modified in this batch.
+  /// Assets and fonts declared in the `pubspec.yaml` are bundled at build
+  /// time, so any change requires a full process relaunch.
+  final bool flutterPubspecChanged;
+
   /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
   ///
   /// Used to trigger a browser refresh without recompilation.
@@ -34,6 +39,7 @@ class FileChangeEvent {
     this.modelFiles = const {},
     this.packageConfigChanged = false,
     this.flutterDependenciesChanged = false,
+    this.flutterPubspecChanged = false,
     this.staticFilesChanged = false,
   });
 }
@@ -56,6 +62,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
     final modelFiles = <String>{};
     var packageConfigChanged = false;
     var flutterDependenciesChanged = false;
+    var flutterPubspecChanged = false;
     var staticFilesChanged = false;
 
     for (final event in this) {
@@ -63,6 +70,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles.addAll(event.modelFiles);
       packageConfigChanged |= event.packageConfigChanged;
       flutterDependenciesChanged |= event.flutterDependenciesChanged;
+      flutterPubspecChanged |= event.flutterPubspecChanged;
       staticFilesChanged |= event.staticFilesChanged;
     }
 
@@ -71,6 +79,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles: modelFiles,
       packageConfigChanged: packageConfigChanged,
       flutterDependenciesChanged: flutterDependenciesChanged,
+      flutterPubspecChanged: flutterPubspecChanged,
       staticFilesChanged: staticFilesChanged,
     );
   }
@@ -92,9 +101,13 @@ class FileWatcher {
     this.debounceDelay = const Duration(milliseconds: 100),
   }) : _watchPaths = watchPaths.map(p.canonicalize).toSet();
 
-  late final List<DirectoryWatcher> _watchers = [
-    for (final watchPath in _watchPaths)
-      if (Directory(watchPath).existsSync()) DirectoryWatcher(watchPath),
+  late final List<w.Watcher> _watchers = [
+    for (final watchPath in _watchPaths) ...{
+      if (Directory(watchPath).existsSync())
+        w.DirectoryWatcher(watchPath)
+      else if (File(watchPath).existsSync())
+        w.FileWatcher(watchPath),
+    },
   ];
 
   /// An immutable view of the paths being watched.
@@ -123,6 +136,7 @@ class FileWatcher {
           final modelFiles = <String>{};
           var packageConfigChanged = false;
           var flutterDependenciesChanged = false;
+          var flutterPubspecChanged = false;
           var staticFilesChanged = false;
 
           for (final event in events) {
@@ -141,6 +155,8 @@ class FileWatcher {
               modelFiles.add(filePath);
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);
+            } else if (p.basename(filePath) == 'pubspec.yaml') {
+              flutterPubspecChanged = true;
             } else {
               staticFilesChanged = true;
             }
@@ -151,6 +167,7 @@ class FileWatcher {
             modelFiles: modelFiles,
             packageConfigChanged: packageConfigChanged,
             flutterDependenciesChanged: flutterDependenciesChanged,
+            flutterPubspecChanged: flutterPubspecChanged,
             staticFilesChanged: staticFilesChanged,
           );
         })
@@ -160,6 +177,7 @@ class FileWatcher {
               e.modelFiles.isNotEmpty ||
               e.packageConfigChanged ||
               e.flutterDependenciesChanged ||
+              e.flutterPubspecChanged ||
               e.staticFilesChanged,
         );
   }

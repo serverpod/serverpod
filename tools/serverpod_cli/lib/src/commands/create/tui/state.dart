@@ -33,7 +33,7 @@ class CreateConfigState extends TuiState {
   /// before the project can be created.
   final bool requireIde;
 
-  late final form = FormState(configs);
+  late final form = MultiScreenFormState(configs);
 
   bool _creatingProject = false;
   bool get creatingProject => _creatingProject;
@@ -67,6 +67,18 @@ class CreateConfigState extends TuiState {
     final selectedIdes =
         form.getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
+    final webapp = _isOptionSelected(
+      ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appOnly,
+      fallback: defaults.webapp,
+    );
+
+    final appAndWebsite = _isOptionSelected(
+      ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appAndWebsite,
+      fallback: defaults.website,
+    );
+
     return TemplateContext(
       template: template,
       auth: _isOptionSelected(
@@ -75,25 +87,17 @@ class CreateConfigState extends TuiState {
         fallback: defaults.auth,
       ),
       redis: _isOptionSelected(
-        ServerpodCreateConfig.redis,
-        BoolFormConfigOption.enabled,
+        ServerpodCreateConfig.database,
+        DatabaseConfigOption.redis,
         fallback: defaults.redis,
       ),
       postgres: _isOptionSelected(
         ServerpodCreateConfig.database,
-        DatabaseConfigOption.postgres,
+        DatabaseConfigOption.database,
         fallback: defaults.postgres,
       ),
-      sqlite: _isOptionSelected(
-        ServerpodCreateConfig.database,
-        DatabaseConfigOption.sqlite,
-        fallback: defaults.sqlite,
-      ),
-      web: _isOptionSelected(
-        ServerpodCreateConfig.web,
-        BoolFormConfigOption.enabled,
-        fallback: defaults.web,
-      ),
+      webapp: webapp || appAndWebsite,
+      website: appAndWebsite,
       ides: selectedIdes.toTemplateIdes,
     );
   }

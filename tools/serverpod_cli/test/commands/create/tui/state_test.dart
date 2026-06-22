@@ -34,7 +34,16 @@ void main() {
       );
 
       test(
-        'and database is postgres (default) then TemplateContext has correct value for postgres',
+        'then TemplateContext has the correct default value for auth',
+        () {
+          final context = state.toTemplateContext();
+          expect(context.auth, isTrue);
+        },
+      );
+
+      test(
+        'when database is selected (default),'
+        'then postgres is enabled in TemplateContext',
         () {
           final context = state.toTemplateContext();
           expect(context.postgres, isTrue);
@@ -42,87 +51,111 @@ void main() {
       );
 
       test(
-        'and database is sqlite then TemplateContext has correct value for sqlite',
+        'when database is selected,'
+        'then postgres is disabled in TemplateContext',
         () {
+          // Deselect to disable
           state.form.updateSelectedOption(
             ServerpodCreateConfig.database,
-            DatabaseConfigOption.sqlite,
+            DatabaseConfigOption.database,
           );
 
           final context = state.toTemplateContext();
           expect(context.postgres, isFalse);
-          expect(context.sqlite, isTrue);
         },
       );
 
       test(
-        'and database is disabled then TemplateContext '
-        'has correct values for postgres, sqlite and auth',
+        'when redis is not selected (default),'
+        'then redis is disabled in TemplateContext',
         () {
-          state.form.updateSelectedOption(
-            ServerpodCreateConfig.database,
-            DatabaseConfigOption.none,
-          );
-
-          final context = state.toTemplateContext();
-          expect(context.postgres, isFalse);
-          expect(context.sqlite, isFalse);
-          expect(context.auth, isFalse);
-        },
-      );
-
-      test(
-        'and redis is disabled then TemplateContext reflects disabled',
-        () {
-          state.form.updateSelectedOption(
-            ServerpodCreateConfig.redis,
-            BoolFormConfigOption.disabled,
-          );
-
+          // By default redis is not selected
           final context = state.toTemplateContext();
           expect(context.redis, isFalse);
         },
       );
 
-      test('and web is disabled then TemplateContext reflects disabled', () {
-        state.form.updateSelectedOption(
-          ServerpodCreateConfig.web,
-          BoolFormConfigOption.disabled,
-        );
-
-        final context = state.toTemplateContext();
-        expect(context.web, isFalse);
-      });
-
       test(
-        'and database is set to postgres with auth enabled, '
-        'then TemplateContext has the correct value for auth',
+        'when redis is selected,'
+        'then redis is enabled in TemplateContext',
         () {
-          var context = state.toTemplateContext();
-          // True by default
-          expect(context.auth, isTrue);
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.database,
+            DatabaseConfigOption.redis,
+          );
 
-          // Move to database config
-          state.form.updateFocusedConfig(1);
-          // Select DatabaseConfigOption.sqlite config option
-          state.form.updateFocusedConfigOption(1);
-          state.form.selectConfigOption();
+          final context = state.toTemplateContext();
+          expect(context.redis, isTrue);
+        },
+      );
 
-          context = state.toTemplateContext();
-          // False for sqlite
-          expect(context.auth, isFalse);
+      group(
+        'when WebServerConfigOption is set to app only (default)',
+        () {
+          late TemplateContext context;
+          setUp(() {
+            context = state.toTemplateContext();
+          });
 
-          // Select DatabaseConfigOption.postgres config option
-          state.form.updateFocusedConfigOption(-1);
-          state.form.selectConfigOption();
+          test('then webapp is enabled', () {
+            expect(context.webapp, isTrue);
+          });
 
-          context = state.toTemplateContext();
-          expect(context.auth, isTrue);
+          test('then website is disabled', () {
+            expect(context.website, isFalse);
+          });
+
+          test('then webserver is enabled', () {
+            expect(context.webserver, isTrue);
+          });
         },
       );
 
       test(
-        'and ides are selected then TemplateContext contains ides',
+        'when WebServerConfigOption is set to app and website,'
+        'then webapp, website and webserver are all enabled',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.webserver,
+            WebServerConfigOption.appAndWebsite,
+          );
+          final context = state.toTemplateContext();
+          expect(context.webapp, isTrue);
+          expect(context.website, isTrue);
+          expect(context.webserver, isTrue);
+        },
+      );
+
+      test(
+        'when WebServerConfigOption is set to none,'
+        'then webapp, website and webserver are all disabled',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.webserver,
+            WebServerConfigOption.none,
+          );
+          final context = state.toTemplateContext();
+          expect(context.webapp, isFalse);
+          expect(context.website, isFalse);
+          expect(context.webserver, isFalse);
+        },
+      );
+
+      test(
+        'when auth is disabled then TemplateContext reflects disabled',
+        () {
+          state.form.updateSelectedOption(
+            ServerpodCreateConfig.auth,
+            BoolFormConfigOption.disabled,
+          );
+
+          final context = state.toTemplateContext();
+          expect(context.auth, isFalse);
+        },
+      );
+
+      test(
+        'when ides are selected then TemplateContext contains ides',
         () {
           state.form.updateSelectedOption(
             ServerpodCreateConfig.ide,
@@ -153,7 +186,7 @@ void main() {
         state = CreateConfigState(
           ServerpodTemplateType.server,
           configs: const [ServerpodCreateConfig.ide],
-          defaults: TemplateContext(postgres: true, web: true),
+          defaults: TemplateContext(postgres: true, webapp: true),
         );
       });
 
@@ -162,7 +195,9 @@ void main() {
         () {
           final context = state.toTemplateContext();
           expect(context.postgres, isTrue);
-          expect(context.web, isTrue);
+          expect(context.webapp, isTrue);
+          expect(context.webserver, isTrue);
+          expect(context.website, isFalse);
           expect(context.auth, isFalse);
           expect(context.redis, isFalse);
           expect(context.sqlite, isFalse);
@@ -214,22 +249,29 @@ void main() {
       late CreateConfigState state;
 
       setUp(() {
-        state = CreateConfigState(
-          ServerpodTemplateType.server,
-          defaults: TemplateContext(auth: true, web: true),
-        );
-        state.form.updateSelectedOption(
-          ServerpodCreateConfig.template,
-          TemplateTypeOption.module,
-        );
+        state = CreateConfigState(ServerpodTemplateType.module);
       });
 
       test(
-        'then TemplateContext resolves the hidden config from the form '
-        'and not from the default values',
+        'then webserver and auth configs are hidden '
+        'for module template',
+        () {
+          final configs = state.form.configurations;
+          expect(configs, isNot(contains(ServerpodCreateConfig.auth)));
+          expect(configs, isNot(contains(ServerpodCreateConfig.webserver)));
+          expect(configs, contains(ServerpodCreateConfig.database));
+          expect(configs, contains(ServerpodCreateConfig.ide));
+          expect(configs, contains(ServerpodCreateConfig.template));
+        },
+      );
+
+      test(
+        'then hidden configs resolve to false in TemplateContext',
         () {
           final context = state.toTemplateContext();
-          expect(context.web, isFalse);
+          expect(context.webapp, isFalse);
+          expect(context.website, isFalse);
+          expect(context.webserver, isFalse);
           expect(context.auth, isFalse);
         },
       );

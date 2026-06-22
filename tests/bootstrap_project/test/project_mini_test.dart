@@ -251,6 +251,9 @@ void main() async {
           final content = pubspec.readAsStringSync();
           expect(content, isNot(contains('flutter_secure_storage')));
         },
+        skip:
+            'flutter_secure_storage override is now in the template '
+            'and mini template type is planned for removal',
       );
 
       test('then the flutter main.dart does not contain auth imports', () {
@@ -595,17 +598,6 @@ void main() async {
           );
         });
 
-        test('then the project contains a web directory', () {
-          var webDir = Directory(
-            path.join(tempPath, serverDir, 'web'),
-          ).existsSync();
-          expect(
-            webDir,
-            isTrue,
-            reason: 'Web directory should exist but it was not found.',
-          );
-        });
-
         test('then the project contains a dockerfile', () {
           var dockerFile = File(
             path.join(tempPath, serverDir, 'Dockerfile'),
@@ -716,6 +708,9 @@ void main() async {
             final content = pubspec.readAsStringSync();
             expect(content, isNot(contains('flutter_secure_storage')));
           },
+          skip:
+              'flutter_secure_storage override is now in the template '
+              'and mini template type is planned for removal',
         );
 
         test('then the flutter main.dart does not contain auth imports', () {

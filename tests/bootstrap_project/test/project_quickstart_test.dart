@@ -304,14 +304,35 @@ void main() async {
                 );
               });
 
-              test('has a pubspec file', () {
-                expect(
-                  File(
+              test(
+                'has a pubspec file with flutter_secure_storage dependency override',
+                () {
+                  final pubspec = File(
                     path.join(tempPath, flutterDir, 'pubspec.yaml'),
-                  ).existsSync(),
-                  isTrue,
-                );
-              });
+                  );
+                  final content = pubspec.readAsStringSync();
+
+                  expect(
+                    pubspec.existsSync(),
+                    isTrue,
+                    reason: 'Flutter pubspec file does not exist.',
+                  );
+
+                  expect(
+                    content,
+                    contains('dependency_overrides:'),
+                    reason:
+                        'Flutter pubspec file does not have dependency overrides.',
+                  );
+
+                  expect(
+                    content,
+                    contains('flutter_secure_storage: ^10.0.0'),
+                    reason:
+                        'Flutter pubspec file does not have flutter_secure_storage override.',
+                  );
+                },
+              );
 
               test('has a main file', () {
                 expect(

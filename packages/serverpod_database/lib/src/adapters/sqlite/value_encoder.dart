@@ -137,6 +137,7 @@ class SqliteValueEncoder implements ValueEncoder {
   }
 
   /// Coerces [value] for [column] as a model value.
+  @override
   String encodeColumnValue(
     Column column,
     dynamic value, {

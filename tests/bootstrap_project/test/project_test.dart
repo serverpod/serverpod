@@ -411,13 +411,35 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
-          expect(
-            File(path.join(tempPath, flutterDir, 'pubspec.yaml')).existsSync(),
-            isTrue,
-            reason: 'Flutter pubspec file does not exist.',
-          );
-        });
+        test(
+          'has a pubspec file with flutter_secure_storage dependency override',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+
+            expect(
+              pubspec.existsSync(),
+              isTrue,
+              reason: 'Flutter pubspec file does not exist.',
+            );
+
+            expect(
+              content,
+              contains('dependency_overrides:'),
+              reason:
+                  'Flutter pubspec file does not have dependency overrides.',
+            );
+
+            expect(
+              content,
+              contains('flutter_secure_storage: ^10.0.0'),
+              reason:
+                  'Flutter pubspec file does not have flutter_secure_storage override.',
+            );
+          },
+        );
 
         test(
           'macOS DebugProfile entitlements has network client tag and true',
@@ -1056,13 +1078,19 @@ void main() async {
     test(
       'when building the server Dockerfile then the image is built successfully',
       () async {
-        // Temporarily remove the `enableWasmHeaders` parameter from server.dart
-        // because it has not been published yet and the Dockerfile won't have
-        // access to the local override. Once published, we can remove this.
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
         final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
         final serverSource = serverFile.readAsStringSync();
         const wasmHeaders = 'enableWasmHeaders: false,';
-        serverFile.writeAsStringSync(serverSource.replaceAll(wasmHeaders, ''));
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(sessionAlert, 'session.log('),
+        );
 
         final dockerBuildProcess = await startProcess(
           'docker',

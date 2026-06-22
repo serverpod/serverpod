@@ -232,7 +232,14 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
-                valueRestriction: BooleanValueRestriction().validate,
+                valueRestriction: restrictions.validateFieldUniqueValue,
+                allowEmptyNestedValue: true,
+                nested: {
+                  ValidateNode(
+                    Keyword.per,
+                    valueRestriction: restrictions.validateUniquePerFieldsValue,
+                  ),
+                },
               ),
             },
           ),

@@ -5163,7 +5163,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'code_unique_idx',
+          indexName: 'upsert_test_model__code__unique_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -5176,7 +5176,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
-          indexName: 'category_value_unique_idx',
+          indexName: 'upsert_test_model__category__value__unique_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(

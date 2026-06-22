@@ -111,6 +111,38 @@ In `config/generator.yaml`:
 - `extraClasses`: custom serializable class URIs
 - `features`: e.g. `database: true/false`
 
+## Flutter apps (pubspec.yaml)
+
+Companion Flutter apps that `serverpod start` can launch (Ctrl+R) are declared
+in the server `pubspec.yaml` under `serverpod: flutter_apps:`, a map of display
+alias to properties (alongside `serverpod: scripts:`):
+
+- `path`: path to the Flutter package, relative to the server package.
+- `auto_launch`: launch this app automatically on `serverpod start`. Apps
+  without it are launched on demand with `Ctrl+R`.
+- `device`: the `flutter run -d` target. Defaults to the web server (opening a
+  browser when ready) when omitted.
+
+**Any other property** is forwarded to `flutter run`: `target: lib/main.dart`
+becomes `--target=lib/main.dart`, `release: true` becomes `--release`,
+`release: false` becomes `--no-release`, and a list value repeats the flag
+(`dart-define: [A=1, B=2]` becomes `--dart-define=A=1 --dart-define=B=2`).
+
+When the key is absent, the sibling `../<project>_flutter` package is used
+automatically (and auto-launched) if present.
+
+```yaml
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../apps/admin
+      auto_launch: true
+      device: chrome
+      target: lib/main.dart
+    Portal:
+      path: ../apps/portal
+```
+
 ## Dart config override
 
 Pass `config: ServerpodConfig(...)` to `Serverpod(...)` to skip file/env loading and use a Dart config object, with CLI flags still merged in.
