@@ -381,8 +381,7 @@ class WatchSession {
     if (reloaded) await _notifyBrowserRefresh();
   }
 
-  /// Reloads the companion Flutter app config from the server's `pubspec.yaml`
-  /// and applies the diff (adds/removes/updates app runtimes).
+  /// Reloads the companion Flutter app config from the server's `pubspec.yaml`.
   Future<void> _reloadFlutterAppsIfChanged() async {
     final reloadApps = _flutterAppsLoader;
     if (reloadApps == null) return;
