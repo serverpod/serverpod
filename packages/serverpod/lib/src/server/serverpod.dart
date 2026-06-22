@@ -1226,6 +1226,29 @@ class Serverpod {
     return session;
   }
 
+  /// Creates a new [InternalSession], runs [callback] with it, and closes
+  /// the session afterwards. Used to access the database and do logging
+  /// outside of sessions triggered by external events, without having to
+  /// manage the session lifecycle manually.
+  ///
+  /// If [callback] throws, the session is closed with the error and
+  /// [StackTrace] attached (so they are written to the logs) before the
+  /// error is rethrown.
+  Future<T> withSession<T>(
+    Future<T> Function(Session session) callback, {
+    bool enableLogging = true,
+  }) async {
+    var session = await createSession(enableLogging: enableLogging);
+    try {
+      var result = await callback(session);
+      await session.close();
+      return result;
+    } catch (e, stackTrace) {
+      await session.close(error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   /// Stops accepting new requests on the user-facing servers (the API
   /// server and, if enabled, the web server), waits for in-flight requests
   /// to settle, runs [action], then resumes request handling.
