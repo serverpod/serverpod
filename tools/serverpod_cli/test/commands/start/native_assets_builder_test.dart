@@ -20,6 +20,7 @@ void main() {
       builder = NativeAssetsBuilder(
         dartExecutable: _dartExecutable(),
         serverDir: tempDir.path,
+        projectRoot: tempDir.path,
         outputDir: p.join(tempDir.path, '.dart_tool', 'serverpod', 'na'),
       );
     });
@@ -63,7 +64,6 @@ void main() {
 
   group('Given a workspace with the server as a member package', () {
     late Directory tempDir;
-    late NativeAssetsBuilder builder;
     late String serverDir;
 
     setUp(() async {
@@ -75,11 +75,6 @@ void main() {
         rootDir: tempDir.path,
         memberDir: serverDir,
       );
-      builder = NativeAssetsBuilder(
-        dartExecutable: _dartExecutable(),
-        serverDir: serverDir,
-        outputDir: p.join(serverDir, '.dart_tool', 'serverpod', 'na'),
-      );
     });
 
     tearDown(() async {
@@ -87,10 +82,10 @@ void main() {
     });
 
     test(
-      'when discoverProjectRoot is called from the member dir, '
+      'when discoverProjectRootFrom is called from the member dir, '
       'then it walks up to the workspace root',
       () async {
-        final root = await builder.discoverProjectRoot();
+        final root = await discoverProjectRootFrom(serverDir);
 
         expect(
           p.equals(root, tempDir.path),
@@ -121,6 +116,7 @@ void main() {
         builder = NativeAssetsBuilder(
           dartExecutable: _dartExecutable(),
           serverDir: tempDir.path,
+          projectRoot: tempDir.path,
           outputDir: p.join(tempDir.path, '.dart_tool', 'serverpod', 'na'),
         );
       });
@@ -164,7 +160,82 @@ void main() {
     },
     skip: Platform.isWindows
         ? 'hooks_runner subprocesses keep .dart_tool handles open on Windows '
-              'long enough to race tearDown — see CI run 25155561001'
+              'long enough to race tearDown - see CI run 25155561001'
+        : null,
+  );
+
+  group(
+    'Given a build hook that emits a data asset',
+    () {
+      late Directory tempDir;
+      late NativeAssetsBuilder builder;
+
+      setUp(() async {
+        tempDir = await Directory.systemTemp.createTemp(
+          'native_assets_builder_drop_test_',
+        );
+        await _createProjectWithBuildHook(
+          dir: tempDir.path,
+          extraImports: const [
+            "import 'dart:io';",
+            "import 'package:data_assets/data_assets.dart';",
+          ],
+          hookBody: '''
+final file = File.fromUri(input.outputDirectory.resolve('asset.txt'));
+await file.writeAsString('hello');
+output.assets.data.add(
+  DataAsset(package: input.packageName, name: 'asset.txt', file: file.uri),
+);
+''',
+        );
+        builder = NativeAssetsBuilder(
+          dartExecutable: _dartExecutable(),
+          serverDir: tempDir.path,
+          projectRoot: tempDir.path,
+          outputDir: p.join(tempDir.path, '.dart_tool', 'serverpod', 'na'),
+        );
+      });
+
+      tearDown(() async {
+        await tempDir.deleteWithRetry(recursive: true);
+      });
+
+      test(
+        'when the last build-hook package is removed after a manifest was '
+        'built, then the next build tears the manifest down and reports the '
+        'change',
+        () async {
+          // First build produces a manifest from the emitted data asset.
+          final first = await builder.build();
+          expect(first, isA<NativeAssetsBuildSuccess>());
+          expect((first as NativeAssetsBuildSuccess).manifestPath, isNotNull);
+          expect(first.manifestChanged, isTrue);
+          expect(File(builder.manifestPath).existsSync(), isTrue);
+
+          // Drop the build hook, mirroring a `pub get` that removed the last
+          // native dependency, and re-discover packages as the watch loop does
+          // on a package_config change.
+          File(p.join(tempDir.path, 'hook', 'build.dart')).deleteSync();
+          builder.reset();
+
+          final second = await builder.build();
+
+          // It must NOT silently skip: the stale manifest is torn down and the
+          // change is reported, so applyTo restarts the FES without
+          // --native-assets (which in turn restarts the pod). Skipping would
+          // leave the pod loading the removed package's assets.
+          expect(second, isA<NativeAssetsBuildSuccess>());
+          final success = second as NativeAssetsBuildSuccess;
+          expect(success.manifestPath, isNull);
+          expect(success.manifestChanged, isTrue);
+          expect(File(builder.manifestPath).existsSync(), isFalse);
+        },
+        timeout: const Timeout(Duration(minutes: 2)),
+      );
+    },
+    skip: Platform.isWindows
+        ? 'hooks_runner subprocesses keep .dart_tool handles open on Windows '
+              'long enough to race tearDown - see CI run 25155561001'
         : null,
   );
 }
@@ -288,6 +359,7 @@ environment:
 Future<void> _createProjectWithBuildHook({
   required String dir,
   required String hookBody,
+  List<String> extraImports = const [],
 }) async {
   await Directory(p.join(dir, '.dart_tool')).create(recursive: true);
   await Directory(p.join(dir, 'hook')).create(recursive: true);
@@ -302,6 +374,7 @@ dependencies:
 
   await File(p.join(dir, 'hook', 'build.dart')).writeAsString('''
 import 'package:hooks/hooks.dart';
+${extraImports.join('\n')}
 
 void main(List<String> args) async {
   await build(args, (input, output) async {

@@ -6,9 +6,10 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_process.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
@@ -44,17 +45,21 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
+    final suffix = invalidatePackageConfig ? '+package_config' : '';
     if (changedPaths.isEmpty) {
-      calls.add('compile');
+      calls.add('compile$suffix');
       return nextCompileResult;
     }
-    calls.add('compile(changed):${changedPaths.toList()..sort()}');
+    calls.add('compile(changed):${changedPaths.toList()..sort()}$suffix');
     return nextIncrementalResult;
   }
 
   @override
-  void accept() => calls.add('accept');
+  Future<void> accept() async => calls.add('accept');
 
   @override
   Future<void> reject() async => calls.add('reject');
@@ -67,6 +72,42 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 
   @override
   Future<void> dispose() async => calls.add('dispose');
+}
+
+/// Stand-in for [NativeAssetsBuilder] so the session's hook/restart bookkeeping
+/// can be driven without running real build hooks. [nextOutcome] controls what
+/// the next [applyTo] reports; `restarted: true` simulates a native-assets
+/// manifest change that restarted the Frontend Server.
+class _FakeNativeAssetsApplier implements NativeAssetsApplier {
+  final List<String> calls = [];
+  NativeAssetsApplyOutcome nextOutcome = const NativeAssetsApplySuccess();
+
+  @override
+  Future<NativeAssetsApplyOutcome> applyTo(KernelCompiler compiler) async {
+    calls.add('applyTo');
+    return nextOutcome;
+  }
+
+  @override
+  void reset() => calls.add('reset');
+}
+
+/// Stand-in for the server's [PackageDependencyTracker] whose closure verdict is
+/// scripted via [next]. The base constructor reads a nonexistent `.dart_tool`,
+/// which seeds an empty (null) closure without throwing; [refreshClosure] is
+/// overridden so file contents never matter.
+class _FakeServerDependencyTracker extends PackageDependencyTracker {
+  _FakeServerDependencyTracker()
+    : super(dartToolDir: '/nonexistent', packageName: 'app_server');
+
+  PackageDependencyChange next = PackageDependencyChange.dartOnly;
+  int refreshCalls = 0;
+
+  @override
+  PackageDependencyChange refreshClosure() {
+    refreshCalls++;
+    return next;
+  }
 }
 
 class _FakeServer extends Fake implements ServerProcess {
@@ -159,7 +200,7 @@ Future<
 >
 _createFlutterManagerHarness({
   _FakeFlutter? flutter,
-  FlutterDependencyChange Function(String appId)? dependencyChange,
+  PackageDependencyChange Function(String appId)? dependencyChange,
   Future<void> Function(String appId)? restartOverride,
   Future<void> Function(String appId)? launchOverride,
 }) async {
@@ -300,10 +341,14 @@ void main() {
     GenerateAction? generate,
     ApplyMigrationsAction? applyMigrationsAction,
     ProtocolChangeClassifier? classifyProtocolChange,
+    NativeAssetsApplier? nativeAssetsBuilder,
+    PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
   }) {
     return WatchSession(
       compiler: compiler,
+      nativeAssetsBuilder: nativeAssetsBuilder,
+      serverDependencyTracker: serverDependencyTracker,
       generate:
           generate ??
           (affectedPaths, requirements) async {
@@ -633,7 +678,7 @@ void main() {
   group('Given package_config.json changed', () {
     test(
       'when dart files also changed, '
-      'then it runs codegen, restarts compiler, and does a full compile',
+      'then it recompiles incrementally and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -645,13 +690,16 @@ void main() {
         expect(generateCalls, [
           {'/lib/a.dart'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]+package_config',
+          'accept',
+        ]);
       },
     );
 
     test(
-      'when both package_config and model files changed, '
-      'then it runs codegen and restarts compiler',
+      'when package_config and model files changed, '
+      'then it recompiles and invalidates the package config',
       () async {
         final event = FileChangeEvent(
           dartFiles: {},
@@ -664,7 +712,214 @@ void main() {
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        expect(compiler.calls, ['restart', 'compile', 'accept']);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
+      },
+    );
+
+    test(
+      'when the package_config compile fails, '
+      'then the package config is re-invalidated on the next compile',
+      () async {
+        // First cycle: package_config changed, but the compile fails and is
+        // rolled back - the new package map never took effect.
+        compiler.nextIncrementalResult = _failResult();
+        await session.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, contains('reject'));
+        expect(compiler.calls, isNot(contains('accept')));
+
+        // Next cycle: an unrelated dart change that does NOT set
+        // packageConfigChanged. The dropped invalidation must ride along.
+        compiler.calls.clear();
+        compiler.nextIncrementalResult = _successResult();
+        await session.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/b.dart'}),
+        );
+
+        expect(
+          compiler.calls.where((c) => c.contains('+package_config')),
+          isNotEmpty,
+          reason: 'a failed package_config compile must not drop the signal',
+        );
+        expect(compiler.calls, contains('accept'));
+      },
+    );
+  });
+
+  group('Given a native-assets builder', () {
+    late _FakeNativeAssetsApplier builder;
+    late WatchSession nativeSession;
+
+    setUp(() {
+      builder = _FakeNativeAssetsApplier();
+      nativeSession = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        nativeAssetsBuilder: builder,
+      );
+    });
+
+    test(
+      'when the native-assets manifest changed (the FES was restarted), '
+      'then the pod is restarted with the full dill instead of hot reloaded',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplySuccess(restarted: true);
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        // A hot reload would never re-link native assets, so the pod is
+        // process-restarted via the factory; the old server only gets `stop`.
+        expect(builder.calls, ['reset', 'applyTo']);
+        expect(compiler.calls, contains('accept'));
+        expect(server.calls, ['stop']);
+        expect(server.calls, isNot(contains('reload:/out.dill')));
+        expect(factoryCalls, ['createServer:/out.dill']);
+        expect(testLogger.infoMessages, contains(serverNativeAssetsChanged));
+      },
+    );
+
+    test(
+      'when the native-assets manifest is unchanged, '
+      'then the pod is hot reloaded as usual',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplySuccess();
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(server.calls, contains('reload:/out.dill'));
+        expect(factoryCalls, isEmpty);
+        expect(
+          testLogger.infoMessages,
+          isNot(contains(serverNativeAssetsChanged)),
+        );
+      },
+    );
+
+    test(
+      'when the build hooks fail, '
+      'then the server is not reloaded or restarted',
+      () async {
+        builder.nextOutcome = const NativeAssetsApplyFailure('boom');
+
+        await nativeSession.handleFileChange(
+          FileChangeEvent(dartFiles: {'/lib/a.dart'}),
+        );
+
+        expect(server.calls, isEmpty);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+  });
+
+  group('Given a server dependency tracker', () {
+    late _FakeServerDependencyTracker tracker;
+    late WatchSession gatedSession;
+
+    setUp(() {
+      tracker = _FakeServerDependencyTracker();
+      gatedSession = buildSession(
+        compiler: compiler,
+        initialServer: server,
+        serverDependencyTracker: tracker,
+      );
+    });
+
+    test(
+      'when package_config changed but the server closure did not, '
+      'then nothing is recompiled or reloaded',
+      () async {
+        tracker.next = PackageDependencyChange.none;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        expect(tracker.refreshCalls, 1);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+
+    test(
+      'when the server closure changed, '
+      'then it recompiles and invalidates the package config',
+      () async {
+        tracker.next = PackageDependencyChange.dartOnly;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(dartFiles: const {}, packageConfigChanged: true),
+        );
+
+        expect(tracker.refreshCalls, 1);
+        expect(compiler.calls, ['compile+package_config', 'accept']);
+        expect(server.calls, contains('reload:/out.dill'));
+      },
+    );
+
+    test(
+      'when package_config changed without a closure change but dart files '
+      'also changed, '
+      'then it recompiles the dart files without invalidating the package config',
+      () async {
+        tracker.next = PackageDependencyChange.none;
+
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+
+        // Source files always compile; only the dependency-driven invalidation
+        // is suppressed when the server's closure is untouched.
+        expect(compiler.calls, ['compile(changed):[/lib/a.dart]', 'accept']);
+        expect(server.calls, contains('reload:/out.dill'));
+      },
+    );
+
+    test(
+      'when a package_config compile fails and the next event has no closure '
+      'change, '
+      'then the pending invalidation still rides along',
+      () async {
+        // First cycle: a real closure change whose compile fails and rolls back.
+        tracker.next = PackageDependencyChange.dartOnly;
+        compiler.nextIncrementalResult = _failResult();
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+        expect(compiler.calls, contains('reject'));
+
+        // Next cycle: the closure is unchanged, so the gate downgrades the event
+        // flag - but the dropped invalidation must still ride along.
+        compiler.calls.clear();
+        compiler.nextIncrementalResult = _successResult();
+        tracker.next = PackageDependencyChange.none;
+        await gatedSession.handleFileChange(
+          FileChangeEvent(
+            dartFiles: {'/lib/b.dart'},
+            packageConfigChanged: true,
+          ),
+        );
+
+        expect(
+          compiler.calls.where((c) => c.contains('+package_config')),
+          isNotEmpty,
+          reason:
+              'a pending invalidation must survive a no-closure-change gate',
+        );
+        expect(compiler.calls, contains('accept'));
       },
     );
   });
@@ -1581,7 +1836,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.native,
+          dependencyChange: (_) => PackageDependencyChange.native,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -1652,7 +1907,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.dartOnly,
+          dependencyChange: (_) => PackageDependencyChange.dartOnly,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -1720,7 +1975,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.none,
+          dependencyChange: (_) => PackageDependencyChange.none,
           restartOverride: (_) async {
             restartActionCalls++;
           },
@@ -1787,7 +2042,7 @@ void main() {
         flutter = _FakeFlutter();
         final harness = await _createFlutterManagerHarness(
           flutter: flutter,
-          dependencyChange: (_) => FlutterDependencyChange.assets,
+          dependencyChange: (_) => PackageDependencyChange.assets,
           restartOverride: (_) async {
             restartActionCalls++;
           },

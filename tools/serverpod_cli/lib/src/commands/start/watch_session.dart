@@ -6,9 +6,9 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
-import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -98,12 +98,18 @@ typedef ApplyMigrationsAction = Future<void> Function();
 /// Frontend Server. Static file change handling is unaffected.
 class WatchSession {
   final KernelCompiler? _compiler;
-  final NativeAssetsBuilder? _nativeAssetsBuilder;
+  final NativeAssetsApplier? _nativeAssetsBuilder;
   final GenerateAction _generate;
   final ServerProcessFactory? _createServer;
   final Set<String> _generatedDirPaths;
   final ProtocolChangeClassifier _classifyProtocolChange;
   final ApplyMigrationsAction _applyMigrationsAction;
+
+  /// Tracks the server package's own dependency closure so a shared-resolution
+  /// (workspace) `package_config.json` change only drives a server reload when
+  /// the server's closure actually changed. `null` disables the gate (no
+  /// compiler / unresolved resolution), preserving the always-reload behavior.
+  final PackageDependencyTracker? _serverDependencyTracker;
 
   final FlutterAppManager? _flutterManager;
 
@@ -118,6 +124,13 @@ class WatchSession {
   /// These must be re-invalidated on the next compile attempt since the FES
   /// rolled back to its last accepted state and no longer knows about them.
   final Set<String> _pendingPaths = {};
+
+  /// Whether a prior `package_config.json` change still needs to be invalidated
+  /// because the compile that carried it failed (and was rolled back). Without
+  /// this, a dependency change that races a transient compile error would be
+  /// dropped, and the new package would stay unresolved until the next
+  /// `package_config.json` write.
+  bool _pendingPackageConfig = false;
 
   ServerProcess _server;
 
@@ -137,8 +150,8 @@ class WatchSession {
 
   /// Queues [body] via [_chain], guarding the disposed state on both edges:
   /// throws a [StateError] synchronously if the session is already disposed
-  /// when called, and — because the session may be disposed while the call
-  /// sits queued — returns [whenDisposed] without running [body] if disposal
+  /// when called, and - because the session may be disposed while the call
+  /// sits queued - returns [whenDisposed] without running [body] if disposal
   /// happens before it reaches the front of the queue.
   Future<T> _chainGuarded<T>(
     Future<T> Function() body, {
@@ -158,7 +171,7 @@ class WatchSession {
 
   WatchSession({
     KernelCompiler? compiler,
-    NativeAssetsBuilder? nativeAssetsBuilder,
+    NativeAssetsApplier? nativeAssetsBuilder,
     required GenerateAction generate,
     ServerProcessFactory? createServer,
     required ServerProcess initialServer,
@@ -166,6 +179,7 @@ class WatchSession {
     ProtocolChangeClassifier classifyProtocolChange =
         defaultProtocolChangeClassifier,
     required ApplyMigrationsAction applyMigrationsAction,
+    PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
   }) : _compiler = compiler,
        _nativeAssetsBuilder = nativeAssetsBuilder,
@@ -175,6 +189,7 @@ class WatchSession {
        _generatedDirPaths = generatedDirPaths,
        _classifyProtocolChange = classifyProtocolChange,
        _applyMigrationsAction = applyMigrationsAction,
+       _serverDependencyTracker = serverDependencyTracker,
        _flutterManager = flutterManager {
     assert(
       nativeAssetsBuilder == null || compiler != null,
@@ -203,10 +218,25 @@ class WatchSession {
       _chain(() => _handleFileChange(event));
 
   Future<void> _handleFileChange(FileChangeEvent event) async {
+    // Scope a package_config.json change to the SERVER's own dependency closure.
+    // In a pub workspace the resolution is shared, so a Flutter-only (or
+    // dev/test-only) dependency change rewrites package_config.json without
+    // touching the server's closure - and must not reload the server. Always
+    // call refreshClosure() when the file changed so the tracker's baseline
+    // advances even when we suppress; only a `none` result downgrades, and a
+    // pending invalidation from a prior failed compile still rides along
+    // independently (see _pendingPackageConfig in _compileAndReload).
+    var serverDepsChanged = event.packageConfigChanged;
+    if (event.packageConfigChanged &&
+        _serverDependencyTracker?.refreshClosure() ==
+            PackageDependencyChange.none) {
+      serverDepsChanged = false;
+    }
+
     final hasDartChanges =
         event.dartFiles.isNotEmpty ||
         event.modelFiles.isNotEmpty ||
-        event.packageConfigChanged;
+        serverDepsChanged;
 
     // Static-only changes (HTML, JS, CSS, templates) and dependency-only
     // changes: no compilation needed. The browser refresh is tied to static
@@ -238,7 +268,7 @@ class WatchSession {
       log.debug('  .dart (generated): $generatedDartFiles');
     }
     if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
-    if (event.packageConfigChanged) log.debug('  package_config.json changed');
+    if (serverDepsChanged) log.debug('  package_config.json changed');
 
     // Narrow source files to those that may affect the generated protocol.
     // Helper files and pure business logic that don't declare endpoints or
@@ -294,7 +324,7 @@ class WatchSession {
 
     final reloaded = await _compileAndReload(
       dartFiles: allDartChanges,
-      packageConfigChanged: event.packageConfigChanged,
+      packageConfigChanged: serverDepsChanged,
     );
     // Always refresh Flutter: flutter/lib-only changes short-circuit the server
     // compile but still need a Flutter refresh (escalated when dependencies
@@ -313,7 +343,7 @@ class WatchSession {
     final appIds = manager.appIdsForChangedPaths(changedPaths);
     await appIds.map((appId) async {
       final change = manager.checkDependencyChange(appId);
-      if (changedPaths.isEmpty && change == FlutterDependencyChange.none) {
+      if (changedPaths.isEmpty && change == PackageDependencyChange.none) {
         return;
       }
       await _reloadOrRestartFlutterApp(change, appId: appId);
@@ -326,20 +356,20 @@ class WatchSession {
   /// code changed. The relaunch calls the action directly rather than via
   /// [restartFlutterApp] since we are already running inside [_chain].
   Future<void> _reloadOrRestartFlutterApp(
-    FlutterDependencyChange change, {
+    PackageDependencyChange change, {
     required String appId,
   }) async {
     switch (change) {
-      case FlutterDependencyChange.assets:
+      case PackageDependencyChange.assets:
         log.info(flutterAssetsFontsChanged);
         await _flutterManager?.restart(appId);
-      case FlutterDependencyChange.native:
+      case PackageDependencyChange.native:
         log.info(flutterDependenciesChangedNative);
         await _flutterManager!.restart(appId);
-      case FlutterDependencyChange.dartOnly:
+      case PackageDependencyChange.dartOnly:
         log.info(flutterDependenciesChangedDart);
         await _restartFlutter(appId);
-      case FlutterDependencyChange.none:
+      case PackageDependencyChange.none:
         await _reloadFlutter(appId);
     }
   }
@@ -380,6 +410,10 @@ class WatchSession {
     // Compile changes. Merge any paths carried over from prior rejected
     // compiles so the FES re-invalidates them (reject rolls back its state).
     final changedPaths = {..._pendingPaths, ...dartFiles};
+    // Likewise carry a package_config change forward if a prior compile that
+    // should have invalidated it failed.
+    final invalidatePackageConfig =
+        packageConfigChanged || _pendingPackageConfig;
 
     // 1. Run native build hooks (if configured). The hook runner caches on
     //    input hashes, so this is cheap when nothing changed. A manifest
@@ -394,6 +428,7 @@ class WatchSession {
         case NativeAssetsApplyFailure(:final message):
           log.error('$message Server not reloaded.');
           if (changedPaths.isNotEmpty) _pendingPaths.addAll(changedPaths);
+          if (invalidatePackageConfig) _pendingPackageConfig = true;
           return false;
         case NativeAssetsApplySuccess(:final restarted):
           if (restarted) {
@@ -413,21 +448,19 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-    } else if (packageConfigChanged) {
-      // FES reads package_config.json only at startup - must restart it.
-      // After restart the FES is in initial state, so we do a full compile.
-      _pendingPaths.clear();
-      if (!compilerRestartedByHooks) await compiler.restart();
-      result = await compileWithProgress(
-        'Compiling server',
-        compiler,
-        rejectOnFailure: true,
-      );
-    } else if (changedPaths.isNotEmpty || compilerRestartedByHooks) {
+    } else if (changedPaths.isNotEmpty ||
+        invalidatePackageConfig ||
+        compilerRestartedByHooks) {
+      // A package_config.json change is picked up incrementally: passing its
+      // URI in the invalidated set makes the Frontend Server reload the
+      // package map in place, so no process restart is needed. (When the
+      // hooks already restarted the FES it's in initial state, so the next
+      // compile is full and reads package_config.json fresh anyway.)
       result = await compileWithProgress(
         'Compiling server',
         compiler,
         changedPaths: changedPaths,
+        invalidatePackageConfig: invalidatePackageConfig,
         rejectOnFailure: true,
       );
     } else {
@@ -436,13 +469,29 @@ class WatchSession {
     }
 
     if (result == null) {
-      // Compilation failed - remember which paths need re-invalidation.
+      // Compilation failed - remember what needs re-invalidation next time.
       _pendingPaths.addAll(changedPaths);
+      if (invalidatePackageConfig) _pendingPackageConfig = true;
       return false;
     }
 
     _pendingPaths.clear();
-    compiler.accept();
+    _pendingPackageConfig = false;
+    await compiler.accept();
+
+    if (compilerRestartedByHooks) {
+      // The FES restart inside applyTo put it back in initial state, so the
+      // compile above was a FULL one (see the `|| compilerRestartedByHooks`
+      // branch) and result.dillOutput is a bootable full kernel here - unlike a
+      // normal accepted increment. The running isolate linked the OLD native
+      // assets at startup, and a hot reload never re-resolves them, so the pod
+      // must be process-restarted to pick up the rebuilt dylibs. Mirrors the
+      // Flutter `native` -> relaunch escalation.
+      if (_state == SessionState.disposed) return false;
+      log.info(serverNativeAssetsChanged);
+      await _restartServer(result.dillOutput!);
+      return true;
+    }
 
     return _reloadOrRestart(result);
   }
@@ -468,6 +517,7 @@ class WatchSession {
     final compiler = _compiler;
     if (compiler != null) {
       _pendingPaths.clear();
+      _pendingPackageConfig = false;
       await compiler.reset();
       final fullResult = await compileWithProgress(
         'Compiling server',
@@ -475,7 +525,7 @@ class WatchSession {
         rejectOnFailure: true,
       );
       if (fullResult == null) return false;
-      compiler.accept();
+      await compiler.accept();
       dillPath = fullResult.dillOutput!;
     }
 
@@ -578,7 +628,7 @@ class WatchSession {
   }
 
   /// Fully (re)launches the Flutter app: kills the running `flutter run`
-  /// process (if any) and launches a fresh one — including launching it from
+  /// process (if any) and launches a fresh one - including launching it from
   /// scratch when none is running, e.g. after a `--no-flutter` start. Unlike
   /// the Flutter hot restart bundled into [forceRestart], this only drives the
   /// Flutter process and is independent of the server's compiler, so it works
