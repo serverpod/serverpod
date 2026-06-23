@@ -66,8 +66,11 @@ class FacebookSignInWidget extends StatefulWidget {
   /// access to retrieving the user's email, name, and profile picture.
   final List<String> permissions;
 
-  /// The button type: icon, continue with, or sign in.
-  final FacebookButtonText type;
+  /// The button text type.
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [FacebookButtonText.continueWith], when null.
+  final FacebookButtonText? type;
 
   /// The button style.
   ///
@@ -76,21 +79,32 @@ class FacebookSignInWidget extends StatefulWidget {
 
   /// The button size.
   ///
-  /// For example, small or large.
-  final FacebookButtonSize size;
+  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
+  /// then to [FacebookButtonSize.large], when null.
+  final FacebookButtonSize? size;
 
   /// The button shape.
   ///
-  /// For example, rectangular or pill.
-  final FacebookButtonShape shape;
+  /// For example, rectangular or pill. Falls back to the shared
+  /// [SignInButtonStyle], then to [FacebookButtonShape.pill], when null.
+  final FacebookButtonShape? shape;
 
   /// The Facebook logo alignment: left or center.
-  final FacebookButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [FacebookButtonLogoAlignment.center], when null.
+  final FacebookButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a Facebook Sign-In widget.
   const FacebookSignInWidget({
@@ -99,12 +113,13 @@ class FacebookSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.permissions = FacebookAuthController.defaultPermissions,
-    this.type = FacebookButtonText.continueWith,
+    this.type,
     this.style = FacebookButtonStyle.blue,
-    this.size = FacebookButtonSize.large,
-    this.shape = FacebookButtonShape.pill,
-    this.logoAlignment = FacebookButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -112,7 +127,7 @@ class FacebookSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
@@ -161,6 +176,7 @@ class _FacebookSignInWidgetState extends State<FacebookSignInWidget> {
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 

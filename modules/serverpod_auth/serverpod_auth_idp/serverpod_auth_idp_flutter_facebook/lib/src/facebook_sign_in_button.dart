@@ -7,6 +7,10 @@ import 'facebook_sign_in_style.dart';
 ///
 /// This widget creates a custom Facebook Sign-In button following Facebook's
 /// brand guidelines and adds loading and disabled states.
+///
+/// The [type], [size], [shape], [logoAlignment], [minimumWidth], and
+/// [textStyle] arguments fall back to the shared [SignInButtonStyle] in scope
+/// when left null, then to Facebook's own defaults.
 class FacebookSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -18,49 +22,83 @@ class FacebookSignInButton extends StatelessWidget {
   final bool isDisabled;
 
   /// The button text type.
-  final FacebookButtonText type;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [FacebookButtonText.continueWith], when null.
+  final FacebookButtonText? type;
 
   /// The button style (blue or white).
   final FacebookButtonStyle style;
 
   /// The button size.
   ///
-  /// For example, small or large.
-  final FacebookButtonSize size;
+  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
+  /// then to [FacebookButtonSize.large], when null.
+  final FacebookButtonSize? size;
 
   /// The button shape.
   ///
-  /// For example, rectangular or pill.
-  final FacebookButtonShape shape;
+  /// For example, rectangular or pill. Falls back to the shared
+  /// [SignInButtonStyle], then to [FacebookButtonShape.pill], when null.
+  final FacebookButtonShape? shape;
 
   /// The Facebook logo alignment: left or center.
-  final FacebookButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [FacebookButtonLogoAlignment.center], when null.
+  final FacebookButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
 
   /// Creates a Facebook Sign-In button.
   const FacebookSignInButton({
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type = FacebookButtonText.continueWith,
+    this.type,
     this.style = FacebookButtonStyle.blue,
-    this.size = FacebookButtonSize.large,
-    this.shape = FacebookButtonShape.pill,
-    this.logoAlignment = FacebookButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
   @override
   Widget build(BuildContext context) {
     final texts = context.facebookSignInTexts;
+    final shared = context.signInButtonStyle;
+
+    final type =
+        this.type ??
+        _toFacebookText(shared.text) ??
+        FacebookButtonText.continueWith;
+    final size =
+        this.size ?? _toFacebookSize(shared.size) ?? FacebookButtonSize.large;
+    final shape =
+        this.shape ??
+        _toFacebookShape(shared.shape) ??
+        FacebookButtonShape.pill;
+    final logoAlignment =
+        this.logoAlignment ??
+        _toFacebookLogoAlignment(shared.logoAlignment) ??
+        FacebookButtonLogoAlignment.center;
+    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared.textStyle;
+
     final buttonStyle = FacebookSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -96,15 +134,26 @@ class FacebookSignInButton extends StatelessWidget {
             alpha: 0.6,
           ),
         ),
-        child: _buildButtonContent(buttonStyle, texts),
+        child: _buildButtonContent(
+          buttonStyle,
+          texts,
+          type: type,
+          size: size,
+          logoAlignment: logoAlignment,
+          textStyle: textStyle,
+        ),
       ),
     );
   }
 
   Widget _buildButtonContent(
     FacebookSignInStyle buttonStyle,
-    FacebookSignInTexts texts,
-  ) {
+    FacebookSignInTexts texts, {
+    required FacebookButtonText type,
+    required FacebookButtonSize size,
+    required FacebookButtonLogoAlignment logoAlignment,
+    required TextStyle? textStyle,
+  }) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -133,12 +182,13 @@ class FacebookSignInButton extends StatelessWidget {
       ),
     );
 
+    final baseTextStyle = TextStyle(
+      fontSize: _getFontSize(size),
+      color: buttonStyle.textColor,
+    );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(),
-      style: TextStyle(
-        fontSize: _getFontSize(),
-        color: buttonStyle.textColor,
-      ),
+      texts.signInButton ?? _getButtonText(type),
+      style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       overflow: TextOverflow.ellipsis,
     );
 
@@ -173,7 +223,7 @@ class FacebookSignInButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText() {
+  String _getButtonText(FacebookButtonText type) {
     return switch (type) {
       FacebookButtonText.signinWith => 'Sign in with Facebook',
       FacebookButtonText.continueWith => 'Continue with Facebook',
@@ -182,7 +232,7 @@ class FacebookSignInButton extends StatelessWidget {
     };
   }
 
-  double _getFontSize() {
+  double _getFontSize(FacebookButtonSize size) {
     return switch (size) {
       FacebookButtonSize.large => 16.0,
       FacebookButtonSize.medium => 14.0,
@@ -190,3 +240,36 @@ class FacebookSignInButton extends StatelessWidget {
     };
   }
 }
+
+FacebookButtonSize? _toFacebookSize(SignInButtonSize? size) => switch (size) {
+  null => null,
+  SignInButtonSize.large => FacebookButtonSize.large,
+  SignInButtonSize.medium => FacebookButtonSize.medium,
+  SignInButtonSize.small => FacebookButtonSize.small,
+};
+
+// Facebook has no rounded shape; it falls back to pill.
+FacebookButtonShape? _toFacebookShape(SignInButtonShape? shape) =>
+    switch (shape) {
+      null => null,
+      SignInButtonShape.rectangular => FacebookButtonShape.rectangular,
+      SignInButtonShape.rounded => FacebookButtonShape.pill,
+      SignInButtonShape.pill => FacebookButtonShape.pill,
+    };
+
+FacebookButtonLogoAlignment? _toFacebookLogoAlignment(
+  SignInButtonLogoAlignment? alignment,
+) => switch (alignment) {
+  null => null,
+  SignInButtonLogoAlignment.left => FacebookButtonLogoAlignment.left,
+  SignInButtonLogoAlignment.center => FacebookButtonLogoAlignment.center,
+};
+
+FacebookButtonText? _toFacebookText(SignInButtonTextVariant? text) =>
+    switch (text) {
+      null => null,
+      SignInButtonTextVariant.signInWith => FacebookButtonText.signinWith,
+      SignInButtonTextVariant.signUpWith => FacebookButtonText.signupWith,
+      SignInButtonTextVariant.continueWith => FacebookButtonText.continueWith,
+      SignInButtonTextVariant.signIn => FacebookButtonText.signIn,
+    };
