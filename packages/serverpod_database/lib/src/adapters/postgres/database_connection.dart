@@ -7,6 +7,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
@@ -20,7 +21,7 @@ part 'postgres_exceptions.dart';
 class PostgresDatabaseConnection
     extends DatabaseConnection<PostgresPoolManager> {
   /// Access to the raw Postgresql connection pool.
-  pg.Pool get _postgresConnection => poolManager.pool;
+  Future<pg.Pool> get _postgresConnection => poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [DatabaseSession]
@@ -155,6 +156,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
 
@@ -176,6 +178,7 @@ class PostgresDatabaseConnection
               [row],
               transaction: tx,
               ignoreConflicts: ignoreConflicts,
+              noReturn: noReturn,
             ).then((results) => results.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -187,6 +190,7 @@ class PostgresDatabaseConnection
       table: table,
       rows: rows,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -220,11 +224,99 @@ class PostgresDatabaseConnection
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    // When the model has non-persisted fields, fall back to single-row upserts
+    // so we can safely merge non-persisted fields with each result row.
+    if (rows.length > 1 && _hasNonPersistedFields(session, rows)) {
+      return DatabaseUtil.runInTransactionOrSavepoint(
+        session.db,
+        transaction,
+        (tx) async => [
+          for (var row in rows)
+            ...await upsert<T>(
+              session,
+              [row],
+              conflictColumns: conflictColumns,
+              updateColumns: updateColumns,
+              updateWhere: updateWhere,
+              transaction: tx,
+              noReturn: noReturn,
+            ),
+        ],
+        settings: const TransactionSettings(),
+      );
+    }
+
+    var table = rows.first.table;
+
+    var query = InsertQueryBuilder(
+      table: table,
+      rows: rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      noReturn: noReturn,
+    ).build();
+
+    return (await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        ).then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    // Defensive: upsertRow passes a single row, so the underlying upsert can
+    // never return more than one row. Guards against future adapter bugs.
+    if (result.length > 1) {
+      throw _PgDatabaseUpsertRowException(
+        'Failed to upsert row, affected number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -253,10 +345,13 @@ class PostgresDatabaseConnection
         .join(', ');
 
     const tableAlias = 't';
-    var returning = buildReturningClause(table, tableAlias: tableAlias);
 
     var query =
-        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
+        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
+    if (!noReturn) {
+      var returning = buildReturningClause(table, tableAlias: tableAlias);
+      query += ' RETURNING $returning';
+    }
 
     return (await _mappedResultsQuery(
           session,
@@ -344,6 +439,7 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
 
@@ -378,26 +474,33 @@ class PostgresDatabaseConnection
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      var orderByClause = switch (orders) {
-        != null when orders.isNotEmpty =>
-          ' ORDER BY '
-              '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
-        _ => '',
-      };
+      if (noReturn) {
+        // No rows are returned, so the wrapping SELECT and its ordering are
+        // unnecessary: run the UPDATE directly against the selected ids.
+        updateQuery =
+            'WITH rows_to_update AS ($subquery) '
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
+      } else {
+        var orderByClause = switch (orders) {
+          != null when orders.isNotEmpty =>
+            ' ORDER BY '
+                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+          _ => '',
+        };
 
-      updateQuery =
-          'WITH rows_to_update AS ($subquery), '
-          'updated AS ('
-          'UPDATE "${table.tableName}" SET $setClause '
-          'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
-          'RETURNING *'
-          ') '
-          'SELECT * FROM updated$orderByClause';
+        updateQuery =
+            'WITH rows_to_update AS ($subquery), '
+            'updated AS ('
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+            'RETURNING *'
+            ') '
+            'SELECT * FROM updated$orderByClause';
+      }
     } else {
-      updateQuery =
-          'UPDATE "${table.tableName}" SET $setClause'
-          ' WHERE $where'
-          ' RETURNING *';
+      updateQuery = 'UPDATE "${table.tableName}" SET $setClause WHERE $where';
+      if (!noReturn) updateQuery += ' RETURNING *';
     }
 
     var result = await _mappedResultsQuery(
@@ -418,6 +521,7 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -434,6 +538,7 @@ class PostgresDatabaseConnection
       // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -467,13 +572,17 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    // Ordering applies to the returned deleted rows, not to which rows are
+    // deleted, so it is irrelevant when nothing is returned.
+    var orderByCols = noReturn
+        ? null
+        : _resolveOrderBy(orderByList, orderBy, orderDescending);
 
-    // Ordering applies to the returned deleted rows, not to which rows are deleted.
     var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.all)
+        .withReturn(noReturn ? Returning.none : Returning.all)
         .withWhere(where)
         .withOrderBy(orderByCols)
         .build();
@@ -557,7 +666,7 @@ class PostgresDatabaseConnection
     bool ignoreRows = false,
     bool simpleQueryMode = false,
     QueryParameters? parameters,
-    required pg.Session context,
+    required Future<pg.Session> context,
   }) async {
     assert(
       simpleQueryMode == false ||
@@ -571,7 +680,8 @@ class PostgresDatabaseConnection
 
     var startTime = DateTime.now();
     try {
-      var result = await context.execute(
+      final resolvedContext = await context;
+      var result = await resolvedContext.execute(
         parameters is QueryParametersNamed ? pg.Sql.named(query) : query,
         timeout: timeout,
         ignoreRows: ignoreRows,
@@ -689,7 +799,7 @@ class PostgresDatabaseConnection
     });
   }
 
-  pg.Session _resolveQueryContext(Transaction? transaction) {
+  Future<pg.Session> _resolveQueryContext(Transaction? transaction) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     return postgresTransaction?.executionContext ?? _postgresConnection;
   }
@@ -717,6 +827,8 @@ class PostgresDatabaseConnection
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -724,6 +836,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .map(poolManager.serializationManager.deserialize<T>)
@@ -757,7 +870,7 @@ class PostgresDatabaseConnection
     TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,
     required DatabaseSession session,
-  }) {
+  }) async {
     var pgTransactionSettings = pg.TransactionSettings(
       isolationLevel: switch (settings.isolationLevel) {
         IsolationLevel.readCommitted => pg.IsolationLevel.readCommitted,
@@ -768,7 +881,8 @@ class PostgresDatabaseConnection
       },
     );
 
-    return _postgresConnection.runTx<R>(
+    final connection = await _postgresConnection;
+    return connection.runTx<R>(
       (ctx) {
         var transaction = _PostgresTransaction(
           ctx,
@@ -845,6 +959,10 @@ class PostgresDatabaseConnection
           transaction,
         );
 
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -852,6 +970,7 @@ class PostgresDatabaseConnection
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()
@@ -1077,7 +1196,7 @@ class _PostgresTransaction implements Transaction {
       _session,
       query,
       parameters: parameters,
-      context: executionContext,
+      context: Future.value(executionContext),
     );
   }
 

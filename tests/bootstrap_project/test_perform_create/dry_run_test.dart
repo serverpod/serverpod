@@ -10,47 +10,68 @@ void main() {
   group(
     'Given a clean state',
     () {
+      late Directory workingDir;
+
+      setUp(() {
+        workingDir = Directory.systemTemp.createTempSync('sp_perform_create_');
+      });
+
+      tearDown(() {
+        try {
+          workingDir.deleteSync(recursive: true);
+        } on FileSystemException {
+          // Gone.
+        }
+      });
+
       group(
         'when calling performCreate with a valid name and dryRun set to true',
         () {
-          String? result;
+          CreateResult? result;
           final projectName = 'test';
 
           setUp(() async {
             result = await performCreate(
               projectName,
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
           });
 
-          test('then returns relative project directory path', () {
-            expect(result, projectName);
-          });
+          test(
+            'then returns success result with relative project directory path',
+            () {
+              expect(result, isA<CreateSuccess>());
+              expect(
+                (result as CreateSuccess).projectDirectoryPath,
+                projectName,
+              );
+            },
+          );
         },
       );
 
       group(
         'when calling performCreate with invalid name and dryRun set to true',
         () {
-          String? result;
+          CreateResult? result;
 
           setUp(() async {
             result = await performCreate(
               '1test',
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
           });
 
-          test('then returns null', () {
-            expect(result, isNull);
+          test('then returns failure', () {
+            expect(result, isA<CreateFailure>());
           });
         },
       );
@@ -58,38 +79,27 @@ void main() {
       group(
         'when calling performCreate with an existing project name and dryRun set to true',
         () {
-          late Directory projectDir;
-          String? result;
+          CreateResult? result;
           final projectName =
-              'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+              'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
           setUp(() async {
-            projectDir = Directory(projectName);
-            projectDir.create();
-
-            final pubspecFile = File(p.join(projectName, 'pubspec.yaml'));
-            await pubspecFile.create();
+            final projectDir = Directory(p.join(workingDir.path, projectName))
+              ..createSync(recursive: true);
+            await File(p.join(projectDir.path, 'pubspec.yaml')).create();
 
             result = await performCreate(
               projectName,
-              ServerpodTemplateType.server,
               false,
               dryRun: true,
               interactive: false,
               context: TemplateContext(),
+              workingDirectory: workingDir,
             );
           });
 
-          tearDown(() {
-            try {
-              projectDir.delete(recursive: true);
-            } on FileSystemException {
-              // Gone.
-            }
-          });
-
-          test('then returns null', () {
-            expect(result, isNull);
+          test('then returns a failure', () {
+            expect(result, isA<CreateFailure>());
           });
         },
       );

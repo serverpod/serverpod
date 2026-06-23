@@ -82,6 +82,7 @@ abstract class EndpointMethodAnalyzer {
   /// be validated and parsed.
   static bool isEndpointMethod(MethodElement method) {
     if (method.isPrivate) return false;
+    if (method.isStatic) return false;
     if (method.markedAsIgnored) return false;
 
     if (_excludedMethodNameSet.contains(method.name)) return false;

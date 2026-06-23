@@ -33,7 +33,13 @@ class MigrationGenerator {
     var now = DateTime.now().toUtc();
     var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
-    if (tag != null) {
+    if (tag != null && tag.isNotEmpty) {
+      if (!RegExp(r'^[a-zA-Z0-9_-\s.]+$').hasMatch(tag)) {
+        throw FormatException(
+          'Invalid migration tag: "$tag". Only characters that are supported '
+          'in file names are allowed.',
+        );
+      }
       versionName += '-$tag';
     }
     return versionName;
@@ -47,6 +53,8 @@ class MigrationGenerator {
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
   /// warnings.
+  /// If [empty] is true, the migration will be created even if there are no
+  /// database changes.
   /// If [write] is false, the migration will not be written to disk.
   ///
   /// A [precomputedVersion] can be provided to skip the version name creation.
@@ -62,6 +70,7 @@ class MigrationGenerator {
   Future<MigrationVersionArtifacts?> createMigration({
     String? tag,
     String? precomputedVersion,
+    bool empty = false,
     required bool force,
     required GeneratorConfig config,
     MigrationGenerationContext? context,
@@ -115,7 +124,7 @@ class MigrationGenerator {
       throw const MigrationAbortedException();
     }
 
-    if (migration.isEmpty) {
+    if (migration.isEmpty && !empty) {
       return null;
     }
 
@@ -178,8 +187,13 @@ class MigrationGenerator {
   /// If [targetMigrationVersion] is not specified, the latest migration version
   /// will be used.
   ///
-  /// Returns the repair migration file, or null if no migration was
-  /// created.
+  /// Returns the repair migration file, or `null` when no schema drift is
+  /// detected between the live database and the target version (callers can
+  /// override with [force]).
+  ///
+  /// Throws [MigrationAbortedException] when warnings are present and [force]
+  /// is false. Other typed exceptions surface specific failure modes; see the
+  /// `MigrationRepair*Exception` types.
   Future<File?> repairMigration({
     String? tag,
     required bool force,
@@ -207,7 +221,10 @@ class MigrationGenerator {
       logWarnings: log.warning,
     );
 
-    var client = ConfigInfo(runMode).createServiceClient();
+    var client = ConfigInfo(
+      runMode,
+      serverDir: path.normalize(path.absolute(directory.path)),
+    ).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
       liveDatabase = normalizeDefinitionToV2(
@@ -230,16 +247,12 @@ class MigrationGenerator {
     _logWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      log.info('Migration aborted. Use --force to ignore warnings.');
-      return null;
+      throw const MigrationAbortedException();
     }
 
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
-      log.info(
-        'No changes detected. Use --force to create an empty repair migration.',
-      );
       return null;
     }
 

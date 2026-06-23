@@ -454,11 +454,11 @@ class Restrictions {
     }
 
     if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
-        parentClass is ModelClassDefinition &&
+        parentClass is ClassDefinition &&
         parentClass.isSealed) {
       return [
         SourceSpanSeverityException(
-          'Can not extend a sealed model from another package.',
+          'Cannot extend a sealed ${parentClass.typeName} class from another package.',
           span,
         ),
       ];
@@ -468,7 +468,21 @@ class Restrictions {
       documentDefinition!.className,
     );
 
-    if (currentModel is ModelClassDefinition) {
+    if (currentModel is ClassDefinition) {
+      if (currentModel.runtimeType != parentClass.runtimeType) {
+        final currentTypeName = currentModel.typeName;
+        final parentTypeName = parentClass is ClassDefinition
+            ? parentClass.typeName
+            : parentClass.runtimeType.toString();
+        return [
+          SourceSpanSeverityException(
+            'A $currentTypeName class can only extend another $currentTypeName '
+            'class, but got parent $parentTypeName class "${parentClass.className}".',
+            span,
+          ),
+        ];
+      }
+
       var ancestorServerOnlyClass = _findServerOnlyClassInParentClasses(
         currentModel,
       );
@@ -587,7 +601,7 @@ class Restrictions {
         return [
           SourceSpanSeverityException(
             'The index name "$indexName" is reserved for the field '
-            '"${reservedIndex.index.fields.first}" of the model '
+            '"${reservedIndex.field.name}" of the model '
             '"${reservedIndex.model.className}" marked as unique '
             '(auto-generated). Either remove the unique modifier from the '
             'field or use a different name for this index.',
@@ -690,10 +704,10 @@ class Restrictions {
       ];
     }
 
-    if (def is ModelClassDefinition) {
+    if (def is ClassDefinition) {
       var currentModel = parsedModels.findByClassName(def.className);
 
-      if (currentModel is ModelClassDefinition) {
+      if (currentModel is ClassDefinition) {
         var fieldWithDuplicatedName = _findFieldWithDuplicatedName(
           currentModel,
           fieldName,
@@ -1593,6 +1607,89 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateFieldUniqueValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is bool) return [];
+
+    if (content is String) {
+      if (content.toLowerCase() == 'true') return [];
+      if (content.toLowerCase() == 'false') {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must be true when specified as a string.',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (content is YamlMap) {
+      if (content.nodes.isEmpty) return [];
+
+      if (!content.containsKey(Keyword.per)) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.unique}" property must include a "${Keyword.per}" '
+            'key when defined as a map.',
+            span,
+          ),
+        ];
+      }
+
+      return [];
+    }
+
+    return [
+      SourceSpanSeverityException(
+        'The "${Keyword.unique}" property must be a bool or a map with a '
+        '"${Keyword.per}" key.',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validateUniquePerFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var perFields = parseUniquePerFields(content);
+    if (perFields == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must be a field name, a comma '
+          'separated list of field names, or a list of field names.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.per}" property must contain at least one field. '
+          'Use bare "${Keyword.unique}" for a single-column unique index.',
+          span,
+        ),
+      ];
+    }
+
+    if (perFields.contains(parentNodeName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$parentNodeName" cannot be included in its own '
+          '"${Keyword.unique}" "${Keyword.per}" list.',
+          span,
+        ),
+      ];
+    }
+
+    return _validateIndexFieldNames(perFields, span);
+  }
+
   List<SourceSpanSeverityException> validateIndexFieldsValue(
     String parentNodeName,
     dynamic content,
@@ -1607,15 +1704,24 @@ class Restrictions {
       ];
     }
 
+    return _validateIndexFieldNames(convertIndexList(content), span);
+  }
+
+  /// Validates that [indexFields] reference persisted fields of the current
+  /// model, contain no duplicates, and respect the vector-index constraints.
+  /// Shared by explicit `indexes` and the `unique(per=...)` shorthand.
+  List<SourceSpanSeverityException> _validateIndexFieldNames(
+    List<String> indexFields,
+    SourceSpan? span,
+  ) {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
     var fields = definition.fieldsIncludingInherited;
-    var indexFields = convertIndexList(content);
-
     var validDatabaseFieldNames = fields
         .where((field) => field.shouldPersist)
-        .fold(<String>{}, (output, field) => output..add(field.name));
+        .map((field) => field.name)
+        .toSet();
 
     var missingFieldErrors = indexFields
         .where((field) => !validDatabaseFieldNames.contains(field))
@@ -1626,13 +1732,11 @@ class Restrictions {
           ),
         );
 
-    var duplicatesCount = _duplicatesCount(indexFields);
-
-    var duplicateFieldErrors = duplicatesCount.entries
+    var duplicateFieldErrors = _duplicatesCount(indexFields).entries
         .where((entry) => entry.value > 1)
         .map(
           (entry) => SourceSpanSeverityException(
-            'Duplicated field name "name", can only reference a field once per index.',
+            'Duplicated field name "${entry.key}", can only reference a field once per index.',
             span,
           ),
         );
@@ -2657,7 +2761,7 @@ class Restrictions {
     return classDefinitions;
   }
 
-  ModelClassDefinition? _getParentClass(ModelClassDefinition currentClass) {
+  ClassDefinition? _getParentClass(ClassDefinition currentClass) {
     if (currentClass.extendsClass is! ResolvedInheritanceDefinition) {
       return null;
     }
@@ -2676,8 +2780,8 @@ class Restrictions {
   /// );
   /// ```
   T? _findInParentHierarchy<T>(
-    ModelClassDefinition currentModel,
-    T? Function(ModelClassDefinition) predicate,
+    ClassDefinition currentModel,
+    T? Function(ClassDefinition) predicate,
   ) {
     var parentModel = _getParentClass(currentModel);
 
@@ -2696,27 +2800,29 @@ class Restrictions {
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) =>
-          ancestor.tableName != null ? ancestor : null,
+      (ancestor) =>
+          ancestor is ModelClassDefinition && ancestor.tableName != null
+          ? ancestor
+          : null,
     );
   }
 
-  ModelClassDefinition? _findServerOnlyClassInParentClasses(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findServerOnlyClassInParentClasses(
+    ClassDefinition currentModel,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) => ancestor.serverOnly ? ancestor : null,
+      (ancestor) => ancestor.serverOnly ? ancestor : null,
     );
   }
 
-  ModelClassDefinition? _findAncestorWithDuplicatedFieldName(
-    ModelClassDefinition currentModel,
+  ClassDefinition? _findAncestorWithDuplicatedFieldName(
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         var parentFieldNames = ancestor.fields.map((field) => field.name);
 
         if (parentFieldNames.contains(fieldName)) {
@@ -2729,12 +2835,12 @@ class Restrictions {
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
-    ModelClassDefinition currentModel,
+    ClassDefinition currentModel,
     String fieldName,
   ) {
     return _findInParentHierarchy(
       currentModel,
-      (ModelClassDefinition ancestor) {
+      (ancestor) {
         return ancestor.fields
             .where((field) => field.name == fieldName)
             .firstOrNull;

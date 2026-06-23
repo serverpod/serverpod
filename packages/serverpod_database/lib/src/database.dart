@@ -229,10 +229,15 @@ class Database {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return _databaseConnection.update<T>(
       _session,
@@ -240,6 +245,7 @@ class Database {
       columns: columns,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -278,6 +284,10 @@ class Database {
 
   /// Updates all [TableRow]s matching the [where] expression with the specified column values.
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<T>> updateWhere<T extends TableRow>({
     required List<ColumnValue> columnValues,
     required Expression where,
@@ -288,6 +298,7 @@ class Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return _databaseConnection.updateWhere<T>(
       _session,
@@ -301,6 +312,7 @@ class Database {
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -311,10 +323,15 @@ class Database {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return _databaseConnection.insert<T>(
       _session,
@@ -322,6 +339,7 @@ class Database {
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -338,6 +356,69 @@ class Database {
     );
   }
 
+  /// Upserts all [TableRow]s in the list and returns the resulting rows.
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  /// This is an atomic operation.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update will only apply to rows
+  /// matching the given expression. Rows that conflict but don't match
+  /// [updateWhere] are skipped and not returned, so the resulting list may be
+  /// shorter than [rows].
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return _databaseConnection.upsert<T>(
+      _session,
+      rows,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [TableRow] and returns the resulting row.
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update will only apply to rows
+  /// matching the given expression.
+  Future<T?> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.upsertRow<T>(
+      _session,
+      row,
+      conflictColumns: conflictColumns,
+      updateColumns: updateColumns,
+      updateWhere: updateWhere,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
@@ -345,6 +426,10 @@ class Database {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
     Column? orderBy,
@@ -352,6 +437,7 @@ class Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return _databaseConnection.delete<T>(
       _session,
@@ -362,6 +448,7 @@ class Database {
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -382,6 +469,12 @@ class Database {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  /// Any [orderBy]/[orderByList] is ignored in that case since there are no
+  /// returned rows to order.
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
     Column? orderBy,
@@ -389,6 +482,7 @@ class Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return _databaseConnection.deleteWhere<T>(
       _session,
@@ -399,6 +493,7 @@ class Database {
       orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      noReturn: noReturn,
     );
   }
 

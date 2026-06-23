@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:nocterm/nocterm.dart' show ClipboardManager;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
-import 'package:serverpod_cli/src/commands/tui/state.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
@@ -66,34 +67,162 @@ void main() {
   });
 
   group('Given an error log event with error details and stackTrace', () {
-    test(
-      'when dispatched then stores the error text but not the stack trace',
-      () {
+    test('when dispatched then stores the error text and stack trace', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'error',
+          'message': 'Failed to apply database migrations.',
+          'error':
+              'Exception: DB has migration version 20260428173453748 '
+              'registered but it is not found in the project files.',
+          'stackTrace': '#0      fake (file:///fake.dart:1:1)',
+        }),
+      );
+
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.level, LogLevel.error);
+      expect(entry.message, 'Failed to apply database migrations.');
+      expect(
+        entry.error,
+        'Exception: DB has migration version 20260428173453748 '
+        'registered but it is not found in the project files.',
+      );
+      expect(entry.stackTrace, isNotNull);
+      expect(
+        entry.stackTrace.toString(),
+        '#0      fake (file:///fake.dart:1:1)',
+      );
+    });
+  });
+
+  group('Given an error log event with an empty stackTrace', () {
+    test('when dispatched then leaves the stack trace null', () {
+      handleServerLogEvent(
+        holder,
+        _logEvent({
+          'type': 'log',
+          'level': 'error',
+          'message': 'Something failed.',
+          'stackTrace': '',
+        }),
+      );
+
+      final entry = state.logHistory.first as LogEntry;
+      expect(entry.stackTrace, isNull);
+    });
+  });
+
+  group(
+    'Given a log event flagged as an alert with copy markup when dispatched',
+    () {
+      String? previousClipboard;
+
+      setUp(() {
+        previousClipboard = ClipboardManager.paste();
+        ClipboardManager.copy('previous clipboard content');
         handleServerLogEvent(
           holder,
           _logEvent({
             'type': 'log',
-            'level': 'error',
-            'message': 'Failed to apply database migrations.',
-            'error':
-                'Exception: DB has migration version 20260428173453748 '
-                'registered but it is not found in the project files.',
-            'stackTrace': '#0      fake (file:///fake.dart:1:1)',
+            'level': 'info',
+            'message': 'Registration code: <h2k9x3mp>',
+            'metadata': {'alert': true},
           }),
         );
+      });
 
+      tearDown(() {
+        final prev = previousClipboard;
+        if (prev != null) ClipboardManager.copy(prev);
+      });
+
+      test('then shows the alert with the markup stripped', () {
+        expect(state.alert?.displayText, 'Registration code: h2k9x3mp');
+      });
+
+      test('then copies the marked segment to the clipboard', () {
+        expect(ClipboardManager.paste(), 'h2k9x3mp');
+      });
+
+      test('then the raw log line keeps the markup', () {
         final entry = state.logHistory.first as LogEntry;
-        expect(entry.level, LogLevel.error);
-        expect(entry.message, 'Failed to apply database migrations.');
-        expect(
-          entry.error,
-          'Exception: DB has migration version 20260428173453748 '
-          'registered but it is not found in the project files.',
+        expect(entry.message, 'Registration code: <h2k9x3mp>');
+      });
+    },
+  );
+
+  group(
+    'Given a log event flagged as an alert without copy markup when dispatched',
+    () {
+      setUp(() {
+        handleServerLogEvent(
+          holder,
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Server requires a restart',
+            'metadata': {'alert': true},
+          }),
         );
-        expect(entry.stackTrace, isNull);
-      },
-    );
-  });
+      });
+
+      test('then shows the alert verbatim', () {
+        expect(state.alert?.displayText, 'Server requires a restart');
+      });
+
+      test('then the alert has no copy text', () {
+        expect(state.alert?.copyText, isNull);
+      });
+    },
+  );
+
+  group(
+    'Given an ordinary log event containing angle brackets when dispatched',
+    () {
+      setUp(() {
+        handleServerLogEvent(
+          holder,
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Parsed List<int> from <html>',
+          }),
+        );
+      });
+
+      test('then no alert is shown', () {
+        expect(state.alert, isNull);
+      });
+
+      test('then the markup is left untouched in the log', () {
+        final entry = state.logHistory.first as LogEntry;
+        expect(entry.message, 'Parsed List<int> from <html>');
+      });
+    },
+  );
+
+  group(
+    'Given a log event whose metadata does not flag an alert when dispatched',
+    () {
+      setUp(() {
+        handleServerLogEvent(
+          holder,
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Some code: <abc>',
+            'metadata': {'alert': false},
+          }),
+        );
+      });
+
+      test('then no alert is shown', () {
+        expect(state.alert, isNull);
+      });
+    },
+  );
 
   group('Given a scope_start event', () {
     setUp(() {

@@ -1,13 +1,21 @@
+import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/create/ide.dart';
+
 /// Context containing values for rendering templates.
 class TemplateContext {
   TemplateContext({
+    this.template = ServerpodTemplateType.server,
     this.auth = false,
     this.redis = false,
     this.postgres = false,
     this.sqlite = false,
-    this.web = false,
-    this.skills = false,
+    this.website = false,
+    this.webapp = false,
+    this.ides = const [],
   });
+
+  /// The template type.
+  final ServerpodTemplateType template;
 
   /// True if auth is enabled.
   final bool auth;
@@ -21,11 +29,14 @@ class TemplateContext {
   /// True if sqlite is enabled.
   final bool sqlite;
 
-  /// True if web is enabled.
-  final bool web;
+  /// True if website is enabled.
+  final bool website;
 
-  /// True if agent skills is enabled.
-  final bool skills;
+  /// True if web app is enabled.
+  final bool webapp;
+
+  /// The configured IDEs.
+  final List<TemplateIde> ides;
 
   /// True if docker is enabled.
   bool get docker => postgres || redis;
@@ -33,16 +44,20 @@ class TemplateContext {
   /// True if a database is enabled.
   bool get database => postgres || sqlite;
 
-  Map<String, bool> toJson() {
+  /// True if webserver is enabled.
+  bool get webserver => website || webapp;
+
+  Map<String, bool> toMustacheMap() {
     return {
-      'auth': auth & postgres, // auth requires postgres
-      'redis': redis,
-      'postgres': postgres,
-      'sqlite': sqlite,
-      'web': web,
-      'docker': docker,
+      'auth': auth && postgres, // auth requires postgres
       'database': database,
-      'skills': skills,
+      'docker': docker,
+      'postgres': postgres,
+      'redis': redis,
+      'sqlite': sqlite,
+      'webapp': webapp,
+      'webserver': webserver,
+      'website': website,
     };
   }
 }

@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/generator/analyzers.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class GenerateFiles {
+  /// Runs the full code generation pipeline.
+  ///
+  /// Analysis and codegen run on a worker isolate via [IsolatedAnalyzers] so
+  /// the main isolate stays responsive during this step.
   static Future<bool> generateFiles(
     Directory serverDir, {
     required bool? interactive,
@@ -23,42 +24,12 @@ class GenerateFiles {
       return false;
     }
 
-    var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-    var endpointsAnalyzer = EndpointsAnalyzer(
-      libDirectory,
-      extraClasses: config.extraClasses,
-    );
-
-    var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-
-    bool hasErrors = false;
-    final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (
-      uri,
-      collector,
-    ) {
-      collector.printErrors();
-      if (collector.errors.isNotEmpty) {
-        hasErrors = true;
-      }
-    });
-
-    var futureCallsAnalyzer = FutureCallsAnalyzer(directory: libDirectory);
-
-    if (hasErrors) {
-      log.error(
-        'There were errors parsing the models. Please fix them and try again.',
-      );
-      return false;
+    final isolated = await IsolatedAnalyzers.create(config);
+    try {
+      final result = await isolated.performGenerate(config: config);
+      return result.success;
+    } finally {
+      await isolated.close();
     }
-
-    final analyzers = Analyzers(
-      endpoints: endpointsAnalyzer,
-      models: modelAnalyzer,
-      futureCalls: futureCallsAnalyzer,
-    );
-    final result = await analyzers.performGenerate(
-      config: config,
-    );
-    return result.success;
   }
 }

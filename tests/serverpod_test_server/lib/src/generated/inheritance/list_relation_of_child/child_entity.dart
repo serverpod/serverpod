@@ -390,16 +390,22 @@ class ChildEntityRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> insert(
     _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChildEntity>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -417,21 +423,96 @@ class ChildEntityRepository {
     );
   }
 
+  /// Upserts all [ChildEntity]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChildEntity]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ChildEntity>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildEntity> rows, {
+    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
+    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _i2.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ChildEntity>(
+      rows,
+      conflictColumns: conflictColumns(ChildEntity.t),
+      updateColumns: updateColumns?.call(ChildEntity.t),
+      updateWhere: updateWhere?.call(ChildEntity.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ChildEntity] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChildEntity] will have its `id` field set.
+  Future<ChildEntity?> upsertRow(
+    _i2.DatabaseSession session,
+    ChildEntity row, {
+    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
+    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
+    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildEntity>(
+      row,
+      conflictColumns: conflictColumns(ChildEntity.t),
+      updateColumns: updateColumns?.call(ChildEntity.t),
+      updateWhere: updateWhere?.call(ChildEntity.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChildEntity]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> update(
     _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.ColumnSelections<ChildEntityTable>? columns,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChildEntity>(
       rows,
       columns: columns?.call(ChildEntity.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -468,6 +549,10 @@ class ChildEntityRepository {
 
   /// Updates all [ChildEntity]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> updateWhere(
     _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
@@ -479,6 +564,7 @@ class ChildEntityRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildEntity>(
       columnValues: columnValues(ChildEntity.t.updateTable),
@@ -490,6 +576,7 @@ class ChildEntityRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -500,6 +587,10 @@ class ChildEntityRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> delete(
     _i2.DatabaseSession session,
     List<ChildEntity> rows, {
@@ -508,6 +599,7 @@ class ChildEntityRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChildEntity>(
       rows,
@@ -516,6 +608,7 @@ class ChildEntityRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -535,6 +628,10 @@ class ChildEntityRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> deleteWhere(
     _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildEntityTable> where,
@@ -543,6 +640,7 @@ class ChildEntityRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildEntity>(
       where: where(ChildEntity.t),
@@ -551,6 +649,7 @@ class ChildEntityRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

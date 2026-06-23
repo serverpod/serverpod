@@ -82,6 +82,8 @@ class BuildRepositoryClass {
           _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
+          _buildUpsertMethod(className),
+          _buildUpsertRowMethod(className),
           _buildUpdateMethod(className),
           _buildUpdateRowMethod(className),
           _buildUpdateByIdMethod(className, idTypeReference),
@@ -706,7 +708,11 @@ class BuildRepositoryClass {
 ///
 /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
 /// rows are silently skipped, and only the successfully inserted rows are
-/// returned.''')
+/// returned.
+///
+/// If [noReturn] is set to `true`, the inserted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'insert'
         ..returns = TypeReference(
           (r) => r
@@ -744,6 +750,13 @@ class BuildRepositoryClass {
               ..named = true
               ..defaultTo = literalFalse.code,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -754,6 +767,7 @@ class BuildRepositoryClass {
               {
                 'transaction': refer('transaction'),
                 'ignoreConflicts': refer('ignoreConflicts'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -816,6 +830,229 @@ class BuildRepositoryClass {
     });
   }
 
+  Method _buildUpsertMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts all [$className]s in the list and returns the resulting rows.
+///
+/// If a row conflicts on the given [conflictColumns], the existing row is
+/// updated with the new values. Otherwise, a new row is inserted.
+///
+/// If [updateColumns] is provided, only those columns will be updated on
+/// conflict. If null, all non-conflict, non-id columns are updated.
+///
+/// If [updateWhere] is provided, the update only applies to rows matching the
+/// given expression. Conflicting rows that don't match are skipped and not
+/// returned, so the resulting list may be shorter than [rows].
+///
+/// The returned [$className]s will have their `id` fields set.
+///
+/// This is an atomic operation, meaning that if one of the rows fails,
+/// none of the rows will be affected.
+///
+/// If [noReturn] is set to `true`, the resulting rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
+        ..name = 'upsert'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer('List<$className>')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('List<$className>')
+              ..name = 'rows',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'conflictColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'updateColumns'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(className, serverCode)
+              ..name = 'updateWhere'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsert')
+            .call(
+              [refer('rows')],
+              {
+                'conflictColumns': refer('conflictColumns').call([
+                  refer(className).property('t'),
+                ]),
+                'updateColumns': refer('updateColumns')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'updateWhere': refer('updateWhere')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpsertRowMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts a single [$className] and returns the resulting row.
+///
+/// If the row conflicts on the given [conflictColumns], the existing row is
+/// updated. Otherwise, a new row is inserted.
+///
+/// If [updateColumns] is provided, only those columns will be updated on
+/// conflict. If null, all non-conflict, non-id columns are updated.
+///
+/// If [updateWhere] is provided, the update only applies when the existing
+/// row matches the expression. Returns `null` if no row was affected — for
+/// example when [updateWhere] does not match the conflicting row.
+///
+/// The returned [$className] will have its `id` field set.''')
+        ..name = 'upsertRow'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (t) => t
+                  ..symbol = className
+                  ..isNullable = true,
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer(className)
+              ..name = 'row',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'conflictColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'updateColumns'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(className, serverCode)
+              ..name = 'updateWhere'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsertRow')
+            .call(
+              [refer('row')],
+              {
+                'conflictColumns': refer('conflictColumns').call([
+                  refer(className).property('t'),
+                ]),
+                'updateColumns': refer('updateColumns')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'updateWhere': refer('updateWhere')
+                    .nullSafeProperty('call')
+                    .call([refer(className).property('t')]),
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
   Method _buildUpdateMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
@@ -824,7 +1061,11 @@ class BuildRepositoryClass {
 /// [columns] is provided, only those columns will be updated. Defaults to
 /// all columns.
 /// This is an atomic operation, meaning that if one of the rows fails to
-/// update, none of the rows will be updated.''')
+/// update, none of the rows will be updated.
+///
+/// If [noReturn] is set to `true`, the updated rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'update'
         ..returns = TypeReference(
           (r) => r
@@ -866,6 +1107,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -878,6 +1126,7 @@ class BuildRepositoryClass {
                   refer(className).property('t'),
                 ]),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1037,7 +1286,11 @@ class BuildRepositoryClass {
       methodBuilder
         ..docs.add('''
 /// Updates all [$className]s matching the [where] expression with the specified [columnValues].
-/// Returns the list of updated rows.''')
+/// Returns the list of updated rows.
+///
+/// If [noReturn] is set to `true`, the updated rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'updateWhere'
         ..returns = TypeReference(
           (r) => r
@@ -1122,6 +1375,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1148,6 +1408,7 @@ class BuildRepositoryClass {
                   Code('// ignore: deprecated_member_use\norderDescending'),
                 ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1166,7 +1427,11 @@ class BuildRepositoryClass {
 /// when sorting by multiple columns.
 ///
 /// This is an atomic operation, meaning that if one of the rows fail to
-/// be deleted, none of the rows will be deleted.''')
+/// be deleted, none of the rows will be deleted.
+///
+/// If [noReturn] is set to `true`, the deleted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'delete'
         ..returns = TypeReference(
           (r) => r
@@ -1227,6 +1492,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1247,6 +1519,7 @@ class BuildRepositoryClass {
                   Code('// ignore: deprecated_member_use\norderDescending'),
                 ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1317,7 +1590,11 @@ class BuildRepositoryClass {
 /// Deletes all rows matching the [where] expression.
 ///
 /// To specify the order of the returned rows use [orderBy] or [orderByList]
-/// when sorting by multiple columns.''')
+/// when sorting by multiple columns.
+///
+/// If [noReturn] is set to `true`, the deleted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
           (r) => r
@@ -1384,6 +1661,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1405,6 +1689,7 @@ class BuildRepositoryClass {
                   Code('// ignore: deprecated_member_use\norderDescending'),
                 ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )

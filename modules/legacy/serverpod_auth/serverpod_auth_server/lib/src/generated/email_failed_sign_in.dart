@@ -364,16 +364,22 @@ class EmailFailedSignInRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> insert(
     _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmailFailedSignIn>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -391,21 +397,96 @@ class EmailFailedSignInRepository {
     );
   }
 
+  /// Upserts all [EmailFailedSignIn]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [EmailFailedSignIn]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<EmailFailedSignIn>> upsert(
+    _i1.DatabaseSession session,
+    List<EmailFailedSignIn> rows, {
+    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<EmailFailedSignIn>(
+      rows,
+      conflictColumns: conflictColumns(EmailFailedSignIn.t),
+      updateColumns: updateColumns?.call(EmailFailedSignIn.t),
+      updateWhere: updateWhere?.call(EmailFailedSignIn.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [EmailFailedSignIn] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [EmailFailedSignIn] will have its `id` field set.
+  Future<EmailFailedSignIn?> upsertRow(
+    _i1.DatabaseSession session,
+    EmailFailedSignIn row, {
+    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmailFailedSignIn>(
+      row,
+      conflictColumns: conflictColumns(EmailFailedSignIn.t),
+      updateColumns: updateColumns?.call(EmailFailedSignIn.t),
+      updateWhere: updateWhere?.call(EmailFailedSignIn.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EmailFailedSignIn]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> update(
     _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmailFailedSignIn>(
       rows,
       columns: columns?.call(EmailFailedSignIn.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -443,6 +524,10 @@ class EmailFailedSignInRepository {
 
   /// Updates all [EmailFailedSignIn]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
@@ -455,6 +540,7 @@ class EmailFailedSignInRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailFailedSignIn>(
       columnValues: columnValues(EmailFailedSignIn.t.updateTable),
@@ -466,6 +552,7 @@ class EmailFailedSignInRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -476,6 +563,10 @@ class EmailFailedSignInRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> delete(
     _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
@@ -484,6 +575,7 @@ class EmailFailedSignInRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmailFailedSignIn>(
       rows,
@@ -492,6 +584,7 @@ class EmailFailedSignInRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -511,6 +604,10 @@ class EmailFailedSignInRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
@@ -519,6 +616,7 @@ class EmailFailedSignInRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailFailedSignIn>(
       where: where(EmailFailedSignIn.t),
@@ -527,6 +625,7 @@ class EmailFailedSignInRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

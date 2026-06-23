@@ -310,16 +310,22 @@ class ObjectWithSelfParentRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSelfParent>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithSelfParent>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -337,21 +343,96 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Upserts all [ObjectWithSelfParent]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ObjectWithSelfParent]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ObjectWithSelfParent>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectWithSelfParent> rows, {
+    required _i1.ColumnSelections<ObjectWithSelfParentTable> conflictColumns,
+    _i1.ColumnSelections<ObjectWithSelfParentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ObjectWithSelfParent>(
+      rows,
+      conflictColumns: conflictColumns(ObjectWithSelfParent.t),
+      updateColumns: updateColumns?.call(ObjectWithSelfParent.t),
+      updateWhere: updateWhere?.call(ObjectWithSelfParent.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ObjectWithSelfParent] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ObjectWithSelfParent] will have its `id` field set.
+  Future<ObjectWithSelfParent?> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectWithSelfParent row, {
+    required _i1.ColumnSelections<ObjectWithSelfParentTable> conflictColumns,
+    _i1.ColumnSelections<ObjectWithSelfParentTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectWithSelfParent>(
+      row,
+      conflictColumns: conflictColumns(ObjectWithSelfParent.t),
+      updateColumns: updateColumns?.call(ObjectWithSelfParent.t),
+      updateWhere: updateWhere?.call(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ObjectWithSelfParent]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSelfParent>> update(
     _i1.DatabaseSession session,
     List<ObjectWithSelfParent> rows, {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithSelfParent>(
       rows,
       columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -389,6 +470,10 @@ class ObjectWithSelfParentRepository {
 
   /// Updates all [ObjectWithSelfParent]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSelfParent>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
@@ -401,6 +486,7 @@ class ObjectWithSelfParentRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithSelfParent>(
       columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
@@ -412,6 +498,7 @@ class ObjectWithSelfParentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -422,6 +509,10 @@ class ObjectWithSelfParentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSelfParent>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithSelfParent> rows, {
@@ -430,6 +521,7 @@ class ObjectWithSelfParentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithSelfParent>(
       rows,
@@ -438,6 +530,7 @@ class ObjectWithSelfParentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -457,6 +550,10 @@ class ObjectWithSelfParentRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithSelfParent>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
@@ -465,6 +562,7 @@ class ObjectWithSelfParentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
@@ -473,6 +571,7 @@ class ObjectWithSelfParentRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -1,104 +1,95 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/create/tui/config.dart';
+import 'package:serverpod_cli/src/commands/create/tui/state.dart';
 import 'package:serverpod_cli/src/commands/create/tui/state_holder.dart';
-import 'package:serverpod_cli/src/commands/tui/components.dart';
-import 'package:serverpod_cli/src/commands/tui/help_overlay.dart';
-import 'package:serverpod_cli/src/commands/tui/serverpod_theme.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 class MainScreen extends StatelessComponent {
   const MainScreen({
     super.key,
-    required this.name,
     required this.holder,
     required this.scrollController,
     required this.logScrollController,
     required this.onCreate,
     required this.onQuit,
-    required this.onToggleHelp,
+    required this.isUpgrade,
   });
 
-  final String name;
   final CreateAppStateHolder holder;
   final ScrollController scrollController;
   final ScrollController logScrollController;
   final VoidCallback onCreate;
   final VoidCallback onQuit;
-  final VoidCallback onToggleHelp;
-
-  static const _helpBindings = [
-    (
-      'Navigation',
-      [
-        ('k', 'Scroll up'),
-        ('j', 'Scroll down'),
-        ('Shift+↑', 'Scroll up ¼ screen'),
-        ('Shift+↓', 'Scroll down ¼ screen'),
-        ('u / Ctrl+u', 'Scroll up ½ screen'),
-        ('d / Ctrl+d', 'Scroll down ½ screen'),
-        ('PgUp / b / Backspace', 'Scroll up one screen'),
-        ('PgDn / Space / f', 'Scroll down one screen'),
-        ('Home / g', 'Go to start'),
-        ('End / G', 'Go to end'),
-      ],
-    ),
-    (
-      'Actions',
-      [
-        ('Enter', 'Create Project'),
-        ('↑↓', 'Navigate Options'),
-        ('←→', 'Select Option'),
-        ('Q', 'Quit'),
-      ],
-    ),
-  ];
+  final bool isUpgrade;
 
   @override
   Component build(BuildContext context) {
     final theme = ServerpodTheme.of(context);
     final state = holder.state;
     final creatingProject = state.creatingProject;
+    final summaryMessageAction = isUpgrade ? 'upgrade' : 'create';
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Stack(
-            children: [
-              BorderedBox(
-                color: theme.activeTab,
-                child: Column(
-                  children: [
-                    _buildHeader(theme),
-                    Expanded(
-                      child: creatingProject
-                          ? _buildLogView()
-                          : _buildForm(theme),
-                    ),
-                  ],
+          child: BorderedBox(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(theme, state),
+                const SizedBox(height: 1),
+                Expanded(
+                  child: creatingProject
+                      ? LogViewerWidget(
+                          state: state,
+                          scrollController: logScrollController,
+                          keyboardScrollable: true,
+                        )
+                      : Form.multiScreen(
+                          state: state.form,
+                          scrollController: scrollController,
+                          rebuild: holder.markDirty,
+                          summaryDescription:
+                              'Press Enter to $summaryMessageAction the project.',
+                        ),
                 ),
-              ),
-              if (state.showHelp) const HelpOverlay(bindings: _helpBindings),
-            ],
+              ],
+            ),
           ),
         ),
-        _buildButtonBar(theme),
+        _buildButtonBar(theme, state, isUpgrade: isUpgrade),
       ],
     );
   }
 
-  Component _buildHeader(ServerpodThemeData theme) {
-    final creatingProject = holder.state.creatingProject;
-    final title = creatingProject
-        ? 'Creating the "$name" project'
-        : 'Configure the "$name" project';
+  Component _buildHeader(ServerpodThemeData theme, CreateConfigState state) {
+    final showingSummary = state.form.isSummary;
+    final creatingProject = state.creatingProject;
+
+    final title = switch (creatingProject) {
+      true => isUpgrade ? 'Upgrading project' : 'Creating project',
+      false => switch (showingSummary) {
+        true => 'Summary',
+        false => isUpgrade ? 'Upgrade project' : 'Create new project',
+      },
+    };
 
     return Container(
-      padding: const EdgeInsets.only(bottom: 1),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Row(
         children: [
           Text(
             title,
+            style: const TextStyle(
+              color: Color.defaultColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            '💡 Click to select',
             style: TextStyle(
-              color: theme.activeTab,
+              color: theme.brightText,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -107,191 +98,97 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  Component _buildForm(ServerpodThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: Scrollbar(
-        controller: scrollController,
-        thumbVisibility: true,
-        child: ListView(
-          controller: scrollController,
-          children: [_buildConfigurations(theme)],
-        ),
-      ),
-    );
-  }
-
-  Component _buildConfigurations(ServerpodThemeData theme) {
-    final state = holder.state;
-    final configurations = state.configValues;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final config in configurations.indexed) ...[
-          _buildConfiguration(
-            theme,
-            config.$2,
-            config.$1 == state.focusedConfigIndex,
-          ),
-          const SizedBox(height: 1),
-        ],
-      ],
-    );
-  }
-
-  Component _buildConfiguration(
+  Component _buildButtonBar(
     ServerpodThemeData theme,
-    ServerpodCreateConfig config,
-    bool focused,
-  ) {
-    final state = holder.state;
-    final selectedOption = state.getSelectedOptionFor(config);
-
-    bool isOptionFocused(int optionIndex) {
-      return focused &&
-          state.getStateFor(config)?.focusedOptionIndex == optionIndex;
-    }
-
-    final titleColor = !state.isConfigConstrained(config)
-        ? selectedOption?.isUserDisabled ?? false
-              ? Colors.white
-              : theme.success
-        : theme.failure;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          config.label,
-          style: TextStyle(
-            color: titleColor,
-            fontWeight: focused ? FontWeight.bold : FontWeight.dim,
-          ),
-        ),
-        Row(
-          children: [
-            for (final option in config.options.indexed) ...[
-              _buildConfigurationOption(
-                theme,
-                option.$2,
-                selected: selectedOption == option.$2,
-                focused: isOptionFocused(option.$1),
-                enabled: !state.isOptionConstrained(config, option.$2),
-              ),
-              const SizedBox(width: 2),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  Component _buildConfigurationOption(
-    ServerpodThemeData theme,
-    ConfigOption option, {
-    required bool selected,
-    required bool focused,
-    required bool enabled,
+    CreateConfigState state, {
+    required bool isUpgrade,
   }) {
-    return RadioButton(
-      label: option.label,
-      focused: focused,
-      value: selected,
-      enabled: enabled,
-    );
-  }
-
-  Component _buildButtonBar(ServerpodThemeData theme) {
-    final state = holder.state;
     final creatingProject = state.creatingProject;
+    final isFirstScreen = state.form.currentScreenIndex == 0;
+    final isSummary = state.form.isSummary;
+    final hasSingleScreen = state.form.hasSingleScreen;
+    final createEnabled = !isSummary || state.canCreate;
+    final enterButtonLabel = switch (hasSingleScreen || isSummary) {
+      true => isUpgrade ? 'Upgrade Project' : 'Create Project',
+      false => 'Next',
+    };
+
     return ButtonBar(
       buttons: [
         Button(
-          name: 'Create Project',
+          name: enterButtonLabel,
           activationChar: 'Enter',
-          enabled: !creatingProject,
           activationKeys: const [LogicalKey.enter],
           onActivate: (_) {
-            state.markCreatingProject();
-            holder.markDirty();
-            onCreate.call();
-          },
-        ),
-        Button(
-          name: 'Navigate Options',
-          activationChar: '↑↓',
-          enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowUp, LogicalKey.arrowDown],
-          onActivate: (key) {
-            switch (key) {
-              case LogicalKey.arrowUp:
-                state.updateFocusedConfig(-1);
-                if (state.focusedConfigIndex == state.maxFocusedConfigIndex) {
-                  scrollController.scrollToEnd();
-                } else {
-                  scrollController.scrollUp(3);
-                }
-                break;
-              case LogicalKey.arrowDown:
-                state.updateFocusedConfig(1);
-                if (state.focusedConfigIndex == 0) {
-                  scrollController.scrollToStart();
-                } else {
-                  scrollController.scrollDown(3);
-                }
-                break;
+            if (hasSingleScreen || state.form.isSummary) {
+              state.markCreatingProject();
+              holder.markDirty();
+              onCreate();
+            } else {
+              state.form.nextScreen();
+              holder.markDirty();
             }
-            holder.markDirty();
           },
+          enabled:
+              (hasSingleScreen ? state.canCreate : createEnabled) &&
+              !creatingProject,
         ),
+        if (!hasSingleScreen)
+          Button(
+            name: 'Back',
+            activationChar: 'Esc',
+            activationKeys: const [LogicalKey.escape],
+            onActivate: (_) {
+              state.form.previousScreen();
+              holder.markDirty();
+            },
+            enabled: !isFirstScreen && !creatingProject,
+          ),
         Button(
-          name: 'Select Option',
-          activationChar: '←→',
-          enabled: !creatingProject,
-          activationKeys: const [LogicalKey.arrowLeft, LogicalKey.arrowRight],
+          name: 'Navigate',
+          activationChar: hasSingleScreen ? '←→' : '←↑↓→',
+          activationKeys: const [
+            LogicalKey.arrowLeft,
+            LogicalKey.arrowRight,
+            LogicalKey.arrowUp,
+            LogicalKey.arrowDown,
+          ],
           onActivate: (key) {
             switch (key) {
               case LogicalKey.arrowLeft:
-                state.selectConfigOption(-1);
+                state.form.focusLeft();
                 break;
               case LogicalKey.arrowRight:
-                state.selectConfigOption(1);
+                state.form.focusRight();
+                break;
+              case LogicalKey.arrowUp:
+                state.form.focusUp();
+                break;
+              case LogicalKey.arrowDown:
+                state.form.focusDown();
                 break;
             }
             holder.markDirty();
           },
+          enabled: !isSummary && !creatingProject,
         ),
         Button(
-          name: 'Help',
-          activationChar: 'H',
-          activationKeys: const [LogicalKey.keyH],
+          name: 'Select',
+          activationChar: 'Space',
+          activationKeys: const [LogicalKey.space],
           onActivate: (_) {
-            onToggleHelp.call();
+            state.form.onSelect();
+            holder.markDirty();
           },
+          enabled: !isSummary && !creatingProject,
         ),
         Button(
           name: 'Quit',
           activationChar: 'Q',
           activationKeys: const [LogicalKey.keyQ],
-          onActivate: (_) {
-            onQuit.call();
-          },
+          onActivate: (_) => onQuit(),
         ),
       ],
     );
-  }
-
-  Component _buildLogView() {
-    return LogViewerWidget(
-      state: holder.state,
-      scrollController: logScrollController,
-    );
-  }
-}
-
-extension on ConfigOption {
-  bool get isUserDisabled {
-    return (this is BoolConfigOption && this == BoolConfigOption.disabled) ||
-        (this is DatabaseConfigOption && this == DatabaseConfigOption.none);
   }
 }

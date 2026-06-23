@@ -1,13 +1,31 @@
+import 'dart:collection';
 import 'dart:typed_data';
 import 'dart:math' as math;
 import 'utils.dart';
 
 /// Represents a vector of half-precision float values.
-class HalfVector {
+class HalfVector extends IterableBase<double> {
   final List<double> _vec;
 
   /// Creates a new [HalfVector] from a list of double values.
   const HalfVector(this._vec);
+
+  @override
+  int get length => _vec.length;
+
+  /// Returns the element at [index].
+  ///
+  /// Throws [RangeError] if [index] is outside `0..<length`.
+  double operator [](int index) {
+    RangeError.checkValidIndex(index, this, 'index', _vec.length);
+    return _vec[index];
+  }
+
+  @override
+  double elementAt(int index) => this[index];
+
+  @override
+  Iterator<double> get iterator => _vec.iterator;
 
   /// Creates a [HalfVector] from its binary representation.
   factory HalfVector.fromBinary(Uint8List bytes) {
@@ -125,7 +143,9 @@ class HalfVector {
   }
 
   /// Returns the half-precision vector as a list of double values.
-  List<double> toList() => _vec;
+  @override
+  List<double> toList({bool growable = true}) =>
+      List<double>.of(_vec, growable: growable);
 
   @override
   String toString() => _vec.toString();

@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod_database.dart';
+import 'column_alias_resolver.dart';
 
 /// Prepares a query result for serverpod serialization.
 /// This is typically only used internally by the serverpod framework.
@@ -11,11 +11,19 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Map<String, dynamic> rawRow,
   Map<String, Map<Object, List<dynamic>>> resolvedListRelations, {
   Include? include,
+  ColumnAliasResolver? aliasResolver,
 }) {
+  // Builder and parser must resolve column aliases identically. The resolver is
+  // a pure function of (table, include), so building it here yields the same
+  // aliases the query builder emitted. Built once at the top-level call and
+  // threaded through the recursion.
+  var resolver = aliasResolver ?? ColumnAliasResolver.forQuery(table, include);
+
   // Resolve this object.
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
     table.columns,
     rawRow,
+    resolver,
   );
 
   if (resolvedTableRow.isEmpty) {
@@ -46,6 +54,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
         rawRow,
         resolvedListRelations,
         include: relationInclude,
+        aliasResolver: resolver,
       );
     }
   });
@@ -89,13 +98,11 @@ List<dynamic> _extractRelationalList(
 Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
   List<Column> columns,
   Map<String, dynamic> rawTableRow,
+  ColumnAliasResolver aliasResolver,
 ) {
   var columnMap = <String, dynamic>{};
   for (var column in columns) {
-    var queryKey = truncateIdentifier(
-      column.fieldQueryAlias,
-      DatabaseConstants.pgsqlMaxNameLimitation,
-    );
+    var queryKey = aliasResolver.resolve(column);
     var columnData = rawTableRow[queryKey];
     if (columnData != null) {
       columnMap[column.fieldName] = columnData;

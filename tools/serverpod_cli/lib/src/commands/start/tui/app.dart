@@ -1,22 +1,27 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
-import 'package:serverpod_cli/src/commands/tui/app.dart';
-import 'package:serverpod_cli/src/commands/tui/app_state_holder.dart';
+import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'main_screen.dart';
 
 import 'state.dart';
+import 'tab_model.dart';
 
 /// State holder for [ServerpodWatchApp].
-class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
+class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   StartAppStateHolder(this._state);
 
   final ServerWatchState _state;
 
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
-  VoidCallback? _onCreateMigration;
+  VoidCallback? _onHotRestart;
+  VoidCallback? _onRestartFlutterApp;
+  void Function(int index)? _onLaunchApp;
+  void Function(int index)? _onStopApp;
+  void Function({bool force})? _onCreateMigration;
+  void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
 
@@ -24,13 +29,18 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
   ServerWatchState get state => _state;
 
   @override
-  ServerpodAppState? get widgetState => _widgetState;
+  TuiAppState? get widgetState => _widgetState;
 
   @override
   void attach(ServerpodWatchAppState widgetState) {
     _widgetState = widgetState;
     widgetState.onHotReload = _onHotReload;
+    widgetState.onHotRestart = _onHotRestart;
+    widgetState.onRestartFlutterApp = _onRestartFlutterApp;
+    widgetState.onLaunchApp = _onLaunchApp;
+    widgetState.onStopApp = _onStopApp;
     widgetState.onCreateMigration = _onCreateMigration;
+    widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
   }
@@ -45,9 +55,34 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
     _widgetState?.onHotReload = cb;
   }
 
-  set onCreateMigration(VoidCallback? cb) {
+  set onHotRestart(VoidCallback? cb) {
+    _onHotRestart = cb;
+    _widgetState?.onHotRestart = cb;
+  }
+
+  set onRestartFlutterApp(VoidCallback? cb) {
+    _onRestartFlutterApp = cb;
+    _widgetState?.onRestartFlutterApp = cb;
+  }
+
+  set onLaunchApp(void Function(int index)? cb) {
+    _onLaunchApp = cb;
+    _widgetState?.onLaunchApp = cb;
+  }
+
+  set onStopApp(void Function(int index)? cb) {
+    _onStopApp = cb;
+    _widgetState?.onStopApp = cb;
+  }
+
+  set onCreateMigration(void Function({bool force})? cb) {
     _onCreateMigration = cb;
     _widgetState?.onCreateMigration = cb;
+  }
+
+  set onCreateRepairMigration(void Function({bool force})? cb) {
+    _onCreateRepairMigration = cb;
+    _widgetState?.onCreateRepairMigration = cb;
   }
 
   set onApplyMigration(VoidCallback? cb) {
@@ -62,7 +97,7 @@ class StartAppStateHolder extends ServerpodAppStateHolder<ServerWatchState> {
 }
 
 /// Root TUI component for `serverpod start`.
-class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
+class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
   const ServerpodWatchApp({
     super.key,
     required super.holder,
@@ -72,17 +107,21 @@ class ServerpodWatchApp extends ServerpodApp<StartAppStateHolder> {
   final void Function(StartAppStateHolder holder) onReady;
 
   @override
-  ServerpodAppState createState() => ServerpodWatchAppState();
+  TuiAppState createState() => ServerpodWatchAppState();
 }
 
-class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
-  final logScrollController = ScrollController();
+class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   final rawScrollController = ScrollController();
   final helpScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
-  VoidCallback? onCreateMigration;
+  VoidCallback? onHotRestart;
+  VoidCallback? onRestartFlutterApp;
+  void Function(int index)? onLaunchApp;
+  void Function(int index)? onStopApp;
+  void Function({bool force})? onCreateMigration;
+  void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
 
@@ -128,6 +167,16 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
   }
 
   @override
+  void onExit() {
+    final quit = onQuit;
+    if (quit != null) {
+      quit();
+    } else {
+      super.onExit();
+    }
+  }
+
+  @override
   Component buildApp(BuildContext context) {
     final state = component.holder.state;
 
@@ -137,20 +186,28 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
       child: MainScreen(
         state: state,
         showSplash: state.showSplash,
-        logScrollController: logScrollController,
         rawScrollController: rawScrollController,
         helpScrollController: helpScrollController,
         onToggleHelp: () {
           state.showHelp = !state.showHelp;
           _rebuild();
         },
-        onTabChanged: (index) {
-          state.selectedTab = index;
+        onTabSelected: _rebuild,
+        onHotReload: onHotReload,
+        onHotRestart: onHotRestart,
+        onCreateMigration: onCreateMigration,
+        onCreateRepairMigration: onCreateRepairMigration,
+        onApplyMigration: onApplyMigration,
+        onClearLogs: () {
+          state.clearLogs();
           _rebuild();
         },
-        onHotReload: onHotReload,
-        onCreateMigration: onCreateMigration,
-        onApplyMigration: onApplyMigration,
+        onLaunchApp: (index) {
+          onLaunchApp?.call(index);
+          // Mirror the keyboard path: a click also dismisses the panel.
+          state.showLaunchPanel = false;
+          _rebuild();
+        },
         onQuit: onQuit,
       ),
     );
@@ -165,40 +222,170 @@ class ServerpodWatchAppState extends ServerpodAppState<ServerpodWatchApp> {
         _rebuild();
         return true;
       }
+      // Let Ctrl-C bubble to the base TuiAppState so copy/exit still work.
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
       // Route navigation keys to the help overlay's controller; absorb the
       // rest so they don't fall through to tab/scroll handling underneath.
       _handleScrollKey(helpScrollController, event);
       return true;
     }
 
-    // Tab cycling: Tab and Right cycle forward, Left cycles back.
-    const tabCount = 2;
-    if (event.logicalKey == LogicalKey.tab ||
-        event.logicalKey == LogicalKey.arrowRight) {
-      state.selectedTab = (state.selectedTab + 1) % tabCount;
-      _rebuild();
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.period) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      _handleScrollKey(rawScrollController, event);
       return true;
     }
+
+    if (state.showLaunchPanel) {
+      final appCount = state.launchableApps.length;
+
+      if (event.logicalKey == LogicalKey.escape ||
+          (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      // Cursor navigation (arrows or vim-style j/k), wrapping at the ends.
+      if (appCount > 0 &&
+          (event.logicalKey == LogicalKey.arrowUp ||
+              event.logicalKey == LogicalKey.keyK)) {
+        state.launchPanelIndex =
+            (state.launchPanelIndex - 1 + appCount) % appCount;
+        _rebuild();
+        return true;
+      }
+      if (appCount > 0 &&
+          (event.logicalKey == LogicalKey.arrowDown ||
+              event.logicalKey == LogicalKey.keyJ)) {
+        state.launchPanelIndex = (state.launchPanelIndex + 1) % appCount;
+        _rebuild();
+        return true;
+      }
+      // Enter launches the focused row.
+      if (event.logicalKey == LogicalKey.enter &&
+          state.launchPanelIndex < appCount) {
+        onLaunchApp?.call(state.launchPanelIndex);
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      // 'x' stops the focused app when it is running. The panel stays open so
+      // the row's marker flips to stopped and the app can be relaunched.
+      if (event.logicalKey == LogicalKey.keyX &&
+          state.launchPanelIndex < appCount) {
+        final app = state.launchableApps[state.launchPanelIndex];
+        if (state.isAppRunning?.call(app.id) ?? false) {
+          onStopApp?.call(state.launchPanelIndex);
+          _rebuild();
+        }
+        return true;
+      }
+      // Number keys remain shortcuts for the first nine apps.
+      final digitIndex = _digitIndex(event.logicalKey);
+      if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
+        onLaunchApp?.call(digitIndex);
+        state.showLaunchPanel = false;
+        _rebuild();
+        return true;
+      }
+      return true;
+    }
+
+    // Ctrl+R: full relaunch of the selected Flutter app (kill `flutter run` and
+    // re-spawn it) or launch it if it isn't running yet (e.g. after starting
+    // with `--no-flutter`). Handled here rather than as a ButtonBar entry
+    // because the Button widget matches only plain/Shift keys. Always consumed
+    // so it never falls through to the plain-R hot reload / restart.
+    // 0 apps inert; 1 app direct action; >1 toggle launch panel.
+    if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
+      if (!state.canLaunchApps) return true;
+      if (state.launchableApps.length <= 1) {
+        onRestartFlutterApp?.call();
+      } else {
+        state.showLaunchPanel = !state.showLaunchPanel;
+        if (state.showLaunchPanel) {
+          state.launchPanelIndex = state.activeLaunchableIndex;
+        }
+        _rebuild();
+      }
+      return true;
+    }
+
+    // Tab, arrows, and digits share one global tab order. Side-by-side mode
+    // skips single-tab areas during cycling (the server pane stays visible);
+    // digit shortcuts always jump by index across every tab.
+    final sideBySide = state.useSideBySideLayout;
     if (event.logicalKey == LogicalKey.arrowLeft) {
-      state.selectedTab = (state.selectedTab - 1 + tabCount) % tabCount;
+      state.tabs.cycleTabs(-1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit1) {
-      state.selectedTab = 0;
+    if (event.logicalKey == LogicalKey.arrowRight) {
+      state.tabs.cycleTabs(1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
-    if (event.logicalKey == LogicalKey.digit2) {
-      state.selectedTab = 1;
+    if (event.matches(LogicalKey.tab, shift: false)) {
+      state.tabs.cycleTabs(1, sideBySide: sideBySide);
+      _rebuild();
+      return true;
+    }
+    if (event.matches(LogicalKey.tab, shift: true)) {
+      state.tabs.cycleTabs(-1, sideBySide: sideBySide);
       _rebuild();
       return true;
     }
 
-    final c = state.selectedTab == 0
-        ? logScrollController
-        : rawScrollController;
-    return _handleScrollKey(c, event);
+    final digitIndex = _digitIndex(event.logicalKey);
+    if (digitIndex != null) {
+      state.tabs.selectAllTabs(digitIndex);
+      _rebuild();
+      return true;
+    }
+
+    final focusedTab = state.tabs.focusedTab;
+    if (event.logicalKey == LogicalKey.keyE && focusedTab is ServerLogTab) {
+      state.expandStackTraces = !state.expandStackTraces;
+      _rebuild();
+      return true;
+    }
+
+    if (event.logicalKey == LogicalKey.backquote ||
+        event.logicalKey == LogicalKey.period) {
+      state.showRawServerLogs = true;
+      _rebuild();
+      return true;
+    }
+
+    final scrollController =
+        focusedTab?.scrollController ?? state.serverLogTab.scrollController;
+    return _handleScrollKey(scrollController, event);
+  }
+
+  int? _digitIndex(LogicalKey key) {
+    return switch (key) {
+      LogicalKey.digit1 => 0,
+      LogicalKey.digit2 => 1,
+      LogicalKey.digit3 => 2,
+      LogicalKey.digit4 => 3,
+      LogicalKey.digit5 => 4,
+      LogicalKey.digit6 => 5,
+      LogicalKey.digit7 => 6,
+      LogicalKey.digit8 => 7,
+      LogicalKey.digit9 => 8,
+      _ => null,
+    };
   }
 
   /// Handles scroll keyboard [event] for [controller].

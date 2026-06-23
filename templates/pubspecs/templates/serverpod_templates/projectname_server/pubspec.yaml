@@ -28,8 +28,31 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
-        && flutter build web --base-href /app/ --wasm
+        && flutter build web --base-href /app/
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         cd ../projectname_flutter
-        flutter build web --base-href /app/ --wasm --output ../projectname_server/web/app
+        flutter build web --base-href /app/ --output ../projectname_server/web/app
+
+  # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
+  # by a display alias. The default device is the web server, opening the
+  # machine's default browser when ready. All non-reserved properties are
+  # forwarded to `flutter run`. See the example below:
+  #
+  # Admin:
+  #   path: ../apps/admin_flutter
+  #   auto_launch: true
+  #   device: chrome
+  #   target: lib/main.dart
+  #   web-hostname: 0.0.0.0
+  #   web-port: 8090
+  #   release: true
+  #   pub: false
+  #   dart-define:
+  #     API_URL=https://admin.example.com
+  #     FLAVOR=production
+  flutter_apps:
+    projectname:
+      path: ../projectname_flutter
+      auto_launch: true
+      target: lib/driver.dart

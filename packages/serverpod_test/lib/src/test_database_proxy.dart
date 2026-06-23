@@ -58,6 +58,7 @@ class TestDatabaseProxy implements Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.delete<T>(
@@ -67,6 +68,7 @@ class TestDatabaseProxy implements Database {
         // ignore: deprecated_member_use
         orderDescending: orderDescending,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -94,6 +96,7 @@ class TestDatabaseProxy implements Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.deleteWhere<T>(
@@ -103,6 +106,7 @@ class TestDatabaseProxy implements Database {
         // ignore: deprecated_member_use
         orderDescending: orderDescending,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -213,12 +217,14 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insert<T>(
         rows,
         transaction: transaction,
         ignoreConflicts: ignoreConflicts,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -232,6 +238,48 @@ class TestDatabaseProxy implements Database {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insertRow<T>(
         row,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+    bool noReturn = false,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsert<T>(
+        rows,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
+        transaction: transaction,
+        noReturn: noReturn,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<T?> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsertRow<T>(
+        row,
+        conflictColumns: conflictColumns,
+        updateColumns: updateColumns,
+        updateWhere: updateWhere,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
@@ -367,12 +415,14 @@ class TestDatabaseProxy implements Database {
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.update<T>(
         rows,
         columns: columns,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );
@@ -423,6 +473,7 @@ class TestDatabaseProxy implements Database {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.updateWhere<T>(
@@ -435,6 +486,7 @@ class TestDatabaseProxy implements Database {
         // ignore: deprecated_member_use
         orderDescending: orderDescending,
         transaction: transaction,
+        noReturn: noReturn,
       ),
       isPartOfUserTransaction: transaction != null,
     );

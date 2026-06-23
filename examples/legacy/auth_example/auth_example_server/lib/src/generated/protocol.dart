@@ -21,7 +21,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._();
+  static final Protocol _instance = Protocol._().._registerHostProtocols();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
     ..._i3.Protocol.targetTableDefinitions,
@@ -93,13 +93,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
       case _i4.Example():
         return 'Example';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod.$className';
-    }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return className.contains('.') ? className : 'serverpod_auth.$className';
+    }
+    className = _i2.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.') ? className : 'serverpod.$className';
     }
     return null;
   }
@@ -113,15 +113,19 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'Example') {
       return deserialize<_i4.Example>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod.')) {
-      data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
-    }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
       return _i3.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod.')) {
+      data['className'] = dataClassName.substring(10);
+      return _i2.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
+  }
+
+  void _registerHostProtocols() {
+    _i3.Protocol().registerHostProtocol('auth_example', this);
   }
 
   @override

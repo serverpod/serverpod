@@ -47,6 +47,7 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
           'timestamp': e.time.toUtc().toIso8601String(),
           'error': e.error,
           'stackTrace': e.stackTrace?.toString(),
+          'metadata': e.metadata,
           'session': {
             'kind': 'log',
             'order': e.order,

@@ -93,6 +93,9 @@ class Protocol extends _i1.SerializationManager {
     return super.deserializeByClassName(data);
   }
 
+  @override
+  String getModuleName() => 'middleware';
+
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
   /// Throws in case the record type is not known.

@@ -16,56 +16,74 @@ String _stampFilePath(GeneratorConfig config) => p.joinAll([
   'generation.stamp',
 ]);
 
-/// Returns `true` if all [paths] are older than the generation stamp,
-/// the stamp's CLI version matches the running version, and all previously
-/// generated output files still exist on disk.
+/// A [FileStat] viewed as just its staleness-relevant identity.
+extension type FileStamp(FileStat _stat) {
+  /// Fingerprint token for a file that does not exist.
+  static const absent = '-1\t-1';
+
+  /// Returns the [FileStamp] of [path], or `null` if it does not exist.
+  static Future<FileStamp?> of(String path) async {
+    final stat = await FileStat.stat(path);
+    return stat.type == FileSystemEntityType.notFound ? null : FileStamp(stat);
+  }
+
+  /// The fingerprint token
+  String get token => '${_stat.modified.microsecondsSinceEpoch}\t${_stat.size}';
+}
+
+/// Computes a deterministic 32-bit FNV-1a fingerprint of [entries].
+String _fingerprint(Map<String, FileStamp?> entries) {
+  final lines = [
+    for (final path in entries.keys.toList()..sort())
+      '$path\t${entries[path]?.token ?? FileStamp.absent}',
+  ];
+  var hash = 0x811c9dc5;
+  for (final unit in lines.join('\n').codeUnits) {
+    hash = ((hash ^ unit) * 0x01000193) & 0xFFFFFFFF;
+  }
+  return hash.toRadixString(16);
+}
+
+/// Computes the fingerprint for a generation over
+/// - [sourceStats] (inputs stat'd before generation), and
+/// - [generatedFiles]
+Future<String> _computeFingerprint(
+  GeneratorConfig config, {
+  required Map<String, FileStamp> sourceStats,
+  required Set<String> generatedFiles,
+}) async {
+  final entries = <String, FileStamp?>{...sourceStats};
+  for (final path in config.auxiliaryInputPaths) {
+    entries[path] = await FileStamp.of(path);
+  }
+  for (final path in generatedFiles) {
+    entries[path] = await FileStamp.of(path);
+  }
+
+  return _fingerprint(entries);
+}
+
+/// Returns `true` if the running CLI version matches the stamp and the
+/// input+output fingerprint is unchanged since the last generation.
 Future<bool> isGenerationUpToDate(
   GeneratorConfig config,
-  Set<String> paths,
+  Map<String, FileStamp> sources,
 ) async {
   final stampFile = File(_stampFilePath(config));
   if (!await stampFile.exists()) return false;
 
-  final content = (await stampFile.readAsString()).trim();
-  if (content.isEmpty) return false;
+  // Line 0: CLI version. Line 1: fingerprint. Remaining lines: generated paths.
+  final lines = (await stampFile.readAsString()).split('\n');
+  if (lines.length < 2) return false;
+  if (lines[0].trim() != templateVersion) return false;
 
-  // First line is the CLI version.
-  final lines = content.split('\n');
-  if (lines.first.trim() != templateVersion) return false;
-
-  // Remaining lines (after version and timestamp) are generated file paths.
-  // If any are missing, generation must run.
-  if (lines.length > 2) {
-    final generatedFiles = lines.skip(2).where((l) => l.isNotEmpty);
-    for (final filePath in generatedFiles) {
-      if (!await File(filePath).exists()) return false;
-    }
-  }
-
-  final stampMtime = (await stampFile.stat()).modified;
-
-  // Check config/generator.yaml - config changes should trigger regen.
-  final configFile = File(
-    p.joinAll([
-      ...config.serverPackageDirectoryPathParts,
-      'config',
-      'generator.yaml',
-    ]),
+  final generatedFiles = lines.skip(2).where((l) => l.isNotEmpty).toSet();
+  final current = await _computeFingerprint(
+    config,
+    sourceStats: sources,
+    generatedFiles: generatedFiles,
   );
-  if (await configFile.exists() &&
-      (await configFile.stat()).modified.isAfter(stampMtime)) {
-    return false;
-  }
-
-  for (final path in paths) {
-    final file = File(path);
-    if (await file.exists() &&
-        (await file.stat()).modified.isAfter(stampMtime)) {
-      return false;
-    }
-  }
-
-  return true;
+  return lines[1].trim() == current;
 }
 
 /// Writes the generation stamp file after a successful generation.
@@ -73,20 +91,28 @@ Future<bool> isGenerationUpToDate(
 /// The stamp format is:
 /// ```
 /// <cli-version>
-/// <iso8601-timestamp>
+/// <input-output-fingerprint>
 /// <generated-file-path-1>
 /// <generated-file-path-2>
 /// ...
 /// ```
+/// Pass [sourceStats] to reuse them; omit it to re-enumerate the full set.
 Future<void> writeGenerationStamp(
   GeneratorConfig config, {
   required Set<String> generatedFiles,
+  Map<String, FileStamp>? sourceStats,
 }) async {
+  final stats = sourceStats ?? await enumerateSourceFiles(config);
+  final fingerprint = await _computeFingerprint(
+    config,
+    sourceStats: stats,
+    generatedFiles: generatedFiles,
+  );
   final file = File(_stampFilePath(config));
   await file.create(recursive: true);
   final buf = StringBuffer()
     ..writeln(templateVersion)
-    ..writeln(DateTime.now().toIso8601String());
+    ..writeln(fingerprint);
   for (final path in generatedFiles) {
     buf.writeln(path);
   }
@@ -100,38 +126,45 @@ Set<String> readGenerationStamp(GeneratorConfig config) {
   try {
     final stampFile = File(_stampFilePath(config));
     final lines = stampFile.readAsLinesSync();
-    // First line is CLI version, second is timestamp, rest are file paths.
+    // Lines 0-1 are version and fingerprint; the rest are generated paths.
     return lines.skip(2).where((l) => l.isNotEmpty).toSet();
   } catch (e) {
     return {};
   }
 }
 
-/// Enumerates all source files that feed into code generation.
-Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
-  final sources = <String>{};
+/// Enumerates the source files that feed code generation, capturing each one's
+/// [FileStamp] as the walk reads it.
+Future<Map<String, FileStamp>> enumerateSourceFiles(
+  GeneratorConfig config,
+) async {
+  final generatedDirs = {
+    p.absolute(p.joinAll(config.generatedServeModelPathParts)),
+    ...config.generatedSharedModelsPaths.map(p.absolute),
+  };
+  bool isOutputDir(Directory dir) =>
+      generatedDirs.any((d) => p.equals(d, p.absolute(dir.path)));
+  bool isSource(String path) =>
+      _sourceExtensions.any((ext) => path.endsWith(ext));
 
-  // Server lib/src/ directory.
-  final srcDir = Directory(p.joinAll(config.srcSourcePathParts));
-  if (await srcDir.exists()) {
-    await for (final entity in srcDir.list(recursive: true)) {
-      if (entity is File &&
-          _sourceExtensions.any((ext) => entity.path.endsWith(ext))) {
-        sources.add(entity.path);
+  final sources = <String, FileStamp>{};
+  Future<void> walk(Directory dir) async {
+    if (!await dir.exists()) return;
+    await for (final entity in dir.list()) {
+      if (entity is Directory) {
+        if (!isOutputDir(entity)) await walk(entity);
+      } else if (entity is File && isSource(entity.path)) {
+        sources[entity.path] = FileStamp(await entity.stat());
       }
     }
   }
 
-  // Shared model packages.
+  // Endpoints and models can live anywhere under lib/ (matching the endpoint
+  // analyzer and model loader, not just lib/src/), so walk it all but the
+  // output dirs.
+  await walk(Directory(p.joinAll(config.libSourcePathParts)));
   for (final path in config.sharedModelsLibSourcePaths) {
-    final dir = Directory(path);
-    if (!await dir.exists()) continue;
-    await for (final entity in dir.list(recursive: true)) {
-      if (entity is File &&
-          _sourceExtensions.any((ext) => entity.path.endsWith(ext))) {
-        sources.add(entity.path);
-      }
-    }
+    await walk(Directory(path));
   }
 
   return sources;

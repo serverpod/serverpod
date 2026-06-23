@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -29,12 +30,15 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
     return _successResult();
   }
 
   @override
-  void accept() {}
+  Future<void> accept() async {}
 
   @override
   Future<void> reject() async {}
@@ -93,7 +97,7 @@ WatchSession _buildSession(_FakeCompiler compiler, _FakeServer server) {
     createServer: (_) async => server,
     initialServer: server,
     generatedDirPaths: const {},
-    applyMigrationsAction: () async => const MigrationsApplied(),
+    applyMigrationsAction: () async {},
   );
 }
 
@@ -156,8 +160,9 @@ void main() {
     late StreamSubscription<void> fileSub;
     late Directory tempDir;
     late String vmServiceInfoFile;
+    late FlutterAppManager flutterManager;
 
-    setUp(() {
+    setUp(() async {
       compiler = _FakeCompiler();
       server = _FakeServer();
       proxy = _FakeProxy();
@@ -177,6 +182,19 @@ void main() {
       tempDir = Directory.systemTemp.createTempSync('watch_loop_test_');
       vmServiceInfoFile = p.join(tempDir.path, 'vm-service-info.json');
       File(vmServiceInfoFile).writeAsStringSync('{}');
+      flutterManager = FlutterAppManager(
+        apps: [],
+        serverpodToolDir: tempDir.path,
+        runMode: 'development',
+        onProgress: (_, _) {},
+        onReady: (_, _) {},
+        onStart: (_, _) async {},
+        onLaunchFailed: (_) {},
+        onEnsureAppTab: (_) {},
+        stdoutSinkFor: (_) => stdout,
+        stderrSinkFor: (_) => stderr,
+      );
+      await flutterManager.initialize();
     });
 
     tearDown(() {
@@ -190,7 +208,8 @@ void main() {
     WatchLoopContext build({bool startedDocker = false}) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
-        proxy: proxy,
+        proxy: () => proxy,
+        flutterManager: flutterManager,
         mcpSocket: mcp,
         fileChangeSub: fileSub,
         closeAnalyzers: () async {
@@ -284,7 +303,8 @@ void main() {
       () async {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
-          proxy: null,
+          proxy: () => null,
+          flutterManager: flutterManager,
           mcpSocket: null,
           fileChangeSub: null,
           closeAnalyzers: () async {

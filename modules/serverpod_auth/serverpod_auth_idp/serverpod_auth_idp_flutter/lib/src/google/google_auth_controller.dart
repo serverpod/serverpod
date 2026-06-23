@@ -1,12 +1,14 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import '../common/exceptions.dart';
+import '../common/oauth2_pkce/oauth2_pkce_exception.dart';
 import 'google_sign_in_service.dart';
+import 'google_web_sign_in_service.dart';
 
 /// Controller for managing Google-based authentication flows.
 ///
@@ -91,6 +93,11 @@ class GoogleAuthController extends ChangeNotifier {
 
   StreamSubscription<GoogleSignInAuthenticationEvent?>? _authSubscription;
 
+  /// Completes when an in-flight [signIn] finishes the Google SDK step *and*
+  /// the Serverpod login (or fails). Used so callers awaiting [signIn] stay
+  /// synchronized with the full flow (see stream-driven `_handleServerSideSignIn`).
+  Completer<void>? _signInFlowCompleter;
+
   /// The current state of the authentication flow.
   GoogleAuthState get state => _state;
 
@@ -113,6 +120,13 @@ class GoogleAuthController extends ChangeNotifier {
   /// Initializes the Google Sign-In service and sets up auth event listeners.
   Future<void> _initialize() async {
     if (_isInitialized) return;
+
+    // OAuth2 PKCE flow on web: no google_sign_in subscription needed.
+    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+      _isInitialized = true;
+      _setState(GoogleAuthState.idle);
+      return;
+    }
 
     try {
       final signIn = await GoogleSignInService.instance.ensureInitialized(
@@ -140,8 +154,16 @@ class GoogleAuthController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _completeSignInFlowAwait();
     unawaited(_authSubscription?.cancel());
     super.dispose();
+  }
+
+  void _completeSignInFlowAwait() {
+    final completer = _signInFlowCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete();
+    }
   }
 
   /// Initiates the Google Sign-In flow.
@@ -149,18 +171,49 @@ class GoogleAuthController extends ChangeNotifier {
   /// On success, the authentication event will be handled automatically and the
   /// user will be signed in. On failure, transitions to error state with the
   /// error message.
+  ///
+  /// On web with the redirect URI configured, opens the browser to Google's
+  /// authorization page using the OAuth2 PKCE redirect flow via
+  /// [GoogleWebSignInService].
   Future<void> signIn() async {
+    if (kIsWeb && GoogleWebSignInService.instance.isInitialized) {
+      await _signInWeb();
+      return;
+    }
+
     if (!GoogleSignIn.instance.supportsAuthenticate()) {
       throw StateError('This sign-in method is not supported on this platform');
     }
+    if (_state == GoogleAuthState.loading) return;
+
     _setState(GoogleAuthState.loading);
 
+    final flowCompleter = Completer<void>();
+    _signInFlowCompleter = flowCompleter;
+
     try {
-      // Only need to initialize the sign-in. The scopes authorization and server
-      // side authentication is handled by the authentication event listener.
+      // The SDK returns when account selection finishes; tokens and Serverpod
+      // login run asynchronously via [authenticationEvents]. Wait for both.
       await GoogleSignIn.instance.authenticate(scopeHint: scopes);
+      await flowCompleter.future;
     } catch (e) {
       _handleAuthenticationError(e);
+    } finally {
+      _signInFlowCompleter = null;
+    }
+  }
+
+  Future<void> _signInWeb() async {
+    if (_state == GoogleAuthState.loading) return;
+
+    _setState(GoogleAuthState.loading);
+    try {
+      final result = await GoogleWebSignInService.instance.signIn(
+        scopes: scopes,
+      );
+      await _handleWebServerSideSignIn(result);
+    } catch (error) {
+      _handleAuthenticationError(error);
     }
   }
 
@@ -202,6 +255,25 @@ class GoogleAuthController extends ChangeNotifier {
 
       _setState(GoogleAuthState.authenticated);
       onAuthenticated?.call();
+      _completeSignInFlowAwait();
+    } catch (error) {
+      _handleAuthenticationError(error);
+    }
+  }
+
+  Future<void> _handleWebServerSideSignIn(GoogleWebSignInResult result) async {
+    try {
+      final endpoint = client.getEndpointOfType<EndpointGoogleIdpBase>();
+      final authSuccess = await endpoint.loginWithCode(
+        code: result.code,
+        codeVerifier: result.codeVerifier,
+        redirectUri: result.redirectUri,
+      );
+
+      await client.auth.updateSignedInUser(authSuccess);
+
+      _setState(GoogleAuthState.authenticated);
+      onAuthenticated?.call();
     } catch (error) {
       _handleAuthenticationError(error);
     }
@@ -209,9 +281,14 @@ class GoogleAuthController extends ChangeNotifier {
 
   /// Handles authentication errors from the Google Sign-In service.
   void _handleAuthenticationError(Object error) {
+    _completeSignInFlowAwait();
     if (error is GoogleSignInException &&
         error.code == GoogleSignInExceptionCode.canceled) {
       // The Google Sign-In package already prints these to the debug log.
+      _setState(GoogleAuthState.idle);
+      return;
+    }
+    if (error is OAuth2PkceUserCancelledException) {
       _setState(GoogleAuthState.idle);
       return;
     }
@@ -281,6 +358,13 @@ Exception? convertToUserFacingException(Object error) {
     );
   }
   if (error is GoogleSignInException) {
+    return UserFacingException(
+      'An error occurred while signing in with Google. Please try again later. '
+      'If the problem persists, please contact support.',
+      originalException: error,
+    );
+  }
+  if (error is OAuth2PkceException) {
     return UserFacingException(
       'An error occurred while signing in with Google. Please try again later. '
       'If the problem persists, please contact support.',

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -29,10 +29,10 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Path to write the VM service info JSON file to. When set, the file
-  /// is passed to the child via `--write-service-info` and the URI is read
-  /// from the file instead of parsing stdout. IDEs can use this path in
-  /// their `vmServiceInfoFile` launch configuration to auto-attach.
+  /// Path to write the VM service info JSON file to. When set, passed
+  /// to the child via `--write-service-info` and the URI is read from
+  /// the file instead of parsing stdout. IDEs use this path in their
+  /// `vmServiceInfoFile` launch configuration to auto-attach.
   final String? _vmServiceInfoFile;
 
   Process? _process;

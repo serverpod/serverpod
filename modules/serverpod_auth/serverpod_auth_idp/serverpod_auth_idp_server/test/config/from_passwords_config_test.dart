@@ -13,8 +13,6 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
-import '../test_tags.dart';
-
 void main() {
   final portZeroConfig = ServerConfig(
     port: 0,
@@ -23,15 +21,11 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given missing IDP passwords', tags: TestTags.concurrencyOneTestTags, () {
-    late Directory originalDir;
-
+  group('Given missing IDP passwords', () {
     setUpAll(() async {
-      originalDir = Directory.current;
       await d.dir('config', [
         d.file('passwords.yaml', 'test:\n  database: "test"'),
       ]).create();
-      Directory.current = d.sandbox;
 
       // Constructing `Serverpod` internally sets `Serverpod.instance`.
       // This is used in `*FromPasswords` constructors to retrieve passwords.
@@ -40,17 +34,8 @@ void main() {
         Protocol(),
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
+        serverDirectory: Directory(d.sandbox),
       );
-
-      // Teardown need to be done using `addTearDown` instead of `tearDownAll`
-      // because the call to `addTearDown` inside `d.sandbox` will add a tear
-      // down that will run before any declared `tearDown` functions. Otherwise,
-      // the tests will fail on Windows because the `d.sandbox` teardown will
-      // try to delete the original directory while `Directory.current` is still
-      // set to it.
-      addTearDown(() async {
-        Directory.current = originalDir;
-      });
     });
 
     test(
@@ -168,12 +153,9 @@ void main() {
 
   group(
     'Given emailSecretHashPepper password is present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -184,18 +166,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -210,12 +188,9 @@ test:
 
   group(
     'Given googleClientSecret password is present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -226,18 +201,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -252,12 +223,9 @@ test:
 
   group(
     'Given Facebook passwords are present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -269,18 +237,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -295,12 +259,9 @@ test:
 
   group(
     'Given GitHub passwords are present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -312,18 +273,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -338,12 +295,9 @@ test:
 
   group(
     'Given all apple passwords are present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -366,18 +320,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -397,12 +347,9 @@ test:
 
   group(
     'Given microsoftClientId and microsoftClientSecret passwords are present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -414,18 +361,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(
@@ -440,12 +383,9 @@ test:
 
   group(
     'Given passkeyHostname password is present',
-    tags: TestTags.concurrencyOneTestTags,
-    () {
-      late Directory originalDir;
 
+    () {
       setUpAll(() async {
-        originalDir = Directory.current;
         await d.dir('config', [
           d.file(
             'passwords.yaml',
@@ -456,18 +396,14 @@ test:
 ''',
           ),
         ]).create();
-        Directory.current = d.sandbox;
 
         Serverpod(
           ['-m', 'test'],
           Protocol(),
           Endpoints(),
           config: ServerpodConfig(apiServer: portZeroConfig),
+          serverDirectory: Directory(d.sandbox),
         );
-
-        addTearDown(() async {
-          Directory.current = originalDir;
-        });
       });
 
       test(

@@ -347,6 +347,68 @@ void main() {
           );
         });
 
+        test('does not copy template pubspec lock files into packages', () {
+          final packageDirs = [serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec.lock'),
+              ).existsSync(),
+              isFalse,
+              reason: 'Template pubspec.lock was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template pubspec override files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            expect(
+              File(
+                path.join(tempPath, packageDir, 'pubspec_overrides.yaml'),
+              ).existsSync(),
+              isFalse,
+              reason:
+                  'Template pubspec_overrides.yaml was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('does not copy template melos project files', () {
+          final packageDirs = [projectName, serverDir, clientDir];
+
+          for (final packageDir in packageDirs) {
+            final directory = Directory(path.join(tempPath, packageDir));
+            final melosProjectFiles = directory
+                .listSync()
+                .whereType<File>()
+                .where((file) {
+                  final fileName = path.basename(file.path);
+                  return fileName.startsWith('melos_') &&
+                      fileName.endsWith('.iml');
+                });
+
+            expect(
+              melosProjectFiles,
+              isEmpty,
+              reason:
+                  'Template melos project file was copied into $packageDir.',
+            );
+          }
+        });
+
+        test('has no AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isFalse);
+        });
+
+        test('has no CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isFalse);
+        });
+
         test('has agent skills installed', () {
           expect(
             Directory(
@@ -360,15 +422,23 @@ void main() {
             ).existsSync(),
             isTrue,
           );
+          expect(
+            Directory(
+              path.join(tempPath, projectName, '.cursor', 'skills'),
+            ).existsSync(),
+            isTrue,
+          );
         });
 
         group('has Serverpod and Dart MCP servers configured', () {
-          final genericConfig = '''
+          final serverDirRelative = '${projectName}_server';
+          final genericConfig =
+              '''
 {
   "mcpServers": {
     "serverpod": {
       "command": "serverpod",
-      "args": ["mcp"]
+      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
     },
     "dart": {
       "command": "dart",
@@ -377,40 +447,6 @@ void main() {
   }
 }
 ''';
-
-          test('for Antigravity', () {
-            final antigravity = File(
-              path.join(
-                tempPath,
-                projectName,
-                '.gemini/antigravity/mcp_config.json',
-              ),
-            );
-            expect(antigravity.existsSync(), isTrue);
-            expect(
-              antigravity.readAsStringSync(),
-              genericConfig.replaceAll('"dart":', '"dart-mcp-server":'),
-            );
-          });
-
-          test('for Codex', () {
-            final codex = File(
-              path.join(tempPath, projectName, '.codex/config.toml'),
-            );
-            expect(codex.existsSync(), isTrue);
-            expect(
-              codex.readAsStringSync(),
-              '''
-[mcp_servers.serverpod]
-command = "serverpod"
-args = ["mcp"]
-
-[mcp_servers.dart_mcp]
-command = "dart"
-args = ["mcp-server", "--force-roots-fallback"]
-''',
-            );
-          });
 
           test('for Claude', () {
             final claude = File(
@@ -428,7 +464,7 @@ args = ["mcp-server", "--force-roots-fallback"]
             expect(cursor.readAsStringSync(), genericConfig);
           });
 
-          test('for VSCode', () {
+          test('for VS Code', () {
             final vscode = File(
               path.join(tempPath, projectName, '.vscode/mcp.json'),
             );

@@ -586,16 +586,22 @@ class ChangedIdTypeSelfRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> insert(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChangedIdTypeSelf>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -613,21 +619,96 @@ class ChangedIdTypeSelfRepository {
     );
   }
 
+  /// Upserts all [ChangedIdTypeSelf]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ChangedIdTypeSelf]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ChangedIdTypeSelf>> upsert(
+    _i1.DatabaseSession session,
+    List<ChangedIdTypeSelf> rows, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ChangedIdTypeSelf>(
+      rows,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ChangedIdTypeSelf] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ChangedIdTypeSelf] will have its `id` field set.
+  Future<ChangedIdTypeSelf?> upsertRow(
+    _i1.DatabaseSession session,
+    ChangedIdTypeSelf row, {
+    required _i1.ColumnSelections<ChangedIdTypeSelfTable> conflictColumns,
+    _i1.ColumnSelections<ChangedIdTypeSelfTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChangedIdTypeSelf>(
+      row,
+      conflictColumns: conflictColumns(ChangedIdTypeSelf.t),
+      updateColumns: updateColumns?.call(ChangedIdTypeSelf.t),
+      updateWhere: updateWhere?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChangedIdTypeSelf]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> update(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
     _i1.ColumnSelections<ChangedIdTypeSelfTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChangedIdTypeSelf>(
       rows,
       columns: columns?.call(ChangedIdTypeSelf.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -665,6 +746,10 @@ class ChangedIdTypeSelfRepository {
 
   /// Updates all [ChangedIdTypeSelf]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
@@ -677,6 +762,7 @@ class ChangedIdTypeSelfRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
       columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
@@ -688,6 +774,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -698,6 +785,10 @@ class ChangedIdTypeSelfRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> delete(
     _i1.DatabaseSession session,
     List<ChangedIdTypeSelf> rows, {
@@ -706,6 +797,7 @@ class ChangedIdTypeSelfRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChangedIdTypeSelf>(
       rows,
@@ -714,6 +806,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -733,6 +826,10 @@ class ChangedIdTypeSelfRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChangedIdTypeSelf>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
@@ -741,6 +838,7 @@ class ChangedIdTypeSelfRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChangedIdTypeSelf>(
       where: where(ChangedIdTypeSelf.t),
@@ -749,6 +847,7 @@ class ChangedIdTypeSelfRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_cli
-version: 3.5.0-beta.6
+version: 3.5.0-beta.10
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
@@ -11,16 +11,17 @@ environment:
 
 dependencies:
   analyzer: '>=8.1.0 <11.0.0'
-  archive: '>=3.3.7 <5.0.0'
+  archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0
   built_collection: ^5.1.1
   ci: ^0.1.0
-  cli_tools: ^0.11.0
+  cli_tools: ^0.13.2
   code_assets: ^1.0.0
   code_builder: ^4.5.0
   collection: ^1.18.0
-  config: ^0.8.3
+  config: ^0.9.0
+  dart_data_home: ^0.1.0
   dart_mcp: '>=0.4.1 <0.6.0'
   # Dart style must be pinned to 3.1.5 until we bump the minimum Dart version
   # to 3.12 due to a bug on the formatter that was fixed in 3.1.6, but only
@@ -29,11 +30,13 @@ dependencies:
   # details, see: https://github.com/dart-lang/dart_style/issues/1785
   dart_style: 3.1.5
   data_assets: '>=0.19.0 <0.20.0'
+  ffi: ^2.1.4
   file: ^7.0.1
   hooks: ^1.0.0
   hooks_runner: ^1.2.1
   http: '>=1.1.0 <2.0.0'
   intl: '>=0.19.0 <0.21.0'
+  isolated_object: ^0.1.0
   json_rpc_2: ^4.0.0
   # Bridge type only: hooks_runner's NativeAssetsBuildRunner requires a
   # Logger argument. All log records are forwarded to the serverpod CLI
@@ -48,11 +51,13 @@ dependencies:
   pub_semver: ^2.1.4
   pubspec_parse: ^1.5.0
   recase: ^4.1.0
-  serverpod_database: 3.5.0-beta.6
-  serverpod_serialization: 3.5.0-beta.6
-  serverpod_service_client: 3.5.0-beta.6
-  serverpod_shared: 3.5.0-beta.6
-  skills: ^0.3.0
+  serverpod_database: 3.5.0-beta.10
+  serverpod_logging_cli: ^0.1.0
+  serverpod_serialization: 3.5.0-beta.10
+  serverpod_service_client: 3.5.0-beta.10
+  serverpod_shared: 3.5.0-beta.10
+  serverpod_tui: ^0.4.0
+  skills: ^0.3.1
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   stream_transform: ^2.1.0
@@ -61,11 +66,13 @@ dependencies:
   vm_service: '>=13.0.0 <16.0.0'
   watcher: ^1.0.2
   whiskers: ^0.1.1
+  win32: ^6.0.0
   yaml: ^3.1.2
   yaml_edit: ^2.2.2
 
 dev_dependencies:
-  serverpod_lints: 3.5.0-beta.6
+  postgres: ^3.4.0
+  serverpod_lints: 3.5.0-beta.10
   term_glyph: ^1.2.2
   test: ^1.25.5
   test_descriptor: ^2.0.2
@@ -75,6 +82,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_database:
     path: ../../packages/serverpod_database
+  serverpod_embedded_postgres:
+    path: ../../packages/serverpod_embedded_postgres
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

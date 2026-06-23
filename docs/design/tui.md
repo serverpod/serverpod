@@ -11,6 +11,11 @@ This document describes the nocterm-based terminal UI for the `serverpod start` 
 > / `session_end` event names are historical; treat the layout, key bindings,
 > and component breakdown as authoritative and the wire protocol details as
 > superseded.
+>
+> **Multiple Flutter apps:** the single-Flutter-tab layout and tab handling
+> below are superseded by the areas-based tab model in
+> [`multiple_flutter_apps.md`](multiple_flutter_apps.md), which makes the layout
+> always two-pane (server + per-app tabs) and adds a `Ctrl+R` launch picker.
 
 ## Current State
 

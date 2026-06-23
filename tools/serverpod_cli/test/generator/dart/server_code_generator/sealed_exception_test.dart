@@ -1,0 +1,1323 @@
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:test/test.dart';
+
+import '../../../test_util/builders/exception_class_definition_builder.dart';
+import '../../../test_util/builders/generator_config_builder.dart';
+import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/builders/type_definition_builder.dart';
+import '../../../test_util/compilation_unit_helpers.dart';
+
+const projectName = 'example_project';
+final config = GeneratorConfigBuilder().withName(projectName).build();
+const generator = DartServerCodeGenerator();
+
+void main() {
+  String getExpectedFilePath(String fileName, {List<String>? subDirParts}) =>
+      p.joinAll([
+        'lib',
+        'src',
+        'generated',
+        ...?subDirParts,
+        '$fileName.dart',
+      ]);
+
+  var serverpodImportPath = 'package:serverpod/serverpod.dart';
+
+  group(
+    'Given a hierarchy with a sealed parent exception and a normal child, when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('AppException')
+          .withFileName('app_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('NotFoundException')
+          .withFileName('not_found_exception')
+          .withSimpleField('code', 'int')
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      group('then the ${parent.className}', () {
+        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          parentCompilationUnit,
+          name: parent.className,
+        );
+
+        test('is defined', () {
+          expect(parentClass, isNotNull);
+        });
+
+        test('has a part directive with ${child.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            parentCompilationUnit,
+            uri: '${child.fileName}.dart',
+          );
+
+          expect(
+            partDirective?.uri.stringValue,
+            '${child.fileName}.dart',
+          );
+        });
+
+        test('has import directive for serverpod', () {
+          var serverpodImport = CompilationUnitHelpers.tryFindImportDirective(
+            parentCompilationUnit,
+            uri: serverpodImportPath,
+          );
+
+          expect(serverpodImport, isNotNull);
+        });
+
+        test('does have an abstract copyWith method', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            parentClass!,
+            name: 'copyWith',
+          );
+
+          expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
+        });
+
+        test('does NOT have a toJson method', () {
+          var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            parentClass!,
+            name: 'toJson',
+          );
+
+          expect(toJsonMethod, isNull);
+        });
+
+        test('does NOT have a toJsonForProtocol method', () {
+          var toJsonForProtocolMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                parentClass!,
+                name: 'toJsonForProtocol',
+              );
+
+          expect(toJsonForProtocolMethod, isNull);
+        });
+
+        test('does NOT have a toString method', () {
+          var toStringMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            parentClass!,
+            name: 'toString',
+          );
+          expect(toStringMethod, isNull);
+        });
+      });
+
+      group('then the ${child.className}', () {
+        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: child.className,
+        );
+
+        test('is defined', () {
+          expect(childClass, isNotNull);
+        });
+
+        test('has a part-of directive with ${parent.className} uri', () {
+          var partDirectives = CompilationUnitHelpers.tryFindPartOfDirective(
+            childCompilationUnit,
+            uri: '${parent.fileName}.dart',
+          );
+
+          expect(
+            partDirectives?.uri?.stringValue,
+            '${parent.fileName}.dart',
+          );
+        });
+
+        test('does not have import directive for serverpod', () {
+          var importDirective = CompilationUnitHelpers.hasImportDirective(
+            childCompilationUnit,
+            uri: serverpodImportPath,
+          );
+
+          expect(importDirective, false);
+        });
+
+        test('does have a copyWith method', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            childClass!,
+            name: 'copyWith',
+          );
+
+          expect(copyWithMethod, isNotNull);
+        });
+
+        test('copyWith has @override annotation', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            childClass!,
+            name: 'copyWith',
+          );
+          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+            copyWithMethod!,
+            name: 'override',
+          );
+
+          expect(overrideAnnotation, isNotNull);
+        });
+
+        test('does have a toJson method', () {
+          var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            childClass!,
+            name: 'toJson',
+          );
+
+          expect(toJsonMethod, isNotNull);
+        });
+
+        test('does have a toJsonForProtocol method', () {
+          var toJsonForProtocolMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                childClass!,
+                name: 'toJsonForProtocol',
+              );
+
+          expect(toJsonForProtocolMethod, isNotNull);
+        });
+
+        test('does have a toString method', () {
+          var toStringMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            childClass!,
+            name: 'toString',
+          );
+
+          expect(toStringMethod, isNotNull);
+        });
+      });
+    },
+  );
+  group(
+    'Given a hierarchy with a sealed parent exception and two normal children with nullable fields when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('TransportException')
+          .withFileName('transport_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+
+      var child1 = ExceptionClassDefinitionBuilder()
+          .withClassName('NetworkException')
+          .withFileName('network_excpetion')
+          .withExtendsClass(parent)
+          .build();
+
+      var child2 = ExceptionClassDefinitionBuilder()
+          .withClassName('TimeoutException')
+          .withFileName('timeout_exception')
+          .withSimpleField('code', 'String', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child1));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child2));
+
+      var models = [
+        parent,
+        child1,
+        child2,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+      var child1CompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child1.fileName)]!,
+      ).unit;
+      var child2CompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child2.fileName)]!,
+      ).unit;
+
+      test('then the ${parent.className} has a _Undefined class', () {
+        var undefinedMethod = CompilationUnitHelpers.tryFindClassDeclaration(
+          parentCompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedMethod,
+          isNotNull,
+          reason: '_Undefined class was not created',
+        );
+      });
+
+      test('then ${child1.className} does NOT have a _Undefined class', () {
+        var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          child1CompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedClass,
+          isNull,
+          reason: '_Undefined class was created in child of a sealed class',
+        );
+      });
+
+      test('then ${child2.className} does NOT have a _Undefined class', () {
+        var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          child2CompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedClass,
+          isNull,
+          reason: '_Undefined class was created in child of a sealed class',
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy with a sealed parent exception with a nullable field and a child with no nullable fields when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('BaseException')
+          .withFileName('base_exception')
+          .withSimpleField('message', 'String', nullable: true)
+          .withIsSealed(true)
+          .build();
+
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('SpecificException')
+          .withFileName('specific_exception')
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      test(
+        'then ${parent.className} has a _Undefined class because descendant inherits nullable field',
+        () {
+          var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            parentCompilationUnit,
+            name: '_Undefined',
+          );
+
+          expect(
+            undefinedClass,
+            isNotNull,
+            reason:
+                '_Undefined class was not created even though the hierarchy contains a nullable inherited field',
+          );
+        },
+      );
+
+      test('then ${child.className} does NOT have a _Undefined class', () {
+        var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedClass,
+          isNull,
+          reason: '_Undefined class was created in child of a sealed class',
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy with a sealed parent with a nullable field and a child with no nullable fields when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('Event')
+          .withFileName('event')
+          .withSimpleField('description', 'String', nullable: true)
+          .withIsSealed(true)
+          .build();
+
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ClickEvent')
+          .withFileName('click_event')
+          .withSimpleField('elementId', 'String')
+          .withExtendsClass(parent)
+          .build();
+
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      test(
+        'then ${parent.className} has a _Undefined class because descendant inherits nullable field',
+        () {
+          var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            parentCompilationUnit,
+            name: '_Undefined',
+          );
+
+          expect(
+            undefinedClass,
+            isNotNull,
+            reason:
+                '_Undefined class was not created even though the hierarchy contains a nullable inherited field',
+          );
+        },
+      );
+
+      test('then ${child.className} does NOT have a _Undefined class', () {
+        var undefinedClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: '_Undefined',
+        );
+
+        expect(
+          undefinedClass,
+          isNull,
+          reason: '_Undefined class was created in child of a sealed class',
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy with a normal parent exception, a sealed child and a normal grandchild when generating code',
+    () {
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('name', 'String')
+          .build();
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .withIsSealed(true)
+          .build();
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        grandparent,
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var grandparentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(grandparent.fileName)]!,
+      ).unit;
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      group('then ${grandparent.className}', () {
+        var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          grandparentCompilationUnit,
+          name: grandparent.className,
+        );
+
+        test('has a copyWith method', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            grandparentClass!,
+            name: 'copyWith',
+          );
+          expect(copyWithMethod, isNotNull);
+        });
+
+        test('has an import directive for serverpod', () {
+          var serverpodImport = CompilationUnitHelpers.tryFindImportDirective(
+            grandparentCompilationUnit,
+            uri: serverpodImportPath,
+          );
+
+          expect(serverpodImport, isNotNull);
+        });
+      });
+
+      group('then ${parent.className} ', () {
+        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          parentCompilationUnit,
+          name: parent.className,
+        );
+
+        test('does have an abstract copyWith method', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            parentClass!,
+            name: 'copyWith',
+          );
+          expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
+        });
+
+        test('has a part directive with ${child.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            parentCompilationUnit,
+            uri: '${child.fileName}.dart',
+          );
+
+          expect(
+            partDirective?.uri.stringValue,
+            '${child.fileName}.dart',
+          );
+        });
+
+        test('has import directive for serverpod', () {
+          var serverpodImport = CompilationUnitHelpers.tryFindImportDirective(
+            parentCompilationUnit,
+            uri: serverpodImportPath,
+          );
+
+          expect(serverpodImport, isNotNull);
+        });
+      });
+
+      group('then ${child.className} has a copyWith method', () {
+        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: child.className,
+        );
+
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        test('defined', () {
+          expect(copyWithMethod, isNotNull);
+        });
+
+        test('with the override annotation', () {
+          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+            copyWithMethod!,
+            name: 'override',
+          );
+
+          expect(overrideAnnotation, isNotNull);
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy: sealed > normal > sealed > normal when generating code',
+    () {
+      var greatGrandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGreatGrandparentException')
+          .withFileName('example_great_grandparent_exception')
+          .withSimpleField('name', 'String')
+          .withIsSealed(true)
+          .build();
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(greatGrandparent)
+          .build();
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .build();
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      greatGrandparent.childClasses.add(
+        ResolvedInheritanceDefinition(grandparent),
+      );
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        greatGrandparent,
+        grandparent,
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var greatGrandparentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(greatGrandparent.fileName)]!,
+      ).unit;
+
+      var grandparentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(grandparent.fileName)]!,
+      ).unit;
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+
+      var childCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(child.fileName)]!,
+      ).unit;
+
+      group('then ${greatGrandparent.className}', () {
+        test('has part directives for all children', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            greatGrandparentCompilationUnit,
+            uri: '${grandparent.fileName}.dart',
+          );
+
+          expect(
+            partDirective?.uri.stringValue,
+            '${grandparent.fileName}.dart',
+          );
+
+          partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            greatGrandparentCompilationUnit,
+            uri: '${parent.fileName}.dart',
+          );
+
+          expect(
+            partDirective?.uri.stringValue,
+            '${parent.fileName}.dart',
+          );
+
+          partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            greatGrandparentCompilationUnit,
+            uri: '${child.fileName}.dart',
+          );
+
+          expect(
+            partDirective?.uri.stringValue,
+            '${child.fileName}.dart',
+          );
+        });
+      });
+
+      group('then ${grandparent.className} has a copyWith method', () {
+        var grandparentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          grandparentCompilationUnit,
+          name: grandparent.className,
+        );
+
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          grandparentClass!,
+          name: 'copyWith',
+        );
+
+        test('defined', () {
+          expect(copyWithMethod, isNotNull);
+        });
+
+        test('with the override annotation', () {
+          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+            copyWithMethod!,
+            name: 'override',
+          );
+
+          expect(overrideAnnotation, isNotNull);
+        });
+      });
+
+      test(
+        'then ${parent.className} has a part-of directive with ${greatGrandparent.className} uri',
+        () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            parentCompilationUnit,
+            uri: '${greatGrandparent.fileName}.dart',
+          );
+
+          expect(
+            partOfDirective?.uri?.stringValue,
+            '${greatGrandparent.fileName}.dart',
+          );
+        },
+      );
+
+      group('then ${child.className} ', () {
+        var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          childCompilationUnit,
+          name: child.className,
+        );
+
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          childClass!,
+          name: 'copyWith',
+        );
+
+        group('has a copyWith method', () {
+          test('defined', () {
+            expect(copyWithMethod, isNotNull);
+          });
+
+          test('with the override annotation', () {
+            var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+              copyWithMethod!,
+              name: 'override',
+            );
+
+            expect(overrideAnnotation, isNotNull);
+          });
+        });
+
+        test(
+          'has a part-of directive with ${greatGrandparent.className} uri',
+          () {
+            var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+              childCompilationUnit,
+              uri: '${greatGrandparent.fileName}.dart',
+            );
+
+            expect(
+              partOfDirective?.uri?.stringValue,
+              '${greatGrandparent.fileName}.dart',
+            );
+          },
+        );
+      });
+    },
+  );
+
+  group('Given a hierarchy: sealed > sealed > normal when generating code', () {
+    var grandparent = ExceptionClassDefinitionBuilder()
+        .withClassName('ExampleGrandparentException')
+        .withFileName('example_grandparent_exception')
+        .withSimpleField('message', 'String')
+        .withIsSealed(true)
+        .build();
+    var parent = ExceptionClassDefinitionBuilder()
+        .withClassName('ExampleParentException')
+        .withFileName('example_parent_exception')
+        .withSimpleField('name', 'String')
+        .withExtendsClass(grandparent)
+        .withIsSealed(true)
+        .build();
+    var child = ExceptionClassDefinitionBuilder()
+        .withClassName('ExampleChildException')
+        .withFileName('example_child_exception')
+        .withSimpleField('code', 'int', nullable: true)
+        .withExtendsClass(parent)
+        .build();
+
+    grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+    var models = [
+      grandparent,
+      parent,
+      child,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var childCompilationUnit = parseString(
+      content: codeMap[getExpectedFilePath(child.fileName)]!,
+    ).unit;
+
+    group('then ${child.className}', () {
+      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        childCompilationUnit,
+        name: child.className,
+      );
+
+      var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        childClass!,
+        name: 'copyWith',
+      );
+
+      test('has a copyWith method', () {
+        expect(copyWithMethod, isNotNull);
+      });
+
+      test('with the override annotation', () {
+        var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+          copyWithMethod!,
+          name: 'override',
+        );
+
+        expect(overrideAnnotation, isNotNull);
+      });
+    });
+  });
+
+  group('Given a sealed class with no children when generating code', () {
+    var parent = ExceptionClassDefinitionBuilder()
+        .withClassName('ExampleParentException')
+        .withFileName('example_parent_exception')
+        .withSimpleField('message', 'String')
+        .withIsSealed(true)
+        .build();
+
+    var models = [
+      parent,
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var parentCompilationUnit = parseString(
+      content: codeMap[getExpectedFilePath(parent.fileName)]!,
+    ).unit;
+
+    group('then ${parent.className}', () {
+      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        parentCompilationUnit,
+        name: parent.className,
+      );
+
+      test('is defined', () {
+        expect(parentClass, isNotNull);
+      });
+
+      test('does have an abstract copyWith method', () {
+        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          parentClass!,
+          name: 'copyWith',
+        );
+
+        expect(copyWithMethod, isNotNull);
+        expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
+      });
+
+      var directives = parentCompilationUnit.directives;
+
+      test('has only directive which is an import', () {
+        expect(directives.length, 1);
+        expect(directives.first, isA<ImportDirective>());
+      });
+
+      test('does NOT have a part directive', () {
+        expect(directives.first, isNot(isA<PartDirective>()));
+      });
+    });
+  });
+
+  group(
+    'Given a hierarchy: sealed > normal > normal, when the sealed top node is in another directory',
+    () {
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withSubDirParts(['sub_dir'])
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('name', 'String')
+          .withIsSealed(true)
+          .build();
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .build();
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSimpleField('code', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        grandparent,
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var grandparentPath = getExpectedFilePath(
+        grandparent.fileName,
+        subDirParts: ['sub_dir'],
+      );
+      var parentPath = getExpectedFilePath(parent.fileName);
+      var childPath = getExpectedFilePath(child.fileName);
+
+      var grandparentCompilationUnit = parseString(
+        content: codeMap[grandparentPath]!,
+      ).unit;
+      var parentCompilationUnit = parseString(
+        content: codeMap[parentPath]!,
+      ).unit;
+      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+      group('then ${grandparent.className}', () {
+        test('has a part directive with ${parent.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: '../${parent.fileName}.dart',
+          );
+
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+
+        test('has a part directive with ${child.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: '../${child.fileName}.dart',
+          );
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${parent.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            parentCompilationUnit,
+            uri: 'sub_dir/${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${child.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            childCompilationUnit,
+            uri: 'sub_dir/${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy: sealed > normal > normal when the middle node is in another directory',
+    () {
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSubDirParts(['sub_dir'])
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .build();
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSimpleField('code', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        grandparent,
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var grandparentPath = getExpectedFilePath(grandparent.fileName);
+      var parentPath = getExpectedFilePath(
+        parent.fileName,
+        subDirParts: ['sub_dir'],
+      );
+      var childPath = getExpectedFilePath(child.fileName);
+
+      var grandparentCompilationUnit = parseString(
+        content: codeMap[grandparentPath]!,
+      ).unit;
+      var parentCompilationUnit = parseString(
+        content: codeMap[parentPath]!,
+      ).unit;
+      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+      group('then ${grandparent.className}', () {
+        test('has a part directive with ${parent.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: 'sub_dir/${parent.fileName}.dart',
+          );
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+
+        test('has a part directive with ${child.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: '${child.fileName}.dart',
+          );
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${parent.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            parentCompilationUnit,
+            uri: '../${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${child.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            childCompilationUnit,
+            uri: '${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a hierarchy: sealed > normal > normal when the bottom node is in another directory',
+    () {
+      var grandparent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleGrandparentException')
+          .withFileName('example_grandparent_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleParentException')
+          .withFileName('example_parent_exception')
+          .withSimpleField('name', 'String')
+          .withExtendsClass(grandparent)
+          .build();
+      var child = ExceptionClassDefinitionBuilder()
+          .withClassName('ExampleChildException')
+          .withFileName('example_child_exception')
+          .withSubDirParts(['sub_dir'])
+          .withSimpleField('code', 'int', nullable: true)
+          .withExtendsClass(parent)
+          .build();
+
+      grandparent.childClasses.add(ResolvedInheritanceDefinition(parent));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
+
+      var models = [
+        grandparent,
+        parent,
+        child,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var grandparentPath = getExpectedFilePath(grandparent.fileName);
+      var parentPath = getExpectedFilePath(parent.fileName);
+      var childPath = getExpectedFilePath(
+        child.fileName,
+        subDirParts: ['sub_dir'],
+      );
+
+      var grandparentCompilationUnit = parseString(
+        content: codeMap[grandparentPath]!,
+      ).unit;
+      var parentCompilationUnit = parseString(
+        content: codeMap[parentPath]!,
+      ).unit;
+      var childCompilationUnit = parseString(content: codeMap[childPath]!).unit;
+
+      group('then ${grandparent.className}', () {
+        test('has a part directive with ${parent.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: '${parent.fileName}.dart',
+          );
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+
+        test('has a part directive with ${child.className} uri', () {
+          var partDirective = CompilationUnitHelpers.tryFindPartDirective(
+            grandparentCompilationUnit,
+            uri: 'sub_dir/${child.fileName}.dart',
+          );
+          expect(
+            partDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${parent.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            parentCompilationUnit,
+            uri: '${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+
+      group('then ${child.className}', () {
+        test('has a part-of directive with ${grandparent.className} uri', () {
+          var partOfDirective = CompilationUnitHelpers.tryFindPartOfDirective(
+            childCompilationUnit,
+            uri: '../${grandparent.fileName}.dart',
+          );
+          expect(
+            partOfDirective,
+            isNotNull,
+          );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a sealed parent exception when generating code',
+    () {
+      var parent = ExceptionClassDefinitionBuilder()
+          .withClassName('AppException')
+          .withFileName('app_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: [parent],
+        config: config,
+      );
+
+      var parentCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(parent.fileName)]!,
+      ).unit;
+
+      test('then the parent exception is declared sealed.', () {
+        var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          parentCompilationUnit,
+          name: parent.className,
+        );
+
+        expect(
+          parentClass!.toSource(),
+          contains('sealed class ${parent.className}'),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a model with a sealed exception as a field type when generating code',
+    () {
+      var sealedParent = ExceptionClassDefinitionBuilder()
+          .withClassName('SealedParentException')
+          .withFileName('sealed_parent_exception')
+          .withSimpleField('message', 'String')
+          .withIsSealed(true)
+          .build();
+
+      var sealedChild = ExceptionClassDefinitionBuilder()
+          .withClassName('SealedChildException')
+          .withFileName('sealed_child_exception')
+          .withSimpleField('code', 'int')
+          .withExtendsClass(sealedParent)
+          .build();
+
+      sealedParent.childClasses.add(ResolvedInheritanceDefinition(sealedChild));
+
+      var modelWithSealedField = ModelClassDefinitionBuilder()
+          .withClassName('ModelWithSealedField')
+          .withFileName('model_with_sealed_field')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('sealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParentException')
+                      .withNullable(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('nullableSealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParentException')
+                      .withNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var models = [
+        sealedParent,
+        sealedChild,
+        modelWithSealedField,
+      ];
+
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      final expectedFileName = getExpectedFilePath(
+        modelWithSealedField.fileName,
+      );
+
+      test('then model file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+
+      group('then ${modelWithSealedField.className}', () {
+        late var modelClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: modelWithSealedField.className,
+        );
+
+        test('compiles without errors', () {
+          expect(compilationUnit.declarations, isNotEmpty);
+        });
+
+        test('is defined', () {
+          expect(modelClass, isNotNull);
+        });
+
+        test('has a field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'sealedField',
+          );
+          expect(field, isNotNull);
+        });
+
+        test('has a nullable field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'nullableSealedField',
+          );
+          expect(field, isNotNull);
+        });
+      });
+    },
+  );
+}

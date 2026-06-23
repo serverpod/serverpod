@@ -13,9 +13,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:async' as _i3;
+import 'dart:io' as _i3;
+import 'dart:async' as _i4;
 import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
-    as _i4;
+    as _i5;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i6;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -90,6 +93,13 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// This property allows this tag to be overridden to something else. Defaults to `['integration']`.
 ///
 /// [experimentalFeatures] Optionally specify experimental features. See [Serverpod] for more information.
+///
+/// [serverDirectory] The server package directory `config/<runMode>.yaml`, `config/passwords.yaml`,
+/// and `migrations/<module>/...` are resolved against. Defaults to
+/// [Directory.current] at the time the test boots. Pass this when the test
+/// isolate's cwd is not the server package root (e.g. running tests from a
+/// workspace parent directory) so config and migrations are still loaded
+/// from the right place.
 @_i1.isTestGroup
 void withServerpod(
   String testGroupName,
@@ -101,6 +111,7 @@ void withServerpod(
   _i1.RollbackDatabase? rollbackDatabase,
   String? runMode,
   _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _i3.Directory? serverDirectory,
   _i2.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
@@ -117,6 +128,7 @@ void withServerpod(
       isDatabaseEnabled: true,
       serverpodLoggingMode: serverpodLoggingMode,
       testServerOutputMode: testServerOutputMode,
+      serverDirectory: serverDirectory,
       experimentalFeatures: experimentalFeatures,
       configOverride: configOverride,
       runtimeParametersBuilder: runtimeParametersBuilder,
@@ -130,6 +142,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final futureCalls = _FutureCalls();
+
   late final _TestToolsEndpoint testTools;
 }
 
@@ -147,6 +161,10 @@ class _InternalTestEndpoints extends TestEndpoints
   }
 }
 
+class _FutureCalls {
+  late final insertSimpleDataCall = _InsertSimpleDataCallFutureCall();
+}
+
 class _TestToolsEndpoint {
   _TestToolsEndpoint(
     this._endpointDispatch,
@@ -157,7 +175,7 @@ class _TestToolsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<void> createSimpleData(
+  _i4.Future<void> createSimpleData(
     _i1.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
@@ -180,7 +198,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -188,7 +206,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Future<List<_i4.SimpleData>> getAllSimpleData(
+  _i4.Future<List<_i5.SimpleData>> getAllSimpleData(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -210,7 +228,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i4.SimpleData>>);
+                as _i4.Future<List<_i5.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -218,7 +236,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Future<void> createSimpleDatasInsideTransactions(
+  _i4.Future<void> createSimpleDatasInsideTransactions(
     _i1.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
@@ -241,7 +259,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -249,7 +267,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Future<void> createSimpleDataAndThrowInsideTransaction(
+  _i4.Future<void> createSimpleDataAndThrowInsideTransaction(
     _i1.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
@@ -272,7 +290,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -280,7 +298,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i3.Future<void> createSimpleDatasInParallelTransactionCalls(
+  _i4.Future<void> createSimpleDatasInParallelTransactionCalls(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -302,11 +320,30 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<void>);
+                as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _InsertSimpleDataCallFutureCall {
+  Future<void> persistIncrementedSimpleData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i5.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i6.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
+          .invoke(
+            _localUniqueSession,
+            data,
+          );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }

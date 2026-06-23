@@ -380,16 +380,22 @@ class CourseRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> insert(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Course>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -407,21 +413,96 @@ class CourseRepository {
     );
   }
 
+  /// Upserts all [Course]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [Course]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<Course>> upsert(
+    _i1.DatabaseSession session,
+    List<Course> rows, {
+    required _i1.ColumnSelections<CourseTable> conflictColumns,
+    _i1.ColumnSelections<CourseTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<Course>(
+      rows,
+      conflictColumns: conflictColumns(Course.t),
+      updateColumns: updateColumns?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [Course] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [Course] will have its `id` field set.
+  Future<Course?> upsertRow(
+    _i1.DatabaseSession session,
+    Course row, {
+    required _i1.ColumnSelections<CourseTable> conflictColumns,
+    _i1.ColumnSelections<CourseTable>? updateColumns,
+    _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Course>(
+      row,
+      conflictColumns: conflictColumns(Course.t),
+      updateColumns: updateColumns?.call(Course.t),
+      updateWhere: updateWhere?.call(Course.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Course]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> update(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -458,6 +539,10 @@ class CourseRepository {
 
   /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
@@ -469,6 +554,7 @@ class CourseRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Course>(
       columnValues: columnValues(Course.t.updateTable),
@@ -480,6 +566,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -490,6 +577,10 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> delete(
     _i1.DatabaseSession session,
     List<Course> rows, {
@@ -498,6 +589,7 @@ class CourseRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Course>(
       rows,
@@ -506,6 +598,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -525,6 +618,10 @@ class CourseRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
@@ -533,6 +630,7 @@ class CourseRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Course>(
       where: where(Course.t),
@@ -541,6 +639,7 @@ class CourseRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

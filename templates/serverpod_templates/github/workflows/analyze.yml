@@ -13,13 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 3.10.3
+          flutter-version: '3.38.4'
 
       - name: Install dependencies
-        working-directory: projectname_server
-        run: dart pub get
+        run: flutter pub get
 
       - name: Analyze
         working-directory: projectname_server

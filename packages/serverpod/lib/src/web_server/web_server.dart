@@ -7,6 +7,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
+import 'package:serverpod/src/server/health/health_routes.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 
@@ -28,11 +29,11 @@ class WebServer {
 
   RelicApp? _appOrNull;
 
-  // The __dev/version endpoint returns the static change counter in dev mode.
-  // In production mode the handler returns 404, which tells the injected
-  // polling script to stop polling.
   RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
+    // Returns the static change counter in dev mode
     ..get('*/__dev/version', _devStaticChangeCount)
+    // Mirrors the probes [Server] exposes on the API/insights ports
+    ..injectAt('*/', HealthRoutes(serverpod))
     ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));

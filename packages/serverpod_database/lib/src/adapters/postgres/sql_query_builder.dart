@@ -6,6 +6,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
+import '../../util/column_alias_resolver.dart';
 
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
@@ -62,6 +63,7 @@ class SelectQueryBuilder {
 
     var select = _buildSelectStatement(
       selectColumns,
+      aliasResolver: ColumnAliasResolver.forColumns(selectColumns),
       countTableRelation: _countTableRelation,
     );
 
@@ -117,6 +119,7 @@ class SelectQueryBuilder {
         listQueryAdditions,
         limit: _limit,
         offset: _offset,
+        orderBy: _orderBy,
       );
     }
 
@@ -128,6 +131,7 @@ class SelectQueryBuilder {
     _ListQueryAdditions listQueryAdditions, {
     required int? limit,
     required int? offset,
+    List<Order>? orderBy,
   }) {
     var wrappedBaseQueryAlias = '_base_query_sorting_and_ordering';
     var partitionedQueryAlias = '_partitioned_list_by_parent_id';
@@ -136,8 +140,13 @@ class SelectQueryBuilder {
 
     String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
+    var windowOrderBy = _buildWindowOrderByClause(
+      orderBy,
+      wrappedBaseQueryAlias,
+    );
+
     query +=
-        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") AS row_number FROM $wrappedBaseQueryAlias)';
+        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName"$windowOrderBy) AS row_number FROM $wrappedBaseQueryAlias)';
 
     var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
 
@@ -145,6 +154,34 @@ class SelectQueryBuilder {
         ' SELECT * FROM $partitionedQueryAlias WHERE row_number $rowLimitClause';
 
     return query;
+  }
+
+  String _buildWindowOrderByClause(List<Order>? orderBy, String tableAlias) {
+    if (orderBy == null || orderBy.isEmpty) {
+      return '';
+    }
+
+    var orderClauses = orderBy
+        .where((order) => order.column is! ColumnCount)
+        .map((order) {
+          var column = order.column;
+          var alias = truncateIdentifier(
+            column.fieldQueryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          );
+          var clause = '$tableAlias."$alias"';
+          if (order.orderDescending) {
+            clause += ' DESC';
+          }
+          return clause;
+        })
+        .join(', ');
+
+    if (orderClauses.isEmpty) {
+      return '';
+    }
+
+    return ' ORDER BY $orderClauses';
   }
 
   String _buildMultiRowLimitClause(int? limit, int? offset) {
@@ -340,27 +377,133 @@ class _ListQueryAdditions {
   });
 }
 
-/// Builds a SQL query for an insert statement.
+/// Builds a SQL query for an INSERT statement, optionally with an
+/// `ON CONFLICT … DO UPDATE` (upsert) or `ON CONFLICT DO NOTHING` clause.
 /// This is typically only used internally by the serverpod framework.
 @internal
 class InsertQueryBuilder {
   final Table _table;
   final bool _ignoreConflicts;
+  final List<Column>? _conflictColumns;
+  final List<Column>? _updateColumns;
+  final Expression? _updateWhere;
+  final bool _noReturn;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
+  ///
+  /// - Plain insert: leave [ignoreConflicts] false and [conflictColumns] null.
+  /// - Insert ignoring conflicts: set [ignoreConflicts] to true.
+  /// - Upsert: provide [conflictColumns]; optionally narrow the update with
+  ///   [updateColumns] and/or filter with [updateWhere].
+  ///
+  /// [ignoreConflicts] and [conflictColumns] are mutually exclusive.
+  /// [updateColumns] and [updateWhere] only apply to upserts and require
+  /// [conflictColumns].
+  ///
+  /// When [noReturn] is true the built query omits the `RETURNING` clause, so
+  /// the database does not send the affected rows back to the client.
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
     bool ignoreConflicts = false,
+    List<Column>? conflictColumns,
+    List<Column>? updateColumns,
+    Expression? updateWhere,
+    bool noReturn = false,
   }) : _table = table,
-       _ignoreConflicts = ignoreConflicts {
+       _ignoreConflicts = ignoreConflicts,
+       _conflictColumns = conflictColumns,
+       _updateColumns = updateColumns,
+       _updateWhere = updateWhere,
+       _noReturn = noReturn {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
         'rows',
         'Cannot be empty',
       );
+    }
+
+    if (ignoreConflicts && conflictColumns != null) {
+      throw ArgumentError(
+        'Cannot use both ignoreConflicts and conflictColumns',
+      );
+    }
+
+    if (conflictColumns == null) {
+      if (updateColumns != null) {
+        throw ArgumentError.value(
+          updateColumns,
+          'updateColumns',
+          'Can only be used together with conflictColumns',
+        );
+      }
+      if (updateWhere != null) {
+        throw ArgumentError.value(
+          updateWhere,
+          'updateWhere',
+          'Can only be used together with conflictColumns',
+        );
+      }
+    }
+
+    if (conflictColumns != null) {
+      if (conflictColumns.isEmpty) {
+        throw ArgumentError.value(
+          conflictColumns,
+          'conflictColumns',
+          'Cannot be empty',
+        );
+      }
+
+      var tableColumnNames = table.columns.map((c) => c.columnName).toSet();
+      for (var col in conflictColumns) {
+        if (!tableColumnNames.contains(col.columnName)) {
+          throw ArgumentError.value(
+            conflictColumns,
+            'conflictColumns',
+            'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+          );
+        }
+      }
+
+      if (updateColumns != null) {
+        if (updateColumns.isEmpty) {
+          throw ArgumentError.value(
+            updateColumns,
+            'updateColumns',
+            'Cannot be empty',
+          );
+        }
+
+        var conflictColumnNames = conflictColumns
+            .map((c) => c.columnName)
+            .toSet();
+        for (var col in updateColumns) {
+          if (!tableColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+            );
+          }
+          if (col.columnName == 'id') {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'The "id" column cannot be used as an update column for upsert',
+            );
+          }
+          if (conflictColumnNames.contains(col.columnName)) {
+            throw ArgumentError.value(
+              updateColumns,
+              'updateColumns',
+              'Column "${col.columnName}" cannot be both a conflict column and an update column',
+            );
+          }
+        }
+      }
     }
 
     _rows = rows;
@@ -388,7 +531,8 @@ class InsertQueryBuilder {
           var values = selectedColumns
               .map((column) {
                 var unformattedValue = row[column.columnName];
-                return ValueEncoder.instance.convert(
+                return ValueEncoder.instance.encodeColumnValue(
+                  column,
                   unformattedValue,
                   hasDefaults: column.hasDefault,
                 );
@@ -398,12 +542,56 @@ class InsertQueryBuilder {
         })
         .join(', ');
 
-    var returning = buildReturningClause(_table);
-    var onConflict = _ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
+    var onConflict = _buildOnConflictClause(selectedColumns);
+    var returning = _noReturn
+        ? ''
+        : ' RETURNING ${buildReturningClause(_table)}';
 
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict$returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict$returning';
+  }
+
+  String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
+    if (_ignoreConflicts) {
+      return ' ON CONFLICT DO NOTHING';
+    }
+    if (_conflictColumns == null) {
+      return '';
+    }
+
+    final conflictColumnNames = _conflictColumns
+        .map((c) => '"${c.columnName}"')
+        .join(', ');
+
+    final conflictColumnNameSet = _conflictColumns
+        .map((c) => c.columnName)
+        .toSet();
+
+    final columnsToUpdate =
+        _updateColumns ??
+        selectedColumns.where(
+          (c) =>
+              c.columnName != 'id' &&
+              !conflictColumnNameSet.contains(c.columnName),
+        );
+
+    var setClause = columnsToUpdate
+        .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
+        .join(', ');
+
+    if (setClause.isEmpty) {
+      final noOpColumn = _conflictColumns.first.columnName;
+      setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
+    }
+
+    var onConflict =
+        ' ON CONFLICT ($conflictColumnNames) DO UPDATE SET $setClause';
+    if (_updateWhere != null) {
+      onConflict += ' WHERE $_updateWhere';
+    }
+
+    return onConflict;
   }
 
   /// Builds the insert SQL query.
@@ -411,6 +599,16 @@ class InsertQueryBuilder {
     // Can not be empty because the constructor checks for empty rows.
     var insertQueries = [true, false].map(_build).nonNulls;
     if (insertQueries.length == 1) return insertQueries.single;
+
+    // Without a RETURNING clause the inserts produce no rows to union, so the
+    // id-null insert is run as a data-modifying CTE (which Postgres still
+    // executes even when its output is not referenced) and the id-not-null
+    // insert is run as the primary statement.
+    if (_noReturn) {
+      return '''
+WITH insertWithIdNull AS (${insertQueries.first})
+${insertQueries.last}''';
+    }
 
     return '''
 WITH
@@ -526,7 +724,7 @@ class DeleteQueryBuilder {
     switch (returning) {
       case Returning.all:
         _returningStatement =
-            ' RETURNING ${_buildColumnAliases(_table.columns)}';
+            ' RETURNING ${_buildColumnAliases(_table.columns, ColumnAliasResolver.forQuery(_table, null))}';
         break;
       case Returning.id:
         _returningStatement = ' RETURNING "${_table.tableName}".id';
@@ -607,9 +805,10 @@ class DeleteQueryBuilder {
 
 String _buildSelectStatement(
   List<Column> selectColumns, {
+  required ColumnAliasResolver aliasResolver,
   TableRelation? countTableRelation,
 }) {
-  var selectStatements = _buildColumnAliases(selectColumns);
+  var selectStatements = _buildColumnAliases(selectColumns, aliasResolver);
 
   if (countTableRelation != null) {
     selectStatements +=
@@ -619,15 +818,12 @@ String _buildSelectStatement(
   return selectStatements;
 }
 
-String _buildColumnAliases(List<Column> columns) {
+String _buildColumnAliases(
+  List<Column> columns,
+  ColumnAliasResolver aliasResolver,
+) {
   return columns
-      .map(
-        (column) =>
-            '$column AS "${truncateIdentifier(
-              column.fieldQueryAlias,
-              DatabaseConstants.pgsqlMaxNameLimitation,
-            )}"',
-      )
+      .map((column) => '$column AS "${aliasResolver.resolve(column)}"')
       .join(', ');
 }
 
@@ -1367,9 +1563,29 @@ LinkedHashMap<String, String> _gatherIncludeJoins(
 
     for (var subTableRelation
         in tableRelation?.getRelations ?? <TableRelation>[]) {
-      joins[subTableRelation.relationQueryAlias] = _buildJoinStatement(
-        tableRelation: subTableRelation,
-      );
+      var alias = subTableRelation.relationQueryAlias;
+      var joinStatement = _buildJoinStatement(tableRelation: subTableRelation);
+
+      var existingJoin = joins[alias];
+      if (existingJoin != null && existingJoin != joinStatement) {
+        // Two different table relations resolved to the same join alias, which
+        // would silently drop one join (and corrupt included data). This can
+        // happen when relation names are long enough to be truncated to the
+        // same identifier. See https://github.com/serverpod/serverpod/issues/5287
+        throw StateError(
+          'Table alias collision in include query: two different relations '
+          'resolved to the same join alias "$alias". This is likely caused by '
+          'very long or similar relation names being truncated to the same '
+          'identifier.\n'
+          'Workaround: reduce the include graph for this query (e.g. drop or '
+          'split out the deepest/most redundant included relation), or shorten '
+          'the affected relation field names.\n'
+          'Please report this so it can be fixed: '
+          'https://github.com/serverpod/serverpod/issues/new/choose',
+        );
+      }
+
+      joins[alias] = joinStatement;
     }
   }
 

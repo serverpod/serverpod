@@ -33,6 +33,21 @@ class LibraryGenerator {
     required this.config,
   });
 
+  /// Whether this package supports delegating serialization to a host protocol.
+  ///
+  /// Will be `true` modules and shared packages.
+  bool get _supportsHostProtocols =>
+      config.type == PackageType.module || sharedPackage;
+
+  /// Whether the host protocols should be registered for this package.
+  ///
+  /// Will be `true` for projects that have modules or shared models.
+  bool get _shouldRegisterHostProtocols =>
+      !sharedPackage &&
+      config.type != PackageType.module &&
+      (config.modules.isNotEmpty ||
+          config.sharedModelsSourcePathsParts.isNotEmpty);
+
   /// Generate the protocol library.
   Library generateProtocol() {
     var library = LibraryBuilder();
@@ -52,7 +67,7 @@ class LibraryGenerator {
             .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! ModelClassDefinition) return true;
+      if (model is! ClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -62,7 +77,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((model) => !(model is ModelClassDefinition && model.isSealed))
+        .where((model) => !(model is ClassDefinition && model.isSealed))
         .toList();
 
     var hasDatabaseTablesForCurrentSide = allModels.any(
@@ -114,7 +129,9 @@ class LibraryGenerator {
           ..static = true
           ..type = refer('Protocol')
           ..modifier = FieldModifier.final$
-          ..assignment = const Code('Protocol._()'),
+          ..assignment = _shouldRegisterHostProtocols
+              ? const Code('Protocol._().._registerHostProtocols()')
+              : const Code('Protocol._()'),
       ),
       if (serverCode || hasDatabaseTablesForCurrentSide)
         Field(
@@ -162,14 +179,39 @@ class LibraryGenerator {
                                 )
                                 .conditional(
                                   refer(
-                                    'Protocol',
-                                    module.dartImportUrl(serverCode),
-                                  ).property('targetTableDefinitions'),
+                                        'Protocol',
+                                        module.dartImportUrl(serverCode),
+                                      )
+                                      .call([])
+                                      .asA(
+                                        refer(
+                                          'DatabaseSerializationManager',
+                                          serverpodDatabaseRuntimeUrl(
+                                            serverCode,
+                                          ),
+                                        ),
+                                      )
+                                      .property('getTargetTableDefinitions')
+                                      .call([]),
                                   literalList([]),
                                 )
                                 .spread,
                         ],
                 ),
+        ),
+      if (_supportsHostProtocols)
+        Field(
+          (f) => f
+            ..name = '_hostProtocols'
+            ..type = TypeReference(
+              (t) => t
+                ..symbol = 'Set'
+                ..types.add(
+                  refer('SerializationManager', serverpodUrl(serverCode)),
+                ),
+            )
+            ..modifier = FieldModifier.final$
+            ..assignment = literalSet({}).code,
         ),
     ]);
 
@@ -180,6 +222,7 @@ class LibraryGenerator {
         .distinct();
 
     protocol.methods.addAll([
+      if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
         (m) => m
           ..static = true
@@ -402,16 +445,6 @@ class LibraryGenerator {
                 ),
               const Code('}'),
             ],
-            if (config.name != 'serverpod' && serverCode)
-              _buildGetClassNameForObjectDelegation(
-                serverpodProtocolUrl(serverCode),
-                'serverpod',
-              ),
-            for (var module in config.modules)
-              _buildGetClassNameForObjectDelegation(
-                module.dartImportUrl(serverCode),
-                module.name,
-              ),
             for (var containerType in nonModelStreamTypes)
               Block.of([
                 const Code('if(data is '),
@@ -422,6 +455,26 @@ class LibraryGenerator {
                 ),
                 const Code('}'),
               ]),
+            if (config.type != PackageType.module)
+              for (var module in config.modules)
+                _buildGetClassNameForObjectDelegation(
+                  module.dartImportUrl(serverCode),
+                  module.name,
+                ),
+            if (!sharedPackage)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                _buildGetClassNameForObjectDelegation(
+                  packageName == 'serverpod_database' &&
+                          config.name != 'serverpod'
+                      ? serverpodDatabaseUrl(serverCode)
+                      : 'package:$packageName/$packageName.dart',
+                  packageName,
+                ),
+            if (config.name != 'serverpod' && serverCode)
+              _buildGetClassNameForObjectDelegation(
+                serverpodProtocolUrl(serverCode),
+                'serverpod',
+              ),
             const Code('return null;'),
           ]),
       ),
@@ -455,15 +508,25 @@ class LibraryGenerator {
                     'if(dataClassName == \'${classInfo.className}\'){'
                     'return deserialize<${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}>(data[\'data\']);}',
               ),
+            if (config.type != PackageType.module)
+              for (var module in config.modules)
+                _buildDeserializeByClassNameDelegation(
+                  module.dartImportUrl(serverCode),
+                  module.name,
+                ),
+            if (!sharedPackage)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                _buildDeserializeByClassNameDelegation(
+                  packageName == 'serverpod_database' &&
+                          config.name != 'serverpod'
+                      ? serverpodDatabaseUrl(serverCode)
+                      : 'package:$packageName/$packageName.dart',
+                  packageName,
+                ),
             if (config.name != 'serverpod' && serverCode)
               _buildDeserializeByClassNameDelegation(
                 serverpodProtocolUrl(serverCode),
                 'serverpod',
-              ),
-            for (var module in config.modules)
-              _buildDeserializeByClassNameDelegation(
-                module.dartImportUrl(serverCode),
-                module.name,
               ),
             for (final containerType in nonModelStreamTypes) ...[
               Code(
@@ -477,6 +540,8 @@ class LibraryGenerator {
             const Code('return super.deserializeByClassName(data);'),
           ]),
       ),
+      if (_supportsHostProtocols) ..._buildDynamicFieldHostMethods(),
+      if (_shouldRegisterHostProtocols) _buildRegisterHostProtocolsMethod(),
       if (serverCode || hasDatabaseTablesForCurrentSide)
         Method(
           (m) => m
@@ -514,9 +579,22 @@ class LibraryGenerator {
               if (!serverCode) ...[
                 for (var module in config.modules)
                   Code.scope(
-                    (a) =>
-                        '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}() is ${a(refer('DatabaseSerializationManager', serverpodDatabaseRuntimeUrl(serverCode)))} ? ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t) : null;'
-                        'if(table!=null) {return table;}}',
+                    (a) {
+                      final protocolRef = a(
+                        refer('Protocol', module.dartImportUrl(serverCode)),
+                      );
+                      final databaseManagerRef = a(
+                        refer(
+                          'DatabaseSerializationManager',
+                          serverpodDatabaseRuntimeUrl(serverCode),
+                        ),
+                      );
+                      return '{var protocol = $protocolRef();'
+                          'var table = protocol is $databaseManagerRef '
+                          '? (protocol as $databaseManagerRef).getTableForType(t) '
+                          ': null;'
+                          'if(table!=null) {return table;}}';
+                    },
                   ),
               ],
               if (allModels.any(
@@ -551,14 +629,13 @@ class LibraryGenerator {
             )
             ..body = refer('targetTableDefinitions').code,
         ),
-      if (serverCode || hasDatabaseTablesForCurrentSide)
-        Method(
-          (m) => m
-            ..name = 'getModuleName'
-            ..annotations.add(refer('override'))
-            ..returns = TypeReference((t) => t..symbol = 'String')
-            ..body = literalString(config.name).code,
-        ),
+      Method(
+        (m) => m
+          ..name = 'getModuleName'
+          ..annotations.add(refer('override'))
+          ..returns = TypeReference((t) => t..symbol = 'String')
+          ..body = literalString(config.name).code,
+      ),
       if (protocolDefinition.usesRecordsInStreams)
         Method(
           (m) => m
@@ -614,7 +691,9 @@ class LibraryGenerator {
         (a) =>
             'className = ${a(refer('Protocol', protocolImportPath))}().getClassNameForObject(data);',
       ),
-      Code('if(className != null){return \'$projectName.\$className\';}'),
+      Code(
+        'if(className != null){return className.contains(\'.\') ? className : \'$projectName.\$className\';}',
+      ),
     ]);
   }
 
@@ -633,6 +712,153 @@ class LibraryGenerator {
       ),
       const Code('}'),
     ]);
+  }
+
+  List<Method> _buildDynamicFieldHostMethods() {
+    return [
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..name = 'dynamicFieldToJson'
+          ..returns = refer('Object?')
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'object'
+                ..type = refer('Object?'),
+            ),
+          )
+          ..optionalParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'forProtocol'
+                ..named = true
+                ..type = refer('bool')
+                ..defaultTo = literalFalse.code,
+            ),
+          )
+          ..body = Code.scope(
+            (a) {
+              final serializationManager = a(
+                refer('SerializationManager', serverpodUrl(serverCode)),
+              );
+              return '''
+if ((object is List || object is Set || object is Map) ||
+    getClassNameForObject(object) != null) {
+  return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+}
+for (final protocol in _hostProtocols) {
+  final className = protocol.getClassNameForObject(object);
+  if (className == null) continue;
+  final host = protocol.getModuleName();
+  final wrapped = {
+    'className': className.contains('.') ? className : '\$host.\$className',
+    'data': object,
+  };
+  return forProtocol
+    ? $serializationManager.toEncodableForProtocol(wrapped)
+    : $serializationManager.toEncodable(wrapped);
+}
+return super.dynamicFieldToJson(object, forProtocol: forProtocol);
+''';
+            },
+          ),
+      ),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..name = 'deserializeDynamicFieldValue'
+          ..returns = refer('dynamic')
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'value'
+                ..type = refer('Object?'),
+            ),
+          )
+          ..body = const Code('''
+if (value == null) return null;
+if (value is! Map<String, dynamic> || value['className'] is! String) {
+  throw FormatException(
+    'Dynamic fields are encoded as a Map with className and data, but got '
+    '\${value.runtimeType} instead.',
+  );
+}
+final className = value['className'] as String;
+for (final protocol in _hostProtocols) {
+  final host = protocol.getModuleName();
+  final hostPrefix = '\$host.';
+  if (className.startsWith(hostPrefix)) {
+    final strippedClassName = className.substring(hostPrefix.length);
+    if (strippedClassName.contains('.')) {
+      throw FormatException(
+        'Dynamic field className must not use multiple prefixes: \$className',
+      );
+    }
+    final hostData = Map<String, dynamic>.from(value);
+    hostData['className'] = strippedClassName;
+    return protocol.deserializeByClassName(hostData);
+  }
+}
+if (className.contains('.')) {
+  for (final protocol in _hostProtocols) {
+    try {
+      return protocol.deserializeByClassName(value);
+    } on FormatException catch (_) {}
+  }
+}
+return deserializeByClassName(value);
+'''),
+      ),
+    ];
+  }
+
+  List<Method> _buildModuleHostProtocolMethods() {
+    return [
+      Method(
+        (m) => m
+          ..returns = refer('void')
+          ..name = 'registerHostProtocol'
+          ..requiredParameters.addAll([
+            Parameter(
+              (p) => p
+                ..name = 'projectName'
+                ..type = refer('String'),
+            ),
+            Parameter(
+              (p) => p
+                ..name = 'protocol'
+                ..type = refer(
+                  'SerializationManager',
+                  serverpodUrl(serverCode),
+                ),
+            ),
+          ])
+          ..body = const Code('_hostProtocols.add(protocol);'),
+      ),
+    ];
+  }
+
+  Method _buildRegisterHostProtocolsMethod() {
+    return Method(
+      (m) => m
+        ..name = '_registerHostProtocols'
+        ..returns = refer('void')
+        ..body = Block.of([
+          for (var module in config.modules)
+            Code.scope(
+              (a) =>
+                  '${a(refer('Protocol', module.dartImportUrl(serverCode)))}()'
+                  '.registerHostProtocol(\'${config.name}\', this);',
+            ),
+          for (var packageName in config.sharedModelsSourcePathsParts.keys)
+            Code.scope(
+              (a) =>
+                  '${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}()'
+                  '.registerHostProtocol(\'${config.name}\', this);',
+            ),
+        ]),
+    );
   }
 
   /// Generates the EndpointDispatch for the server side.
@@ -1087,6 +1313,17 @@ class LibraryGenerator {
                             ..isNullable = true,
                         ),
                     ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'httpClientOverride'
+                        ..named = true
+                        ..type = TypeReference(
+                          (t) => t
+                            ..symbol = 'Client'
+                            ..url = 'package:http/http.dart'
+                            ..isNullable = true,
+                        ),
+                    ),
                   ])
                   ..initializers.add(
                     refer('super')
@@ -1106,6 +1343,7 @@ class LibraryGenerator {
                             'disconnectStreamsOnLostInternetConnection': refer(
                               'disconnectStreamsOnLostInternetConnection',
                             ),
+                            'httpClientOverride': refer('httpClientOverride'),
                           },
                         )
                         .code,
@@ -1190,6 +1428,20 @@ class LibraryGenerator {
               if (hasClientDatabaseTables && config.type != PackageType.module)
                 Method(
                   (m) => m
+                    ..docs.add('''
+  /// Creates a new client-side database session for the given path.
+  ///
+  /// The [path] is the file path to the SQLite database file. Since SQLite uses
+  /// WAL mode, note that `[path]-shm` and `[path]-wal` files might also exist
+  /// transiently for the database while the session is open.
+  ///
+  /// If [runMigrations] is true, pending migrations will be applied when
+  /// opening the database. Be careful when setting this to false, as it might
+  /// lead to inconsistencies between the models and the database.
+  ///
+  /// If [isDebugMode] is true, the database integrity will be verified after
+  /// the migrations are applied to provide feedback of possible issues. On a
+  /// Flutter application, this should be set to [kDebugMode].''')
                     ..name = 'createSession'
                     ..modifier = MethodModifier.async
                     ..returns = TypeReference(
@@ -1210,7 +1462,14 @@ class LibraryGenerator {
                           ..type = refer('String'),
                       ),
                     )
-                    ..optionalParameters.add(
+                    ..optionalParameters.addAll([
+                      Parameter(
+                        (p) => p
+                          ..name = 'runMigrations'
+                          ..named = true
+                          ..type = refer('bool')
+                          ..defaultTo = literalTrue.code,
+                      ),
                       Parameter(
                         (p) => p
                           ..name = 'isDebugMode'
@@ -1218,7 +1477,7 @@ class LibraryGenerator {
                           ..type = refer('bool')
                           ..defaultTo = literalFalse.code,
                       ),
-                    )
+                    ])
                     ..body =
                         refer(
                               'ClientDatabaseSession',
@@ -1234,6 +1493,7 @@ class LibraryGenerator {
                                 'clientMigrations': refer(
                                   'MigrationRegistry',
                                 ).property('migrations'),
+                                'runMigrations': refer('runMigrations'),
                                 'isDebugMode': refer('isDebugMode'),
                               },
                             )
@@ -2295,9 +2555,9 @@ extension on DatabaseDefinition {
   }
 }
 
-extension on ModelClassDefinition {
+extension on ClassDefinition {
   /// Get all child classes and their children, ensuring children before parents.
-  List<ModelClassDefinition> get sortedChildClasses => childClasses
+  List<ClassDefinition> get sortedChildClasses => childClasses
       .whereType<ResolvedInheritanceDefinition>()
       .map(
         (e) => [
@@ -2315,7 +2575,7 @@ extension on List<SerializableModelDefinition> {
     var sorted = <SerializableModelDefinition>[];
 
     for (var model in this) {
-      if (model is ModelClassDefinition) {
+      if (model is ClassDefinition) {
         for (var subClass in model.sortedChildClasses) {
           if (contains(subClass) && !sorted.contains(subClass)) {
             sorted.add(subClass);

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Runs the serverpod_test_module_server integration tests against an
+# embedded PostgreSQL postmaster (no Docker required).
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_module_integration_embedded"
+    exit 1
+fi
+
+set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+
+REPO_ROOT="$(pwd)"
+
+cd "tests/serverpod_test_module/serverpod_test_module_server"
+
+dart test -t integration --concurrency=1 --reporter=failures-only
+
+# Verify that the database data path exists
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+# Remove the database data path
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+cd "$REPO_ROOT"
+
