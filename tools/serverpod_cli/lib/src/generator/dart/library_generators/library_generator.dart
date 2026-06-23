@@ -179,9 +179,20 @@ class LibraryGenerator {
                                 )
                                 .conditional(
                                   refer(
-                                    'Protocol',
-                                    module.dartImportUrl(serverCode),
-                                  ).property('targetTableDefinitions'),
+                                        'Protocol',
+                                        module.dartImportUrl(serverCode),
+                                      )
+                                      .call([])
+                                      .asA(
+                                        refer(
+                                          'DatabaseSerializationManager',
+                                          serverpodDatabaseRuntimeUrl(
+                                            serverCode,
+                                          ),
+                                        ),
+                                      )
+                                      .property('getTargetTableDefinitions')
+                                      .call([]),
                                   literalList([]),
                                 )
                                 .spread,
@@ -568,9 +579,22 @@ class LibraryGenerator {
               if (!serverCode) ...[
                 for (var module in config.modules)
                   Code.scope(
-                    (a) =>
-                        '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}() is ${a(refer('DatabaseSerializationManager', serverpodDatabaseRuntimeUrl(serverCode)))} ? ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t) : null;'
-                        'if(table!=null) {return table;}}',
+                    (a) {
+                      final protocolRef = a(
+                        refer('Protocol', module.dartImportUrl(serverCode)),
+                      );
+                      final databaseManagerRef = a(
+                        refer(
+                          'DatabaseSerializationManager',
+                          serverpodDatabaseRuntimeUrl(serverCode),
+                        ),
+                      );
+                      return '{var protocol = $protocolRef();'
+                          'var table = protocol is $databaseManagerRef '
+                          '? (protocol as $databaseManagerRef).getTableForType(t) '
+                          ': null;'
+                          'if(table!=null) {return table;}}';
+                    },
                   ),
               ],
               if (allModels.any(
