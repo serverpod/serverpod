@@ -18,7 +18,7 @@ void main() {
 
   group('Given a GoogleSignInNativeButton with no textStyle', () {
     testWidgets(
-      'when built then it renders the default label',
+      'when built then it renders the default label without forcing a font family',
       (tester) async {
         await tester.pumpWidget(
           const _Host(
@@ -31,6 +31,8 @@ void main() {
         );
 
         expect(find.text('Continue with Google'), findsOneWidget);
+        // No hardcoded font family, so the label inherits the app theme font.
+        expect(labelOf(tester).style?.fontFamily, isNull);
       },
     );
   });
@@ -52,8 +54,8 @@ void main() {
 
         final style = labelOf(tester).style;
         expect(style?.fontWeight, FontWeight.bold);
-        // The default Roboto size is preserved since textStyle did not set one.
-        expect(style?.fontSize, 14);
+        // The default large size (16) is preserved since textStyle set none.
+        expect(style?.fontSize, 16);
       },
     );
   });

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../localization/sign_in_localization_provider.dart';
 import '../common/button.dart';
@@ -184,9 +183,15 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         getButtonText?.call(isLoading: isLoading) ??
             texts.signInButton ??
             _getButtonText(),
-        style: GoogleFonts.roboto(
-          fontSize: 14,
-          letterSpacing: 0.7,
+        // No font family is set, so the label inherits the app's theme font,
+        // matching the other sign-in buttons. The shared textStyle is merged on
+        // top so it can still override the font.
+        style: TextStyle(
+          fontSize: switch (size) {
+            GSIButtonSize.large => 16.0,
+            GSIButtonSize.medium => 14.0,
+            GSIButtonSize.small => 12.0,
+          },
         ).merge(textStyle),
       ),
     );
