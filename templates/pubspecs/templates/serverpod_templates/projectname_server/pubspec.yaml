@@ -10,6 +10,9 @@ environment:
 
 dependencies:
   serverpod: SERVERPOD_VERSION
+  # {{#auth}}
+  serverpod_auth_idp_server: SERVERPOD_VERSION
+  # {{/auth}}
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'

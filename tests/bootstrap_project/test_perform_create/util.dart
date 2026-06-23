@@ -28,6 +28,13 @@ class TempProject {
 
   /// Absolute path to the generated server package.
   String get serverDir => p.join(workingDir.path, createServerFolderPath(name));
+
+  /// Absolute path to the generated flutter package.
+  String get flutterDir =>
+      p.join(workingDir.path, createFlutterFolderPath(name));
+
+  /// Absolute path to the generated client package.
+  String get clientDir => p.join(workingDir.path, createClientFolderPath(name));
 }
 
 /// Generate a Serverpod project for [context] via [performCreate].

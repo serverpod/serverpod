@@ -33,6 +33,9 @@ dependencies:
   projectname_client:
     path: ../projectname_client
   serverpod_flutter: 3.5.0-beta.10
+  # {{#auth}}
+  serverpod_auth_idp_flutter: 3.5.0-beta.10
+  # {{/auth}}
 
 dev_dependencies:
   # Used for agents to drive the app through the Dart MCP
@@ -42,8 +45,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+# {{#auth}}
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
+# {{/auth}}
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

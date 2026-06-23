@@ -8,3 +8,6 @@ environment:
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION
+  # {{#auth}}
+  serverpod_auth_idp_client: SERVERPOD_VERSION
+  # {{/auth}}
