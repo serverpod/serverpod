@@ -671,13 +671,19 @@ void main() async {
           );
         });
 
-        test('then the server pubspec does not contain auth dependencies', () {
-          final pubspec = File(
-            path.join(tempPath, serverDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
-        });
+        test(
+          'then the server pubspec does not contain auth dependencies',
+          () {
+            final pubspec = File(
+              path.join(tempPath, serverDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_server')));
+          },
+          skip:
+              'serverpod_auth_idp_server dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
         test('then the server server.dart does not contain auth imports', () {
           final serverFile = File(
@@ -687,15 +693,21 @@ void main() async {
           expect(content, isNot(contains('serverpod_auth_idp_server')));
         });
 
-        test('then the flutter pubspec does not contain auth dependencies', () {
-          final (:serverDir, :flutterDir, :clientDir) =
-              createProjectFolderPaths(projectName);
-          final pubspec = File(
-            path.join(tempPath, flutterDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
-        });
+        test(
+          'then the flutter pubspec does not contain auth dependencies',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          },
+          skip:
+              'serverpod_auth_idp_flutter dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
         test(
           'then the flutter pubspec does not contain override for flutter secure storage',
