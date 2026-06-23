@@ -516,20 +516,30 @@ Future<CreateResult> _performUpgrade({
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      writtenPaths.addAll(
-        await _copyServerUpgrade(
+      writtenPaths.addAll([
+        ...await _copyServerUpgrade(
           serverpodDir,
           name: name,
           isUpgrade: true,
           context: context,
           customServerpodPath: productionMode ? null : serverpodHome,
         ),
-      );
+        ...await _copyFlutterUpgrade(
+          serverpodDir,
+          name: name,
+          context: context,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        ),
+      ]);
       return true;
     },
   );
 
   success &= await _renderTemplates(writtenPaths, context);
+
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDir.projectDir);
+  });
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -537,7 +547,7 @@ Future<CreateResult> _performUpgrade({
     interactive: interactive,
   );
 
-  if (createDefaultMigration) {
+  if (createDefaultMigration && context.database) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDir.serverDir,
@@ -942,13 +952,6 @@ Future<List<String>> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [
-      if (isUpgrade) ...[
-        'server.dart',
-        'email_idp_endpoint.dart',
-        'jwt_refresh_endpoint.dart',
-      ],
-    ],
   );
   final writtenPaths = [...copier.copyFiles()];
 
@@ -1008,7 +1011,7 @@ Future<List<String>> _copyServerUpgrade(
     writtenPaths.addAll(copier.copyFiles());
   }
 
-  if (!isUpgrade && context.auth) {
+  if (context.auth) {
     log.debug(
       'Adding auth dependencies to server pubspec',
       newParagraph: true,
