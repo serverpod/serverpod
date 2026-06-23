@@ -189,8 +189,7 @@ abstract class EndpointMethodAnalyzer {
       TypeValidationOptions(
         extraClasses: extraClasses,
         models: models,
-        allowRecordType: true,
-        allowSerializableDartType: true,
+        allowSerializableGenerics: true,
         allowStreamType: true,
       ),
     )) {

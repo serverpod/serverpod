@@ -1445,7 +1445,6 @@ class Restrictions {
         extraClasses: config.extraClasses,
         modelTypeValidator: _isModelType,
         allowSerializableDartType: true,
-        allowRecordType: true,
       ),
     )) {
       var typeName = fieldType.className;

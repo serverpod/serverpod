@@ -124,7 +124,6 @@ abstract class FutureCallParameterAnalyzer {
       TypeDefinition.fromDartType(parameter.type),
       TypeValidationOptions(
         models: models,
-        allowRecordType: true,
         allowSerializableGenerics: true,
         allowSerializableModelBaseType: true,
       ),

@@ -14,7 +14,7 @@ class TypeValidators {
         isModelType(type, options) ||
         (options.modelTypeValidator?.call(type) ?? false) ||
         isCustomType(type, options) ||
-        (options.allowRecordType && isRecordType(type, options)) ||
+        isRecordType(type, options) ||
         (options.allowSerializableGenerics &&
             isSerializableGeneric(type, options));
   }
@@ -76,13 +76,15 @@ class TypeValidationOptions {
   /// Custom validator function for model types.
   final bool Function(TypeDefinition type)? modelTypeValidator;
 
-  /// Whether record types are allowed.
-  final bool allowRecordType;
-
-  /// Whether serializable Dart types are allowed.
+  /// Whether serializable Dart types are allowed without validating their
+  /// generic arguments (e.g. `List<Foo>` is accepted regardless of `Foo`).
+  /// Prefer [allowSerializableGenerics] unless the generic arguments are
+  /// validated separately.
   final bool allowSerializableDartType;
 
-  /// Whether serializable generic types are allowed.
+  /// Whether serializable Dart types are allowed, validating each generic
+  /// argument recursively (e.g. `List<Foo>` is only accepted when `Foo` is
+  /// itself a valid type).
   final bool allowSerializableGenerics;
 
   /// Whether Stream types are allowed.
@@ -95,7 +97,6 @@ class TypeValidationOptions {
     this.models,
     this.extraClasses,
     this.modelTypeValidator,
-    this.allowRecordType = false,
     this.allowSerializableDartType = false,
     this.allowSerializableGenerics = false,
     this.allowStreamType = false,
