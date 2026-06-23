@@ -41,6 +41,9 @@ enum FacebookButtonShape {
   /// The rectangular-shaped button.
   rectangular,
 
+  /// The button with a moderate corner radius.
+  rounded,
+
   /// The pill-shaped button (StadiumBorder).
   pill,
 }
@@ -109,6 +112,7 @@ class FacebookSignInStyle {
       size: Size(width, height),
       borderRadius: switch (shape) {
         FacebookButtonShape.rectangular => BorderRadius.circular(4),
+        FacebookButtonShape.rounded => BorderRadius.circular(8),
         FacebookButtonShape.pill => BorderRadius.circular(height / 2),
       },
       backgroundColor: backgroundColor,

@@ -253,6 +253,14 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
     final minimumWidth = widget.minimumWidth ?? shared.minimumWidth ?? 240;
     final textStyle = widget.textStyle ?? shared.textStyle;
 
+    // The web GSIButtonShape has no rounded option, so the native Flutter button
+    // gets an explicit radius for the shared rounded shape. The web iframe
+    // keeps its pill fallback (see _toGoogleShape).
+    final borderRadius =
+        widget.shape == null && shared.shape == SignInButtonShape.rounded
+        ? BorderRadius.circular(8)
+        : null;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -272,6 +280,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             logoAlignment: logoAlignment,
             minimumWidth: minimumWidth,
             textStyle: textStyle,
+            borderRadius: borderRadius,
             getButtonText: widget.getButtonText,
             buttonWrapper: widget.buttonWrapper,
           )
@@ -318,7 +327,8 @@ GSIButtonSize? _toGoogleSize(SignInButtonSize? size) => switch (size) {
   SignInButtonSize.small => GSIButtonSize.medium,
 };
 
-// Google has no rounded shape; it falls back to pill.
+// The web GSIButtonShape has no rounded option, so rounded maps to pill here;
+// the native button applies the rounded radius via a borderRadius override.
 GSIButtonShape? _toGoogleShape(SignInButtonShape? shape) => switch (shape) {
   null => null,
   SignInButtonShape.rectangular => GSIButtonShape.rectangular,

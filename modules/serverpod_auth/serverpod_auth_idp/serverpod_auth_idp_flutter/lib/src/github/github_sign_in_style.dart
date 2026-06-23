@@ -115,7 +115,7 @@ class GitHubSignInStyle {
     };
 
     final borderRadius = switch (shape) {
-      GitHubButtonShape.rectangular => BorderRadius.zero,
+      GitHubButtonShape.rectangular => BorderRadius.circular(4),
       GitHubButtonShape.pill => BorderRadius.circular(buttonSize.height / 2),
       GitHubButtonShape.rounded => BorderRadius.circular(8),
     };

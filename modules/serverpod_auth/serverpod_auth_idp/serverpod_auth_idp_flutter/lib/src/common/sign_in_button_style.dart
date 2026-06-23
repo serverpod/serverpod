@@ -12,7 +12,7 @@ enum SignInButtonSize {
   small,
 }
 
-/// Sign-in button shape. Providers without [rounded] fall back to [pill].
+/// Sign-in button shape.
 enum SignInButtonShape {
   /// Sharp corners.
   rectangular,

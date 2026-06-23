@@ -48,11 +48,16 @@ class GoogleSignInStyle {
   ///
   /// Values are translated from the enum values to actual style properties
   /// using the Google Sign-In documentation as reference.
+  ///
+  /// [borderRadius] overrides the shape-derived radius when provided. The web
+  /// [GSIButtonShape] only exposes rectangular and pill, so the Flutter button
+  /// uses this to support additional shapes (e.g. rounded).
   factory GoogleSignInStyle.fromConfiguration({
     required GSIButtonTheme theme,
     required GSIButtonShape shape,
     required GSIButtonSize size,
     required double width,
+    BorderRadius? borderRadius,
   }) {
     final height = switch (size) {
       GSIButtonSize.large => 40.0,
@@ -72,10 +77,12 @@ class GoogleSignInStyle {
         GSIButtonTheme.filledBlue => const Color(0xFF1A73E8),
         GSIButtonTheme.filledBlack => Colors.black,
       },
-      borderRadius: switch (shape) {
-        GSIButtonShape.rectangular => BorderRadius.circular(4),
-        GSIButtonShape.pill => BorderRadius.circular(height / 2),
-      },
+      borderRadius:
+          borderRadius ??
+          switch (shape) {
+            GSIButtonShape.rectangular => BorderRadius.circular(4),
+            GSIButtonShape.pill => BorderRadius.circular(height / 2),
+          },
     );
   }
 }

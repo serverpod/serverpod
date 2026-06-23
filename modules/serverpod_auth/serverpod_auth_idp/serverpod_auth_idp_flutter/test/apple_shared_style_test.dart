@@ -69,7 +69,7 @@ void main() {
     );
 
     testWidgets(
-      'when the shared style sets a pill shape then the button border radius follows it',
+      'when the shared style sets a rectangular shape then the button border radius follows it',
       (tester) async {
         await tester.pumpWidget(
           const _Host(
@@ -87,6 +87,28 @@ void main() {
         expect(
           appleButtonOf(tester).borderRadius,
           BorderRadius.circular(4),
+        );
+      },
+    );
+
+    testWidgets(
+      'when the shared style sets a rounded shape then the button uses the shared 8px radius',
+      (tester) async {
+        await tester.pumpWidget(
+          const _Host(
+            style: SignInButtonStyle(shape: SignInButtonShape.rounded),
+            child: AppleSignInButton(
+              onPressed: null,
+              isLoading: false,
+              isDisabled: false,
+              size: AppleButtonSize.large,
+            ),
+          ),
+        );
+
+        expect(
+          appleButtonOf(tester).borderRadius,
+          BorderRadius.circular(8),
         );
       },
     );

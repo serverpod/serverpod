@@ -167,10 +167,11 @@ class FacebookSignInButton extends StatelessWidget {
       );
     }
 
+    // Matches the 20/16/12 logo scale used by the other sign-in buttons.
     final logoSize = switch (size) {
-      FacebookButtonSize.small => 15.0,
-      FacebookButtonSize.medium => 17.0,
-      FacebookButtonSize.large => 21.0,
+      FacebookButtonSize.small => 12.0,
+      FacebookButtonSize.medium => 16.0,
+      FacebookButtonSize.large => 20.0,
     };
 
     final logo = SizedBox.square(
@@ -197,7 +198,7 @@ class FacebookSignInButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           logo,
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           textWidget,
         ],
       );
@@ -248,12 +249,11 @@ FacebookButtonSize? _toFacebookSize(SignInButtonSize? size) => switch (size) {
   SignInButtonSize.small => FacebookButtonSize.small,
 };
 
-// Facebook has no rounded shape; it falls back to pill.
 FacebookButtonShape? _toFacebookShape(SignInButtonShape? shape) =>
     switch (shape) {
       null => null,
       SignInButtonShape.rectangular => FacebookButtonShape.rectangular,
-      SignInButtonShape.rounded => FacebookButtonShape.pill,
+      SignInButtonShape.rounded => FacebookButtonShape.rounded,
       SignInButtonShape.pill => FacebookButtonShape.pill,
     };
 

@@ -25,9 +25,15 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
 
   /// The text style applied to the button label.
   ///
-  /// Merged over the default Roboto style, so it can override the font while
-  /// keeping Google's defaults for any unset properties.
+  /// Merged over the default label style, so it can override the font while
+  /// keeping the defaults for any unset properties.
   final TextStyle? textStyle;
+
+  /// Overrides the shape-derived border radius when provided.
+  ///
+  /// Used to render shapes the web [GSIButtonShape] cannot express (e.g.
+  /// rounded), since the native button is drawn in Flutter.
+  final BorderRadius? borderRadius;
 
   /// Creates a Google Sign-In button for native platforms.
   const GoogleSignInNativeButton({
@@ -43,6 +49,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     super.minimumWidth,
     this.getButtonText,
     this.textStyle,
+    this.borderRadius,
     super.buttonWrapper,
     super.key,
   });
@@ -138,6 +145,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       shape: shape,
       size: size,
       width: minimumWidth,
+      borderRadius: borderRadius,
     );
 
     if (type == GSIButtonType.icon) {

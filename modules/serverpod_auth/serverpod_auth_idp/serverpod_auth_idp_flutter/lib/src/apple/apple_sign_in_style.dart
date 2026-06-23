@@ -36,6 +36,9 @@ enum AppleButtonShape {
   /// The rectangular-shaped button.
   rectangular,
 
+  /// The button with a moderate corner radius.
+  rounded,
+
   /// The pill-shaped button (StadiumBorder).
   pill,
 }
@@ -78,6 +81,7 @@ class AppleSignInStyle {
       size: Size(width, height),
       borderRadius: switch (shape) {
         AppleButtonShape.rectangular => BorderRadius.circular(4),
+        AppleButtonShape.rounded => BorderRadius.circular(8),
         AppleButtonShape.pill => BorderRadius.circular(height / 2),
       },
     );

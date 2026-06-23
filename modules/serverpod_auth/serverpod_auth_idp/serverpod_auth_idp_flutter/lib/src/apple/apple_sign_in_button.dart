@@ -134,11 +134,10 @@ AppleButtonSize? _toAppleSize(SignInButtonSize? size) => switch (size) {
   SignInButtonSize.small => AppleButtonSize.small,
 };
 
-// Apple has no rounded shape; it falls back to pill.
 AppleButtonShape? _toAppleShape(SignInButtonShape? shape) => switch (shape) {
   null => null,
   SignInButtonShape.rectangular => AppleButtonShape.rectangular,
-  SignInButtonShape.rounded => AppleButtonShape.pill,
+  SignInButtonShape.rounded => AppleButtonShape.rounded,
   SignInButtonShape.pill => AppleButtonShape.pill,
 };
 

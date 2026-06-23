@@ -112,9 +112,9 @@ class MicrosoftSignInStyle {
         : const Color(0xFF2F2F2F);
 
     final borderRadius = switch (shape) {
-      MicrosoftButtonShape.rectangular => BorderRadius.zero,
+      MicrosoftButtonShape.rectangular => BorderRadius.circular(4),
       MicrosoftButtonShape.pill => BorderRadius.circular(buttonSize.height / 2),
-      MicrosoftButtonShape.rounded => BorderRadius.circular(4),
+      MicrosoftButtonShape.rounded => BorderRadius.circular(8),
     };
 
     return MicrosoftSignInStyle(
