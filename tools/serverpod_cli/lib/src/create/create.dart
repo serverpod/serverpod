@@ -722,7 +722,10 @@ Future<List<String>> _copyFlutterUpgrade(
   final writtenPaths = [...copier.copyFiles()];
 
   if (context.auth) {
-    log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
+    log.debug(
+      'Adding auth dependencies to Flutter pubspec',
+      newParagraph: true,
+    );
     _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
       additions: [
