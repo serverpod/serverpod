@@ -73,6 +73,7 @@ declare -a DART_PACKAGES_PATHS=(
     "integrations/serverpod_cloud_storage_s3"
     "integrations/serverpod_cloud_storage_gcp"
     "integrations/serverpod_cloud_storage_r2"
+    "integrations/serverpod_cloud_storage_local"
     "tools/serverpod_cli"
 )
 
