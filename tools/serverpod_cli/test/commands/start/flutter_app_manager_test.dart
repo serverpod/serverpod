@@ -105,13 +105,23 @@ dependencies:
       );
 
       final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-      serverPubspecFile.writeAsStringSync('name: server');
+      serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
 
       launchedAppId = '';
       manager = FlutterAppManager(
-        apps: [appA, appB],
-        serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+        projectName: 'project',
+        launchFlutterApp: false,
         serverPubspecFile: serverPubspecFile,
+        serverPackageDirectoryPathParts: p.split(serverDir.path),
+        serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
         runMode: 'development',
         onProgress: (_, _) {},
         onReady: (_, _) {},
@@ -319,12 +329,22 @@ dependencies:
       }
 
       final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-      serverPubspecFile.writeAsStringSync('name: server');
+      serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
 
       manager = FlutterAppManager(
-        apps: [appA, appB],
+        projectName: 'project',
+        launchFlutterApp: false,
         serverpodToolDir: 'unused',
         serverPubspecFile: serverPubspecFile,
+        serverPackageDirectoryPathParts: p.split(serverDir.path),
         runMode: 'development',
         onProgress: (_, _) {},
         onReady: (_, _) {},
@@ -389,13 +409,21 @@ dependencies:
         final fake = await _startFakeVmService();
         addTearDown(() => fake.server.close(force: true));
         final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-        serverPubspecFile.writeAsStringSync('name: server');
+        serverPubspecFile.writeAsStringSync('''
+name: project_server
+serverpod:
+  flutter_apps:
+    project:
+      path: ../project_flutter
+''');
 
         ready = Completer<String>();
         manager = FlutterAppManager(
-          apps: [app],
-          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+          projectName: 'project',
+          launchFlutterApp: false,
           serverPubspecFile: serverPubspecFile,
+          serverPackageDirectoryPathParts: p.split(serverDir.path),
+          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
           runMode: 'development',
           onProgress: (_, _) {},
           onReady: (_, url) => ready.complete(url),
@@ -489,14 +517,22 @@ dependencies:
         );
 
         final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-        serverPubspecFile.writeAsStringSync('name: server');
+        serverPubspecFile.writeAsStringSync('''
+name: project_server
+serverpod:
+  flutter_apps:
+    project:
+      path: ../project_flutter
+''');
 
         readyCalls = 0;
         launchFailed = Completer<FlutterAppConfig>();
         manager = FlutterAppManager(
-          apps: [app],
-          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+          projectName: 'project',
+          launchFlutterApp: false,
           serverPubspecFile: serverPubspecFile,
+          serverPackageDirectoryPathParts: p.split(serverDir.path),
+          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
           runMode: 'development',
           onProgress: (_, _) {},
           onReady: (_, _) => readyCalls++,
@@ -540,8 +576,7 @@ dependencies:
     late Directory tempDir;
     late Directory serverDir;
     late FlutterAppManager manager;
-    late FlutterAppConfig appA;
-    late FlutterAppConfig appB;
+    late File serverPubspecFile;
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('flutter_mgr_reload_');
@@ -561,26 +596,23 @@ dependencies:
 ''');
       }
 
-      appA = _testApp(
-        serverDir: serverDir,
-        flutterDir: flutterDirA,
-        id: 'app-a',
-        name: 'App A',
-      );
-      appB = _testApp(
-        serverDir: serverDir,
-        flutterDir: flutterDirB,
-        id: 'app-b',
-        name: 'App B',
-      );
-
-      final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-      serverPubspecFile.writeAsStringSync('name: server');
+      serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+      serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
 
       manager = FlutterAppManager(
-        apps: [appA, appB],
-        serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+        projectName: 'project',
+        launchFlutterApp: false,
         serverPubspecFile: serverPubspecFile,
+        serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+        serverPackageDirectoryPathParts: p.split(serverDir.path),
         runMode: 'development',
         onProgress: (_, _) {},
         onReady: (_, _) {},
@@ -599,23 +631,41 @@ dependencies:
     });
 
     test(
-      'when reloadApps is called with a subset of apps, '
+      'when loadApps is called after removing apps from the config, '
       'then removed apps are stopped and new list is reflected',
       () async {
+        serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+''');
+
         expect(manager.apps.length, 2);
-
-        await manager.reloadApps([appA]);
-
-        expect(manager.isRunning(appB.id), isFalse);
+        await manager.loadApps();
+        expect(manager.isRunning('app-b'), isFalse);
         expect(manager.apps.length, 1);
         expect(manager.apps.first.id, 'app-a');
       },
     );
 
     test(
-      'when reloadApps is called with additional apps, '
+      'when loadApps is called after adding additional apps to the config, '
       'then new apps are added and old ones remain',
       () async {
+        serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+    app-c:
+      path: ../app_c_flutter
+''');
+
         final flutterDirC = Directory(p.join(tempDir.path, 'app_c_flutter'))
           ..createSync(recursive: true);
         File(p.join(flutterDirC.path, 'pubspec.yaml')).writeAsStringSync('''
@@ -624,16 +674,9 @@ dependencies:
   flutter:
     sdk: flutter
 ''');
-        final appC = _testApp(
-          serverDir: serverDir,
-          flutterDir: flutterDirC,
-          id: 'app-c',
-          name: 'App C',
-        );
 
         expect(manager.apps.length, 2);
-
-        await manager.reloadApps([appA, appB, appC]);
+        await manager.loadApps();
 
         expect(manager.apps.length, 3);
         expect(
@@ -644,13 +687,11 @@ dependencies:
     );
 
     test(
-      'when reloadApps is called with the same apps, '
+      'when loadApps without changing the apps in the config, '
       'then the app list remains unchanged',
       () async {
         expect(manager.apps.length, 2);
-
-        await manager.reloadApps([appA, appB]);
-
+        await manager.loadApps();
         expect(manager.apps.length, 2);
         expect(manager.apps.map((a) => a.id), containsAll(['app-a', 'app-b']));
       },

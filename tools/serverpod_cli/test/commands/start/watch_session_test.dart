@@ -12,7 +12,6 @@ import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/frontend_server_client.dart';
 import 'package:test/fake.dart';
@@ -218,15 +217,6 @@ dependencies:
     sdk: flutter
 ''');
 
-  final app = FlutterAppConfig(
-    id: 'app',
-    name: 'App',
-    relativePathParts: p.split(
-      p.relative(flutterDir.path, from: serverDir.path),
-    ),
-    serverPackageDirectoryPathParts: p.split(serverDir.path),
-  );
-
   final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
   serverPubspecFile.writeAsStringSync('''
 name: server
@@ -238,9 +228,11 @@ serverpod:
 
   final process = flutter ?? _FakeFlutter();
   final manager = FlutterAppManager(
-    apps: [app],
-    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    projectName: 'project',
+    launchFlutterApp: false,
     serverPubspecFile: serverPubspecFile,
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
     runMode: 'development',
     onProgress: (_, _) {},
     onReady: (_, _) {},
@@ -280,13 +272,6 @@ _createTwoAppFlutterManagerHarness() async {
   final flutterDirB = Directory(p.join(tempDir.path, 'app_b_flutter'))
     ..createSync(recursive: true);
 
-  FlutterAppConfig appConfig(String id, Directory dir) => FlutterAppConfig(
-    id: id,
-    name: id,
-    relativePathParts: p.split(p.relative(dir.path, from: serverDir.path)),
-    serverPackageDirectoryPathParts: p.split(serverDir.path),
-  );
-
   final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
   serverPubspecFile.writeAsStringSync('''
 name: server
@@ -301,10 +286,12 @@ serverpod:
   final processA = _FakeFlutter();
   final processB = _FakeFlutter();
   final manager = FlutterAppManager(
-    apps: [appConfig('app-a', flutterDirA), appConfig('app-b', flutterDirB)],
-    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
-    serverPubspecFile: serverPubspecFile,
+    projectName: 'project',
+    launchFlutterApp: false,
     runMode: 'development',
+    serverPubspecFile: serverPubspecFile,
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
     onProgress: (_, _) {},
     onReady: (_, _) {},
     onStart: (_, _) async {},

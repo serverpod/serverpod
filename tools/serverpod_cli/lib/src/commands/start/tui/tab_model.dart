@@ -132,6 +132,11 @@ class TabModel {
     );
   }
 
+  /// Adds a tab area.
+  void addArea(TabArea area) {
+    areas.add(area);
+  }
+
   /// Adds [tab] to the area named by its [PaneTab.areaId].
   void addTab(PaneTab tab) {
     areaOf(tab.areaId).tabs.add(tab);

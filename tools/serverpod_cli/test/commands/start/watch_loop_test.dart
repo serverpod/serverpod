@@ -171,14 +171,18 @@ void main() {
       stopFileWatcherCalls = 0;
 
       tempDir = Directory.systemTemp.createTempSync('watch_loop_test_');
+      final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+        ..createSync(recursive: true);
       vmServiceInfoFile = p.join(tempDir.path, 'vm-service-info.json');
       File(vmServiceInfoFile).writeAsStringSync('{}');
       final serverPubspecFile = File(p.join(tempDir.path, 'pubspec.yaml'));
       serverPubspecFile.writeAsStringSync('name: server');
       flutterManager = FlutterAppManager(
-        apps: [],
+        projectName: 'project',
+        launchFlutterApp: false,
         serverpodToolDir: tempDir.path,
         serverPubspecFile: serverPubspecFile,
+        serverPackageDirectoryPathParts: p.split(serverDir.path),
         runMode: 'development',
         onProgress: (_, _) {},
         onReady: (_, _) {},
