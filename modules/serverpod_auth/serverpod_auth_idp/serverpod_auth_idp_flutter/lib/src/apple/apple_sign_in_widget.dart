@@ -68,8 +68,11 @@ class AppleSignInWidget extends StatefulWidget {
   /// retrieving the user's email and full name.
   final List<AppleIDAuthorizationScopes> scopes;
 
-  /// The button type: icon, or standard button.
-  final AppleButtonText type;
+  /// The button text variant.
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [AppleButtonText.continueWith], when null.
+  final AppleButtonText? type;
 
   /// The button style.
   ///
@@ -78,21 +81,27 @@ class AppleSignInWidget extends StatefulWidget {
 
   /// The button size.
   ///
-  /// For example, small or large.
-  final AppleButtonSize size;
+  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
+  /// then to [AppleButtonSize.large], when null.
+  final AppleButtonSize? size;
 
   /// The button shape.
   ///
-  /// For example, rectangular or pill.
-  final AppleButtonShape shape;
+  /// For example, rectangular or pill. Falls back to the shared
+  /// [SignInButtonStyle], then to [AppleButtonShape.pill], when null.
+  final AppleButtonShape? shape;
 
   /// The Apple logo alignment: left or center.
-  final AppleButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [AppleButtonLogoAlignment.center], when null.
+  final AppleButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
 
   /// Creates an Apple Sign-In widget.
   const AppleSignInWidget({
@@ -101,12 +110,12 @@ class AppleSignInWidget extends StatefulWidget {
     this.onAuthenticated,
     this.onError,
     this.scopes = AppleAuthController.defaultScopes,
-    this.type = AppleButtonText.continueWith,
+    this.type,
     this.style = AppleButtonStyle.black,
-    this.size = AppleButtonSize.large,
-    this.shape = AppleButtonShape.pill,
-    this.logoAlignment = AppleButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -119,7 +128,7 @@ class AppleSignInWidget extends StatefulWidget {
          'as they will be handled by the controller and will be ignored.',
        ),
        assert(
-         minimumWidth > 0 && minimumWidth <= 400,
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
