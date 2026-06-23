@@ -86,7 +86,7 @@ class Serverpod {
   /// program it's not recommended.
   static Serverpod get instance {
     if (_instance == null) {
-      throw Exception(
+      throw StateError(
         'Serverpod has not been initialized. You need to create '
         'the Serverpod object before calling this method.',
       );
