@@ -237,6 +237,12 @@ class EndpointsAnalyzer {
 
       templateRegistry.addAll(fileTemplates);
 
+      // Skip parameter/return type validation when models aren't available yet
+      // (e.g. when called from updateFileContexts before performGenerate
+      // provides models). Without models every custom type would look
+      // unregistered, producing false errors and filtering valid methods out
+      // of the parsed definitions. Validation runs on the next analyze() call
+      // with models.
       if (models != null) {
         var severityExceptions = _validateLibrary(
           library,
