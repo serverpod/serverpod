@@ -26,6 +26,12 @@ class UserProfiles {
   });
 
   /// Creates a new user profile and stores it in the database.
+  ///
+  /// If an [imageSource] is provided, it will be set on the user profile.
+  /// Setting the image is a best-effort operation and may fail if the image
+  /// cannot be fetched or stored. In case of a failure, the user profile is
+  /// still created without an image. Failures can be handled inside the
+  /// [UserProfileConfig.onAfterUserProfileCreated] callback.
   Future<UserProfileModel> createUserProfile(
     final Session session,
     final UuidValue authUserId,
@@ -62,15 +68,25 @@ class UserProfiles {
           transaction: transaction,
         );
 
-        final createdProfileModel = switch (imageSource) {
-          null => createdProfile.toModel(),
-          _ => await _setUserImage(
-            session,
-            authUserId,
-            imageSource,
-            transaction: transaction,
-          ),
-        };
+        UserProfileModel? createdProfileModel;
+        if (imageSource != null) {
+          try {
+            createdProfileModel = await _setUserImage(
+              session,
+              authUserId,
+              imageSource,
+              transaction: transaction,
+            );
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to set user profile image during profile creation.',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+        }
+        createdProfileModel ??= createdProfile.toModel();
 
         await config.onAfterUserProfileCreated?.call(
           session,
