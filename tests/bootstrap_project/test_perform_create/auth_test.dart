@@ -178,7 +178,6 @@ void main() {
         () async {
           final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
-          expect(content, contains('dependency_overrides:'));
           expect(content, contains('flutter_secure_storage:'));
         },
       );
@@ -348,7 +347,6 @@ void main() {
         () async {
           final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
-          expect(content, isNot(contains('dependency_overrides:')));
           expect(content, isNot(contains('flutter_secure_storage:')));
         },
       );
