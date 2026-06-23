@@ -11,12 +11,17 @@ class CreateConfigState extends TuiState {
     TemplateContext? defaults,
     this.requireIde = false,
   }) : defaults = defaults ?? TemplateContext() {
-    if (configs.contains(ServerpodCreateConfig.template)) {
-      form.updateSelectedOption(
-        ServerpodCreateConfig.template,
-        startingTemplate.toConfigOption,
-      );
-    }
+    // The starting template is set as the initial
+    // selected option for ServerpodCreateConfig.template.
+    // This is required even if ServerpodCreateConfig.template
+    // is not in the list of configs, since some configs
+    // have a requirement on ServerpodCreateConfig.template.
+    form.updateSelectedOption(
+      ServerpodCreateConfig.template,
+      startingTemplate.toConfigOption,
+    );
+    // Ensure the first config is focused.
+    form.requestFocus(configs.first);
   }
 
   final ServerpodTemplateType startingTemplate;
