@@ -9,6 +9,7 @@ import 'google_auth_controller.dart';
 import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
 import 'web/button.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 export 'native/button.dart';
@@ -96,26 +97,41 @@ class GoogleSignInWidget extends StatefulWidget {
 
   /// The button size.
   ///
-  /// For example, small or large.
-  final GSIButtonSize size;
+  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
+  /// then to [GSIButtonSize.large], when null.
+  final GSIButtonSize? size;
 
   /// The button text.
   ///
-  /// For example "Sign in with Google" or "Sign up with Google".
-  final GSIButtonText text;
+  /// For example "Sign in with Google" or "Sign up with Google". Falls back to
+  /// the shared [SignInButtonStyle], then to [GSIButtonText.continueWith], when
+  /// null.
+  final GSIButtonText? text;
 
   /// The button shape.
   ///
-  /// For example, rectangular or circular.
-  final GSIButtonShape shape;
+  /// For example, rectangular or circular. Falls back to the shared
+  /// [SignInButtonStyle], then to [GSIButtonShape.pill], when null.
+  final GSIButtonShape? shape;
 
   /// The Google logo alignment: left or center.
-  final GSIButtonLogoAlignment logoAlignment;
+  ///
+  /// Falls back to the shared [SignInButtonStyle], then to
+  /// [GSIButtonLogoAlignment.center], when null.
+  final GSIButtonLogoAlignment? logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels.
-  final double minimumWidth;
+  /// The maximum width is 400 pixels. Falls back to the shared
+  /// [SignInButtonStyle], then to 240, when null.
+  final double? minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null. Only applies to
+  /// the native button; the web button is rendered by Google and uses its own
+  /// font.
+  final TextStyle? textStyle;
 
   /// A function to generate the button text based on the current configuration.
   ///
@@ -161,11 +177,12 @@ class GoogleSignInWidget extends StatefulWidget {
     this.scopes = GoogleAuthController.defaultScopes,
     this.type = GSIButtonType.standard,
     this.theme = GSIButtonTheme.outline,
-    this.size = GSIButtonSize.large,
-    this.text = GSIButtonText.continueWith,
-    this.shape = GSIButtonShape.pill,
-    this.logoAlignment = GSIButtonLogoAlignment.center,
-    this.minimumWidth = 240,
+    this.size,
+    this.text,
+    this.shape,
+    this.logoAlignment,
+    this.minimumWidth,
+    this.textStyle,
     this.getButtonText,
     this.locale,
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
@@ -179,6 +196,10 @@ class GoogleSignInWidget extends StatefulWidget {
          (onAuthenticated == null && onError == null) || controller == null,
          'Do not provide onAuthenticated or onError when using a controller '
          'as they will be handled by the controller and will be ignored.',
+       ),
+       assert(
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         'Invalid minimumWidth. Must be between 0 and 400.',
        );
 
   @override
@@ -217,6 +238,21 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final shared = context.signInButtonStyle;
+
+    final size =
+        widget.size ?? _toGoogleSize(shared.size) ?? GSIButtonSize.large;
+    final shape =
+        widget.shape ?? _toGoogleShape(shared.shape) ?? GSIButtonShape.pill;
+    final text =
+        widget.text ?? _toGoogleText(shared.text) ?? GSIButtonText.continueWith;
+    final logoAlignment =
+        widget.logoAlignment ??
+        _toGoogleLogoAlignment(shared.logoAlignment) ??
+        GSIButtonLogoAlignment.center;
+    final minimumWidth = widget.minimumWidth ?? shared.minimumWidth ?? 240;
+    final textStyle = widget.textStyle ?? shared.textStyle;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -230,24 +266,27 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             isDisabled: !_controller.isInitialized || _controller.isLoading,
             type: widget.type,
             theme: widget.theme,
-            size: widget.size,
-            text: widget.text,
-            shape: widget.shape,
-            logoAlignment: widget.logoAlignment,
-            minimumWidth: widget.minimumWidth,
+            size: size,
+            text: text,
+            shape: shape,
+            logoAlignment: logoAlignment,
+            minimumWidth: minimumWidth,
+            textStyle: textStyle,
             getButtonText: widget.getButtonText,
             buttonWrapper: widget.buttonWrapper,
           )
         else if (_controller.isInitialized)
-          // Google-hosted iFrame button, self-managed.
+          // Google-hosted iFrame button, self-managed. The web button is
+          // rendered by Google and uses its own font, so textStyle is not
+          // forwarded here.
           GoogleSignInWebButton(
             type: widget.type,
             theme: widget.theme,
-            size: widget.size,
-            text: widget.text,
-            shape: widget.shape,
-            logoAlignment: widget.logoAlignment,
-            minimumWidth: widget.minimumWidth,
+            size: size,
+            text: text,
+            shape: shape,
+            logoAlignment: logoAlignment,
+            minimumWidth: minimumWidth,
             locale: widget.locale,
             buttonWrapper: widget.buttonWrapper,
           ),
@@ -269,3 +308,36 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
     }
   }
 }
+
+// Google buttons disallow the small size (Material/HIG minimum target size), so
+// it falls back to medium.
+GSIButtonSize? _toGoogleSize(SignInButtonSize? size) => switch (size) {
+  null => null,
+  SignInButtonSize.large => GSIButtonSize.large,
+  SignInButtonSize.medium => GSIButtonSize.medium,
+  SignInButtonSize.small => GSIButtonSize.medium,
+};
+
+// Google has no rounded shape; it falls back to pill.
+GSIButtonShape? _toGoogleShape(SignInButtonShape? shape) => switch (shape) {
+  null => null,
+  SignInButtonShape.rectangular => GSIButtonShape.rectangular,
+  SignInButtonShape.rounded => GSIButtonShape.pill,
+  SignInButtonShape.pill => GSIButtonShape.pill,
+};
+
+GSIButtonLogoAlignment? _toGoogleLogoAlignment(
+  SignInButtonLogoAlignment? alignment,
+) => switch (alignment) {
+  null => null,
+  SignInButtonLogoAlignment.left => GSIButtonLogoAlignment.left,
+  SignInButtonLogoAlignment.center => GSIButtonLogoAlignment.center,
+};
+
+GSIButtonText? _toGoogleText(SignInButtonTextVariant? text) => switch (text) {
+  null => null,
+  SignInButtonTextVariant.signInWith => GSIButtonText.signinWith,
+  SignInButtonTextVariant.signUpWith => GSIButtonText.signupWith,
+  SignInButtonTextVariant.continueWith => GSIButtonText.continueWith,
+  SignInButtonTextVariant.signIn => GSIButtonText.signin,
+};

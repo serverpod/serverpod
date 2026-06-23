@@ -24,6 +24,12 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
   /// A function to generate the button text based on the current configuration.
   final String Function({bool isLoading})? getButtonText;
 
+  /// The text style applied to the button label.
+  ///
+  /// Merged over the default Roboto style, so it can override the font while
+  /// keeping Google's defaults for any unset properties.
+  final TextStyle? textStyle;
+
   /// Creates a Google Sign-In button for native platforms.
   const GoogleSignInNativeButton({
     required this.onPressed,
@@ -37,6 +43,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     super.logoAlignment,
     super.minimumWidth,
     this.getButtonText,
+    this.textStyle,
     super.buttonWrapper,
     super.key,
   });
@@ -180,7 +187,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         style: GoogleFonts.roboto(
           fontSize: 14,
           letterSpacing: 0.7,
-        ),
+        ).merge(textStyle),
       ),
     );
 
