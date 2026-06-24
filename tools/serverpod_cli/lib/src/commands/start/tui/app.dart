@@ -211,8 +211,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: (index) {
             onLaunchApp?.call(index);
-            // Mirror the keyboard path: a click also dismisses the panel.
-            state.showLaunchPanel = false;
             _rebuild();
           },
           onQuit: onQuit,
@@ -269,7 +267,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       if (event.logicalKey == LogicalKey.enter &&
           state.launchPanelIndex < appCount) {
         onLaunchApp?.call(state.launchPanelIndex);
-        state.showLaunchPanel = false;
         _rebuild();
         return true;
       }
@@ -288,7 +285,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       final digitIndex = _digitIndex(event.logicalKey);
       if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
         onLaunchApp?.call(digitIndex);
-        state.showLaunchPanel = false;
         _rebuild();
         return true;
       }
@@ -315,18 +311,14 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     // with `--no-flutter`). Handled here rather than as a ButtonBar entry
     // because the Button widget matches only plain/Shift keys. Always consumed
     // so it never falls through to the plain-R hot reload / restart.
-    // 0 apps inert; 1 app direct action; >1 toggle launch panel.
+    // 0 apps inert; >0 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (!state.canLaunchApps) return true;
-      if (state.launchableApps.length <= 1) {
-        onRestartFlutterApp?.call();
-      } else {
-        state.showLaunchPanel = !state.showLaunchPanel;
-        if (state.showLaunchPanel) {
-          state.launchPanelIndex = state.activeLaunchableIndex;
-        }
-        _rebuild();
+      state.showLaunchPanel = !state.showLaunchPanel;
+      if (state.showLaunchPanel) {
+        state.launchPanelIndex = state.activeLaunchableIndex;
       }
+      _rebuild();
       return true;
     }
 

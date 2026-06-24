@@ -165,16 +165,14 @@ class MainScreen extends StatelessComponent {
     final apps = state.launchableApps;
     final isRunning = state.isAppRunning;
 
-    // The title tracks the highlighted row: a running app is relaunched, a
+    // The enterAction tracks the highlighted row: a running app is relaunched, a
     // stopped one is launched — matching what pressing Enter does.
     final focusedIndex = apps.isEmpty
         ? -1
         : state.launchPanelIndex.clamp(0, apps.length - 1);
     final focusedRunning =
         focusedIndex >= 0 && (isRunning?.call(apps[focusedIndex].id) ?? false);
-    final title = focusedRunning ? 'Relaunch app' : 'Launch app';
-
-    const legendStyle = TextStyle(fontWeight: FontWeight.dim);
+    final enterAction = focusedRunning ? 'Relaunch app' : 'Launch app';
 
     return Align(
       alignment: Alignment.topRight,
@@ -186,16 +184,16 @@ class MainScreen extends StatelessComponent {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 1, top: 1),
+                padding: const EdgeInsets.only(left: 1),
                 child: Text(
-                  title,
+                  'Apps',
                   style: TextStyle(
-                    color: st.primary,
-                    fontWeight: FontWeight.bold,
+                    color: st.brightText,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ),
-              Divider(color: st.subtleDivider),
+              const Divider(),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,6 +205,8 @@ class MainScreen extends StatelessComponent {
                         isRunning,
                         state.isAppLaunching,
                       ),
+                    const SizedBox(height: 1),
+                    const Tip('Click app to launch'),
                   ],
                 ),
               ),
@@ -215,16 +215,37 @@ class MainScreen extends StatelessComponent {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final line in [
-                      '1–${apps.length} / click · launch app',
-                      '↑↓ · navigate',
-                      'enter · ${title.split(' ').first.toLowerCase()}',
-                      if (focusedRunning) 'x · stop app',
-                      'esc · close panel',
+                    for (final (key, desc, enabled) in [
+                      ('↑↓', 'Navigate', true),
+                      ('Enter', enterAction, true),
+                      ('X', 'Stop app', focusedRunning),
+                      ('Esc', 'Close', true),
                     ])
-                      Text(
-                        line,
-                        style: legendStyle.copyWith(color: st.debugLevel),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 8,
+                            child: Text(
+                              key,
+                              style: TextStyle(
+                                color: enabled
+                                    ? st.activationKey
+                                    : st.subtleDivider,
+                                fontWeight: enabled
+                                    ? FontWeight.bold
+                                    : FontWeight.dim,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            desc,
+                            style: TextStyle(
+                              fontWeight: enabled
+                                  ? FontWeight.normal
+                                  : FontWeight.dim,
+                            ),
+                          ),
+                        ],
                       ),
                   ],
                 ),
@@ -264,7 +285,10 @@ class MainScreen extends StatelessComponent {
         : st.debugLevel;
 
     return GestureDetector(
-      onTap: () => onLaunchApp?.call(i),
+      onTap: () {
+        state.launchPanelIndex = i;
+        onLaunchApp?.call(i);
+      },
       child: Padding(
         padding: const EdgeInsets.only(left: 1),
         child: Row(
