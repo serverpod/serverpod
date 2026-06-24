@@ -93,32 +93,7 @@ class MainScreen extends StatelessComponent {
                             children: [
                               Expanded(
                                 child: state.useSideBySideLayout
-                                    ? Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          for (
-                                            var i = 0;
-                                            i < state.tabs.areas.length;
-                                            i++
-                                          ) ...[
-                                            if (i > 0)
-                                              VerticalDivider(
-                                                color: st.subtleDivider,
-                                                width: 1,
-                                                thickness: 1,
-                                              ),
-                                            Expanded(
-                                              flex: state.tabs.areas[i].flex,
-                                              child: _buildAreaPane(
-                                                st,
-                                                state.tabs.areas[i],
-                                                i,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      )
+                                    ? _buildSideBySideLayout(st, constraints)
                                     : _buildMergedColumn(st),
                               ),
                               if (state.activeOperations.isNotEmpty)
@@ -157,6 +132,46 @@ class MainScreen extends StatelessComponent {
             bottom: 1,
             child: _buildLaunchPanel(st),
           ),
+      ],
+    );
+  }
+
+  Component _buildSideBySideLayout(
+    ServerpodThemeData st,
+    BoxConstraints constraints,
+  ) {
+    final tabAreas = state.tabs.areas;
+    final tabAreasCount = tabAreas.length;
+    final dividerPositionFactor = (1 / tabAreasCount) * 0.99;
+
+    // Stack is used here to position the dividers correctly,
+    // removing small gaps between the area panes and dividers.
+    return Stack(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < tabAreasCount; i++)
+              Expanded(
+                flex: tabAreas[i].flex,
+                child: _buildAreaPane(st, tabAreas[i], i),
+              ),
+          ],
+        ),
+        if (tabAreasCount > 1)
+          for (var i = 1; i <= tabAreasCount - 1; i++)
+            Positioned(
+              key: ValueKey(i),
+              left: constraints.maxWidth * dividerPositionFactor * i,
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: VerticalDivider(
+                  color: st.subtleDivider,
+                  width: 1,
+                  thickness: 1,
+                ),
+              ),
+            ),
       ],
     );
   }
@@ -388,11 +403,7 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabContent(ServerpodThemeData st, PaneTab tab) {
     return switch (tab) {
-      ServerLogTab() => Column(
-        children: [
-          Expanded(child: _buildStructuredLogView(tab.scrollController)),
-        ],
-      ),
+      ServerLogTab() => _buildStructuredLogView(tab.scrollController),
       AppLogTab appTab => Column(
         children: [
           ?_buildFlutterStatusLine(st, appTab),
@@ -442,11 +453,8 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: child,
-        ),
-        Divider(color: st.subtleDivider, endIndent: 1),
+        Padding(padding: const EdgeInsets.only(left: 1), child: child),
+        Divider(color: st.subtleDivider),
       ],
     );
   }
