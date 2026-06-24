@@ -297,6 +297,30 @@ class Server implements RouterInjectable {
               for (final h in httpOptionsResponseHeaders.entries) {
                 mh[h.key] = h.value;
               }
+              // Cookie-auth web clients send the marker header on every request,
+              // so a cross-origin preflight must allow-list it or the browser
+              // blocks the request before it reaches the server.
+              //
+              // The default OPTIONS headers include it,
+              // but a custom httpOptionsResponseHeaders may not.
+              //
+              // Ensure it is present whenever cookie auth is enabled so
+              // the feature can't be silently disabled by a header override.
+              if (serverpod.config.authCookie != null) {
+                final allow = mh.accessControlAllowHeaders;
+                if (allow == null) {
+                  mh.accessControlAllowHeaders =
+                      AccessControlAllowHeadersHeader.headers(
+                        const [webAuthModeHeaderName],
+                      );
+                } else if (!allow.isWildcard &&
+                    !allow.headers.contains(webAuthModeHeaderName)) {
+                  mh.accessControlAllowHeaders =
+                      AccessControlAllowHeadersHeader.headers(
+                        [...allow.headers, webAuthModeHeaderName],
+                      );
+                }
+              }
             })
           : httpResponseHeaders;
 
@@ -380,6 +404,10 @@ class Server implements RouterInjectable {
           origin: parsedOrigin,
         );
         mh.accessControlAllowCredentials = true;
+      } else if (origin != null) {
+        // A browser request from a non-allow-listed origin.
+        // Drop the Allow-Origin header so the browser blocks cleanly.
+        mh.accessControlAllowOrigin = null;
       }
       // The credentialed-CORS response varies by Origin: an allow-listed origin
       // gets a specific Access-Control-Allow-Origin while every other request
