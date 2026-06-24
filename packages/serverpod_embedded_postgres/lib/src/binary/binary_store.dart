@@ -11,6 +11,8 @@ import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 
 import '../exceptions.dart';
 import 'binary_artifact.dart';
+import 'binary_source.dart';
+import 'bundle_builder.dart';
 
 /// Per-user cache of Zonky PG binaries.
 ///
@@ -152,9 +154,16 @@ class BinaryStore {
   /// [onProgress] receives `(fraction, stage)` where `stage` is one of
   /// `'download'` or `'extract'`. The `fraction` ramps 0->1 within each
   /// stage; the stage label changes at each phase boundary.
+  ///
+  /// [source] selects download vs. build-from-source (see [BinarySource]); a
+  /// [builder] must be supplied for the build paths. Building is far slower
+  /// than a download, so when a build may run the claim stale/timeout windows
+  /// are widened to avoid a concurrent isolate stealing the claim mid-build.
   Future<Directory> ensure(
     BinaryArtifact artifact, {
     void Function(double fraction, String stage)? onProgress,
+    BinarySource source = BinarySource.auto,
+    BundleBuilder? builder,
   }) async {
     var installDir = installDirFor(artifact);
     var meta = metaFileFor(artifact);
@@ -163,11 +172,21 @@ class BinaryStore {
       return installDir;
     }
 
+    var willBuild =
+        source == BinarySource.build ||
+        (source == BinarySource.auto && builder != null);
+    var staleAfter = willBuild && _staleAfter < _buildStaleAfter
+        ? _buildStaleAfter
+        : _staleAfter;
+    var hardTimeout = willBuild && _hardTimeout < _buildHardTimeout
+        ? _buildHardTimeout
+        : _hardTimeout;
+
     // Ensure cache root exists; exclusive-create on the claim file can't
     // auto-create parents.
     cacheRoot.createSync(recursive: true);
     var claim = _claimFileFor(artifact);
-    var deadline = DateTime.now().add(_hardTimeout);
+    var deadline = DateTime.now().add(hardTimeout);
 
     while (true) {
       try {
@@ -175,7 +194,7 @@ class BinaryStore {
       } on PathExistsException {
         // Someone else is extracting (or crashed mid-extract). Wait for
         // them, or steal a stale claim and retry.
-        var outcome = await _awaitOrSteal(claim, meta, deadline);
+        var outcome = await _awaitOrSteal(claim, meta, deadline, staleAfter);
         switch (outcome) {
           case _LoserOutcome.metaAppeared:
             return installDir;
@@ -183,7 +202,7 @@ class BinaryStore {
             continue;
           case _LoserOutcome.timedOut:
             throw BinaryFetchException(
-              'Timed out after ${_formatDuration(_hardTimeout)} waiting for '
+              'Timed out after ${_formatDuration(hardTimeout)} waiting for '
               'another extractor of ${artifact.bom}/${artifact.platform}. '
               'Claim: ${claim.path} (${_describeClaimAge(claim)})',
             );
@@ -198,7 +217,12 @@ class BinaryStore {
         if (meta.existsSync()) {
           return installDir;
         }
-        await _extractAsWinner(artifact, onProgress: onProgress);
+        await _extractAsWinner(
+          artifact,
+          onProgress: onProgress,
+          source: source,
+          builder: builder,
+        );
         return installDir;
       } finally {
         await claim.deleteIfExists();
@@ -212,10 +236,11 @@ class BinaryStore {
     File claim,
     File meta,
     DateTime deadline,
+    Duration staleAfter,
   ) async {
     while (DateTime.now().isBefore(deadline)) {
       if (meta.existsSync()) return _LoserOutcome.metaAppeared;
-      if (_isStale(claim)) {
+      if (_isStale(claim, staleAfter)) {
         // Best-effort delete. If another stealer beat us, our subsequent
         // createSync(exclusive: true) just fails again and we re-poll -
         // exclusive-create remains the only serialization point.
@@ -231,10 +256,10 @@ class BinaryStore {
   /// [_staleAfter]. Using mtime (set atomically by `createSync(exclusive:
   /// true)`) means a winner that hasn't started extracting yet still has
   /// a fresh-enough timestamp to not be mis-stolen.
-  bool _isStale(File claim) {
+  bool _isStale(File claim, Duration staleAfter) {
     var stat = claim.statSync();
     if (stat.type == FileSystemEntityType.notFound) return true;
-    return DateTime.now().difference(stat.modified) > _staleAfter;
+    return DateTime.now().difference(stat.modified) > staleAfter;
   }
 
   /// Human-readable claim age for diagnostics. "age 3 s" / "age 2 min" /
@@ -251,29 +276,18 @@ class BinaryStore {
   Future<void> _extractAsWinner(
     BinaryArtifact artifact, {
     void Function(double fraction, String stage)? onProgress,
+    required BinarySource source,
+    required BundleBuilder? builder,
   }) async {
     var installDir = installDirFor(artifact);
     var meta = metaFileFor(artifact);
 
-    // SHA and JAR are independent fetches; run them in parallel to save one
-    // RTT. The progress callback fires once each completes - granular
-    // progress would require streaming the responses, which we don't do.
-    onProgress?.call(0.0, 'download');
-    var fetches = await Future.wait([
-      _fetchSha256(artifact),
-      _downloadJar(artifact),
-    ]);
-    onProgress?.call(1.0, 'download');
-    var expectedSha = fetches[0] as String;
-    var jarBytes = fetches[1] as Uint8List;
-
-    var actualSha = sha256.convert(jarBytes).toString();
-    if (actualSha != expectedSha) {
-      throw BinaryVerificationException(
-        'SHA-256 mismatch for ${artifact.archiveFileName}:\n'
-        '  expected $expectedSha\n  actual   $actualSha',
-      );
-    }
+    var (archiveBytes, shaHex, sourceLabel) = await _obtainArchive(
+      artifact,
+      source: source,
+      builder: builder,
+      onProgress: onProgress,
+    );
 
     // Per-claimant unique staging dir. Belt-and-suspenders: even though
     // exclusive-create already guarantees a single winner, a unique name
@@ -290,7 +304,7 @@ class BinaryStore {
 
     try {
       artifact.extractInto(
-        jarBytes,
+        archiveBytes,
         stagingDir,
         onProgress: onProgress == null ? null : (f) => onProgress(f, 'extract'),
       );
@@ -318,8 +332,8 @@ class BinaryStore {
         jsonEncode({
           'bom': artifact.bom,
           'platform': artifact.platform,
-          'source_url': artifact.archiveUrl.toString(),
-          'sha256': actualSha,
+          'source_url': sourceLabel,
+          'sha256': shaHex,
           'installed_at': DateTime.now().toUtc().toIso8601String(),
         }),
       );
@@ -329,6 +343,84 @@ class BinaryStore {
       }
       rethrow;
     }
+  }
+
+  /// Obtains the archive bytes for [source], returning
+  /// `(bytes, sha256-hex, source-label)`. Download verifies the bytes against
+  /// the sidecar; build trusts the freshly-built artifact (records a computed
+  /// digest for the meta).
+  Future<(Uint8List, String, String)> _obtainArchive(
+    BinaryArtifact artifact, {
+    required BinarySource source,
+    required BundleBuilder? builder,
+    void Function(double fraction, String stage)? onProgress,
+  }) async {
+    switch (source) {
+      case BinarySource.build:
+        return _buildArchive(artifact, builder, onProgress);
+      case BinarySource.download:
+        return _downloadVerified(artifact, onProgress);
+      case BinarySource.auto:
+        try {
+          return await _downloadVerified(artifact, onProgress);
+        } on BinaryFetchException catch (e) {
+          // Fall back to a local build only when the prebuilt bundle is
+          // definitively absent (404) and a builder is available - never on a
+          // transient network error.
+          if (builder != null && e.statusCode == 404) {
+            return _buildArchive(artifact, builder, onProgress);
+          }
+          rethrow;
+        }
+    }
+  }
+
+  Future<(Uint8List, String, String)> _downloadVerified(
+    BinaryArtifact artifact,
+    void Function(double fraction, String stage)? onProgress,
+  ) async {
+    // SHA and archive are independent fetches; run them in parallel to save one
+    // RTT. The progress callback fires once each completes.
+    onProgress?.call(0.0, 'download');
+    var fetches = await Future.wait([
+      _fetchSha256(artifact),
+      _downloadArchive(artifact),
+    ]);
+    onProgress?.call(1.0, 'download');
+    var expectedSha = fetches[0] as String;
+    var bytes = fetches[1] as Uint8List;
+    var actualSha = sha256.convert(bytes).toString();
+    if (actualSha != expectedSha) {
+      throw BinaryVerificationException(
+        'SHA-256 mismatch for ${artifact.archiveFileName}:\n'
+        '  expected $expectedSha\n  actual   $actualSha',
+      );
+    }
+    return (bytes, actualSha, artifact.archiveUrl.toString());
+  }
+
+  Future<(Uint8List, String, String)> _buildArchive(
+    BinaryArtifact artifact,
+    BundleBuilder? builder,
+    void Function(double fraction, String stage)? onProgress,
+  ) async {
+    if (builder == null) {
+      throw BinaryBuildException(
+        'no builder available to build ${artifact.archiveFileName}.',
+      );
+    }
+    onProgress?.call(0.0, 'build');
+    var file = await builder.build(
+      bom: artifact.bom,
+      platform: artifact.platform,
+    );
+    var bytes = await file.readAsBytes();
+    onProgress?.call(1.0, 'build');
+    return (
+      bytes,
+      sha256.convert(bytes).toString(),
+      'local-build:${file.path}',
+    );
   }
 
   Future<String> _fetchSha256(BinaryArtifact artifact) async {
@@ -344,6 +436,7 @@ class BinaryStore {
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.sha256Url} returned ${resp.statusCode}',
+        statusCode: resp.statusCode,
       );
     }
     final body = resp.body.trim();
@@ -356,7 +449,7 @@ class BinaryStore {
     return token.toLowerCase();
   }
 
-  Future<Uint8List> _downloadJar(BinaryArtifact artifact) async {
+  Future<Uint8List> _downloadArchive(BinaryArtifact artifact) async {
     final resp = await _http
         .get(artifact.archiveUrl)
         .timeout(
@@ -369,6 +462,7 @@ class BinaryStore {
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
         'GET ${artifact.archiveUrl} returned ${resp.statusCode}',
+        statusCode: resp.statusCode,
       );
     }
     return resp.bodyBytes;
@@ -409,3 +503,10 @@ const Duration _sha256Timeout = Duration(seconds: 60);
 /// failures on legitimately-slow networks; looser defeats the point of
 /// adding the timeout at all.
 const Duration _jarTimeout = Duration(minutes: 5);
+
+/// Claim stale/hard-timeout windows used when a from-source build may run.
+/// A build is far slower than a download (minutes), so widen these so a
+/// concurrent isolate doesn't treat the building winner as crashed and steal
+/// the claim mid-build (which would double-build).
+const Duration _buildStaleAfter = Duration(minutes: 20);
+const Duration _buildHardTimeout = Duration(minutes: 45);

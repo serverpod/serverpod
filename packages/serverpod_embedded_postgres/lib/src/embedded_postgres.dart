@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:pub_semver/pub_semver.dart';
 
+import 'binary/binary_source.dart' show BinarySource, resolveBinarySource;
 import 'binary/binary_store.dart' show BinaryStore;
+import 'binary/bundle_builder.dart' show BundleBuilder;
 import 'binary/serverpod_bundle.dart'
     show ServerpodBundleArtifact, serverpodPlatformSuffixes;
 import 'embedded_postgres_impl.dart';
@@ -61,7 +63,14 @@ abstract class EmbeddedPostgres {
   /// If [target] is omitted, downloads the artifact for the current host
   /// platform. CI hosts can pass a different target to populate caches
   /// for other platforms.
-  static Future<void> prefetch(Version version, {String? target}) async {
+  /// [source] selects download vs. build-from-source (defaults to the
+  /// `SERVERPOD_PG_SOURCE` env, else [BinarySource.auto]); pass
+  /// [BinarySource.build] to force a local build (CI warm-up before publish).
+  static Future<void> prefetch(
+    Version version, {
+    String? target,
+    BinarySource? source,
+  }) async {
     if (target != null && !serverpodPlatformSuffixes.contains(target)) {
       throw UnsupportedPlatformException(
         "Unknown prefetch target '$target'. Expected one of: "
@@ -77,7 +86,11 @@ abstract class EmbeddedPostgres {
     );
     var store = BinaryStore();
     try {
-      await store.ensure(artifact);
+      await store.ensure(
+        artifact,
+        source: resolveBinarySource(source),
+        builder: const BundleBuilder(),
+      );
     } finally {
       store.close();
     }
