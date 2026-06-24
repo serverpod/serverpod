@@ -556,7 +556,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     try {
       var provider = authKeyProvider;
       var useCookieAuth =
-          provider is CookieAuthKeyProvider && provider.usesCookies;
+          authenticated &&
+          provider is CookieAuthKeyProvider &&
+          provider.usesCookies;
       var authenticationValue = authenticated && !useCookieAuth
           ? await provider?.authHeaderValue
           : null;
