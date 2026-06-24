@@ -56,7 +56,6 @@ final class EmailAccountAlreadyRegisteredException
 final class EmailAccountRequestInvalidEmailException
     extends EmailAccountRequestServerException {}
 
-
 /// Exception thrown when trying to complete a password reset request with an
 /// invalid verification code.
 final class EmailPasswordResetInvalidVerificationCodeException
