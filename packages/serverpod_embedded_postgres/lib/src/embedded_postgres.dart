@@ -4,8 +4,10 @@ import 'package:postgres/postgres.dart' as pg;
 import 'package:pub_semver/pub_semver.dart';
 
 import 'binary/binary_store.dart' show BinaryStore;
-import 'binary/maven_url.dart' show ZonkyArtifact;
+import 'binary/serverpod_bundle.dart'
+    show ServerpodBundleArtifact, serverpodPlatformSuffixes;
 import 'embedded_postgres_impl.dart';
+import 'exceptions.dart' show UnsupportedPlatformException;
 import 'options.dart';
 
 /// A managed PostgreSQL postmaster running as a child process of this Dart
@@ -60,9 +62,19 @@ abstract class EmbeddedPostgres {
   /// platform. CI hosts can pass a different target to populate caches
   /// for other platforms.
   static Future<void> prefetch(Version version, {String? target}) async {
+    if (target != null && !serverpodPlatformSuffixes.contains(target)) {
+      throw UnsupportedPlatformException(
+        "Unknown prefetch target '$target'. Expected one of: "
+        '${serverpodPlatformSuffixes.join(', ')}.',
+      );
+    }
     var platform =
-        target ?? ZonkyArtifact.forCurrentPlatform(version: version).platform;
-    var artifact = ZonkyArtifact(version: version, platform: platform);
+        target ??
+        ServerpodBundleArtifact.forCurrentPlatform(version: version).platform;
+    var artifact = ServerpodBundleArtifact(
+      version: version,
+      platform: platform,
+    );
     var store = BinaryStore();
     try {
       await store.ensure(artifact);

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
@@ -84,10 +86,21 @@ class Supervisor implements SupervisedProcess {
       '\n=== supervisor start @ ${DateTime.now().toIso8601String()} ===',
     );
 
+    // Serverpod bundles ship PostGIS, whose PROJ has the build-time data dir
+    // baked in. Point PROJ_LIB at the bundle's own copy so coordinate
+    // transforms resolve after the install tree was relocated by the cache.
+    // (No-op for bundles without a share/proj, e.g. plain Zonky binaries.)
+    var projData = Directory(p.join(installDir.path, 'share', 'proj'));
+    var environment = <String, String>{
+      ...Platform.environment,
+      if (projData.existsSync()) 'PROJ_LIB': projData.path,
+    };
+
     var process = await Process.start(
       executable,
       ['-D', dataDir.path],
       mode: ProcessStartMode.normal,
+      environment: environment,
     );
 
     void handleLine(String line) {

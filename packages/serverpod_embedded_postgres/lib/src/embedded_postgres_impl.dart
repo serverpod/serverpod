@@ -9,7 +9,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'binary/binary_store.dart';
 import 'binary/executable.dart';
-import 'binary/maven_url.dart';
+import 'binary/serverpod_bundle.dart';
 import 'cluster/cluster_store.dart';
 import 'embedded_postgres.dart';
 import 'exceptions.dart';
@@ -185,7 +185,9 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
     required File pwFile,
   }) async {
     var binaryStore = BinaryStore(cacheRoot: options.binaryCache);
-    var artifact = ZonkyArtifact.forCurrentPlatform(version: options.version);
+    var artifact = ServerpodBundleArtifact.forCurrentPlatform(
+      version: options.version,
+    );
     Directory installDir;
     try {
       installDir = await binaryStore.ensure(
