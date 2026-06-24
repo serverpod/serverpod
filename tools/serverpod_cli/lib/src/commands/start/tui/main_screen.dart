@@ -314,17 +314,14 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: TabBar(
-            labels: [for (final tab in area.tabs) tab.label],
-            selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
-            onTabChanged: (index) {
-              area.selectedIndex = index;
-              state.tabs.focusedAreaIndex = areaIndex;
-              onTabSelected?.call();
-            },
-          ),
+        TabBar(
+          labels: [for (final tab in area.tabs) tab.label],
+          selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
+          onTabChanged: (index) {
+            area.selectedIndex = index;
+            state.tabs.focusedAreaIndex = areaIndex;
+            onTabSelected?.call();
+          },
         ),
         Expanded(child: _buildTabContent(st, selected)),
       ],
@@ -341,16 +338,13 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: TabBar(
-            labels: [for (final tab in all) tab.label],
-            selectedTab: selected,
-            onTabChanged: (index) {
-              state.tabs.focusTab(all[index]);
-              onTabSelected?.call();
-            },
-          ),
+        TabBar(
+          labels: [for (final tab in all) tab.label],
+          selectedTab: selected,
+          onTabChanged: (index) {
+            state.tabs.focusTab(all[index]);
+            onTabSelected?.call();
+          },
         ),
         Expanded(child: _buildTabContent(st, all[selected])),
       ],
