@@ -183,32 +183,40 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     return Focusable(
       focused: true,
       onKeyEvent: _handleKeyEvent,
-      child: MainScreen(
-        state: state,
-        showSplash: state.showSplash,
-        rawScrollController: rawScrollController,
-        helpScrollController: helpScrollController,
-        onToggleHelp: () {
-          state.showHelp = !state.showHelp;
-          _rebuild();
+      child: GestureDetector(
+        onTap: () {
+          if (state.showHelp) {
+            state.showHelp = false;
+            _rebuild();
+          }
         },
-        onTabSelected: _rebuild,
-        onHotReload: onHotReload,
-        onHotRestart: onHotRestart,
-        onCreateMigration: onCreateMigration,
-        onCreateRepairMigration: onCreateRepairMigration,
-        onApplyMigration: onApplyMigration,
-        onClearLogs: () {
-          state.clearLogs();
-          _rebuild();
-        },
-        onLaunchApp: (index) {
-          onLaunchApp?.call(index);
-          // Mirror the keyboard path: a click also dismisses the panel.
-          state.showLaunchPanel = false;
-          _rebuild();
-        },
-        onQuit: onQuit,
+        child: MainScreen(
+          state: state,
+          showSplash: state.showSplash,
+          rawScrollController: rawScrollController,
+          helpScrollController: helpScrollController,
+          onToggleHelp: () {
+            state.showHelp = !state.showHelp;
+            _rebuild();
+          },
+          onTabSelected: _rebuild,
+          onHotReload: onHotReload,
+          onHotRestart: onHotRestart,
+          onCreateMigration: onCreateMigration,
+          onCreateRepairMigration: onCreateRepairMigration,
+          onApplyMigration: onApplyMigration,
+          onClearLogs: () {
+            state.clearLogs();
+            _rebuild();
+          },
+          onLaunchApp: (index) {
+            onLaunchApp?.call(index);
+            // Mirror the keyboard path: a click also dismisses the panel.
+            state.showLaunchPanel = false;
+            _rebuild();
+          },
+          onQuit: onQuit,
+        ),
       ),
     );
   }
