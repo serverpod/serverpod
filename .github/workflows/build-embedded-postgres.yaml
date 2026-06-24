@@ -1,0 +1,123 @@
+name: Build embedded postgres bundles
+
+# Builds the Serverpod PostgreSQL bundles (PostgreSQL + PostGIS + pgvector,
+# compiled with Zig) consumed by serverpod_embedded_postgres at runtime.
+# Native per-runner build (no cross-compile). Publishes to a GitHub Release
+# tagged `embedded-postgres-v<bom>` (matches ServerpodBundleArtifact's URL).
+#
+# Status: macOS x64 is fully validated; macOS arm64 should work (package.sh
+# re-signs after install_name_tool). Linux and Windows BUILD but are NOT yet
+# validated end-to-end - Linux needs $ORIGIN-rpath packaging; Windows builds via
+# MSYS2 + zig->x86_64-windows-gnu with the geo DLLs dropped beside the exe. They
+# upload artifacts for inspection but do NOT publish until proven.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pg_version:
+        description: 'PG version (bom), e.g. 16.13.0'
+        default: '16.13.0'
+  push:
+    tags: ['embedded-postgres-v*']
+
+permissions:
+  contents: write   # create/append the GitHub Release
+
+jobs:
+  build:
+    name: ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-13,         os: macos,   arch: x64,   validated: true }
+          - { runner: macos-14,         os: macos,   arch: arm64, validated: true }
+          - { runner: ubuntu-22.04,     os: linux,   arch: x64,   validated: false }
+          - { runner: ubuntu-22.04-arm, os: linux,   arch: arm64, validated: false }
+          - { runner: windows-2022,     os: windows, arch: x64,   validated: false }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Zig 0.16.0
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: Install build tools (Linux)
+        if: matrix.os == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y cmake pkg-config bison flex
+
+      - name: Install build tools (macOS)
+        if: matrix.os == 'macos'
+        run: |
+          brew install cmake pkg-config bison flex
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix flex)/bin"  >> "$GITHUB_PATH"
+
+      # MSYS2 supplies the Unix build shell (sh/make/bison/flex/perl/autoconf) +
+      # cmake/pkgconf + binutils (windres/dlltool for postgres's win32 build).
+      # zig (on the Windows PATH via setup-zig) is the compiler - `path-type:
+      # inherit` makes it visible inside the MSYS2 shell. Package set is a
+      # first cut; expect to refine names on the first CI run.
+      - name: Set up MSYS2 (Windows)
+        if: matrix.os == 'windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          path-type: inherit
+          install: >-
+            base-devel bison flex tar xz curl
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-binutils
+
+      # On a tag push the workflow_dispatch input is empty, so derive the
+      # version from the tag (embedded-postgres-v<bom>) - otherwise assets
+      # would always be named 16.13.0 regardless of the release tag.
+      - name: Resolve PG version
+        id: pgver
+        shell: bash
+        run: |
+          v="${{ github.event.inputs.pg_version }}"
+          [ -n "$v" ] || v="${GITHUB_REF_NAME#embedded-postgres-v}"
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Build + package (Unix)
+        if: matrix.os != 'windows'
+        env:
+          PGBUILD: ${{ runner.temp }}/pgbuild
+          BUNDLE_OS: ${{ matrix.os }}
+          BUNDLE_ARCH: ${{ matrix.arch }}
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+        run: bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+
+      - name: Build + package (Windows / MSYS2)
+        if: matrix.os == 'windows'
+        shell: msys2 {0}
+        env:
+          BUNDLE_OS: ${{ matrix.os }}
+          BUNDLE_ARCH: ${{ matrix.arch }}
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+        run: |
+          # cygpath bridges the Windows RUNNER_TEMP to an MSYS path pointing at
+          # the same dir, so the upload step (which uses the Windows path) finds
+          # the artifacts.
+          export PGBUILD="$(cygpath -u "$RUNNER_TEMP")/pgbuild"
+          bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: serverpod-postgres-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
+
+      - name: Publish to GitHub Release (validated platforms only, on tag)
+        if: startsWith(github.ref, 'refs/tags/embedded-postgres-v') && matrix.validated
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
