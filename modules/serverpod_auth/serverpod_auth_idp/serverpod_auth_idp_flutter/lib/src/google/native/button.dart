@@ -153,22 +153,38 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
   @override
   Widget build(BuildContext context) {
     final texts = context.googleSignInTexts;
-    // Resolve alignment from the shared style so the standalone native button
-    // honors it too (the GoogleSignInWidget passes an explicit value, which
-    // wins when provided).
+    final shared = context.signInButtonStyle;
+
+    // Resolve the shared style so the standalone native button honors it too
+    // (GoogleSignInWidget passes explicit values, which win when provided).
     final effectiveLogoAlignment =
         logoAlignment ??
-        _toGoogleLogoAlignment(context.signInButtonStyle.logoAlignment) ??
+        _toGoogleLogoAlignment(shared.logoAlignment) ??
         GSIButtonLogoAlignment.center;
+    final effectiveTheme = theme ?? GSIButtonTheme.outline;
+    final effectiveShape =
+        shape ?? _toGoogleShape(shared.shape) ?? GSIButtonShape.pill;
+    // When no brand theme or explicit color is set, use the shared (uniform,
+    // theme-aware) colors so the button matches the others.
+    final sharedColors = theme == null && backgroundColor == null
+        ? shared.resolveColors(context)
+        : null;
+    // The web GSIButtonShape has no rounded option, so render the shared rounded
+    // shape with an explicit radius.
+    final effectiveBorderRadius =
+        borderRadius ??
+        (shape == null && shared.shape == SignInButtonShape.rounded
+            ? BorderRadius.circular(8)
+            : null);
     final buttonStyle = GoogleSignInStyle.fromConfiguration(
-      theme: theme,
-      shape: shape,
+      theme: effectiveTheme,
+      shape: effectiveShape,
       size: size,
       width: minimumWidth,
-      borderRadius: borderRadius,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      borderColor: borderColor,
+      borderRadius: effectiveBorderRadius,
+      backgroundColor: backgroundColor ?? sharedColors?.background,
+      foregroundColor: foregroundColor ?? sharedColors?.foreground,
+      borderColor: borderColor ?? sharedColors?.border,
     );
 
     if (type == GSIButtonType.icon) {
@@ -195,10 +211,12 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       isDisabled: isDisabled,
       isCentered: true,
       size: size,
-      borderRadius: theme == GSIButtonTheme.outline
+      borderRadius: effectiveTheme == GSIButtonTheme.outline
           ? null
           : buttonStyle.borderRadius,
-      backgroundColor: theme == GSIButtonTheme.outline ? null : Colors.white,
+      backgroundColor: effectiveTheme == GSIButtonTheme.outline
+          ? null
+          : Colors.white,
     );
 
     final text = Padding(
@@ -220,7 +238,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
             GSIButtonSize.medium => 14.0,
             GSIButtonSize.small => 12.0,
           },
-        ).merge(textStyle),
+        ).merge(textStyle ?? shared.textStyle),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -308,4 +326,13 @@ GSIButtonLogoAlignment? _toGoogleLogoAlignment(
   null => null,
   SignInButtonLogoAlignment.left => GSIButtonLogoAlignment.left,
   SignInButtonLogoAlignment.center => GSIButtonLogoAlignment.center,
+};
+
+// The web GSIButtonShape has no rounded option, so rounded maps to pill here;
+// the native button applies the rounded radius via a borderRadius override.
+GSIButtonShape? _toGoogleShape(SignInButtonShape? shape) => switch (shape) {
+  null => null,
+  SignInButtonShape.rectangular => GSIButtonShape.rectangular,
+  SignInButtonShape.rounded => GSIButtonShape.pill,
+  SignInButtonShape.pill => GSIButtonShape.pill,
 };

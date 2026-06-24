@@ -9,8 +9,9 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
 
   /// The button theme.
   ///
-  /// For example, filledBlue or filledBlack.
-  final GSIButtonTheme theme;
+  /// For example, filledBlue or filledBlack. When null, the native button uses
+  /// the shared [SignInButtonStyle] colors (or the uniform default).
+  final GSIButtonTheme? theme;
 
   /// The button size.
   ///
@@ -24,8 +25,9 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
 
   /// The button shape.
   ///
-  /// For example, rectangular or circular.
-  final GSIButtonShape shape;
+  /// For example, rectangular or circular. When null, the native button falls
+  /// back to the shared [SignInButtonStyle], then to pill.
+  final GSIButtonShape? shape;
 
   /// The Google logo alignment: left or center.
   ///
@@ -59,10 +61,10 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
   /// Creates a base Google Sign-In button.
   const GoogleSignInBaseButton({
     this.type = GSIButtonType.standard,
-    this.theme = GSIButtonTheme.outline,
+    this.theme,
     this.size = GSIButtonSize.large,
     this.text = GSIButtonText.continueWith,
-    this.shape = GSIButtonShape.pill,
+    this.shape,
     this.logoAlignment,
     this.minimumWidth = 240,
     this.buttonWrapper = wrapAsOutline,
