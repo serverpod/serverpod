@@ -121,13 +121,13 @@ void main() {
       expect(state.showRawServerLogs, isFalse);
     });
 
-    test('when period is pressed then the raw server logs open', () async {
+    test('when S is pressed then the raw server logs open', () async {
       expect(state.showRawServerLogs, isFalse);
 
-      await _sendKey(tester, LogicalKey.period);
+      await _sendKey(tester, LogicalKey.keyS);
       expect(state.showRawServerLogs, isTrue);
 
-      await _sendKey(tester, LogicalKey.period);
+      await _sendKey(tester, LogicalKey.keyS);
       expect(state.showRawServerLogs, isFalse);
     });
   });
@@ -143,8 +143,8 @@ void main() {
       expect(state.showRawServerLogs, isFalse);
     });
 
-    test('when period is pressed then it closes', () async {
-      await _sendKey(tester, LogicalKey.period);
+    test('when S is pressed then it closes', () async {
+      await _sendKey(tester, LogicalKey.keyS);
 
       expect(state.showRawServerLogs, isFalse);
     });
@@ -169,11 +169,11 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the Flutter app restart is invoked',
+      'when Ctrl+R is pressed then the panel is opened',
       () async {
+        expect(state.showLaunchPanel, isFalse);
         await _sendCtrlR(tester);
-
-        expect(restartCalls, 1);
+        expect(state.showLaunchPanel, isTrue);
       },
     );
 
@@ -192,36 +192,6 @@ void main() {
     );
   });
 
-  group(
-    'Given a running TUI start app where the Flutter app has not launched yet but a restart is available',
-    () {
-      late int restartCalls;
-
-      setUp(() {
-        restartCalls = 0;
-        holder.onRestartFlutterApp = () => restartCalls++;
-        state.canLaunchApps = true;
-        state.launchableApps = [
-          const FlutterAppConfig(
-            id: 'app',
-            name: 'App',
-            relativePathParts: ['..', 'app'],
-            serverPackageDirectoryPathParts: [],
-          ),
-        ];
-      });
-
-      test(
-        'when Ctrl+R is pressed then the Flutter app launch is invoked',
-        () async {
-          await _sendCtrlR(tester);
-
-          expect(restartCalls, 1);
-        },
-      );
-    },
-  );
-
   group('Given a running TUI start app with no Flutter package', () {
     late int restartCalls;
 
@@ -232,11 +202,11 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the Flutter app restart is not invoked',
+      'when Ctrl+R is pressed then the panel is not opened',
       () async {
+        expect(state.showLaunchPanel, isFalse);
         await _sendCtrlR(tester);
-
-        expect(restartCalls, 0);
+        expect(state.showLaunchPanel, isFalse);
       },
     );
   });
@@ -377,20 +347,6 @@ void main() {
     );
 
     test(
-      'when digit 1 is pressed with the panel open then onLaunchApp is called',
-      () async {
-        var launchIndex = -1;
-        holder.onLaunchApp = (index) => launchIndex = index;
-        state.showLaunchPanel = true;
-
-        await _sendKey(tester, LogicalKey.digit1);
-
-        expect(launchIndex, 0);
-        expect(state.showLaunchPanel, isFalse);
-      },
-    );
-
-    test(
       'when no app tab is open then the panel cursor starts at the first app',
       () async {
         state.launchPanelIndex = 1;
@@ -437,17 +393,21 @@ void main() {
       },
     );
 
-    test('when Enter is pressed then the focused app is launched', () async {
-      var launchIndex = -1;
-      holder.onLaunchApp = (index) => launchIndex = index;
-      state.showLaunchPanel = true;
-      state.launchPanelIndex = 1;
+    test(
+      'when Enter is pressed,'
+      'then the focused app is launched and the panel stays open',
+      () async {
+        var launchIndex = -1;
+        holder.onLaunchApp = (index) => launchIndex = index;
+        state.showLaunchPanel = true;
+        state.launchPanelIndex = 1;
 
-      await _sendKey(tester, LogicalKey.enter);
+        await _sendKey(tester, LogicalKey.enter);
 
-      expect(launchIndex, 1);
-      expect(state.showLaunchPanel, isFalse);
-    });
+        expect(launchIndex, 1);
+        expect(state.showLaunchPanel, isTrue);
+      },
+    );
 
     test(
       'when x is pressed on a running app then it stops and the panel stays open',
@@ -498,12 +458,11 @@ void main() {
     });
 
     test(
-      'when Ctrl+R is pressed then the launch panel does not open',
+      'when Ctrl+R is pressed then the launch panel opens',
       () async {
         await _sendCtrlR(tester);
-
-        expect(state.showLaunchPanel, isFalse);
-        expect(restartCalls, 1);
+        expect(state.showLaunchPanel, isTrue);
+        expect(restartCalls, 0);
       },
     );
   });
