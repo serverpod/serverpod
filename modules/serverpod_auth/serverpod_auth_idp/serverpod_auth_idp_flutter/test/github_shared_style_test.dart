@@ -17,8 +17,6 @@ void main() {
   }
 
   group('Given a GitHubSignInButton with no shared style and no arguments', () {
-    setUp(() {});
-
     testWidgets(
       'when built then it uses GitHub built-in defaults',
       (tester) async {

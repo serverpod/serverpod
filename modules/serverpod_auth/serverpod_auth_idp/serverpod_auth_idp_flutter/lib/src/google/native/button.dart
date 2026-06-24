@@ -229,9 +229,8 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         getButtonText?.call(isLoading: isLoading) ??
             texts.signInButton ??
             _getButtonText(),
-        // No font family is set, so the label inherits the app's theme font,
-        // matching the other sign-in buttons. The shared textStyle is merged on
-        // top so it can still override the font.
+        // No font family, so the label inherits the theme font like the other
+        // buttons; the shared textStyle is merged on top.
         style: TextStyle(
           fontSize: switch (size) {
             GSIButtonSize.large => 16.0,
