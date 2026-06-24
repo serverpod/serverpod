@@ -10,8 +10,9 @@ import '../exceptions.dart';
 /// when the prebuilt bundle isn't published, or when a build is forced via
 /// [BinarySource.build].
 ///
-/// Requires the build toolchain on PATH: zig 0.16.x, cmake, pkg-config, make,
-/// bison, flex, perl, curl, tar/xz - and `bash` (MSYS2 on Windows). The scripts
+/// Requires the build toolchain on PATH: a C/C++ compiler (zig 0.16.x on
+/// macOS/Linux, mingw-w64 gcc on Windows), cmake, pkg-config, make, bison, flex,
+/// perl, curl, tar/xz - and `bash` (MSYS2 on Windows). The scripts
 /// are found relative to this package; override their location with the
 /// `SERVERPOD_PG_BUILD_DIR` env var (e.g. for AOT/compiled consumers where
 /// package resolution is unavailable).
@@ -40,8 +41,9 @@ class BundleBuilder {
     if (!await _onPath(bash)) {
       throw BinaryBuildException(
         'building the embedded PostgreSQL bundle from source requires '
-        '`$bash` (plus zig, cmake, make, bison, flex, perl). On Windows '
-        'install MSYS2 and set SERVERPOD_PG_BUILD_BASH to its bash.',
+        '`$bash` plus a C/C++ toolchain (zig on macOS/Linux, mingw-w64 gcc on '
+        'Windows) and cmake, make, bison, flex, perl. On Windows install MSYS2 '
+        '(with mingw-w64-gcc) and set SERVERPOD_PG_BUILD_BASH to its bash.',
       );
     }
 
@@ -52,12 +54,19 @@ class BundleBuilder {
     var arch = dash < 0 ? '' : platform.substring(dash + 1);
 
     var scratch = Directory.systemTemp.createTempSync('serverpod-pg-build-');
+    // The build runs under bash (MSYS2 on Windows). bash needs forward slashes:
+    // a backslashed `D:\...\build-all.sh` makes the script's own
+    // `dirname "$BASH_SOURCE"` collapse to "." (no `/`), and a backslashed
+    // PGBUILD mixes separators in every `$B/...` path. The forward-slash form
+    // (`D:/...`) is accepted by the native tooling too. No-op off Windows.
+    String fwd(String path) =>
+        Platform.isWindows ? path.replaceAll(r'\', '/') : path;
     var proc = await Process.start(
       bash,
-      [script.path],
+      [fwd(script.path)],
       environment: {
         ...Platform.environment,
-        'PGBUILD': scratch.path,
+        'PGBUILD': fwd(scratch.path),
         'BUNDLE_OS': os,
         'BUNDLE_ARCH': arch,
         'PG_VERSION': bom,

@@ -12,14 +12,21 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 B="${PGBUILD:-$HOME/pgzig}"
-WCC="$B/zigshim/zig-cc"
+WCC="$B/shim/cc"
 PREFIX="$B/out/pg"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 export MAKEFLAGS="-j$J"
+# Pin the macOS floor to Flutter's dev minimum (macOS 12 Monterey) so the bundle
+# runs on any Serverpod-capable Mac, decoupled from the build runner's SDK -
+# otherwise the runner's macOS version silently becomes the bundle's min-OS.
+# Respected by clang/ld/configure/cmake; override via the env var.
+case "$(uname -s)" in
+  Darwin) export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-12.0}" ;;
+esac
 
 mkdir -p "$B"
-cp -R "$HERE/zigshim" "$B/"            # the cc/c++ wrapper the scripts expect at $B/zigshim
-chmod +x "$B"/zigshim/*
+cp -R "$HERE/shim" "$B/"            # the cc/c++ wrapper the scripts expect at $B/shim
+chmod +x "$B"/shim/*
 
 echo "### fetch-sources";  "$HERE/fetch-sources.sh"
 echo "### build-core";     "$HERE/build-core.sh"

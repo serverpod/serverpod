@@ -6,7 +6,7 @@
 set -euo pipefail
 
 B="${PGBUILD:-$HOME/pgzig}"; SRC="$B/src/postgresql-16.13"; PREFIX="$B/out/pg"; LOG="$B/logs"; mkdir -p "$LOG"
-WCC="$B/zigshim/zig-cc"; WCXX="$B/zigshim/zig-cxx"
+WCC="$B/shim/cc"; WCXX="$B/shim/cxx"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 export CC="$WCC" CXX="$WCXX"
 
@@ -25,9 +25,16 @@ echo "=== configure ($(date +%H:%M:%S)) ==="
 # Surface config.log on failure - configure only prints "cannot proceed" to
 # stdout; the actual compiler/linker error (conftest) lives in config.log, and
 # the scratch tree is gone by the time CI logs are inspected.
+#
+# --disable-nls: don't ship translated messages. Otherwise configure may detect
+# a gettext (e.g. Homebrew on macOS) and enable NLS, which makes the installed
+# server headers `#include <libintl.h>`; PGXS doesn't carry gettext's include
+# path, so PostGIS then fails to compile ("libintl.h file not found"). We want
+# English-only messages in the embedded bundle regardless, so just turn it off.
 ./configure --prefix="$PREFIX" \
   --without-icu --without-readline --without-zlib \
   --without-zstd --without-lz4 --without-gssapi --without-ldap --without-openssl \
+  --disable-nls \
   || {
     echo "=== configure FAILED - config.log diagnostics ==="
     echo "--- resolved flags ---"
@@ -44,12 +51,19 @@ echo "=== configure ($(date +%H:%M:%S)) ==="
 echo "=== make ($(date +%H:%M:%S)) ==="
 make -j"$J"
 
-# --- Force-keep every backend global so extensions resolve them at runtime ---
-# zig 0.16's mach-o linker GCs globals unreferenced in the link graph and
-# ignores -rdynamic / -exported_symbols_list for them. The postgres extension
-# API (e.g. RelnameGetRelid) is referenced only by external dlopen'd modules,
-# so we force each backend global undefined (-Wl,-u,<sym>) which makes the
-# linker keep it; -rdynamic then exports them (like Linux --export-dynamic).
+# Backend symbol export so dlopen'd extensions resolve the postgres API.
+# Only the Linux ZIG path needs help: zig's ELF linker honours postgres's own
+# --export-dynamic, but to be safe we force-keep every backend global
+# (-Wl,-u,<sym>) + -rdynamic there. macOS (Apple clang) and Windows (mingw gcc)
+# export the backend natively via the normal link (-export_dynamic / import
+# library), so they just `make install` - no nm/relink dance. (The force-keep
+# was originally for zig's mach-o linker, but we no longer use zig on macOS.)
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*|Darwin)
+    echo "=== install ($(date +%H:%M:%S)) ==="
+    make install
+    ;;
+  *)
 echo "=== generate force-keep export list ($(date +%H:%M:%S)) ==="
 cd "$SRC/src/backend"
 rm -f postgres
@@ -65,6 +79,8 @@ echo "=== relink + install ($(date +%H:%M:%S)) ==="
 cd "$SRC"
 make -j"$J" PG_EXPORTS="@$B/uflags.rsp -rdynamic"
 make install PG_EXPORTS="@$B/uflags.rsp -rdynamic"
+    ;;
+esac
 
 echo "=== verify ($(date +%H:%M:%S)) ==="
 echo "pg_config --cc: $("$PREFIX/bin/pg_config" --cc)"

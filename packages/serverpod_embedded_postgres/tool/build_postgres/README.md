@@ -2,9 +2,14 @@
 
 These scripts build the binary bundles that `serverpod_embedded_postgres`
 downloads at runtime: **PostgreSQL 16.13 + PostGIS 3.5.4 + pgvector 0.8.3**,
-compiled with **Zig** (`zig cc`/`zig c++`) as a drop-in C/C++ compiler driving
-each project's own build system. No Docker; the output is a single relocatable
-`.tar.xz` per platform.
+driving each project's own build system via a thin compiler wrapper
+(`shim/_ccwrap`). The wrapper picks the compiler per platform: **Zig**
+(`zig cc`/`zig c++`) on Linux - for an old-glibc target - **Apple clang** on
+macOS, and **mingw-w64 gcc** on Windows. No Docker; the output is a single
+relocatable `.tar.xz` per platform.
+
+(macOS used zig too until zig's bundled clang 21.1.0 was found to miscompile the
+backend into an intermittent segfault - Apple clang builds it crash-free.)
 
 Unlike Zonky's stock binaries, these ship the spatial + vector extensions.
 
@@ -16,18 +21,19 @@ PGBUILD=/tmp/pgbuild packages/serverpod_embedded_postgres/tool/build_postgres/bu
 # => $PGBUILD/dist/serverpod-postgres-<bom>-<os>-<arch>.tar.xz (+ .sha256)
 ```
 
-Requires on `PATH`: `zig` 0.16.x, `cmake`, `pkg-config`, `bison`, `flex`,
-`make`, `curl`, `perl`, `tar`/`xz`. macOS also uses `xcrun`,
-`install_name_tool`, `codesign`. CI (`.github/workflows/build-embedded-postgres.yaml`)
-pins Zig via `mlugg/setup-zig` and runs this per-runner, publishing to a
+Requires on `PATH`: `cmake`, `pkg-config`, `bison`, `flex`, `make`, `curl`,
+`perl`, `tar`/`xz`, plus the platform compiler - `zig` 0.16.x on Linux, Apple
+clang (Xcode) on macOS (also `xcrun`/`install_name_tool`/`codesign`),
+mingw-w64 gcc on Windows. CI (`.github/workflows/build-embedded-postgres.yaml`)
+runs this per-runner (zig only on Linux), publishing to a
 `embedded-postgres-v<bom>` release.
 
-The recipe is Zig-version-sensitive (Mach-O symbol GC, `-bundle`, UBSan
-defaults). For local builds, [anyzig](https://github.com/marler8997/anyzig) is
+The Linux zig path is zig-version-sensitive (UBSan defaults, glibc target). For
+local Linux builds, [anyzig](https://github.com/marler8997/anyzig) is
 the recommended way to get the exact version - a single `zig` that fetches any
 version on demand. Because there is no `build.zig.zon` for it to read
 `minimum_zig_version` from (Zig is used only as a C/C++ compiler here), pass the
-version explicitly: `export ZIG_VERSION=0.16.0` and `zigshim` will invoke
+version explicitly: `export ZIG_VERSION=0.16.0` and `shim` will invoke
 `zig 0.16.0 …`. Leave `ZIG_VERSION` unset with a plain Zig install (CI does).
 
 ## Layout
@@ -41,38 +47,42 @@ version explicitly: `export ZIG_VERSION=0.16.0` and `zigshim` will invoke
 | `build-postgis.sh` | PostGIS against core + deps |
 | `package.sh` | stage + relocate + `tar.xz` + sha256 |
 | `build-all.sh` | orchestrates all of the above |
-| `zigshim/` | the `zig cc`/`zig c++` wrapper (see below) |
+| `shim/` | the per-platform compiler wrapper (zig/clang/gcc - see below) |
 
-## The `zigshim` wrapper
+## The `shim` wrapper
 
-Postgres + PGXS + PostGIS emit flags Zig's toolchain doesn't handle the same
-way as Apple clang. The wrapper (`zigshim/_zigwrap`) adapts them - all
-platform-gated (macOS unless noted) and no-ops elsewhere:
+`shim/_ccwrap` is the `CC`/`CXX` the build uses everywhere (so `pg_config`
+reports it and PGXS/PostGIS inherit it). It picks the real compiler per platform
+and adapts the flags each needs. C++ is selected by the *invocation* (`cxx`)
+not just the args, so C++ LINK steps (only `.o` inputs, no `.cpp`) still get the
+C++ driver + libc++/libstdc++.
 
-1. **`-x c++` / `.cpp` / `-std=c++` -> `zig c++`.** `zig cc` doesn't wire up the
-   libc++ headers; PostGIS compiles `.cpp` via `$(CC) -x c++`.
-2. **`-bundle [-bundle_loader X]` -> `-dynamiclib -Wl,-undefined,dynamic_lookup`.**
-   Zig's Mach-O linker has no `-bundle`; `dlopen` loads an `MH_DYLIB` fine.
-3. **`-fno-sanitize=undefined` for C++.** `zig c++` enables UBSan by default; the
-   `__ubsan_handle_*` calls would be unresolved in a `dlopen`'d module.
-4. **`-Wl,-headerpad_max_install_names` on macOS link steps** so `package.sh`
-   can rewrite install_names/rpaths to make the bundle relocatable.
-5. **`-Wno-unknown-warning-option` on real compiles only.** postgres's
-   `configure` bakes GCC-only warning flags (`-Wimplicit-fallthrough=3`,
-   `-Wno-stringop-truncation`) into CFLAGS, which PostGIS/pgvector inherit;
-   clang doesn't recognize them and emits a cosmetic note on every file. This
-   silences it for actual compiles while leaving autoconf/cmake probe compiles
-   (`conftest.*`, `CMakeScratch/…`, `*CompilerId.c`) untouched, so those probes
-   stay discriminating about which flags clang really supports.
-6. **`-target x86_64-windows-gnu` on a Windows/MSYS2 host.** Forces the mingw
-   (gnu) ABI + Zig's bundled mingw-w64 sysroot, so we don't pick up the MSVC ABI
-   when Visual Studio is also present (e.g. GitHub's windows runners).
+- **macOS -> Apple clang** (`clang`/`clang++`). It implements `-bundle`/
+  `-bundle_loader` and `-export_dynamic` natively and defaults UBSan off, so no
+  flag rewriting is needed - only `-Wl,-headerpad_max_install_names` on link
+  steps, so `package.sh` can rewrite install_names/rpaths for relocation. (macOS
+  used zig until its bundled clang 21.1.0 was found to miscompile the backend
+  into an intermittent segfault; Apple clang builds it crash-free.)
+- **Windows -> mingw-w64 `gcc`/`g++`.** Postgres's win32 build relies on GNU-ld
+  semantics zig's lld lacks (notably `--allow-multiple-definition` for its
+  `getopt` vs the CRT's); gcc handles `-shared`/`.o`/the win32 LDFLAGS natively.
+- **Linux -> `zig cc`/`zig c++`**, plus `-target <arch>-linux-gnu.2.28` so the
+  bundle links against the oldest glibc Dart/Flutter support (Debian 10), not
+  the build runner's - the redistribution win plain gcc can't give. zig-only
+  adaptations: route `.cpp`/`-x c++`/`-std=c++` to `zig c++` (else libc++
+  headers like `<algorithm>` are missing); `-fno-sanitize=undefined` (zig
+  defaults UBSan on; the `__ubsan_handle_*` calls would be unresolved in
+  dlopen'd modules / static libs); `-bundle -> -dynamiclib -undefined
+  dynamic_lookup` (zig's lld has no `-bundle` - unused now that only Linux,
+  which uses `-shared`, takes this path); and `-Wno-unknown-warning-option` on
+  real compiles (postgres bakes GCC-only warning flags into CFLAGS that clang
+  doesn't know - left off conftest/cmake probes so they stay discriminating).
 
-`build-core.sh` additionally force-keeps every backend global with
-`-Wl,-u,<sym>` (+ `-rdynamic`): Zig's Mach-O linker garbage-collects globals
-unreferenced in the link graph (ignoring `-rdynamic` / `-exported_symbols_list`),
-but extension modules resolve those symbols against the postmaster at load - the
-macOS equivalent of Linux `--export-dynamic`.
+`build-core.sh` force-keeps every backend global with `-Wl,-u,<sym>` (+
+`-rdynamic`) **on the Linux zig path only** - a belt-and-braces export of the
+extension API (postgres's own `--export-dynamic` should suffice on ELF). macOS
+(Apple `ld`'s `-export_dynamic`) and Windows (its import library) export the
+backend on a plain `make install`, no nm/relink dance.
 
 At runtime the launcher must set `PROJ_LIB=<install>/share/proj` (the supervisor
 does this) because PROJ bakes in the build-time data path.
@@ -81,7 +91,7 @@ does this) because PROJ bakes in the build-time data path.
 
 | platform | status |
 |---|---|
-| macOS x64 | ✅ built + bundle verified end-to-end |
-| macOS arm64 | ⏳ same recipe; CI re-signs after `install_name_tool` |
-| Linux x64 / arm64 | ⏳ builds; relocation packaging (ELF `$ORIGIN` rpath) is TODO - also pin glibc via a Zig target triple and add `-fPIC` for static deps linked into shared libs |
-| Windows x64 | ⏳ builds via MSYS2 + zig->`x86_64-windows-gnu`; geo DLLs beside `postgres.exe` (no rpath). UNVALIDATED - pending CI. Likely rough spots: postgres's `windres` step, postgis-on-mingw configure, where postgres's own DLLs (libpq) land |
+| macOS x64 | ✅ Apple clang; bundle verified end-to-end (crash repro + pgvector/PostGIS/PROJ/GEOS) |
+| macOS arm64 | ✅ same recipe (Apple clang); `package.sh` re-signs after `install_name_tool` - pending CI confirmation |
+| Linux x64 / arm64 | ⏳ builds (zig, glibc-2.28 target); `--without-address-standardizer`; relocation packaging (ELF `$ORIGIN` rpath) status per CI |
+| Windows x64 | ⏳ builds via mingw-w64 gcc; GEOS/PROJ DLLs use `CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS` + sit beside `postgres.exe`; being brought up on CI (PostGIS-on-mingw + packaging next) |

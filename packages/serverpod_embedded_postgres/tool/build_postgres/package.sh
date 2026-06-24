@@ -29,7 +29,7 @@ Darwin)
   # postgres bakes absolute install_names + build-tree rpaths; rewrite every
   # Mach-O's build-prefix refs to @rpath/<leaf> and add the @loader_path rpath
   # that resolves to the bundle's lib/. Relies on the
-  # -headerpad_max_install_names that _zigwrap adds on Darwin link steps.
+  # -headerpad_max_install_names that _ccwrap adds on Darwin link steps.
   relocate() {  # $1=file  $2=rpath-to-lib
     local f="$1" rp="$2" dep
     case "$f" in *.dylib) install_name_tool -id "@rpath/$(basename "$f")" "$f" 2>/dev/null || true ;; esac
@@ -57,14 +57,41 @@ MINGW*|MSYS*|CYGWIN*)
   cp "$DEPS"/bin/libgeos_c*.dll "$DEPS"/bin/libgeos*.dll "$DEPS"/bin/libproj*.dll "$STAGE/bin/" 2>/dev/null || true
   ;;
 *)
-  # Linux (UNVALIDATED - pending CI): .so in lib/; ELF $ORIGIN-rpath relocation
-  # is still TODO (postgis-3.so must find lib/ via -Wl,-rpath,'$ORIGIN/..').
+  # Linux: shared geo deps live in lib/ next to postgres's own libs. Rewrite ELF
+  # rpaths to $ORIGIN-relative so the relocated postgis-3.so finds libgeos_c /
+  # libproj in lib/, and those find each other - the ELF analog of the macOS
+  # install_name rewrite above. patchelf (post-build) avoids $ORIGIN being
+  # mangled by make/cmake at link time.
   cp -P "$DEPS"/lib/libgeos_c.so* "$DEPS"/lib/libgeos.so* "$DEPS"/lib/libproj.so* "$STAGE/lib/" 2>/dev/null || true
-  echo "WARNING: Linux \$ORIGIN-rpath relocation not implemented yet; bundle may not be portable." >&2
+  command -v patchelf >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq patchelf; }
+  # geo libs in lib/ resolve their siblings via $ORIGIN
+  for f in "$STAGE"/lib/libgeos*.so* "$STAGE"/lib/libproj*.so*; do
+    if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN' "$f"; fi
+  done
+  # extensions in lib/postgresql/ reach the geo deps + postgres libs in lib/
+  for f in "$STAGE"/lib/postgresql/*.so; do
+    if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN/..' "$f"; fi
+  done
   ;;
 esac
 
 cd "$OUT"
+# Windows: PostGIS installs ~345 extension upgrade-SQL files as symlinks, and on
+# mingw their targets are bundle-root-relative (./share/...) - unresolvable from
+# the file's own dir, so tar -h can't follow them and a plain Windows runner
+# can't recreate them on extraction ("Cannot create symlink ... No such file").
+# Every target is a file in the SAME extension dir, so resolve each by basename
+# (following symlink chains) and replace it with a real copy; the bundle then
+# carries no symlinks. macOS/Linux keep theirs (smaller, and they extract fine).
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    find "$STAGE" -type l 2>/dev/null | while IFS= read -r link; do
+      d=$(dirname "$link"); t=$(basename "$(readlink "$link")"); n=0
+      while [ -L "$d/$t" ] && [ "$n" -lt 32 ]; do t=$(basename "$(readlink "$d/$t")"); n=$((n+1)); done
+      [ -f "$d/$t" ] && { rm -f "$link"; cp "$d/$t" "$link"; }
+    done
+    ;;
+esac
 # Archive STAGE's *contents* (bin/ lib/ share/ at the tar root), NOT a wrapper
 # directory: BinaryStore extracts verbatim into installDir and expects
 # installDir/bin/postgres, with no leading-component strip.
