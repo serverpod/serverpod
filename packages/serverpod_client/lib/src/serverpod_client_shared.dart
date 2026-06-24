@@ -70,6 +70,9 @@ abstract class ServerpodClientRequestDelegate {
     bool useCookieAuth = false,
   });
 
+  /// Whether the transport can carry an `HttpOnly` auth cookie.
+  bool get supportsCookieAuth => false;
+
   /// Closes the connection to the server.
   /// This delegate should not be used after calling this.
   void close();
@@ -559,6 +562,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
           authenticated &&
           provider is CookieAuthKeyProvider &&
           provider.usesCookies;
+      if (useCookieAuth && !_requestDelegate.supportsCookieAuth) {
+        throw StateError(
+          'Cookie-based web auth is only supported on the web (browser) platform. '
+          'Run native clients in header mode (cookieAuth: false).',
+        );
+      }
       var authenticationValue = authenticated && !useCookieAuth
           ? await provider?.authHeaderValue
           : null;

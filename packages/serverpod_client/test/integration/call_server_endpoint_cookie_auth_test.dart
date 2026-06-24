@@ -15,16 +15,19 @@ void main() {
   late Uri httpHost;
   late TestServerpodClient client;
   late Future<void> Function() closeServer;
+  late int requestCount;
   late List<String?> receivedAuthModeMarkers;
   late List<String?> receivedAuthHeaders;
 
-  group('Given a cookie-auth client', () {
+  group('Given a cookie-auth client on a transport without a cookie jar', () {
     setUp(() async {
+      requestCount = 0;
       receivedAuthModeMarkers = [];
       receivedAuthHeaders = [];
 
       closeServer = await TestHttpServer.startServer(
         httpRequestHandler: (request) async {
+          requestCount++;
           receivedAuthModeMarkers.add(
             request.headers[webAuthModeHeaderName]?.firstOrNull,
           );
@@ -44,18 +47,20 @@ void main() {
 
     test(
       'when an authenticated call is made '
-      'then the cookie-mode marker is sent and no Authorization header is set.',
+      'then it fails loudly because the transport cannot carry the auth cookie.',
       () async {
-        await client.callServerEndpoint<String>('test', 'method', {});
+        await expectLater(
+          client.callServerEndpoint<String>('test', 'method', {}),
+          throwsA(isA<StateError>()),
+        );
 
-        expect(receivedAuthModeMarkers, [webAuthModeCookie]);
-        expect(receivedAuthHeaders, [null]);
+        expect(requestCount, 0);
       },
     );
 
     test(
       'when an unauthenticated call is made '
-      'then the cookie-mode marker is omitted so the server treats the call as anonymous.',
+      'then cookie mode is suppressed: no marker, no Authorization header, and the call succeeds.',
       () async {
         await client.callServerEndpoint<String>(
           'test',
@@ -64,6 +69,7 @@ void main() {
           authenticated: false,
         );
 
+        expect(requestCount, 1);
         expect(receivedAuthModeMarkers, [null]);
         expect(receivedAuthHeaders, [null]);
       },

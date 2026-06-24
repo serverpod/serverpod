@@ -28,6 +28,9 @@ class ServerpodClientRequestDelegateImpl
   }
 
   @override
+  bool get supportsCookieAuth => true;
+
+  @override
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
