@@ -1,6 +1,8 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -164,10 +166,12 @@ void main() {
   });
 
   group('Given a class with table name when generating code', () {
+    var tableName = 'example_table';
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
-          .withTableName('example_table')
+          .withTableName(tableName)
+          .withDatabase(ModelDatabaseDefinition.all)
           .withSharedPackageName(sharedPackageName)
           .build(),
     ];
@@ -186,55 +190,163 @@ void main() {
           compilationUnit,
           name: testClassName,
         );
-    group(
-      'then the class named $testClassName',
-      () {
-        test('still implements SerializableModel.', () {
-          expect(
-            CompilationUnitHelpers.hasImplementsClause(
-              maybeClassNamedExample!,
-              name: 'SerializableModel',
-            ),
-            isTrue,
-            reason: 'Missing extends clause for SerializableModel.',
-          );
-        });
 
-        test('has id in constructor.', () {
-          expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(
-              maybeClassNamedExample!,
-              name: null,
-              parameters: ['int? id'],
-            ),
-            isTrue,
-            reason: 'Missing declaration for $testClassName constructor.',
-          );
-        });
-
-        test('is generated with id field.', () {
-          expect(
-            CompilationUnitHelpers.hasFieldDeclaration(
-              maybeClassNamedExample!,
-              name: 'id',
-              type: 'int?',
-            ),
-            isTrue,
-            reason: 'Declaration for id field was should be generated.',
-          );
-        });
-      },
-    );
-
-    test('then a class named ${testClassName}Include does NOT exist.', () {
+    test('then a class named $testClassName is generated.', () {
       expect(
-        CompilationUnitHelpers.hasClassDeclaration(
-          compilationUnit,
-          name: '${testClassName}Include',
-        ),
-        isFalse,
-        reason: 'Class ${testClassName}Include should not be generated.',
+        maybeClassNamedExample,
+        isNotNull,
+        reason: 'Missing definition for class named $testClassName.',
       );
+    });
+
+    group('then the class named $testClassName', () {
+      test('implements TableRow.', () {
+        expect(
+          CompilationUnitHelpers.hasImplementsClause(
+            maybeClassNamedExample!,
+            name: 'TableRow',
+          ),
+          isTrue,
+          reason: 'Missing extends clause for TableRow.',
+        );
+      });
+
+      test('has TableRow implements generic to the default id type int.', () {
+        var typeName =
+            maybeClassNamedExample!
+                    .implementsClause
+                    ?.interfaces
+                    .first
+                    .typeArguments
+                    ?.arguments
+                    .first
+                as NamedType?;
+
+        expect(
+          typeName?.name.toString(),
+          'int',
+          reason: 'Wrong generic type for TableRow.',
+        );
+      });
+
+      test('implements ProtocolSerialization', () {
+        expect(
+          CompilationUnitHelpers.hasImplementsClause(
+            maybeClassNamedExample!,
+            name: 'ProtocolSerialization',
+          ),
+          isTrue,
+          reason: 'Missing implements clause for ProtocolSerialization.',
+        );
+      });
+
+      group('has a constructor', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          maybeClassNamedExample!,
+          name: '_',
+        );
+
+        test('defined', () {
+          expect(constructor, isNotNull, reason: 'No private constructor');
+        });
+
+        test('initializing id in initializer list', () {
+          expect(constructor?.parameters.toSource(), '({this.id})');
+        });
+      });
+
+      test('has a static Singleton instance.', () {
+        expect(
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExample!,
+            name: 't',
+            isFinal: true,
+            isStatic: true,
+            initializerMethod: '${testClassName}Table',
+          ),
+          isTrue,
+          reason: 'Missing declaration for ${testClassName}Table singleton.',
+        );
+      });
+
+      test('has a table getter.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'table',
+          ),
+          isTrue,
+          reason: 'Missing declaration for table method.',
+        );
+      });
+
+      test(
+        'has Table generic to the default id type int as table getter return type.',
+        () {
+          var maybeTableGetter =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                maybeClassNamedExample!,
+                name: 'table',
+              );
+
+          var typeArguments = maybeTableGetter?.returnType as NamedType?;
+          var genericType = typeArguments?.typeArguments?.arguments.first;
+
+          expect(
+            (genericType as NamedType?)?.name.toString(),
+            'int',
+            reason: 'Wrong generic type for Table getter.',
+          );
+        },
+      );
+
+      test('is generated with id field.', () {
+        expect(
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExample!,
+            name: 'id',
+          ),
+          isTrue,
+          reason: 'Declaration for id field should be generated.',
+        );
+      });
+
+      test('has type of the id field default to int.', () {
+        var maybeIdField = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExample!,
+          name: 'id',
+        );
+
+        expect(
+          (maybeIdField?.fields.type as NamedType).name.toString(),
+          'int',
+          reason: 'Wrong type for the id field.',
+        );
+      });
+
+      test('has a static include method.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'include',
+            isStatic: true,
+          ),
+          isTrue,
+          reason: 'Missing declaration for static include method.',
+        );
+      });
+
+      test('has a static includeList method.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'includeList',
+            isStatic: true,
+          ),
+          isTrue,
+          reason: 'Missing declaration for static includeList method.',
+        );
+      });
     });
   });
 

@@ -1,27 +1,38 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
+const sharedPackageName = 'shared_pkg';
 const projectName = 'example_project';
-final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = DartServerCodeGenerator();
+const serverPathParts = ['server_root'];
+final config = GeneratorConfigBuilder()
+    .withServerPackageDirectoryPathParts(serverPathParts)
+    .withSharedModelsSourcePathsParts({
+      sharedPackageName: ['packages', 'shared'],
+    })
+    .withModules([])
+    .build();
+const generator = DartSharedCodeGenerator();
 
 void main() {
   var testClassName = 'Example';
   var repositoryClassName = '${testClassName}Repository';
   var testClassFileName = 'example';
-  var expectedFilePath = path.join(
+  var expectedFilePath = path.joinAll([
+    ...serverPathParts,
+    'packages',
+    'shared',
     'lib',
     'src',
     'generated',
     '$testClassFileName.dart',
-  );
+  ]);
 
   group('Given a class with table name when generating code', () {
     var tableName = 'example_table';
@@ -29,6 +40,8 @@ void main() {
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
+          .withDatabase(ModelDatabaseDefinition.all)
+          .withSharedPackageName(sharedPackageName)
           .build(),
     ];
 
@@ -373,14 +386,14 @@ void main() {
         test('that takes the lockMode as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('required _i1.LockMode lockMode'),
+            matches(r'required _i\d+\.LockMode lockMode'),
           );
         });
 
         test('that takes the transaction as a named required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('required _i1.Transaction transaction'),
+            matches(r'required _i\d+\.Transaction transaction'),
           );
         });
 
@@ -389,8 +402,8 @@ void main() {
           () {
             expect(
               lockRowsMethod?.parameters?.toSource(),
-              contains(
-                '_i1.LockBehavior lockBehavior = _i1.LockBehavior.wait',
+              matches(
+                r'_i\d+\.LockBehavior lockBehavior = _i\d+\.LockBehavior\.wait',
               ),
             );
           },
@@ -444,13 +457,6 @@ void main() {
           expect(
             insertMethod?.parameters?.toSource(),
             contains('bool ignoreConflicts = false'),
-          );
-        });
-
-        test('that takes the noReturn bool as an optional param', () {
-          expect(
-            insertMethod?.parameters?.toSource(),
-            contains('bool noReturn = false'),
           );
         });
       });
@@ -553,13 +559,6 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
-
-        test('that takes the noReturn bool as an optional param', () {
-          expect(
-            updateMethod?.parameters?.toSource(),
-            contains('bool noReturn = false'),
-          );
-        });
       });
 
       group('has an update row method', () {
@@ -647,38 +646,10 @@ void main() {
           );
         });
 
-        test('that takes the orderBy column as an optional param', () {
-          expect(
-            deleteMethod?.parameters?.toSource(),
-            contains('OrderByBuilder<ExampleTable>? orderBy'),
-          );
-        });
-
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            deleteMethod?.parameters?.toSource(),
-            contains('bool orderDescending = false'),
-          );
-        });
-
-        test('that takes the orderByList as an optional param', () {
-          expect(
-            deleteMethod?.parameters?.toSource(),
-            contains('OrderByListBuilder<ExampleTable>? orderByList'),
-          );
-        });
-
         test('that takes the transaction object as an optional param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
-          );
-        });
-
-        test('that takes the noReturn bool as an optional param', () {
-          expect(
-            deleteMethod?.parameters?.toSource(),
-            contains('bool noReturn = false'),
           );
         });
       });
@@ -774,38 +745,10 @@ void main() {
           );
         });
 
-        test('that takes the orderBy column as an optional param', () {
-          expect(
-            deleteWhereMethod?.parameters?.toSource(),
-            contains('OrderByBuilder<ExampleTable>? orderBy'),
-          );
-        });
-
-        test('that takes the orderDescending bool as an optional param', () {
-          expect(
-            deleteWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending = false'),
-          );
-        });
-
-        test('that takes the orderByList as an optional param', () {
-          expect(
-            deleteWhereMethod?.parameters?.toSource(),
-            contains('OrderByListBuilder<ExampleTable>? orderByList'),
-          );
-        });
-
         test('that takes the transaction object as an optional param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
-          );
-        });
-
-        test('that takes the noReturn bool as an optional param', () {
-          expect(
-            deleteWhereMethod?.parameters?.toSource(),
-            contains('bool noReturn = false'),
           );
         });
       });
@@ -915,8 +858,10 @@ void main() {
           var params = updateByIdMethod?.parameters?.toSource();
           expect(
             params,
-            contains(
-              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            matches(
+              r'required _i\d+\.ColumnValueListBuilder<'
+              '$testClassName'
+              r'UpdateTable> columnValues',
             ),
           );
         });
@@ -967,8 +912,10 @@ void main() {
           var params = updateWhereMethod?.parameters?.toSource();
           expect(
             params,
-            contains(
-              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            matches(
+              r'required _i\d+\.ColumnValueListBuilder<'
+              '$testClassName'
+              r'UpdateTable> columnValues',
             ),
           );
         });
@@ -977,8 +924,10 @@ void main() {
           var params = updateWhereMethod?.parameters?.toSource();
           expect(
             params,
-            contains(
-              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            matches(
+              r'required _i\d+\.WhereExpressionBuilder<'
+              '$testClassName'
+              r'Table> where',
             ),
           );
         });
@@ -1000,7 +949,7 @@ void main() {
         test('that takes the orderBy column as an optional param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
-            contains('_i1.OrderByBuilder<${testClassName}Table>? orderBy'),
+            contains('OrderByBuilder<${testClassName}Table>? orderBy'),
           );
         });
 
@@ -1008,7 +957,7 @@ void main() {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains(
-              '_i1.OrderByListBuilder<${testClassName}Table>? orderByList',
+              'OrderByListBuilder<${testClassName}Table>? orderByList',
             ),
           );
         });
@@ -1026,27 +975,21 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
-
-        test('that takes the noReturn bool as an optional param', () {
-          expect(
-            updateWhereMethod?.parameters?.toSource(),
-            contains('bool noReturn = false'),
-          );
-        });
       });
     }, skip: repositoryClass == null);
   });
 
   test(
-    'Given a class with table name declared on the project '
+    'Given a class with table name declared on a shared package '
     'when generating code '
-    'then the DatabaseSession is imported from the serverpod package.',
+    'then the DatabaseSession is imported from the serverpod_database package.',
     () {
       var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
             .withTableName('example_table')
             .withDatabase(ModelDatabaseDefinition.all)
+            .withSharedPackageName(sharedPackageName)
             .build(),
       ];
 
@@ -1075,7 +1018,7 @@ void main() {
           compilationUnit,
           uri: 'package:serverpod/serverpod.dart',
         ),
-        isTrue,
+        isFalse,
       );
 
       expect(
@@ -1083,7 +1026,7 @@ void main() {
           compilationUnit,
           uri: 'package:serverpod_database/serverpod_database.dart',
         ),
-        isFalse,
+        isTrue,
       );
     },
   );
