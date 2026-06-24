@@ -7,7 +7,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_shared/process_io.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import 'binary/binary_source.dart';
 import 'binary/binary_store.dart';
+import 'binary/bundle_builder.dart';
 import 'binary/executable.dart';
 import 'binary/serverpod_bundle.dart';
 import 'cluster/cluster_store.dart';
@@ -193,6 +195,8 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       installDir = await binaryStore.ensure(
         artifact,
         onProgress: options.onProgress,
+        source: resolveBinarySource(options.binarySource),
+        builder: const BundleBuilder(),
       );
     } finally {
       binaryStore.close();
