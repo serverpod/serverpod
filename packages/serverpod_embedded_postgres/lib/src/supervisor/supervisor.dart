@@ -103,9 +103,16 @@ class Supervisor implements SupervisedProcess {
       environment: environment,
     );
 
+    // Diagnostic: when SERVERPOD_PG_LOG_STDERR=1, mirror the postmaster log to
+    // this process's stderr so a backend crash ("server process ... was
+    // terminated by signal N", PANIC, out-of-memory, etc.) shows up inline in
+    // CI output. Otherwise it only lands in the per-datadir postgres.log, which
+    // a test runner never surfaces.
+    var mirrorLog = Platform.environment['SERVERPOD_PG_LOG_STDERR'] == '1';
     void handleLine(String line) {
       logSink.writeln(line);
       ring.add(line);
+      if (mirrorLog) stderr.writeln('[pg] $line');
     }
 
     process.stdout

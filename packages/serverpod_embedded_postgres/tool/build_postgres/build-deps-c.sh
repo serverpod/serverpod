@@ -3,9 +3,18 @@
 # (sqlite3 - needed by PROJ; libxml2 - GML/KML; json-c - GeoJSON)
 set -euo pipefail
 B="${PGBUILD:-$HOME/pgzig}"; DEPS="$B/deps"; SRC="$B/src"; LOG="$B/logs"; mkdir -p "$LOG"
-WCC="$B/zigshim/zig-cc"
+WCC="$B/shim/cc"
 export PATH="$DEPS/bin:$PATH"
 J="$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+
+# json-c builds with cmake, which can't identify the zig wrapper on Windows and
+# then names the lib MSVC-style (json-c.lib, not libjson-c.a). The wrapper is a
+# pass-through to gcc there, so let cmake use native gcc; zig wrapper elsewhere.
+# (sqlite/libxml2 use autoconf, which needs no compiler-ID table, so they're ok.)
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*) CMAKE_CC=gcc ;;
+  *)                    CMAKE_CC="$WCC" ;;
+esac
 
 echo "=== sqlite ($(date +%H:%M:%S)) ==="
 cd "$SRC/sqlite-autoconf-3470200"
@@ -29,7 +38,7 @@ cd "$SRC/json-c-0.18"
 rm -rf build && mkdir build && cd build
 cmake -G "Unix Makefiles" \
   -DCMAKE_INSTALL_PREFIX="$DEPS" \
-  -DCMAKE_C_COMPILER="$WCC" \
+  -DCMAKE_C_COMPILER="$CMAKE_CC" \
   -DBUILD_SHARED_LIBS=OFF \
   -DBUILD_TESTING=OFF \
   -DCMAKE_BUILD_TYPE=Release \

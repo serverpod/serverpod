@@ -86,12 +86,22 @@ class BinaryStore {
 
   /// Top-level binary cache directory for the current user.
   ///
+  /// `SERVERPOD_PG_CACHE_DIR`, if set, overrides all of the below - used by CI
+  /// to stage the bundle into a fixed, workspace-relative directory so it can
+  /// be handed between jobs as an artifact (the per-user defaults differ per
+  /// OS, which artifact paths can't express portably).
+  ///
   ///   - macOS:   `~/Library/Caches/serverpod/pg-binaries`
   ///   - Linux:   `$XDG_CACHE_HOME/serverpod/pg-binaries` (or
   ///              `~/.cache/serverpod/pg-binaries` if XDG_CACHE_HOME unset)
   ///   - Windows: `%LOCALAPPDATA%\serverpod\Cache\pg-binaries`
   static Directory defaultCacheRoot() {
     final env = Platform.environment;
+
+    var override = env['SERVERPOD_PG_CACHE_DIR'];
+    if (override != null && override.isNotEmpty) {
+      return Directory(override);
+    }
 
     if (Platform.isMacOS || Platform.isIOS) {
       var home =
