@@ -28,9 +28,9 @@ class MicrosoftSignInButton extends StatelessWidget {
 
   /// The brand color preset (light or dark).
   ///
-  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
-  /// uniform default). Set it to opt this button into Microsoft's brand colors.
-  final MicrosoftButtonStyle? style;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
+  final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
   final MicrosoftButtonSize? size;
@@ -58,7 +58,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type = MicrosoftButtonType.standard,
-    this.style,
+    this.style = MicrosoftButtonStyle.light,
     this.size,
     this.text,
     this.shape,
@@ -74,49 +74,51 @@ class MicrosoftSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.microsoftSignInTexts;
-    final shared = context.signInButtonStyle;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final size =
-        this.size ?? _toMicrosoftSize(shared.size) ?? MicrosoftButtonSize.large;
+        this.size ??
+        _toMicrosoftSize(shared?.size) ??
+        MicrosoftButtonSize.large;
     final shape =
         this.shape ??
-        _toMicrosoftShape(shared.shape) ??
+        _toMicrosoftShape(shared?.shape) ??
         MicrosoftButtonShape.pill;
     final text =
         this.text ??
-        _toMicrosoftText(shared.text) ??
+        _toMicrosoftText(shared?.text) ??
         MicrosoftButtonText.continueWith;
     final logoAlignment =
         this.logoAlignment ??
-        _toMicrosoftLogoAlignment(shared.logoAlignment) ??
+        _toMicrosoftLogoAlignment(shared?.logoAlignment) ??
         MicrosoftButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
-    final textStyle = this.textStyle ?? shared.textStyle;
+    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = MicrosoftSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style ?? MicrosoftButtonStyle.light,
+      style: style,
       width: minimumWidth,
     );
 
-    // An explicit brand `style` uses Microsoft's brand colors; otherwise the
-    // shared (uniform, theme-aware) colors apply.
+    // A shared style (e.g. inside SignInWidget) applies the common, theme-aware
+    // colors; on its own the button uses its Microsoft brand colors.
     final Color backgroundColor;
     final Color foregroundColor;
     final Color borderColor;
     final bool showBorder;
-    if (style != null) {
-      backgroundColor = buttonStyle.backgroundColor;
-      foregroundColor = buttonStyle.foregroundColor;
-      borderColor = buttonStyle.borderSide.color;
-      showBorder = style == MicrosoftButtonStyle.light;
-    } else {
+    if (shared != null) {
       final colors = shared.resolveColors(context);
       backgroundColor = colors.background;
       foregroundColor = colors.foreground;
       borderColor = colors.border;
       showBorder = true;
+    } else {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.foregroundColor;
+      borderColor = buttonStyle.borderSide.color;
+      showBorder = style == MicrosoftButtonStyle.light;
     }
 
     return ConstrainedBox(

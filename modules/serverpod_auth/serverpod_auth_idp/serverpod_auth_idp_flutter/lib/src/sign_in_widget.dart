@@ -102,10 +102,11 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Microsoft sign-in.
   final MicrosoftSignInWidget? microsoftSignInWidget;
 
-  /// Shared styling applied to every sign-in button.
+  /// Customizes the common styling applied to every sign-in button.
   ///
-  /// Forwarded to all provider buttons — including external ones — as defaults
-  /// each widget can still override. See [SignInButtonStyle].
+  /// Buttons inside [SignInWidget] always adopt a shared common appearance
+  /// instead of their brand colors; set this to customize that appearance for
+  /// all of them — including external ones. See [SignInButtonStyle].
   final SignInButtonStyle? buttonStyle;
 
   /// Creates an authentication onboarding widget.
@@ -266,12 +267,12 @@ class _SignInWidgetState extends State<SignInWidget> {
       ),
     );
 
-    final buttonStyle = widget.buttonStyle;
-    if (buttonStyle != null) {
-      child = SignInButtonStyleProvider(style: buttonStyle, child: child);
-    }
-
-    return child;
+    // Always provide a shared style so every button inside adopts the common
+    // appearance; [buttonStyle] customizes it when given.
+    return SignInButtonStyleProvider(
+      style: widget.buttonStyle ?? const SignInButtonStyle(),
+      child: child,
+    );
   }
 }
 

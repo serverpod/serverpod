@@ -153,31 +153,28 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
   @override
   Widget build(BuildContext context) {
     final texts = context.googleSignInTexts;
-    final shared = context.signInButtonStyle;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
 
     // Resolve the shared style so the standalone native button honors it too
     // (GoogleSignInWidget passes explicit values, which win when provided).
     final effectiveLogoAlignment =
         logoAlignment ??
-        _toGoogleLogoAlignment(shared.logoAlignment) ??
+        _toGoogleLogoAlignment(shared?.logoAlignment) ??
         GSIButtonLogoAlignment.center;
-    final effectiveTheme = theme ?? GSIButtonTheme.outline;
     final effectiveShape =
-        shape ?? _toGoogleShape(shared.shape) ?? GSIButtonShape.pill;
-    // When no brand theme or explicit color is set, use the shared (uniform,
-    // theme-aware) colors so the button matches the others.
-    final sharedColors = theme == null && backgroundColor == null
-        ? shared.resolveColors(context)
-        : null;
+        shape ?? _toGoogleShape(shared?.shape) ?? GSIButtonShape.pill;
+    // Inside a shared style, apply its common (theme-aware) colors; on its own
+    // the button uses its Google brand theme.
+    final sharedColors = shared?.resolveColors(context);
     // The web GSIButtonShape has no rounded option, so render the shared rounded
     // shape with an explicit radius.
     final effectiveBorderRadius =
         borderRadius ??
-        (shape == null && shared.shape == SignInButtonShape.rounded
+        (shape == null && shared?.shape == SignInButtonShape.rounded
             ? BorderRadius.circular(8)
             : null);
     final buttonStyle = GoogleSignInStyle.fromConfiguration(
-      theme: effectiveTheme,
+      theme: theme,
       shape: effectiveShape,
       size: size,
       width: minimumWidth,
@@ -211,12 +208,10 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       isDisabled: isDisabled,
       isCentered: true,
       size: size,
-      borderRadius: effectiveTheme == GSIButtonTheme.outline
+      borderRadius: theme == GSIButtonTheme.outline
           ? null
           : buttonStyle.borderRadius,
-      backgroundColor: effectiveTheme == GSIButtonTheme.outline
-          ? null
-          : Colors.white,
+      backgroundColor: theme == GSIButtonTheme.outline ? null : Colors.white,
     );
 
     final text = Padding(
@@ -237,7 +232,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
             GSIButtonSize.medium => 14.0,
             GSIButtonSize.small => 12.0,
           },
-        ).merge(textStyle ?? shared.textStyle),
+        ).merge(textStyle ?? shared?.textStyle),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

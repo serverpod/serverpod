@@ -76,9 +76,10 @@ class AppleSignInWidget extends StatefulWidget {
 
   /// The brand color preset (black, white, or white-outlined).
   ///
-  /// When null, the button approximates the shared [SignInButtonStyle] colors
-  /// (or the uniform default) with its nearest preset.
-  final AppleButtonStyle? style;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead,
+  /// approximated with Apple's nearest preset.
+  final AppleButtonStyle style;
 
   /// The button size.
   ///
@@ -112,7 +113,7 @@ class AppleSignInWidget extends StatefulWidget {
     this.onError,
     this.scopes = AppleAuthController.defaultScopes,
     this.type,
-    this.style,
+    this.style = AppleButtonStyle.black,
     this.size,
     this.shape,
     this.logoAlignment,

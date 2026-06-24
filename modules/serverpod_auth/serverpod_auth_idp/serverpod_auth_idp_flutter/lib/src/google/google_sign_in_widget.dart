@@ -92,9 +92,9 @@ class GoogleSignInWidget extends StatefulWidget {
 
   /// The brand color theme (outline, filledBlue, or filledBlack).
   ///
-  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
-  /// uniform default). Set it to opt this button into Google's brand colors.
-  final GSIButtonTheme? theme;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
+  final GSIButtonTheme theme;
 
   /// The button size.
   ///
@@ -177,7 +177,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.attemptLightweightSignIn = false,
     this.scopes = GoogleAuthController.defaultScopes,
     this.type = GSIButtonType.standard,
-    this.theme,
+    this.theme = GSIButtonTheme.outline,
     this.size,
     this.text,
     this.shape,
@@ -262,14 +262,6 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
         ? BorderRadius.circular(8)
         : null;
 
-    // An explicit brand `theme` uses Google's brand colors; otherwise the shared
-    // (uniform, theme-aware) colors apply to the native button. The web iframe
-    // can only take a brand theme, so it falls back to outline.
-    final effectiveTheme = widget.theme ?? GSIButtonTheme.outline;
-    final uniformColors = widget.theme == null
-        ? shared.resolveColors(context)
-        : null;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -282,7 +274,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             isLoading: _controller.isLoading,
             isDisabled: !_controller.isInitialized || _controller.isLoading,
             type: widget.type,
-            theme: effectiveTheme,
+            theme: widget.theme,
             size: size,
             text: text,
             shape: shape,
@@ -290,9 +282,6 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             minimumWidth: minimumWidth,
             textStyle: textStyle,
             borderRadius: borderRadius,
-            backgroundColor: uniformColors?.background,
-            foregroundColor: uniformColors?.foreground,
-            borderColor: uniformColors?.border,
             getButtonText: widget.getButtonText,
             buttonWrapper: widget.buttonWrapper,
           )
@@ -302,7 +291,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
           // forwarded here.
           GoogleSignInWebButton(
             type: widget.type,
-            theme: effectiveTheme,
+            theme: widget.theme,
             size: size,
             text: text,
             shape: shape,

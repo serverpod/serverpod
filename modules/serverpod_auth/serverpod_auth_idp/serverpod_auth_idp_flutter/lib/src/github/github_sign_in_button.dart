@@ -28,9 +28,9 @@ class GitHubSignInButton extends StatelessWidget {
 
   /// The brand color preset (black or white).
   ///
-  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
-  /// uniform default). Set it to opt this button into GitHub's brand colors.
-  final GitHubButtonStyle? style;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
+  final GitHubButtonStyle style;
 
   /// The button size (large or medium).
   final GitHubButtonSize? size;
@@ -58,7 +58,7 @@ class GitHubSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type = GitHubButtonType.standard,
-    this.style,
+    this.style = GitHubButtonStyle.black,
     this.size,
     this.text,
     this.shape,
@@ -74,45 +74,47 @@ class GitHubSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.githubSignInTexts;
-    final shared = context.signInButtonStyle;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final size =
-        this.size ?? _toGitHubSize(shared.size) ?? GitHubButtonSize.large;
+        this.size ?? _toGitHubSize(shared?.size) ?? GitHubButtonSize.large;
     final shape =
-        this.shape ?? _toGitHubShape(shared.shape) ?? GitHubButtonShape.pill;
+        this.shape ?? _toGitHubShape(shared?.shape) ?? GitHubButtonShape.pill;
     final text =
-        this.text ?? _toGitHubText(shared.text) ?? GitHubButtonText.continueWith;
+        this.text ??
+        _toGitHubText(shared?.text) ??
+        GitHubButtonText.continueWith;
     final logoAlignment =
         this.logoAlignment ??
-        _toGitHubLogoAlignment(shared.logoAlignment) ??
+        _toGitHubLogoAlignment(shared?.logoAlignment) ??
         GitHubButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
-    final textStyle = this.textStyle ?? shared.textStyle;
+    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = GitHubSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style ?? GitHubButtonStyle.white,
+      style: style,
       width: minimumWidth,
     );
 
-    // An explicit brand `style` uses GitHub's brand colors; otherwise the shared
-    // (uniform, theme-aware) colors apply.
+    // A shared style (e.g. inside SignInWidget) applies the common, theme-aware
+    // colors; on its own the button uses its GitHub brand colors.
     final Color backgroundColor;
     final Color foregroundColor;
     final Color borderColor;
     final bool showBorder;
-    if (style != null) {
-      backgroundColor = buttonStyle.backgroundColor;
-      foregroundColor = buttonStyle.foregroundColor;
-      borderColor = buttonStyle.borderSide.color;
-      showBorder = style == GitHubButtonStyle.white;
-    } else {
+    if (shared != null) {
       final colors = shared.resolveColors(context);
       backgroundColor = colors.background;
       foregroundColor = colors.foreground;
       borderColor = colors.border;
       showBorder = true;
+    } else {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.foregroundColor;
+      borderColor = buttonStyle.borderSide.color;
+      showBorder = style == GitHubButtonStyle.white;
     }
 
     return ConstrainedBox(

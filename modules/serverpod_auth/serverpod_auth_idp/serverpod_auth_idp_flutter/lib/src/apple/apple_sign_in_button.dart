@@ -32,10 +32,10 @@ class AppleSignInButton extends StatelessWidget {
 
   /// The brand color preset (black, white, or white-outlined).
   ///
-  /// When null, the button approximates the shared [SignInButtonStyle] colors
-  /// (or the uniform default) with its nearest preset. Set it to pick an Apple
-  /// preset explicitly.
-  final AppleButtonStyle? style;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead,
+  /// approximated with Apple's nearest preset.
+  final AppleButtonStyle style;
 
   /// The button size.
   ///
@@ -67,7 +67,7 @@ class AppleSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type,
-    this.style,
+    this.style = AppleButtonStyle.black,
     this.size,
     this.shape,
     this.logoAlignment,
@@ -81,31 +81,33 @@ class AppleSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.appleSignInTexts;
-    final shared = context.signInButtonStyle;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final type =
-        this.type ?? _toAppleText(shared.text) ?? AppleButtonText.continueWith;
+        this.type ?? _toAppleText(shared?.text) ?? AppleButtonText.continueWith;
     final size =
-        this.size ?? _toAppleSize(shared.size) ?? AppleButtonSize.large;
+        this.size ?? _toAppleSize(shared?.size) ?? AppleButtonSize.large;
     final shape =
-        this.shape ?? _toAppleShape(shared.shape) ?? AppleButtonShape.pill;
+        this.shape ?? _toAppleShape(shared?.shape) ?? AppleButtonShape.pill;
     final logoAlignment =
         this.logoAlignment ??
-        _toAppleLogoAlignment(shared.logoAlignment) ??
+        _toAppleLogoAlignment(shared?.logoAlignment) ??
         AppleButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
+    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
 
-    // Apple's native button can't take arbitrary colors, so an explicit preset
-    // wins; otherwise map the resolved background to its nearest preset. The
-    // borderless white/black presets are used (rather than whiteOutlined, whose
-    // outline is black), and the shared border is drawn on top to match the
-    // other buttons. [colors] is non-null exactly when no brand preset is set.
-    final colors = style == null ? shared.resolveColors(context) : null;
-    final effectiveStyle =
-        style ??
-        (colors!.background.computeLuminance() > 0.5
-            ? AppleButtonStyle.white
-            : AppleButtonStyle.black);
+    // Inside a shared style, Apple's native button can't take arbitrary colors,
+    // so map the resolved background to its nearest borderless preset and
+    // overlay the shared border; on its own the button uses its brand preset.
+    // [colors] is non-null only when a shared style is in scope.
+    final colors = shared?.resolveColors(context);
+    final AppleButtonStyle effectiveStyle;
+    if (colors != null) {
+      effectiveStyle = colors.background.computeLuminance() > 0.5
+          ? AppleButtonStyle.white
+          : AppleButtonStyle.black;
+    } else {
+      effectiveStyle = style;
+    }
 
     final buttonStyle = AppleSignInStyle.fromConfiguration(
       shape: shape,

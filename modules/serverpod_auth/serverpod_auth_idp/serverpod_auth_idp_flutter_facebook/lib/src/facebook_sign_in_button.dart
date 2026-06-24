@@ -29,9 +29,9 @@ class FacebookSignInButton extends StatelessWidget {
 
   /// The brand color preset (blue or white).
   ///
-  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
-  /// uniform default). Set it to opt this button into Facebook's brand colors.
-  final FacebookButtonStyle? style;
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
+  final FacebookButtonStyle style;
 
   /// The button size.
   ///
@@ -68,7 +68,7 @@ class FacebookSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type,
-    this.style,
+    this.style = FacebookButtonStyle.blue,
     this.size,
     this.shape,
     this.logoAlignment,
@@ -83,49 +83,49 @@ class FacebookSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.facebookSignInTexts;
-    final shared = context.signInButtonStyle;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final type =
         this.type ??
-        _toFacebookText(shared.text) ??
+        _toFacebookText(shared?.text) ??
         FacebookButtonText.continueWith;
     final size =
-        this.size ?? _toFacebookSize(shared.size) ?? FacebookButtonSize.large;
+        this.size ?? _toFacebookSize(shared?.size) ?? FacebookButtonSize.large;
     final shape =
         this.shape ??
-        _toFacebookShape(shared.shape) ??
+        _toFacebookShape(shared?.shape) ??
         FacebookButtonShape.pill;
     final logoAlignment =
         this.logoAlignment ??
-        _toFacebookLogoAlignment(shared.logoAlignment) ??
+        _toFacebookLogoAlignment(shared?.logoAlignment) ??
         FacebookButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
-    final textStyle = this.textStyle ?? shared.textStyle;
+    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+    final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = FacebookSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style ?? FacebookButtonStyle.blue,
+      style: style,
       width: minimumWidth,
     );
 
-    // An explicit brand `style` uses Facebook's brand colors; otherwise the
-    // shared (uniform, theme-aware) colors apply.
+    // A shared style (e.g. inside SignInWidget) applies the common, theme-aware
+    // colors; on its own the button uses its Facebook brand colors.
     final Color backgroundColor;
     final Color foregroundColor;
     final Color borderColor;
     final bool showBorder;
-    if (style != null) {
-      backgroundColor = buttonStyle.backgroundColor;
-      foregroundColor = buttonStyle.textColor;
-      borderColor = const Color(0xFFE0E0E0);
-      showBorder = style == FacebookButtonStyle.white;
-    } else {
+    if (shared != null) {
       final colors = shared.resolveColors(context);
       backgroundColor = colors.background;
       foregroundColor = colors.foreground;
       borderColor = colors.border;
       showBorder = true;
+    } else {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.textColor;
+      borderColor = const Color(0xFFE0E0E0);
+      showBorder = style == FacebookButtonStyle.white;
     }
 
     return ConstrainedBox(

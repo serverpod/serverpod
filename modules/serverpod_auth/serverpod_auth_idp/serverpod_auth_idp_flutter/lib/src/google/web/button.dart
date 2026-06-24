@@ -110,7 +110,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
         final width = constraints.maxWidth.clamp(minimumWidth, 400).toDouble();
 
         final buttonStyle = GoogleSignInStyle.fromConfiguration(
-          theme: theme ?? GSIButtonTheme.outline,
+          theme: theme,
           shape: shape ?? GSIButtonShape.pill,
           size: size,
           width: width,

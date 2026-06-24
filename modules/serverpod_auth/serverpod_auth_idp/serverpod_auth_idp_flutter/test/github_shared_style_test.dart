@@ -116,6 +116,51 @@ void main() {
       },
     );
   });
+
+  group('Given a GitHubSignInButton', () {
+    Color? backgroundOf(WidgetTester tester) {
+      final button = tester.widget<ElevatedButton>(
+        find.byType(ElevatedButton),
+      );
+      return button.style?.backgroundColor?.resolve({});
+    }
+
+    testWidgets(
+      'when there is no shared style then it keeps its GitHub brand colors',
+      (tester) async {
+        await tester.pumpWidget(
+          const _Host(
+            child: GitHubSignInButton(
+              onPressed: null,
+              isLoading: false,
+              isDisabled: false,
+            ),
+          ),
+        );
+
+        // The brand background is not the common (light theme) white.
+        expect(backgroundOf(tester), isNot(const Color(0xFFFFFFFF)));
+      },
+    );
+
+    testWidgets(
+      'when a shared style is in scope then it adopts the common colors',
+      (tester) async {
+        await tester.pumpWidget(
+          const _Host(
+            style: SignInButtonStyle(),
+            child: GitHubSignInButton(
+              onPressed: null,
+              isLoading: false,
+              isDisabled: false,
+            ),
+          ),
+        );
+
+        expect(backgroundOf(tester), const Color(0xFFFFFFFF));
+      },
+    );
+  });
 }
 
 /// Hosts a widget with an optional shared [SignInButtonStyle] and an asset

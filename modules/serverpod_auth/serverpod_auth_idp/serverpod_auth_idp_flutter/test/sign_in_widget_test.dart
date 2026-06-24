@@ -59,13 +59,16 @@ void main() {
   testWidgets(
     'Given a SignInWidget configured without a shared button style, '
     'when building the available sign-in options, '
-    'then no style provider is inserted.',
+    'then a default style provider is inserted so buttons share the common style.',
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(home: SignInWidget(client: _TestClient())),
       );
 
-      expect(find.byType(SignInButtonStyleProvider), findsNothing);
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, const SignInButtonStyle());
     },
   );
 }
