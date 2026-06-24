@@ -352,10 +352,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
       // therefore not in server/proxy access logs or browser history). The
       // wrapped header value is sent as-is; the server validates and unwraps
       // it (matching the method-stream protocol).
+      //
+      // This 'auth' message is the stream-opening handshake and must be the
+      // first frame, so it is always sent - with a null key when anonymous -
+      // not only when a token is present. The server opens its streams on this
+      // frame, so streamOpened observes the settled auth state rather than
+      // racing a later auth message.
       var auth = await authKeyProvider?.authHeaderValue;
-      if (auth != null) {
-        await _sendControlCommandToStream('auth', {'key': auth});
-      }
+      await _sendControlCommandToStream('auth', {'key': auth});
 
       // We are sending the ping message to the server, so that we are
       // guaranteed to get a first message in return. This will verify that we
