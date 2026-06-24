@@ -400,12 +400,15 @@ jobs:
           ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
         working-directory: tests/docker/tests_integration
       - name: Run integration tests (concurrently)
-        run: dart test -t integration -x concurrency_one --reporter=failures-only || [ $? -eq 79 ]
+        # `-x email` keeps the live-service email integration test out of this
+        # DB-focused job; it runs only in the dedicated email_integration_tests
+        # job. The tag is undefined in other matrix modules, where it is a no-op.
+        run: dart test -t integration -x concurrency_one -x email --reporter=failures-only || [ $? -eq 79 ]
         working-directory: ${{ matrix.module }}
       - name: Run integration tests (sequentially)
         if: always()
         # Exit code `79` means that no tests were found for the tags
-        run: dart test -t integration -t concurrency_one --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
+        run: dart test -t integration -t concurrency_one -x email --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
         working-directory: ${{ matrix.module }}
       - name: Stop containers
         if: always()
@@ -703,6 +706,30 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - run: dart pub get
       - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
+
+  email_integration_tests:
+    name: Transactional Email Integration Tests
+    runs-on: ubuntu-latest
+    # No `if` gate: the negative paths (400/401) run on every push and need no
+    # credentials. The happy-path tests self-skip when the secrets below are
+    # absent (an unset secret resolves to an empty string, treated as missing).
+    env:
+      SERVERPOD_TEST_SCLOUD_EMAIL_KEY: ${{ secrets.SERVERPOD_TEST_SCLOUD_EMAIL_KEY }}
+      SERVERPOD_TEST_SCLOUD_EMAIL_RECIPIENT: ${{ secrets.SERVERPOD_TEST_SCLOUD_EMAIL_RECIPIENT }}
+      SERVERPOD_TEST_SCLOUD_EMAIL_BASE_URL: ${{ secrets.SERVERPOD_TEST_SCLOUD_EMAIL_BASE_URL }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: "3.38.4"
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Run transactional email integration tests
+        run: dart test test/integration/serverpod_cloud_email_integration_test.dart --reporter=failures-only
+        working-directory: modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
 
   publish_check:
     name: Publish check

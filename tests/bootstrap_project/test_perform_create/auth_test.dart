@@ -94,7 +94,7 @@ void main() {
           );
           final content = await serverFile.readAsString();
           expect(content, contains('initializeAuthServices'));
-          expect(content, contains('EmailIdpConfigFromPasswords'));
+          expect(content, contains('ServerpodCloudEmailIdpConfig'));
           expect(content, contains('JwtConfigFromPasswords'));
         },
       );
@@ -270,7 +270,7 @@ void main() {
           );
           final content = await serverFile.readAsString();
           expect(content, isNot(contains('initializeAuthServices')));
-          expect(content, isNot(contains('EmailIdpConfigFromPasswords')));
+          expect(content, isNot(contains('ServerpodCloudEmailIdpConfig')));
           expect(content, isNot(contains('JwtConfigFromPasswords')));
         },
       );
