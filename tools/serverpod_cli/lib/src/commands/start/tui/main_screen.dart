@@ -425,19 +425,25 @@ class MainScreen extends StatelessComponent {
     }
     if (value == null) return null;
 
+    Component child = Row(
+      children: [
+        Text(' ${tab.label}', style: mutedText),
+        Text(' │ ', style: separatorStyle),
+        Text(value, style: mutedText),
+      ],
+    );
+
+    if (!tab.ready) {
+      child = Shimmer(child: child);
+    }
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 1),
-          child: Row(
-            children: [
-              Text(' ${tab.label}', style: mutedText),
-              Text(' │ ', style: separatorStyle),
-              Text(value, style: mutedText),
-            ],
-          ),
+          child: child,
         ),
-        Divider(color: st.subtleDivider),
+        Divider(color: st.subtleDivider, endIndent: 1),
       ],
     );
   }
