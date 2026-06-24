@@ -79,9 +79,6 @@ abstract class EndpointWebsocketRequestHandler {
             var args = data['args'] as Map;
 
             if (command == 'ping') {
-              // Open streams (anonymously, if no 'auth' message preceded this)
-              // before responding, so streamOpened fires once per connection.
-              await openAllStreams();
               webSocket.trySendText(
                 SerializationManager.encodeForProtocol(
                   {'command': 'pong'},
