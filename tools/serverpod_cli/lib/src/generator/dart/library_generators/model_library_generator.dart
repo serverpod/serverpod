@@ -39,6 +39,13 @@ class SerializableModelLibraryGenerator {
     return classDefinition.shouldGenerateTableCode(serverCode);
   }
 
+  bool _shouldImplementProtocolSerialization(
+    ModelClassDefinition classDefinition,
+    String? tableName,
+  ) {
+    return serverCode || (tableName != null && classDefinition.isSharedModel);
+  }
+
   /// Generate the file for a model.
   Library generateModelLibrary(
     SerializableModelDefinition modelDefinition,
@@ -491,7 +498,7 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      if (serverCode) {
+      if (_shouldImplementProtocolSerialization(classDefinition, tableName)) {
         classBuilder.implements.add(
           refer('ProtocolSerialization', serverpodUrl(serverCode)),
         );
@@ -596,7 +603,7 @@ class SerializableModelLibraryGenerator {
       }
 
       // Serialization for database and everything
-      if (serverCode) {
+      if (_shouldImplementProtocolSerialization(classDefinition, tableName)) {
         if (!classDefinition.isSealed) {
           classBuilder.methods.add(
             _buildModelClassToJsonForProtocolMethod(
@@ -2277,9 +2284,7 @@ class SerializableModelLibraryGenerator {
     ModelClassDefinition classDefinition,
     TypeReference idTypeReference,
   ) {
-    var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
-        .toSet();
+    var serializedFields = fields.where((f) => f.shouldPersist).toSet();
     // Omit scope-none persisted columns from [managedColumns] on server and
     // client (e.g. implicit foreign keys).
     var hiddenSerializedFields = serializedFields
@@ -2358,7 +2363,7 @@ class SerializableModelLibraryGenerator {
     ModelClassDefinition classDefinition,
   ) {
     var serializedFields = fields
-        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
+        .where((f) => f.shouldPersist)
         .where(
           (f) => !(f.name == 'id' && classDefinition.isTableOwner(serverCode)),
         );
@@ -2417,7 +2422,7 @@ class SerializableModelLibraryGenerator {
                   );
 
             m
-              ..name = createFieldName(serverCode, field)
+              ..name = _createDatabaseFieldName(field)
               ..returns = TypeReference(
                 (t) => t
                   ..symbol = 'ColumnValue'
@@ -2530,7 +2535,7 @@ class SerializableModelLibraryGenerator {
         ..lambda = true
         ..type = MethodType.getter
         ..body = literalList(
-          fields.map((f) => refer(createFieldName(serverCode, f))),
+          fields.map((f) => refer(_createDatabaseFieldName(f))),
         ).code,
     );
   }
@@ -2544,14 +2549,13 @@ class SerializableModelLibraryGenerator {
 
     for (var field in fields) {
       // Simple column field
-      if (field.shouldSerializeFieldForDatabase(serverCode) &&
-          !(field.name == 'id' && isTableOwner)) {
+      if (field.shouldPersist && !(field.name == 'id' && isTableOwner)) {
         tableFields.add(
           Field(
             (f) => f
               ..late = true
               ..modifier = FieldModifier.final$
-              ..name = createFieldName(serverCode, field)
+              ..name = _createDatabaseFieldName(field)
               ..docs.addAll(field.documentation ?? [])
               ..type = TypeReference(
                 (t) => t
@@ -2909,10 +2913,10 @@ class SerializableModelLibraryGenerator {
             )
             .statement,
         for (var field in fields.where(
-          (field) => field.shouldSerializeFieldForDatabase(serverCode),
+          (field) => field.shouldPersist,
         ))
           if (!(field.name == 'id' && classDefinition.isTableOwner(serverCode)))
-            refer(createFieldName(serverCode, field))
+            refer(_createDatabaseFieldName(field))
                 .assign(
                   field.type.isEnumType
                       ? _buildModelTableEnumFieldTypeReference(field)
@@ -3627,6 +3631,18 @@ class SerializableModelLibraryGenerator {
     }
 
     return field.name;
+  }
+
+  bool _isHiddenDatabaseField(SerializableModelFieldDefinition field) {
+    return field.shouldPersist && field.scope == ModelFieldScopeDefinition.none;
+  }
+
+  String _createDatabaseFieldName(SerializableModelFieldDefinition field) {
+    if (_isHiddenDatabaseField(field)) {
+      return createImplicitFieldName(field.name);
+    }
+
+    return createFieldName(serverCode, field);
   }
 
   Code _buildDefaultSwitchCase(

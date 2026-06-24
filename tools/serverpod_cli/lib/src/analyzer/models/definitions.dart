@@ -435,7 +435,6 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldSerializeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all ||
         (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
@@ -446,32 +445,8 @@ class SerializableModelFieldDefinition {
   ///
   /// See also:
   /// - [shouldIncludeField]
-  /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
     return scope == ModelFieldScopeDefinition.all;
-  }
-
-  /// Returns true, if this field should be added to the serialization for the
-  /// database.
-  /// [serverCode] specifies if it's code on the server or client side.
-  ///
-  /// See also:
-  /// - [shouldIncludeField]
-  /// - [shouldSerializeField]
-  bool shouldSerializeFieldForDatabase(bool serverCode) {
-    if (serverCode) {
-      return shouldPersist;
-    }
-    if (shouldPersist && scope == ModelFieldScopeDefinition.all) {
-      return true;
-    }
-
-    // Client: one-to-many implicit "child" FKs only.
-    final relation = this.relation;
-    return shouldPersist &&
-        scope == ModelFieldScopeDefinition.none &&
-        relation is ForeignRelationDefinition &&
-        relation.containerField == null;
   }
 
   /// Fields with !persist or scope [ModelFieldScopeDefinition.none] are hidden
