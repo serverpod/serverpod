@@ -92,25 +92,16 @@ class GitHubIdp {
 
         final image = account.details.image;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.name?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new GitHub user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.name?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: image != null ? UserImageFromUrl(image) : null,
+          );
         } else if (image != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
