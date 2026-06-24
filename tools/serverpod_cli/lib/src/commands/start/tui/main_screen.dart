@@ -422,6 +422,9 @@ class MainScreen extends StatelessComponent {
       value = tab.url ?? 'ready';
     } else {
       value = tab.startupStage;
+      if (value != null && value.contains('.')) {
+        value = value.replaceFirst(RegExp(r'\.+$'), '');
+      }
     }
     if (value == null) return null;
 
