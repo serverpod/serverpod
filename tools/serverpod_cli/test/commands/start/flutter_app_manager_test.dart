@@ -126,6 +126,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (app) => launchedAppId = app.id,
         stdoutSinkFor: (_) => stdout,
@@ -349,6 +350,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
@@ -428,6 +430,7 @@ serverpod:
           onProgress: (_, _) {},
           onReady: (_, url) => ready.complete(url),
           onStart: (_, _) async {},
+          onStop: (_) {},
           onLaunchFailed: (_) {},
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -537,6 +540,7 @@ serverpod:
           onProgress: (_, _) {},
           onReady: (_, _) => readyCalls++,
           onStart: (_, _) async {},
+          onStop: (_) {},
           onLaunchFailed: (app) => launchFailed.complete(app),
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -567,6 +571,83 @@ serverpod:
           expect(readyCalls, 0);
           expect(manager.isRunning(app.id), isFalse);
           expect(manager.isLaunching(app.id), isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an initialized FlutterAppManager with a running app',
+    () {
+      late Directory tempDir;
+      late Directory serverDir;
+      late Directory flutterDir;
+      late FlutterAppConfig app;
+      late FlutterAppManager manager;
+      var stopCalls = 0;
+
+      setUp(() async {
+        tempDir = await Directory.systemTemp.createTemp('flutter_mgr_fail_');
+        serverDir = Directory(p.join(tempDir.path, 'project_server'))
+          ..createSync(recursive: true);
+        flutterDir = Directory(p.join(tempDir.path, 'project_flutter'))
+          ..createSync(recursive: true);
+        File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
+name: project_flutter
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+
+        app = _testApp(
+          serverDir: serverDir,
+          flutterDir: flutterDir,
+          id: 'project',
+          name: 'Project',
+        );
+
+        final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+        serverPubspecFile.writeAsStringSync('''
+name: project_server
+serverpod:
+  flutter_apps:
+    project:
+      path: ../project_flutter
+''');
+
+        stopCalls = 0;
+
+        manager = FlutterAppManager(
+          projectName: 'project',
+          launchFlutterApp: false,
+          serverPubspecFile: serverPubspecFile,
+          serverPackageDirectoryPathParts: p.split(serverDir.path),
+          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
+          runMode: 'development',
+          onProgress: (_, _) {},
+          onReady: (_, _) {},
+          onStart: (_, _) async {},
+          onStop: (_) => stopCalls++,
+          onLaunchFailed: (_) {},
+          onEnsureAppTab: (_) {},
+          stdoutSinkFor: (_) => stdout,
+          stderrSinkFor: (_) => stderr,
+        );
+        await manager.initialize();
+        await manager.launch(app.id);
+        expect(manager.isRunning(app.id), isTrue);
+      });
+
+      tearDown(() async {
+        await manager.dispose();
+        await tempDir.delete(recursive: true);
+      });
+
+      test(
+        'when the app is stoped, then onStop fires',
+        () async {
+          await manager.stop(app.id);
+          expect(stopCalls, 1);
         },
       );
     },
@@ -617,6 +698,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (_) => stdout,
@@ -634,6 +716,9 @@ serverpod:
       'when loadApps is called after removing apps from the config, '
       'then removed apps are stopped and new list is reflected',
       () async {
+        await manager.launch('app-b');
+        expect(manager.isRunning('app-b'), isTrue);
+
         serverPubspecFile.writeAsStringSync('''
 name: server
 serverpod:

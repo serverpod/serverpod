@@ -380,6 +380,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   void Function(FlutterAppConfig app, String stage)? onFlutterProgress,
   void Function(FlutterAppConfig app, String url)? onFlutterReady,
   void Function(FlutterAppConfig app)? onFlutterLaunchFailed,
+  void Function(FlutterAppConfig app)? onFlutterStop,
   Future<void> Function(ServerProcess server)? onServerStart,
   Future<void> Function(FlutterAppConfig app, FlutterProcess flutter)?
   onFlutterStart,
@@ -593,6 +594,9 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onReady: (app, url) => onFlutterReady?.call(app, url),
     onStart: (app, process) async {
       if (onFlutterStart != null) await onFlutterStart(app, process);
+    },
+    onStop: (app) {
+      onFlutterStop?.call(app);
     },
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
@@ -1121,7 +1125,7 @@ Future<void> _runTuiBackend({
           label: app.name,
         );
         tab.ready = false;
-        tab.launchFailed = false;
+        tab.stopped = false;
         tab.url = null;
         holder.state.tabs.focusTab(tab);
         holder.markDirty();
@@ -1138,7 +1142,7 @@ Future<void> _runTuiBackend({
         if (tab != null) {
           tab.url = url;
           tab.ready = true;
-          tab.launchFailed = false;
+          tab.stopped = false;
           holder.markDirty();
         }
       },
@@ -1146,11 +1150,11 @@ Future<void> _runTuiBackend({
         final tab = holder.state.appLogTabFor(app.id);
         if (tab != null) {
           tab.ready = false;
+          tab.stopped = true;
           tab.url = null;
-          tab.launchFailed = true;
           // Replace the breadcrumb's spinner-y "connecting" with a terminal
           // state so it doesn't hang; the build error is in the app's log.
-          tab.startupStage = 'launch failed — see log';
+          tab.startupStage = 'Launch failed — see log';
           holder.markDirty();
         }
       },
@@ -1175,6 +1179,15 @@ Future<void> _runTuiBackend({
         vmService.onExtensionEvent.listen(
           (event) => handleServerLogEvent(holder, event),
         );
+      },
+      onFlutterStop: (app) {
+        final tab = holder.state.appLogTabFor(app.id);
+        if (tab != null) {
+          tab.ready = false;
+          tab.stopped = true;
+          tab.startupStage = 'App stopped';
+          holder.markDirty();
+        }
       },
       onFlutterAppsLoaded: (newApps) {
         // Remove tabs for gone apps and update state.

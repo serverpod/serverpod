@@ -45,7 +45,7 @@ class AppLogTab implements PaneTab {
     BoundedQueueList<String>? lines,
     ScrollController? scrollController,
     this.ready = false,
-    this.launchFailed = false,
+    this.stopped = false,
     this.url,
     this.startupStage,
   }) : lines = lines ?? BoundedQueueList<String>(maxRawLines),
@@ -63,8 +63,10 @@ class AppLogTab implements PaneTab {
   /// Whether the Flutter app is running and a URL has been published.
   bool ready;
 
-  /// Whether the Flutter app failed to launch.
-  bool launchFailed;
+  /// Whether the Flutter app stopped.
+  /// This can be from user quitting the app
+  /// or from app launch failing.
+  bool stopped;
 
   /// HTTP URL the Flutter app is served at.
   String? url;
