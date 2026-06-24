@@ -1121,6 +1121,7 @@ Future<void> _runTuiBackend({
           label: app.name,
         );
         tab.ready = false;
+        tab.launchFailed = false;
         tab.url = null;
         holder.state.tabs.focusTab(tab);
         holder.markDirty();
@@ -1137,6 +1138,7 @@ Future<void> _runTuiBackend({
         if (tab != null) {
           tab.url = url;
           tab.ready = true;
+          tab.launchFailed = false;
           holder.markDirty();
         }
       },
@@ -1145,6 +1147,7 @@ Future<void> _runTuiBackend({
         if (tab != null) {
           tab.ready = false;
           tab.url = null;
+          tab.launchFailed = true;
           // Replace the breadcrumb's spinner-y "connecting" with a terminal
           // state so it doesn't hang; the build error is in the app's log.
           tab.startupStage = 'launch failed — see log';

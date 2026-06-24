@@ -436,7 +436,7 @@ class MainScreen extends StatelessComponent {
       ],
     );
 
-    if (!tab.ready) {
+    if (!tab.ready & !tab.launchFailed) {
       child = Shimmer(child: child);
     }
 
