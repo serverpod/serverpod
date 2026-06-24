@@ -96,24 +96,51 @@ class AppleSignInButton extends StatelessWidget {
     final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
 
     // Apple's native button can't take arbitrary colors, so an explicit preset
-    // wins, otherwise map the resolved background to its nearest preset. The
-    // borderless white/black presets are used (rather than whiteOutlined) since
-    // Apple's outline is black and would not match the other buttons' border.
-    final AppleButtonStyle effectiveStyle;
-    if (style != null) {
-      effectiveStyle = style!;
-    } else {
-      final colors = shared.resolveColors(context);
-      effectiveStyle = colors.background.computeLuminance() > 0.5
-          ? AppleButtonStyle.white
-          : AppleButtonStyle.black;
-    }
+    // wins; otherwise map the resolved background to its nearest preset. The
+    // borderless white/black presets are used (rather than whiteOutlined, whose
+    // outline is black), and the shared border is drawn on top to match the
+    // other buttons. [colors] is non-null exactly when no brand preset is set.
+    final colors = style == null ? shared.resolveColors(context) : null;
+    final effectiveStyle =
+        style ??
+        (colors!.background.computeLuminance() > 0.5
+            ? AppleButtonStyle.white
+            : AppleButtonStyle.black);
 
     final buttonStyle = AppleSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
       width: minimumWidth,
     );
+
+    Widget button = SignInWithAppleButton(
+      onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
+      text: texts.signInButton ?? _getButtonText(type),
+      height: buttonStyle.size.height,
+      style: effectiveStyle,
+      borderRadius: buttonStyle.borderRadius,
+      iconAlignment: logoAlignment,
+    );
+
+    if (colors != null) {
+      // Apple's native button only offers no border or a black outline, so
+      // overlay the shared border to match the other buttons.
+      button = Stack(
+        children: [
+          button,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: buttonStyle.borderRadius,
+                  border: Border.all(color: colors.border),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -122,14 +149,7 @@ class AppleSignInButton extends StatelessWidget {
         minHeight: buttonStyle.size.height,
         maxHeight: buttonStyle.size.height,
       ),
-      child: SignInWithAppleButton(
-        onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-        text: texts.signInButton ?? _getButtonText(type),
-        height: buttonStyle.size.height,
-        style: effectiveStyle,
-        borderRadius: buttonStyle.borderRadius,
-        iconAlignment: logoAlignment,
-      ),
+      child: button,
     );
   }
 
