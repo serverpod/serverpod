@@ -51,40 +51,23 @@ class MainScreen extends StatelessComponent {
     (
       'Navigation',
       [
-        ('↑ / k', 'Scroll up'),
-        ('↓ / j / Enter', 'Scroll down'),
-        ('Shift+↑', 'Scroll up ¼ screen'),
-        ('Shift+↓', 'Scroll down ¼ screen'),
-        ('u / Ctrl+u', 'Scroll up ½ screen'),
-        ('d / Ctrl+d', 'Scroll down ½ screen'),
-        ('PgUp / b / Backspace', 'Scroll up one screen'),
-        ('PgDn / Space / f', 'Scroll down one screen'),
-        ('Home / g', 'Go to start'),
-        ('End / G', 'Go to end'),
-      ],
-    ),
-    (
-      'Tabs',
-      [
-        ('Tab / Shift+Tab / ← / →', 'Cycle tabs'),
-        ('1–9', 'Jump to tab'),
+        ('G', 'Scroll to top'),
+        ('Shift+G', 'Scroll to bottom'),
+        ('Tab', 'Switch tabs'),
       ],
     ),
     (
       'Actions',
       [
-        if (state.watchModeEnabled)
-          ('R', 'Hot restart')
-        else
-          ('R / Shift+R', 'Hot reload / restart'),
-        if (state.canLaunchApps) ('Ctrl+R', 'Launch app…'),
-        ('M / Shift+M', 'Create migration (⇧ = force)'),
-        ('P / Shift+P', 'Repair migration (⇧ = force)'),
-        ('A', 'Apply migrations'),
-        ('e', 'Expand / collapse stack traces'),
-        ('` / .', 'Show raw server logs'),
-        ('L', 'Clear logs'),
-        ('Q', 'Quit'),
+        if (state.canLaunchApps)
+          (
+            'Ctrl+R',
+            state.launchableApps.length == 1 ? 'Launch app' : 'Launch apps',
+          ),
+        ('Shift+M', 'Force Create migration'),
+        ('Shift+P', 'Force Repair migration'),
+        ('E', 'Expand / collapse stack traces'),
+        ('S', 'Show raw server logs'),
       ],
     ),
   ];
@@ -165,6 +148,7 @@ class MainScreen extends StatelessComponent {
             bindings: _helpBindings,
             closeKey: 'Esc',
             controller: helpScrollController,
+            closeKey: 'Esc',
           ),
         if (state.showLaunchPanel)
           Positioned(
