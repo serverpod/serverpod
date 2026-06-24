@@ -10,12 +10,11 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 
 import '../exceptions.dart';
-import 'maven_url.dart';
-import 'zonky_archive.dart';
+import 'binary_artifact.dart';
 
 /// Per-user cache of Zonky PG binaries.
 ///
-/// Conceptually a key/value store from [ZonkyArtifact] -> on-disk install
+/// Conceptually a key/value store from [BinaryArtifact] -> on-disk install
 /// directory. On cache miss [ensure] downloads the JAR from Maven, verifies
 /// its SHA-256 against Maven's sidecar, and extracts the inner txz into the
 /// install dir.
@@ -123,19 +122,19 @@ class BinaryStore {
 
   /// Install dir for [artifact] under this cache root. Read-only by
   /// convention - callers should not write into the returned directory.
-  Directory installDirFor(ZonkyArtifact artifact) =>
+  Directory installDirFor(BinaryArtifact artifact) =>
       Directory(p.join(cacheRoot.path, artifact.bom, artifact.platform));
 
   /// Path to the manifest written after a successful install. Presence of
   /// this file is the cache-hit predicate for [ensure].
   @visibleForTesting
-  File metaFileFor(ZonkyArtifact artifact) =>
+  File metaFileFor(BinaryArtifact artifact) =>
       File(p.join(installDirFor(artifact).path, '.meta.json'));
 
   /// Per-artifact claim file. Atomic exclusive-create on this path is the
   /// "I'll do the extract" handshake; presence-with-fresh-mtime means
   /// another caller is mid-flight.
-  File _claimFileFor(ZonkyArtifact artifact) => File(
+  File _claimFileFor(BinaryArtifact artifact) => File(
     p.join(
       cacheRoot.path,
       '${artifact.bom}.${artifact.platform}.claim',
@@ -154,7 +153,7 @@ class BinaryStore {
   /// `'download'` or `'extract'`. The `fraction` ramps 0->1 within each
   /// stage; the stage label changes at each phase boundary.
   Future<Directory> ensure(
-    ZonkyArtifact artifact, {
+    BinaryArtifact artifact, {
     void Function(double fraction, String stage)? onProgress,
   }) async {
     var installDir = installDirFor(artifact);
@@ -250,7 +249,7 @@ class BinaryStore {
   }
 
   Future<void> _extractAsWinner(
-    ZonkyArtifact artifact, {
+    BinaryArtifact artifact, {
     void Function(double fraction, String stage)? onProgress,
   }) async {
     var installDir = installDirFor(artifact);
@@ -271,7 +270,7 @@ class BinaryStore {
     var actualSha = sha256.convert(jarBytes).toString();
     if (actualSha != expectedSha) {
       throw BinaryVerificationException(
-        'SHA-256 mismatch for ${artifact.jarFileName}:\n'
+        'SHA-256 mismatch for ${artifact.archiveFileName}:\n'
         '  expected $expectedSha\n  actual   $actualSha',
       );
     }
@@ -290,11 +289,21 @@ class BinaryStore {
     stagingDir.createSync(recursive: true);
 
     try {
-      ZonkyArchive.extractInto(
+      artifact.extractInto(
         jarBytes,
         stagingDir,
         onProgress: onProgress == null ? null : (f) => onProgress(f, 'extract'),
       );
+
+      // Sanity-check the extracted shape before caching it: a mis-shaped
+      // archive (whose sha256 sidecar still matched) would otherwise poison
+      // the cache and surface much later as "postgres not found" at start().
+      if (!Directory(p.join(stagingDir.path, 'bin')).existsSync()) {
+        throw BinaryVerificationException(
+          'Extracted bundle ${artifact.archiveFileName} has no bin/ directory; '
+          'expected a postgres install tree at the archive root.',
+        );
+      }
 
       // Move into place. Parent must exist; any prior install at the
       // canonical path is removed first (we hold the claim, so this is
@@ -309,7 +318,7 @@ class BinaryStore {
         jsonEncode({
           'bom': artifact.bom,
           'platform': artifact.platform,
-          'source_url': artifact.jarUrl.toString(),
+          'source_url': artifact.archiveUrl.toString(),
           'sha256': actualSha,
           'installed_at': DateTime.now().toUtc().toIso8601String(),
         }),
@@ -322,7 +331,7 @@ class BinaryStore {
     }
   }
 
-  Future<String> _fetchSha256(ZonkyArtifact artifact) async {
+  Future<String> _fetchSha256(BinaryArtifact artifact) async {
     final resp = await _http
         .get(artifact.sha256Url)
         .timeout(
@@ -347,19 +356,19 @@ class BinaryStore {
     return token.toLowerCase();
   }
 
-  Future<Uint8List> _downloadJar(ZonkyArtifact artifact) async {
+  Future<Uint8List> _downloadJar(BinaryArtifact artifact) async {
     final resp = await _http
-        .get(artifact.jarUrl)
+        .get(artifact.archiveUrl)
         .timeout(
           _jarTimeout,
           onTimeout: () => throw BinaryFetchException(
             'Timed out after ${_jarTimeout.inMinutes} min downloading '
-            '${artifact.jarUrl}',
+            '${artifact.archiveUrl}',
           ),
         );
     if (resp.statusCode != 200) {
       throw BinaryFetchException(
-        'GET ${artifact.jarUrl} returned ${resp.statusCode}',
+        'GET ${artifact.archiveUrl} returned ${resp.statusCode}',
       );
     }
     return resp.bodyBytes;
