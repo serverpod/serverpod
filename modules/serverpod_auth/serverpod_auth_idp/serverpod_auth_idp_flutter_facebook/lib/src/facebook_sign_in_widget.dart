@@ -72,10 +72,11 @@ class FacebookSignInWidget extends StatefulWidget {
   /// [FacebookButtonText.continueWith], when null.
   final FacebookButtonText? type;
 
-  /// The button style.
+  /// The brand color preset (blue or white).
   ///
-  /// For example, blue or white.
-  final FacebookButtonStyle style;
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into Facebook's brand colors.
+  final FacebookButtonStyle? style;
 
   /// The button size.
   ///
@@ -114,7 +115,7 @@ class FacebookSignInWidget extends StatefulWidget {
     this.onError,
     this.permissions = FacebookAuthController.defaultPermissions,
     this.type,
-    this.style = FacebookButtonStyle.blue,
+    this.style,
     this.size,
     this.shape,
     this.logoAlignment,

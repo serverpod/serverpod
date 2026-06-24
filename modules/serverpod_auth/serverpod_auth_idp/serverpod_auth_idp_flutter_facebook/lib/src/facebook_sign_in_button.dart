@@ -27,8 +27,11 @@ class FacebookSignInButton extends StatelessWidget {
   /// [FacebookButtonText.continueWith], when null.
   final FacebookButtonText? type;
 
-  /// The button style (blue or white).
-  final FacebookButtonStyle style;
+  /// The brand color preset (blue or white).
+  ///
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into Facebook's brand colors.
+  final FacebookButtonStyle? style;
 
   /// The button size.
   ///
@@ -65,7 +68,7 @@ class FacebookSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type,
-    this.style = FacebookButtonStyle.blue,
+    this.style,
     this.size,
     this.shape,
     this.logoAlignment,
@@ -102,9 +105,28 @@ class FacebookSignInButton extends StatelessWidget {
     final buttonStyle = FacebookSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style,
+      style: style ?? FacebookButtonStyle.blue,
       width: minimumWidth,
     );
+
+    // An explicit brand `style` uses Facebook's brand colors; otherwise the
+    // shared (uniform, theme-aware) colors apply.
+    final Color backgroundColor;
+    final Color foregroundColor;
+    final Color borderColor;
+    final bool showBorder;
+    if (style != null) {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.textColor;
+      borderColor = const Color(0xFFE0E0E0);
+      showBorder = style == FacebookButtonStyle.white;
+    } else {
+      final colors = shared.resolveColors(context);
+      backgroundColor = colors.background;
+      foregroundColor = colors.foreground;
+      borderColor = colors.border;
+      showBorder = true;
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -116,43 +138,36 @@ class FacebookSignInButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading || isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonStyle.backgroundColor,
-          foregroundColor: buttonStyle.textColor,
-
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: buttonStyle.borderRadius,
-            side: style == FacebookButtonStyle.white
-                ? BorderSide(color: Colors.grey.shade300)
-                : BorderSide.none,
+            side: showBorder ? BorderSide(color: borderColor) : BorderSide.none,
           ),
           elevation: 0,
           padding: EdgeInsets.zero,
-          disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-            alpha: .6,
-          ),
-          disabledForegroundColor: buttonStyle.textColor.withValues(
-            alpha: 0.6,
-          ),
+          disabledBackgroundColor: backgroundColor.withValues(alpha: .6),
+          disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
         ),
         child: _buildButtonContent(
-          buttonStyle,
           texts,
           type: type,
           size: size,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
+          foregroundColor: foregroundColor,
         ),
       ),
     );
   }
 
   Widget _buildButtonContent(
-    FacebookSignInStyle buttonStyle,
     FacebookSignInTexts texts, {
     required FacebookButtonText type,
     required FacebookButtonSize size,
     required FacebookButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
+    required Color foregroundColor,
   }) {
     if (isLoading) {
       return SizedBox(
@@ -160,9 +175,7 @@ class FacebookSignInButton extends StatelessWidget {
         width: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            buttonStyle.textColor,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
         ),
       );
     }
@@ -179,48 +192,59 @@ class FacebookSignInButton extends StatelessWidget {
       child: Icon(
         Icons.facebook,
         size: logoSize,
-        color: buttonStyle.textColor,
+        color: foregroundColor,
       ),
     );
 
     final baseTextStyle = TextStyle(
       fontSize: _getFontSize(size),
-      color: buttonStyle.textColor,
+      color: foregroundColor,
     );
     final textWidget = Text(
       texts.signInButton ?? _getButtonText(type),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
+      maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
 
+    // Center: logo indented so it lines up with the native Apple button's
+    // centered logo at any button width, with the label hugging it.
     if (logoAlignment == FacebookButtonLogoAlignment.center) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          logo,
-          const SizedBox(width: 12),
-          textWidget,
-        ],
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final raw =
+              (constraints.maxWidth - signInCenteredAppleContentWidth) / 2;
+          final indent = raw < 16.0 ? 16.0 : raw;
+          return Row(
+            children: [
+              SizedBox(width: indent),
+              logo,
+              const SizedBox(width: signInCenteredLogoGap),
+              Flexible(child: textWidget),
+            ],
+          );
+        },
       );
     }
 
-    return Stack(
-      children: [
-        Positioned(
-          left: 13,
-          top: 0,
-          bottom: 0,
-          child: logo,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
+    // Left: logo at the left column, with the label left-aligned starting where
+    // the native Apple button's centered label starts, so the labels line up.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final raw =
+            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
+            signInLeftLogoIndent -
+            logoSize;
+        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
+        return Row(
           children: [
-            SizedBox(width: logoSize + 6),
-            Center(child: textWidget),
+            const SizedBox(width: signInLeftLogoIndent),
+            logo,
+            SizedBox(width: gap),
+            Flexible(child: textWidget),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 

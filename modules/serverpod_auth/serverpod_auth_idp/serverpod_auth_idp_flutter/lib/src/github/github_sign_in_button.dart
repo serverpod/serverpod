@@ -26,8 +26,11 @@ class GitHubSignInButton extends StatelessWidget {
   /// The button type: icon or standard button.
   final GitHubButtonType type;
 
-  /// The button style (black or white).
-  final GitHubButtonStyle style;
+  /// The brand color preset (black or white).
+  ///
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into GitHub's brand colors.
+  final GitHubButtonStyle? style;
 
   /// The button size (large or medium).
   final GitHubButtonSize? size;
@@ -55,7 +58,7 @@ class GitHubSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type = GitHubButtonType.standard,
-    this.style = GitHubButtonStyle.black,
+    this.style,
     this.size,
     this.text,
     this.shape,
@@ -89,9 +92,28 @@ class GitHubSignInButton extends StatelessWidget {
     final buttonStyle = GitHubSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style,
+      style: style ?? GitHubButtonStyle.white,
       width: minimumWidth,
     );
+
+    // An explicit brand `style` uses GitHub's brand colors; otherwise the shared
+    // (uniform, theme-aware) colors apply.
+    final Color backgroundColor;
+    final Color foregroundColor;
+    final Color borderColor;
+    final bool showBorder;
+    if (style != null) {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.foregroundColor;
+      borderColor = buttonStyle.borderSide.color;
+      showBorder = style == GitHubButtonStyle.white;
+    } else {
+      final colors = shared.resolveColors(context);
+      backgroundColor = colors.background;
+      foregroundColor = colors.foreground;
+      borderColor = colors.border;
+      showBorder = true;
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -103,42 +125,36 @@ class GitHubSignInButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading || isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonStyle.backgroundColor,
-          foregroundColor: buttonStyle.foregroundColor,
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: buttonStyle.borderRadius,
-            side: style == GitHubButtonStyle.white
-                ? buttonStyle.borderSide
-                : BorderSide.none,
+            side: showBorder ? BorderSide(color: borderColor) : BorderSide.none,
           ),
           padding: EdgeInsets.zero,
           elevation: 0,
-          disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-            alpha: 0.6,
-          ),
-          disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-            alpha: 0.6,
-          ),
+          disabledBackgroundColor: backgroundColor.withValues(alpha: 0.6),
+          disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
         ),
         child: _buildButtonContent(
-          buttonStyle,
           texts,
           size: size,
           text: text,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
+          foregroundColor: foregroundColor,
         ),
       ),
     );
   }
 
   Widget _buildButtonContent(
-    GitHubSignInStyle buttonStyle,
     GitHubSignInTexts texts, {
     required GitHubButtonSize size,
     required GitHubButtonText text,
     required GitHubButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
+    required Color foregroundColor,
   }) {
     if (isLoading) {
       return SizedBox(
@@ -146,69 +162,77 @@ class GitHubSignInButton extends StatelessWidget {
         width: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            buttonStyle.foregroundColor,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
         ),
       );
     }
 
     if (type == GitHubButtonType.icon) {
-      return _buildGitHubLogo(buttonStyle, size);
+      return _buildGitHubLogo(size, foregroundColor);
     }
 
     final baseTextStyle = TextStyle(
       fontSize: size == GitHubButtonSize.large ? 16 : 14,
-      color: buttonStyle.foregroundColor,
+      color: foregroundColor,
     );
     final textWidget = Text(
       texts.signInButton ?? _getButtonText(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
 
-    final logo = _buildGitHubLogo(buttonStyle, size);
+    final logo = _buildGitHubLogo(size, foregroundColor);
+    final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
 
+    // Center: logo indented so it lines up with the native Apple button's
+    // centered logo at any button width, with the label hugging it.
     if (logoAlignment == GitHubButtonLogoAlignment.center) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          logo,
-          const SizedBox(width: 12),
-          textWidget,
-        ],
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final raw =
+              (constraints.maxWidth - signInCenteredAppleContentWidth) / 2;
+          final indent = raw < 16.0 ? 16.0 : raw;
+          return Row(
+            children: [
+              SizedBox(width: indent),
+              logo,
+              const SizedBox(width: signInCenteredLogoGap),
+              Flexible(child: textWidget),
+            ],
+          );
+        },
       );
     }
 
-    final logoSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
-
-    return Stack(
-      children: [
-        Positioned(
-          left: 14,
-          top: 0,
-          bottom: 0,
-          child: logo,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
+    // Left: logo at the left column, with the label left-aligned starting where
+    // the native Apple button's centered label starts, so the labels line up.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final raw =
+            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
+            signInLeftLogoIndent -
+            iconSize;
+        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
+        return Row(
           children: [
-            SizedBox(width: logoSize),
-            Center(child: textWidget),
-            const SizedBox(width: 8),
+            const SizedBox(width: signInLeftLogoIndent),
+            logo,
+            SizedBox(width: gap),
+            Flexible(child: textWidget),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildGitHubLogo(GitHubSignInStyle buttonStyle, GitHubButtonSize size) {
+  Widget _buildGitHubLogo(GitHubButtonSize size, Color foregroundColor) {
     final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
 
-    // Use the appropriate SVG based on the button style
-    final svgAsset = style == GitHubButtonStyle.white
-        ? 'assets/images/github-mark.svg'
-        : 'assets/images/github-mark-white.svg';
+    // Pick the mark that matches the foreground (contrasts the background).
+    final svgAsset = foregroundColor.computeLuminance() > 0.5
+        ? 'assets/images/github-mark-white.svg'
+        : 'assets/images/github-mark.svg';
 
     return SizedBox.square(
       dimension: iconSize,

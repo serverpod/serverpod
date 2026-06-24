@@ -26,8 +26,11 @@ class MicrosoftSignInButton extends StatelessWidget {
   /// The button type: icon or standard button.
   final MicrosoftButtonType type;
 
-  /// The button style (light or dark).
-  final MicrosoftButtonStyle style;
+  /// The brand color preset (light or dark).
+  ///
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into Microsoft's brand colors.
+  final MicrosoftButtonStyle? style;
 
   /// The button size (large or medium).
   final MicrosoftButtonSize? size;
@@ -55,7 +58,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type = MicrosoftButtonType.standard,
-    this.style = MicrosoftButtonStyle.light,
+    this.style,
     this.size,
     this.text,
     this.shape,
@@ -93,9 +96,28 @@ class MicrosoftSignInButton extends StatelessWidget {
     final buttonStyle = MicrosoftSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
-      style: style,
+      style: style ?? MicrosoftButtonStyle.light,
       width: minimumWidth,
     );
+
+    // An explicit brand `style` uses Microsoft's brand colors; otherwise the
+    // shared (uniform, theme-aware) colors apply.
+    final Color backgroundColor;
+    final Color foregroundColor;
+    final Color borderColor;
+    final bool showBorder;
+    if (style != null) {
+      backgroundColor = buttonStyle.backgroundColor;
+      foregroundColor = buttonStyle.foregroundColor;
+      borderColor = buttonStyle.borderSide.color;
+      showBorder = style == MicrosoftButtonStyle.light;
+    } else {
+      final colors = shared.resolveColors(context);
+      backgroundColor = colors.background;
+      foregroundColor = colors.foreground;
+      borderColor = colors.border;
+      showBorder = true;
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -104,69 +126,39 @@ class MicrosoftSignInButton extends StatelessWidget {
         minHeight: buttonStyle.size.height,
         maxHeight: buttonStyle.size.height,
       ),
-      child: style == MicrosoftButtonStyle.light
-          ? OutlinedButton(
-              onPressed: isLoading || isDisabled ? null : onPressed,
-              style: OutlinedButton.styleFrom(
-                backgroundColor: buttonStyle.backgroundColor,
-                foregroundColor: buttonStyle.foregroundColor,
-                side: buttonStyle.borderSide,
-                shape: RoundedRectangleBorder(
-                  borderRadius: buttonStyle.borderRadius,
-                ),
-                padding: EdgeInsets.zero,
-                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-                  alpha: 0.6,
-                ),
-                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-                  alpha: 0.6,
-                ),
-              ),
-              child: _buildButtonContent(
-                buttonStyle,
-                texts,
-                size: size,
-                text: text,
-                logoAlignment: logoAlignment,
-                textStyle: textStyle,
-              ),
-            )
-          : ElevatedButton(
-              onPressed: isLoading || isDisabled ? null : onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonStyle.backgroundColor,
-                foregroundColor: buttonStyle.foregroundColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: buttonStyle.borderRadius,
-                ),
-                padding: EdgeInsets.zero,
-                elevation: 0,
-                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-                  alpha: 0.6,
-                ),
-                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-                  alpha: 0.6,
-                ),
-              ),
-              child: _buildButtonContent(
-                buttonStyle,
-                texts,
-                size: size,
-                text: text,
-                logoAlignment: logoAlignment,
-                textStyle: textStyle,
-              ),
-            ),
+      child: ElevatedButton(
+        onPressed: isLoading || isDisabled ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: buttonStyle.borderRadius,
+            side: showBorder ? BorderSide(color: borderColor) : BorderSide.none,
+          ),
+          padding: EdgeInsets.zero,
+          elevation: 0,
+          disabledBackgroundColor: backgroundColor.withValues(alpha: 0.6),
+          disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
+        ),
+        child: _buildButtonContent(
+          texts,
+          size: size,
+          text: text,
+          logoAlignment: logoAlignment,
+          textStyle: textStyle,
+          foregroundColor: foregroundColor,
+        ),
+      ),
     );
   }
 
   Widget _buildButtonContent(
-    MicrosoftSignInStyle buttonStyle,
     MicrosoftSignInTexts texts, {
     required MicrosoftButtonSize size,
     required MicrosoftButtonText text,
     required MicrosoftButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
+    required Color foregroundColor,
   }) {
     if (isLoading) {
       return SizedBox(
@@ -174,66 +166,71 @@ class MicrosoftSignInButton extends StatelessWidget {
         width: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            buttonStyle.foregroundColor,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
         ),
       );
     }
 
     if (type == MicrosoftButtonType.icon) {
-      return _buildMicrosoftLogo(buttonStyle, size);
+      return _buildMicrosoftLogo(size);
     }
 
     final baseTextStyle = TextStyle(
       fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
-      color: buttonStyle.foregroundColor,
+      color: foregroundColor,
     );
     final textWidget = Text(
       texts.signInButton ?? _getButtonText(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
 
-    final logo = _buildMicrosoftLogo(buttonStyle, size);
+    final logo = _buildMicrosoftLogo(size);
+    final iconSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
+    // Center: logo indented so it lines up with the native Apple button's
+    // centered logo at any button width, with the label hugging it.
     if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          logo,
-          const SizedBox(width: 12),
-          textWidget,
-        ],
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final raw =
+              (constraints.maxWidth - signInCenteredAppleContentWidth) / 2;
+          final indent = raw < 16.0 ? 16.0 : raw;
+          return Row(
+            children: [
+              SizedBox(width: indent),
+              logo,
+              const SizedBox(width: signInCenteredLogoGap),
+              Flexible(child: textWidget),
+            ],
+          );
+        },
       );
     }
 
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
-
-    return Stack(
-      children: [
-        Positioned(
-          left: 14,
-          top: 0,
-          bottom: 0,
-          child: logo,
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
+    // Left: logo at the left column, with the label left-aligned starting where
+    // the native Apple button's centered label starts, so the labels line up.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final raw =
+            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
+            signInLeftLogoIndent -
+            iconSize;
+        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
+        return Row(
           children: [
-            SizedBox(width: logoSize + 14),
-            Center(child: textWidget),
-            const SizedBox(width: 8),
+            const SizedBox(width: signInLeftLogoIndent),
+            logo,
+            SizedBox(width: gap),
+            Flexible(child: textWidget),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildMicrosoftLogo(
-    MicrosoftSignInStyle buttonStyle,
-    MicrosoftButtonSize size,
-  ) {
+  Widget _buildMicrosoftLogo(MicrosoftButtonSize size) {
     final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
     return SizedBox.square(

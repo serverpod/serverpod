@@ -68,8 +68,11 @@ class GitHubSignInWidget extends StatefulWidget {
   /// The button type: icon or standard button.
   final GitHubButtonType type;
 
-  /// The button style (black or white).
-  final GitHubButtonStyle style;
+  /// The brand color preset (black or white).
+  ///
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into GitHub's brand colors.
+  final GitHubButtonStyle? style;
 
   /// The button size (large or medium).
   ///
@@ -114,7 +117,7 @@ class GitHubSignInWidget extends StatefulWidget {
     this.onError,
     this.scopes = GitHubAuthController.defaultScopes,
     this.type = GitHubButtonType.standard,
-    this.style = GitHubButtonStyle.black,
+    this.style,
     this.size,
     this.text,
     this.shape,

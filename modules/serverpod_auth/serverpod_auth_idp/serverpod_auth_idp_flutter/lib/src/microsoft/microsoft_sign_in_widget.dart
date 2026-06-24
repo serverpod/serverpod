@@ -68,8 +68,11 @@ class MicrosoftSignInWidget extends StatefulWidget {
   /// The button type: icon or standard button.
   final MicrosoftButtonType type;
 
-  /// The button style (light or dark).
-  final MicrosoftButtonStyle style;
+  /// The brand color preset (light or dark).
+  ///
+  /// When null, the button uses the shared [SignInButtonStyle] colors (or the
+  /// uniform default). Set it to opt this button into Microsoft's brand colors.
+  final MicrosoftButtonStyle? style;
 
   /// The button size (large or medium).
   ///
@@ -114,7 +117,7 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.onError,
     this.scopes = MicrosoftAuthController.defaultScopes,
     this.type = MicrosoftButtonType.standard,
-    this.style = MicrosoftButtonStyle.light,
+    this.style,
     this.size,
     this.text,
     this.shape,

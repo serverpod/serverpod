@@ -30,10 +30,12 @@ class AppleSignInButton extends StatelessWidget {
   /// [AppleButtonText.continueWith], when null.
   final AppleButtonText? type;
 
-  /// The button style.
+  /// The brand color preset (black, white, or white-outlined).
   ///
-  /// For example, black or white.
-  final AppleButtonStyle style;
+  /// When null, the button approximates the shared [SignInButtonStyle] colors
+  /// (or the uniform default) with its nearest preset. Set it to pick an Apple
+  /// preset explicitly.
+  final AppleButtonStyle? style;
 
   /// The button size.
   ///
@@ -65,7 +67,7 @@ class AppleSignInButton extends StatelessWidget {
     required this.isLoading,
     required this.isDisabled,
     this.type,
-    this.style = AppleButtonStyle.black,
+    this.style,
     this.size,
     this.shape,
     this.logoAlignment,
@@ -93,6 +95,20 @@ class AppleSignInButton extends StatelessWidget {
         AppleButtonLogoAlignment.center;
     final minimumWidth = this.minimumWidth ?? shared.minimumWidth ?? 240;
 
+    // Apple's native button can't take arbitrary colors, so an explicit preset
+    // wins, otherwise map the resolved background to its nearest preset. The
+    // borderless white/black presets are used (rather than whiteOutlined) since
+    // Apple's outline is black and would not match the other buttons' border.
+    final AppleButtonStyle effectiveStyle;
+    if (style != null) {
+      effectiveStyle = style!;
+    } else {
+      final colors = shared.resolveColors(context);
+      effectiveStyle = colors.background.computeLuminance() > 0.5
+          ? AppleButtonStyle.white
+          : AppleButtonStyle.black;
+    }
+
     final buttonStyle = AppleSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -110,7 +126,7 @@ class AppleSignInButton extends StatelessWidget {
         onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
         text: texts.signInButton ?? _getButtonText(type),
         height: buttonStyle.size.height,
-        style: style,
+        style: effectiveStyle,
         borderRadius: buttonStyle.borderRadius,
         iconAlignment: logoAlignment,
       ),

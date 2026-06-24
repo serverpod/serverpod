@@ -1,4 +1,28 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+
+/// The width of the native Apple button's centered `[logo + label]` content.
+///
+/// A centered sign-in button indents its logo by `(buttonWidth - this) / 2`, so
+/// the logo lands at the same spot as the Apple button's centered logo at any
+/// button width. Tune this to line the icons up with Apple.
+const double signInCenteredAppleContentWidth = 168;
+
+/// The gap between the logo and the label on a centered sign-in button, tuned
+/// to match the tighter spacing of the native Apple button.
+const double signInCenteredLogoGap = 6;
+
+/// The left indent of the logo when a sign-in button is left-aligned, tuned so
+/// the icons line up with the native Apple button (whose logo is centered in a
+/// wider icon box, sitting a few pixels in from the edge).
+const double signInLeftLogoIndent = 21;
+
+/// The width of the native Apple button's centered label ("Continue with
+/// Apple").
+///
+/// A left-aligned sign-in button starts its label at `(buttonWidth - this) / 2`
+/// so the label lines up with the Apple button's centered label at any width.
+/// Tune this to line the labels up with Apple.
+const double signInLeftLabelWidth = 146;
 
 /// Sign-in button size. Providers without [small] fall back to [medium].
 enum SignInButtonSize {
@@ -49,6 +73,26 @@ enum SignInButtonTextVariant {
   signIn,
 }
 
+/// The resolved background, foreground, and border colors of a sign-in button.
+@immutable
+class SignInButtonColors {
+  /// The button background color.
+  final Color background;
+
+  /// The label (and monochrome logo) color.
+  final Color foreground;
+
+  /// The button border color.
+  final Color border;
+
+  /// Creates a resolved set of sign-in button colors.
+  const SignInButtonColors({
+    required this.background,
+    required this.foreground,
+    required this.border,
+  });
+}
+
 /// Styling shared by every sign-in button.
 ///
 /// Pass this to [SignInWidget] to style all provider buttons at once instead of
@@ -57,8 +101,14 @@ enum SignInButtonTextVariant {
 /// resolves each property as: widget argument, then this style, then its own
 /// default.
 ///
-/// Apple is drawn by its native button and only follows the layout fields
-/// ([size], [shape], [logoAlignment], [text], [minimumWidth]) — see [textStyle].
+/// By default the buttons share one neutral appearance (see [resolveColors]);
+/// set [backgroundColor]/[foregroundColor]/[borderColor] to recolor them all,
+/// or set a provider widget's own brand `style` to opt that one back into its
+/// brand colors.
+///
+/// Apple is drawn by its native button and only approximates these colors with
+/// its nearest black/white/outlined preset, and it ignores [textStyle] (it
+/// always uses the system font).
 @immutable
 class SignInButtonStyle {
   /// Button size.
@@ -80,6 +130,15 @@ class SignInButtonStyle {
   /// system font.
   final TextStyle? textStyle;
 
+  /// Button background color. Defaults to a theme-based neutral.
+  final Color? backgroundColor;
+
+  /// Label (and monochrome logo) color. Defaults to a theme-based neutral.
+  final Color? foregroundColor;
+
+  /// Button border color. Defaults to a theme-based neutral.
+  final Color? borderColor;
+
   /// Creates a shared button style. Unset fields fall through to each widget.
   const SignInButtonStyle({
     this.size,
@@ -88,6 +147,9 @@ class SignInButtonStyle {
     this.text,
     this.minimumWidth,
     this.textStyle,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
   }) : assert(
          minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
          'Invalid minimumWidth. Must be between 0 and 400.',
@@ -95,6 +157,24 @@ class SignInButtonStyle {
 
   /// A style that overrides nothing.
   static const defaults = SignInButtonStyle();
+
+  /// Resolves the uniform button colors for the current theme, applying any
+  /// [backgroundColor]/[foregroundColor]/[borderColor] overrides on top of a
+  /// neutral default that follows the theme brightness.
+  SignInButtonColors resolveColors(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SignInButtonColors(
+      background:
+          backgroundColor ??
+          (isDark ? const Color(0xFF1F1F1F) : const Color(0xFFFFFFFF)),
+      foreground:
+          foregroundColor ??
+          (isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1F1F1F)),
+      border:
+          borderColor ??
+          (isDark ? const Color(0xFF5F6368) : const Color(0xFFDADCE0)),
+    );
+  }
 
   /// Returns a copy with the given fields replaced.
   SignInButtonStyle copyWith({
@@ -104,6 +184,9 @@ class SignInButtonStyle {
     SignInButtonTextVariant? text,
     double? minimumWidth,
     TextStyle? textStyle,
+    Color? backgroundColor,
+    Color? foregroundColor,
+    Color? borderColor,
   }) {
     return SignInButtonStyle(
       size: size ?? this.size,
@@ -112,6 +195,9 @@ class SignInButtonStyle {
       text: text ?? this.text,
       minimumWidth: minimumWidth ?? this.minimumWidth,
       textStyle: textStyle ?? this.textStyle,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      foregroundColor: foregroundColor ?? this.foregroundColor,
+      borderColor: borderColor ?? this.borderColor,
     );
   }
 
@@ -124,7 +210,10 @@ class SignInButtonStyle {
         other.logoAlignment == logoAlignment &&
         other.text == text &&
         other.minimumWidth == minimumWidth &&
-        other.textStyle == textStyle;
+        other.textStyle == textStyle &&
+        other.backgroundColor == backgroundColor &&
+        other.foregroundColor == foregroundColor &&
+        other.borderColor == borderColor;
   }
 
   @override
@@ -135,6 +224,9 @@ class SignInButtonStyle {
     text,
     minimumWidth,
     textStyle,
+    backgroundColor,
+    foregroundColor,
+    borderColor,
   );
 }
 

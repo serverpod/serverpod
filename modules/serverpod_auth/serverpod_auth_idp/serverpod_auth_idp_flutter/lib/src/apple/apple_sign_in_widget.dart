@@ -74,10 +74,11 @@ class AppleSignInWidget extends StatefulWidget {
   /// [AppleButtonText.continueWith], when null.
   final AppleButtonText? type;
 
-  /// The button style.
+  /// The brand color preset (black, white, or white-outlined).
   ///
-  /// For example, black or white.
-  final AppleButtonStyle style;
+  /// When null, the button approximates the shared [SignInButtonStyle] colors
+  /// (or the uniform default) with its nearest preset.
+  final AppleButtonStyle? style;
 
   /// The button size.
   ///
@@ -111,7 +112,7 @@ class AppleSignInWidget extends StatefulWidget {
     this.onError,
     this.scopes = AppleAuthController.defaultScopes,
     this.type,
-    this.style = AppleButtonStyle.black,
+    this.style,
     this.size,
     this.shape,
     this.logoAlignment,
