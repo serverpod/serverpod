@@ -419,26 +419,35 @@ class MainScreen extends StatelessComponent {
   }
 
   /// The raw server logs "dev console", shown as a full-area overlay when
-  /// toggled via the backtick (`` ` ``) shortcut.
+  /// toggled via the key S shortcut.
   Component _buildRawServerLogsPanel(ServerpodThemeData st) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 1),
-          child: Row(
-            children: [
-              Text(
-                'Raw server logs',
-                style: TextStyle(
-                  color: st.primary,
-                  fontWeight: FontWeight.bold,
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(fontWeight: FontWeight.dim),
+              children: [
+                TextSpan(
+                  text: 'Raw server logs',
+                  style: TextStyle(
+                    color: st.brightText,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
-              ),
-              const Text(
-                '  press ` / . or Esc to close',
-                style: TextStyle(fontWeight: FontWeight.dim),
-              ),
-            ],
+                const TextSpan(text: '  press '),
+                TextSpan(
+                  text: 'Esc',
+                  style: TextStyle(
+                    color: st.activationKey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(text: ' to close'),
+              ],
+            ),
           ),
         ),
         Divider(color: st.subtleDivider),

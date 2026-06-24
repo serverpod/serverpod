@@ -240,21 +240,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    if (state.showRawServerLogs) {
-      if (event.logicalKey == LogicalKey.escape ||
-          event.logicalKey == LogicalKey.backquote ||
-          event.logicalKey == LogicalKey.period) {
-        state.showRawServerLogs = false;
-        _rebuild();
-        return true;
-      }
-      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
-        return false;
-      }
-      _handleScrollKey(rawScrollController, event);
-      return true;
-    }
-
     if (state.showLaunchPanel) {
       final appCount = state.launchableApps.length;
 
@@ -307,7 +292,22 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         _rebuild();
         return true;
       }
-      return true;
+    }
+
+    if (state.showRawServerLogs) {
+      if (event.logicalKey == LogicalKey.escape ||
+          event.logicalKey == LogicalKey.backquote ||
+          event.logicalKey == LogicalKey.keyS) {
+        state.showRawServerLogs = false;
+        _rebuild();
+        return true;
+      }
+      if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+        return false;
+      }
+      if (_handleScrollKey(rawScrollController, event)) {
+        return true;
+      }
     }
 
     // Ctrl+R: full relaunch of the selected Flutter app (kill `flutter run` and
@@ -370,7 +370,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     }
 
     if (event.logicalKey == LogicalKey.backquote ||
-        event.logicalKey == LogicalKey.period) {
+        event.logicalKey == LogicalKey.keyS) {
       state.showRawServerLogs = true;
       _rebuild();
       return true;
