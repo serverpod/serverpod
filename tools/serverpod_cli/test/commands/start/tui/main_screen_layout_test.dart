@@ -24,6 +24,15 @@ Future<NoctermTester> _pumpAppsLayout(Size size) async {
       scope: LogScope.root('server'),
     ),
   );
+  state.launchableApps = [
+    for (final name in ['Admin', 'Portal'])
+      FlutterAppConfig(
+        id: name.toLowerCase(),
+        name: name,
+        relativePathParts: ['..', name.toLowerCase()],
+        serverPackageDirectoryPathParts: const [],
+      ),
+  ];
   final admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
   admin.lines.add('admin-log-line');
   state

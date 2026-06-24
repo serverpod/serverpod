@@ -75,8 +75,8 @@ void main() {
     'when created '
     'then only the main area exists',
     () {
-      final state = ServerWatchState(hasConfiguredApps: false);
-
+      final state = ServerWatchState();
+      expect(state.hasConfiguredApps, isFalse);
       expect(state.tabs.areas, hasLength(1));
       expect(state.tabs.areas.single.id, kMainArea);
     },

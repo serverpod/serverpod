@@ -36,7 +36,6 @@ Future<VmServiceProxy> bindFlutterAppProxy({
 class FlutterAppManager {
   /// Creates a [FlutterAppManager].
   FlutterAppManager({
-    required List<FlutterAppConfig> apps,
     required this.serverpodToolDir,
     required this.runMode,
     required this.onProgress,
@@ -46,9 +45,13 @@ class FlutterAppManager {
     required this.onEnsureAppTab,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
+    required this.serverPubspecFile,
+    required this.serverPackageDirectoryPathParts,
+    required this.projectName,
+    required this.launchFlutterApp,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
-  }) : _apps = apps;
+  });
 
   /// Test-only override for the `flutter` executable path.
   final String? flutterExecutableForTesting;
@@ -90,7 +93,16 @@ class FlutterAppManager {
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
 
-  final List<FlutterAppConfig> _apps;
+  /// The server's `pubspec.yaml`, used to fingerprint the `flutter_apps`
+  /// config and detect changes without re-parsing on every file event.
+  final File serverPubspecFile;
+  final List<String> serverPackageDirectoryPathParts;
+  final String projectName;
+  final bool launchFlutterApp;
+
+  String? _cachedFlutterAppsFingerprint;
+
+  final List<FlutterAppConfig> _apps = [];
   final Map<String, _AppRuntime> _runtimes = {};
   bool _initialized = false;
 
@@ -153,6 +165,16 @@ class FlutterAppManager {
         PackageDependencyChange.none;
   }
 
+  /// Checks whether the `serverpod: flutter_apps:` section of the server's
+  /// `pubspec.yaml` has changed since the last check. Returns `true` when the
+  /// fingerprint differs, meaning the Flutter app config should be reloaded.
+  bool hasServerFlutterAppsChanged() {
+    final fingerprint = computeFlutterAppsFingerprint(serverPubspecFile);
+    final changed = fingerprint != _cachedFlutterAppsFingerprint;
+    _cachedFlutterAppsFingerprint = fingerprint;
+    return changed;
+  }
+
   /// Returns running app ids whose `lib` directory contains any of [paths].
   ///
   /// When no app matches, returns every running app id so single-app behavior
@@ -181,24 +203,7 @@ class FlutterAppManager {
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
-
-    for (final app in _apps) {
-      final infoFile = _infoFileFor(app.id);
-      final proxy = await bindFlutterAppProxy(
-        infoFile: infoFile,
-        onWaitingClientArrived: () {
-          final launch = launchOnWaitingClient;
-          if (launch != null) return launch(app.id);
-          return this.launch(app.id);
-        },
-      );
-      _runtimes[app.id] = _AppRuntime(
-        app: app,
-        proxy: proxy,
-        infoFile: infoFile,
-      );
-      _setupDependencyTracker(app.id);
-    }
+    await loadApps();
   }
 
   /// Launches [appId] when not already running. No-op in non-development mode
@@ -290,6 +295,65 @@ class FlutterAppManager {
     runtime.process = null;
   }
 
+  /// Loads configured apps from [serverPubspecFile].
+  ///
+  /// Apps present in the old config but absent in the new one are stopped and
+  /// removed. Apps present in the new config but absent in the old one are
+  /// initialized (VM-service proxy bound, dependency tracker set up) and
+  /// launched if [FlutterAppConfig.autoLaunch] is true. Apps present in both
+  /// are kept running but their config is updated.
+  Future<void> loadApps() async {
+    final newApps = loadFlutterApps(
+      serverPubspecFile: serverPubspecFile,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      projectName: projectName,
+    );
+
+    final oldIds = {for (final a in _apps) a.id};
+    final newIds = {for (final a in newApps) a.id};
+
+    // Stop and remove apps no longer configured.
+    for (final id in oldIds.difference(newIds)) {
+      await stop(id);
+      await _runtimes[id]?.proxy.close();
+      _runtimes.remove(id);
+    }
+
+    _apps
+      ..clear()
+      ..addAll(newApps);
+
+    _cacheFlutterAppsFingerprint();
+
+    // Add newly configured apps or update existing ones.
+    for (final app in newApps) {
+      final existing = _runtimes[app.id];
+      if (existing == null) {
+        final infoFile = _infoFileFor(app.id);
+        final proxy = await bindFlutterAppProxy(
+          infoFile: infoFile,
+          onWaitingClientArrived: () {
+            final launch = launchOnWaitingClient;
+            if (launch != null) return launch(app.id);
+            return this.launch(app.id);
+          },
+        );
+        _runtimes[app.id] = _AppRuntime(
+          app: app,
+          proxy: proxy,
+          infoFile: infoFile,
+        );
+      } else {
+        existing.app = app;
+      }
+
+      _setupDependencyTracker(app.id);
+      if (launchFlutterApp && app.autoLaunch) {
+        await launch(app.id);
+      }
+    }
+  }
+
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {
@@ -344,6 +408,12 @@ class FlutterAppManager {
         'not read the Flutter package name from $flutterPackageDir ($e).',
       );
     }
+  }
+
+  void _cacheFlutterAppsFingerprint() {
+    _cachedFlutterAppsFingerprint = computeFlutterAppsFingerprint(
+      serverPubspecFile,
+    );
   }
 
   Future<void> _connectAfterLaunch(
@@ -405,7 +475,7 @@ class _AppRuntime {
     required this.infoFile,
   });
 
-  final FlutterAppConfig app;
+  FlutterAppConfig app;
   final VmServiceProxy proxy;
   final String infoFile;
   FlutterProcess? process;

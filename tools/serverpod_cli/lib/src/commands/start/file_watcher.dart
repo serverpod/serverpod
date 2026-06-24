@@ -24,10 +24,10 @@ class FileChangeEvent {
   /// comparing the dependency fingerprint (see `FlutterDependencyTracker`).
   final bool flutterDependenciesChanged;
 
-  /// Whether the Flutter app's `pubspec.yaml` was modified in this batch.
-  /// Assets and fonts declared in the `pubspec.yaml` are bundled at build
-  /// time, so any change requires a full process relaunch.
-  final bool flutterPubspecChanged;
+  /// Whether any `pubspec.yaml` was modified in this batch (any watched
+  /// pubspec, including the server's and each companion Flutter app's).
+  /// Consumers use fingerprinting to decide what action, if any, is needed.
+  final bool pubspecChanged;
 
   /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
   ///
@@ -39,7 +39,7 @@ class FileChangeEvent {
     this.modelFiles = const {},
     this.packageConfigChanged = false,
     this.flutterDependenciesChanged = false,
-    this.flutterPubspecChanged = false,
+    this.pubspecChanged = false,
     this.staticFilesChanged = false,
   });
 }
@@ -62,7 +62,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
     final modelFiles = <String>{};
     var packageConfigChanged = false;
     var flutterDependenciesChanged = false;
-    var flutterPubspecChanged = false;
+    var pubspecChanged = false;
     var staticFilesChanged = false;
 
     for (final event in this) {
@@ -70,7 +70,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles.addAll(event.modelFiles);
       packageConfigChanged |= event.packageConfigChanged;
       flutterDependenciesChanged |= event.flutterDependenciesChanged;
-      flutterPubspecChanged |= event.flutterPubspecChanged;
+      pubspecChanged |= event.pubspecChanged;
       staticFilesChanged |= event.staticFilesChanged;
     }
 
@@ -79,7 +79,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles: modelFiles,
       packageConfigChanged: packageConfigChanged,
       flutterDependenciesChanged: flutterDependenciesChanged,
-      flutterPubspecChanged: flutterPubspecChanged,
+      pubspecChanged: pubspecChanged,
       staticFilesChanged: staticFilesChanged,
     );
   }
@@ -109,9 +109,9 @@ class FileWatcher {
 
   /// Creates a file watcher.
   ///
-  /// [watchPaths] is the set of directories to watch. [packageConfigPath] and
-  /// [packageGraphPaths] are the exact pub-artifact files whose changes map to
-  /// `packageConfigChanged` / `flutterDependenciesChanged`.
+  /// [watchPaths] is the set of directories or files to watch.
+  /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
+  /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
   FileWatcher({
     required Iterable<String> watchPaths,
     String? packageConfigPath,
@@ -158,7 +158,7 @@ class FileWatcher {
           final modelFiles = <String>{};
           var packageConfigChanged = false;
           var flutterDependenciesChanged = false;
-          var flutterPubspecChanged = false;
+          var pubspecChanged = false;
           var staticFilesChanged = false;
 
           for (final event in events) {
@@ -192,7 +192,7 @@ class FileWatcher {
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);
             } else if (p.basename(filePath) == 'pubspec.yaml') {
-              flutterPubspecChanged = true;
+              pubspecChanged = true;
             } else {
               staticFilesChanged = true;
             }
@@ -203,7 +203,7 @@ class FileWatcher {
             modelFiles: modelFiles,
             packageConfigChanged: packageConfigChanged,
             flutterDependenciesChanged: flutterDependenciesChanged,
-            flutterPubspecChanged: flutterPubspecChanged,
+            pubspecChanged: pubspecChanged,
             staticFilesChanged: staticFilesChanged,
           );
         })
@@ -213,7 +213,7 @@ class FileWatcher {
               e.modelFiles.isNotEmpty ||
               e.packageConfigChanged ||
               e.flutterDependenciesChanged ||
-              e.flutterPubspecChanged ||
+              e.pubspecChanged ||
               e.staticFilesChanged,
         );
   }

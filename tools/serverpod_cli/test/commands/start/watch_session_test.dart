@@ -12,7 +12,6 @@ import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
-import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/frontend_server_client.dart';
 import 'package:test/fake.dart';
@@ -218,18 +217,21 @@ dependencies:
     sdk: flutter
 ''');
 
-  final app = FlutterAppConfig(
-    id: 'app',
-    name: 'App',
-    relativePathParts: p.split(
-      p.relative(flutterDir.path, from: serverDir.path),
-    ),
-    serverPackageDirectoryPathParts: p.split(serverDir.path),
-  );
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+''');
 
   final process = flutter ?? _FakeFlutter();
   final manager = FlutterAppManager(
-    apps: [app],
+    projectName: 'project',
+    launchFlutterApp: false,
+    serverPubspecFile: serverPubspecFile,
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
     serverpodToolDir: p.join(tempDir.path, '.serverpod'),
     runMode: 'development',
     onProgress: (_, _) {},
@@ -270,19 +272,26 @@ _createTwoAppFlutterManagerHarness() async {
   final flutterDirB = Directory(p.join(tempDir.path, 'app_b_flutter'))
     ..createSync(recursive: true);
 
-  FlutterAppConfig appConfig(String id, Directory dir) => FlutterAppConfig(
-    id: id,
-    name: id,
-    relativePathParts: p.split(p.relative(dir.path, from: serverDir.path)),
-    serverPackageDirectoryPathParts: p.split(serverDir.path),
-  );
+  final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app-a:
+      path: ../app_a_flutter
+    app-b:
+      path: ../app_b_flutter
+''');
 
   final processA = _FakeFlutter();
   final processB = _FakeFlutter();
   final manager = FlutterAppManager(
-    apps: [appConfig('app-a', flutterDirA), appConfig('app-b', flutterDirB)],
-    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    projectName: 'project',
+    launchFlutterApp: false,
     runMode: 'development',
+    serverPubspecFile: serverPubspecFile,
+    serverpodToolDir: p.join(tempDir.path, '.serverpod'),
+    serverPackageDirectoryPathParts: p.split(serverDir.path),
     onProgress: (_, _) {},
     onReady: (_, _) {},
     onStart: (_, _) async {},
@@ -345,6 +354,7 @@ void main() {
     NativeAssetsApplier? nativeAssetsBuilder,
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
+    FlutterAppsLoader? flutterAppsLoader,
   }) {
     return WatchSession(
       compiler: compiler,
@@ -372,6 +382,7 @@ void main() {
       classifyProtocolChange:
           classifyProtocolChange ?? defaultProtocolChangeClassifier,
       flutterManager: flutterManager,
+      flutterAppsLoader: flutterAppsLoader,
     );
   }
 
@@ -2068,7 +2079,7 @@ void main() {
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
-            flutterPubspecChanged: true,
+            pubspecChanged: true,
           );
 
           await session.handleFileChange(event);
@@ -2086,7 +2097,7 @@ void main() {
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/a.dart'},
-            flutterPubspecChanged: true,
+            pubspecChanged: true,
           );
 
           await session.handleFileChange(event);
@@ -2094,6 +2105,82 @@ void main() {
           expect(server.calls, contains('reload:/out.dill'));
           expect(restartActionCalls, 1);
           expect(flutter.calls, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a watch session where the server pubspec flutter_apps section changed,',
+    () {
+      late int reloadAppsCalls;
+      late _FakeFlutter flutter;
+      late FlutterAppManager flutterManager;
+      late Directory tempDir;
+
+      setUp(() async {
+        reloadAppsCalls = 0;
+        flutter = _FakeFlutter();
+        final harness = await _createFlutterManagerHarness(
+          flutter: flutter,
+        );
+        flutterManager = harness.manager;
+        tempDir = harness.tempDir;
+
+        session = buildSession(
+          compiler: compiler,
+          initialServer: server,
+          flutterManager: flutterManager,
+          flutterAppsLoader: () async {
+            reloadAppsCalls++;
+          },
+        );
+
+        flutterManager.serverPubspecFile.writeAsStringSync('''
+name: server
+serverpod:
+  flutter_apps:
+    app:
+      path: ../app_flutter
+      device: chrome
+''');
+      });
+
+      tearDown(() {
+        tempDir.deleteSync(recursive: true);
+      });
+
+      test(
+        'when pubspecChanged is set without dart changes, '
+        'then the flutter apps reload callback is invoked and server is not recompiled.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(compiler.calls, isEmpty);
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
+        },
+      );
+
+      test(
+        'when pubspecChanged and dart files change together, '
+        'then the flutter apps reload callback is invoked and the server is reloaded.',
+        () async {
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+            pubspecChanged: true,
+          );
+
+          await session.handleFileChange(event);
+
+          expect(reloadAppsCalls, 1);
+          expect(server.calls, contains('reload:/out.dill'));
+          expect(testLogger.infoMessages, contains(flutterAppsConfigChanged));
         },
       );
     },
