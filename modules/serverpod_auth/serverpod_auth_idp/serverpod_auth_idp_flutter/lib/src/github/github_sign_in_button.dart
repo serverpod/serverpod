@@ -282,10 +282,11 @@ GitHubButtonLogoAlignment? _toGitHubLogoAlignment(
 };
 
 // GitHub always appends its name, so the bare "sign in" maps to "Sign in with".
-GitHubButtonText? _toGitHubText(SignInButtonTextVariant? text) => switch (text) {
-  null => null,
-  SignInButtonTextVariant.signInWith => GitHubButtonText.signIn,
-  SignInButtonTextVariant.signUpWith => GitHubButtonText.signUp,
-  SignInButtonTextVariant.continueWith => GitHubButtonText.continueWith,
-  SignInButtonTextVariant.signIn => GitHubButtonText.signIn,
-};
+GitHubButtonText? _toGitHubText(SignInButtonTextVariant? text) =>
+    switch (text) {
+      null => null,
+      SignInButtonTextVariant.signInWith => GitHubButtonText.signIn,
+      SignInButtonTextVariant.signUpWith => GitHubButtonText.signUp,
+      SignInButtonTextVariant.continueWith => GitHubButtonText.continueWith,
+      SignInButtonTextVariant.signIn => GitHubButtonText.signIn,
+    };

@@ -19,25 +19,28 @@ void main() {
   // These tests cover text/style precedence, not layout. They render at medium
   // size because the long "Continue with Microsoft" label overflows the button
   // by ~2px at large size under the test font.
-  group('Given a MicrosoftSignInButton with no shared style and no arguments', () {
-    testWidgets(
-      'when built then it uses Microsoft built-in defaults',
-      (tester) async {
-        await tester.pumpWidget(
-          const _Host(
-            child: MicrosoftSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              size: MicrosoftButtonSize.medium,
+  group(
+    'Given a MicrosoftSignInButton with no shared style and no arguments',
+    () {
+      testWidgets(
+        'when built then it uses Microsoft built-in defaults',
+        (tester) async {
+          await tester.pumpWidget(
+            const _Host(
+              child: MicrosoftSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                size: MicrosoftButtonSize.medium,
+              ),
             ),
-          ),
-        );
+          );
 
-        expect(find.text('Continue with Microsoft'), findsOneWidget);
-      },
-    );
-  });
+          expect(find.text('Continue with Microsoft'), findsOneWidget);
+        },
+      );
+    },
+  );
 
   group('Given a shared SignInButtonStyle in scope', () {
     testWidgets(

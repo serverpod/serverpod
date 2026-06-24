@@ -15,18 +15,21 @@ void main() {
       expect(style.borderRadius, BorderRadius.circular(4));
     });
 
-    test('when a border radius override is given then it wins over the shape', () {
-      final style = GoogleSignInStyle.fromConfiguration(
-        theme: GSIButtonTheme.outline,
-        // Pill would normally resolve to height/2; the override must win so the
-        // native button can render shapes the web GSIButtonShape lacks.
-        shape: GSIButtonShape.pill,
-        size: GSIButtonSize.large,
-        width: 240,
-        borderRadius: BorderRadius.circular(8),
-      );
+    test(
+      'when a border radius override is given then it wins over the shape',
+      () {
+        final style = GoogleSignInStyle.fromConfiguration(
+          theme: GSIButtonTheme.outline,
+          // Pill would normally resolve to height/2; the override must win so the
+          // native button can render shapes the web GSIButtonShape lacks.
+          shape: GSIButtonShape.pill,
+          size: GSIButtonSize.large,
+          width: 240,
+          borderRadius: BorderRadius.circular(8),
+        );
 
-      expect(style.borderRadius, BorderRadius.circular(8));
-    });
+        expect(style.borderRadius, BorderRadius.circular(8));
+      },
+    );
   });
 }
