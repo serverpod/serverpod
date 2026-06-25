@@ -114,30 +114,28 @@ class ClientAuthSessionManager
   @override
   bool get usesCookies => cookieAuth;
 
-  @override
-  Future<String?> get authHeaderValue async {
-    if (!cookieAuth) return authKeyProviderDelegate?.authHeaderValue;
-
-    // Cookie mode carries the credential in an `HttpOnly` cookie, so no
-    // `Authorization` header is sent. Only the opaque session (SAS) strategy is
-    // supported in cookie mode today; JWT cookie mode (access-in-memory +
-    // refresh cookie) is not implemented yet. Without this guard a JWT client
-    // built with `cookieAuth: true` would send neither a header nor a cookie
-    // and authenticate as nobody, silently. Fail loudly instead.
+  void _ensureCookieModeSupported() {
+    if (!cookieAuth) return;
     final strategy = authInfo?.authStrategy;
     if (strategy != null &&
         AuthStrategy.fromJson(strategy) == AuthStrategy.jwt) {
       throw StateError(
-        'cookieAuth is not supported with the JWT auth strategy. Use the opaque '
-        'session (SAS) strategy for cookie-based web auth, or run the client in '
-        'header mode (cookieAuth: false).',
+        'cookieAuth is not supported with the JWT auth strategy. '
+        'Use the opaque session (SAS) strategy for cookie-based web auth. ',
       );
     }
+  }
+
+  @override
+  Future<String?> get authHeaderValue async {
+    if (!cookieAuth) return authKeyProviderDelegate?.authHeaderValue;
+    _ensureCookieModeSupported();
     return null;
   }
 
   @override
   Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    _ensureCookieModeSupported();
     final authKeyProvider = authKeyProviderDelegate;
     if (authKeyProvider is! RefresherClientAuthKeyProvider) {
       return RefreshAuthKeyResult.skipped;
