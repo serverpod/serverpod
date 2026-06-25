@@ -123,7 +123,6 @@ class MainScreen extends StatelessComponent {
             bindings: _helpBindings,
             closeKey: 'Esc',
             controller: helpScrollController,
-            closeKey: 'Esc',
           ),
         if (state.showLaunchPanel)
           Positioned(
