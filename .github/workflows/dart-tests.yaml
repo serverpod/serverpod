@@ -642,6 +642,7 @@ jobs:
   integration_test_server:
     name: Serverpod integration tests (server)
     runs-on: ubuntu-latest
+    needs: seed_embedded_pg
     strategy:
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
@@ -651,12 +652,43 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
+      # Run against an embedded PostgreSQL postmaster (built once by
+      # seed_embedded_pg) instead of a Docker postgres - pulled in as an
+      # artifact and unpacked into the workflow-wide SERVERPOD_PG_CACHE_DIR.
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      # serverpod_test_server's config uses redis host 'redis' (Docker DNS in the
+      # container suites, /etc/hosts on dev machines); alias it to localhost and
+      # host a Redis whose password matches config/passwords.yaml. The run script
+      # then detects redis at redis:6379 and includes the redis-tagged tests.
+      - name: Start Redis
+        run: |
+          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+          # apt auto-starts a password-less redis on 6379; stop it so our
+          # password-protected instance can bind the port.
+          sudo systemctl stop redis-server 2>/dev/null || true
+          redis-server --daemonize yes --requirepass password
       - name: Run integration tests
         run: util/run_tests_integration
+        timeout-minutes: 15
 
   integration_test_server_concurrent:
     name: Serverpod concurrent integration tests (server)
     runs-on: ubuntu-latest
+    needs: seed_embedded_pg
     strategy:
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
@@ -666,8 +698,35 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
+      # withServerpod provisions a per-group embedded database (no up-front
+      # apply-migrations); matches the other *_integration_embedded suites.
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      # The concurrent (withServerpod) suite's auth tests use the redis-backed
+      # cache (config redis host 'redis'); alias it to localhost and host a Redis.
+      - name: Start Redis
+        run: |
+          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+          # apt auto-starts a password-less redis on 6379; stop it so our
+          # password-protected instance can bind the port.
+          sudo systemctl stop redis-server 2>/dev/null || true
+          redis-server --daemonize yes --requirepass password
       - name: Run integration tests
         run: util/run_tests_integration_concurrently
+        timeout-minutes: 15
 
   integration_test_sqlite_server:
     name: Serverpod SQLite integration tests (server)

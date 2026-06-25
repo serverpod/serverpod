@@ -29,7 +29,10 @@ void main() async {
     'then fails fast with a clear database error',
     () async {
       var timer = Stopwatch()..start();
-      final result = await runTest('test_that_will_timeout_after_default.dart');
+      final result = await runTest(
+        'test_that_will_timeout_after_default.dart',
+        embeddedDatabase: false,
+      );
 
       expect(result.exitCode, 1);
       expect(
@@ -63,7 +66,15 @@ void main() async {
   );
 }
 
-Future<ProcessResult> runTest(String testFile) {
+Future<ProcessResult> runTest(String testFile, {bool embeddedDatabase = true}) {
+  // When the suite runs against an embedded PostgreSQL, SERVERPOD_DATABASE_DATA_PATH
+  // is set and would otherwise leak into this spawned `dart test`, starting an
+  // embedded postmaster and making the database reachable - which defeats the
+  // unreachable-database cases. Drop it for those.
+  final environment = Map<String, String>.from(Platform.environment);
+  if (!embeddedDatabase) {
+    environment.remove('SERVERPOD_DATABASE_DATA_PATH');
+  }
   return Process.run(
     'dart',
     [
@@ -76,5 +87,7 @@ Future<ProcessResult> runTest(String testFile) {
       ]),
     ],
     runInShell: true,
+    environment: environment,
+    includeParentEnvironment: false,
   );
 }
