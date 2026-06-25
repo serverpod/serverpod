@@ -244,6 +244,19 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       );
     }
 
+    // postmaster.pid (above) is removed early in PG's shutdown, but the Unix
+    // socket lock outlives it until the postmaster has fully exited. A previous
+    // postmaster still finishing shutdown therefore reads as startable here yet
+    // would crash the launch with "lock file ... already exists". Wait for that
+    // holder to exit so the launch lands on a free socket. The socket lock uses
+    // the same first-line-PID format, so readPostmasterPidFile parses it too.
+    var socketLockPid = readPostmasterPidFile(
+      File(p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort.lock')),
+    );
+    if (socketLockPid != null && isProcessAlive(socketLockPid)) {
+      await waitForPidExit(socketLockPid, options.startTimeout);
+    }
+
     var supervisor = await _startSupervisorWithPortRetry(
       installDir: installDir,
       dataDir: pgDataDir,
