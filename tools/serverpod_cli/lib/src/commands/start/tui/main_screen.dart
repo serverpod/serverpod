@@ -163,6 +163,7 @@ class MainScreen extends StatelessComponent {
         if (state.showHelp)
           HelpOverlay(
             bindings: _helpBindings,
+            closeKey: 'Esc',
             controller: helpScrollController,
           ),
         if (state.showLaunchPanel)
