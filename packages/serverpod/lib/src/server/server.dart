@@ -350,14 +350,14 @@ class Server implements RouterInjectable {
     };
   }
 
-  /// The `Origin` header of [req] normalized to lowercase, or null if absent.
-  ///
-  /// Origins (scheme + host) are case-insensitive, and browsers send a
-  /// canonical lowercase origin; [ServerpodConfig.allowedOrigins] is likewise
-  /// normalized to lowercase, so membership checks match regardless of the
-  /// casing an operator happened to configure.
-  String? _requestOrigin(Request req) =>
-      req.headers[Headers.originHeader]?.firstOrNull?.trim().toLowerCase();
+  /// The `Origin` header of [req] normalized to lowercase with any trailing
+  /// slash dropped, or null if absent.
+  String? _requestOrigin(Request req) => req
+      .headers[Headers.originHeader]
+      ?.firstOrNull
+      ?.trim()
+      .toLowerCase()
+      .replaceFirst(RegExp(r'/+$'), '');
 
   /// Whether [req] carries an `Origin` that is present but not in
   /// [ServerpodConfig.allowedOrigins].
