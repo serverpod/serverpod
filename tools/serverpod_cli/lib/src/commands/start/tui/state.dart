@@ -6,14 +6,7 @@ import 'tab_model.dart';
 /// Central state for the TUI, mutated by the backend and rendered by nocterm.
 class ServerWatchState extends TuiState {
   /// Creates [ServerWatchState].
-  ///
-  /// When [hasConfiguredApps] is false the layout is a single full-width server
-  /// pane with no apps area.
-  ServerWatchState({this.hasConfiguredApps = true})
-    : tabs = TabModel([
-        TabArea(id: kMainArea, flex: 1),
-        if (hasConfiguredApps) TabArea(id: kAppsArea, flex: 1),
-      ]) {
+  ServerWatchState() : tabs = TabModel([TabArea(id: kMainArea, flex: 1)]) {
     tabs.addTab(ServerLogTab());
   }
 
@@ -35,7 +28,7 @@ class ServerWatchState extends TuiState {
   final TabModel tabs;
 
   /// Whether this project declares at least one companion Flutter app.
-  final bool hasConfiguredApps;
+  bool get hasConfiguredApps => launchableApps.isNotEmpty;
 
   /// Whether a Flutter app can be launched or restarted from here (the project
   /// has configured apps and we're in development mode).
@@ -91,6 +84,11 @@ class ServerWatchState extends TuiState {
   /// Whether the server is running and ready for actions.
   bool serverReady = false;
 
+  /// Whether the session is degraded: no server is running because the project
+  /// failed to generate or compile, but it can be (re)built and started on
+  /// demand. Enables the "Start server" action while [serverReady] is false.
+  bool serverStartable = false;
+
   /// Whether to show the splash overlay. Starts true, set to false
   /// after 5 seconds or explicitly by the backend.
   bool showSplash = true;
@@ -119,20 +117,34 @@ class ServerWatchState extends TuiState {
   /// The [launchableApps] index of the currently selected app tab, or 0 when
   /// none is open. Used to start the launch panel cursor on the active app.
   int get activeLaunchableIndex {
-    if (!hasConfiguredApps) return 0;
-    final selected = tabs.areaOf(kAppsArea).selected;
+    final tabArea = _appsTabArea;
+    if (tabArea == null) return 0;
+    final selected = tabArea.selected;
     if (selected is! AppLogTab) return 0;
     final index = launchableApps.indexWhere((a) => a.id == selected.appId);
     return index >= 0 ? index : 0;
   }
 
+  /// Returns tab area for apps if it exists.
+  TabArea? get _appsTabArea {
+    try {
+      return tabs.areaOf(kAppsArea);
+    } catch (_) {}
+    return null;
+  }
+
   /// Returns the [AppLogTab] for [appId], or null if it is not open.
   AppLogTab? appLogTabFor(String appId) {
-    if (!hasConfiguredApps) return null;
-    for (final tab in tabs.areaOf(kAppsArea).tabs) {
+    for (final tab in _appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab && tab.appId == appId) return tab;
     }
     return null;
+  }
+
+  void createAppsTabAreaIfNeeded() {
+    if (_appsTabArea == null) {
+      tabs.addArea(TabArea(id: kAppsArea, flex: 1));
+    }
   }
 
   /// Returns an existing [AppLogTab] for [appId] or creates and adds one.
@@ -143,6 +155,7 @@ class ServerWatchState extends TuiState {
     final existing = appLogTabFor(appId);
     if (existing != null) return existing;
 
+    createAppsTabAreaIfNeeded();
     final tab = AppLogTab(appId: appId, label: label);
     tabs.addTab(tab);
     return tab;
@@ -155,8 +168,7 @@ class ServerWatchState extends TuiState {
   void clearLogs() {
     logHistory.clear();
     rawLines.clear();
-    if (!hasConfiguredApps) return;
-    for (final tab in tabs.areaOf(kAppsArea).tabs) {
+    for (final tab in _appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab) {
         tab.lines.clear();
       }

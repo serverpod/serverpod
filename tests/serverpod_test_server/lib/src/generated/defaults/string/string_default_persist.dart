@@ -621,16 +621,22 @@ class StringDefaultPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> insert(
     _i1.DatabaseSession session,
     List<StringDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<StringDefaultPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -664,6 +670,10 @@ class StringDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> upsert(
     _i1.DatabaseSession session,
     List<StringDefaultPersist> rows, {
@@ -671,6 +681,7 @@ class StringDefaultPersistRepository {
     _i1.ColumnSelections<StringDefaultPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<StringDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<StringDefaultPersist>(
       rows,
@@ -678,6 +689,7 @@ class StringDefaultPersistRepository {
       updateColumns: updateColumns?.call(StringDefaultPersist.t),
       updateWhere: updateWhere?.call(StringDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -716,16 +728,22 @@ class StringDefaultPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> update(
     _i1.DatabaseSession session,
     List<StringDefaultPersist> rows, {
     _i1.ColumnSelections<StringDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<StringDefaultPersist>(
       rows,
       columns: columns?.call(StringDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -763,6 +781,10 @@ class StringDefaultPersistRepository {
 
   /// Updates all [StringDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<StringDefaultPersistUpdateTable>
@@ -775,6 +797,7 @@ class StringDefaultPersistRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultPersist>(
       columnValues: columnValues(StringDefaultPersist.t.updateTable),
@@ -786,6 +809,7 @@ class StringDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -796,6 +820,10 @@ class StringDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<StringDefaultPersist> rows, {
@@ -804,6 +832,7 @@ class StringDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<StringDefaultPersist>(
       rows,
@@ -812,6 +841,7 @@ class StringDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -831,6 +861,10 @@ class StringDefaultPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
@@ -839,6 +873,7 @@ class StringDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultPersist>(
       where: where(StringDefaultPersist.t),
@@ -847,6 +882,7 @@ class StringDefaultPersistRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
@@ -10,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_clas
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -94,6 +96,8 @@ abstract class EndpointMethodAnalyzer {
     MethodElement method,
     ClassElement classElement,
     ResolvedLibraryResult resolvedLibrary,
+    List<TypeDefinition> extraClasses,
+    List<SerializableModelDefinition> models,
   ) {
     List<SourceSpanSeverityException?> errors = [
       _validateReturnType(
@@ -101,6 +105,8 @@ abstract class EndpointMethodAnalyzer {
         dartElement: method,
         method: method,
         resolvedLibrary: resolvedLibrary,
+        extraClasses: extraClasses,
+        models: models,
       ),
       _validateUnauthenticatedAnnotation(method, classElement),
     ];
@@ -113,6 +119,8 @@ abstract class EndpointMethodAnalyzer {
     required Element dartElement,
     required MethodElement method,
     required ResolvedLibraryResult resolvedLibrary,
+    required List<TypeDefinition> extraClasses,
+    required List<SerializableModelDefinition> models,
   }) {
     if (!(dartType.isDartAsyncFuture || dartType.isDartAsyncStream)) {
       return SourceSpanSeverityException(
@@ -147,7 +155,8 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
-    if (innerType is VoidType && dartType.isDartAsyncFuture) {
+    if ((innerType is VoidType || innerType.isDartCoreNull) &&
+        dartType.isDartAsyncFuture) {
       return null;
     }
 
@@ -161,11 +170,34 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
+    if (innerType is DynamicType && dartType.isDartAsyncStream) {
+      return null;
+    }
+
+    final TypeDefinition typeDefinition;
     try {
-      TypeDefinition.fromDartType(innerType);
+      typeDefinition = TypeDefinition.fromDartType(innerType);
     } on FromDartTypeClassNameException catch (e) {
       return SourceSpanSeverityException(
         'The type "${e.type}" is not a supported endpoint return type.',
+        dartElement.span,
+      );
+    }
+
+    if (!TypeValidators.isValidType(
+      typeDefinition,
+      TypeValidationOptions(
+        extraClasses: extraClasses,
+        models: models,
+        allowSerializableGenerics: true,
+        allowStreamType: true,
+      ),
+    )) {
+      var typeName = typeDefinition.className;
+      return SourceSpanSeverityException(
+        'The return type has an invalid datatype "$typeName". If this is a '
+        'custom model, make sure it is added to config/generator.yaml so '
+        'Serverpod can generate the necessary serialization code.',
         dartElement.span,
       );
     }

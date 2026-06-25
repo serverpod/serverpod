@@ -236,11 +236,13 @@ Future<CreateResult> performCreate(
             serverpodDirs,
             name: name,
             isUpgrade: false,
+            context: context,
             customServerpodPath: productionMode ? null : serverpodHome,
           ),
           ...await _copyFlutterUpgrade(
             serverpodDirs,
             name: name,
+            context: context,
             customServerpodPath: productionMode ? null : serverpodHome,
           ),
         ]);
@@ -514,19 +516,30 @@ Future<CreateResult> _performUpgrade({
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      writtenPaths.addAll(
-        await _copyServerUpgrade(
+      writtenPaths.addAll([
+        ...await _copyServerUpgrade(
           serverpodDir,
           name: name,
           isUpgrade: true,
+          context: context,
           customServerpodPath: productionMode ? null : serverpodHome,
         ),
-      );
+        ...await _copyFlutterUpgrade(
+          serverpodDir,
+          name: name,
+          context: context,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        ),
+      ]);
       return true;
     },
   );
 
   success &= await _renderTemplates(writtenPaths, context);
+
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDir.projectDir);
+  });
 
   success &= await _runGenerate(
     serverpodDir.serverDir,
@@ -534,7 +547,7 @@ Future<CreateResult> _performUpgrade({
     interactive: interactive,
   );
 
-  if (createDefaultMigration) {
+  if (createDefaultMigration && context.database) {
     success &= await log.progress('Creating default database migration.', () {
       return DatabaseSetup.createDefaultMigration(
         serverpodDir.serverDir,
@@ -695,6 +708,7 @@ void _createDirectory(Directory dir) {
 Future<List<String>> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   log.debug('Copying Flutter upgrade files.', newParagraph: true);
@@ -717,35 +731,47 @@ Future<List<String>> _copyFlutterUpgrade(
   );
   final writtenPaths = [...copier.copyFiles()];
 
-  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_flutter',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+  if (context.auth) {
+    log.debug(
+      'Adding auth dependencies to Flutter pubspec',
+      newParagraph: true,
+    );
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_flutter',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
-
-  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_client',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+        (
+          name: 'flutter_secure_storage',
+          source: DependencySource.version(
+            VersionConstraint.parse('^10.0.0'),
+          ),
+          type: DependencyType.override,
         ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
+      ],
+    );
 
-  if (customServerpodPath != null) {
+    log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
+        ),
+      ],
+    );
+  }
+
+  if (customServerpodPath != null && context.auth) {
     log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
     _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
@@ -788,6 +814,7 @@ Future<List<String>> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   required bool isUpgrade,
+  required TemplateContext context,
   String? customServerpodPath,
 }) async {
   var awsName = name.replaceAll('_', '-');
@@ -925,13 +952,6 @@ Future<List<String>> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [
-      if (isUpgrade) ...[
-        'server.dart',
-        'email_idp_endpoint.dart',
-        'jwt_refresh_endpoint.dart',
-      ],
-    ],
   );
   final writtenPaths = [...copier.copyFiles()];
 
@@ -991,7 +1011,7 @@ Future<List<String>> _copyServerUpgrade(
     writtenPaths.addAll(copier.copyFiles());
   }
 
-  if (!isUpgrade) {
+  if (context.auth) {
     log.debug(
       'Adding auth dependencies to server pubspec',
       newParagraph: true,

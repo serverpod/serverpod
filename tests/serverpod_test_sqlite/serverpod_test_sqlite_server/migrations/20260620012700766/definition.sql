@@ -1219,10 +1219,6 @@ CREATE TABLE "types" (
     "aHalfVector" TEXT,
     "aSparseVector" TEXT,
     "aBit" TEXT,
-    "aGeographyPoint" TEXT,
-    "aGeographyLineString" TEXT,
-    "aGeographyPolygon" TEXT,
-    "aGeographyGeometryCollection" TEXT,
     "anEnum" INTEGER,
     "aStringifiedEnum" TEXT,
     "aList" TEXT,
@@ -1644,6 +1640,309 @@ CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" ("isO
 
 
 --
+-- Class RefreshToken as table serverpod_auth_core_jwt_refresh_token
+--
+CREATE TABLE "serverpod_auth_core_jwt_refresh_token" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "scopeNames" TEXT NOT NULL,
+    "extraClaims" TEXT,
+    "method" TEXT NOT NULL,
+    "fixedSecret" BLOB NOT NULL,
+    "rotatingSecretHash" TEXT NOT NULL,
+    "lastUpdatedAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    CONSTRAINT "serverpod_auth_core_jwt_refresh_token_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE INDEX "serverpod_auth_core_jwt_refresh_token_last_updated_at" ON "serverpod_auth_core_jwt_refresh_token" ("lastUpdatedAt");
+
+
+--
+-- Class UserProfile as table serverpod_auth_core_profile
+--
+CREATE TABLE "serverpod_auth_core_profile" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "userName" TEXT,
+    "fullName" TEXT,
+    "email" TEXT,
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "imageId" BLOB,
+    CONSTRAINT "serverpod_auth_core_profile_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "serverpod_auth_core_profile_fk_1" FOREIGN KEY ("imageId") REFERENCES "serverpod_auth_core_profile_image" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_profile_user_profile_email_auth_user_id" ON "serverpod_auth_core_profile" ("authUserId");
+
+
+--
+-- Class UserProfileImage as table serverpod_auth_core_profile_image
+--
+CREATE TABLE "serverpod_auth_core_profile_image" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "userProfileId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "storageId" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    CONSTRAINT "serverpod_auth_core_profile_image_fk_0" FOREIGN KEY ("userProfileId") REFERENCES "serverpod_auth_core_profile" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+
+--
+-- Class ServerSideSession as table serverpod_auth_core_session
+--
+CREATE TABLE "serverpod_auth_core_session" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "scopeNames" TEXT NOT NULL,
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "lastUsedAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "expiresAt" INTEGER,
+    "expireAfterUnusedFor" INTEGER,
+    "sessionKeyHash" BLOB NOT NULL,
+    "sessionKeySalt" BLOB NOT NULL,
+    "method" TEXT NOT NULL,
+    CONSTRAINT "serverpod_auth_core_session_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+
+--
+-- Class AuthUser as table serverpod_auth_core_user
+--
+CREATE TABLE "serverpod_auth_core_user" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "createdAt" INTEGER NOT NULL,
+    "scopeNames" TEXT NOT NULL,
+    "blocked" INTEGER NOT NULL
+) STRICT;
+
+
+--
+-- Class AnonymousAccount as table serverpod_auth_idp_anonymous_account
+--
+CREATE TABLE "serverpod_auth_idp_anonymous_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_anonymous_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+
+--
+-- Class AppleAccount as table serverpod_auth_idp_apple_account
+--
+CREATE TABLE "serverpod_auth_idp_apple_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "userIdentifier" TEXT NOT NULL,
+    "refreshToken" TEXT NOT NULL,
+    "refreshTokenRequestedWithBundleIdentifier" INTEGER NOT NULL,
+    "lastRefreshedAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "authUserId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL,
+    "email" TEXT,
+    "isEmailVerified" INTEGER,
+    "isPrivateEmail" INTEGER,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    CONSTRAINT "serverpod_auth_idp_apple_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_apple_account_identifier" ON "serverpod_auth_idp_apple_account" ("userIdentifier");
+
+
+--
+-- Class EmailAccount as table serverpod_auth_idp_email_account
+--
+CREATE TABLE "serverpod_auth_idp_email_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL,
+    "email" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_email_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_email" ON "serverpod_auth_idp_email_account" ("email");
+
+
+--
+-- Class EmailAccountPasswordResetRequest as table serverpod_auth_idp_email_account_password_reset_request
+--
+CREATE TABLE "serverpod_auth_idp_email_account_password_reset_request" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "emailAccountId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "challengeId" BLOB NOT NULL,
+    "setPasswordChallengeId" BLOB,
+    CONSTRAINT "serverpod_auth_idp_email_account_password_reset_request_fk_0" FOREIGN KEY ("emailAccountId") REFERENCES "serverpod_auth_idp_email_account" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "serverpod_auth_idp_email_account_password_reset_request_fk_1" FOREIGN KEY ("challengeId") REFERENCES "serverpod_auth_idp_secret_challenge" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "serverpod_auth_idp_email_account_password_reset_request_fk_2" FOREIGN KEY ("setPasswordChallengeId") REFERENCES "serverpod_auth_idp_secret_challenge" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+
+--
+-- Class EmailAccountRequest as table serverpod_auth_idp_email_account_request
+--
+CREATE TABLE "serverpod_auth_idp_email_account_request" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "createdAt" INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsecond') * 1000 AS INTEGER)),
+    "email" TEXT NOT NULL,
+    "challengeId" BLOB NOT NULL,
+    "createAccountChallengeId" BLOB,
+    CONSTRAINT "serverpod_auth_idp_email_account_request_fk_0" FOREIGN KEY ("challengeId") REFERENCES "serverpod_auth_idp_secret_challenge" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "serverpod_auth_idp_email_account_request_fk_1" FOREIGN KEY ("createAccountChallengeId") REFERENCES "serverpod_auth_idp_secret_challenge" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_request_email" ON "serverpod_auth_idp_email_account_request" ("email");
+
+
+--
+-- Class FacebookAccount as table serverpod_auth_idp_facebook_account
+--
+CREATE TABLE "serverpod_auth_idp_facebook_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL,
+    "userIdentifier" TEXT NOT NULL,
+    "email" TEXT,
+    "fullName" TEXT,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" ("userIdentifier");
+
+
+--
+-- Class FirebaseAccount as table serverpod_auth_idp_firebase_account
+--
+CREATE TABLE "serverpod_auth_idp_firebase_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "created" INTEGER NOT NULL,
+    "email" TEXT,
+    "phone" TEXT,
+    "userIdentifier" TEXT NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_firebase_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_firebase_account_user_identifier" ON "serverpod_auth_idp_firebase_account" ("userIdentifier");
+
+
+--
+-- Class GitHubAccount as table serverpod_auth_idp_github_account
+--
+CREATE TABLE "serverpod_auth_idp_github_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "userIdentifier" TEXT NOT NULL,
+    "email" TEXT,
+    "created" INTEGER NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_github_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_github_account_user_identifier" ON "serverpod_auth_idp_github_account" ("userIdentifier");
+
+
+--
+-- Class GoogleAccount as table serverpod_auth_idp_google_account
+--
+CREATE TABLE "serverpod_auth_idp_google_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "created" INTEGER NOT NULL,
+    "email" TEXT NOT NULL,
+    "userIdentifier" TEXT NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_google_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_google_account_user_identifier" ON "serverpod_auth_idp_google_account" ("userIdentifier");
+
+
+--
+-- Class MicrosoftAccount as table serverpod_auth_idp_microsoft_account
+--
+CREATE TABLE "serverpod_auth_idp_microsoft_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "userIdentifier" TEXT NOT NULL,
+    "email" TEXT,
+    "created" INTEGER NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_microsoft_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_microsoft_account_user_identifier" ON "serverpod_auth_idp_microsoft_account" ("userIdentifier");
+
+
+--
+-- Class PasskeyAccount as table serverpod_auth_idp_passkey_account
+--
+CREATE TABLE "serverpod_auth_idp_passkey_account" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "authUserId" BLOB NOT NULL,
+    "createdAt" INTEGER NOT NULL,
+    "keyId" BLOB NOT NULL,
+    "keyIdBase64" TEXT NOT NULL,
+    "clientDataJSON" BLOB NOT NULL,
+    "attestationObject" BLOB NOT NULL,
+    "originalChallenge" BLOB NOT NULL,
+    CONSTRAINT "serverpod_auth_idp_passkey_account_fk_0" FOREIGN KEY ("authUserId") REFERENCES "serverpod_auth_core_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+) STRICT;
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_passkey_account_key_id_base64" ON "serverpod_auth_idp_passkey_account" ("keyIdBase64");
+
+
+--
+-- Class PasskeyChallenge as table serverpod_auth_idp_passkey_challenge
+--
+CREATE TABLE "serverpod_auth_idp_passkey_challenge" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "createdAt" INTEGER NOT NULL,
+    "challenge" BLOB NOT NULL
+) STRICT;
+
+
+--
+-- Class RateLimitedRequestAttempt as table serverpod_auth_idp_rate_limited_request_attempt
+--
+CREATE TABLE "serverpod_auth_idp_rate_limited_request_attempt" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "domain" TEXT NOT NULL,
+    "source" TEXT NOT NULL,
+    "nonce" TEXT NOT NULL,
+    "ipAddress" TEXT,
+    "attemptedAt" INTEGER NOT NULL,
+    "extraData" TEXT
+) STRICT;
+
+-- Indexes
+CREATE INDEX "serverpod_auth_idp_rate_limited_request_attempt_composite" ON "serverpod_auth_idp_rate_limited_request_attempt" ("domain", "source", "nonce", "attemptedAt");
+
+
+--
+-- Class SecretChallenge as table serverpod_auth_idp_secret_challenge
+--
+CREATE TABLE "serverpod_auth_idp_secret_challenge" (
+    "id" BLOB PRIMARY KEY DEFAULT (unhex(printf('%012x', CAST(unixepoch('now', 'subsecond') * 1000 AS INTEGER)) || '7' || substr(hex(randomblob(2)), 2, 3) || substr('89AB', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(8)), 2, 15))),
+    "challengeCodeHash" TEXT NOT NULL
+) STRICT;
+
+
+--
 -- STORE COLUMN TYPES FOR MIGRATIONS
 --
 DROP TABLE IF EXISTS "serverpod_sqlite_schema";
@@ -1760,10 +2059,6 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
     ('types', 'aHalfVector', 'halfvec', 3),
     ('types', 'aSparseVector', 'sparsevec', 3),
     ('types', 'aBit', 'bit', 3),
-    ('types', 'aGeographyPoint', 'geography', NULL),
-    ('types', 'aGeographyLineString', 'geographyLineString', NULL),
-    ('types', 'aGeographyPolygon', 'geographyPolygon', NULL),
-    ('types', 'aGeographyGeometryCollection', 'geographyGeometryCollection', NULL),
     ('types', 'aList', 'json', NULL),
     ('types', 'aMap', 'json', NULL),
     ('types', 'aSet', 'json', NULL),
@@ -1805,15 +2100,83 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
     ('serverpod_session_log', 'time', 'timestampWithoutTimeZone', NULL),
     ('serverpod_session_log', 'slow', 'boolean', NULL),
     ('serverpod_session_log', 'isOpen', 'boolean', NULL),
-    ('serverpod_session_log', 'touched', 'timestampWithoutTimeZone', NULL);
+    ('serverpod_session_log', 'touched', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'lastUpdatedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_profile', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_profile', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_profile', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_profile', 'imageId', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'userProfileId', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_session', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_session', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_session', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'lastUsedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'expiresAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_user', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_user', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_user', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_user', 'blocked', 'boolean', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_apple_account', 'refreshTokenRequestedWithBundleIdentifier', 'boolean', NULL),
+    ('serverpod_auth_idp_apple_account', 'lastRefreshedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_apple_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'isEmailVerified', 'boolean', NULL),
+    ('serverpod_auth_idp_apple_account', 'isPrivateEmail', 'boolean', NULL),
+    ('serverpod_auth_idp_email_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'emailAccountId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'challengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'setPasswordChallengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_request', 'challengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'createAccountChallengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_firebase_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_firebase_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_firebase_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_github_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_github_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_github_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_google_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_google_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_google_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_passkey_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_passkey_challenge', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_challenge', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'attemptedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'extraData', 'json', NULL),
+    ('serverpod_auth_idp_secret_challenge', 'id', 'uuid', NULL);
 
 --
 -- MIGRATION VERSION FOR serverpod_test_sqlite
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test_sqlite', '20260622105508747', (unixepoch('now', 'subsecond') * 1000))
+    VALUES ('serverpod_test_sqlite', '20260620012700766', (unixepoch('now', 'subsecond') * 1000))
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260622105508747', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+    DO UPDATE SET "version" = '20260620012700766', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -1822,6 +2185,22 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20260416151914983-insights-perf', (unixepoch('now', 'subsecond') * 1000))
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20260416151914983-insights-perf', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_core
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_core', '20260417182253191', (unixepoch('now', 'subsecond') * 1000))
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182253191', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_idp
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_idp', '20260417182309198', (unixepoch('now', 'subsecond') * 1000))
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182309198', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
 
 
 COMMIT;

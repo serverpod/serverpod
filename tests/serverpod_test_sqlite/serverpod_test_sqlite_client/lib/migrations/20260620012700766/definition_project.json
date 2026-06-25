@@ -1555,38 +1555,6 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "aGeographyPoint",
-          "fieldName": "aGeographyPoint",
-          "columnType": 15,
-          "isNullable": true,
-          "dartType": "GeographyPoint?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "aGeographyLineString",
-          "fieldName": "aGeographyLineString",
-          "columnType": 16,
-          "isNullable": true,
-          "dartType": "GeographyLineString?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "aGeographyPolygon",
-          "fieldName": "aGeographyPolygon",
-          "columnType": 17,
-          "isNullable": true,
-          "dartType": "GeographyPolygon?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "aGeographyGeometryCollection",
-          "fieldName": "aGeographyGeometryCollection",
-          "columnType": 18,
-          "isNullable": true,
-          "dartType": "GeographyGeometryCollection?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
           "name": "anEnum",
           "fieldName": "anEnum",
           "columnType": 6,
@@ -1748,6 +1716,16 @@
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod",
       "version": "20260416151914983-insights-perf"
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod_auth_core",
+      "version": "20260417182253191"
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod_auth_idp",
+      "version": "20260417182309198"
     }
   ],
   "migrationApiVersion": 1

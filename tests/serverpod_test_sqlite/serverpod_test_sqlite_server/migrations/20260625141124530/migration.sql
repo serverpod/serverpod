@@ -170,15 +170,83 @@ INSERT INTO "serverpod_sqlite_schema" VALUES
     ('serverpod_session_log', 'time', 'timestampWithoutTimeZone', NULL),
     ('serverpod_session_log', 'slow', 'boolean', NULL),
     ('serverpod_session_log', 'isOpen', 'boolean', NULL),
-    ('serverpod_session_log', 'touched', 'timestampWithoutTimeZone', NULL);
+    ('serverpod_session_log', 'touched', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'lastUpdatedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_jwt_refresh_token', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_profile', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_profile', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_profile', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_profile', 'imageId', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'userProfileId', 'uuid', NULL),
+    ('serverpod_auth_core_profile_image', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_session', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_core_session', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_session', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'lastUsedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_session', 'expiresAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_user', 'id', 'uuid', NULL),
+    ('serverpod_auth_core_user', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_core_user', 'scopeNames', 'json', NULL),
+    ('serverpod_auth_core_user', 'blocked', 'boolean', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_anonymous_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_apple_account', 'refreshTokenRequestedWithBundleIdentifier', 'boolean', NULL),
+    ('serverpod_auth_idp_apple_account', 'lastRefreshedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_apple_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_apple_account', 'isEmailVerified', 'boolean', NULL),
+    ('serverpod_auth_idp_apple_account', 'isPrivateEmail', 'boolean', NULL),
+    ('serverpod_auth_idp_email_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'emailAccountId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'challengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_password_reset_request', 'setPasswordChallengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_email_account_request', 'challengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_email_account_request', 'createAccountChallengeId', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_facebook_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_firebase_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_firebase_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_firebase_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_github_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_github_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_github_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_google_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_google_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_google_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_microsoft_account', 'created', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_passkey_account', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_account', 'authUserId', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_account', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_passkey_challenge', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_passkey_challenge', 'createdAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'id', 'uuid', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'attemptedAt', 'timestampWithoutTimeZone', NULL),
+    ('serverpod_auth_idp_rate_limited_request_attempt', 'extraData', 'json', NULL),
+    ('serverpod_auth_idp_secret_challenge', 'id', 'uuid', NULL);
 
 --
 -- MIGRATION VERSION FOR serverpod_test_sqlite
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test_sqlite', '20260622105508747', (unixepoch('now', 'subsecond') * 1000))
+    VALUES ('serverpod_test_sqlite', '20260625141124530', (unixepoch('now', 'subsecond') * 1000))
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260622105508747', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+    DO UPDATE SET "version" = '20260625141124530', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -187,6 +255,22 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20260416151914983-insights-perf', (unixepoch('now', 'subsecond') * 1000))
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20260416151914983-insights-perf', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_core
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_core', '20260417182253191', (unixepoch('now', 'subsecond') * 1000))
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182253191', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_idp
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_idp', '20260417182309198', (unixepoch('now', 'subsecond') * 1000))
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260417182309198', "timestamp" = (unixepoch('now', 'subsecond') * 1000);
 
 
 COMMIT;

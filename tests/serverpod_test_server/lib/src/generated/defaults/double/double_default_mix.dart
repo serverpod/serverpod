@@ -380,16 +380,22 @@ class DoubleDefaultMixRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> insert(
     _i1.DatabaseSession session,
     List<DoubleDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DoubleDefaultMix>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -423,6 +429,10 @@ class DoubleDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> upsert(
     _i1.DatabaseSession session,
     List<DoubleDefaultMix> rows, {
@@ -430,6 +440,7 @@ class DoubleDefaultMixRepository {
     _i1.ColumnSelections<DoubleDefaultMixTable>? updateColumns,
     _i1.WhereExpressionBuilder<DoubleDefaultMixTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DoubleDefaultMix>(
       rows,
@@ -437,6 +448,7 @@ class DoubleDefaultMixRepository {
       updateColumns: updateColumns?.call(DoubleDefaultMix.t),
       updateWhere: updateWhere?.call(DoubleDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -475,16 +487,22 @@ class DoubleDefaultMixRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> update(
     _i1.DatabaseSession session,
     List<DoubleDefaultMix> rows, {
     _i1.ColumnSelections<DoubleDefaultMixTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DoubleDefaultMix>(
       rows,
       columns: columns?.call(DoubleDefaultMix.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -522,6 +540,10 @@ class DoubleDefaultMixRepository {
 
   /// Updates all [DoubleDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultMixUpdateTable>
@@ -534,6 +556,7 @@ class DoubleDefaultMixRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefaultMix>(
       columnValues: columnValues(DoubleDefaultMix.t.updateTable),
@@ -545,6 +568,7 @@ class DoubleDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -555,6 +579,10 @@ class DoubleDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<DoubleDefaultMix> rows, {
@@ -563,6 +591,7 @@ class DoubleDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DoubleDefaultMix>(
       rows,
@@ -571,6 +600,7 @@ class DoubleDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -590,6 +620,10 @@ class DoubleDefaultMixRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
@@ -598,6 +632,7 @@ class DoubleDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefaultMix>(
       where: where(DoubleDefaultMix.t),
@@ -606,6 +641,7 @@ class DoubleDefaultMixRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

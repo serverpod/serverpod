@@ -387,6 +387,7 @@ class InsertQueryBuilder {
   final List<Column>? _conflictColumns;
   final List<Column>? _updateColumns;
   final Expression? _updateWhere;
+  final bool _noReturn;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
@@ -399,6 +400,9 @@ class InsertQueryBuilder {
   /// [ignoreConflicts] and [conflictColumns] are mutually exclusive.
   /// [updateColumns] and [updateWhere] only apply to upserts and require
   /// [conflictColumns].
+  ///
+  /// When [noReturn] is true the built query omits the `RETURNING` clause, so
+  /// the database does not send the affected rows back to the client.
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
@@ -406,11 +410,13 @@ class InsertQueryBuilder {
     List<Column>? conflictColumns,
     List<Column>? updateColumns,
     Expression? updateWhere,
+    bool noReturn = false,
   }) : _table = table,
        _ignoreConflicts = ignoreConflicts,
        _conflictColumns = conflictColumns,
        _updateColumns = updateColumns,
-       _updateWhere = updateWhere {
+       _updateWhere = updateWhere,
+       _noReturn = noReturn {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
@@ -536,12 +542,14 @@ class InsertQueryBuilder {
         })
         .join(', ');
 
-    var returning = buildReturningClause(_table);
     var onConflict = _buildOnConflictClause(selectedColumns);
+    var returning = _noReturn
+        ? ''
+        : ' RETURNING ${buildReturningClause(_table)}';
 
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict$returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict$returning';
   }
 
   String _buildOnConflictClause(Iterable<Column<dynamic>> selectedColumns) {
@@ -591,6 +599,16 @@ class InsertQueryBuilder {
     // Can not be empty because the constructor checks for empty rows.
     var insertQueries = [true, false].map(_build).nonNulls;
     if (insertQueries.length == 1) return insertQueries.single;
+
+    // Without a RETURNING clause the inserts produce no rows to union, so the
+    // id-null insert is run as a data-modifying CTE (which Postgres still
+    // executes even when its output is not referenced) and the id-not-null
+    // insert is run as the primary statement.
+    if (_noReturn) {
+      return '''
+WITH insertWithIdNull AS (${insertQueries.first})
+${insertQueries.last}''';
+    }
 
     return '''
 WITH

@@ -24,10 +24,10 @@ class FileChangeEvent {
   /// comparing the dependency fingerprint (see `FlutterDependencyTracker`).
   final bool flutterDependenciesChanged;
 
-  /// Whether the Flutter app's `pubspec.yaml` was modified in this batch.
-  /// Assets and fonts declared in the `pubspec.yaml` are bundled at build
-  /// time, so any change requires a full process relaunch.
-  final bool flutterPubspecChanged;
+  /// Whether any `pubspec.yaml` was modified in this batch (any watched
+  /// pubspec, including the server's and each companion Flutter app's).
+  /// Consumers use fingerprinting to decide what action, if any, is needed.
+  final bool pubspecChanged;
 
   /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
   ///
@@ -39,7 +39,7 @@ class FileChangeEvent {
     this.modelFiles = const {},
     this.packageConfigChanged = false,
     this.flutterDependenciesChanged = false,
-    this.flutterPubspecChanged = false,
+    this.pubspecChanged = false,
     this.staticFilesChanged = false,
   });
 }
@@ -62,7 +62,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
     final modelFiles = <String>{};
     var packageConfigChanged = false;
     var flutterDependenciesChanged = false;
-    var flutterPubspecChanged = false;
+    var pubspecChanged = false;
     var staticFilesChanged = false;
 
     for (final event in this) {
@@ -70,7 +70,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles.addAll(event.modelFiles);
       packageConfigChanged |= event.packageConfigChanged;
       flutterDependenciesChanged |= event.flutterDependenciesChanged;
-      flutterPubspecChanged |= event.flutterPubspecChanged;
+      pubspecChanged |= event.pubspecChanged;
       staticFilesChanged |= event.staticFilesChanged;
     }
 
@@ -79,7 +79,7 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
       modelFiles: modelFiles,
       packageConfigChanged: packageConfigChanged,
       flutterDependenciesChanged: flutterDependenciesChanged,
-      flutterPubspecChanged: flutterPubspecChanged,
+      pubspecChanged: pubspecChanged,
       staticFilesChanged: staticFilesChanged,
     );
   }
@@ -91,15 +91,37 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
 /// categorized by file type.
 class FileWatcher {
   final Set<String> _watchPaths;
+
+  /// The exact `package_config.json` whose change sets `packageConfigChanged`
+  /// (the server's resolution), or `null` if not tracked. Matched by full path
+  /// rather than basename so that, in a non-workspace layout where the server
+  /// and Flutter app have separate `.dart_tool` dirs, only the server's file
+  /// drives a server reload.
+  final String? _packageConfigPath;
+
+  /// The exact `package_graph.json` files whose change sets
+  /// `flutterDependenciesChanged` (one per Flutter app's resolution). Empty when
+  /// no Flutter dependency closures are tracked. A workspace layout collapses to
+  /// a single entry shared with the server's resolution.
+  final Set<String> _packageGraphPaths;
+
   final Duration debounceDelay;
 
   /// Creates a file watcher.
   ///
-  /// [watchPaths] is the set of directories to watch.
+  /// [watchPaths] is the set of directories or files to watch.
+  /// [packageConfigPath] and [packageGraphPaths] are the exact pub-artifact
+  /// files whose changes map to `packageConfigChanged` / `flutterDependenciesChanged`.
   FileWatcher({
     required Iterable<String> watchPaths,
+    String? packageConfigPath,
+    Iterable<String> packageGraphPaths = const [],
     this.debounceDelay = const Duration(milliseconds: 100),
-  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet();
+  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
+       _packageConfigPath = packageConfigPath == null
+           ? null
+           : p.canonicalize(packageConfigPath),
+       _packageGraphPaths = packageGraphPaths.map(p.canonicalize).toSet();
 
   late final List<w.Watcher> _watchers = [
     for (final watchPath in _watchPaths) ...{
@@ -136,27 +158,41 @@ class FileWatcher {
           final modelFiles = <String>{};
           var packageConfigChanged = false;
           var flutterDependenciesChanged = false;
-          var flutterPubspecChanged = false;
+          var pubspecChanged = false;
           var staticFilesChanged = false;
 
           for (final event in events) {
             final filePath = event.path;
-            if (_isWithinDartTool(filePath)) {
-              // Inside .dart_tool only the dependency graph is relevant;
-              // everything else is ignored. Notably this keeps
-              // packageConfigChanged (the FES restart path) dormant, exactly
-              // as before .dart_tool was watched at all.
-              if (p.basename(filePath) == 'package_graph.json') {
-                flutterDependenciesChanged = true;
-              }
-            } else if (p.basename(filePath) == 'package_config.json') {
+            final canonical = p.canonicalize(filePath);
+            // Two pub artifacts matter, each matched by its EXACT path (not
+            // just basename):
+            //
+            // - package_config.json (the server's resolution): makes the
+            //   server's Frontend Server reload its package map in place, no
+            //   restart (KernelCompiler.invalidatePackageConfig).
+            // - package_graph.json (each Flutter app's resolution): drives the
+            //   Flutter dependency-closure check (hot reload vs restart vs
+            //   relaunch).
+            //
+            // Exact-path matching means that in a non-workspace layout, where
+            // the server and Flutter apps have separate .dart_tool dirs, the
+            // *other* resolution's same-named file does not cross-trigger.
+            // pub writes both back-to-back on `pub get`, but they are flagged
+            // separately so a debounce window that splits them still triggers
+            // each action - at worst as two reload steps instead of one.
+            if (_packageConfigPath != null && canonical == _packageConfigPath) {
               packageConfigChanged = true;
+            } else if (_packageGraphPaths.contains(canonical)) {
+              flutterDependenciesChanged = true;
+            } else if (_isWithinDartTool(filePath)) {
+              // Any other .dart_tool churn (build artifacts, the output dill,
+              // a sibling resolution's pub artifacts) is ignored.
             } else if (_isModelFile(filePath)) {
               modelFiles.add(filePath);
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);
             } else if (p.basename(filePath) == 'pubspec.yaml') {
-              flutterPubspecChanged = true;
+              pubspecChanged = true;
             } else {
               staticFilesChanged = true;
             }
@@ -167,7 +203,7 @@ class FileWatcher {
             modelFiles: modelFiles,
             packageConfigChanged: packageConfigChanged,
             flutterDependenciesChanged: flutterDependenciesChanged,
-            flutterPubspecChanged: flutterPubspecChanged,
+            pubspecChanged: pubspecChanged,
             staticFilesChanged: staticFilesChanged,
           );
         })
@@ -177,7 +213,7 @@ class FileWatcher {
               e.modelFiles.isNotEmpty ||
               e.packageConfigChanged ||
               e.flutterDependenciesChanged ||
-              e.flutterPubspecChanged ||
+              e.pubspecChanged ||
               e.staticFilesChanged,
         );
   }

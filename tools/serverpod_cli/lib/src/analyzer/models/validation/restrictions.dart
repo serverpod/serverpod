@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_cli/src/util/type_validators.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -1438,7 +1439,14 @@ class Restrictions {
       return errors;
     }
 
-    if (!_isValidType(fieldType)) {
+    if (!TypeValidators.isValidType(
+      fieldType,
+      TypeValidationOptions(
+        extraClasses: config.extraClasses,
+        modelTypeValidator: _isModelType,
+        allowSerializableDartType: true,
+      ),
+    )) {
       var typeName = fieldType.className;
       errors.add(
         SourceSpanSeverityException(
@@ -2695,13 +2703,6 @@ class Restrictions {
     return type.startsWith('package:') || type.startsWith('project:');
   }
 
-  bool _isValidType(TypeDefinition type) {
-    return type.isSerializableDartType ||
-        _isModelType(type) ||
-        _isCustomType(type) ||
-        _isRecordType(type);
-  }
-
   bool _isUnresolvedModuleType(TypeDefinition type) {
     if (!type.isModuleType) return false;
 
@@ -2732,14 +2733,6 @@ class Restrictions {
     }
 
     return true;
-  }
-
-  bool _isCustomType(TypeDefinition type) {
-    return config.extraClasses.any((c) => c.className == type.className);
-  }
-
-  bool _isRecordType(TypeDefinition type) {
-    return type.isRecordType && type.generics.every(_isValidType);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {
