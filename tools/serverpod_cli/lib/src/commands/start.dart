@@ -595,9 +595,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     onStart: (app, process) async {
       if (onFlutterStart != null) await onFlutterStart(app, process);
     },
-    onStop: (app) {
-      onFlutterStop?.call(app);
-    },
+    onStop: (app) => onFlutterStop?.call(app),
     onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
     stdoutSinkFor: (app) => flutterStdoutSinkFor?.call(app) ?? stdout,
@@ -1154,7 +1152,7 @@ Future<void> _runTuiBackend({
           tab.url = null;
           // Replace the breadcrumb's spinner-y "connecting" with a terminal
           // state so it doesn't hang; the build error is in the app's log.
-          tab.startupStage = 'Launch failed — see log';
+          tab.startupStage = 'Launch failed. Check logs for details';
           holder.markDirty();
         }
       },

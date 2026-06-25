@@ -172,7 +172,6 @@ class MainScreen extends StatelessComponent {
         if (tabAreasCount > 1)
           for (var i = 1; i <= tabAreasCount - 1; i++)
             Positioned(
-              key: ValueKey(i),
               left: constraints.maxWidth * dividerPositionFactor * i,
               child: SizedBox(
                 height: constraints.maxHeight,
