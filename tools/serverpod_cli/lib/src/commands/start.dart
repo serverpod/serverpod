@@ -1150,9 +1150,6 @@ Future<void> _runTuiBackend({
           tab.ready = false;
           tab.stopped = true;
           tab.url = null;
-          // Replace the breadcrumb's spinner-y "connecting" with a terminal
-          // state so it doesn't hang; the build error is in the app's log.
-          tab.startupStage = 'Launch failed. Check logs for details';
           holder.markDirty();
         }
       },
@@ -1183,7 +1180,6 @@ Future<void> _runTuiBackend({
         if (tab != null) {
           tab.ready = false;
           tab.stopped = true;
-          tab.startupStage = 'App stopped';
           holder.markDirty();
         }
       },

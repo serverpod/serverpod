@@ -243,6 +243,44 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
+    late final appCount = state.launchableApps.length;
+
+    // 'x' stops the focused app when it is running. The panel stays open so
+    // the row's marker flips to stopped and the app can be relaunched.
+    // Pressing 'x' when the focused app is already stopped closes its tab.
+    if (event.logicalKey == LogicalKey.keyX &&
+        state.launchPanelIndex < appCount) {
+      final app = state.launchableApps[state.launchPanelIndex];
+      final appRunning = state.isAppRunning?.call(app.id) ?? false;
+      if (state.showLaunchPanel && appRunning) {
+        onStopApp?.call(state.launchPanelIndex);
+        _rebuild();
+        return true;
+      }
+
+      // Remove the focused tab if it is in a stopped state.
+      final appsArea = state.appsTabArea;
+      final focusedTab = appsArea?.selected as AppLogTab?;
+      if (focusedTab != null && focusedTab.stopped) {
+        state.removeAppLogTab(focusedTab.appId);
+        final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
+
+        if (lastTab == null) {
+          state.launchPanelIndex = 0;
+          _rebuild();
+          return true;
+        }
+        state.tabs.focusTab(lastTab);
+
+        final index = state.launchableApps.indexWhere(
+          (app) => app.id == lastTab.appId,
+        );
+        state.launchPanelIndex = index;
+        _rebuild();
+        return true;
+      }
+    }
+
     if (state.showLaunchPanel) {
       final appCount = state.launchableApps.length;
 
@@ -273,17 +311,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           state.launchPanelIndex < appCount) {
         onLaunchApp?.call(state.launchPanelIndex);
         _rebuild();
-        return true;
-      }
-      // 'x' stops the focused app when it is running. The panel stays open so
-      // the row's marker flips to stopped and the app can be relaunched.
-      if (event.logicalKey == LogicalKey.keyX &&
-          state.launchPanelIndex < appCount) {
-        final app = state.launchableApps[state.launchPanelIndex];
-        if (state.isAppRunning?.call(app.id) ?? false) {
-          onStopApp?.call(state.launchPanelIndex);
-          _rebuild();
-        }
         return true;
       }
       // Number keys remain shortcuts for the first nine apps.

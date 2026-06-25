@@ -117,7 +117,7 @@ class ServerWatchState extends TuiState {
   /// The [launchableApps] index of the currently selected app tab, or 0 when
   /// none is open. Used to start the launch panel cursor on the active app.
   int get activeLaunchableIndex {
-    final tabArea = _appsTabArea;
+    final tabArea = appsTabArea;
     if (tabArea == null) return 0;
     final selected = tabArea.selected;
     if (selected is! AppLogTab) return 0;
@@ -126,7 +126,7 @@ class ServerWatchState extends TuiState {
   }
 
   /// Returns tab area for apps if it exists.
-  TabArea? get _appsTabArea {
+  TabArea? get appsTabArea {
     try {
       return tabs.areaOf(kAppsArea);
     } catch (_) {}
@@ -135,14 +135,14 @@ class ServerWatchState extends TuiState {
 
   /// Returns the [AppLogTab] for [appId], or null if it is not open.
   AppLogTab? appLogTabFor(String appId) {
-    for (final tab in _appsTabArea?.tabs ?? []) {
+    for (final tab in appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab && tab.appId == appId) return tab;
     }
     return null;
   }
 
   void createAppsTabAreaIfNeeded() {
-    if (_appsTabArea == null) {
+    if (appsTabArea == null) {
       tabs.addArea(TabArea(id: kAppsArea, flex: 1));
     }
   }
@@ -161,6 +161,14 @@ class ServerWatchState extends TuiState {
     return tab;
   }
 
+  /// Removes any existing [AppLogTab] for [appId].
+  void removeAppLogTab(String appId) {
+    final tab = appLogTabFor(appId);
+    if (tab != null) {
+      tabs.removeTab(tab);
+    }
+  }
+
   /// Drops all server, raw server, and app log entries.
   ///
   /// In-progress [activeOperations] are kept so a running hot reload or
@@ -168,7 +176,7 @@ class ServerWatchState extends TuiState {
   void clearLogs() {
     logHistory.clear();
     rawLines.clear();
-    for (final tab in _appsTabArea?.tabs ?? []) {
+    for (final tab in appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab) {
         tab.lines.clear();
       }

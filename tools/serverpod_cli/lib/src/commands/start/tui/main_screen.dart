@@ -449,22 +449,42 @@ class MainScreen extends StatelessComponent {
       fontWeight: FontWeight.dim,
     );
 
-    String? value;
+    Component indicator = const SizedBox.shrink();
+
     if (tab.ready) {
-      value = tab.url ?? 'App running';
+      indicator = Text(tab.url ?? 'App running', style: mutedText);
+    } else if (tab.stopped) {
+      indicator = RichText(
+        text: TextSpan(
+          text: 'App stopped. Press ',
+          style: mutedText,
+          children: [
+            TextSpan(
+              text: 'X',
+              style: TextStyle(
+                color: st.activationKey,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            const TextSpan(text: ' to close tab'),
+          ],
+        ),
+      );
     } else {
-      value = tab.startupStage;
-      if (value != null && value.contains('.')) {
-        value = value.replaceFirst(RegExp(r'\.+$'), '');
+      var value = tab.startupStage;
+      if (value != null) {
+        if (value.contains('.')) {
+          value = value.replaceFirst(RegExp(r'\.+$'), '');
+        }
+        indicator = Text(value, style: mutedText);
       }
     }
-    if (value == null) return null;
 
     Component child = Row(
       children: [
         Text(' ${tab.label}', style: mutedText),
         Text(' │ ', style: separatorStyle),
-        Text(value, style: mutedText),
+        indicator,
       ],
     );
 

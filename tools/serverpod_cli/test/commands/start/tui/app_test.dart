@@ -532,16 +532,43 @@ void main() {
         expect(state.tabs.focusedTab, portal);
       },
     );
+
+    test(
+      'when x is pressed on the tab of a non-running app, '
+      'then the tab is removed',
+      () async {
+        state.isAppRunning = (_) => false;
+        state.launchableApps = [
+          for (final name in ['Admin', 'Portal'])
+            FlutterAppConfig(
+              id: name.toLowerCase(),
+              name: name,
+              relativePathParts: ['..', name.toLowerCase()],
+              serverPackageDirectoryPathParts: const [],
+            ),
+        ];
+        state.launchPanelIndex = 0;
+        expect(state.tabs.allTabs, contains(admin));
+
+        state.tabs.focusTab(admin);
+        admin.stopped = true;
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(state.tabs.allTabs, isNot(contains(admin)));
+      },
+    );
   });
 
   group('Given a narrow TUI with multiple tabs open', () {
+    late AppLogTab admin;
+
     setUp(() async {
       tester.dispose();
       await holder.dispose();
 
       state = ServerWatchState();
       holder = StartAppStateHolder(state);
-      state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
+      admin = state.getOrCreateAppLogTab(appId: 'admin', label: 'Admin');
       state.contentWidth = 100;
 
       tester = await NoctermTester.create(size: const Size(100, 24));
@@ -559,6 +586,30 @@ void main() {
         await _sendKey(tester, LogicalKey.tab);
 
         expect(state.tabs.focusedTab?.label, 'Admin');
+      },
+    );
+
+    test(
+      'when x is pressed on the tab of a non-running app, '
+      'then the tab is removed',
+      () async {
+        state.isAppRunning = (_) => false;
+        state.launchableApps = const [
+          FlutterAppConfig(
+            id: 'admin',
+            name: 'Admin',
+            relativePathParts: ['..', 'admin'],
+            serverPackageDirectoryPathParts: [],
+          ),
+        ];
+        state.launchPanelIndex = 0;
+        expect(state.tabs.allTabs, contains(admin));
+
+        state.tabs.focusTab(admin);
+        admin.stopped = true;
+        await _sendKey(tester, LogicalKey.keyX);
+
+        expect(state.tabs.allTabs, isNot(contains(admin)));
       },
     );
   });
