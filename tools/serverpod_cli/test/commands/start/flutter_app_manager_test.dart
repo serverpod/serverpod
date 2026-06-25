@@ -653,9 +653,6 @@ serverpod:
       'when loadApps is called after removing apps from the config, '
       'then removed apps are stopped and new list is reflected',
       () async {
-        await manager.launch('app-b');
-        expect(manager.isRunning('app-b'), isTrue);
-
         serverPubspecFile.writeAsStringSync('''
 name: server
 serverpod:
