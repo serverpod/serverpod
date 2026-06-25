@@ -111,6 +111,85 @@ void main() {
           expect(content, contains('jwtRefreshTokenHashPepper:'));
         },
       );
+
+      test(
+        'then the server pubspec.yaml contains serverpod_auth_idp_server dependency',
+        () async {
+          final serverPubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await serverPubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_server:'));
+        },
+      );
+
+      test(
+        'then the sign in screen file is created',
+        () async {
+          final file = File(
+            p.join(
+              project.flutterDir,
+              'lib',
+              'screens',
+              'sign_in_screen.dart',
+            ),
+          );
+
+          await expectLater(file.exists(), completion(true));
+        },
+      );
+
+      test(
+        'then the flutter main.dart contains auth configurations',
+        () async {
+          final file = File(
+            p.join(project.flutterDir, 'lib', 'main.dart'),
+          );
+          final content = await file.readAsString();
+          expect(
+            content,
+            contains(
+              "import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';",
+            ),
+          );
+          expect(
+            content,
+            contains('..authSessionManager = FlutterAuthSessionManager()'),
+          );
+          expect(content, contains('client.auth.initialize();'));
+          expect(
+            content,
+            contains(
+              '// To test authentication in this example app, uncomment the line below',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml contains serverpod_auth_idp_flutter dependency',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_flutter:'));
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml contains flutter_secure_storage override',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, contains('flutter_secure_storage:'));
+        },
+      );
+
+      test(
+        'then the client pubspec.yaml contains serverpod_auth_idp_client dependency',
+        () async {
+          final clientPubspec = File(p.join(project.clientDir, 'pubspec.yaml'));
+          final content = await clientPubspec.readAsString();
+          expect(content, contains('serverpod_auth_idp_client:'));
+        },
+      );
     },
   );
 
@@ -193,6 +272,91 @@ void main() {
           expect(content, isNot(contains('initializeAuthServices')));
           expect(content, isNot(contains('EmailIdpConfigFromPasswords')));
           expect(content, isNot(contains('JwtConfigFromPasswords')));
+        },
+      );
+
+      test(
+        'then the server pubspec.yaml does not contain serverpod_auth_idp_server dependency',
+        () async {
+          final serverPubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await serverPubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_server:')));
+        },
+      );
+
+      test(
+        'then the sign in screen file is not created',
+        () async {
+          final file = File(
+            p.join(
+              project.flutterDir,
+              'lib',
+              'screens',
+              'sign_in_screen.dart',
+            ),
+          );
+
+          await expectLater(file.exists(), completion(false));
+        },
+      );
+
+      test(
+        'then the flutter main.dart does not contain auth configurations',
+        () async {
+          final file = File(
+            p.join(project.flutterDir, 'lib', 'main.dart'),
+          );
+          final content = await file.readAsString();
+          expect(
+            content,
+            isNot(
+              contains(
+                "import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';",
+              ),
+            ),
+          );
+          expect(
+            content,
+            isNot(
+              contains('..authSessionManager = FlutterAuthSessionManager()'),
+            ),
+          );
+          expect(content, isNot(contains('client.auth.initialize();')));
+          expect(
+            content,
+            isNot(
+              contains(
+                '// To test authentication in this example app, uncomment the line below',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml does not contain serverpod_auth_idp_flutter dependency',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter:')));
+        },
+      );
+
+      test(
+        'then the flutter app pubspec.yaml does not contain flutter_secure_storage override',
+        () async {
+          final pubspec = File(p.join(project.flutterDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+          expect(content, isNot(contains('flutter_secure_storage:')));
+        },
+      );
+
+      test(
+        'then the client pubspec.yaml does not contain serverpod_auth_idp_client dependency',
+        () async {
+          final clientPubspec = File(p.join(project.clientDir, 'pubspec.yaml'));
+          final content = await clientPubspec.readAsString();
+          expect(content, isNot(contains('serverpod_auth_idp_client:')));
         },
       );
     },

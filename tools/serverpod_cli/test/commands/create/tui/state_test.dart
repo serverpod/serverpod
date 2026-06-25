@@ -346,4 +346,40 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a CreateConfigState with all configs except ServerpodCreateConfig.template',
+    () {
+      late CreateConfigState state;
+
+      setUp(() {
+        final configs = ServerpodCreateConfig.values.toList()
+          ..removeWhere((e) => e == ServerpodCreateConfig.template);
+        state = CreateConfigState(
+          ServerpodTemplateType.module,
+          configs: configs,
+        );
+      });
+
+      test(
+        'when getting selected option for ServerpodCreateConfig.template, '
+        'then startingTemplate option is returned',
+        () {
+          expect(
+            state.form.getSelectedOptionFor(ServerpodCreateConfig.template),
+            TemplateTypeOption.module,
+          );
+        },
+      );
+
+      test(
+        'when converting to template context, '
+        'then startingTemplate is set in the context for template field',
+        () {
+          final context = state.toTemplateContext();
+          expect(context.template, ServerpodTemplateType.module);
+        },
+      );
+    },
+  );
 }

@@ -26,6 +26,14 @@ String createServerFolderPath(String projectName) {
   return path.join(projectName, '${projectName}_server');
 }
 
+String createFlutterFolderPath(String projectName) {
+  return path.join(projectName, '${projectName}_flutter');
+}
+
+String createClientFolderPath(String projectName) {
+  return path.join(projectName, '${projectName}_client');
+}
+
 Future<bool> isNetworkPortAvailable(int port) async {
   try {
     var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);

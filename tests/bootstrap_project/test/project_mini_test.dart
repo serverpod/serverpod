@@ -671,31 +671,43 @@ void main() async {
           );
         });
 
-        test('then the server pubspec does not contain auth dependencies', () {
-          final pubspec = File(
-            path.join(tempPath, serverDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
-        });
+        test(
+          'then the server pubspec does not contain auth dependencies',
+          () {
+            final pubspec = File(
+              path.join(tempPath, serverDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_server')));
+          },
+          skip:
+              'serverpod_auth_idp_server dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
-        test('then the server server.dart does not contain auth imports', () {
+        test('then the server server.dart contains auth imports', () {
           final serverFile = File(
             path.join(tempPath, serverDir, 'lib', 'server.dart'),
           );
           final content = serverFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
+          expect(content, contains('serverpod_auth_idp_server'));
         });
 
-        test('then the flutter pubspec does not contain auth dependencies', () {
-          final (:serverDir, :flutterDir, :clientDir) =
-              createProjectFolderPaths(projectName);
-          final pubspec = File(
-            path.join(tempPath, flutterDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
-        });
+        test(
+          'then the flutter pubspec does not contain auth dependencies',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          },
+          skip:
+              'serverpod_auth_idp_flutter dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
         test(
           'then the flutter pubspec does not contain override for flutter secure storage',
@@ -713,14 +725,14 @@ void main() async {
               'and mini template type is planned for removal',
         );
 
-        test('then the flutter main.dart does not contain auth imports', () {
+        test('then the flutter main.dart contains auth imports', () {
           final (:serverDir, :flutterDir, :clientDir) =
               createProjectFolderPaths(projectName);
           final mainFile = File(
             path.join(tempPath, flutterDir, 'lib', 'main.dart'),
           );
           final content = mainFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          expect(content, contains('serverpod_auth_idp_flutter'));
         });
 
         test('then the email_idp_endpoint.dart does not exist', () {
