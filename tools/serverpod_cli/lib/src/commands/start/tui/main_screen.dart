@@ -18,6 +18,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.rawScrollController,
     required this.helpScrollController,
+    required this.appPanelScrollController,
     this.onToggleHelp,
     this.onHotReload,
     this.onHotRestart,
@@ -34,6 +35,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController rawScrollController;
   final ScrollController helpScrollController;
+  final ScrollController appPanelScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
@@ -82,36 +84,53 @@ class MainScreen extends StatelessComponent {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: BorderedBox(
-                child: state.showRawServerLogs
-                    ? _buildRawServerLogsPanel(st)
-                    : LayoutBuilder(
-                        builder: (context, constraints) {
-                          state.contentWidth = constraints.maxWidth;
+              child: Stack(
+                children: [
+                  BorderedBox(
+                    child: state.showRawServerLogs
+                        ? _buildRawServerLogsPanel(st)
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              state.contentWidth = constraints.maxWidth;
 
-                          return Column(
-                            children: [
-                              Expanded(
-                                child: state.useSideBySideLayout
-                                    ? _buildSideBySideLayout(st, constraints)
-                                    : _buildMergedColumn(st),
-                              ),
-                              if (state.activeOperations.isNotEmpty)
-                                ...state.activeOperations.values.map(
-                                  (op) => TrackedOperationWidget(
-                                    key: ValueKey(op.id),
-                                    operation: op,
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: state.useSideBySideLayout
+                                        ? _buildSideBySideLayout(
+                                            st,
+                                            constraints,
+                                          )
+                                        : _buildMergedColumn(st),
                                   ),
-                                ),
-                              if (state.alert case final alert?) ...[
-                                const SizedBox(height: 1),
-                                Divider(color: st.subtleDivider),
-                                AlertLine(alert: alert, time: state.alertTime),
-                              ],
-                            ],
-                          );
-                        },
-                      ),
+                                  if (state.activeOperations.isNotEmpty)
+                                    ...state.activeOperations.values.map(
+                                      (op) => TrackedOperationWidget(
+                                        key: ValueKey(op.id),
+                                        operation: op,
+                                      ),
+                                    ),
+                                  if (state.alert case final alert?) ...[
+                                    const SizedBox(height: 1),
+                                    Divider(color: st.subtleDivider),
+                                    AlertLine(
+                                      alert: alert,
+                                      time: state.alertTime,
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          ),
+                  ),
+                  if (state.showLaunchPanel)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: _buildLaunchPanel(st),
+                    ),
+                ],
               ),
             ),
             _buildButtonBar(),
@@ -123,13 +142,6 @@ class MainScreen extends StatelessComponent {
             bindings: _helpBindings,
             closeKey: 'Esc',
             controller: helpScrollController,
-          ),
-        if (state.showLaunchPanel)
-          Positioned(
-            top: 0,
-            right: 0,
-            bottom: 1,
-            child: _buildLaunchPanel(st),
           ),
       ],
     );
@@ -209,23 +221,27 @@ class MainScreen extends StatelessComponent {
               ),
               const Divider(),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < apps.length; i++)
-                      _buildLaunchAppRow(
-                        st,
-                        i,
-                        isRunning,
-                        state.isAppLaunching,
-                      ),
-                    const SizedBox(height: 1),
-                    const Tip('Click app to launch'),
-                  ],
+                child: Scrollbar(
+                  controller: appPanelScrollController,
+                  thumbVisibility: true,
+                  child: ListView(
+                    controller: appPanelScrollController,
+                    children: [
+                      for (var i = 0; i < apps.length; i++)
+                        _buildLaunchAppRow(
+                          st,
+                          i,
+                          isRunning,
+                          state.isAppLaunching,
+                        ),
+                      const SizedBox(height: 1),
+                      const Tip('Click app to launch'),
+                    ],
+                  ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 1, bottom: 1),
+                padding: const EdgeInsets.only(left: 1, bottom: 1, top: 1),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -254,6 +270,7 @@ class MainScreen extends StatelessComponent {
                           Text(
                             desc,
                             style: TextStyle(
+                              color: st.brightText,
                               fontWeight: enabled
                                   ? FontWeight.normal
                                   : FontWeight.dim,
@@ -316,11 +333,14 @@ class MainScreen extends StatelessComponent {
                 color: background,
                 child: Row(
                   children: [
-                    Text(
-                      ' ${i < 9 ? '${i + 1}' : ' '}  ',
-                      style: TextStyle(
-                        color: focused ? st.brightText : st.debugLevel,
-                        fontWeight: weight,
+                    SizedBox(
+                      width: 3,
+                      child: Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          color: focused ? st.brightText : st.debugLevel,
+                          fontWeight: weight,
+                        ),
                       ),
                     ),
                     Text(

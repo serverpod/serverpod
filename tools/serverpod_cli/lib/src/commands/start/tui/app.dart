@@ -113,6 +113,7 @@ class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
 class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   final rawScrollController = ScrollController();
   final helpScrollController = ScrollController();
+  final appPanelScrollController = ScrollController();
 
   /// Callbacks wired by the backend.
   VoidCallback? onHotReload;
@@ -144,6 +145,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   @override
   void dispose() {
     component.holder.detach(this);
+    rawScrollController.dispose();
+    helpScrollController.dispose();
+    appPanelScrollController.dispose();
     super.dispose();
   }
 
@@ -195,6 +199,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           showSplash: state.showSplash,
           rawScrollController: rawScrollController,
           helpScrollController: helpScrollController,
+          appPanelScrollController: appPanelScrollController,
           onToggleHelp: () {
             state.showHelp = !state.showHelp;
             _rebuild();
