@@ -451,7 +451,7 @@ class MainScreen extends StatelessComponent {
 
     String? value;
     if (tab.ready) {
-      value = tab.url ?? 'ready';
+      value = tab.url ?? 'App running';
     } else {
       value = tab.startupStage;
       if (value != null && value.contains('.')) {
