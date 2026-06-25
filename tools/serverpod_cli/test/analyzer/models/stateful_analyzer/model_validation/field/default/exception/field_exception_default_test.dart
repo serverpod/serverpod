@@ -465,7 +465,8 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultPersist" property is not allowed for defaultMessage type. Valid keys are {type, required, default, defaultModel}.',
+          'The "defaultPersist" property is not allowed for defaultMessage '
+          'type. Valid keys are: type, required, default, defaultModel.',
         );
       },
     );
