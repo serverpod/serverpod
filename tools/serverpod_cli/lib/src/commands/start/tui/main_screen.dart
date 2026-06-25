@@ -233,8 +233,6 @@ class MainScreen extends StatelessComponent {
                           isRunning,
                           state.isAppLaunching,
                         ),
-                      const SizedBox(height: 1),
-                      const Tip('Click app to launch'),
                     ],
                   ),
                 ),
@@ -244,6 +242,11 @@ class MainScreen extends StatelessComponent {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      '💡 Click app to launch',
+                      style: TextStyle(color: st.brightText),
+                    ),
+                    const SizedBox(height: 1),
                     for (final (key, desc, enabled) in [
                       ('↑↓', 'Navigate', true),
                       ('Enter', enterAction, true),
