@@ -105,6 +105,18 @@ abstract class SerializationManager {
     } else if (_isNullableType<Bit>(t)) {
       if (data == null) return null as T;
       return BitJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPoint>(t)) {
+      if (data == null) return null as T;
+      return GeographyPointJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyLineString>(t)) {
+      if (data == null) return null as T;
+      return GeographyLineStringJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPolygon>(t)) {
+      if (data == null) return null as T;
+      return GeographyPolygonJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyGeometryCollection>(t)) {
+      if (data == null) return null as T;
+      return GeographyGeometryCollectionJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -150,6 +162,14 @@ abstract class SerializationManager {
       return 'SparseVector';
     } else if (data is Bit) {
       return 'Bit';
+    } else if (data is GeographyPoint) {
+      return 'GeographyPoint';
+    } else if (data is GeographyLineString) {
+      return 'GeographyLineString';
+    } else if (data is GeographyPolygon) {
+      return 'GeographyPolygon';
+    } else if (data is GeographyGeometryCollection) {
+      return 'GeographyGeometryCollection';
     }
 
     return null;
@@ -190,6 +210,14 @@ abstract class SerializationManager {
         return deserialize<SparseVector>(raw);
       case 'Bit':
         return deserialize<Bit>(raw);
+      case 'GeographyPoint':
+        return deserialize<GeographyPoint>(raw);
+      case 'GeographyLineString':
+        return deserialize<GeographyLineString>(raw);
+      case 'GeographyPolygon':
+        return deserialize<GeographyPolygon>(raw);
+      case 'GeographyGeometryCollection':
+        return deserialize<GeographyGeometryCollection>(raw);
       case 'List' when raw is List:
         return raw.map(deserializeDynamicFieldValue).toList();
       case 'Set' when raw is List:
@@ -423,6 +451,10 @@ const extensionSerializedTypes = [
   'HalfVector',
   'SparseVector',
   'Bit',
+  'GeographyPoint',
+  'GeographyLineString',
+  'GeographyPolygon',
+  'GeographyGeometryCollection',
   'Map',
   'List',
   'Set',

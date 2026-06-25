@@ -199,6 +199,24 @@ void main() async {
       aHalfVector: HalfVector([1.0, 2.0, 3.0]),
       aSparseVector: SparseVector([1.0, 0.0, 2.0]),
       aBit: Bit([true, false, true]),
+      aGeographyPoint: GeographyPoint(longitude: 1.0, latitude: 2.0),
+      aGeographyLineString: GeographyLineString(
+        points: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+        ],
+      ),
+      aGeographyPolygon: GeographyPolygon(
+        exteriorRing: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+        ],
+      ),
+      aGeographyGeometryCollection: GeographyGeometryCollection(
+        geometries: [GeographyPoint(longitude: 1.0, latitude: 2.0)],
+      ),
       anEnum: TestEnum.one,
       aStringifiedEnum: TestEnumStringified.one,
       aList: [1, 2, 3],
@@ -410,6 +428,62 @@ void main() async {
         var updated = await Types.db.updateRow(session, value);
 
         expect(updated.aBit, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyPoint to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyPoint: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyPoint, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyLineString to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyLineString: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyLineString, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyPolygon to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyPolygon: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyPolygon, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyGeometryCollection to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyGeometryCollection: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyGeometryCollection, isNull);
       },
     );
 

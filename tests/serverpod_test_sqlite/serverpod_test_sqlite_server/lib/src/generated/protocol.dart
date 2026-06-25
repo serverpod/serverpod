@@ -4980,6 +4980,30 @@ class Protocol extends _i1.DatabaseSerializationManager {
           vectorDimension: 3,
         ),
         _i2.ColumnDefinition(
+          name: 'aGeographyPoint',
+          columnType: _i2.ColumnType.geography,
+          isNullable: true,
+          dartType: 'GeographyPoint?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aGeographyLineString',
+          columnType: _i2.ColumnType.geographyLineString,
+          isNullable: true,
+          dartType: 'GeographyLineString?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aGeographyPolygon',
+          columnType: _i2.ColumnType.geographyPolygon,
+          isNullable: true,
+          dartType: 'GeographyPolygon?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'aGeographyGeometryCollection',
+          columnType: _i2.ColumnType.geographyGeometryCollection,
+          isNullable: true,
+          dartType: 'GeographyGeometryCollection?',
+        ),
+        _i2.ColumnDefinition(
           name: 'anEnum',
           columnType: _i2.ColumnType.bigint,
           isNullable: true,
