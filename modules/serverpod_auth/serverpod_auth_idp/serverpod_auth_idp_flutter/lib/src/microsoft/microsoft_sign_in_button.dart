@@ -68,7 +68,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     super.key,
   }) : assert(
          minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override

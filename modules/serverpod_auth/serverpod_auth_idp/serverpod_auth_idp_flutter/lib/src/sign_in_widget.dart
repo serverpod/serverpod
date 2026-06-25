@@ -237,7 +237,7 @@ class _SignInWidgetState extends State<SignInWidget> {
       );
     }
 
-    // TODO: Make this adaptative.
+    // TODO: Make this adaptive.
     Widget child = SignInFlowCoordinatorWidget(
       child: Material(
         type: MaterialType.transparency,
