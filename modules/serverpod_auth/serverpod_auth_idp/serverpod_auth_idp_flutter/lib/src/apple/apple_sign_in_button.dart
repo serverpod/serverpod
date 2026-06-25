@@ -80,7 +80,7 @@ class AppleSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.appleSignInTexts;
+    final localizations = context.appleSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final type =
@@ -117,7 +117,7 @@ class AppleSignInButton extends StatelessWidget {
 
     Widget button = SignInWithAppleButton(
       onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-      text: texts.signInButton ?? _getButtonText(type),
+      text: localizations.signInButton ?? _getButtonText(type),
       height: buttonStyle.size.height,
       style: effectiveStyle,
       borderRadius: buttonStyle.borderRadius,

@@ -82,7 +82,7 @@ class FacebookSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.facebookSignInTexts;
+    final localizations = context.facebookSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final type =
@@ -150,7 +150,7 @@ class FacebookSignInButton extends StatelessWidget {
           disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
         ),
         child: _buildButtonContent(
-          texts,
+          localizations,
           type: type,
           size: size,
           logoAlignment: logoAlignment,
@@ -162,7 +162,7 @@ class FacebookSignInButton extends StatelessWidget {
   }
 
   Widget _buildButtonContent(
-    FacebookSignInTexts texts, {
+    FacebookSignInTexts localizations, {
     required FacebookButtonText type,
     required FacebookButtonSize size,
     required FacebookButtonLogoAlignment logoAlignment,
@@ -201,7 +201,7 @@ class FacebookSignInButton extends StatelessWidget {
       color: foregroundColor,
     );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(type),
+      localizations.signInButton ?? _getButtonText(type),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

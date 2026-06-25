@@ -73,7 +73,7 @@ class MicrosoftSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.microsoftSignInTexts;
+    final localizations = context.microsoftSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final size =
@@ -143,7 +143,7 @@ class MicrosoftSignInButton extends StatelessWidget {
           disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
         ),
         child: _buildButtonContent(
-          texts,
+          localizations,
           size: size,
           text: text,
           logoAlignment: logoAlignment,
@@ -155,7 +155,7 @@ class MicrosoftSignInButton extends StatelessWidget {
   }
 
   Widget _buildButtonContent(
-    MicrosoftSignInTexts texts, {
+    MicrosoftSignInTexts localizations, {
     required MicrosoftButtonSize size,
     required MicrosoftButtonText text,
     required MicrosoftButtonLogoAlignment logoAlignment,
@@ -182,7 +182,7 @@ class MicrosoftSignInButton extends StatelessWidget {
       color: foregroundColor,
     );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(text),
+      localizations.signInButton ?? _getButtonText(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

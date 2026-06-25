@@ -73,7 +73,7 @@ class GitHubSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.githubSignInTexts;
+    final localizations = context.githubSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
     final size =
@@ -139,7 +139,7 @@ class GitHubSignInButton extends StatelessWidget {
           disabledForegroundColor: foregroundColor.withValues(alpha: 0.6),
         ),
         child: _buildButtonContent(
-          texts,
+          localizations,
           size: size,
           text: text,
           logoAlignment: logoAlignment,
@@ -151,7 +151,7 @@ class GitHubSignInButton extends StatelessWidget {
   }
 
   Widget _buildButtonContent(
-    GitHubSignInTexts texts, {
+    GitHubSignInTexts localizations, {
     required GitHubButtonSize size,
     required GitHubButtonText text,
     required GitHubButtonLogoAlignment logoAlignment,
@@ -178,7 +178,7 @@ class GitHubSignInButton extends StatelessWidget {
       color: foregroundColor,
     );
     final textWidget = Text(
-      texts.signInButton ?? _getButtonText(text),
+      localizations.signInButton ?? _getButtonText(text),
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

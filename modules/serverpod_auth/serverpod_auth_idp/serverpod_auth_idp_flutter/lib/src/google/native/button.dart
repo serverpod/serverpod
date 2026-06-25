@@ -152,7 +152,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.googleSignInTexts;
+    final localizations = context.googleSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
     // Resolve the shared style so the standalone native button honors it too
@@ -222,7 +222,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       },
       child: Text(
         getButtonText?.call(isLoading: isLoading) ??
-            texts.signInButton ??
+            localizations.signInButton ??
             _getButtonText(),
         // No font family, so the label inherits the theme font like the other
         // buttons; the shared textStyle is merged on top.
