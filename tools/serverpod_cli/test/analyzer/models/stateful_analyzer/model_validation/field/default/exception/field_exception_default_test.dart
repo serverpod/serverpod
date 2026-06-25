@@ -466,7 +466,7 @@ void main() {
         expect(
           firstError.message,
           'The "defaultPersist" property is not allowed for defaultMessage '
-          'type. Valid keys are: type, required, default, defaultModel.',
+          'type. Valid keys are: type, required, default, defaultModel, tail.',
         );
       },
     );

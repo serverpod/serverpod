@@ -36,6 +36,7 @@ class Keyword {
   static const String scope = 'scope';
   static const String persist = 'persist';
   static const String requiredKey = 'required';
+  static const String tail = 'tail';
 
   static const String defaultKey = 'default';
   static const String defaultModelKey = 'defaultModel';
