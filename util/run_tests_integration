@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
-# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+# Runs the serverpod_test_server integration tests that are NOT safe to run
+# concurrently (real-server boot via IntegrationTestServer against a shared,
+# pre-migrated database), against an embedded PostgreSQL postmaster - no Docker
+# required. All tests tagged 'integration' (the test-tools default) are excluded
+# here; they run in run_tests_integration_concurrently.
+#
+# The redis-tagged tests are included only when a Redis is reachable on
+# redis:6379 (resolved to localhost via /etc/hosts; hosted in CI). A local run
+# without that alias/Redis simply skips them.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -9,13 +16,55 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
-# Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+# Embedded PG runs the server in the host timezone, whereas the former docker
+# server ran in the container's UTC. Pin UTC so timezone-sensitive tests (e.g.
+# cron-scheduled future calls) behave identically regardless of host/runner tz.
+export TZ="UTC"
 
-cd tests/docker/tests_integration
+REPO_ROOT="$(pwd)"
 
-docker compose --progress quiet --profile concurrency_one up \
-  --abort-on-container-exit \
-  --exit-code-from serverpod_test_server \
-  --build \
-  --remove-orphans
+# Activate the serverpod CLI so tests that spawn it as a subprocess
+# (e.g. MigrationTestUtils.createMigrationFromProtocols) find it on PATH.
+# CI=true skips the CLI's flutter-on-PATH check (not needed to create-migration).
+export PATH="$PATH:$HOME/.pub-cache/bin"
+export CI=true
+(
+  cd "$REPO_ROOT/tools/serverpod_cli"
+  dart pub global activate -s path .
+)
+
+cd "tests/serverpod_test_server"
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+# Apply migrations to the embedded postmaster. The serial tests share one
+# pre-migrated database via IntegrationTestServer; the embedded postmaster
+# persists its data dir across this apply process and the test process.
+echo "### Apply migrations (embedded PG)"
+dart run bin/main.dart -m production -r maintenance --apply-migrations
+
+# Include the redis-tagged tests only if a Redis is reachable (bash /dev/tcp -
+# no redis-cli dependency). Without one, skip them rather than fail.
+REDIS_TAG_FILTER="-x redis"
+if (exec 3<>/dev/tcp/redis/6379) 2>/dev/null; then
+    exec 3>&- 3<&-
+    echo "### Redis reachable at redis:6379 - including redis-tagged tests"
+    REDIS_TAG_FILTER=""
+else
+    echo "### Redis not reachable at redis:6379 - skipping redis-tagged tests"
+fi
+
+echo "### Running serial integration tests"
+dart test test_integration -x integration $REDIS_TAG_FILTER --concurrency=1 --reporter=failures-only
+
+# Verify the embedded data path was created, then clean up.
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+cd "$REPO_ROOT"

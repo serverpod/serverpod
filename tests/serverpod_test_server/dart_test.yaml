@@ -2,3 +2,4 @@ tags:
   integration: {}
   concurrency_one: {}
   customTag: {} # Used to test that tag overrides work
+  redis: {} # Tests needing a running Redis; hosted in CI, skipped locally if absent
