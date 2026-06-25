@@ -246,24 +246,16 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
 
     final buttonContents =
         (effectiveLogoAlignment == GSIButtonLogoAlignment.center)
-        // Center: logo indented so it lines up with the native Apple button's
-        // centered logo at any button width, with the label hugging it.
-        ? LayoutBuilder(
-            builder: (context, constraints) {
-              final raw =
-                  (constraints.maxWidth - signInCenteredAppleContentWidth) / 2;
-              final indent = raw < 16.0 ? 16.0 : raw;
-              return Row(
-                children: [
-                  SizedBox(width: indent),
-                  logo,
-                  // Google's logo doesn't fill its box (scaled SVG), so tighten
-                  // the gap a little to match the other buttons.
-                  const SizedBox(width: signInCenteredLogoGap - 2),
-                  Flexible(child: text),
-                ],
-              );
-            },
+        // Center: center the [logo + label] group, matching the native Apple
+        // button's centered layout. Google's logo doesn't fill its box (scaled
+        // SVG), so tighten the gap a little to match the other buttons.
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              logo,
+              const SizedBox(width: signInCenteredLogoGap - 2),
+              Flexible(child: text),
+            ],
           )
         // Left: logo at the left column, with the label left-aligned starting
         // where the native Apple button's centered label starts.

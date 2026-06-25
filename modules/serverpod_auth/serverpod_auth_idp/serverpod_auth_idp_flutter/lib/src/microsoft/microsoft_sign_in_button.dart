@@ -191,23 +191,16 @@ class MicrosoftSignInButton extends StatelessWidget {
     final logo = _buildMicrosoftLogo(size);
     final iconSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
-    // Center: logo indented so it lines up with the native Apple button's
-    // centered logo at any button width, with the label hugging it.
+    // Center: center the [logo + label] group, matching the native Apple
+    // button's centered layout.
     if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          final raw =
-              (constraints.maxWidth - signInCenteredAppleContentWidth) / 2;
-          final indent = raw < 16.0 ? 16.0 : raw;
-          return Row(
-            children: [
-              SizedBox(width: indent),
-              logo,
-              const SizedBox(width: signInCenteredLogoGap),
-              Flexible(child: textWidget),
-            ],
-          );
-        },
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          logo,
+          const SizedBox(width: signInCenteredLogoGap),
+          Flexible(child: textWidget),
+        ],
       );
     }
 

@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// The width of the native Apple button's centered `[logo + label]` content.
-///
-/// A centered sign-in button indents its logo by `(buttonWidth - this) / 2`, so
-/// the logo lands at the same spot as the Apple button's centered logo at any
-/// button width. Tune this to line the icons up with Apple.
-const double signInCenteredAppleContentWidth = 168;
-
 /// The gap between the logo and the label on a centered sign-in button, tuned
-/// to match the tighter spacing of the native Apple button.
+/// to match the native Apple button (whose logo sits in a wider box, leaving
+/// ~5.8px between the logo and the label at the default size).
 const double signInCenteredLogoGap = 6;
 
 /// The left indent of the logo when a sign-in button is left-aligned, tuned so
