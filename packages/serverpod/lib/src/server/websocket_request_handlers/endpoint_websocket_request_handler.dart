@@ -42,22 +42,10 @@ abstract class EndpointWebsocketRequestHandler {
       Future<void> openAllStreams() async {
         if (streamsOpened) return;
         streamsOpened = true;
-        for (var endpointConnector in endpointDispatch.connectors.values) {
-          await _callStreamOpened(
-            session,
-            endpointConnector.endpoint.name,
-            endpointDispatch,
-          );
-        }
-        for (var module in endpointDispatch.modules.values) {
-          for (var endpointConnector in module.connectors.values) {
-            await _callStreamOpened(
-              session,
-              endpointConnector.endpoint.name,
-              module,
-            );
-          }
-        }
+        await _forEachEndpoint(
+          endpointDispatch,
+          (name, dispatch) => _callStreamOpened(session, name, dispatch),
+        );
       }
 
       dynamic error;
@@ -183,22 +171,10 @@ abstract class EndpointWebsocketRequestHandler {
       // closed without any message never fired streamOpened.
       // TODO: Possibly keep a list of open streams instead
       if (streamsOpened) {
-        for (var endpointConnector in server.endpoints.connectors.values) {
-          await _callStreamClosed(
-            session,
-            endpointConnector.endpoint.name,
-            endpointDispatch,
-          );
-        }
-        for (var module in server.endpoints.modules.values) {
-          for (var endpointConnector in module.connectors.values) {
-            await _callStreamClosed(
-              session,
-              endpointConnector.endpoint.name,
-              module,
-            );
-          }
-        }
+        await _forEachEndpoint(
+          endpointDispatch,
+          (name, dispatch) => _callStreamClosed(session, name, dispatch),
+        );
       }
       await session.close(error: error, stackTrace: stackTrace);
     } catch (e, s) {
@@ -209,10 +185,30 @@ abstract class EndpointWebsocketRequestHandler {
     }
   }
 
-  static Future<void> _callStreamOpened(
+  /// Invokes [action] for every endpoint connector on the server.
+  static Future<void> _forEachEndpoint(
+    EndpointDispatch endpointDispatch,
+    Future<void> Function(String endpointName, EndpointDispatch dispatch)
+    action,
+  ) async {
+    for (var endpointConnector in endpointDispatch.connectors.values) {
+      await action(endpointConnector.endpoint.name, endpointDispatch);
+    }
+    for (var module in endpointDispatch.modules.values) {
+      for (var endpointConnector in module.connectors.values) {
+        await action(endpointConnector.endpoint.name, module);
+      }
+    }
+  }
+
+  /// Resolves the connector for [endpointName] and invokes [notify] with its
+  /// endpoint, swallowing an unauthorized stream and reporting any other error
+  /// without tearing down the connection.
+  static Future<void> _notifyEndpoint(
     StreamingSession session,
     String endpointName,
     EndpointDispatch endpointDispatch,
+    Future<void> Function(Endpoint endpoint) notify,
   ) async {
     try {
       session.endpoint = endpointName;
@@ -220,8 +216,7 @@ abstract class EndpointWebsocketRequestHandler {
         session: session,
         endpointPath: endpointName,
       );
-      // ignore: deprecated_member_use_from_same_package
-      await connector.endpoint.streamOpened(session);
+      await notify(connector.endpoint);
     } on NotAuthorizedException catch (_) {
       // User is not authorized to communicate with this endpoint.
       return;
@@ -231,27 +226,29 @@ abstract class EndpointWebsocketRequestHandler {
     }
   }
 
+  static Future<void> _callStreamOpened(
+    StreamingSession session,
+    String endpointName,
+    EndpointDispatch endpointDispatch,
+  ) => _notifyEndpoint(
+    session,
+    endpointName,
+    endpointDispatch,
+    // ignore: deprecated_member_use_from_same_package
+    (endpoint) => endpoint.streamOpened(session),
+  );
+
   static Future<void> _callStreamClosed(
     StreamingSession session,
     String endpointName,
     EndpointDispatch endpointDispatch,
-  ) async {
-    try {
-      session.endpoint = endpointName;
-      var connector = await endpointDispatch.getEndpointConnector(
-        session: session,
-        endpointPath: endpointName,
-      );
-      // ignore: deprecated_member_use_from_same_package
-      await connector.endpoint.streamClosed(session);
-    } on NotAuthorizedException catch (_) {
-      // User is not authorized to communicate with this endpoint.
-      return;
-    } catch (e, s) {
-      _reportException(session.server, e, s, session: session);
-      return;
-    }
-  }
+  ) => _notifyEndpoint(
+    session,
+    endpointName,
+    endpointDispatch,
+    // ignore: deprecated_member_use_from_same_package
+    (endpoint) => endpoint.streamClosed(session),
+  );
 
   static void _reportException(
     Server server,
