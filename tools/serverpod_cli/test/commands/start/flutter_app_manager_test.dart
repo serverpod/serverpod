@@ -387,6 +387,8 @@ serverpod:
       // Completed by onReady once the shim publishes its web URL, so the test
       // waits for exactly that event rather than a fixed duration.
       late Completer<String> ready;
+      // Completed by onStop.
+      late Completer<void> stop;
 
       setUp(() async {
         tempDir = await Directory.systemTemp.createTemp('flutter_mgr_shim_');
@@ -420,6 +422,8 @@ serverpod:
 ''');
 
         ready = Completer<String>();
+        stop = Completer<void>();
+        ready = Completer<String>();
         manager = FlutterAppManager(
           projectName: 'project',
           launchFlutterApp: false,
@@ -430,7 +434,7 @@ serverpod:
           onProgress: (_, _) {},
           onReady: (_, url) => ready.complete(url),
           onStart: (_, _) async {},
-          onStop: (_) {},
+          onStop: (_) => stop.complete(),
           onLaunchFailed: (_) {},
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -465,24 +469,34 @@ serverpod:
         },
       );
 
-      test(
-        'when the app is stopped then its published DTD URI is no longer '
-        'reported by dtdUris',
-        () async {
-          await manager.launch(app.id);
-          await ready.future.timeout(const Duration(seconds: 30));
-          // onReady fires on the web URL, which the shim emits before app.dtd,
-          // so wait until the DTD URI has been parsed too.
-          await _eventually(() => manager.dtdUris['project'] != null);
+      group(
+        'when the app is stopped',
+        () {
+          setUp(() async {
+            await manager.launch(app.id);
+            await ready.future.timeout(const Duration(seconds: 30));
+            // onReady fires on the web URL, which the shim emits before app.dtd,
+            // so wait until the DTD URI has been parsed too.
+            await _eventually(() => manager.dtdUris['project'] != null);
 
-          // The shim emits app.dtd, so the running app reports its DTD URI.
-          expect(manager.dtdUris, {'project': 'ws://127.0.0.1:9100/ws'});
+            // The shim emits app.dtd, so the running app reports its DTD URI.
+            expect(manager.dtdUris, {'project': 'ws://127.0.0.1:9100/ws'});
 
-          await manager.stop(app.id);
+            await manager.stop(app.id);
+          });
 
-          // Stopping the app drops it from the map that backs the
-          // get_flutter_app_dtd MCP tool, so its DTD URI is no longer returned.
-          expect(manager.dtdUris, isEmpty);
+          test(
+            'then its published DTD URI is no longer reported by dtdUris',
+            () {
+              // Stopping the app drops it from the map that backs the
+              // get_flutter_app_dtd MCP tool, so its DTD URI is no longer returned.
+              expect(manager.dtdUris, isEmpty);
+            },
+          );
+
+          test('then onStop fires', () {
+            expect(stop.future, completes);
+          });
         },
       );
     },
@@ -571,83 +585,6 @@ serverpod:
           expect(readyCalls, 0);
           expect(manager.isRunning(app.id), isFalse);
           expect(manager.isLaunching(app.id), isFalse);
-        },
-      );
-    },
-  );
-
-  group(
-    'Given an initialized FlutterAppManager with a running app',
-    () {
-      late Directory tempDir;
-      late Directory serverDir;
-      late Directory flutterDir;
-      late FlutterAppConfig app;
-      late FlutterAppManager manager;
-      var stopCalls = 0;
-
-      setUp(() async {
-        tempDir = await Directory.systemTemp.createTemp('flutter_mgr_fail_');
-        serverDir = Directory(p.join(tempDir.path, 'project_server'))
-          ..createSync(recursive: true);
-        flutterDir = Directory(p.join(tempDir.path, 'project_flutter'))
-          ..createSync(recursive: true);
-        File(p.join(flutterDir.path, 'pubspec.yaml')).writeAsStringSync('''
-name: project_flutter
-dependencies:
-  flutter:
-    sdk: flutter
-''');
-
-        app = _testApp(
-          serverDir: serverDir,
-          flutterDir: flutterDir,
-          id: 'project',
-          name: 'Project',
-        );
-
-        final serverPubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-        serverPubspecFile.writeAsStringSync('''
-name: project_server
-serverpod:
-  flutter_apps:
-    project:
-      path: ../project_flutter
-''');
-
-        stopCalls = 0;
-
-        manager = FlutterAppManager(
-          projectName: 'project',
-          launchFlutterApp: false,
-          serverPubspecFile: serverPubspecFile,
-          serverPackageDirectoryPathParts: p.split(serverDir.path),
-          serverpodToolDir: p.join(serverDir.path, '.dart_tool', 'serverpod'),
-          runMode: 'development',
-          onProgress: (_, _) {},
-          onReady: (_, _) {},
-          onStart: (_, _) async {},
-          onStop: (_) => stopCalls++,
-          onLaunchFailed: (_) {},
-          onEnsureAppTab: (_) {},
-          stdoutSinkFor: (_) => stdout,
-          stderrSinkFor: (_) => stderr,
-        );
-        await manager.initialize();
-        await manager.launch(app.id);
-        expect(manager.isRunning(app.id), isTrue);
-      });
-
-      tearDown(() async {
-        await manager.dispose();
-        await tempDir.delete(recursive: true);
-      });
-
-      test(
-        'when the app is stoped, then onStop fires',
-        () async {
-          await manager.stop(app.id);
-          expect(stopCalls, 1);
         },
       );
     },
