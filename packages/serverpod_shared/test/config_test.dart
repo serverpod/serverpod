@@ -2141,7 +2141,28 @@ allowedOrigins: []
     );
 
     test(
-      'when set with a trailing comma then the blank entry is dropped.',
+      'when the environment variable is an empty string '
+      'then a configured allow-list is kept (the blank env var does not override it).',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
+$apiServerConfig
+allowedOrigins:
+  - https://app.example.com
+'''),
+          environment: {'SERVERPOD_ALLOWED_ORIGINS': ''},
+        );
+
+        expect(config.allowedOrigins, equals(['https://app.example.com']));
+      },
+    );
+
+    test(
+      'when set with a trailing comma '
+      'then the blank entry is dropped.',
       () {
         var config = ServerpodConfig.loadFromMap(
           runMode,
@@ -2158,8 +2179,8 @@ allowedOrigins: "https://app.example.com,"
     );
 
     test(
-      'when set with a trailing slash then the slash is dropped so the entry '
-      'still matches the (path-less) browser Origin.',
+      'when set with a trailing slash '
+      'then the entry still matches the browser Origin.',
       () {
         var config = ServerpodConfig.loadFromMap(
           runMode,
@@ -2276,6 +2297,22 @@ authCookie:
 
       expect(config.authCookie!.secure, isFalse);
     });
+
+    test(
+      'when secure is a capitalized bool-string in an env var '
+      'then it is parsed case-insensitively.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(apiServerConfig),
+          environment: {'SERVERPOD_AUTH_COOKIE_SECURE': 'TRUE'},
+        );
+
+        expect(config.authCookie!.secure, isTrue);
+      },
+    );
 
     test('when secure is not a boolean then it throws.', () {
       expect(

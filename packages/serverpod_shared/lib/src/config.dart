@@ -1051,15 +1051,15 @@ class WebAuthCookieConfig {
     };
   }
 
-  /// Parses the `secure` value, accepting a bool or a bool-string. A non-bool
-  /// value (e.g. a quoted YAML string) throws rather than silently defaulting,
-  /// so a misconfiguration surfaces instead of producing a surprising cookie.
+  /// Parses the `secure` [value], accepting a [bool] or a [String].
+  ///
+  /// A string is trimmed and matched case-insensitively, so `"True"` or `" true "` is accepted.
   static bool _parseSecure(Object? value) {
     return switch (value) {
       null => true,
       bool b => b,
       String s =>
-        bool.tryParse(s) ??
+        bool.tryParse(s.trim(), caseSensitive: false) ??
             (throw ArgumentError.value(
               s,
               ServerpodEnv.authCookieSecure.configKey,
@@ -1073,10 +1073,9 @@ class WebAuthCookieConfig {
     };
   }
 
-  /// Parses the `sameSite` value. Null falls back to the [CookieSameSite.lax]
-  /// default; a string is matched case-insensitively against [CookieSameSite];
-  /// any other type (or an unknown string) throws, so a wrong-typed value can't
-  /// silently weaken the configured cross-site posture.
+  /// Parses the `sameSite` [value].
+  ///
+  /// Fall back to [CookieSameSite.lax] on `null`. Throws on wrong type
   static CookieSameSite _parseSameSite(Object? value) {
     if (value == null) return CookieSameSite.lax;
 
@@ -1804,10 +1803,13 @@ List<String>? _readAllowedOrigins(
 
   // The environment variable (a comma-separated string) takes precedence over
   // the config file value (which may be a YAML list or a comma-separated
-  // string).
+  // string). An empty or whitespace-only env var is treated as unset so a
+  // blank value injected by a deployment template cannot silently override a
+  // configured allow-list and disable the origin guard.
   Object? value = configMap[configKey];
-  if (environment[envVariable] != null) {
-    value = environment[envVariable];
+  final envValue = environment[envVariable];
+  if (envValue != null && envValue.trim().isNotEmpty) {
+    value = envValue;
   }
 
   List<String>? origins;
