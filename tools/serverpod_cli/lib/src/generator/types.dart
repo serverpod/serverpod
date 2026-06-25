@@ -159,6 +159,8 @@ class TypeDefinition {
     'GeographyGeometryCollection',
   ];
 
+  bool get isGeographyType => geographyClassNames.contains(className);
+
   bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>

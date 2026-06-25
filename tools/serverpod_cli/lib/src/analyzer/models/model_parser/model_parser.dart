@@ -690,6 +690,9 @@ class ModelParser {
         onlyJsonbFields:
             indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isJsonbSerialized),
+        onlyGeographyFields:
+            indexFieldsTypes.isNotEmpty &&
+            indexFieldsTypes.every((f) => f.type.isGeographyType),
       );
       var unique = _parseUniqueKey(nodeDocument);
       var operatorClass = _parseOperatorClass(
@@ -752,6 +755,7 @@ class ModelParser {
     YamlMap documentContents, {
     required bool onlyVectorFields,
     required bool onlyJsonbFields,
+    required bool onlyGeographyFields,
   }) {
     var typeNode = documentContents.nodes[Keyword.type];
     var type = typeNode?.value;
@@ -759,6 +763,7 @@ class ModelParser {
     if (type == null || type is! String) {
       if (onlyVectorFields) return 'hnsw';
       if (onlyJsonbFields) return 'gin';
+      if (onlyGeographyFields) return 'gist';
       return 'btree';
     }
 

@@ -410,4 +410,60 @@ void main() async {
       );
     },
   );
+
+  group(
+    'Given declared ObjectWithGeographyIndex class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var geographyTable = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_geography_index',
+        );
+
+        indexes = geographyTable.indexes;
+      });
+
+      test(
+        'then the implicitly declared geography index exists with default type "gist".',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_index_default',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'point');
+        },
+      );
+
+      test(
+        'then the explicitly declared "gist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_index_gist',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'pointIndexedGist');
+        },
+      );
+
+      test(
+        'then the explicitly declared "spgist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_index_spgist',
+          );
+
+          expect(index.type, 'spgist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'pointIndexedSpgist');
+        },
+      );
+    },
+  );
 }
