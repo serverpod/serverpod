@@ -1,4 +1,5 @@
 import 'package:relic/relic.dart';
+import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Extends [Request] with useful methods.
@@ -69,7 +70,14 @@ extension RequestExtension on Request {
   String? getCookieValue(String cookieName) {
     try {
       var matching = headers.cookie?.getCookies(cookieName).toList();
-      if (matching == null || matching.length != 1) return null;
+      if (matching == null || matching.isEmpty) return null;
+      if (matching.length != 1) {
+        log.warning(
+          'Received ${matching.length} cookies named "$cookieName". '
+          'Treating it as absent!',
+        );
+        return null;
+      }
       return matching.first.value;
     } on Exception {
       return null;
