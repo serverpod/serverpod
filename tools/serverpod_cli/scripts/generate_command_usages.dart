@@ -30,8 +30,10 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 /// leaving the hand-maintained `_<command>.md` intros untouched.
 void main(final List<String> args) {
   if (args.length != 1) {
-    throw StateError('Expected the path to the docs directory as the only '
-        'argument.');
+    throw StateError(
+      'Expected the path to the docs directory as the only '
+      'argument.',
+    );
   }
   final docsPath = args.first;
 
@@ -44,28 +46,29 @@ void main(final List<String> args) {
   // Keep this command list in sync with `buildCommandRunner` in
   // `bin/serverpod_cli.dart`. Hidden commands are filtered out below.
   final version = Version.parse(templateVersion);
-  final cli = ServerpodCommandRunner.createCommandRunner(
-    CompoundAnalytics([]),
-    true,
-    version,
-    onBeforeRunCommand: (_) async {},
-  )..addCommands([
-      AnalyzePubspecsCommand(),
-      CloudCommand(),
-      CreateCommand(),
-      QuickstartCommand(),
-      GenerateCommand(),
-      GeneratePubspecsCommand(),
-      LanguageServerCommand(),
-      McpCommand(),
-      CreateMigrationCommand(),
-      CreateRepairMigrationCommand(),
-      MigrateCommand(),
-      RunCommand(),
-      StartCommand(),
-      UpgradeCommand(),
-      VersionCommand(version),
-    ]);
+  final cli =
+      ServerpodCommandRunner.createCommandRunner(
+        CompoundAnalytics([]),
+        true,
+        version,
+        onBeforeRunCommand: (_) async {},
+      )..addCommands([
+        AnalyzePubspecsCommand(),
+        CloudCommand(),
+        CreateCommand(),
+        QuickstartCommand(),
+        GenerateCommand(),
+        GeneratePubspecsCommand(),
+        LanguageServerCommand(),
+        McpCommand(),
+        CreateMigrationCommand(),
+        CreateRepairMigrationCommand(),
+        MigrateCommand(),
+        RunCommand(),
+        StartCommand(),
+        UpgradeCommand(),
+        VersionCommand(version),
+      ]);
 
   final generator = _CommandDocumentationGenerator(cli);
 
@@ -153,8 +156,10 @@ import $importName from '$generatedImportPath';
 String _toImportIdentifier(final String commandName) {
   return commandName
       .split('-')
-      .map((final part) =>
-          part.isEmpty ? part : part[0].toUpperCase() + part.substring(1))
+      .map(
+        (final part) =>
+            part.isEmpty ? part : part[0].toUpperCase() + part.substring(1),
+      )
       .join();
 }
 
