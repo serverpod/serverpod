@@ -812,9 +812,39 @@ CREATE TABLE "object_with_enum_enhanced" (
 );
 
 --
--- Class ObjectWithGeographyIndex as table object_with_geography_index
+-- Class ObjectWithGeographyGeometryCollection as table object_with_geography_geometry_collection
 --
-CREATE TABLE "object_with_geography_index" (
+CREATE TABLE "object_with_geography_geometry_collection" (
+    "id" bigserial PRIMARY KEY,
+    "geometryCollection" geography(GeometryCollection,4326) NOT NULL,
+    "geometryCollectionIndexedGist" geography(GeometryCollection,4326) NOT NULL,
+    "geometryCollectionIndexedSpgist" geography(GeometryCollection,4326) NOT NULL
+);
+
+-- Indexes
+CREATE INDEX "geography_geometry_collection_index_default" ON "object_with_geography_geometry_collection" USING gist ("geometryCollection");
+CREATE INDEX "geography_geometry_collection_index_gist" ON "object_with_geography_geometry_collection" USING gist ("geometryCollectionIndexedGist");
+CREATE INDEX "geography_geometry_collection_index_spgist" ON "object_with_geography_geometry_collection" USING spgist ("geometryCollectionIndexedSpgist");
+
+--
+-- Class ObjectWithGeographyLineString as table object_with_geography_line_string
+--
+CREATE TABLE "object_with_geography_line_string" (
+    "id" bigserial PRIMARY KEY,
+    "lineString" geography(LineString,4326) NOT NULL,
+    "lineStringIndexedGist" geography(LineString,4326) NOT NULL,
+    "lineStringIndexedSpgist" geography(LineString,4326) NOT NULL
+);
+
+-- Indexes
+CREATE INDEX "geography_line_string_index_default" ON "object_with_geography_line_string" USING gist ("lineString");
+CREATE INDEX "geography_line_string_index_gist" ON "object_with_geography_line_string" USING gist ("lineStringIndexedGist");
+CREATE INDEX "geography_line_string_index_spgist" ON "object_with_geography_line_string" USING spgist ("lineStringIndexedSpgist");
+
+--
+-- Class ObjectWithGeographyPoint as table object_with_geography_point
+--
+CREATE TABLE "object_with_geography_point" (
     "id" bigserial PRIMARY KEY,
     "point" geography(Point,4326) NOT NULL,
     "pointIndexedGist" geography(Point,4326) NOT NULL,
@@ -822,9 +852,24 @@ CREATE TABLE "object_with_geography_index" (
 );
 
 -- Indexes
-CREATE INDEX "geography_index_default" ON "object_with_geography_index" USING gist ("point");
-CREATE INDEX "geography_index_gist" ON "object_with_geography_index" USING gist ("pointIndexedGist");
-CREATE INDEX "geography_index_spgist" ON "object_with_geography_index" USING spgist ("pointIndexedSpgist");
+CREATE INDEX "geography_point_index_default" ON "object_with_geography_point" USING gist ("point");
+CREATE INDEX "geography_point_index_gist" ON "object_with_geography_point" USING gist ("pointIndexedGist");
+CREATE INDEX "geography_point_index_spgist" ON "object_with_geography_point" USING spgist ("pointIndexedSpgist");
+
+--
+-- Class ObjectWithGeographyPolygon as table object_with_geography_polygon
+--
+CREATE TABLE "object_with_geography_polygon" (
+    "id" bigserial PRIMARY KEY,
+    "polygon" geography(Polygon,4326) NOT NULL,
+    "polygonIndexedGist" geography(Polygon,4326) NOT NULL,
+    "polygonIndexedSpgist" geography(Polygon,4326) NOT NULL
+);
+
+-- Indexes
+CREATE INDEX "geography_polygon_index_default" ON "object_with_geography_polygon" USING gist ("polygon");
+CREATE INDEX "geography_polygon_index_gist" ON "object_with_geography_polygon" USING gist ("polygonIndexedGist");
+CREATE INDEX "geography_polygon_index_spgist" ON "object_with_geography_polygon" USING spgist ("polygonIndexedSpgist");
 
 --
 -- Class ObjectWithHalfVector as table object_with_half_vector
@@ -2320,9 +2365,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260625164551675', now())
+    VALUES ('serverpod_test', '20260625222607235', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260625164551675', "timestamp" = now();
+    DO UPDATE SET "version" = '20260625222607235', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

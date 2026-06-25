@@ -1,16 +1,16 @@
-class: ObjectWithGeographyIndex
-table: object_with_geography_index
+class: ObjectWithGeographyPoint
+table: object_with_geography_point
 fields:
   point: GeographyPoint
   pointIndexedGist: GeographyPoint
   pointIndexedSpgist: GeographyPoint
 
 indexes:
-  geography_index_default:
+  geography_point_index_default:
     fields: point
-  geography_index_gist:
+  geography_point_index_gist:
     fields: pointIndexedGist
     type: gist
-  geography_index_spgist:
+  geography_point_index_spgist:
     fields: pointIndexedSpgist
     type: spgist

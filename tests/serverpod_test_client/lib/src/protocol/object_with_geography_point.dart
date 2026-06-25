@@ -12,25 +12,25 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ObjectWithGeographyIndex implements _i1.SerializableModel {
-  ObjectWithGeographyIndex._({
+abstract class ObjectWithGeographyPoint implements _i1.SerializableModel {
+  ObjectWithGeographyPoint._({
     this.id,
     required this.point,
     required this.pointIndexedGist,
     required this.pointIndexedSpgist,
   });
 
-  factory ObjectWithGeographyIndex({
+  factory ObjectWithGeographyPoint({
     int? id,
     required _i1.GeographyPoint point,
     required _i1.GeographyPoint pointIndexedGist,
     required _i1.GeographyPoint pointIndexedSpgist,
-  }) = _ObjectWithGeographyIndexImpl;
+  }) = _ObjectWithGeographyPointImpl;
 
-  factory ObjectWithGeographyIndex.fromJson(
+  factory ObjectWithGeographyPoint.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ObjectWithGeographyIndex(
+    return ObjectWithGeographyPoint(
       id: jsonSerialization['id'] as int?,
       point: _i1.GeographyPointJsonExtension.fromJson(
         jsonSerialization['point'],
@@ -55,10 +55,10 @@ abstract class ObjectWithGeographyIndex implements _i1.SerializableModel {
 
   _i1.GeographyPoint pointIndexedSpgist;
 
-  /// Returns a shallow copy of this [ObjectWithGeographyIndex]
+  /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithGeographyIndex copyWith({
+  ObjectWithGeographyPoint copyWith({
     int? id,
     _i1.GeographyPoint? point,
     _i1.GeographyPoint? pointIndexedGist,
@@ -67,7 +67,7 @@ abstract class ObjectWithGeographyIndex implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ObjectWithGeographyIndex',
+      '__className__': 'ObjectWithGeographyPoint',
       if (id != null) 'id': id,
       'point': point.toJson(),
       'pointIndexedGist': pointIndexedGist.toJson(),
@@ -83,8 +83,8 @@ abstract class ObjectWithGeographyIndex implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _ObjectWithGeographyIndexImpl extends ObjectWithGeographyIndex {
-  _ObjectWithGeographyIndexImpl({
+class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
+  _ObjectWithGeographyPointImpl({
     int? id,
     required _i1.GeographyPoint point,
     required _i1.GeographyPoint pointIndexedGist,
@@ -96,17 +96,17 @@ class _ObjectWithGeographyIndexImpl extends ObjectWithGeographyIndex {
          pointIndexedSpgist: pointIndexedSpgist,
        );
 
-  /// Returns a shallow copy of this [ObjectWithGeographyIndex]
+  /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ObjectWithGeographyIndex copyWith({
+  ObjectWithGeographyPoint copyWith({
     Object? id = _Undefined,
     _i1.GeographyPoint? point,
     _i1.GeographyPoint? pointIndexedGist,
     _i1.GeographyPoint? pointIndexedSpgist,
   }) {
-    return ObjectWithGeographyIndex(
+    return ObjectWithGeographyPoint(
       id: id is int? ? id : this.id,
       point: point ?? this.point,
       pointIndexedGist: pointIndexedGist ?? this.pointIndexedGist,
