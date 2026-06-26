@@ -152,7 +152,7 @@ class FacebookSignInButton extends StatelessWidget {
         child: _buildButtonContent(
           localizations,
           type: type,
-          size: size,
+          buttonStyle: buttonStyle,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
           foregroundColor: foregroundColor,
@@ -164,7 +164,7 @@ class FacebookSignInButton extends StatelessWidget {
   Widget _buildButtonContent(
     FacebookSignInTexts localizations, {
     required FacebookButtonText type,
-    required FacebookButtonSize size,
+    required FacebookSignInStyle buttonStyle,
     required FacebookButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
     required Color foregroundColor,
@@ -180,12 +180,7 @@ class FacebookSignInButton extends StatelessWidget {
       );
     }
 
-    // Matches the 20/16/12 logo scale used by the other sign-in buttons.
-    final logoSize = switch (size) {
-      FacebookButtonSize.small => 12.0,
-      FacebookButtonSize.medium => 16.0,
-      FacebookButtonSize.large => 20.0,
-    };
+    final logoSize = buttonStyle.logoSize;
 
     final logo = SizedBox.square(
       dimension: logoSize,
@@ -197,7 +192,7 @@ class FacebookSignInButton extends StatelessWidget {
     );
 
     final baseTextStyle = TextStyle(
-      fontSize: _getFontSize(size),
+      fontSize: buttonStyle.labelFontSize,
       color: foregroundColor,
     );
     final textWidget = Text(
@@ -247,14 +242,6 @@ class FacebookSignInButton extends StatelessWidget {
       FacebookButtonText.continueWith => 'Continue with Facebook',
       FacebookButtonText.signupWith => 'Sign up with Facebook',
       FacebookButtonText.signIn => 'Sign in',
-    };
-  }
-
-  double _getFontSize(FacebookButtonSize size) {
-    return switch (size) {
-      FacebookButtonSize.large => 16.0,
-      FacebookButtonSize.medium => 14.0,
-      FacebookButtonSize.small => 12.0,
     };
   }
 }

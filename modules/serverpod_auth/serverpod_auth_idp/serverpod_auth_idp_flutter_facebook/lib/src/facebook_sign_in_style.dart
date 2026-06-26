@@ -64,6 +64,12 @@ class FacebookSignInStyle {
   /// The size of the button.
   final Size size;
 
+  /// The size of the provider logo.
+  final double logoSize;
+
+  /// The font size of the label.
+  final double labelFontSize;
+
   /// The border radius of the button.
   final BorderRadius borderRadius;
 
@@ -79,6 +85,8 @@ class FacebookSignInStyle {
     required this.borderRadius,
     required this.backgroundColor,
     required this.textColor,
+    this.logoSize = 20,
+    this.labelFontSize = 16,
   });
 
   /// Creates a [FacebookSignInStyle] from the button configuration.
@@ -97,6 +105,18 @@ class FacebookSignInStyle {
       FacebookButtonSize.small => 20.0,
     };
 
+    final logoSize = switch (size) {
+      FacebookButtonSize.large => 20.0,
+      FacebookButtonSize.medium => 16.0,
+      FacebookButtonSize.small => 12.0,
+    };
+
+    final labelFontSize = switch (size) {
+      FacebookButtonSize.large => 16.0,
+      FacebookButtonSize.medium => 14.0,
+      FacebookButtonSize.small => 12.0,
+    };
+
     final (backgroundColor, textColor) = switch (style) {
       FacebookButtonStyle.blue => (
         const Color(0xFF1877F2),
@@ -110,6 +130,8 @@ class FacebookSignInStyle {
 
     return FacebookSignInStyle(
       size: Size(width, height),
+      logoSize: logoSize,
+      labelFontSize: labelFontSize,
       borderRadius: switch (shape) {
         FacebookButtonShape.rectangular => BorderRadius.circular(4),
         FacebookButtonShape.rounded => BorderRadius.circular(8),

@@ -65,6 +65,12 @@ class MicrosoftSignInStyle {
   /// The size of the button.
   final Size size;
 
+  /// The size of the provider logo.
+  final double logoSize;
+
+  /// The font size of the label.
+  final double labelFontSize;
+
   /// The foreground color (text and icon).
   final Color foregroundColor;
 
@@ -80,6 +86,8 @@ class MicrosoftSignInStyle {
     required this.foregroundColor,
     required this.backgroundColor,
     required this.borderRadius,
+    this.logoSize = 20,
+    this.labelFontSize = 16,
   });
 
   /// Gets the border side for the button.
@@ -99,9 +107,9 @@ class MicrosoftSignInStyle {
     required MicrosoftButtonStyle style,
     required double width,
   }) {
-    final buttonSize = size == MicrosoftButtonSize.large
-        ? const Size(0, 40)
-        : const Size(0, 32);
+    final height = size == MicrosoftButtonSize.large ? 40.0 : 32.0;
+    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
+    final labelFontSize = size == MicrosoftButtonSize.large ? 16.0 : 14.0;
 
     final foregroundColor = style == MicrosoftButtonStyle.light
         ? const Color(0xFF5E5E5E)
@@ -113,12 +121,14 @@ class MicrosoftSignInStyle {
 
     final borderRadius = switch (shape) {
       MicrosoftButtonShape.rectangular => BorderRadius.circular(4),
-      MicrosoftButtonShape.pill => BorderRadius.circular(buttonSize.height / 2),
+      MicrosoftButtonShape.pill => BorderRadius.circular(height / 2),
       MicrosoftButtonShape.rounded => BorderRadius.circular(8),
     };
 
     return MicrosoftSignInStyle(
-      size: Size(width, buttonSize.height),
+      size: Size(width, height),
+      logoSize: logoSize,
+      labelFontSize: labelFontSize,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       borderRadius: borderRadius,

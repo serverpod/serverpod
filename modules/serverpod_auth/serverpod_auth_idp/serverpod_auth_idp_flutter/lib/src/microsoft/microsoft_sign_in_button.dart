@@ -144,7 +144,7 @@ class MicrosoftSignInButton extends StatelessWidget {
         ),
         child: _buildButtonContent(
           localizations,
-          size: size,
+          buttonStyle: buttonStyle,
           text: text,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
@@ -156,7 +156,7 @@ class MicrosoftSignInButton extends StatelessWidget {
 
   Widget _buildButtonContent(
     MicrosoftSignInTexts localizations, {
-    required MicrosoftButtonSize size,
+    required MicrosoftSignInStyle buttonStyle,
     required MicrosoftButtonText text,
     required MicrosoftButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
@@ -174,11 +174,11 @@ class MicrosoftSignInButton extends StatelessWidget {
     }
 
     if (type == MicrosoftButtonType.icon) {
-      return _buildMicrosoftLogo(size);
+      return _buildMicrosoftLogo(buttonStyle.logoSize);
     }
 
     final baseTextStyle = TextStyle(
-      fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
+      fontSize: buttonStyle.labelFontSize,
       color: foregroundColor,
     );
     final textWidget = Text(
@@ -188,8 +188,8 @@ class MicrosoftSignInButton extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
 
-    final logo = _buildMicrosoftLogo(size);
-    final iconSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
+    final logo = _buildMicrosoftLogo(buttonStyle.logoSize);
+    final iconSize = buttonStyle.logoSize;
 
     // Center: center the [logo + label] group, matching the native Apple
     // button's centered layout.
@@ -225,9 +225,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     );
   }
 
-  Widget _buildMicrosoftLogo(MicrosoftButtonSize size) {
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
-
+  Widget _buildMicrosoftLogo(double logoSize) {
     return SizedBox.square(
       dimension: logoSize,
       child: SvgPicture.asset(

@@ -140,7 +140,7 @@ class GitHubSignInButton extends StatelessWidget {
         ),
         child: _buildButtonContent(
           localizations,
-          size: size,
+          buttonStyle: buttonStyle,
           text: text,
           logoAlignment: logoAlignment,
           textStyle: textStyle,
@@ -152,7 +152,7 @@ class GitHubSignInButton extends StatelessWidget {
 
   Widget _buildButtonContent(
     GitHubSignInTexts localizations, {
-    required GitHubButtonSize size,
+    required GitHubSignInStyle buttonStyle,
     required GitHubButtonText text,
     required GitHubButtonLogoAlignment logoAlignment,
     required TextStyle? textStyle,
@@ -170,11 +170,11 @@ class GitHubSignInButton extends StatelessWidget {
     }
 
     if (type == GitHubButtonType.icon) {
-      return _buildGitHubLogo(size, foregroundColor);
+      return _buildGitHubLogo(buttonStyle.logoSize, foregroundColor);
     }
 
     final baseTextStyle = TextStyle(
-      fontSize: size == GitHubButtonSize.large ? 16 : 14,
+      fontSize: buttonStyle.labelFontSize,
       color: foregroundColor,
     );
     final textWidget = Text(
@@ -184,8 +184,8 @@ class GitHubSignInButton extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
 
-    final logo = _buildGitHubLogo(size, foregroundColor);
-    final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
+    final logo = _buildGitHubLogo(buttonStyle.logoSize, foregroundColor);
+    final iconSize = buttonStyle.logoSize;
 
     // Center: center the [logo + label] group, matching the native Apple
     // button's centered layout.
@@ -221,16 +221,14 @@ class GitHubSignInButton extends StatelessWidget {
     );
   }
 
-  Widget _buildGitHubLogo(GitHubButtonSize size, Color foregroundColor) {
-    final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
-
+  Widget _buildGitHubLogo(double logoSize, Color foregroundColor) {
     // Pick the mark that matches the foreground (contrasts the background).
     final svgAsset = foregroundColor.computeLuminance() > 0.5
         ? 'assets/images/github-mark-white.svg'
         : 'assets/images/github-mark.svg';
 
     return SizedBox.square(
-      dimension: iconSize,
+      dimension: logoSize,
       child: SvgPicture.asset(
         svgAsset,
         package: 'serverpod_auth_idp_flutter',
