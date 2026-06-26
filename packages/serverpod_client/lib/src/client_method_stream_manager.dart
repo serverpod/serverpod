@@ -49,6 +49,9 @@ final class ClientMethodStreamManager {
   /// The serialization manager used to serialize and deserialize messages.
   final SerializationManager _serializationManager;
 
+  /// Optional connector used to override [WebSocketChannel.connect] in tests.
+  final WebSocketChannel Function(Uri uri)? _webSocketConnector;
+
   /// Lock used to synchronize access when establishing websocket connection.
   final Lock _lock = Lock();
 
@@ -67,11 +70,13 @@ final class ClientMethodStreamManager {
     required SerializationManager serializationManager,
     @visibleForTesting Duration? pingInterval,
     @visibleForTesting Duration? idleTimeout,
+    @visibleForTesting WebSocketChannel Function(Uri uri)? webSocketConnector,
   }) : _webSocketHost = webSocketHost,
        _connectionTimeout = connectionTimeout,
        _serializationManager = serializationManager,
        _pingInterval = pingInterval ?? _defaultPingInterval,
-       _idleTimeout = idleTimeout ?? _defaultIdleTimeout;
+       _idleTimeout = idleTimeout ?? _defaultIdleTimeout,
+       _webSocketConnector = webSocketConnector;
 
   /// Closes all open connections and streams
   ///
@@ -229,6 +234,7 @@ final class ClientMethodStreamManager {
 
     if (exception != null) {
       for (var c in inputControllers) {
+        if (c.isClosed) continue;
         c.addError(exception);
       }
     }
@@ -385,7 +391,8 @@ final class ClientMethodStreamManager {
     // a close message to the server.
     inboundStreamContext.controller.onCancel = null;
 
-    if (reason == CloseReason.error) {
+    if (reason == CloseReason.error &&
+        !inboundStreamContext.controller.isClosed) {
       inboundStreamContext.controller.addError(
         const ConnectionClosedException(),
       );
@@ -444,7 +451,8 @@ final class ClientMethodStreamManager {
     );
 
     var inboundStreamContext = _inboundStreams[inboundStreamKey];
-    if (inboundStreamContext == null) {
+    if (inboundStreamContext == null ||
+        inboundStreamContext.controller.isClosed) {
       return false;
     }
 
@@ -480,12 +488,15 @@ final class ClientMethodStreamManager {
       return;
     }
 
-    inboundStreamContext.controller.addError(message.exception);
+    if (!inboundStreamContext.controller.isClosed) {
+      inboundStreamContext.controller.addError(message.exception);
+    }
     await _closeControllers([inboundStreamContext.controller]);
   }
 
   Future<void> _listenToWebSocketStream(WebSocketChannel webSocket) async {
-    _webSocketListenerCompleter = Completer();
+    final webSocketListenerCompleter = Completer();
+    _webSocketListenerCompleter = webSocketListenerCompleter;
     MethodStreamException closeException = const WebSocketClosedException();
     try {
       await for (String jsonData in webSocket.stream) {
@@ -549,7 +560,9 @@ final class ClientMethodStreamManager {
       await webSocket.sink.close();
     } finally {
       _cancelConnectionTimer();
-      _webSocketListenerCompleter.complete();
+      if (!webSocketListenerCompleter.isCompleted) {
+        webSocketListenerCompleter.complete();
+      }
 
       /// Close any still open streams with an exception.
       await closeAllConnections(closeException);
@@ -560,7 +573,9 @@ final class ClientMethodStreamManager {
     await _lock.synchronized(() async {
       if (_webSocket != null) return;
 
-      var webSocket = WebSocketChannel.connect(_webSocketHost);
+      var webSocket =
+          _webSocketConnector?.call(_webSocketHost) ??
+          WebSocketChannel.connect(_webSocketHost);
 
       await webSocket.ready.onError((e, s) {
         throw WebSocketConnectException(e, s);

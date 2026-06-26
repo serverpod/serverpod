@@ -162,10 +162,12 @@ void main() {
       late FlutterProcess fp;
       late ({HttpServer server, String wsUri}) fake;
       late List<String> progressMessages;
+      late Completer<void> ready;
 
       setUp(() async {
         fake = await _startFakeVmService();
         progressMessages = <String>[];
+        ready = Completer<void>();
 
         fp = FlutterProcess(
           flutterPackageDir: Directory.current.path,
@@ -176,7 +178,10 @@ void main() {
             '--ws=${fake.wsUri}',
             '--web-url=http://localhost:54321',
           ],
-          onProgress: progressMessages.add,
+          onProgress: (message) {
+            progressMessages.add(message);
+            if (message == 'ready' && !ready.isCompleted) ready.complete();
+          },
         );
 
         await fp.start();
@@ -187,17 +192,14 @@ void main() {
 
       tearDown(() async {
         await fp.stop();
+        await fake.server.close(force: true);
       });
 
       test(
         'when the shim emits app.progress, app.webLaunchUrl, app.debugPort, app.dtd, app.started '
         'then onProgress fires, flutterAppUrl is captured, dtdUri is captured, and vmServiceUri is the http form of the daemon\'s wsUri',
         () async {
-          // Wait until the URI shows up (the shim emits it ~immediately).
-          final deadline = DateTime.now().add(const Duration(seconds: 5));
-          while (fp.vmServiceUri == null && DateTime.now().isBefore(deadline)) {
-            await Future<void>.delayed(const Duration(milliseconds: 20));
-          }
+          await ready.future.timeout(const Duration(seconds: 20));
 
           expect(
             fp.vmServiceUri,
@@ -210,7 +212,6 @@ void main() {
           expect(progressMessages, contains('ready'));
 
           await fp.stop(timeout: const Duration(seconds: 1));
-          await fake.server.close(force: true);
         },
         timeout: const Timeout(Duration(seconds: 30)),
       );
@@ -518,6 +519,7 @@ void main() {
         );
         await fp.launched.timeout(const Duration(milliseconds: 100));
         expect(fp.flutterAppUrl, isNull);
+        expect(fp.vmServiceUri, 'http://127.0.0.1:1111');
       },
     );
   });

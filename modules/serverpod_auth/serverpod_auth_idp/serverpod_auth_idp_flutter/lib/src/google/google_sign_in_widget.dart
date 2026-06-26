@@ -9,6 +9,7 @@ import 'google_auth_controller.dart';
 import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
 import 'web/button.dart';
+import '../common/sign_in_flow_coordinator.dart';
 
 export 'native/button.dart';
 export 'web/button.dart';
@@ -224,7 +225,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             GoogleSignIn.instance.supportsAuthenticate())
           // Native platforms (iOS, Android, macOS, etc.) and web with OAuth2.
           GoogleSignInNativeButton(
-            onPressed: _controller.signIn,
+            onPressed: _signIn,
             isLoading: _controller.isLoading,
             isDisabled: !_controller.isInitialized || _controller.isLoading,
             type: widget.type,
@@ -252,5 +253,19 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
           ),
       ],
     );
+  }
+
+  Future<void> _signIn() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.signIn();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

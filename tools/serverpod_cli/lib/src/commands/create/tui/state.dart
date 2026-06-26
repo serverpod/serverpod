@@ -5,16 +5,40 @@ import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// Central state for [ServerpodCreateApp] rendered by nocterm.
 class CreateConfigState extends TuiState {
-  CreateConfigState(this.startingTemplate) {
+  CreateConfigState(
+    this.startingTemplate, {
+    this.configs = ServerpodCreateConfig.values,
+    TemplateContext? defaults,
+    this.requireIde = false,
+  }) : defaults = defaults ?? TemplateContext() {
+    // The starting template is set as the initial
+    // selected option for ServerpodCreateConfig.template.
+    // This is required even if ServerpodCreateConfig.template
+    // is not in the list of configs, since some configs
+    // have a requirement on ServerpodCreateConfig.template.
     form.updateSelectedOption(
       ServerpodCreateConfig.template,
       startingTemplate.toConfigOption,
     );
+    // Ensure the first config is focused.
+    form.requestFocus(configs.first);
   }
 
   final ServerpodTemplateType startingTemplate;
 
-  late final form = FormState(ServerpodCreateConfig.values);
+  /// The configurations exposed in the form.
+  final List<ServerpodCreateConfig> configs;
+
+  /// Fallback values for configurations not exposed in the form.
+  /// Configurations hidden by an unsatisfied [FormRequirement] are
+  /// not affected and resolve from the form as usual.
+  final TemplateContext defaults;
+
+  /// Whether at least one IDE must be selected
+  /// before the project can be created.
+  final bool requireIde;
+
+  late final form = MultiScreenFormState(configs);
 
   bool _creatingProject = false;
   bool get creatingProject => _creatingProject;
@@ -29,6 +53,14 @@ class CreateConfigState extends TuiState {
       form.getSelectedOptionFor(ServerpodCreateConfig.template)?.toTemplate ??
       startingTemplate;
 
+  /// True when all required selections are made
+  /// and the project can be created.
+  bool get canCreate {
+    if (!requireIde) return true;
+    final selectedIdes = form.getSelectedOptionsFor(ServerpodCreateConfig.ide);
+    return selectedIdes != null && selectedIdes.isNotEmpty;
+  }
+
   /// Called when project creation starts.
   /// This transitions the UI to a log viewer.
   void markCreatingProject() {
@@ -40,29 +72,49 @@ class CreateConfigState extends TuiState {
     final selectedIdes =
         form.getSelectedOptionsFor(ServerpodCreateConfig.ide) ?? {};
 
+    final webapp = _isOptionSelected(
+      ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appOnly,
+      fallback: defaults.webapp,
+    );
+
+    final appAndWebsite = _isOptionSelected(
+      ServerpodCreateConfig.webserver,
+      WebServerConfigOption.appAndWebsite,
+      fallback: defaults.website,
+    );
+
     return TemplateContext(
       template: template,
-      auth: form.isOptionSelectedForConfig(
+      auth: _isOptionSelected(
         ServerpodCreateConfig.auth,
         BoolFormConfigOption.enabled,
+        fallback: defaults.auth,
       ),
-      redis: form.isOptionSelectedForConfig(
-        ServerpodCreateConfig.redis,
-        BoolFormConfigOption.enabled,
-      ),
-      postgres: form.isOptionSelectedForConfig(
+      redis: _isOptionSelected(
         ServerpodCreateConfig.database,
-        DatabaseConfigOption.postgres,
+        DatabaseConfigOption.redis,
+        fallback: defaults.redis,
       ),
-      sqlite: form.isOptionSelectedForConfig(
+      postgres: _isOptionSelected(
         ServerpodCreateConfig.database,
-        DatabaseConfigOption.sqlite,
+        DatabaseConfigOption.database,
+        fallback: defaults.postgres,
       ),
-      web: form.isOptionSelectedForConfig(
-        ServerpodCreateConfig.web,
-        BoolFormConfigOption.enabled,
-      ),
+      webapp: webapp || appAndWebsite,
+      website: appAndWebsite,
       ides: selectedIdes.toTemplateIdes,
     );
+  }
+
+  /// Returns whether [option] is selected for [config] in the form,
+  /// or [fallback] if [config] is not exposed in the form at all.
+  bool _isOptionSelected<T extends FormConfigOption>(
+    ServerpodCreateConfig<T> config,
+    T option, {
+    required bool fallback,
+  }) {
+    if (!configs.contains(config)) return fallback;
+    return form.isOptionSelectedForConfig(config, option);
   }
 }

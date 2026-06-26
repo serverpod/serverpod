@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 12))
+@Timeout(Duration(minutes: 15))
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -169,7 +169,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 15; retries++) {
+        for (int retries = 0; retries < 60; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
@@ -274,6 +274,14 @@ void main() async {
             ).existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
+          );
+        });
+
+        test('has a Dockerfile', () {
+          expect(
+            File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Server Dockerfile does not exist.',
           );
         });
 
@@ -392,30 +400,6 @@ void main() async {
             reason: 'Server generated protocol.yaml file does not exist.',
           );
         });
-
-        test('has a web/app directory containing the flutter web app', () {
-          expect(
-            Directory(
-              path.join(tempPath, serverDir, 'web', 'app'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app directory does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'index.html'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/index.html file does not exist.',
-          );
-          expect(
-            File(
-              path.join(tempPath, serverDir, 'web', 'app', 'main.dart.js'),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server web/app/main.dart.js file does not exist.',
-          );
-        });
       });
 
       group('then the flutter project', () {
@@ -427,13 +411,51 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
-          expect(
-            File(path.join(tempPath, flutterDir, 'pubspec.yaml')).existsSync(),
-            isTrue,
-            reason: 'Flutter pubspec file does not exist.',
-          );
-        });
+        test(
+          'has a pubspec file with serverpod_auth_idp_flutter dependency',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+
+            expect(
+              pubspec.existsSync(),
+              isTrue,
+              reason: 'Flutter pubspec file does not exist.',
+            );
+
+            expect(
+              pubspec.readAsStringSync(),
+              contains('serverpod_auth_idp_flutter:'),
+              reason:
+                  'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+            );
+          },
+        );
+
+        test(
+          'has a pubspec file with flutter_secure_storage dependency override',
+          () {
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+
+            expect(
+              content,
+              contains('dependency_overrides:'),
+              reason:
+                  'Flutter pubspec file does not have dependency overrides.',
+            );
+
+            expect(
+              content,
+              contains('flutter_secure_storage: ^10.0.0'),
+              reason:
+                  'Flutter pubspec file does not have flutter_secure_storage override.',
+            );
+          },
+        );
 
         test(
           'macOS DebugProfile entitlements has network client tag and true',
@@ -541,11 +563,20 @@ void main() async {
           );
         });
 
-        test('has a pubspec file', () {
+        test('has a pubspec file with serverpod_auth_idp_client dependency', () {
+          final pubspec = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          );
           expect(
-            File(path.join(tempPath, clientDir, 'pubspec.yaml')).existsSync(),
+            pubspec.existsSync(),
             isTrue,
             reason: 'Client pubspec file does not exist.',
+          );
+          expect(
+            pubspec.readAsStringSync(),
+            contains('serverpod_auth_idp_client:'),
+            reason:
+                'Client pubspec file does not have serverpod_auth_idp_client dependency.',
           );
         });
 
@@ -763,6 +794,18 @@ void main() async {
             expect(content, contains('flutter_secure_storage'));
           },
         );
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
+        });
 
         test('has agent skills installed', () {
           expect(
@@ -1028,6 +1071,76 @@ void main() async {
           reason: 'Client protocol client file does not exist.',
         );
       },
+    );
+  });
+
+  group('Given a created project', () {
+    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+
+    setUp(() async {
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          projectName,
+          '--no-analytics',
+          '--no-interactive',
+        ],
+        rootPath: rootPath,
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+      assert((await createProcess.exitCode) == 0);
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+    });
+
+    test(
+      'when building the server Dockerfile then the image is built successfully',
+      () async {
+        // Temporarily remove parameters from server.dart that have not been
+        // published yet, because the Dockerfile won't have access to the local
+        // override. Once published, we can remove these.
+        final serverFile = File(path.join(commandRoot, 'lib', 'server.dart'));
+        final serverSource = serverFile.readAsStringSync();
+        const wasmHeaders = 'enableWasmHeaders: false,';
+        // TODO: Remove once Session.alert is published.
+        const sessionAlert = 'session.alert(';
+        serverFile.writeAsStringSync(
+          serverSource
+              .replaceAll(wasmHeaders, '')
+              .replaceAll(sessionAlert, 'session.log('),
+        );
+
+        final dockerBuildProcess = await startProcess(
+          'docker',
+          [
+            'build',
+            '-f',
+            path.join('${projectName}_server', 'Dockerfile'),
+            '.',
+          ],
+          workingDirectory: path.join(tempPath, projectName),
+        );
+
+        addTearDown(() async {
+          await dockerBuildProcess.kill();
+        });
+
+        expect(
+          await dockerBuildProcess.exitCode,
+          0,
+          reason: 'Failed to build the generated server Docker image.',
+        );
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker builds in GitHub Actions.'
+          : null,
     );
   });
 

@@ -34,6 +34,7 @@ pubspec.lock
 google_client_secret.json
 firebase_service_account_key.json
 firebase_options.dart
+temp/
 tests/temp
 templates/serverpod_templates/projectname_flutter/android
 templates/serverpod_templates/projectname_flutter/ios

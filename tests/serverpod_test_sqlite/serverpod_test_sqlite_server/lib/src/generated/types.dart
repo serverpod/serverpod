@@ -34,6 +34,10 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     this.aHalfVector,
     this.aSparseVector,
     this.aBit,
+    this.aGeographyPoint,
+    this.aGeographyLineString,
+    this.aGeographyPolygon,
+    this.aGeographyGeometryCollection,
     this.anEnum,
     this.aStringifiedEnum,
     this.aList,
@@ -58,6 +62,10 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -109,6 +117,27 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       aBit: jsonSerialization['aBit'] == null
           ? null
           : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+      aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
+          ? null
+          : _i1.GeographyPointJsonExtension.fromJson(
+              jsonSerialization['aGeographyPoint'],
+            ),
+      aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
+          ? null
+          : _i1.GeographyLineStringJsonExtension.fromJson(
+              jsonSerialization['aGeographyLineString'],
+            ),
+      aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
+          ? null
+          : _i1.GeographyPolygonJsonExtension.fromJson(
+              jsonSerialization['aGeographyPolygon'],
+            ),
+      aGeographyGeometryCollection:
+          jsonSerialization['aGeographyGeometryCollection'] == null
+          ? null
+          : _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+              jsonSerialization['aGeographyGeometryCollection'],
+            ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
@@ -171,6 +200,14 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   _i1.Bit? aBit;
 
+  _i1.GeographyPoint? aGeographyPoint;
+
+  _i1.GeographyLineString? aGeographyLineString;
+
+  _i1.GeographyPolygon? aGeographyPolygon;
+
+  _i1.GeographyGeometryCollection? aGeographyGeometryCollection;
+
   _i3.TestEnum? anEnum;
 
   _i4.TestEnumStringified? aStringifiedEnum;
@@ -205,6 +242,10 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -231,6 +272,13 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
       if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
       if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -260,6 +308,13 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aHalfVector != null) 'aHalfVector': aHalfVector?.toJson(),
       if (aSparseVector != null) 'aSparseVector': aSparseVector?.toJson(),
       if (aBit != null) 'aBit': aBit?.toJson(),
+      if (aGeographyPoint != null) 'aGeographyPoint': aGeographyPoint?.toJson(),
+      if (aGeographyLineString != null)
+        'aGeographyLineString': aGeographyLineString?.toJson(),
+      if (aGeographyPolygon != null)
+        'aGeographyPolygon': aGeographyPolygon?.toJson(),
+      if (aGeographyGeometryCollection != null)
+        'aGeographyGeometryCollection': aGeographyGeometryCollection?.toJson(),
       if (anEnum != null) 'anEnum': anEnum?.toJson(),
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
@@ -321,6 +376,10 @@ class _TypesImpl extends Types {
     _i1.HalfVector? aHalfVector,
     _i1.SparseVector? aSparseVector,
     _i1.Bit? aBit,
+    _i1.GeographyPoint? aGeographyPoint,
+    _i1.GeographyLineString? aGeographyLineString,
+    _i1.GeographyPolygon? aGeographyPolygon,
+    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
     _i3.TestEnum? anEnum,
     _i4.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
@@ -343,6 +402,10 @@ class _TypesImpl extends Types {
          aHalfVector: aHalfVector,
          aSparseVector: aSparseVector,
          aBit: aBit,
+         aGeographyPoint: aGeographyPoint,
+         aGeographyLineString: aGeographyLineString,
+         aGeographyPolygon: aGeographyPolygon,
+         aGeographyGeometryCollection: aGeographyGeometryCollection,
          anEnum: anEnum,
          aStringifiedEnum: aStringifiedEnum,
          aList: aList,
@@ -371,6 +434,10 @@ class _TypesImpl extends Types {
     Object? aHalfVector = _Undefined,
     Object? aSparseVector = _Undefined,
     Object? aBit = _Undefined,
+    Object? aGeographyPoint = _Undefined,
+    Object? aGeographyLineString = _Undefined,
+    Object? aGeographyPolygon = _Undefined,
+    Object? aGeographyGeometryCollection = _Undefined,
     Object? anEnum = _Undefined,
     Object? aStringifiedEnum = _Undefined,
     Object? aList = _Undefined,
@@ -400,6 +467,19 @@ class _TypesImpl extends Types {
           ? aSparseVector
           : this.aSparseVector?.clone(),
       aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _i1.GeographyPoint?
+          ? aGeographyPoint
+          : this.aGeographyPoint,
+      aGeographyLineString: aGeographyLineString is _i1.GeographyLineString?
+          ? aGeographyLineString
+          : this.aGeographyLineString,
+      aGeographyPolygon: aGeographyPolygon is _i1.GeographyPolygon?
+          ? aGeographyPolygon
+          : this.aGeographyPolygon,
+      aGeographyGeometryCollection:
+          aGeographyGeometryCollection is _i1.GeographyGeometryCollection?
+          ? aGeographyGeometryCollection
+          : this.aGeographyGeometryCollection,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
       aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
           ? aStringifiedEnum
@@ -511,6 +591,36 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
     value,
   );
 
+  _i1.ColumnValue<_i1.GeographyPoint, _i1.GeographyPoint> aGeographyPoint(
+    _i1.GeographyPoint? value,
+  ) => _i1.ColumnValue(
+    table.aGeographyPoint,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString>
+  aGeographyLineString(_i1.GeographyLineString? value) => _i1.ColumnValue(
+    table.aGeographyLineString,
+    value,
+  );
+
+  _i1.ColumnValue<_i1.GeographyPolygon, _i1.GeographyPolygon> aGeographyPolygon(
+    _i1.GeographyPolygon? value,
+  ) => _i1.ColumnValue(
+    table.aGeographyPolygon,
+    value,
+  );
+
+  _i1.ColumnValue<
+    _i1.GeographyGeometryCollection,
+    _i1.GeographyGeometryCollection
+  >
+  aGeographyGeometryCollection(_i1.GeographyGeometryCollection? value) =>
+      _i1.ColumnValue(
+        table.aGeographyGeometryCollection,
+        value,
+      );
+
   _i1.ColumnValue<_i3.TestEnum, _i3.TestEnum> anEnum(_i3.TestEnum? value) =>
       _i1.ColumnValue(
         table.anEnum,
@@ -611,6 +721,22 @@ class TypesTable extends _i1.Table<int?> {
       this,
       dimension: 3,
     );
+    aGeographyPoint = _i1.ColumnGeographyPoint(
+      'aGeographyPoint',
+      this,
+    );
+    aGeographyLineString = _i1.ColumnGeographyLineString(
+      'aGeographyLineString',
+      this,
+    );
+    aGeographyPolygon = _i1.ColumnGeographyPolygon(
+      'aGeographyPolygon',
+      this,
+    );
+    aGeographyGeometryCollection = _i1.ColumnGeographyGeometryCollection(
+      'aGeographyGeometryCollection',
+      this,
+    );
     anEnum = _i1.ColumnEnum(
       'anEnum',
       this,
@@ -669,6 +795,14 @@ class TypesTable extends _i1.Table<int?> {
 
   late final _i1.ColumnBit aBit;
 
+  late final _i1.ColumnGeographyPoint aGeographyPoint;
+
+  late final _i1.ColumnGeographyLineString aGeographyLineString;
+
+  late final _i1.ColumnGeographyPolygon aGeographyPolygon;
+
+  late final _i1.ColumnGeographyGeometryCollection aGeographyGeometryCollection;
+
   late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
   late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
@@ -698,6 +832,10 @@ class TypesTable extends _i1.Table<int?> {
     aHalfVector,
     aSparseVector,
     aBit,
+    aGeographyPoint,
+    aGeographyLineString,
+    aGeographyPolygon,
+    aGeographyGeometryCollection,
     anEnum,
     aStringifiedEnum,
     aList,
@@ -858,16 +996,22 @@ class TypesRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> insert(
     _i1.DatabaseSession session,
     List<Types> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Types>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -901,6 +1045,10 @@ class TypesRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> upsert(
     _i1.DatabaseSession session,
     List<Types> rows, {
@@ -908,6 +1056,7 @@ class TypesRepository {
     _i1.ColumnSelections<TypesTable>? updateColumns,
     _i1.WhereExpressionBuilder<TypesTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Types>(
       rows,
@@ -915,6 +1064,7 @@ class TypesRepository {
       updateColumns: updateColumns?.call(Types.t),
       updateWhere: updateWhere?.call(Types.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -953,16 +1103,22 @@ class TypesRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> update(
     _i1.DatabaseSession session,
     List<Types> rows, {
     _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Types>(
       rows,
       columns: columns?.call(Types.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -999,6 +1155,10 @@ class TypesRepository {
 
   /// Updates all [Types]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TypesUpdateTable> columnValues,
@@ -1010,6 +1170,7 @@ class TypesRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Types>(
       columnValues: columnValues(Types.t.updateTable),
@@ -1021,6 +1182,7 @@ class TypesRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1031,6 +1193,10 @@ class TypesRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> delete(
     _i1.DatabaseSession session,
     List<Types> rows, {
@@ -1039,6 +1205,7 @@ class TypesRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Types>(
       rows,
@@ -1047,6 +1214,7 @@ class TypesRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1066,6 +1234,10 @@ class TypesRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TypesTable> where,
@@ -1074,6 +1246,7 @@ class TypesRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Types>(
       where: where(Types.t),
@@ -1082,6 +1255,7 @@ class TypesRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

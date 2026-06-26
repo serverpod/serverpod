@@ -215,30 +215,6 @@ void main() async {
               });
 
               test(
-                'has a web/app directory containing the flutter web app',
-                () {
-                  expect(
-                    Directory(
-                      path.join(tempPath, serverDir, 'web', 'app'),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                  expect(
-                    File(
-                      path.join(
-                        tempPath,
-                        serverDir,
-                        'web',
-                        'app',
-                        'index.html',
-                      ),
-                    ).existsSync(),
-                    isTrue,
-                  );
-                },
-              );
-
-              test(
                 'has embedded postgres configuration on test run mode',
                 () {
                   final testConfigFile = File(
@@ -328,14 +304,51 @@ void main() async {
                 );
               });
 
-              test('has a pubspec file', () {
-                expect(
-                  File(
+              test(
+                'has a pubspec file with serverpod_auth_idp_flutter dependency',
+                () {
+                  final pubspec = File(
                     path.join(tempPath, flutterDir, 'pubspec.yaml'),
-                  ).existsSync(),
-                  isTrue,
-                );
-              });
+                  );
+
+                  expect(
+                    pubspec.existsSync(),
+                    isTrue,
+                    reason: 'Flutter pubspec file does not exist.',
+                  );
+
+                  expect(
+                    pubspec.readAsStringSync(),
+                    contains('serverpod_auth_idp_flutter:'),
+                    reason:
+                        'Flutter pubspec file does not have serverpod_auth_idp_flutter dependency.',
+                  );
+                },
+              );
+
+              test(
+                'has a pubspec file with flutter_secure_storage dependency override',
+                () {
+                  final pubspec = File(
+                    path.join(tempPath, flutterDir, 'pubspec.yaml'),
+                  );
+                  final content = pubspec.readAsStringSync();
+
+                  expect(
+                    content,
+                    contains('dependency_overrides:'),
+                    reason:
+                        'Flutter pubspec file does not have dependency overrides.',
+                  );
+
+                  expect(
+                    content,
+                    contains('flutter_secure_storage: ^10.0.0'),
+                    reason:
+                        'Flutter pubspec file does not have flutter_secure_storage override.',
+                  );
+                },
+              );
 
               test('has a main file', () {
                 expect(
@@ -356,14 +369,25 @@ void main() async {
               );
             });
 
-            test('has a pubspec file', () {
-              expect(
-                File(
+            test(
+              'has a pubspec file with serverpod_auth_idp_client dependency',
+              () {
+                final pubspec = File(
                   path.join(tempPath, clientDir, 'pubspec.yaml'),
-                ).existsSync(),
-                isTrue,
-              );
-            });
+                );
+                expect(
+                  pubspec.existsSync(),
+                  isTrue,
+                  reason: 'Client pubspec file does not exist.',
+                );
+                expect(
+                  pubspec.readAsStringSync(),
+                  contains('serverpod_auth_idp_client:'),
+                  reason:
+                      'Client pubspec file does not have serverpod_auth_idp_client dependency.',
+                );
+              },
+            );
 
             test('has a project_client file', () {
               expect(
@@ -459,6 +483,22 @@ void main() async {
                 ).existsSync(),
                 isTrue,
               );
+            });
+
+            test('has AGENTS.md', () {
+              final agentsMd = File(
+                path.join(tempPath, projectName, 'AGENTS.md'),
+              );
+              expect(agentsMd.existsSync(), isTrue);
+              expect(agentsMd.readAsStringSync(), isNotEmpty);
+            });
+
+            test('has CLAUDE.md', () {
+              final claudeMd = File(
+                path.join(tempPath, projectName, 'CLAUDE.md'),
+              );
+              expect(claudeMd.existsSync(), isTrue);
+              expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
             });
 
             test('has agent skills installed', () {

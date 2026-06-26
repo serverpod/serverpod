@@ -17,17 +17,31 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
   final type = data['type'] as String?;
   switch (type) {
     case 'log':
+      final stackTrace = data['stackTrace'] as String?;
+      final message = data['message'] as String? ?? '';
+      final time =
+          DateTime.tryParse(data['timestamp'] as String? ?? '') ??
+          DateTime.now();
       state.logHistory.add(
         LogEntry(
           level: parseLogLevel(data['level'] as String? ?? 'info'),
-          time:
-              DateTime.tryParse(data['timestamp'] as String? ?? '') ??
-              DateTime.now(),
-          message: data['message'] as String? ?? '',
+          time: time,
+          message: message,
           scope: LogScope.root('server'),
           error: data['error']?.toString(),
+          stackTrace: stackTrace != null && stackTrace.isNotEmpty
+              ? StackTrace.fromString(stackTrace)
+              : null,
         ),
       );
+
+      // An alert carries `metadata: {'alert': true}`. AlertMessage.parse
+      // strips any `<...>` copy markup for display; the raw log line above
+      // keeps the markup.
+      final metadata = data['metadata'];
+      if (metadata is Map && metadata['alert'] == true) {
+        holder.showAlert(AlertMessage.parse(message), time: time);
+      }
 
     case 'scope_start':
       final id = data['id'] as String? ?? '';
@@ -61,15 +75,21 @@ void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
 
 /// Runs an async action as a tracked operation with spinner in the TUI.
 ///
-/// Guards against concurrent actions - if [state.actionBusy] is true or
-/// [state.serverReady] is false, the action is silently ignored.
+/// Guards against concurrent actions - if [state.actionBusy] is true the action
+/// is silently ignored. The action also requires [state.serverReady], unless
+/// [allowWhenStartable] is set and the session is degraded but
+/// [state.serverStartable] (used by the "Start server" recovery action, which
+/// runs precisely when no server is up yet).
 void runTrackedAction(
   StartAppStateHolder holder,
   String label,
-  Future<void> Function() action,
-) {
+  Future<void> Function() action, {
+  bool allowWhenStartable = false,
+}) {
   final state = holder.state;
-  if (state.actionBusy || !state.serverReady) return;
+  final ready =
+      state.serverReady || (allowWhenStartable && state.serverStartable);
+  if (state.actionBusy || !ready) return;
 
   state.actionBusy = true;
   final id =

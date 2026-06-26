@@ -1,0 +1,3 @@
+exception: BaseAppException
+fields:
+  message: String

@@ -4,6 +4,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'microsoft_auth_controller.dart';
 import 'microsoft_sign_in_button.dart';
 import 'microsoft_sign_in_style.dart';
+import '../common/sign_in_flow_coordinator.dart';
 
 export 'microsoft_sign_in_button.dart';
 export 'microsoft_sign_in_style.dart';
@@ -147,7 +148,7 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
   @override
   Widget build(BuildContext context) {
     return MicrosoftSignInButton(
-      onPressed: _controller.signIn,
+      onPressed: _signIn,
       isLoading: _controller.isLoading,
       isDisabled: _controller.isAuthenticated,
       type: widget.type,
@@ -158,5 +159,19 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
       logoAlignment: widget.logoAlignment,
       minimumWidth: widget.minimumWidth,
     );
+  }
+
+  Future<void> _signIn() async {
+    final coordinator = SignInFlowCoordinatorWidget.of(context);
+    if (coordinator?.isAuthenticating == true) return;
+
+    coordinator?.lockUI();
+    try {
+      await _controller.signIn();
+    } finally {
+      if (mounted) {
+        coordinator?.unlockUI();
+      }
+    }
   }
 }

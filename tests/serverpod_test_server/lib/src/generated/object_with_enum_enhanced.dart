@@ -469,16 +469,22 @@ class ObjectWithEnumEnhancedRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> insert(
     _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ObjectWithEnumEnhanced>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -512,6 +518,10 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> upsert(
     _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
@@ -519,6 +529,7 @@ class ObjectWithEnumEnhancedRepository {
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
     _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithEnumEnhanced>(
       rows,
@@ -526,6 +537,7 @@ class ObjectWithEnumEnhancedRepository {
       updateColumns: updateColumns?.call(ObjectWithEnumEnhanced.t),
       updateWhere: updateWhere?.call(ObjectWithEnumEnhanced.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -564,16 +576,22 @@ class ObjectWithEnumEnhancedRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> update(
     _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithEnumEnhanced>(
       rows,
       columns: columns?.call(ObjectWithEnumEnhanced.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -611,6 +629,10 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Updates all [ObjectWithEnumEnhanced]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
@@ -623,6 +645,7 @@ class ObjectWithEnumEnhancedRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithEnumEnhanced>(
       columnValues: columnValues(ObjectWithEnumEnhanced.t.updateTable),
@@ -634,6 +657,7 @@ class ObjectWithEnumEnhancedRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -644,6 +668,10 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
@@ -652,6 +680,7 @@ class ObjectWithEnumEnhancedRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithEnumEnhanced>(
       rows,
@@ -660,6 +689,7 @@ class ObjectWithEnumEnhancedRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -679,6 +709,10 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
@@ -687,6 +721,7 @@ class ObjectWithEnumEnhancedRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithEnumEnhanced>(
       where: where(ObjectWithEnumEnhanced.t),
@@ -695,6 +730,7 @@ class ObjectWithEnumEnhancedRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

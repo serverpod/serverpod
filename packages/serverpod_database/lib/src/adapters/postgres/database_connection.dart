@@ -7,6 +7,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import '../../../serverpod_database.dart';
 import '../../concepts/table_relation.dart';
 import '../../interface/database_connection.dart';
+import '../../util/column_alias_resolver.dart';
 import '../../util/query_result_parser.dart';
 import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
@@ -155,6 +156,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
 
@@ -176,6 +178,7 @@ class PostgresDatabaseConnection
               [row],
               transaction: tx,
               ignoreConflicts: ignoreConflicts,
+              noReturn: noReturn,
             ).then((results) => results.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -187,6 +190,7 @@ class PostgresDatabaseConnection
       table: table,
       rows: rows,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -227,6 +231,7 @@ class PostgresDatabaseConnection
     List<Column>? updateColumns,
     Expression? updateWhere,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
 
@@ -245,6 +250,7 @@ class PostgresDatabaseConnection
               updateColumns: updateColumns,
               updateWhere: updateWhere,
               transaction: tx,
+              noReturn: noReturn,
             ),
         ],
         settings: const TransactionSettings(),
@@ -259,6 +265,7 @@ class PostgresDatabaseConnection
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
       updateWhere: updateWhere,
+      noReturn: noReturn,
     ).build();
 
     return (await _mappedResultsQuery(
@@ -309,6 +316,7 @@ class PostgresDatabaseConnection
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -337,10 +345,13 @@ class PostgresDatabaseConnection
         .join(', ');
 
     const tableAlias = 't';
-    var returning = buildReturningClause(table, tableAlias: tableAlias);
 
     var query =
-        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
+        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id';
+    if (!noReturn) {
+      var returning = buildReturningClause(table, tableAlias: tableAlias);
+      query += ' RETURNING $returning';
+    }
 
     return (await _mappedResultsQuery(
           session,
@@ -428,6 +439,7 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
 
@@ -462,26 +474,33 @@ class PostgresDatabaseConnection
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      var orderByClause = switch (orders) {
-        != null when orders.isNotEmpty =>
-          ' ORDER BY '
-              '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
-        _ => '',
-      };
+      if (noReturn) {
+        // No rows are returned, so the wrapping SELECT and its ordering are
+        // unnecessary: run the UPDATE directly against the selected ids.
+        updateQuery =
+            'WITH rows_to_update AS ($subquery) '
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update)';
+      } else {
+        var orderByClause = switch (orders) {
+          != null when orders.isNotEmpty =>
+            ' ORDER BY '
+                '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+          _ => '',
+        };
 
-      updateQuery =
-          'WITH rows_to_update AS ($subquery), '
-          'updated AS ('
-          'UPDATE "${table.tableName}" SET $setClause '
-          'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
-          'RETURNING *'
-          ') '
-          'SELECT * FROM updated$orderByClause';
+        updateQuery =
+            'WITH rows_to_update AS ($subquery), '
+            'updated AS ('
+            'UPDATE "${table.tableName}" SET $setClause '
+            'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+            'RETURNING *'
+            ') '
+            'SELECT * FROM updated$orderByClause';
+      }
     } else {
-      updateQuery =
-          'UPDATE "${table.tableName}" SET $setClause'
-          ' WHERE $where'
-          ' RETURNING *';
+      updateQuery = 'UPDATE "${table.tableName}" SET $setClause WHERE $where';
+      if (!noReturn) updateQuery += ' RETURNING *';
     }
 
     var result = await _mappedResultsQuery(
@@ -502,6 +521,7 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
@@ -518,6 +538,7 @@ class PostgresDatabaseConnection
       // ignore: deprecated_member_use_from_same_package
       orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -551,13 +572,17 @@ class PostgresDatabaseConnection
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    // Ordering applies to the returned deleted rows, not to which rows are
+    // deleted, so it is irrelevant when nothing is returned.
+    var orderByCols = noReturn
+        ? null
+        : _resolveOrderBy(orderByList, orderBy, orderDescending);
 
-    // Ordering applies to the returned deleted rows, not to which rows are deleted.
     var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.all)
+        .withReturn(noReturn ? Returning.none : Returning.all)
         .withWhere(where)
         .withOrderBy(orderByCols)
         .build();
@@ -802,6 +827,8 @@ class PostgresDatabaseConnection
       transaction,
     );
 
+    var aliasResolver = ColumnAliasResolver.forQuery(table, include);
+
     return result
         .map(
           (rawRow) => resolvePrefixedQueryRow(
@@ -809,6 +836,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            aliasResolver: aliasResolver,
           ),
         )
         .map(poolManager.serializationManager.deserialize<T>)
@@ -931,6 +959,10 @@ class PostgresDatabaseConnection
           transaction,
         );
 
+        var listAliasResolver = ColumnAliasResolver.forQuery(
+          relationTable,
+          nestedInclude,
+        );
         var resolvedList = includeListResult
             .map(
               (rawRow) => resolvePrefixedQueryRow(
@@ -938,6 +970,7 @@ class PostgresDatabaseConnection
                 rawRow,
                 resolvedLists,
                 include: nestedInclude,
+                aliasResolver: listAliasResolver,
               ),
             )
             .whereType<Map<String, dynamic>>()
@@ -1031,6 +1064,18 @@ class PostgresDatabaseConnection
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    if (column is ColumnGeographyPoint) {
+      return 'geography(Point,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LineString,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyPolygon) {
+      return 'geography(Polygon,${Geography.defaultSrid})';
+    }
+    if (column is ColumnGeographyGeometryCollection) {
+      return 'geography(GeometryCollection,${Geography.defaultSrid})';
+    }
     if (column is ColumnStructured) return 'jsonb';
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {

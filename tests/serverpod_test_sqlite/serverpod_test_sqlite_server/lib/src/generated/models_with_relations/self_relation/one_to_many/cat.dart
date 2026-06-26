@@ -463,16 +463,22 @@ class CatRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> insert(
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Cat>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -506,6 +512,10 @@ class CatRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> upsert(
     _i1.DatabaseSession session,
     List<Cat> rows, {
@@ -513,6 +523,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? updateColumns,
     _i1.WhereExpressionBuilder<CatTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Cat>(
       rows,
@@ -520,6 +531,7 @@ class CatRepository {
       updateColumns: updateColumns?.call(Cat.t),
       updateWhere: updateWhere?.call(Cat.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -558,16 +570,22 @@ class CatRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> update(
     _i1.DatabaseSession session,
     List<Cat> rows, {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Cat>(
       rows,
       columns: columns?.call(Cat.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -604,6 +622,10 @@ class CatRepository {
 
   /// Updates all [Cat]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
@@ -615,6 +637,7 @@ class CatRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Cat>(
       columnValues: columnValues(Cat.t.updateTable),
@@ -626,6 +649,7 @@ class CatRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -636,6 +660,10 @@ class CatRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> delete(
     _i1.DatabaseSession session,
     List<Cat> rows, {
@@ -644,6 +672,7 @@ class CatRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Cat>(
       rows,
@@ -652,6 +681,7 @@ class CatRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -671,6 +701,10 @@ class CatRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CatTable> where,
@@ -679,6 +713,7 @@ class CatRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Cat>(
       where: where(Cat.t),
@@ -687,6 +722,7 @@ class CatRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -1,0 +1,4 @@
+exception: SharedExtendedAppException
+extends: SharedBaseAppException
+fields:
+  detail: String

@@ -17,6 +17,7 @@ class VmServiceLogWriter extends LogWriter {
       'timestamp': entry.time.toUtc().toIso8601String(),
       'error': entry.error?.toString(),
       'stackTrace': entry.stackTrace?.toString(),
+      'metadata': entry.metadata,
     });
   }
 

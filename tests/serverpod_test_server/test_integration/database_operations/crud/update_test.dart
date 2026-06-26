@@ -13,6 +13,27 @@ void main() async {
   });
 
   test(
+    'Given an inserted entry '
+    'when batch updating with noReturn set to true '
+    'then an empty list is returned but the change is persisted.',
+    () async {
+      var inserted = (await UniqueData.db.insert(session, [
+        UniqueData(number: 1, email: 'a@serverpod.dev'),
+      ])).first;
+
+      var result = await UniqueData.db.update(
+        session,
+        [UniqueData(id: inserted.id, number: 99, email: 'a@serverpod.dev')],
+        noReturn: true,
+      );
+
+      expect(result, isEmpty);
+      var found = await UniqueData.db.findById(session, inserted.id!);
+      expect(found?.number, 99);
+    },
+  );
+
+  test(
     'Given a list of entries when batch updating only a single column then no other data is updated.',
     () async {
       var expectedFirstEmail = 'info@serverpod.dev';
@@ -178,6 +199,24 @@ void main() async {
       aHalfVector: HalfVector([1.0, 2.0, 3.0]),
       aSparseVector: SparseVector([1.0, 0.0, 2.0]),
       aBit: Bit([true, false, true]),
+      aGeographyPoint: GeographyPoint(longitude: 1.0, latitude: 2.0),
+      aGeographyLineString: GeographyLineString(
+        points: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+        ],
+      ),
+      aGeographyPolygon: GeographyPolygon(
+        exteriorRing: [
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 0.0),
+          GeographyPoint(longitude: 1.0, latitude: 1.0),
+          GeographyPoint(longitude: 0.0, latitude: 0.0),
+        ],
+      ),
+      aGeographyGeometryCollection: GeographyGeometryCollection(
+        geometries: [GeographyPoint(longitude: 1.0, latitude: 2.0)],
+      ),
       anEnum: TestEnum.one,
       aStringifiedEnum: TestEnumStringified.one,
       aList: [1, 2, 3],
@@ -389,6 +428,62 @@ void main() async {
         var updated = await Types.db.updateRow(session, value);
 
         expect(updated.aBit, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyPoint to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyPoint: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyPoint, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyLineString to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyLineString: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyLineString, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyPolygon to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyPolygon: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyPolygon, isNull);
+      },
+    );
+
+    test(
+      'when updating aGeographyGeometryCollection to null then the database is updated with null value.',
+      () async {
+        var value = Types(
+          id: type.id,
+          aGeographyGeometryCollection: null,
+        );
+
+        var updated = await Types.db.updateRow(session, value);
+
+        expect(updated.aGeographyGeometryCollection, isNull);
       },
     );
 

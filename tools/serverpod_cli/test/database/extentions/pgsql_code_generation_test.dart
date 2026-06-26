@@ -452,6 +452,35 @@ END
         );
       },
     );
+
+    for (var indexType in ['gist', 'spgist']) {
+      test(
+        'when defining a $indexType index on a geography field, then the SQL should use $indexType with no operator class.',
+        () {
+          var indexName = '${modelName}_location_${indexType}_idx';
+          var index = IndexDefinitionBuilder()
+              .withIndexName(indexName)
+              .withElements([
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'location',
+                ),
+              ])
+              .withType(indexType)
+              .withIsUnique(false)
+              .withIsPrimary(false)
+              .build();
+
+          var sql = index.toPgSql(tableName: tableDefinition.name);
+
+          expect(
+            sql,
+            'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+            'USING $indexType ("location");\n',
+          );
+        },
+      );
+    }
   });
 
   group('Given a table definition with a half vector field', () {
@@ -871,4 +900,168 @@ END
       },
     );
   });
+
+  const createPostgisExtension = '''
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN
+    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';
+  ELSE
+    RAISE EXCEPTION 'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.';
+  END IF;
+END
+\$\$;
+''';
+
+  test(
+    'Given a database definition with no geography field when toPgSql is called then PostGIS extension creation code is not included.',
+    () {
+      var databaseDefinition = DatabaseDefinitionBuilder().build();
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, isNot(contains(createPostgisExtension)));
+    },
+  );
+
+  group('Given a table definition with a GeographyPoint field', () {
+    var modelName = 'geoPointModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withSimpleField('location', 'GeographyPoint')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'when toPgSql is called then the column uses geography(Point,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"location" geography(Point,4326) NOT NULL'));
+      },
+    );
+  });
+
+  group('Given a table definition with a GeographyLineString field', () {
+    var modelName = 'geoLineStringModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withSimpleField('route', 'GeographyLineString')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'when toPgSql is called then the column uses geography(LineString,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"route" geography(LineString,4326) NOT NULL'));
+      },
+    );
+  });
+
+  group('Given a table definition with a GeographyPolygon field', () {
+    var modelName = 'geoPolygonModel';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withSimpleField('region', 'GeographyPolygon')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+
+    test(
+      'when toPgSql is called then PostGIS extension creation code is included.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains(createPostgisExtension));
+      },
+    );
+
+    test(
+      'when toPgSql is called then the column uses geography(Polygon,4326) type.',
+      () {
+        var pgsql = databaseDefinition.toPgSql(installedModules: []);
+        expect(pgsql, contains('"region" geography(Polygon,4326) NOT NULL'));
+      },
+    );
+  });
+
+  group(
+    'Given a table definition with a GeographyGeometryCollection field',
+    () {
+      var modelName = 'geoCollectionModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withSimpleField('shapes', 'GeographyGeometryCollection')
+            .build(),
+      ];
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
+      );
+
+      test(
+        'when toPgSql is called then PostGIS extension creation code is included.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+          expect(pgsql, contains(createPostgisExtension));
+        },
+      );
+
+      test(
+        'when toPgSql is called then the column uses geography(GeometryCollection,4326) type.',
+        () {
+          var pgsql = databaseDefinition.toPgSql(installedModules: []);
+          expect(
+            pgsql,
+            contains('"shapes" geography(GeometryCollection,4326) NOT NULL'),
+          );
+        },
+      );
+    },
+  );
 }

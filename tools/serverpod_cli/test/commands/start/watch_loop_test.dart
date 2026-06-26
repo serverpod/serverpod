@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -29,12 +30,15 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   String get outputDill => '/tmp/fake.dill';
 
   @override
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+  Future<CompileResult> compile({
+    Set<String> changedPaths = const {},
+    bool invalidatePackageConfig = false,
+  }) async {
     return _successResult();
   }
 
   @override
-  void accept() {}
+  Future<void> accept() async {}
 
   @override
   Future<void> reject() async {}
@@ -152,39 +156,43 @@ void main() {
     late _FakeMcpSocket mcp;
     late int closeAnalyzersCalls;
     late int stopDockerCalls;
-    late int fileSubCancelCalls;
-    late StreamSubscription<void> fileSub;
+    late int stopFileWatcherCalls;
     late Directory tempDir;
     late String vmServiceInfoFile;
-    late String flutterVmServiceInfoFile;
-    late _FakeProxy flutterProxy;
+    late FlutterAppManager flutterManager;
 
-    setUp(() {
+    setUp(() async {
       compiler = _FakeCompiler();
       server = _FakeServer();
       proxy = _FakeProxy();
-      flutterProxy = _FakeProxy();
       mcp = _FakeMcpSocket();
       closeAnalyzersCalls = 0;
       stopDockerCalls = 0;
-      fileSubCancelCalls = 0;
-
-      // A real StreamSubscription whose cancel we count via a wrapper
-      // controller; cancelling the inner sub increments the counter.
-      final controller = StreamController<void>();
-      fileSub = controller.stream.listen((_) {});
-      controller.onCancel = () {
-        fileSubCancelCalls++;
-      };
+      stopFileWatcherCalls = 0;
 
       tempDir = Directory.systemTemp.createTempSync('watch_loop_test_');
+      final serverDir = Directory(p.join(tempDir.path, 'project_server'))
+        ..createSync(recursive: true);
       vmServiceInfoFile = p.join(tempDir.path, 'vm-service-info.json');
-      flutterVmServiceInfoFile = p.join(
-        tempDir.path,
-        'flutter-vm-service-info.json',
-      );
       File(vmServiceInfoFile).writeAsStringSync('{}');
-      File(flutterVmServiceInfoFile).writeAsStringSync('{}');
+      final serverPubspecFile = File(p.join(tempDir.path, 'pubspec.yaml'));
+      serverPubspecFile.writeAsStringSync('name: server');
+      flutterManager = FlutterAppManager(
+        projectName: 'project',
+        launchFlutterApp: false,
+        serverpodToolDir: tempDir.path,
+        serverPubspecFile: serverPubspecFile,
+        serverPackageDirectoryPathParts: p.split(serverDir.path),
+        runMode: 'development',
+        onProgress: (_, _) {},
+        onReady: (_, _) {},
+        onStart: (_, _) async {},
+        onLaunchFailed: (_) {},
+        onEnsureAppTab: (_) {},
+        stdoutSinkFor: (_) => stdout,
+        stderrSinkFor: (_) => stderr,
+      );
+      await flutterManager.initialize();
     });
 
     tearDown(() {
@@ -198,10 +206,10 @@ void main() {
     WatchLoopContext build({bool startedDocker = false}) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
-        proxy: proxy,
-        flutterProxy: flutterProxy,
+        proxy: () => proxy,
+        flutterManager: flutterManager,
         mcpSocket: mcp,
-        fileChangeSub: fileSub,
+        stopFileWatcher: () => stopFileWatcherCalls++,
         closeAnalyzers: () async {
           closeAnalyzersCalls++;
         },
@@ -211,7 +219,6 @@ void main() {
               }
             : null,
         vmServiceInfoFile: vmServiceInfoFile,
-        flutterVmServiceInfoFile: flutterVmServiceInfoFile,
       );
     }
 
@@ -223,7 +230,6 @@ void main() {
 
         await ctx.dispose();
 
-        expect(fileSubCancelCalls, 1);
         expect(mcp.closeCalls, 1);
         expect(closeAnalyzersCalls, 1);
         expect(server.calls, contains('stop'));
@@ -231,6 +237,7 @@ void main() {
         expect(proxy.closeCalls, 1);
         expect(File(vmServiceInfoFile).existsSync(), isFalse);
         expect(stopDockerCalls, 1);
+        expect(stopFileWatcherCalls, 1);
         expect(ctx.isDisposed, isTrue);
       },
     );
@@ -244,7 +251,6 @@ void main() {
         await ctx.dispose();
         await ctx.dispose();
 
-        expect(fileSubCancelCalls, 1, reason: 'fileChangeSub.cancel');
         expect(mcp.closeCalls, 1, reason: 'mcpSocket.close');
         expect(closeAnalyzersCalls, 1, reason: 'closeAnalyzers');
         expect(
@@ -259,6 +265,7 @@ void main() {
         );
         expect(proxy.closeCalls, 1, reason: 'proxy.close');
         expect(stopDockerCalls, 1, reason: 'stopDocker');
+        expect(stopFileWatcherCalls, 1, reason: 'stopFileWatcher');
       },
     );
 
@@ -289,26 +296,26 @@ void main() {
     );
 
     test(
-      'when proxy and mcpSocket and fileChangeSub are null, '
+      'when proxy and mcpSocket are null, '
       'then dispose skips them and runs the rest',
       () async {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
-          proxy: null,
-          flutterProxy: flutterProxy,
+          proxy: () => null,
+          flutterManager: flutterManager,
           mcpSocket: null,
-          fileChangeSub: null,
+          stopFileWatcher: () => stopFileWatcherCalls++,
           closeAnalyzers: () async {
             closeAnalyzersCalls++;
           },
           stopDocker: null,
           vmServiceInfoFile: vmServiceInfoFile,
-          flutterVmServiceInfoFile: flutterVmServiceInfoFile,
         );
 
         await ctx.dispose();
 
         expect(closeAnalyzersCalls, 1);
+        expect(stopFileWatcherCalls, 1);
         expect(server.calls, contains('stop'));
       },
     );

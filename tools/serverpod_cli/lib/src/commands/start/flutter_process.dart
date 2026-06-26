@@ -65,6 +65,9 @@ class FlutterProcess {
   /// arg list when non-null.
   final List<String>? _argsOverrideForTesting;
 
+  /// Production override for `flutter run --machine` arguments.
+  final List<String>? _machineArgsOverride;
+
   /// Test-only override for [BrowserLauncher.openUrl].
   final Future<bool> Function(Uri url)? _openBrowserForTesting;
 
@@ -102,6 +105,7 @@ class FlutterProcess {
     void Function(String stage)? onProgress,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    List<String>? machineArgsOverride,
     @visibleForTesting List<String>? argsOverrideForTesting,
     @visibleForTesting Future<bool> Function(Uri url)? openBrowserForTesting,
   }) : _flutterPackageDir = flutterPackageDir,
@@ -113,6 +117,7 @@ class FlutterProcess {
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _launchBrowser = device == flutterDeviceWebServerWithBrowser,
+       _machineArgsOverride = machineArgsOverride,
        _argsOverrideForTesting = argsOverrideForTesting,
        _openBrowserForTesting = openBrowserForTesting;
 
@@ -122,7 +127,7 @@ class FlutterProcess {
   /// True once [connectToVmService] resolved the upstream VM service.
   bool get isVmServiceConnected => _vmService != null;
 
-  /// HTTP VM service URI, or `null` before [connectToVmService] resolves.
+  /// HTTP VM service URI published by the daemon, or `null` before publication.
   String? get vmServiceUri => _vmServiceUri;
 
   /// Connected `vm_service` client; `null` outside connect..[stop].
@@ -151,6 +156,7 @@ class FlutterProcess {
     final device = _launchBrowser ? flutterDeviceWebServer : _device;
     final args =
         _argsOverrideForTesting ??
+        _machineArgsOverride ??
         <String>['run', '--machine', '-d', device, ..._extraArgs];
 
     final invocation = await _resolveFlutterInvocation(_flutterExecutable);
@@ -255,7 +261,6 @@ class FlutterProcess {
       return;
     }
     if (maybeUri == null) return;
-    _vmServiceUri = maybeUri;
 
     final wsUri = vmServiceWsUri(maybeUri);
     await _flutterProxy?.setUpstream(Uri.parse(wsUri));
@@ -287,10 +292,12 @@ class FlutterProcess {
     // detaches (its keep-alive is hardcoded to ~3000 days). 2s
     // interval + 1s timeout lets us notice within ~3s.
     //
-    // Hot restart briefly empties the isolate list - require two
-    // consecutive empty reads (~4s window at 2s interval) so we
-    // don't race-kill a healthy restart.
+    // Both paths need two consecutive bad reads before tearing down
+    // (~4s at 2s interval): a hot restart briefly empties the isolate
+    // list, and a one-off getVM() failure - blip, GC pause - shouldn't
+    // race-kill a live app.
     var emptyReads = 0;
+    var failedReads = 0;
     _vmServiceHeartbeat = Timer.periodic(const Duration(seconds: 2), (
       timer,
     ) async {
@@ -300,6 +307,8 @@ class FlutterProcess {
       }
       try {
         final vmInfo = await vm.getVM().timeout(const Duration(seconds: 1));
+        // A successful read means the connection is alive; clear failures.
+        failedReads = 0;
         if (vmInfo.isolates?.isEmpty ?? true) {
           emptyReads++;
           if (emptyReads >= 2) {
@@ -311,9 +320,14 @@ class FlutterProcess {
           emptyReads = 0;
         }
       } catch (e) {
-        timer.cancel();
-        log.info('Flutter heartbeat failed ($e); tearing down.');
-        await _onAppStop();
+        // A failure breaks any empty-isolate streak; keep them consecutive.
+        emptyReads = 0;
+        failedReads++;
+        if (failedReads >= 2) {
+          timer.cancel();
+          log.info('Flutter heartbeat failed ($e); tearing down.');
+          await _onAppStop();
+        }
       }
     });
   }
@@ -413,8 +427,9 @@ class FlutterProcess {
     }
   }
 
-  /// SIGINT -> wait -> SIGKILL. Reaches the daemon because [start]
-  /// spawns flutter_tools directly, bypassing wrappers.
+  /// Graceful daemon `app.stop` -> SIGINT -> wait -> SIGKILL. The signals
+  /// reach the daemon because [start] spawns flutter_tools directly,
+  /// bypassing wrappers.
   Future<int> stop({
     Duration timeout = const Duration(seconds: 5),
   }) async {
@@ -426,6 +441,31 @@ class FlutterProcess {
 
     await _sigtermSub?.cancel();
     _sigtermSub = null;
+
+    // Ask the daemon to stop the app first: in --machine mode a bare SIGINT
+    // can terminate flutter_tools without device cleanup, leaving e.g. the
+    // browser window it spawned open. `app.stop` tears the device session
+    // down properly; signals below remain as the fallback.
+    final daemon = _daemon;
+    final appId = _appId;
+    if (daemon != null && appId != null) {
+      try {
+        await daemon
+            .sendRequest('app.stop', <String, Object?>{'appId': appId})
+            .timeout(timeout);
+        final exitCode = await process.exitCode.timeout(timeout);
+        log.debug(
+          'Flutter stop: PID ${process.pid} exited gracefully with $exitCode',
+        );
+        await _cleanup();
+        return exitCode;
+      } catch (e) {
+        log.debug(
+          'Flutter stop: app.stop failed ($e); falling back to '
+          'signals.',
+        );
+      }
+    }
 
     log.debug('Flutter stop: sending SIGINT to PID ${process.pid}');
     process.kill(ProcessSignal.sigint);
@@ -484,7 +524,9 @@ class FlutterProcess {
           final wsUri = paramMap['wsUri'];
           if (wsUri is String && !_vmServiceUriCompleter.isCompleted) {
             // IDEs and callers expect the http form.
-            _vmServiceUriCompleter.complete(httpFromWs(wsUri));
+            final httpUri = httpFromWs(wsUri);
+            _vmServiceUri = httpUri;
+            _vmServiceUriCompleter.complete(httpUri);
           }
           if (!_launchedCompleter.isCompleted) _launchedCompleter.complete();
         case 'app.webLaunchUrl':

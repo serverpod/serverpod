@@ -338,16 +338,22 @@ class DoubleDefaultModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> insert(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DoubleDefaultModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -381,6 +387,10 @@ class DoubleDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> upsert(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
@@ -388,6 +398,7 @@ class DoubleDefaultModelRepository {
     _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
     _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DoubleDefaultModel>(
       rows,
@@ -395,6 +406,7 @@ class DoubleDefaultModelRepository {
       updateColumns: updateColumns?.call(DoubleDefaultModel.t),
       updateWhere: updateWhere?.call(DoubleDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -433,16 +445,22 @@ class DoubleDefaultModelRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> update(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
     _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DoubleDefaultModel>(
       rows,
       columns: columns?.call(DoubleDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -480,6 +498,10 @@ class DoubleDefaultModelRepository {
 
   /// Updates all [DoubleDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
@@ -492,6 +514,7 @@ class DoubleDefaultModelRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
       columnValues: columnValues(DoubleDefaultModel.t.updateTable),
@@ -503,6 +526,7 @@ class DoubleDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -513,6 +537,10 @@ class DoubleDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
@@ -521,6 +549,7 @@ class DoubleDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DoubleDefaultModel>(
       rows,
@@ -529,6 +558,7 @@ class DoubleDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -548,6 +578,10 @@ class DoubleDefaultModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
@@ -556,6 +590,7 @@ class DoubleDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefaultModel>(
       where: where(DoubleDefaultModel.t),
@@ -564,6 +599,7 @@ class DoubleDefaultModelRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

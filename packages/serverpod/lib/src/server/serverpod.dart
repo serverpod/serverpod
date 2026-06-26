@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart' hide LogLevel;
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/log.dart';
@@ -30,6 +31,16 @@ typedef HealthCheckHandler =
     Future<List<internal.ServerHealthMetric>> Function(
       Serverpod pod,
       DateTime timestamp,
+    );
+
+/// Replaces the default [Database] for a [Session].
+///
+/// The [inner] database is the framework-provided instance. Return a custom
+/// [Database] implementation to layer behavior on top of it.
+typedef DatabaseInterceptor =
+    Database Function(
+      Session session,
+      Database inner,
     );
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
@@ -75,7 +86,7 @@ class Serverpod {
   /// program it's not recommended.
   static Serverpod get instance {
     if (_instance == null) {
-      throw Exception(
+      throw StateError(
         'Serverpod has not been initialized. You need to create '
         'the Serverpod object before calling this method.',
       );
@@ -398,6 +409,16 @@ class Serverpod {
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
 
+  /// Directory the server package lives in. Resolved against this when
+  /// loading `config/<runMode>.yaml`, `config/passwords.yaml`, and
+  /// `migrations/<module>/...`. Captured at construction time from the
+  /// `serverDirectory` parameter, falling back to [Directory.current].
+  ///
+  /// Pass this explicitly when boot-time cwd is not the server package root
+  /// (e.g. test isolates, MCP-triggered actions, or any process whose cwd
+  /// was inherited from a parent shell).
+  final Directory serverDirectory;
+
   /// Runtime parameters builder to apply to all sessions of the connection pool.
   ///
   /// Use the callback function to discover runtime parameters:
@@ -409,6 +430,17 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// Optional interceptor that replaces the default [Database] for each session.
+  ///
+  /// Called once per session with the framework-provided [Database] as [inner].
+  /// The returned [Database] becomes [Session.db] for that session. Useful for
+  /// injecting cross-cutting behavior such as logging, tracing, metrics, tenant
+  /// scoping, policy enforcement, retries, or safety guards.
+  ///
+  /// Be aware that the [Database] class is part of the `serverpod_database`
+  /// internal package and may face breaking changes in minor version bumps.
+  final DatabaseInterceptor? databaseInterceptor;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -419,6 +451,7 @@ class Serverpod {
     List<String> args,
     this.serializationManager,
     this.endpoints, {
+    Directory? serverDirectory,
     ServerpodConfig? config,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
     this.authenticationHandler,
@@ -429,7 +462,11 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  }) : httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
+    this.databaseInterceptor,
+  }) : serverDirectory = Directory(
+         p.normalize(p.absolute((serverDirectory ?? Directory.current).path)),
+       ),
+       httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _configOverride = configOverride,
@@ -508,7 +545,9 @@ class Serverpod {
 
     // Load passwords
     _passwordManager = PasswordManager(runMode: runMode);
-    _passwords = _passwordManager.loadPasswords();
+    _passwords = _passwordManager.loadPasswords(
+      serverDir: serverDirectory.path,
+    );
 
     // Because `.copyWith` is not a real copyWith method (`null` is not a valid
     // value for any of the fields), this works due to CommandLineArgs.toMap()
@@ -533,6 +572,7 @@ class Serverpod {
             serverId,
             _passwords,
             commandLineArgs: _commandLineArgs.toMap(),
+            serverDir: serverDirectory.path,
           );
     } on ArgumentError catch (e) {
       throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
@@ -599,6 +639,7 @@ class Serverpod {
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
+        serverDirectory: serverDirectory,
       );
     }
 
@@ -915,7 +956,7 @@ class Serverpod {
       );
       result = await applyMigrationsAndVerify(
         session: internalSession,
-        projectDirectory: Directory.current,
+        projectDirectory: serverDirectory,
         runMode: runMode,
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
@@ -1185,13 +1226,36 @@ class Serverpod {
     return session;
   }
 
+  /// Creates a new [InternalSession], runs [callback] with it, and closes
+  /// the session afterwards. Used to access the database and do logging
+  /// outside of sessions triggered by external events, without having to
+  /// manage the session lifecycle manually.
+  ///
+  /// If [callback] throws, the session is closed with the error and
+  /// [StackTrace] attached (so they are written to the logs) before the
+  /// error is rethrown.
+  Future<T> withSession<T>(
+    Future<T> Function(Session session) callback, {
+    bool enableLogging = true,
+  }) async {
+    var session = await createSession(enableLogging: enableLogging);
+    try {
+      var result = await callback(session);
+      await session.close();
+      return result;
+    } catch (e, stackTrace) {
+      await session.close(error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   /// Stops accepting new requests on the user-facing servers (the API
   /// server and, if enabled, the web server), waits for in-flight requests
   /// to settle, runs [action], then resumes request handling.
   ///
-  /// Used during runtime operations that require the pod to be quiescent —
+  /// Used during runtime operations that require the pod to be quiescent -
   /// e.g. applying migrations through
-  /// [InsightsEndpoint.applyMigrations] — to provide the same safety
+  /// [InsightsEndpoint.applyMigrations] - to provide the same safety
   /// guarantees as a pod restart.
   ///
   /// The operator-facing Insights server is not paused, so the call that
@@ -1210,7 +1274,7 @@ class Serverpod {
 
   /// Starts the API server and, if configured, the web server.
   ///
-  /// The Insights server is intentionally not included — it's started
+  /// The Insights server is intentionally not included - it's started
   /// once during pod boot and stays up across pause/resume cycles
   /// initiated through its own endpoints (e.g. applyMigrations).
   Future<bool> _startUserFacingServers() async {

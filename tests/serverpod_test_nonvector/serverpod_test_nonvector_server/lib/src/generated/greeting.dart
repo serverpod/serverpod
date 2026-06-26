@@ -364,16 +364,22 @@ class GreetingRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> insert(
     _i1.DatabaseSession session,
     List<Greeting> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Greeting>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -407,6 +413,10 @@ class GreetingRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> upsert(
     _i1.DatabaseSession session,
     List<Greeting> rows, {
@@ -414,6 +424,7 @@ class GreetingRepository {
     _i1.ColumnSelections<GreetingTable>? updateColumns,
     _i1.WhereExpressionBuilder<GreetingTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Greeting>(
       rows,
@@ -421,6 +432,7 @@ class GreetingRepository {
       updateColumns: updateColumns?.call(Greeting.t),
       updateWhere: updateWhere?.call(Greeting.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -459,16 +471,22 @@ class GreetingRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> update(
     _i1.DatabaseSession session,
     List<Greeting> rows, {
     _i1.ColumnSelections<GreetingTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Greeting>(
       rows,
       columns: columns?.call(Greeting.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -505,6 +523,10 @@ class GreetingRepository {
 
   /// Updates all [Greeting]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
@@ -516,6 +538,7 @@ class GreetingRepository {
     @Deprecated('Use desc() on the orderBy column instead.')
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Greeting>(
       columnValues: columnValues(Greeting.t.updateTable),
@@ -527,6 +550,7 @@ class GreetingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -537,6 +561,10 @@ class GreetingRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> delete(
     _i1.DatabaseSession session,
     List<Greeting> rows, {
@@ -545,6 +573,7 @@ class GreetingRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Greeting>(
       rows,
@@ -553,6 +582,7 @@ class GreetingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -572,6 +602,10 @@ class GreetingRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Greeting>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GreetingTable> where,
@@ -580,6 +614,7 @@ class GreetingRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<GreetingTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Greeting>(
       where: where(Greeting.t),
@@ -588,6 +623,7 @@ class GreetingRepository {
       orderDescending: // ignore: deprecated_member_use
           orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

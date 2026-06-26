@@ -25,6 +25,9 @@ class PostgresPoolManager implements DatabasePoolManager {
   /// Database configuration.
   final PostgresDatabaseConfig config;
 
+  /// Base dir relative `dataPath` values resolve against. Defaults to cwd.
+  final Directory? _serverDirectory;
+
   late DatabaseSerializationManager _serializationManager;
 
   @override
@@ -65,34 +68,36 @@ class PostgresPoolManager implements DatabasePoolManager {
   PostgresPoolManager(
     DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    this.config,
-  ) : _poolSettings = pg.PoolSettings(
-        maxConnectionCount: config.maxConnectionCount,
-        queryTimeout: const Duration(minutes: 1),
-        sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
-        typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
-        onOpen: (connection) async {
-          var parameters =
-              runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
+    this.config, {
+    Directory? serverDirectory,
+  }) : _serverDirectory = serverDirectory,
+       _poolSettings = pg.PoolSettings(
+         maxConnectionCount: config.maxConnectionCount,
+         queryTimeout: const Duration(minutes: 1),
+         sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+         typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
+         onOpen: (connection) async {
+           var parameters =
+               runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
 
-          if (!parameters.any((p) => p is SearchPathsConfig) &&
-              config.searchPaths != null &&
-              config.searchPaths!.isNotEmpty) {
-            parameters.add(
-              SearchPathsConfig(searchPaths: config.searchPaths),
-            );
-          }
+           if (!parameters.any((p) => p is SearchPathsConfig) &&
+               config.searchPaths != null &&
+               config.searchPaths!.isNotEmpty) {
+             parameters.add(
+               SearchPathsConfig(searchPaths: config.searchPaths),
+             );
+           }
 
-          var setParametersStatements = parameters
-              .map((p) => p.buildStatements(isLocal: false))
-              .expand((e) => e);
-          if (setParametersStatements.isNotEmpty) {
-            for (var statement in setParametersStatements) {
-              await connection.execute(statement);
-            }
-          }
-        },
-      ) {
+           var setParametersStatements = parameters
+               .map((p) => p.buildStatements(isLocal: false))
+               .expand((e) => e);
+           if (setParametersStatements.isNotEmpty) {
+             for (var statement in setParametersStatements) {
+               await connection.execute(statement);
+             }
+           }
+         },
+       ) {
     _serializationManager = serializationManager;
   }
 
@@ -181,7 +186,9 @@ class PostgresPoolManager implements DatabasePoolManager {
   /// [EmbeddedPostgres] instance and the [PostgresDatabaseConfig] for it.
   Future<(EmbeddedPostgres?, PostgresDatabaseConfig?)>
   _launchEmbeddedPostgresIfNeeded() async {
-    final dataDir = config.embeddedPostgresDataDir;
+    final dataDir = config.embeddedPostgresDataDir(
+      baseDirectory: _serverDirectory ?? Directory.current,
+    );
     if (dataDir == null) return (null, null);
 
     try {
@@ -223,13 +230,14 @@ class PostgresPoolManager implements DatabasePoolManager {
 
 extension on PostgresDatabaseConfig {
   /// The effective data [Directory] for the embedded PostgreSQL, if configured.
-  Directory? get embeddedPostgresDataDir {
+  /// Relative `dataPath` values resolve against [baseDirectory].
+  Directory? embeddedPostgresDataDir({required Directory baseDirectory}) {
     final dataPath = this.dataPath?.trim();
     if (dataPath == null || dataPath.isEmpty) return null;
     return Directory(
       path.isAbsolute(dataPath)
           ? dataPath
-          : path.join(Directory.current.path, dataPath),
+          : path.join(baseDirectory.path, dataPath),
     );
   }
 }

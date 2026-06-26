@@ -236,6 +236,9 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
     _generateFutureCallDispatchers(library);
     _generateServerFutureCalls(library);
 
+    // Ensure users are not alerted due to the import of the clock package.
+    library.ignoreForFile.add('depend_on_referenced_packages');
+
     return library.build();
   }
 

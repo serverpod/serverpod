@@ -12,18 +12,20 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 3.5.0-beta.9
-  serverpod_service_client: 3.5.0-beta.9
+  serverpod: 3.5.0-beta.10
+  serverpod_auth_core_server: 3.5.0-beta.10
+  serverpod_auth_idp_server: 3.5.0-beta.10
+  serverpod_service_client: 3.5.0-beta.10
 
 dev_dependencies:
-  serverpod_cli: 3.5.0-beta.9
-  serverpod_lints: 3.5.0-beta.9
-  serverpod_test: 3.5.0-beta.9
+  serverpod_cli: 3.5.0-beta.10
+  serverpod_lints: 3.5.0-beta.10
+  serverpod_test: 3.5.0-beta.10
   serverpod_test_client:
     path: ../../serverpod_test_client
   serverpod_test_server:
     path: ../../serverpod_test_server
-  serverpod_test_sqlite_client: 3.5.0-beta.9
+  serverpod_test_sqlite_client: 3.5.0-beta.10
   test: ^1.25.5
   test_descriptor: ^2.0.2
 
@@ -32,6 +34,14 @@ dependency_overrides:
     path: ../../../packages/serverpod
   serverpod_auth_client:
     path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
+  serverpod_auth_core_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_auth_idp_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_server:
     path: ../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_cli:

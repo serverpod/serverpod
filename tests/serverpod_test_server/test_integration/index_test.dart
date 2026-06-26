@@ -410,4 +410,237 @@ void main() async {
       );
     },
   );
+
+  group(
+    'Given declared ObjectWithGeographyPoint class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_geography_point',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the implicitly declared geography index exists with default type "gist".',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_point_index_default',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'point');
+        },
+      );
+
+      test(
+        'then the explicitly declared "gist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_point_index_gist',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'pointIndexedGist');
+        },
+      );
+
+      test(
+        'then the explicitly declared "spgist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_point_index_spgist',
+          );
+
+          expect(index.type, 'spgist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'pointIndexedSpgist');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given declared ObjectWithGeographyLineString class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_geography_line_string',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the implicitly declared geography index exists with default type "gist".',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_line_string_index_default',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'lineString');
+        },
+      );
+
+      test(
+        'then the explicitly declared "gist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_line_string_index_gist',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'lineStringIndexedGist');
+        },
+      );
+
+      test(
+        'then the explicitly declared "spgist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_line_string_index_spgist',
+          );
+
+          expect(index.type, 'spgist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'lineStringIndexedSpgist');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given declared ObjectWithGeographyPolygon class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_geography_polygon',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the implicitly declared geography index exists with default type "gist".',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_polygon_index_default',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'polygon');
+        },
+      );
+
+      test(
+        'then the explicitly declared "gist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_polygon_index_gist',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'polygonIndexedGist');
+        },
+      );
+
+      test(
+        'then the explicitly declared "spgist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) => idx.indexName == 'geography_polygon_index_spgist',
+          );
+
+          expect(index.type, 'spgist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'polygonIndexedSpgist');
+        },
+      );
+    },
+  );
+
+  group(
+    'Given declared ObjectWithGeographyGeometryCollection class when analyzing database schema',
+    () {
+      late List<IndexDefinition> indexes;
+
+      setUpAll(() async {
+        var databaseDefinition = await session.db.analyzer.analyze();
+
+        var table = databaseDefinition.tables.firstWhere(
+          (table) => table.name == 'object_with_geography_geometry_collection',
+        );
+
+        indexes = table.indexes;
+      });
+
+      test(
+        'then the implicitly declared geography index exists with default type "gist".',
+        () {
+          var index = indexes.firstWhere(
+            (idx) =>
+                idx.indexName == 'geography_geometry_collection_index_default',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(index.elements.first.definition, 'geometryCollection');
+        },
+      );
+
+      test(
+        'then the explicitly declared "gist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) =>
+                idx.indexName == 'geography_geometry_collection_index_gist',
+          );
+
+          expect(index.type, 'gist');
+          expect(index.elements.length, 1);
+          expect(
+            index.elements.first.definition,
+            'geometryCollectionIndexedGist',
+          );
+        },
+      );
+
+      test(
+        'then the explicitly declared "spgist" geography index exists with correct type.',
+        () {
+          var index = indexes.firstWhere(
+            (idx) =>
+                idx.indexName == 'geography_geometry_collection_index_spgist',
+          );
+
+          expect(index.type, 'spgist');
+          expect(index.elements.length, 1);
+          expect(
+            index.elements.first.definition,
+            'geometryCollectionIndexedSpgist',
+          );
+        },
+      );
+    },
+  );
 }

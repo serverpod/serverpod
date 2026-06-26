@@ -266,6 +266,43 @@ void main() {
           });
         },
       );
+
+      test(
+        'when creating a user profile with an image URL that fails to download, '
+        'then the profile is still created without an image.',
+        () async {
+          userProfiles = UserProfiles(
+            config: UserProfileConfig(
+              imageFetchFunc: (final _) {
+                throw Exception('Failed to download profile image');
+              },
+            ),
+          );
+
+          final createdUserProfile = await userProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(
+              userName: 'test_user',
+              email: 'test@example.com',
+            ),
+            imageSource: UserImageFromUrl.parse(
+              'https://serverpod.dev/external-profile-image.png',
+            ),
+          );
+
+          expect(createdUserProfile.userName, 'test_user');
+          expect(createdUserProfile.email, 'test@example.com');
+          expect(createdUserProfile.imageUrl, isNull);
+
+          final foundUserProfile = await userProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
+
+          expect(foundUserProfile.imageUrl, isNull);
+        },
+      );
     },
   );
 

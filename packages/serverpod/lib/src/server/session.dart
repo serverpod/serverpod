@@ -89,7 +89,7 @@ abstract class Session implements DatabaseSession {
   Database get db {
     var database = _db;
     if (database == null) {
-      throw Exception('Database is not available in this session.');
+      throw StateError('Database is not available in this session.');
     }
     return database;
   }
@@ -220,18 +220,31 @@ abstract class Session implements DatabaseSession {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
+  ///
+  /// [metadata] is forwarded to the CLI over the VM service stream but not
+  /// persisted to the database.
   void log(
     String message, {
     LogLevel? level,
     dynamic exception,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,
       error: exception?.toString(),
       stackTrace: stackTrace,
+      metadata: metadata,
     );
+  }
+
+  /// Logs [message] as an alert. Works like [log], but the `serverpod` CLI
+  /// shows it as a copyable alert in its terminal UI. Wrap a copyable segment
+  /// in angle brackets, e.g. `'Code: <123456>'`. Other log destinations treat
+  /// it as a regular log message.
+  void alert(String message, {LogLevel? level}) {
+    log(message, level: level, metadata: {'alert': true});
   }
 }
 

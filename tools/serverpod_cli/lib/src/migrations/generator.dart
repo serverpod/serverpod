@@ -33,7 +33,13 @@ class MigrationGenerator {
     var now = DateTime.now().toUtc();
     var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
-    if (tag != null) {
+    if (tag != null && tag.isNotEmpty) {
+      if (!RegExp(r'^[a-zA-Z0-9_-\s.]+$').hasMatch(tag)) {
+        throw FormatException(
+          'Invalid migration tag: "$tag". Only characters that are supported '
+          'in file names are allowed.',
+        );
+      }
       versionName += '-$tag';
     }
     return versionName;
@@ -215,7 +221,10 @@ class MigrationGenerator {
       logWarnings: log.warning,
     );
 
-    var client = ConfigInfo(runMode).createServiceClient();
+    var client = ConfigInfo(
+      runMode,
+      serverDir: path.normalize(path.absolute(directory.path)),
+    ).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
       liveDatabase = normalizeDefinitionToV2(

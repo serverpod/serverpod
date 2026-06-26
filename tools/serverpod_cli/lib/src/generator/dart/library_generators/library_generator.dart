@@ -67,7 +67,7 @@ class LibraryGenerator {
             .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
-      if (model is! ModelClassDefinition) return true;
+      if (model is! ClassDefinition) return true;
       var sealedTopNode = model.sealedTopNode;
       bool isSealedTopNode = sealedTopNode == model;
 
@@ -77,7 +77,7 @@ class LibraryGenerator {
     }).toList();
 
     var unsealedModels = allModels
-        .where((model) => !(model is ModelClassDefinition && model.isSealed))
+        .where((model) => !(model is ClassDefinition && model.isSealed))
         .toList();
 
     var hasDatabaseTablesForCurrentSide = allModels.any(
@@ -179,9 +179,20 @@ class LibraryGenerator {
                                 )
                                 .conditional(
                                   refer(
-                                    'Protocol',
-                                    module.dartImportUrl(serverCode),
-                                  ).property('targetTableDefinitions'),
+                                        'Protocol',
+                                        module.dartImportUrl(serverCode),
+                                      )
+                                      .call([])
+                                      .asA(
+                                        refer(
+                                          'DatabaseSerializationManager',
+                                          serverpodDatabaseRuntimeUrl(
+                                            serverCode,
+                                          ),
+                                        ),
+                                      )
+                                      .property('getTargetTableDefinitions')
+                                      .call([]),
                                   literalList([]),
                                 )
                                 .spread,
@@ -568,9 +579,22 @@ class LibraryGenerator {
               if (!serverCode) ...[
                 for (var module in config.modules)
                   Code.scope(
-                    (a) =>
-                        '{var table = ${a(refer('Protocol', module.dartImportUrl(serverCode)))}() is ${a(refer('DatabaseSerializationManager', serverpodDatabaseRuntimeUrl(serverCode)))} ? ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().getTableForType(t) : null;'
-                        'if(table!=null) {return table;}}',
+                    (a) {
+                      final protocolRef = a(
+                        refer('Protocol', module.dartImportUrl(serverCode)),
+                      );
+                      final databaseManagerRef = a(
+                        refer(
+                          'DatabaseSerializationManager',
+                          serverpodDatabaseRuntimeUrl(serverCode),
+                        ),
+                      );
+                      return '{var protocol = $protocolRef();'
+                          'var table = protocol is $databaseManagerRef '
+                          '? (protocol as $databaseManagerRef).getTableForType(t) '
+                          ': null;'
+                          'if(table!=null) {return table;}}';
+                    },
                   ),
               ],
               if (allModels.any(
@@ -2531,9 +2555,9 @@ extension on DatabaseDefinition {
   }
 }
 
-extension on ModelClassDefinition {
+extension on ClassDefinition {
   /// Get all child classes and their children, ensuring children before parents.
-  List<ModelClassDefinition> get sortedChildClasses => childClasses
+  List<ClassDefinition> get sortedChildClasses => childClasses
       .whereType<ResolvedInheritanceDefinition>()
       .map(
         (e) => [
@@ -2551,7 +2575,7 @@ extension on List<SerializableModelDefinition> {
     var sorted = <SerializableModelDefinition>[];
 
     for (var model in this) {
-      if (model is ModelClassDefinition) {
+      if (model is ClassDefinition) {
         for (var subClass in model.sortedChildClasses) {
           if (contains(subClass) && !sorted.contains(subClass)) {
             sorted.add(subClass);

@@ -79,6 +79,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -149,6 +150,10 @@ void main() {
           expect(
             testToolsFile,
             contains('\n///\n/// [experimentalFeatures] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverDirectory] '),
           );
         },
       );
@@ -249,6 +254,7 @@ void main() {
               r'  bool\? enableSessionLogging,\n'
               r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  String\? runMode,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -374,6 +380,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -521,6 +528,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -1887,6 +1895,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
@@ -1969,6 +1978,7 @@ void main() {
               r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
               r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.Directory\? serverDirectory,\n'
               r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'

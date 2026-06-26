@@ -29,10 +29,8 @@ void main() {
       await tester.pumpComponent(
         ServerpodCreateApp(
           holder: holder,
-          name: 'test_project',
           onCreate: () {},
           onQuit: () => quitCalls++,
-          onSkipFlutterBuild: () {},
         ),
       );
     });

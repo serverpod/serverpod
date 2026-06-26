@@ -54,6 +54,34 @@ void main() async {
     );
 
     test(
+      'when fetching models filtered by NOT many relation count then result is as expected',
+      () async {
+        var students = await Student.db.insert(session, [
+          Student(name: 'Alex'),
+          Student(name: 'Isak'),
+          Student(name: 'Lisa'),
+        ]);
+        var courses = await Course.db.insert(session, [
+          Course(name: 'Math'),
+          Course(name: 'English'),
+        ]);
+        await Enrollment.db.insert(session, [
+          Enrollment(studentId: students[0].id!, courseId: courses[0].id!),
+          Enrollment(studentId: students[0].id!, courseId: courses[1].id!),
+          Enrollment(studentId: students[1].id!, courseId: courses[1].id!),
+        ]);
+
+        var studentsFetched = await Student.db.find(
+          session,
+          where: (s) => ~(s.enrollments.count() > 0),
+        );
+
+        var studentNames = studentsFetched.map((e) => e.name);
+        expect(studentNames, ['Lisa']);
+      },
+    );
+
+    test(
       'when fetching models filtered on filtered many relation count then result is as expected',
       () async {
         var students = await Student.db.insert(session, [

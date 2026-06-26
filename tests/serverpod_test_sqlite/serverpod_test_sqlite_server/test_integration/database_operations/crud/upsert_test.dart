@@ -142,6 +142,22 @@ void main() async {
     );
 
     test(
+      'when batch upserting with noReturn set to true '
+      'then an empty list is returned but the rows are persisted.',
+      () async {
+        var result = await UniqueData.db.upsert(
+          session,
+          [UniqueData(number: 1, email: 'a@serverpod.dev')],
+          conflictColumns: (t) => [t.email],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(1));
+      },
+    );
+
+    test(
       'when upserting a single row with upsertRow then the row is inserted.',
       () async {
         var result = (await UniqueData.db.upsertRow(
@@ -429,21 +445,112 @@ void main() async {
     },
   );
 
-  test(
-    'Given an upsert operation with id as conflictColumn '
-    'when executing it '
-    'then it throws an ArgumentError.',
-    () async {
-      await expectLater(
-        UpsertTestModel.db.upsert(
-          session,
-          [UpsertTestModel(code: 'A', category: 'c1', value: 1)],
-          conflictColumns: (t) => [t.id],
-        ),
-        throwsA(isA<ArgumentError>()),
+  group('Given an existing row', () {
+    late SimpleData existingRow;
+
+    setUp(() async {
+      existingRow = await SimpleData.db.insertRow(
+        session,
+        SimpleData(num: 1),
       );
-    },
-  );
+    });
+
+    tearDown(() async {
+      await SimpleData.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test(
+      'when upserting with id as conflictColumn then the existing row is updated.',
+      () async {
+        var updated = (await SimpleData.db.upsertRow(
+          session,
+          SimpleData(id: existingRow.id, num: 2),
+          conflictColumns: (t) => [t.id],
+        ))!;
+
+        expect(updated.id, existingRow.id);
+        expect(updated.num, 2);
+      },
+    );
+
+    test(
+      'when batch upserting a mix of existing and new rows by id '
+      'then existing rows are updated and new rows are inserted.',
+      () async {
+        var result = await SimpleData.db.upsert(
+          session,
+          [
+            SimpleData(id: existingRow.id, num: 10),
+            SimpleData(num: 20),
+          ],
+          conflictColumns: (t) => [t.id],
+        );
+
+        expect(result, hasLength(2));
+
+        var updated = result.firstWhere((r) => r.id == existingRow.id);
+        expect(updated.num, 10);
+
+        var inserted = result.firstWhere((r) => r.id != existingRow.id);
+        expect(inserted.id, isNotNull);
+        expect(inserted.num, 20);
+
+        var allRows = await SimpleData.db.find(session);
+        expect(allRows, hasLength(2));
+      },
+    );
+  });
+
+  group('Given a row with a UUID column stored in the database', () {
+    late ObjectWithUuid existingRow;
+
+    setUp(() async {
+      var uuid = UuidValue.fromString(
+        '550e8400-e29b-41d4-a716-446655440000',
+      );
+      var uuidNullable = UuidValue.fromString(
+        '9e107d9d-372b-4d97-92b7-2f0907d0b1d4',
+      );
+
+      existingRow = await ObjectWithUuid.db.insertRow(
+        session,
+        ObjectWithUuid(uuid: uuid, uuidNullable: uuidNullable),
+      );
+    });
+
+    tearDown(() async {
+      await ObjectWithUuid.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    test(
+      'when upserting the row with an updated UUID column value, '
+      'then the UUID column is updated successfully.',
+      () async {
+        var updatedUuidNullable = UuidValue.fromString(
+          'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        );
+
+        var updated = await ObjectWithUuid.db.upsertRow(
+          session,
+          ObjectWithUuid(
+            id: existingRow.id,
+            uuid: existingRow.uuid,
+            uuidNullable: updatedUuidNullable,
+          ),
+          conflictColumns: (t) => [t.id],
+        );
+
+        expect(updated, isNotNull);
+        expect(updated!.uuidNullable, updatedUuidNullable);
+      },
+    );
+  });
 
   test(
     'Given an upsert operation with column from different table '

@@ -251,6 +251,9 @@ void main() async {
           final content = pubspec.readAsStringSync();
           expect(content, isNot(contains('flutter_secure_storage')));
         },
+        skip:
+            'flutter_secure_storage override is now in the template '
+            'and mini template type is planned for removal',
       );
 
       test('then the flutter main.dart does not contain auth imports', () {
@@ -336,6 +339,18 @@ void main() async {
             isTrue,
             reason: 'Root pubspec.lock file does not exist.',
           );
+        });
+
+        test('has AGENTS.md', () {
+          final agentsMd = File(path.join(tempPath, projectName, 'AGENTS.md'));
+          expect(agentsMd.existsSync(), isTrue);
+          expect(agentsMd.readAsStringSync(), isNotEmpty);
+        });
+
+        test('has CLAUDE.md', () {
+          final claudeMd = File(path.join(tempPath, projectName, 'CLAUDE.md'));
+          expect(claudeMd.existsSync(), isTrue);
+          expect(claudeMd.readAsStringSync(), '@AGENTS.md\n');
         });
 
         test('has agent skills installed', () {
@@ -583,17 +598,6 @@ void main() async {
           );
         });
 
-        test('then the project contains a web directory', () {
-          var webDir = Directory(
-            path.join(tempPath, serverDir, 'web'),
-          ).existsSync();
-          expect(
-            webDir,
-            isTrue,
-            reason: 'Web directory should exist but it was not found.',
-          );
-        });
-
         test('then the project contains a dockerfile', () {
           var dockerFile = File(
             path.join(tempPath, serverDir, 'Dockerfile'),
@@ -667,31 +671,43 @@ void main() async {
           );
         });
 
-        test('then the server pubspec does not contain auth dependencies', () {
-          final pubspec = File(
-            path.join(tempPath, serverDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
-        });
+        test(
+          'then the server pubspec does not contain auth dependencies',
+          () {
+            final pubspec = File(
+              path.join(tempPath, serverDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_server')));
+          },
+          skip:
+              'serverpod_auth_idp_server dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
-        test('then the server server.dart does not contain auth imports', () {
+        test('then the server server.dart contains auth imports', () {
           final serverFile = File(
             path.join(tempPath, serverDir, 'lib', 'server.dart'),
           );
           final content = serverFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_server')));
+          expect(content, contains('serverpod_auth_idp_server'));
         });
 
-        test('then the flutter pubspec does not contain auth dependencies', () {
-          final (:serverDir, :flutterDir, :clientDir) =
-              createProjectFolderPaths(projectName);
-          final pubspec = File(
-            path.join(tempPath, flutterDir, 'pubspec.yaml'),
-          );
-          final content = pubspec.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
-        });
+        test(
+          'then the flutter pubspec does not contain auth dependencies',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          },
+          skip:
+              'serverpod_auth_idp_flutter dependency is now added '
+              'and mini template type is planned for removal',
+        );
 
         test(
           'then the flutter pubspec does not contain override for flutter secure storage',
@@ -704,16 +720,19 @@ void main() async {
             final content = pubspec.readAsStringSync();
             expect(content, isNot(contains('flutter_secure_storage')));
           },
+          skip:
+              'flutter_secure_storage override is now in the template '
+              'and mini template type is planned for removal',
         );
 
-        test('then the flutter main.dart does not contain auth imports', () {
+        test('then the flutter main.dart contains auth imports', () {
           final (:serverDir, :flutterDir, :clientDir) =
               createProjectFolderPaths(projectName);
           final mainFile = File(
             path.join(tempPath, flutterDir, 'lib', 'main.dart'),
           );
           final content = mainFile.readAsStringSync();
-          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+          expect(content, contains('serverpod_auth_idp_flutter'));
         });
 
         test('then the email_idp_endpoint.dart does not exist', () {
