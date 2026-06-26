@@ -416,6 +416,7 @@ class ModelParser {
     );
 
     var isRequired = _parseIsRequired(node);
+    var isTail = _parseIsTail(node);
     var uniquePerFieldNames = _parseUniqueField(node);
 
     return [
@@ -429,6 +430,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
+        isTail: isTail,
         columnNameOverride: columnNameOverride,
         jsonKeyOverride: jsonKeyOverride,
         uniquePerFieldNames: uniquePerFieldNames,
@@ -561,6 +563,10 @@ class ModelParser {
 
   static bool _parseIsRequired(YamlMap node) {
     return _parseBooleanKey(node, Keyword.requiredKey);
+  }
+
+  static bool _parseIsTail(YamlMap node) {
+    return _parseBooleanKey(node, Keyword.tail);
   }
 
   static List<String>? _parseUniqueField(YamlMap node) {

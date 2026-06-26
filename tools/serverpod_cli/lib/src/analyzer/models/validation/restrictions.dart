@@ -2088,6 +2088,23 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateTailKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    if (parentNodeName == defaultPrimaryKeyName) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.tail}" keyword is not allowed on the "id" field.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validatePersistKey(
     String parentNodeName,
     String relation,

@@ -101,11 +101,13 @@ sealed class ClassDefinition extends SerializableModelDefinition {
       parentClass?.fieldsIncludingInherited.toList() ?? [];
 
   /// Returns a list of all fields in this class, including inherited fields.
+  /// Non-tail fields are ordered top-down through the inheritance chain. Tail
+  /// fields are ordered bottom-up so that root parent tail fields appear last.
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    return [
-      ...inheritedFields,
-      ...fields,
-    ];
+    return _fieldsWithTailFieldsLast(
+      inheritedFields: inheritedFields,
+      fields: fields,
+    );
   }
 
   /// Returns `true` if this class is a parent class or sealed.
@@ -255,17 +257,21 @@ final class ModelClassDefinition extends ClassDefinition {
       parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the
-  /// beginning of the list.
+  /// It ensures that the 'id' field, if present on this class, is always
+  /// included at the beginning of the list. Non-tail fields are ordered
+  /// top-down through the inheritance chain. Tail fields are ordered bottom-up
+  /// so that root parent tail fields appear last.
   @override
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
-    bool hasIdField = fields.any((element) => element.name == 'id');
+    final idField = fields
+        .where((element) => element.name == defaultPrimaryKeyName)
+        .firstOrNull;
 
-    return [
-      if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
-      ...inheritedFields,
-      ...fields.where((element) => element.name != 'id'),
-    ];
+    return _fieldsWithTailFieldsLast(
+      firstField: idField,
+      inheritedFields: inheritedFields,
+      fields: fields.where((element) => element.name != defaultPrimaryKeyName),
+    );
   }
 
   /// Returns a list of all indexes declared in the parent class.
@@ -371,6 +377,11 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// When true, this field is placed at the end of the combined field list
+  /// when inherited. Tail fields from child classes appear before tail fields
+  /// from parent classes.
+  final bool isTail;
+
   /// Name of the column in the database
   final String? _columnNameOverride;
 
@@ -412,6 +423,7 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
+    this.isTail = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
     this.uniquePerFieldNames,
@@ -916,3 +928,15 @@ const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
 const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
+
+List<SerializableModelFieldDefinition> _fieldsWithTailFieldsLast({
+  SerializableModelFieldDefinition? firstField,
+  required Iterable<SerializableModelFieldDefinition> inheritedFields,
+  required Iterable<SerializableModelFieldDefinition> fields,
+}) => [
+  ?firstField,
+  ...inheritedFields.where((field) => !field.isTail),
+  ...fields.where((field) => !field.isTail),
+  ...fields.where((field) => field.isTail),
+  ...inheritedFields.where((field) => field.isTail),
+];
