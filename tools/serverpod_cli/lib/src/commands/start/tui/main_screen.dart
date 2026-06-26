@@ -18,6 +18,7 @@ class MainScreen extends StatelessComponent {
     this.showSplash = false,
     required this.rawScrollController,
     required this.helpScrollController,
+    required this.appPanelScrollController,
     this.onToggleHelp,
     this.onHotReload,
     this.onHotRestart,
@@ -34,6 +35,7 @@ class MainScreen extends StatelessComponent {
   final bool showSplash;
   final ScrollController rawScrollController;
   final ScrollController helpScrollController;
+  final ScrollController appPanelScrollController;
   final VoidCallback? onToggleHelp;
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
@@ -51,40 +53,23 @@ class MainScreen extends StatelessComponent {
     (
       'Navigation',
       [
-        ('↑ / k', 'Scroll up'),
-        ('↓ / j / Enter', 'Scroll down'),
-        ('Shift+↑', 'Scroll up ¼ screen'),
-        ('Shift+↓', 'Scroll down ¼ screen'),
-        ('u / Ctrl+u', 'Scroll up ½ screen'),
-        ('d / Ctrl+d', 'Scroll down ½ screen'),
-        ('PgUp / b / Backspace', 'Scroll up one screen'),
-        ('PgDn / Space / f', 'Scroll down one screen'),
-        ('Home / g', 'Go to start'),
-        ('End / G', 'Go to end'),
-      ],
-    ),
-    (
-      'Tabs',
-      [
-        ('Tab / Shift+Tab / ← / →', 'Cycle tabs'),
-        ('1–9', 'Jump to tab'),
+        ('G', 'Scroll to top'),
+        ('Shift+G', 'Scroll to bottom'),
+        ('Tab', 'Switch tabs'),
       ],
     ),
     (
       'Actions',
       [
-        if (state.watchModeEnabled)
-          ('R', 'Hot restart')
-        else
-          ('R / Shift+R', 'Hot reload / restart'),
-        if (state.canLaunchApps) ('Ctrl+R', 'Launch app…'),
-        ('M / Shift+M', 'Create migration (⇧ = force)'),
-        ('P / Shift+P', 'Repair migration (⇧ = force)'),
-        ('A', 'Apply migrations'),
-        ('e', 'Expand / collapse stack traces'),
-        ('` / .', 'Show raw server logs'),
-        ('L', 'Clear logs'),
-        ('Q', 'Quit'),
+        if (state.canLaunchApps)
+          (
+            'Ctrl+R',
+            state.launchableApps.length == 1 ? 'Launch app' : 'Launch apps',
+          ),
+        ('Shift+M', 'Force Create migration'),
+        ('Shift+P', 'Force Repair migration'),
+        ('E', 'Expand / collapse stack traces'),
+        ('S', 'Show raw server logs'),
       ],
     ),
   ];
@@ -99,61 +84,53 @@ class MainScreen extends StatelessComponent {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: BorderedBox(
-                child: state.showRawServerLogs
-                    ? _buildRawServerLogsPanel(st)
-                    : LayoutBuilder(
-                        builder: (context, constraints) {
-                          state.contentWidth = constraints.maxWidth;
+              child: Stack(
+                children: [
+                  BorderedBox(
+                    child: state.showRawServerLogs
+                        ? _buildRawServerLogsPanel(st)
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              state.contentWidth = constraints.maxWidth;
 
-                          return Column(
-                            children: [
-                              Expanded(
-                                child: state.useSideBySideLayout
-                                    ? Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          for (
-                                            var i = 0;
-                                            i < state.tabs.areas.length;
-                                            i++
-                                          ) ...[
-                                            if (i > 0)
-                                              VerticalDivider(
-                                                color: st.subtleDivider,
-                                                width: 1,
-                                                thickness: 1,
-                                              ),
-                                            Expanded(
-                                              flex: state.tabs.areas[i].flex,
-                                              child: _buildAreaPane(
-                                                st,
-                                                state.tabs.areas[i],
-                                                i,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      )
-                                    : _buildMergedColumn(st),
-                              ),
-                              if (state.activeOperations.isNotEmpty)
-                                ...state.activeOperations.values.map(
-                                  (op) => TrackedOperationWidget(
-                                    key: ValueKey(op.id),
-                                    operation: op,
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: state.useSideBySideLayout
+                                        ? _buildSideBySideLayout(
+                                            st,
+                                            constraints,
+                                          )
+                                        : _buildMergedColumn(st),
                                   ),
-                                ),
-                              if (state.alert case final alert?) ...[
-                                const SizedBox(height: 1),
-                                Divider(color: st.subtleDivider),
-                                AlertLine(alert: alert, time: state.alertTime),
-                              ],
-                            ],
-                          );
-                        },
-                      ),
+                                  if (state.activeOperations.isNotEmpty)
+                                    ...state.activeOperations.values.map(
+                                      (op) => TrackedOperationWidget(
+                                        key: ValueKey(op.id),
+                                        operation: op,
+                                      ),
+                                    ),
+                                  if (state.alert case final alert?) ...[
+                                    const SizedBox(height: 1),
+                                    Divider(color: st.subtleDivider),
+                                    AlertLine(
+                                      alert: alert,
+                                      time: state.alertTime,
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          ),
+                  ),
+                  if (state.showLaunchPanel)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: _buildLaunchPanel(st),
+                    ),
+                ],
               ),
             ),
             _buildButtonBar(),
@@ -166,13 +143,45 @@ class MainScreen extends StatelessComponent {
             closeKey: 'Esc',
             controller: helpScrollController,
           ),
-        if (state.showLaunchPanel)
-          Positioned(
-            top: 0,
-            right: 0,
-            bottom: 1,
-            child: _buildLaunchPanel(st),
-          ),
+      ],
+    );
+  }
+
+  Component _buildSideBySideLayout(
+    ServerpodThemeData st,
+    BoxConstraints constraints,
+  ) {
+    final tabAreas = state.tabs.areas;
+    final tabAreasCount = tabAreas.length;
+    final dividerPositionFactor = (1 / tabAreasCount) * 0.99;
+
+    // Stack is used here to position the dividers correctly,
+    // removing small gaps between the area panes and dividers.
+    return Stack(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < tabAreasCount; i++)
+              Expanded(
+                flex: tabAreas[i].flex,
+                child: _buildAreaPane(st, tabAreas[i], i),
+              ),
+          ],
+        ),
+        if (tabAreasCount > 1)
+          for (var i = 1; i <= tabAreasCount - 1; i++)
+            Positioned(
+              left: constraints.maxWidth * dividerPositionFactor * i,
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: VerticalDivider(
+                  color: st.subtleDivider,
+                  width: 1,
+                  thickness: 1,
+                ),
+              ),
+            ),
       ],
     );
   }
@@ -181,16 +190,14 @@ class MainScreen extends StatelessComponent {
     final apps = state.launchableApps;
     final isRunning = state.isAppRunning;
 
-    // The title tracks the highlighted row: a running app is relaunched, a
+    // The enterAction tracks the highlighted row: a running app is relaunched, a
     // stopped one is launched — matching what pressing Enter does.
     final focusedIndex = apps.isEmpty
         ? -1
         : state.launchPanelIndex.clamp(0, apps.length - 1);
     final focusedRunning =
         focusedIndex >= 0 && (isRunning?.call(apps[focusedIndex].id) ?? false);
-    final title = focusedRunning ? 'Relaunch app' : 'Launch app';
-
-    const legendStyle = TextStyle(fontWeight: FontWeight.dim);
+    final enterAction = focusedRunning ? 'Relaunch app' : 'Launch app';
 
     return Align(
       alignment: Alignment.topRight,
@@ -202,45 +209,76 @@ class MainScreen extends StatelessComponent {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 1, top: 1),
+                padding: const EdgeInsets.only(left: 1),
                 child: Text(
-                  title,
+                  'Apps',
                   style: TextStyle(
-                    color: st.primary,
-                    fontWeight: FontWeight.bold,
+                    color: st.brightText,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ),
-              Divider(color: st.subtleDivider),
+              const Divider(),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < apps.length; i++)
-                      _buildLaunchAppRow(
-                        st,
-                        i,
-                        isRunning,
-                        state.isAppLaunching,
-                      ),
-                  ],
+                child: Scrollbar(
+                  controller: appPanelScrollController,
+                  thumbVisibility: true,
+                  child: ListView(
+                    controller: appPanelScrollController,
+                    children: [
+                      for (var i = 0; i < apps.length; i++)
+                        _buildLaunchAppRow(
+                          st,
+                          i,
+                          isRunning,
+                          state.isAppLaunching,
+                        ),
+                    ],
+                  ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 1, bottom: 1),
+                padding: const EdgeInsets.only(left: 1, bottom: 1, top: 1),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final line in [
-                      '1–${apps.length} / click · launch app',
-                      '↑↓ · navigate',
-                      'enter · ${title.split(' ').first.toLowerCase()}',
-                      if (focusedRunning) 'x · stop app',
-                      'esc · close panel',
+                    Text(
+                      '💡 Click app to launch',
+                      style: TextStyle(color: st.brightText),
+                    ),
+                    const SizedBox(height: 1),
+                    for (final (key, desc, enabled) in [
+                      ('↑↓', 'Navigate', true),
+                      ('Enter', enterAction, true),
+                      ('X', 'Stop app', focusedRunning),
+                      ('Esc', 'Close', true),
                     ])
-                      Text(
-                        line,
-                        style: legendStyle.copyWith(color: st.debugLevel),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 8,
+                            child: Text(
+                              key,
+                              style: TextStyle(
+                                color: enabled
+                                    ? st.activationKey
+                                    : st.subtleDivider,
+                                fontWeight: enabled
+                                    ? FontWeight.bold
+                                    : FontWeight.dim,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            desc,
+                            style: TextStyle(
+                              color: st.brightText,
+                              fontWeight: enabled
+                                  ? FontWeight.normal
+                                  : FontWeight.dim,
+                            ),
+                          ),
+                        ],
                       ),
                   ],
                 ),
@@ -280,7 +318,10 @@ class MainScreen extends StatelessComponent {
         : st.debugLevel;
 
     return GestureDetector(
-      onTap: () => onLaunchApp?.call(i),
+      onTap: () {
+        state.launchPanelIndex = i;
+        onLaunchApp?.call(i);
+      },
       child: Padding(
         padding: const EdgeInsets.only(left: 1),
         child: Row(
@@ -294,11 +335,14 @@ class MainScreen extends StatelessComponent {
                 color: background,
                 child: Row(
                   children: [
-                    Text(
-                      ' ${i < 9 ? '${i + 1}' : ' '}  ',
-                      style: TextStyle(
-                        color: focused ? st.brightText : st.debugLevel,
-                        fontWeight: weight,
+                    SizedBox(
+                      width: 3,
+                      child: Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          color: focused ? st.brightText : st.debugLevel,
+                          fontWeight: weight,
+                        ),
                       ),
                     ),
                     Text(
@@ -330,17 +374,14 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: TabBar(
-            labels: [for (final tab in area.tabs) tab.label],
-            selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
-            onTabChanged: (index) {
-              area.selectedIndex = index;
-              state.tabs.focusedAreaIndex = areaIndex;
-              onTabSelected?.call();
-            },
-          ),
+        TabBar(
+          labels: [for (final tab in area.tabs) tab.label],
+          selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
+          onTabChanged: (index) {
+            area.selectedIndex = index;
+            state.tabs.focusedAreaIndex = areaIndex;
+            onTabSelected?.call();
+          },
         ),
         Expanded(child: _buildTabContent(st, selected)),
       ],
@@ -357,16 +398,13 @@ class MainScreen extends StatelessComponent {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: TabBar(
-            labels: [for (final tab in all) tab.label],
-            selectedTab: selected,
-            onTabChanged: (index) {
-              state.tabs.focusTab(all[index]);
-              onTabSelected?.call();
-            },
-          ),
+        TabBar(
+          labels: [for (final tab in all) tab.label],
+          selectedTab: selected,
+          onTabChanged: (index) {
+            state.tabs.focusTab(all[index]);
+            onTabSelected?.call();
+          },
         ),
         Expanded(child: _buildTabContent(st, all[selected])),
       ],
@@ -386,11 +424,7 @@ class MainScreen extends StatelessComponent {
 
   Component _buildTabContent(ServerpodThemeData st, PaneTab tab) {
     return switch (tab) {
-      ServerLogTab() => Column(
-        children: [
-          Expanded(child: _buildStructuredLogView(tab.scrollController)),
-        ],
-      ),
+      ServerLogTab() => _buildStructuredLogView(tab.scrollController),
       AppLogTab appTab => Column(
         children: [
           ?_buildFlutterStatusLine(st, appTab),
@@ -415,52 +449,87 @@ class MainScreen extends StatelessComponent {
       fontWeight: FontWeight.dim,
     );
 
-    String? value;
+    Component indicator = const SizedBox.shrink();
+
     if (tab.ready) {
-      value = tab.url ?? 'ready';
+      indicator = Text(tab.url ?? 'App running', style: mutedText);
+    } else if (tab.stopped) {
+      indicator = RichText(
+        text: TextSpan(
+          text: 'App stopped. Press ',
+          style: mutedText,
+          children: [
+            TextSpan(
+              text: 'X',
+              style: TextStyle(
+                color: st.activationKey,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            const TextSpan(text: ' to close tab'),
+          ],
+        ),
+      );
     } else {
-      value = tab.startupStage;
+      var value = tab.startupStage;
+      if (value != null) {
+        if (value.contains('.')) {
+          value = value.replaceFirst(RegExp(r'\.+$'), '');
+        }
+        indicator = Text(value, style: mutedText);
+      }
     }
-    if (value == null) return null;
+
+    Component child = Row(
+      children: [
+        Text(' ${tab.label}', style: mutedText),
+        Text(' │ ', style: separatorStyle),
+        indicator,
+      ],
+    );
+
+    if (!tab.ready & !tab.stopped) {
+      child = Shimmer(child: child);
+    }
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 1),
-          child: Row(
-            children: [
-              Text(' ${tab.label}', style: mutedText),
-              Text(' │ ', style: separatorStyle),
-              Text(value, style: mutedText),
-            ],
-          ),
-        ),
+        Padding(padding: const EdgeInsets.only(left: 1), child: child),
         Divider(color: st.subtleDivider),
       ],
     );
   }
 
   /// The raw server logs "dev console", shown as a full-area overlay when
-  /// toggled via the backtick (`` ` ``) shortcut.
+  /// toggled via the key S shortcut.
   Component _buildRawServerLogsPanel(ServerpodThemeData st) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 1),
-          child: Row(
-            children: [
-              Text(
-                'Raw server logs',
-                style: TextStyle(
-                  color: st.primary,
-                  fontWeight: FontWeight.bold,
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(fontWeight: FontWeight.dim),
+              children: [
+                TextSpan(
+                  text: 'Raw server logs',
+                  style: TextStyle(
+                    color: st.brightText,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
-              ),
-              const Text(
-                '  press ` / . or Esc to close',
-                style: TextStyle(fontWeight: FontWeight.dim),
-              ),
-            ],
+                const TextSpan(text: '  press '),
+                TextSpan(
+                  text: 'Esc',
+                  style: TextStyle(
+                    color: st.activationKey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const TextSpan(text: ' to close'),
+              ],
+            ),
           ),
         ),
         Divider(color: st.subtleDivider),

@@ -41,6 +41,7 @@ class FlutterAppManager {
     required this.onProgress,
     required this.onReady,
     required this.onStart,
+    required this.onStop,
     required this.onLaunchFailed,
     required this.onEnsureAppTab,
     required this.stdoutSinkFor,
@@ -83,11 +84,9 @@ class FlutterAppManager {
   final String runMode;
   final void Function(FlutterAppConfig app, String stage) onProgress;
   final void Function(FlutterAppConfig app, String url) onReady;
-  final Future<void> Function(
-    FlutterAppConfig app,
-    FlutterProcess process,
-  )
+  final Future<void> Function(FlutterAppConfig app, FlutterProcess process)
   onStart;
+  final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
   final void Function(FlutterAppConfig app) onEnsureAppTab;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
@@ -290,9 +289,11 @@ class FlutterAppManager {
   Future<void> stop(String appId) async {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
+    final app = runtime.app;
     runtime.relaunchInProgress = false;
     await runtime.process?.stop();
     runtime.process = null;
+    onStop(app);
   }
 
   /// Loads configured apps from [serverPubspecFile].

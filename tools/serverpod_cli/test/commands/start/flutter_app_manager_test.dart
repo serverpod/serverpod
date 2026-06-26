@@ -126,6 +126,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (app) => launchedAppId = app.id,
         stdoutSinkFor: (_) => stdout,
@@ -349,6 +350,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (app) => sinkFor(sinkLines[app.id]!),
@@ -385,6 +387,8 @@ serverpod:
       // Completed by onReady once the shim publishes its web URL, so the test
       // waits for exactly that event rather than a fixed duration.
       late Completer<String> ready;
+      // Completed by onStop.
+      late Completer<void> stop;
 
       setUp(() async {
         tempDir = await Directory.systemTemp.createTemp('flutter_mgr_shim_');
@@ -418,6 +422,8 @@ serverpod:
 ''');
 
         ready = Completer<String>();
+        stop = Completer<void>();
+        ready = Completer<String>();
         manager = FlutterAppManager(
           projectName: 'project',
           launchFlutterApp: false,
@@ -428,6 +434,7 @@ serverpod:
           onProgress: (_, _) {},
           onReady: (_, url) => ready.complete(url),
           onStart: (_, _) async {},
+          onStop: (_) => stop.complete(),
           onLaunchFailed: (_) {},
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -462,24 +469,34 @@ serverpod:
         },
       );
 
-      test(
-        'when the app is stopped then its published DTD URI is no longer '
-        'reported by dtdUris',
-        () async {
-          await manager.launch(app.id);
-          await ready.future.timeout(const Duration(seconds: 30));
-          // onReady fires on the web URL, which the shim emits before app.dtd,
-          // so wait until the DTD URI has been parsed too.
-          await _eventually(() => manager.dtdUris['project'] != null);
+      group(
+        'when the app is stopped',
+        () {
+          setUp(() async {
+            await manager.launch(app.id);
+            await ready.future.timeout(const Duration(seconds: 30));
+            // onReady fires on the web URL, which the shim emits before app.dtd,
+            // so wait until the DTD URI has been parsed too.
+            await _eventually(() => manager.dtdUris['project'] != null);
 
-          // The shim emits app.dtd, so the running app reports its DTD URI.
-          expect(manager.dtdUris, {'project': 'ws://127.0.0.1:9100/ws'});
+            // The shim emits app.dtd, so the running app reports its DTD URI.
+            expect(manager.dtdUris, {'project': 'ws://127.0.0.1:9100/ws'});
 
-          await manager.stop(app.id);
+            await manager.stop(app.id);
+          });
 
-          // Stopping the app drops it from the map that backs the
-          // get_flutter_app_dtd MCP tool, so its DTD URI is no longer returned.
-          expect(manager.dtdUris, isEmpty);
+          test(
+            'then its published DTD URI is no longer reported by dtdUris',
+            () {
+              // Stopping the app drops it from the map that backs the
+              // get_flutter_app_dtd MCP tool, so its DTD URI is no longer returned.
+              expect(manager.dtdUris, isEmpty);
+            },
+          );
+
+          test('then onStop fires', () {
+            expect(stop.future, completes);
+          });
         },
       );
     },
@@ -537,6 +554,7 @@ serverpod:
           onProgress: (_, _) {},
           onReady: (_, _) => readyCalls++,
           onStart: (_, _) async {},
+          onStop: (_) {},
           onLaunchFailed: (app) => launchFailed.complete(app),
           onEnsureAppTab: (_) {},
           stdoutSinkFor: (_) => stdout,
@@ -617,6 +635,7 @@ serverpod:
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (_) => stdout,

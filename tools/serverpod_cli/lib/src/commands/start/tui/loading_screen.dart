@@ -108,7 +108,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     required Color highlightColor,
   }) {
     return Container(
-      margin: const EdgeInsets.all(2),
+      margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
       child: Shimmer(
         highlightColor: highlightColor,
         baseColor: baseColor,

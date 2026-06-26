@@ -187,6 +187,7 @@ void main() {
         onProgress: (_, _) {},
         onReady: (_, _) {},
         onStart: (_, _) async {},
+        onStop: (_) {},
         onLaunchFailed: (_) {},
         onEnsureAppTab: (_) {},
         stdoutSinkFor: (_) => stdout,
