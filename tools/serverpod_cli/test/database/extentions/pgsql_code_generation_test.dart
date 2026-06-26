@@ -452,6 +452,35 @@ END
         );
       },
     );
+
+    for (var indexType in ['gist', 'spgist']) {
+      test(
+        'when defining a $indexType index on a geography field, then the SQL should use $indexType with no operator class.',
+        () {
+          var indexName = '${modelName}_location_${indexType}_idx';
+          var index = IndexDefinitionBuilder()
+              .withIndexName(indexName)
+              .withElements([
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'location',
+                ),
+              ])
+              .withType(indexType)
+              .withIsUnique(false)
+              .withIsPrimary(false)
+              .build();
+
+          var sql = index.toPgSql(tableName: tableDefinition.name);
+
+          expect(
+            sql,
+            'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+            'USING $indexType ("location");\n',
+          );
+        },
+      );
+    }
   });
 
   group('Given a table definition with a half vector field', () {

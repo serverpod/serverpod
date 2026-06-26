@@ -555,4 +555,84 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with an index that mixes geography and non-geography fields, then collect an error that mixing is not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+            location: GeographyPoint
+          indexes:
+            example_index:
+              fields: name, location
+              type: gist
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.firstWhere(
+        (e) => e.message.contains('Mixing geography and non-geography'),
+      );
+
+      expect(
+        error.message,
+        'Mixing geography and non-geography fields in the same index is not '
+        'allowed.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with an index containing more than one geography field, then no mixing error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            origin: GeographyPoint
+            destination: GeographyPoint
+          indexes:
+            example_index:
+              fields: origin, destination
+              type: gist
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+    },
+  );
 }

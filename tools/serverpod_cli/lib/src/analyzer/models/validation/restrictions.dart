@@ -1758,10 +1758,25 @@ class Restrictions {
         ),
     ];
 
+    var hasGeographyField = fields
+        .where((f) => indexFields.contains(f.name))
+        .map((f) => f.type.isGeographyType)
+        .toSet();
+
+    var geographyErrors = [
+      if (hasGeographyField.length > 1)
+        SourceSpanSeverityException(
+          'Mixing geography and non-geography fields in the same index is not '
+          'allowed.',
+          span,
+        ),
+    ];
+
     return [
       ...missingFieldErrors,
       ...duplicateFieldErrors,
       ...vectorErrors,
+      ...geographyErrors,
     ];
   }
 
@@ -1948,6 +1963,10 @@ class Restrictions {
 
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
+      }
+
+      if (indexFields.any((e) => e.type.isGeographyType)) {
+        validIndexTypes = {'gist', 'spgist'};
       }
 
       if (content == 'gin') {
