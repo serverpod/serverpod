@@ -54,6 +54,15 @@ void main() {
         expect(stopwatch.elapsed, lessThan(const Duration(seconds: 2)));
       },
     );
+
+    test(
+      'when getting the connection without a reachable Redis server, '
+      'then null is returned.',
+      () async {
+        final connection = await controller.getConnection();
+        expect(connection, isNull);
+      },
+    );
   });
 
   group(
