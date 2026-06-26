@@ -229,17 +229,25 @@ class _CommandDocumentationGenerator {
 
   StringBuffer _generateCommandPage(final Command command) {
     final StringBuffer markdown = StringBuffer();
+
+    final hasOptions = command.argParser.options.isNotEmpty;
+    final subcommands = command.subcommands.entries
+        .where((final e) => !_excludeCommand(e.value))
+        .toList();
+
+    // Commands that forward raw arguments (e.g. `cloud`) expose no options or
+    // subcommands, so there is nothing to document beyond the maintained intro.
+    if (!hasOptions && subcommands.isEmpty) {
+      return markdown;
+    }
+
     markdown.writeln('## Usage\n');
 
-    if (command.argParser.options.isNotEmpty) {
+    if (hasOptions) {
       markdown.writeln('```console');
       markdown.writeln(_stripGlobalOptions(command.usage));
       markdown.writeln('```\n');
     }
-
-    final subcommands = command.subcommands.entries.where(
-      (final e) => !_excludeCommand(e.value),
-    );
 
     if (subcommands.isNotEmpty) {
       final numberOfSubcommands = subcommands.length;
@@ -267,6 +275,6 @@ class _CommandDocumentationGenerator {
   }
 
   bool _excludeCommand(final Command command) {
-    return command.hidden && command.name != 'help';
+    return command.hidden || command.name == 'help';
   }
 }
