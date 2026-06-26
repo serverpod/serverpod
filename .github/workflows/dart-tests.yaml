@@ -174,13 +174,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # macos-15-intel is x64 (the supported Intel image now that macos-13 is
-        # retiring). arm64 (macos-14+/-latest) segfaults a backend in the
-        # zig-built Postgres on a plain INSERT (signal 11) - an unresolved arm64
-        # codegen issue - and the x64 bundle runs on Apple Silicon via Rosetta
-        # anyway. The cache key/artifact include runner.arch, so a native arm64
-        # leg can be added back once that's fixed.
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        # Build every published <os>-<arch> (what ServerpodBundleArtifact serves via
+        # Abi.current()): x64 + arm64 on Linux/macOS, x64 on Windows. macos-15-intel
+        # is the Intel image, macos-15 Apple Silicon - both Apple clang, so the
+        # arm64-backend INSERT segfault that once kept arm64 out (zig-only; macOS no
+        # longer uses zig) no longer applies. runner.arch is in the cache key/artifact,
+        # so each arch builds, caches, and uploads independently.
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       # Cross-run cache FIRST. On a hit (recipe hash unchanged) this is the fast
@@ -327,8 +327,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4"]
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
         # Each suite bootstraps only its leaf package; melos pulls in the
         # transitive path-dependencies via --include-dependencies.
         suite:
@@ -363,10 +362,11 @@ jobs:
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # Embedded-PG suites are server-side Dart tests (`dart test`, no Flutter) -
+      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: stable
       # The bundle is built once by seed_embedded_pg (this job `needs:` it); pull
       # it in as an artifact - reliable within a run, unlike a cross-job cache
       # restore. No build toolchain needed here.
@@ -424,14 +424,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.44.4"]
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # serverpod_embedded_postgres is a Dart package (`dart test`, no Flutter) -
+      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: stable
       # Built once by seed_embedded_pg (this job `needs:` it); pulled in as an
       # artifact (reliable within a run, unlike a cross-job cache restore).
       - name: Download the seeded embedded PG bundle
