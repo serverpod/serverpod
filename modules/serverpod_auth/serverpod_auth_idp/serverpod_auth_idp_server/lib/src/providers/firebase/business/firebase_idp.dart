@@ -159,28 +159,14 @@ class FirebaseIdp implements AccountMergeHandlerProvider {
     required final UuidValue userToRemoveId,
     required final Transaction transaction,
   }) async {
-    final existingAccount = await FirebaseAccount.db.findFirstRow(
+    await FirebaseAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToKeepId),
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
       transaction: transaction,
     );
-
-    if (existingAccount != null) {
-      await FirebaseAccount.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        transaction: transaction,
-      );
-    } else {
-      await FirebaseAccount.db.updateWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        columnValues: (final t) => [
-          t.authUserId(userToKeepId),
-        ],
-        transaction: transaction,
-      );
-    }
   }
 }
 

@@ -104,7 +104,7 @@ void main() {
 
       test(
         'when EmailIdp.migrate is called then the EmailAccount '
-        'from userToRemove is deleted',
+        'from userToRemove is moved to userToKeep',
         () async {
           await session.db.transaction((final transaction) async {
             await EmailIdp.migrate(
@@ -115,12 +115,13 @@ void main() {
             );
           });
 
-          // Verify removed
-          final deletedAccount = await EmailAccount.db.findFirstRow(
+          // Verify moved
+          final movedAccount = await EmailAccount.db.findFirstRow(
             session,
             where: (final t) => t.email.equals('remove@example.com'),
           );
-          expect(deletedAccount, isNull);
+          expect(movedAccount, isNotNull);
+          expect(movedAccount!.authUserId, userToKeep.id);
 
           // Verify kept
           final keptAccount = await EmailAccount.db.findFirstRow(
@@ -217,12 +218,13 @@ void main() {
             );
           });
 
-          // Verify removed
-          final deletedAccount = await GoogleAccount.db.findFirstRow(
+          // Verify moved
+          final movedAccount = await GoogleAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('google_remove'),
           );
-          expect(deletedAccount, isNull);
+          expect(movedAccount, isNotNull);
+          expect(movedAccount!.authUserId, userToKeep.id);
 
           // Verify kept
           final keptAccount = await GoogleAccount.db.findFirstRow(
@@ -321,12 +323,13 @@ void main() {
             );
           });
 
-          // Verify removed
-          final deletedAccount = await AppleAccount.db.findFirstRow(
+          // Verify moved
+          final movedAccount = await AppleAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('apple_remove'),
           );
-          expect(deletedAccount, isNull);
+          expect(movedAccount, isNotNull);
+          expect(movedAccount!.authUserId, userToKeep.id);
 
           // Verify kept
           final keptAccount = await AppleAccount.db.findFirstRow(
@@ -419,12 +422,13 @@ void main() {
             );
           });
 
-          // Verify removed
-          final deletedAccount = await FirebaseAccount.db.findFirstRow(
+          // Verify moved
+          final movedAccount = await FirebaseAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('firebase_remove'),
           );
-          expect(deletedAccount, isNull);
+          expect(movedAccount, isNotNull);
+          expect(movedAccount!.authUserId, userToKeep.id);
 
           // Verify kept
           final keptAccount = await FirebaseAccount.db.findFirstRow(
@@ -517,12 +521,13 @@ void main() {
             );
           });
 
-          // Verify removed
-          final deletedAccount = await GitHubAccount.db.findFirstRow(
+          // Verify moved
+          final movedAccount = await GitHubAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('github_remove'),
           );
-          expect(deletedAccount, isNull);
+          expect(movedAccount, isNotNull);
+          expect(movedAccount!.authUserId, userToKeep.id);
 
           // Verify kept
           final keptAccount = await GitHubAccount.db.findFirstRow(
@@ -708,7 +713,7 @@ void main() {
       });
 
       test(
-        'when FacebookIdp.migrate is called then the FacebookAccount from userToRemove is deleted',
+        'when FacebookIdp.migrate is called then the FacebookAccount from userToRemove is moved to userToKeep',
         () async {
           await session.db.transaction((final transaction) async {
             await FacebookIdp.migrate(
@@ -791,7 +796,7 @@ void main() {
       });
 
       test(
-        'when MicrosoftIdp.migrate is called then the MicrosoftAccount from userToRemove is deleted',
+        'when MicrosoftIdp.migrate is called then the MicrosoftAccount from userToRemove is moved to userToKeep',
         () async {
           await session.db.transaction((final transaction) async {
             await MicrosoftIdp.migrate(
@@ -874,7 +879,7 @@ void main() {
       });
 
       test(
-        'when PasskeyIdp.migrate is called then the PasskeyAccount from userToRemove is deleted',
+        'when PasskeyIdp.migrate is called then the PasskeyAccount from userToRemove is moved to userToKeep',
         () async {
           await session.db.transaction((final transaction) async {
             await PasskeyIdp.migrate(

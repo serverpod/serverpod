@@ -38,28 +38,14 @@ class PasskeyIdp implements AccountMergeHandlerProvider {
     required final UuidValue userToRemoveId,
     required final Transaction transaction,
   }) async {
-    final existingAccount = await PasskeyAccount.db.findFirstRow(
+    await PasskeyAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToKeepId),
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
       transaction: transaction,
     );
-
-    if (existingAccount != null) {
-      await PasskeyAccount.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        transaction: transaction,
-      );
-    } else {
-      await PasskeyAccount.db.updateWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        columnValues: (final t) => [
-          t.authUserId(userToKeepId),
-        ],
-        transaction: transaction,
-      );
-    }
   }
 
   PasskeyIdp._(

@@ -150,28 +150,14 @@ class AppleIdp implements AccountMergeHandlerProvider {
     required final UuidValue userToRemoveId,
     required final Transaction transaction,
   }) async {
-    final existingAccount = await AppleAccount.db.findFirstRow(
+    await AppleAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToKeepId),
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
       transaction: transaction,
     );
-
-    if (existingAccount != null) {
-      await AppleAccount.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        transaction: transaction,
-      );
-    } else {
-      await AppleAccount.db.updateWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        columnValues: (final t) => [
-          t.authUserId(userToKeepId),
-        ],
-        transaction: transaction,
-      );
-    }
   }
 
   /// {@macro apple_idp.revokedNotificationRoute}

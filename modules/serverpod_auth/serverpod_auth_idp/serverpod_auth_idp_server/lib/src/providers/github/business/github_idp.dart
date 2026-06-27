@@ -161,34 +161,21 @@ class GitHubIdp implements AccountMergeHandlerProvider {
   ///
   /// If [userToKeep] does not have a [GitHubAccount], the [GitHubAccount] of
   /// [userToRemove] will be transferred to [userToKeep].
+  /// The [GitHubAccount] of [userToRemove] will be transferred to [userToKeep].
   static Future<void> migrate(
     final Session session, {
     required final UuidValue userToKeepId,
     required final UuidValue userToRemoveId,
     required final Transaction transaction,
   }) async {
-    final existingAccount = await GitHubAccount.db.findFirstRow(
+    await GitHubAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToKeepId),
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
       transaction: transaction,
     );
-
-    if (existingAccount != null) {
-      await GitHubAccount.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        transaction: transaction,
-      );
-    } else {
-      await GitHubAccount.db.updateWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        columnValues: (final t) => [
-          t.authUserId(userToKeepId),
-        ],
-        transaction: transaction,
-      );
-    }
   }
 }
 

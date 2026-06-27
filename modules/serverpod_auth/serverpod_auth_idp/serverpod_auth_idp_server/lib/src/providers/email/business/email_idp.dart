@@ -314,28 +314,14 @@ class EmailIdp implements AccountMergeHandlerProvider {
     required final UuidValue userToRemoveId,
     required final Transaction transaction,
   }) async {
-    final existingAccount = await EmailAccount.db.findFirstRow(
+    await EmailAccount.db.updateWhere(
       session,
-      where: (final t) => t.authUserId.equals(userToKeepId),
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
       transaction: transaction,
     );
-
-    if (existingAccount != null) {
-      await EmailAccount.db.deleteWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        transaction: transaction,
-      );
-    } else {
-      await EmailAccount.db.updateWhere(
-        session,
-        where: (final t) => t.authUserId.equals(userToRemoveId),
-        columnValues: (final t) => [
-          t.authUserId(userToKeepId),
-        ],
-        transaction: transaction,
-      );
-    }
   }
 }
 
