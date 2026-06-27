@@ -124,6 +124,38 @@ void main() {
       );
 
       test(
+        'when userToRemove has server side sessions, then they are moved to userToKeep.',
+        () async {
+          final userToKeep = await authUsers.create(session);
+          final userToRemove = await authUsers.create(session);
+
+          await ServerSideSession.db.insertRow(
+            session,
+            ServerSideSession(
+              authUserId: userToRemove.id,
+              scopeNames: {},
+              sessionKeyHash: ByteData(16),
+              sessionKeySalt: ByteData(16),
+              method: 'test',
+            ),
+          );
+
+          await session.db.transaction(
+            (final transaction) async =>
+                AccountMergeConfig.defaultCoreDataMergeHandler(
+                  session,
+                  userToKeepId: userToKeep.id,
+                  userToRemoveId: userToRemove.id,
+                  transaction: transaction,
+                ),
+          );
+
+          final serverSideSession = await ServerSideSession.db.findFirstRow(session);
+          expect(serverSideSession?.authUserId, userToKeep.id);
+        },
+      );
+
+      test(
         'when userToRemove has a profile and userToKeep does not, then the profile is moved to userToKeep.',
         () async {
           final userToKeep = await authUsers.create(session);

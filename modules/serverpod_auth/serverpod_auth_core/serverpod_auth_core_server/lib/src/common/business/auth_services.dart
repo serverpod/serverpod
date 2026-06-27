@@ -16,7 +16,8 @@ class AuthServices {
     final localInstance = _instance;
     if (localInstance == null) {
       throw StateError(
-        'AuthServices is not set. Call AuthServices.set() to initialize it before accessing the instance.',
+        'AuthServices is not set. Call AuthServices.set() to initialize it '
+        'before accessing the instance.',
       );
     }
 

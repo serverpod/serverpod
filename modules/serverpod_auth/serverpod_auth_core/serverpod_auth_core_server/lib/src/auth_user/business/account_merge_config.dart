@@ -186,6 +186,14 @@ class AccountMergeConfig {
       transaction: transaction,
     );
 
+    // Move Server-Side Sessions
+    await ServerSideSession.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemove.id),
+      columnValues: (final t) => [t.authUserId(userToKeep!.id!)],
+      transaction: transaction,
+    );
+
     // Load existing profiles
     final profiles = await Future.wait([
       UserProfile.db.findFirstRow(
