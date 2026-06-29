@@ -3,11 +3,11 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/firebase.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
-import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
@@ -598,7 +598,7 @@ void main() {
         // Initialize AuthServices with a dummy provider that migrates both Apple and Google accounts
         AuthServices.set(
           tokenManagerBuilders: [
-            ServerSideSessionsConfig(sessionKeyHashPepper: 'pepper'),
+            ServerSideSessionsConfig(sessionKeyHashPepper: 'pepper_12345'),
           ],
           identityProviderBuilders: [
             PreBuiltIdpBuilder(TestMergeIdp()),
@@ -909,7 +909,7 @@ void main() {
         final accountToRemove = PasskeyAccount(
           authUserId: userToRemove.id,
           keyId: ByteData(16),
-          keyIdBase64: 'base64',
+          keyIdBase64: 'base64_2',
           clientDataJSON: ByteData(16),
           attestationObject: ByteData(16),
           originalChallenge: ByteData(16),
@@ -929,17 +929,17 @@ void main() {
             );
           });
 
-          final keptAccount = await PasskeyAccount.db.findFirstRow(
+          final keptAccounts = await PasskeyAccount.db.find(
             session,
             where: (final t) => t.authUserId.equals(userToKeep.id),
           );
-          expect(keptAccount, isNotNull);
+          expect(keptAccounts, hasLength(2));
 
-          final deletedAccount = await PasskeyAccount.db.findFirstRow(
+          final deletedAccounts = await PasskeyAccount.db.find(
             session,
             where: (final t) => t.authUserId.equals(userToRemove.id),
           );
-          expect(deletedAccount, isNull);
+          expect(deletedAccounts, isEmpty);
         },
       );
     },
