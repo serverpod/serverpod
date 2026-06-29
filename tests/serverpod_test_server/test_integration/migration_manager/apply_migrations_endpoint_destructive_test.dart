@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod/src/endpoints/insights.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -13,7 +12,6 @@ import '../test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given a pending regular migration with a new protocol model',
     (sessionBuilder, _) async {
       const tableName = 'endpoint_destructive_test_migrated_table';
@@ -79,7 +77,6 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given a pending repair migration',
     (sessionBuilder, _) async {
       const tableName = 'endpoint_destructive_test_repair_table';
