@@ -3,9 +3,19 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
+import '../../common/business/fakes/fakes.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
+  setUpAll(() {
+    AuthServices.set(
+      tokenManagerBuilders: [
+        FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
+      ],
+      identityProviderBuilders: [],
+    );
+  });
+
   const authUsers = AuthUsers();
 
   withServerpod('Given an auth user created without parameters,', (
