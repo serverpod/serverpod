@@ -18,11 +18,7 @@ void main() async {
 
   group('Given auth key in valid HTTP header format', () {
     var authKeyManager = TestBasicAuthenticationKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -31,7 +27,12 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await IntegrationTestServer.start(server);
+      client = Client(
+        IntegrationTestServer.apiUrl(server),
+        // ignore: deprecated_member_use
+        authenticationKeyManager: authKeyManager,
+      );
     });
 
     tearDown(() async {
@@ -108,11 +109,7 @@ void main() async {
 
   group('Given auth key in invalid Basic HTTP header format', () {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: incorrectAuthKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -121,7 +118,12 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await IntegrationTestServer.start(server);
+      client = Client(
+        IntegrationTestServer.apiUrl(server),
+        // ignore: deprecated_member_use
+        authenticationKeyManager: incorrectAuthKeyManager,
+      );
     });
 
     tearDown(() async {
@@ -155,11 +157,7 @@ void main() async {
 
   group('Given auth key with Bearer HTTP header format', () {
     var authKeyManager = TestAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -168,7 +166,12 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await IntegrationTestServer.start(server);
+      client = Client(
+        IntegrationTestServer.apiUrl(server),
+        // ignore: deprecated_member_use
+        authenticationKeyManager: authKeyManager,
+      );
     });
 
     tearDown(() async {

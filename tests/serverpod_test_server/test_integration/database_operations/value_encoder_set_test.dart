@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -35,7 +36,7 @@ void main() {
     );
 
     setUp(() async {
-      await pod.start();
+      await IntegrationTestServer.start(pod);
     });
 
     tearDown(() async {
@@ -80,7 +81,7 @@ void main() {
     );
 
     setUp(() async {
-      await pod.start();
+      await IntegrationTestServer.start(pod);
     });
 
     tearDown(() async {
