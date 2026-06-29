@@ -25,10 +25,7 @@ class AppleSignInButton extends StatelessWidget {
   final bool isDisabled;
 
   /// The button text variant.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [AppleButtonText.continueWith], when null.
-  final AppleButtonText? type;
+  final AppleButtonText type;
 
   /// The brand color preset (black, white, or white-outlined).
   ///
@@ -38,43 +35,33 @@ class AppleSignInButton extends StatelessWidget {
   final AppleButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
-  /// then to [AppleButtonSize.large], when null.
-  final AppleButtonSize? size;
+  final AppleButtonSize size;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill. Falls back to the shared
-  /// [SignInButtonStyle], then to [AppleButtonShape.pill], when null.
-  final AppleButtonShape? shape;
+  final AppleButtonShape shape;
 
   /// The Apple logo alignment: left or center.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [AppleButtonLogoAlignment.center], when null.
-  final AppleButtonLogoAlignment? logoAlignment;
+  final AppleButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels. Falls back to the shared
-  /// [SignInButtonStyle], then to 240, when null.
-  final double? minimumWidth;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
 
   /// Creates an Apple Sign-In button.
   const AppleSignInButton({
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type,
+    this.type = AppleButtonText.continueWith,
     this.style = AppleButtonStyle.black,
-    this.size,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = AppleButtonSize.large,
+    this.shape = AppleButtonShape.pill,
+    this.logoAlignment = AppleButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     super.key,
   }) : assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
@@ -83,17 +70,12 @@ class AppleSignInButton extends StatelessWidget {
     final localizations = context.appleSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final type =
-        this.type ?? _toAppleText(shared?.text) ?? AppleButtonText.continueWith;
-    final size =
-        this.size ?? _toAppleSize(shared?.size) ?? AppleButtonSize.large;
-    final shape =
-        this.shape ?? _toAppleShape(shared?.shape) ?? AppleButtonShape.pill;
+    final type = _toAppleText(shared?.text) ?? this.type;
+    final size = _toAppleSize(shared?.size) ?? this.size;
+    final shape = _toAppleShape(shared?.shape) ?? this.shape;
     final logoAlignment =
-        this.logoAlignment ??
-        _toAppleLogoAlignment(shared?.logoAlignment) ??
-        AppleButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+        _toAppleLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
 
     // Inside a shared style, Apple's native button can't take arbitrary colors,
     // so map the resolved background to its nearest borderless preset and

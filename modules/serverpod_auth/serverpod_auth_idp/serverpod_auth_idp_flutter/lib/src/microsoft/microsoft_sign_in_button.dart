@@ -33,21 +33,21 @@ class MicrosoftSignInButton extends StatelessWidget {
   final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
-  final MicrosoftButtonSize? size;
+  final MicrosoftButtonSize size;
 
   /// The button text.
-  final MicrosoftButtonText? text;
+  final MicrosoftButtonText text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final MicrosoftButtonShape? shape;
+  final MicrosoftButtonShape shape;
 
   /// The Microsoft logo alignment: left or center.
-  final MicrosoftButtonLogoAlignment? logoAlignment;
+  final MicrosoftButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
-  final double? minimumWidth;
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   final TextStyle? textStyle;
@@ -59,15 +59,15 @@ class MicrosoftSignInButton extends StatelessWidget {
     required this.isDisabled,
     this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size,
-    this.text,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = MicrosoftButtonSize.large,
+    this.text = MicrosoftButtonText.continueWith,
+    this.shape = MicrosoftButtonShape.pill,
+    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
@@ -76,23 +76,12 @@ class MicrosoftSignInButton extends StatelessWidget {
     final localizations = context.microsoftSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final size =
-        this.size ??
-        _toMicrosoftSize(shared?.size) ??
-        MicrosoftButtonSize.large;
-    final shape =
-        this.shape ??
-        _toMicrosoftShape(shared?.shape) ??
-        MicrosoftButtonShape.pill;
-    final text =
-        this.text ??
-        _toMicrosoftText(shared?.text) ??
-        MicrosoftButtonText.continueWith;
+    final size = _toMicrosoftSize(shared?.size) ?? this.size;
+    final shape = _toMicrosoftShape(shared?.shape) ?? this.shape;
+    final text = _toMicrosoftText(shared?.text) ?? this.text;
     final logoAlignment =
-        this.logoAlignment ??
-        _toMicrosoftLogoAlignment(shared?.logoAlignment) ??
-        MicrosoftButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+        _toMicrosoftLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = MicrosoftSignInStyle.fromConfiguration(

@@ -22,10 +22,7 @@ class FacebookSignInButton extends StatelessWidget {
   final bool isDisabled;
 
   /// The button text type.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [FacebookButtonText.continueWith], when null.
-  final FacebookButtonText? type;
+  final FacebookButtonText type;
 
   /// The brand color preset (blue or white).
   ///
@@ -34,28 +31,18 @@ class FacebookSignInButton extends StatelessWidget {
   final FacebookButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
-  /// then to [FacebookButtonSize.large], when null.
-  final FacebookButtonSize? size;
+  final FacebookButtonSize size;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill. Falls back to the shared
-  /// [SignInButtonStyle], then to [FacebookButtonShape.pill], when null.
-  final FacebookButtonShape? shape;
+  final FacebookButtonShape shape;
 
   /// The Facebook logo alignment: left or center.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [FacebookButtonLogoAlignment.center], when null.
-  final FacebookButtonLogoAlignment? logoAlignment;
+  final FacebookButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels. Falls back to the shared
-  /// [SignInButtonStyle], then to 240, when null.
-  final double? minimumWidth;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   ///
@@ -67,16 +54,16 @@ class FacebookSignInButton extends StatelessWidget {
     required this.onPressed,
     required this.isLoading,
     required this.isDisabled,
-    this.type,
+    this.type = FacebookButtonText.continueWith,
     this.style = FacebookButtonStyle.blue,
-    this.size,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = FacebookButtonSize.large,
+    this.shape = FacebookButtonShape.pill,
+    this.logoAlignment = FacebookButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
@@ -85,21 +72,12 @@ class FacebookSignInButton extends StatelessWidget {
     final localizations = context.facebookSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final type =
-        this.type ??
-        _toFacebookText(shared?.text) ??
-        FacebookButtonText.continueWith;
-    final size =
-        this.size ?? _toFacebookSize(shared?.size) ?? FacebookButtonSize.large;
-    final shape =
-        this.shape ??
-        _toFacebookShape(shared?.shape) ??
-        FacebookButtonShape.pill;
+    final type = _toFacebookText(shared?.text) ?? this.type;
+    final size = _toFacebookSize(shared?.size) ?? this.size;
+    final shape = _toFacebookShape(shared?.shape) ?? this.shape;
     final logoAlignment =
-        this.logoAlignment ??
-        _toFacebookLogoAlignment(shared?.logoAlignment) ??
-        FacebookButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+        _toFacebookLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = FacebookSignInStyle.fromConfiguration(

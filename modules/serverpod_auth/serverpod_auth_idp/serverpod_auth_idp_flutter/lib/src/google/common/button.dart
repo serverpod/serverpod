@@ -26,15 +26,11 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
 
   /// The button shape.
   ///
-  /// For example, rectangular or circular. When null, the native button falls
-  /// back to the shared [SignInButtonStyle], then to pill.
-  final GSIButtonShape? shape;
+  /// For example, rectangular or circular.
+  final GSIButtonShape shape;
 
   /// The Google logo alignment: left or center.
-  ///
-  /// When null, the native button falls back to the shared [SignInButtonStyle],
-  /// then to center.
-  final GSIButtonLogoAlignment? logoAlignment;
+  final GSIButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
@@ -65,8 +61,8 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
     this.theme = GSIButtonTheme.outline,
     this.size = GSIButtonSize.large,
     this.text = GSIButtonText.continueWith,
-    this.shape,
-    this.logoAlignment,
+    this.shape = GSIButtonShape.pill,
+    this.logoAlignment = GSIButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.buttonWrapper = wrapAsOutline,
     super.key,

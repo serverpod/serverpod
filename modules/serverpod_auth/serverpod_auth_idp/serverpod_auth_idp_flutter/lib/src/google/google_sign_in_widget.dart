@@ -98,34 +98,26 @@ class GoogleSignInWidget extends StatefulWidget {
 
   /// The button size.
   ///
-  /// For example, small or large. Falls back to the shared [SignInButtonStyle],
-  /// then to [GSIButtonSize.large], when null.
-  final GSIButtonSize? size;
+  /// For example, small or large.
+  final GSIButtonSize size;
 
   /// The button text.
   ///
-  /// For example "Sign in with Google" or "Sign up with Google". Falls back to
-  /// the shared [SignInButtonStyle], then to [GSIButtonText.continueWith], when
-  /// null.
-  final GSIButtonText? text;
+  /// For example "Sign in with Google" or "Sign up with Google".
+  final GSIButtonText text;
 
   /// The button shape.
   ///
-  /// For example, rectangular or circular. Falls back to the shared
-  /// [SignInButtonStyle], then to [GSIButtonShape.pill], when null.
-  final GSIButtonShape? shape;
+  /// For example, rectangular or circular.
+  final GSIButtonShape shape;
 
   /// The Google logo alignment: left or center.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [GSIButtonLogoAlignment.center], when null.
-  final GSIButtonLogoAlignment? logoAlignment;
+  final GSIButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels. Falls back to the shared
-  /// [SignInButtonStyle], then to 240, when null.
-  final double? minimumWidth;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   ///
@@ -178,11 +170,11 @@ class GoogleSignInWidget extends StatefulWidget {
     this.scopes = GoogleAuthController.defaultScopes,
     this.type = GSIButtonType.standard,
     this.theme = GSIButtonTheme.outline,
-    this.size,
-    this.text,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = GSIButtonSize.large,
+    this.text = GSIButtonText.continueWith,
+    this.shape = GSIButtonShape.pill,
+    this.logoAlignment = GSIButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     this.getButtonText,
     this.locale,
@@ -199,7 +191,7 @@ class GoogleSignInWidget extends StatefulWidget {
          'as they will be handled by the controller and will be ignored.',
        ),
        assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
@@ -241,24 +233,18 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
   Widget build(BuildContext context) {
     final shared = context.signInButtonStyle;
 
-    final size =
-        widget.size ?? _toGoogleSize(shared.size) ?? GSIButtonSize.large;
-    final shape =
-        widget.shape ?? _toGoogleShape(shared.shape) ?? GSIButtonShape.pill;
-    final text =
-        widget.text ?? _toGoogleText(shared.text) ?? GSIButtonText.continueWith;
+    final size = _toGoogleSize(shared.size) ?? widget.size;
+    final shape = _toGoogleShape(shared.shape) ?? widget.shape;
+    final text = _toGoogleText(shared.text) ?? widget.text;
     final logoAlignment =
-        widget.logoAlignment ??
-        _toGoogleLogoAlignment(shared.logoAlignment) ??
-        GSIButtonLogoAlignment.center;
-    final minimumWidth = widget.minimumWidth ?? shared.minimumWidth ?? 240;
+        _toGoogleLogoAlignment(shared.logoAlignment) ?? widget.logoAlignment;
+    final minimumWidth = shared.minimumWidth ?? widget.minimumWidth;
     final textStyle = widget.textStyle ?? shared.textStyle;
 
     // The web GSIButtonShape has no rounded option, so the native Flutter button
     // gets an explicit radius for the shared rounded shape. The web iframe
     // keeps its pill fallback (see _toGoogleShape).
-    final borderRadius =
-        widget.shape == null && shared.shape == SignInButtonShape.rounded
+    final borderRadius = shared.shape == SignInButtonShape.rounded
         ? BorderRadius.circular(8)
         : null;
 

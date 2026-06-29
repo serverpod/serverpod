@@ -158,11 +158,8 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     // Resolve the shared style so the standalone native button honors it too
     // (GoogleSignInWidget passes explicit values, which win when provided).
     final effectiveLogoAlignment =
-        logoAlignment ??
-        _toGoogleLogoAlignment(shared?.logoAlignment) ??
-        GSIButtonLogoAlignment.center;
-    final effectiveShape =
-        shape ?? _toGoogleShape(shared?.shape) ?? GSIButtonShape.pill;
+        _toGoogleLogoAlignment(shared?.logoAlignment) ?? logoAlignment;
+    final effectiveShape = _toGoogleShape(shared?.shape) ?? shape;
     // Inside a shared style, apply its common (theme-aware) colors; on its own
     // the button uses its Google brand theme.
     final sharedColors = shared?.resolveColors(context);
@@ -170,7 +167,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     // shape with an explicit radius.
     final effectiveBorderRadius =
         borderRadius ??
-        (shape == null && shared?.shape == SignInButtonShape.rounded
+        (shared?.shape == SignInButtonShape.rounded
             ? BorderRadius.circular(8)
             : null);
     final buttonStyle = GoogleSignInStyle.fromConfiguration(

@@ -50,7 +50,7 @@ void main() {
     );
 
     testWidgets(
-      'when the button sets its own text then the argument wins over the shared style',
+      'when both the button and the shared style set the text then the shared style wins',
       (tester) async {
         await tester.pumpWidget(
           const _Host(
@@ -64,7 +64,7 @@ void main() {
           ),
         );
 
-        expect(appleButtonOf(tester).text, 'Continue with Apple');
+        expect(appleButtonOf(tester).text, 'Sign up with Apple');
       },
     );
 

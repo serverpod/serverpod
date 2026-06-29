@@ -33,21 +33,21 @@ class GitHubSignInButton extends StatelessWidget {
   final GitHubButtonStyle style;
 
   /// The button size (large or medium).
-  final GitHubButtonSize? size;
+  final GitHubButtonSize size;
 
   /// The button text.
-  final GitHubButtonText? text;
+  final GitHubButtonText text;
 
   /// The button shape (rectangular, pill, or rounded).
-  final GitHubButtonShape? shape;
+  final GitHubButtonShape shape;
 
   /// The GitHub logo alignment: left or center.
-  final GitHubButtonLogoAlignment? logoAlignment;
+  final GitHubButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
   /// The maximum width is 400 pixels.
-  final double? minimumWidth;
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   final TextStyle? textStyle;
@@ -59,15 +59,15 @@ class GitHubSignInButton extends StatelessWidget {
     required this.isDisabled,
     this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size,
-    this.text,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = GitHubButtonSize.large,
+    this.text = GitHubButtonText.continueWith,
+    this.shape = GitHubButtonShape.pill,
+    this.logoAlignment = GitHubButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     super.key,
   }) : assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
@@ -76,19 +76,12 @@ class GitHubSignInButton extends StatelessWidget {
     final localizations = context.githubSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final size =
-        this.size ?? _toGitHubSize(shared?.size) ?? GitHubButtonSize.large;
-    final shape =
-        this.shape ?? _toGitHubShape(shared?.shape) ?? GitHubButtonShape.pill;
-    final text =
-        this.text ??
-        _toGitHubText(shared?.text) ??
-        GitHubButtonText.continueWith;
+    final size = _toGitHubSize(shared?.size) ?? this.size;
+    final shape = _toGitHubShape(shared?.shape) ?? this.shape;
+    final text = _toGitHubText(shared?.text) ?? this.text;
     final logoAlignment =
-        this.logoAlignment ??
-        _toGitHubLogoAlignment(shared?.logoAlignment) ??
-        GitHubButtonLogoAlignment.center;
-    final minimumWidth = this.minimumWidth ?? shared?.minimumWidth ?? 240;
+        _toGitHubLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
     final buttonStyle = GitHubSignInStyle.fromConfiguration(

@@ -75,34 +75,21 @@ class GitHubSignInWidget extends StatefulWidget {
   final GitHubButtonStyle style;
 
   /// The button size (large or medium).
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [GitHubButtonSize.large], when null.
-  final GitHubButtonSize? size;
+  final GitHubButtonSize size;
 
   /// The button text.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [GitHubButtonText.continueWith], when null.
-  final GitHubButtonText? text;
+  final GitHubButtonText text;
 
   /// The button shape (rectangular, pill, or rounded).
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [GitHubButtonShape.pill], when null.
-  final GitHubButtonShape? shape;
+  final GitHubButtonShape shape;
 
   /// The GitHub logo alignment: left or center.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [GitHubButtonLogoAlignment.center], when null.
-  final GitHubButtonLogoAlignment? logoAlignment;
+  final GitHubButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels. Falls back to the shared
-  /// [SignInButtonStyle], then to 240, when null.
-  final double? minimumWidth;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   ///
@@ -118,11 +105,11 @@ class GitHubSignInWidget extends StatefulWidget {
     this.scopes = GitHubAuthController.defaultScopes,
     this.type = GitHubButtonType.standard,
     this.style = GitHubButtonStyle.black,
-    this.size,
-    this.text,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = GitHubButtonSize.large,
+    this.text = GitHubButtonText.continueWith,
+    this.shape = GitHubButtonShape.pill,
+    this.logoAlignment = GitHubButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     super.key,
   }) : assert(
@@ -131,7 +118,7 @@ class GitHubSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 

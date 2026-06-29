@@ -111,7 +111,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
 
         final buttonStyle = GoogleSignInStyle.fromConfiguration(
           theme: theme,
-          shape: shape ?? GSIButtonShape.pill,
+          shape: shape,
           size: size,
           width: width,
         );

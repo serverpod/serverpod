@@ -75,34 +75,21 @@ class MicrosoftSignInWidget extends StatefulWidget {
   final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [MicrosoftButtonSize.large], when null.
-  final MicrosoftButtonSize? size;
+  final MicrosoftButtonSize size;
 
   /// The button text.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [MicrosoftButtonText.continueWith], when null.
-  final MicrosoftButtonText? text;
+  final MicrosoftButtonText text;
 
   /// The button shape (rectangular, pill, or rounded).
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [MicrosoftButtonShape.pill], when null.
-  final MicrosoftButtonShape? shape;
+  final MicrosoftButtonShape shape;
 
   /// The Microsoft logo alignment: left or center.
-  ///
-  /// Falls back to the shared [SignInButtonStyle], then to
-  /// [MicrosoftButtonLogoAlignment.center], when null.
-  final MicrosoftButtonLogoAlignment? logoAlignment;
+  final MicrosoftButtonLogoAlignment logoAlignment;
 
   /// The minimum button width, in pixels.
   ///
-  /// The maximum width is 400 pixels. Falls back to the shared
-  /// [SignInButtonStyle], then to 240, when null.
-  final double? minimumWidth;
+  /// The maximum width is 400 pixels.
+  final double minimumWidth;
 
   /// The text style applied to the button label.
   ///
@@ -118,11 +105,11 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.scopes = MicrosoftAuthController.defaultScopes,
     this.type = MicrosoftButtonType.standard,
     this.style = MicrosoftButtonStyle.light,
-    this.size,
-    this.text,
-    this.shape,
-    this.logoAlignment,
-    this.minimumWidth,
+    this.size = MicrosoftButtonSize.large,
+    this.text = MicrosoftButtonText.continueWith,
+    this.shape = MicrosoftButtonShape.pill,
+    this.logoAlignment = MicrosoftButtonLogoAlignment.center,
+    this.minimumWidth = 240,
     this.textStyle,
     super.key,
   }) : assert(
@@ -131,7 +118,7 @@ class MicrosoftSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
-         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 

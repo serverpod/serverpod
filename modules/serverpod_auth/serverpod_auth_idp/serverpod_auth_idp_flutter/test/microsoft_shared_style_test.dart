@@ -63,7 +63,7 @@ void main() {
     );
 
     testWidgets(
-      'when the button sets its own text then the argument wins over the shared style',
+      'when both the button and the shared style set the text then the shared style wins',
       (tester) async {
         await tester.pumpWidget(
           const _Host(
@@ -78,8 +78,8 @@ void main() {
           ),
         );
 
-        expect(find.text('Continue with Microsoft'), findsOneWidget);
-        expect(find.text('Sign up with Microsoft'), findsNothing);
+        expect(find.text('Sign up with Microsoft'), findsOneWidget);
+        expect(find.text('Continue with Microsoft'), findsNothing);
       },
     );
 
