@@ -17,7 +17,7 @@ void main() {
     test(
       'when starting Serverpod on any platform, then no error occurs.',
       () async {
-        await server.start();
+        await IntegrationTestServer.start(server);
       },
       timeout: Timeout(Duration(seconds: 10)),
     );
@@ -25,9 +25,9 @@ void main() {
     test(
       'when starting Serverpod multiple times, then no error occurs.',
       () async {
-        await server.start();
+        await IntegrationTestServer.start(server);
         await server.shutdown(exitProcess: false);
-        await server.start();
+        await IntegrationTestServer.start(server);
       },
       timeout: Timeout(Duration(seconds: 10)),
     );

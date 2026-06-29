@@ -3,23 +3,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
-
-import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/src/generated/endpoints.dart';
 
 void main() {
   late Directory webDir;
   late File indexFile;
   late http.Client client;
-
-  final portZeroConfig = ServerConfig(
-    port: 0,
-    publicScheme: 'http',
-    publicHost: 'localhost',
-    publicPort: 0,
-  );
 
   setUpAll(() async {
     client = http.Client();
@@ -41,18 +32,9 @@ void main() {
     'Given a web server with SPA route configured using fallbackMiddleware',
     () {
       late Serverpod pod;
-      late int port;
 
       setUp(() async {
-        pod = Serverpod(
-          [],
-          Protocol(),
-          Endpoints(),
-          config: ServerpodConfig(
-            apiServer: portZeroConfig,
-            webServer: portZeroConfig,
-          ),
-        );
+        pod = IntegrationTestServer.create();
 
         pod.webServer.addMiddleware(
           FallbackMiddleware(
@@ -63,8 +45,7 @@ void main() {
         );
         pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-        await pod.start();
-        port = pod.webServer.port!;
+        await IntegrationTestServer.start(pod);
       });
 
       tearDown(() async {
@@ -73,7 +54,7 @@ void main() {
 
       test('when requesting existing file then file is served', () async {
         final response = await client.get(
-          Uri.http('localhost:$port', '/app.js'),
+          Uri.parse('${IntegrationTestServer.webUrl(pod)}app.js'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('console.log'));
@@ -81,7 +62,7 @@ void main() {
 
       test('when requesting index.html then index is served', () async {
         final response = await client.get(
-          Uri.http('localhost:$port', '/index.html'),
+          Uri.parse('${IntegrationTestServer.webUrl(pod)}index.html'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -91,7 +72,7 @@ void main() {
         'when requesting non-existent file then index.html is served',
         () async {
           final response = await client.get(
-            Uri.http('localhost:$port', '/users/123'),
+            Uri.parse('${IntegrationTestServer.webUrl(pod)}users/123'),
           );
           expect(response.statusCode, 200);
           expect(response.body, contains('SPA Index'));
@@ -102,7 +83,9 @@ void main() {
         'when requesting nested non-existent path then index.html is served',
         () async {
           final response = await client.get(
-            Uri.http('localhost:$port', '/app/users/profile/settings'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}app/users/profile/settings',
+            ),
           );
           expect(response.statusCode, 200);
           expect(response.body, contains('SPA Index'));
@@ -113,18 +96,9 @@ void main() {
 
   group('Given a fallbackMiddleware where the fallback also returns 404', () {
     late Serverpod pod;
-    late int port;
 
     setUp(() async {
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(
-          apiServer: portZeroConfig,
-          webServer: portZeroConfig,
-        ),
-      );
+      pod = IntegrationTestServer.create();
 
       pod.webServer.addMiddleware(
         FallbackMiddleware(
@@ -135,8 +109,7 @@ void main() {
       );
       pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-      await pod.start();
-      port = pod.webServer.port!;
+      await IntegrationTestServer.start(pod);
     });
 
     tearDown(() async {
@@ -145,7 +118,7 @@ void main() {
 
     test('when primary and fallback both 404 then 404 is returned', () async {
       final response = await client.get(
-        Uri.http('localhost:$port', '/does-not-exist'),
+        Uri.parse('${IntegrationTestServer.webUrl(pod)}does-not-exist'),
       );
       expect(response.statusCode, 404);
     });
@@ -153,20 +126,11 @@ void main() {
 
   group('Given multiple SPAs on different paths', () {
     late Serverpod pod;
-    late int port;
     late Directory adminDir;
     late File adminIndexFile;
 
     setUp(() async {
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(
-          apiServer: portZeroConfig,
-          webServer: portZeroConfig,
-        ),
-      );
+      pod = IntegrationTestServer.create();
 
       await d.dir('admin', [
         d.file('index.html', '<html><body>Admin SPA</body></html>'),
@@ -196,8 +160,7 @@ void main() {
       );
       pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-      await pod.start();
-      port = pod.webServer.port!;
+      await IntegrationTestServer.start(pod);
     });
 
     tearDown(() async {
@@ -206,7 +169,7 @@ void main() {
 
     test('when requesting admin path then admin index is served', () async {
       final response = await client.get(
-        Uri.http('localhost:$port', '/admin/users'),
+        Uri.parse('${IntegrationTestServer.webUrl(pod)}admin/users'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('Admin SPA'));
@@ -214,7 +177,7 @@ void main() {
 
     test('when requesting public path then public index is served', () async {
       final response = await client.get(
-        Uri.http('localhost:$port', '/users'),
+        Uri.parse('${IntegrationTestServer.webUrl(pod)}users'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('SPA Index'));

@@ -14,14 +14,15 @@ List<int> toLogLevelInts(List<LogLevel> levels) {
 }
 
 void main() async {
-  var client = Client('http://localhost:8080/');
+  late Client client;
   late Serverpod server;
   late Session session;
 
   group('Database logger -', () {
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await IntegrationTestServer.start(server);
+      client = Client(IntegrationTestServer.apiUrl(server));
 
       session = await server.createSession(enableLogging: false);
       await LoggingUtil.clearAllLogs(session);
@@ -443,8 +444,9 @@ void main() async {
       );
 
       await IOOverrides.runZoned(() async {
-        await server.start();
+        await IntegrationTestServer.start(server);
       }, stdout: () => record);
+      client = Client(IntegrationTestServer.apiUrl(server));
     });
 
     tearDown(() async {
@@ -506,8 +508,9 @@ void main() async {
       );
 
       await IOOverrides.runZoned(() async {
-        await server.start();
+        await IntegrationTestServer.start(server);
       }, stdout: () => record);
+      client = Client(IntegrationTestServer.apiUrl(server));
     });
 
     tearDown(() async {

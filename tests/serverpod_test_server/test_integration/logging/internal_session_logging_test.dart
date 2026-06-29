@@ -11,7 +11,7 @@ void main() async {
   group('Database logger -', () {
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await IntegrationTestServer.start(server);
 
       session = await server.createSession(enableLogging: false);
       await LoggingUtil.clearAllLogs(session);

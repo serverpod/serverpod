@@ -58,14 +58,14 @@ void main() {
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
-        await pod.start();
+        await IntegrationTestServer.start(pod);
       });
 
       test('when requesting a static file with the same path pattern '
           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/file1.txt',
+            '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
           ),
         );
 
@@ -76,7 +76,7 @@ void main() {
           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/file2.test',
+            '${IntegrationTestServer.webUrl(pod)}url_prefix/file2.test',
           ),
         );
 
@@ -98,14 +98,14 @@ void main() {
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
-        await pod.start();
+        await IntegrationTestServer.start(pod);
       });
 
       test('when requesting a static file with the same path string '
           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/file1.txt',
+            '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
           ),
         );
 
@@ -116,7 +116,7 @@ void main() {
           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/file2.test',
+            '${IntegrationTestServer.webUrl(pod)}url_prefix/file2.test',
           ),
         );
 
@@ -140,7 +140,7 @@ void main() {
           ),
           '/url_prefix',
         );
-        await pod.start();
+        await IntegrationTestServer.start(pod);
 
         file1AssetPath = await cacheBustingConfig.assetPath(
           '/url_prefix/file1.txt',
@@ -155,7 +155,7 @@ void main() {
           'then the file is served correctly', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/$file1AssetPath',
+            '${IntegrationTestServer.webUrl(pod)}$file1AssetPath',
           ),
         );
 
@@ -170,13 +170,13 @@ void main() {
           StaticRoute.directory(directory),
           '/url_prefix',
         );
-        await pod.start();
+        await IntegrationTestServer.start(pod);
       });
 
       test('then the file is served correctly', () async {
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/nested_dir/file3.txt',
+            '${IntegrationTestServer.webUrl(pod)}url_prefix/nested_dir/file3.txt',
           ),
         );
 
@@ -192,13 +192,15 @@ void main() {
           StaticRoute.directory(directory),
           '/url_prefix',
         );
-        await pod.start();
+        await IntegrationTestServer.start(pod);
       });
 
       group('and an If-None-Match header', () {
         test('then ETag header is returned with initial request', () async {
           var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+            ),
           );
 
           expect(response.statusCode, 200);
@@ -211,14 +213,18 @@ void main() {
           () async {
             // First request to get ETag
             var initialResponse = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
             );
             var etag = initialResponse.headers['etag'];
             expect(etag, isNotNull);
 
             // Second request with If-None-Match
             var response = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
               headers: {
                 'If-None-Match': etag!,
               },
@@ -235,7 +241,9 @@ void main() {
           'then Last-Modified header is returned with initial request',
           () async {
             var response = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
             );
 
             expect(response.statusCode, 200);
@@ -249,7 +257,9 @@ void main() {
           () async {
             // First request to get Last-Modified
             var initialResponse = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
             );
             var lastModified = initialResponse.headers['last-modified'];
             expect(lastModified, isNotNull);
@@ -262,7 +272,9 @@ void main() {
 
             // Second request with If-Modified-Since set to lastModified
             var response = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
               headers: {
                 'If-Modified-Since': lastModified,
               },
@@ -277,7 +289,9 @@ void main() {
       group('and a Range header for partial content', () {
         test('then byte range requests are supported', () async {
           var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+            ),
             headers: {
               'Range': 'bytes=0-3',
             },
@@ -290,7 +304,9 @@ void main() {
 
         test('then range request for end of file is supported', () async {
           var response = await http.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+            ),
             headers: {
               'Range': 'bytes=4-7',
             },
@@ -303,7 +319,9 @@ void main() {
 
         test('then 416 is returned for invalid range', () async {
           var response = await http.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+            ),
             headers: {
               'Range': 'bytes=100-200', // Beyond file size
             },
@@ -316,7 +334,9 @@ void main() {
       group('and Content-Type header validation', () {
         test('then correct content-type is set for text files', () async {
           var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            Uri.parse(
+              '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+            ),
           );
 
           expect(response.statusCode, 200);
@@ -330,13 +350,17 @@ void main() {
           () async {
             // GET request for comparison
             var getResponse = await client.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
             );
             expect(getResponse.statusCode, 200);
 
             // HEAD request
             var headResponse = await client.head(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              Uri.parse(
+                '${IntegrationTestServer.webUrl(pod)}url_prefix/file1.txt',
+              ),
             );
 
             expect(headResponse.statusCode, 200);
