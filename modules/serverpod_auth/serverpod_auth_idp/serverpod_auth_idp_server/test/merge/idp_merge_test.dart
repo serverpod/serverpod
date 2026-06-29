@@ -668,7 +668,10 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final account = FacebookAccount(authUserId: userToRemove.id, userIdentifier: 'facebook_123');
+        final account = FacebookAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'facebook_123',
+        );
         await FacebookAccount.db.insertRow(session, account);
       });
 
@@ -705,10 +708,16 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final existingAccount = FacebookAccount(authUserId: userToKeep.id, userIdentifier: 'facebook_keep');
+        final existingAccount = FacebookAccount(
+          authUserId: userToKeep.id,
+          userIdentifier: 'facebook_keep',
+        );
         await FacebookAccount.db.insertRow(session, existingAccount);
 
-        final accountToRemove = FacebookAccount(authUserId: userToRemove.id, userIdentifier: 'facebook_123');
+        final accountToRemove = FacebookAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'facebook_123',
+        );
         await FacebookAccount.db.insertRow(session, accountToRemove);
       });
 
@@ -751,7 +760,10 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final account = MicrosoftAccount(authUserId: userToRemove.id, userIdentifier: 'microsoft_123');
+        final account = MicrosoftAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'microsoft_123',
+        );
         await MicrosoftAccount.db.insertRow(session, account);
       });
 
@@ -788,10 +800,16 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final existingAccount = MicrosoftAccount(authUserId: userToKeep.id, userIdentifier: 'microsoft_keep');
+        final existingAccount = MicrosoftAccount(
+          authUserId: userToKeep.id,
+          userIdentifier: 'microsoft_keep',
+        );
         await MicrosoftAccount.db.insertRow(session, existingAccount);
 
-        final accountToRemove = MicrosoftAccount(authUserId: userToRemove.id, userIdentifier: 'microsoft_123');
+        final accountToRemove = MicrosoftAccount(
+          authUserId: userToRemove.id,
+          userIdentifier: 'microsoft_123',
+        );
         await MicrosoftAccount.db.insertRow(session, accountToRemove);
       });
 
@@ -834,7 +852,14 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final account = PasskeyAccount(authUserId: userToRemove.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        final account = PasskeyAccount(
+          authUserId: userToRemove.id,
+          keyId: ByteData(16),
+          keyIdBase64: 'base64',
+          clientDataJSON: ByteData(16),
+          attestationObject: ByteData(16),
+          originalChallenge: ByteData(16),
+        );
         await PasskeyAccount.db.insertRow(session, account);
       });
 
@@ -871,10 +896,24 @@ void main() {
         userToKeep = await authUsers.create(session);
         userToRemove = await authUsers.create(session);
 
-        final existingAccount = PasskeyAccount(authUserId: userToKeep.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        final existingAccount = PasskeyAccount(
+          authUserId: userToKeep.id,
+          keyId: ByteData(16),
+          keyIdBase64: 'base64',
+          clientDataJSON: ByteData(16),
+          attestationObject: ByteData(16),
+          originalChallenge: ByteData(16),
+        );
         await PasskeyAccount.db.insertRow(session, existingAccount);
 
-        final accountToRemove = PasskeyAccount(authUserId: userToRemove.id, keyId: ByteData(16), keyIdBase64: 'base64', clientDataJSON: ByteData(16), attestationObject: ByteData(16), originalChallenge: ByteData(16));
+        final accountToRemove = PasskeyAccount(
+          authUserId: userToRemove.id,
+          keyId: ByteData(16),
+          keyIdBase64: 'base64',
+          clientDataJSON: ByteData(16),
+          attestationObject: ByteData(16),
+          originalChallenge: ByteData(16),
+        );
         await PasskeyAccount.db.insertRow(session, accountToRemove);
       });
 

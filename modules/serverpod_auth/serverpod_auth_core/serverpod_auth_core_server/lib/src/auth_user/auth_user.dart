@@ -4,8 +4,10 @@ export '../generated/protocol.dart'
         AuthUserBlockedException,
         AuthUserModel,
         AuthUserNotFoundException;
-export 'business/account_merge_config.dart' show AccountMergeConfig, AccountMergeHandler;
-export 'business/account_merge_handler_provider.dart' show AccountMergeHandlerProvider;
+export 'business/account_merge_config.dart'
+    show AccountMergeConfig, AccountMergeHandler;
+export 'business/account_merge_handler_provider.dart'
+    show AccountMergeHandlerProvider;
 export 'business/account_merger.dart' show AccountMerger;
 export 'business/auth_users.dart' show AuthUsers;
 export 'business/auth_users_config.dart' show AuthUsersConfig;

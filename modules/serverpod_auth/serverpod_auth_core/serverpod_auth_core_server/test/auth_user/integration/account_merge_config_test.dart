@@ -150,7 +150,9 @@ void main() {
                 ),
           );
 
-          final serverSideSession = await ServerSideSession.db.findFirstRow(session);
+          final serverSideSession = await ServerSideSession.db.findFirstRow(
+            session,
+          );
           expect(serverSideSession?.authUserId, userToKeep.id);
         },
       );
