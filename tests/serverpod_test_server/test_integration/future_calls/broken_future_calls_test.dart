@@ -57,7 +57,7 @@ void main() {
       test(
         'when starting Serverpod, then no errors are logged',
         () async {
-          await server.start();
+          await IntegrationTestServer.start(server);
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -112,7 +112,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await IntegrationTestServer.start(server);
         });
 
         test(
@@ -199,7 +199,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await IntegrationTestServer.start(server);
         });
 
         test(
@@ -288,7 +288,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await IntegrationTestServer.start(server);
         });
 
         test(
@@ -374,7 +374,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not logged',
         () async {
-          await server.start();
+          await IntegrationTestServer.start(server);
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -434,7 +434,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not deleted from the database',
         () async {
-          await server.start();
+          await IntegrationTestServer.start(server);
           final entries = await FutureCallEntry.db.find(session);
           expect(entries, hasLength(futureCallsCount));
         },
@@ -494,7 +494,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await server.start();
+          await IntegrationTestServer.start(server);
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();
@@ -557,7 +557,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await server.start();
+          await IntegrationTestServer.start(server);
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();

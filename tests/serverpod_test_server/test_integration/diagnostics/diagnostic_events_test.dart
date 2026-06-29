@@ -107,7 +107,7 @@ void main() {
   group(
     'Given a serverpod server with future calls and a diagnostic event handler',
     () {
-      var client = Client('http://localhost:8080/');
+      late Client client;
       var exceptionHandler = TestExceptionHandler();
       late Serverpod pod;
 
@@ -119,7 +119,8 @@ void main() {
           ),
         );
         pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
-        await pod.start();
+        await IntegrationTestServer.start(pod);
+        client = Client(IntegrationTestServer.apiUrl(pod));
       });
 
       tearDown(() async {
@@ -147,7 +148,7 @@ void main() {
   );
 
   group('Given a serverpod server with a diagnostic event handler', () {
-    var client = Client('http://localhost:8080/');
+    late Client client;
     var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
 
@@ -158,7 +159,8 @@ void main() {
           diagnosticEventHandlers: [exceptionHandler],
         ),
       );
-      await pod.start();
+      await IntegrationTestServer.start(pod);
+      client = Client(IntegrationTestServer.apiUrl(pod));
     });
 
     tearDown(() async {
@@ -252,7 +254,7 @@ void main() {
     test('when a client calls method url with malformed json '
         'then the diagnostic event handler gets called', () async {
       var response = http.post(
-        Uri.parse('http://localhost:8080/simple/hello'),
+        Uri.parse('${IntegrationTestServer.apiUrl(pod)}simple/hello'),
         body: '{"name": [42]}',
       );
       await response;
@@ -277,7 +279,7 @@ void main() {
           ),
         );
         pod.webServer.addRoute(ExceptionRoute(), '/exception');
-        await pod.start();
+        await IntegrationTestServer.start(pod);
       });
 
       tearDown(() async {
@@ -288,7 +290,7 @@ void main() {
       test('when a client calls web url with malformed json '
           'then the diagnostic event handler gets called', () async {
         var response = http.get(
-          Uri.parse('http://localhost:8082/exception'),
+          Uri.parse('${IntegrationTestServer.webUrl(pod)}exception'),
         );
         await response;
 
