@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart' as c;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -27,12 +26,12 @@ void main() {
         authId: 'token-${tokenCounter++}',
       ),
     );
-    await server.start();
+    await IntegrationTestServer.start(server);
     session = await server.createSession();
 
     authKeyManager = TestAuthKeyManager();
     client = c.Client(
-      serverUrl,
+      IntegrationTestServer.apiUrl(server),
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );

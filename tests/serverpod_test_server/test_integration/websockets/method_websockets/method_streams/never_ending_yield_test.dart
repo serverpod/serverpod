@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod_test_server/src/endpoints/method_streaming.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/serverpod.dart';
@@ -37,9 +36,9 @@ void main() {
         });
 
         server = IntegrationTestServer.create();
-        await server.start();
+        await IntegrationTestServer.start(server);
         webSocket = await WebSocket.connect(
-          Uri.parse(serverMethodWebsocketUrl),
+          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
         );
         var streamOpened = Completer<void>();
 

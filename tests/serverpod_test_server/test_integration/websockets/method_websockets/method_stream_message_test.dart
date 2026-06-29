@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -16,9 +15,9 @@ void main() {
 
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await IntegrationTestServer.start(server);
       webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
+        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
       );
     });
 
@@ -538,9 +537,9 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
-        await server.start();
+        await IntegrationTestServer.start(server);
         webSocket = await WebSocket.connect(
-          Uri.parse(serverMethodWebsocketUrl),
+          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
         );
       });
 

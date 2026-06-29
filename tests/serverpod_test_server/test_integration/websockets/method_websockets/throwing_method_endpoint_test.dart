@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
@@ -14,9 +13,9 @@ void main() {
 
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await IntegrationTestServer.start(server);
       webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
+        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
       );
     });
 
