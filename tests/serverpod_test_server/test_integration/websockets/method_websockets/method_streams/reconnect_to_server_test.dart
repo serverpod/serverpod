@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart' as c;
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -12,11 +11,14 @@ void main() {
   late c.Client client;
 
   setUp(() async {
-    server = IntegrationTestServer.create();
-    await server.start();
+    // The client reconnects to the same address after the restart, so the API
+    // port must be stable: a fixed port below the OS ephemeral range, so it
+    // does not collide with the concurrent port-0 suites.
+    server = IntegrationTestServer.create(apiPort: 8099);
+    await IntegrationTestServer.start(server);
 
     client = c.Client(
-      serverUrl,
+      IntegrationTestServer.apiUrl(server),
       // ignore: deprecated_member_use
       authenticationKeyManager: TestAuthKeyManager(),
     );
@@ -50,7 +52,7 @@ void main() {
       await valueReceivedCompleter.future;
       await server.shutdown(exitProcess: false);
       await errorReceivedCompleter.future;
-      await server.start();
+      await IntegrationTestServer.start(server);
     }
 
     outStream = client.methodStreaming.neverEndingStreamWithDelay(100);
