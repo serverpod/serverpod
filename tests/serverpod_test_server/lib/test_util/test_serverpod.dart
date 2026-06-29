@@ -6,6 +6,10 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/serverpod.dart'
     show ServerpodInternalMethods;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
+import 'package:serverpod_database/embedded.dart'
+    show startOrAttachEmbeddedPostgres;
+import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
+import 'package:serverpod_test/serverpod_test.dart' show TestDatabaseManager;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -26,6 +30,20 @@ class IntegrationTestServer extends TestServerpod {
          config: config,
          runtimeParametersBuilder: runtimeParametersBuilder,
        );
+
+  /// The database owned by this suite's runner isolate. Pass it to a child
+  /// isolate (in its spawn message) and have that isolate call
+  /// [attachToDatabase] before constructing its own server, so the two share
+  /// one database. See [_IsolateTestDatabase].
+  static String get databaseName => _IsolateTestDatabase.name;
+
+  /// Binds this (child) isolate to a database owned by another isolate - the
+  /// suite's runner, identified by [databaseName] - instead of creating its
+  /// own, so isolates within a suite can share one database. The runner owns
+  /// the lifecycle; an attached isolate never creates, migrates, or drops it.
+  /// Call before constructing any [IntegrationTestServer] in this isolate.
+  static void attachToDatabase(String databaseName) =>
+      _IsolateTestDatabase.attachTo(databaseName);
 
   static Serverpod create({
     ServerpodConfig? config,
@@ -103,6 +121,7 @@ class TestServerpod {
       config: config,
       authenticationHandler: auth.authenticationHandler,
       runtimeParametersBuilder: runtimeParametersBuilder,
+      configOverride: _useIsolateDatabase,
     );
   }
 
@@ -111,8 +130,148 @@ class TestServerpod {
   }
 
   Future<Session> session() async {
+    await _IsolateTestDatabase.ensureReady(
+      runMode: _serverpod.runMode,
+      serverDirectory: _serverpod.serverDirectory.path,
+      migrate: _migrateIsolateDatabase,
+    );
     _session = await _serverpod.createSession();
     _sessionFinalizer.attach(this, _session, detach: this);
     return _session;
+  }
+
+  /// Applies migrations to this isolate's freshly-created database, using a
+  /// session that connects to it ([_serverpod] is pointed at it via
+  /// [_useIsolateDatabase]). Runs once per isolate, driven by
+  /// [_IsolateTestDatabase.ensureReady].
+  Future<void> _migrateIsolateDatabase() async {
+    final session = await _serverpod.createSession();
+    try {
+      await applyMigrationsAndVerify(
+        session: session,
+        projectDirectory: _serverpod.serverDirectory,
+        runMode: _serverpod.runMode,
+        applyMigrations: true,
+        applyRepairMigration: false,
+      );
+    } finally {
+      await session.close();
+    }
+  }
+}
+
+/// Points a test server at this isolate's own database (see
+/// [_IsolateTestDatabase]) so test files run concurrently without sharing
+/// committed state. PostgreSQL only; other configs (e.g. SQLite) are left
+/// untouched.
+ServerpodConfig _useIsolateDatabase(ServerpodConfig config) {
+  final database = config.database;
+  if (database is! PostgresDatabaseConfig) return config;
+  return config.copyWith(
+    database: database.withName(_IsolateTestDatabase.name),
+  );
+}
+
+/// The PostgreSQL database backing the integration tests in this isolate.
+///
+/// `dart test` runs each test suite (file) in its own isolate sharing one OS
+/// process, and statics are per-isolate - so each suite's runner isolate gets
+/// a private database on the shared embedded postmaster. Suites therefore run
+/// concurrently without colliding on each other's committed data, which is
+/// what previously forced these suites to run serially (the `concurrency_one`
+/// tag).
+///
+/// The runner isolate that generates [name] owns the database: it creates and
+/// migrates it. A child isolate the suite spawns can instead [attachTo] the
+/// runner's database (passing [name] across in the spawn message) to share the
+/// same data; an attached isolate never creates, migrates, or drops it.
+///
+/// The database is created lazily on first use and intentionally not dropped:
+/// it lives on the shared postmaster for the process's lifetime and is
+/// reclaimed when the test data directory is cleared between runs. Per-database
+/// teardown (by the owning isolate) is a later refinement.
+class _IsolateTestDatabase {
+  static String? _name;
+  static bool _owns = true;
+
+  /// This isolate's database. The owner generates it once on first use; an
+  /// isolate that called [attachTo] uses the database it was given.
+  static String get name =>
+      _name ??= TestDatabaseManager.generateDatabaseName();
+
+  /// Binds this isolate to an existing database created by another isolate
+  /// (the suite's runner), so isolates within a suite can share one database.
+  /// The owner creates, migrates, and (eventually) drops it; this isolate only
+  /// reads and writes. Call before [name] is first read - i.e. before
+  /// constructing any server in this isolate.
+  static void attachTo(String databaseName) {
+    _name = databaseName;
+    _owns = false;
+  }
+
+  static Future<void>? _ready;
+
+  /// Creates and migrates [name] exactly once for the owning isolate. An
+  /// attached isolate ([attachTo]) skips this - the owner already created and
+  /// migrated the database. [migrate] applies migrations against a session
+  /// connected to [name].
+  static Future<void> ensureReady({
+    required String runMode,
+    required String serverDirectory,
+    required Future<void> Function() migrate,
+  }) {
+    if (!_owns) return Future<void>.value();
+    return _ready ??= _provision(
+      runMode: runMode,
+      serverDirectory: serverDirectory,
+      migrate: migrate,
+    );
+  }
+
+  static Future<void> _provision({
+    required String runMode,
+    required String serverDirectory,
+    required Future<void> Function() migrate,
+  }) async {
+    final database = _resolveProjectDatabaseConfig(
+      runMode: runMode,
+      serverDirectory: serverDirectory,
+    );
+    // Only PostgreSQL is provisioned per isolate; other configs (e.g. SQLite)
+    // keep their previous shared behaviour.
+    if (database is! PostgresDatabaseConfig) return;
+
+    // Resolve the shared postmaster's coordinates against the *project*
+    // database (launching it on first use), then create this isolate's own
+    // database on it. The launched postmaster is intentionally left running -
+    // it is shared by every isolate and reclaimed when the process exits.
+    final resolved = await startOrAttachEmbeddedPostgres(
+      database,
+      baseDirectory: Directory(serverDirectory),
+    );
+    final connectivity = resolved?.connectivity ?? database;
+
+    await TestDatabaseManager(connectivity).createEmptyDatabase(name);
+    await migrate();
+  }
+
+  /// Loads the project's database config (run mode, passwords, environment) the
+  /// way the server would, but without the per-isolate name swap - so the
+  /// shared postmaster is launched against the project database, not this
+  /// isolate's.
+  static DatabaseConfig? _resolveProjectDatabaseConfig({
+    required String runMode,
+    required String serverDirectory,
+  }) {
+    final passwords = PasswordManager(
+      runMode: runMode,
+    ).loadPasswords(serverDir: serverDirectory);
+    final config = ServerpodConfig.load(
+      runMode,
+      null,
+      passwords,
+      serverDir: serverDirectory,
+    );
+    return config.database;
   }
 }
