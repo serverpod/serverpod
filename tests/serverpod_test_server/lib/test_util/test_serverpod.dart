@@ -52,6 +52,7 @@ class IntegrationTestServer extends TestServerpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    int? apiPort,
   }) {
     final server = Serverpod(
       _integrationTestFlags,
@@ -63,6 +64,7 @@ class IntegrationTestServer extends TestServerpod {
       securityContextConfig: securityContextConfig,
       experimentalFeatures: experimentalFeatures,
       runtimeParametersBuilder: runtimeParametersBuilder,
+      configOverride: (config) => _isolatedTestConfig(config, apiPort: apiPort),
     );
 
     // Runtime settings persist in the serverpod_runtime_settings table
@@ -98,20 +100,46 @@ class IntegrationTestServer extends TestServerpod {
     return server;
   }
 
-  /// Starts [serverpod] for an integration test.
-  ///
-  /// Delegates to [Serverpod.start] today; it is the single seam where
-  /// per-suite test-database provisioning will live once [create] moves to
-  /// isolated databases + ephemeral ports (mirroring [TestServerpod.session]).
-  /// Routing `serverpod.start()` through here now means that change needs no
-  /// further edits to the test suites.
+  /// Starts [serverpod] for an integration test, first provisioning this
+  /// suite's own database (created + migrated) so the per-suite-named,
+  /// ephemeral-port server that [create] configures can connect to it.
   static Future<void> start(Serverpod serverpod) async {
+    await ensureDatabase(serverpod);
     await serverpod.start();
   }
 
-  /// A client for the API server [serverpod] is running on, addressed by its
-  /// actually-bound port ([Server.port]) rather than a hard-coded one - so it
-  /// keeps working when the configured port is 0 (ephemeral).
+  /// Provisions this suite's database (create + migrate) without starting the
+  /// server - for tests that need a manual `serverpod.start(...)` with options
+  /// [start] does not forward (e.g. `runInGuardedZone: false`). Idempotent per
+  /// isolate.
+  static Future<void> ensureDatabase(Serverpod serverpod) async {
+    await _IsolateTestDatabase.ensureReady(
+      runMode: serverpod.runMode,
+      serverDirectory: serverpod.serverDirectory.path,
+      migrate: () => _migrateDatabaseFor(serverpod),
+    );
+  }
+
+  /// Applies migrations to this suite's freshly-created database using a session
+  /// from [serverpod] (pointed at it via [_isolatedTestConfig]). Runs once per
+  /// isolate, via [_IsolateTestDatabase.ensureReady].
+  static Future<void> _migrateDatabaseFor(Serverpod serverpod) async {
+    final session = await serverpod.createSession();
+    try {
+      await applyMigrationsAndVerify(
+        session: session,
+        projectDirectory: serverpod.serverDirectory,
+        runMode: serverpod.runMode,
+        applyMigrations: true,
+        applyRepairMigration: false,
+      );
+    } finally {
+      await session.close();
+    }
+  }
+
+  /// A client for [serverpod]'s API server, addressed by its bound port
+  /// ([Server.port]) so it works with an ephemeral (0) configured port.
   static client.Client clientFor(Serverpod serverpod) =>
       client.Client(apiUrl(serverpod));
 
@@ -212,24 +240,51 @@ ServerpodConfig _useIsolateDatabase(ServerpodConfig config) {
   );
 }
 
-/// The PostgreSQL database backing the integration tests in this isolate.
+/// Names a per-isolate database (like [_useIsolateDatabase]) and binds every
+/// user-facing server to an ephemeral port (0), so servers that bind sockets do
+/// not collide on a fixed port. Tests read the bound port via
+/// [IntegrationTestServer.apiUrl] etc.
+ServerpodConfig _isolatedTestConfig(ServerpodConfig config, {int? apiPort}) {
+  final database = config.database;
+  final insightsServer = config.insightsServer;
+  final webServer = config.webServer;
+  return config.copyWith(
+    // [apiPort] lets a suite opt out of an ephemeral API port when it needs a
+    // stable address across a restart (see reconnect_to_server_test). Pick one
+    // below the OS ephemeral range so it can't collide with the port-0 suites.
+    apiServer: _boundTo(config.apiServer, port: apiPort ?? 0),
+    insightsServer: insightsServer == null ? null : _boundTo(insightsServer),
+    webServer: webServer == null ? null : _boundTo(webServer),
+    database: database is PostgresDatabaseConfig
+        ? database.withName(_IsolateTestDatabase.name)
+        : database,
+  );
+}
+
+/// A copy of [config] bound to [port] (default 0 = an OS-assigned ephemeral
+/// port).
+ServerConfig _boundTo(ServerConfig config, {int port = 0}) => ServerConfig(
+  port: port,
+  publicScheme: config.publicScheme,
+  publicHost: config.publicHost,
+  publicPort: config.publicPort,
+);
+
+/// The PostgreSQL database backing this isolate's integration tests.
 ///
-/// `dart test` runs each test suite (file) in its own isolate sharing one OS
-/// process, and statics are per-isolate - so each suite's runner isolate gets
-/// a private database on the shared embedded postmaster. Suites therefore run
-/// concurrently without colliding on each other's committed data, which is
-/// what previously forced these suites to run serially (the `concurrency_one`
-/// tag).
+/// `dart test` runs each test suite (file) in its own isolate, and statics are
+/// per-isolate, so each suite's runner isolate gets a private database on the
+/// shared embedded postmaster. Suites therefore run concurrently without
+/// colliding on each other's committed data.
 ///
 /// The runner isolate that generates [name] owns the database: it creates and
-/// migrates it. A child isolate the suite spawns can instead [attachTo] the
-/// runner's database (passing [name] across in the spawn message) to share the
-/// same data; an attached isolate never creates, migrates, or drops it.
+/// migrates it. A child isolate the suite spawns can [attachTo] the runner's
+/// database (passing [name] in the spawn message) to share the same data; an
+/// attached isolate never creates or migrates it.
 ///
-/// The database is created lazily on first use and intentionally not dropped:
-/// it lives on the shared postmaster for the process's lifetime and is
-/// reclaimed when the test data directory is cleared between runs. Per-database
-/// teardown (by the owning isolate) is a later refinement.
+/// Created lazily on first use and not dropped: it lives on the shared
+/// postmaster for the process's lifetime, reclaimed when the data directory is
+/// cleared between runs.
 class _IsolateTestDatabase {
   static String? _name;
   static bool _owns = true;
@@ -239,11 +294,10 @@ class _IsolateTestDatabase {
   static String get name =>
       _name ??= TestDatabaseManager.generateDatabaseName();
 
-  /// Binds this isolate to an existing database created by another isolate
-  /// (the suite's runner), so isolates within a suite can share one database.
-  /// The owner creates, migrates, and (eventually) drops it; this isolate only
-  /// reads and writes. Call before [name] is first read - i.e. before
-  /// constructing any server in this isolate.
+  /// Binds this isolate to a database owned by another isolate (the suite's
+  /// runner), so isolates within a suite share one database. The owner creates
+  /// and migrates it; this isolate only reads and writes. Call before [name] is
+  /// first read - before constructing any server in this isolate.
   static void attachTo(String databaseName) {
     _name = databaseName;
     _owns = false;
@@ -278,7 +332,7 @@ class _IsolateTestDatabase {
       serverDirectory: serverDirectory,
     );
     // Only PostgreSQL is provisioned per isolate; other configs (e.g. SQLite)
-    // keep their previous shared behaviour.
+    // are left as-is.
     if (database is! PostgresDatabaseConfig) return;
 
     // Resolve the shared postmaster's coordinates against the *project*

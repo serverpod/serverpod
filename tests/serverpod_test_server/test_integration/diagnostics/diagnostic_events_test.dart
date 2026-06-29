@@ -52,6 +52,7 @@ void main() {
         ),
       );
       pod.webServer.addRoute(ExceptionRoute(), '/exception');
+      await IntegrationTestServer.ensureDatabase(pod);
       final result = pod
           .start(runInGuardedZone: false)
           .timeout(const Duration(seconds: 5));
@@ -189,7 +190,7 @@ void main() {
           contains('remoteInfo'),
           containsPair(
             'uri',
-            'http://localhost:8080/exceptionTest/throwNormalException',
+            '${IntegrationTestServer.apiUrl(pod)}exceptionTest/throwNormalException',
           ),
           containsPair('endpoint', 'exceptionTest'),
           containsPair('methodName', 'throwNormalException'),
@@ -334,6 +335,7 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
+        await IntegrationTestServer.ensureDatabase(pod);
         final result = pod
             .start(runInGuardedZone: false)
             .timeout(const Duration(seconds: 2));
