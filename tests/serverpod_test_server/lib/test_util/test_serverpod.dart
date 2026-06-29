@@ -10,6 +10,7 @@ import 'package:serverpod_database/embedded.dart'
     show startOrAttachEmbeddedPostgres;
 import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
 import 'package:serverpod_test/serverpod_test.dart' show TestDatabaseManager;
+import 'package:serverpod_test_client/serverpod_test_client.dart' as client;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -96,6 +97,45 @@ class IntegrationTestServer extends TestServerpod {
 
     return server;
   }
+
+  /// Starts [serverpod] for an integration test.
+  ///
+  /// Delegates to [Serverpod.start] today; it is the single seam where
+  /// per-suite test-database provisioning will live once [create] moves to
+  /// isolated databases + ephemeral ports (mirroring [TestServerpod.session]).
+  /// Routing `serverpod.start()` through here now means that change needs no
+  /// further edits to the test suites.
+  static Future<void> start(Serverpod serverpod) async {
+    await serverpod.start();
+  }
+
+  /// A client for the API server [serverpod] is running on, addressed by its
+  /// actually-bound port ([Server.port]) rather than a hard-coded one - so it
+  /// keeps working when the configured port is 0 (ephemeral).
+  static client.Client clientFor(Serverpod serverpod) =>
+      client.Client(apiUrl(serverpod));
+
+  /// `http://localhost:<bound api port>/` for [serverpod].
+  static String apiUrl(Serverpod serverpod) =>
+      'http://localhost:${serverpod.server.port}/';
+
+  /// `http://localhost:<bound web-server port>/` for [serverpod].
+  static String webUrl(Serverpod serverpod) =>
+      'http://localhost:${serverpod.webServer.port}/';
+
+  /// `http://localhost:<bound insights/service port>/` for [serverpod].
+  static String serviceUrl(Serverpod serverpod) =>
+      'http://localhost:${serverpod.serviceServer.port}/';
+
+  /// `ws://localhost:<bound api port>/websocket` (endpoint streaming) for
+  /// [serverpod].
+  static String endpointWebSocketUrl(Serverpod serverpod) =>
+      'ws://localhost:${serverpod.server.port}/websocket';
+
+  /// `ws://localhost:<bound api port>/v1/websocket` (method streaming) for
+  /// [serverpod].
+  static String methodWebSocketUrl(Serverpod serverpod) =>
+      'ws://localhost:${serverpod.server.port}/v1/websocket';
 }
 
 class TestServerpod {
