@@ -244,8 +244,9 @@ jobs:
           sdk: "3.12.2"
       - name: Resolve melos
         run: dart pub get
-      - name: Bootstrap (resolve the template servers)
-        run: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --include-dependencies
+      - name: Bootstrap (resolve the template servers + serverpod_test_server)
+        # serverpod_test_server is needed by the "verify generate from scratch" step.
+        run: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --scope='serverpod_test_server' --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
@@ -683,13 +684,24 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
       # serverpod_cli's unit suite is ~half of all unit tests (~27min run whole),
-      # so split it across shards with dart test --total-shards.
+      # so split it across shards by whole FILE. (dart test --total-shards
+      # compiles all ~378 test files on every shard, which exhausts the runner
+      # disk; this compiles only this shard's slice.) Keep the divisor in sync
+      # with the shard matrix size.
       - name: Run unit tests
         shell: bash
         working-directory: tools/serverpod_cli
+        env:
+          SHARD: ${{ matrix.shard }}
         run: |
-          dart test -x integration --reporter=failures-only \
-            --total-shards 10 --shard-index ${{ matrix.shard }} || {
+          shard_files=()
+          i=0
+          while IFS= read -r f; do
+            [ $(( i % 10 )) -eq "$SHARD" ] && shard_files+=("$f")
+            i=$(( i + 1 ))
+          done < <(find test -name '*_test.dart' | sort)
+          [ ${#shard_files[@]} -eq 0 ] && exit 0
+          dart test "${shard_files[@]}" -x integration --reporter=failures-only || {
             status=$?
             [ "$status" -eq 79 ] && exit 0
             exit "$status"
