@@ -27,6 +27,16 @@ export SERVERPOD_TEST_SERVICE_URL="http://localhost:8081/"
 # behaviour matches the former container (which ran UTC).
 export TZ="UTC"
 
+# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index). Defaults to a single shard, so non-sharded callers are
+# unchanged.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+shard_args=()
+if [ "$total_shards" -gt 1 ]; then
+    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
+fi
+
 cd tests/serverpod_test_server
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 
@@ -70,4 +80,4 @@ done
 
 # Run the migration e2e tests.
 echo "### Running migration e2e tests"
-dart test test_e2e_migrations --concurrency=1 --reporter=failures-only
+dart test test_e2e_migrations --concurrency=1 --reporter=failures-only "${shard_args[@]}"
