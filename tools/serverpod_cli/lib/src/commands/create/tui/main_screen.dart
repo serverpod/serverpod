@@ -147,11 +147,13 @@ class MainScreen extends StatelessComponent {
         Button(
           name: 'Navigate',
           activationChar: hasSingleScreen ? '←→' : '←↑↓→',
-          activationKeys: const [
+          activationKeys: [
             LogicalKey.arrowLeft,
             LogicalKey.arrowRight,
-            LogicalKey.arrowUp,
-            LogicalKey.arrowDown,
+            if (!hasSingleScreen) ...{
+              LogicalKey.arrowUp,
+              LogicalKey.arrowDown,
+            },
           ],
           onActivate: (key) {
             switch (key) {
@@ -162,15 +164,23 @@ class MainScreen extends StatelessComponent {
                 state.form.focusRight();
                 break;
               case LogicalKey.arrowUp:
-                state.form.focusUp();
+                if (isSummary) {
+                  scrollController.scrollUp(3);
+                } else {
+                  state.form.focusUp();
+                }
                 break;
               case LogicalKey.arrowDown:
-                state.form.focusDown();
+                if (isSummary) {
+                  scrollController.scrollDown(3);
+                } else {
+                  state.form.focusDown();
+                }
                 break;
             }
             holder.markDirty();
           },
-          enabled: !isSummary && !creatingProject,
+          enabled: !creatingProject,
         ),
         Button(
           name: 'Select',
