@@ -76,11 +76,11 @@ class GitHubSignInButton extends StatelessWidget {
     final localizations = context.githubSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final size = _toGitHubSize(shared?.size) ?? this.size;
-    final shape = _toGitHubShape(shared?.shape) ?? this.shape;
-    final text = _toGitHubText(shared?.text) ?? this.text;
+    final size = shared?.size?.toGitHub() ?? this.size;
+    final shape = shared?.shape?.toGitHub() ?? this.shape;
+    final text = shared?.text?.toGitHub() ?? this.text;
     final logoAlignment =
-        _toGitHubLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+        shared?.logoAlignment?.toGitHub() ?? this.logoAlignment;
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
@@ -175,10 +175,10 @@ class GitHubSignInButton extends StatelessWidget {
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
     );
 
     final logo = _buildGitHubLogo(buttonStyle.logoSize, foregroundColor);
-    final iconSize = buttonStyle.logoSize;
 
     // Center: center the [logo + label] group, matching the native Apple
     // button's centered layout.
@@ -193,24 +193,16 @@ class GitHubSignInButton extends StatelessWidget {
       );
     }
 
-    // Left: logo at the left column, with the label left-aligned starting where
-    // the native Apple button's centered label starts, so the labels line up.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final raw =
-            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
-            signInLeftLogoIndent -
-            iconSize;
-        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
-        return Row(
-          children: [
-            const SizedBox(width: signInLeftLogoIndent),
-            logo,
-            SizedBox(width: gap),
-            Flexible(child: textWidget),
-          ],
-        );
-      },
+    // Left: logo pinned to the left column with the label centered in the
+    // button, matching the native Apple button's left layout. The trailing
+    // gap balances the leading logo so the label stays centered.
+    return Row(
+      children: [
+        const SizedBox(width: signInLeftLogoIndent),
+        logo,
+        Expanded(child: textWidget),
+        SizedBox(width: signInLeftLogoIndent + buttonStyle.logoSize),
+      ],
     );
   }
 
@@ -242,35 +234,37 @@ class GitHubSignInButton extends StatelessWidget {
   }
 }
 
-// GitHub has no small size; it falls back to medium.
-GitHubButtonSize? _toGitHubSize(SignInButtonSize? size) => switch (size) {
-  null => null,
-  SignInButtonSize.large => GitHubButtonSize.large,
-  SignInButtonSize.medium => GitHubButtonSize.medium,
-  SignInButtonSize.small => GitHubButtonSize.medium,
-};
+extension on SignInButtonSize {
+  // GitHub has no small size; it falls back to medium.
+  GitHubButtonSize toGitHub() => switch (this) {
+    SignInButtonSize.large => GitHubButtonSize.large,
+    SignInButtonSize.medium => GitHubButtonSize.medium,
+    SignInButtonSize.small => GitHubButtonSize.medium,
+  };
+}
 
-GitHubButtonShape? _toGitHubShape(SignInButtonShape? shape) => switch (shape) {
-  null => null,
-  SignInButtonShape.rectangular => GitHubButtonShape.rectangular,
-  SignInButtonShape.rounded => GitHubButtonShape.rounded,
-  SignInButtonShape.pill => GitHubButtonShape.pill,
-};
+extension on SignInButtonShape {
+  GitHubButtonShape toGitHub() => switch (this) {
+    SignInButtonShape.rectangular => GitHubButtonShape.rectangular,
+    SignInButtonShape.rounded => GitHubButtonShape.rounded,
+    SignInButtonShape.pill => GitHubButtonShape.pill,
+  };
+}
 
-GitHubButtonLogoAlignment? _toGitHubLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => GitHubButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => GitHubButtonLogoAlignment.center,
-};
+extension on SignInButtonLogoAlignment {
+  GitHubButtonLogoAlignment toGitHub() => switch (this) {
+    SignInButtonLogoAlignment.left => GitHubButtonLogoAlignment.left,
+    SignInButtonLogoAlignment.center => GitHubButtonLogoAlignment.center,
+  };
+}
 
-// GitHub always appends its name, so the bare "sign in" maps to "Sign in with".
-GitHubButtonText? _toGitHubText(SignInButtonTextVariant? text) =>
-    switch (text) {
-      null => null,
-      SignInButtonTextVariant.signInWith => GitHubButtonText.signIn,
-      SignInButtonTextVariant.signUpWith => GitHubButtonText.signUp,
-      SignInButtonTextVariant.continueWith => GitHubButtonText.continueWith,
-      SignInButtonTextVariant.signIn => GitHubButtonText.signIn,
-    };
+extension on SignInButtonTextVariant {
+  // GitHub always appends its name, so the bare "sign in" maps to "Sign in
+  // with".
+  GitHubButtonText toGitHub() => switch (this) {
+    SignInButtonTextVariant.signInWith => GitHubButtonText.signIn,
+    SignInButtonTextVariant.signUpWith => GitHubButtonText.signUp,
+    SignInButtonTextVariant.continueWith => GitHubButtonText.continueWith,
+    SignInButtonTextVariant.signIn => GitHubButtonText.signIn,
+  };
+}

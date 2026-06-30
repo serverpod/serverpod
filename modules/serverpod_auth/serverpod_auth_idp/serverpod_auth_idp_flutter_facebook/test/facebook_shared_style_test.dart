@@ -14,25 +14,20 @@ void main() {
     );
   }
 
-  group(
-    'Given a FacebookSignInButton with no shared style and no arguments',
-    () {
-      testWidgets(
-        'when built then it uses Facebook built-in defaults',
-        (tester) async {
-          await tester.pumpWidget(
-            const _Host(
-              child: FacebookSignInButton(
-                onPressed: null,
-                isLoading: false,
-                isDisabled: false,
-              ),
-            ),
-          );
-
-          expect(find.text('Continue with Facebook'), findsOneWidget);
-        },
+  testWidgets(
+    'Given a FacebookSignInButton with no shared style and no arguments when built then it uses Facebook built-in defaults',
+    (tester) async {
+      await tester.pumpWidget(
+        const _Host(
+          child: FacebookSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
+          ),
+        ),
       );
+
+      expect(find.text('Continue with Facebook'), findsOneWidget);
     },
   );
 
@@ -40,7 +35,7 @@ void main() {
   // crosses the package boundary into this separate Facebook package.
   group('Given a shared SignInButtonStyle from the main package', () {
     testWidgets(
-      'when the button sets no arguments then the shared text variant is used',
+      'when built then the shared text variant is used',
       (tester) async {
         await tester.pumpWidget(
           const _Host(

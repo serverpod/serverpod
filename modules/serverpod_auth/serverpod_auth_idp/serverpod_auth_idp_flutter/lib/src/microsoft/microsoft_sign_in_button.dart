@@ -76,11 +76,11 @@ class MicrosoftSignInButton extends StatelessWidget {
     final localizations = context.microsoftSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final size = _toMicrosoftSize(shared?.size) ?? this.size;
-    final shape = _toMicrosoftShape(shared?.shape) ?? this.shape;
-    final text = _toMicrosoftText(shared?.text) ?? this.text;
+    final size = shared?.size?.toMicrosoft() ?? this.size;
+    final shape = shared?.shape?.toMicrosoft() ?? this.shape;
+    final text = shared?.text?.toMicrosoft() ?? this.text;
     final logoAlignment =
-        _toMicrosoftLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+        shared?.logoAlignment?.toMicrosoft() ?? this.logoAlignment;
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
@@ -175,10 +175,10 @@ class MicrosoftSignInButton extends StatelessWidget {
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
     );
 
     final logo = _buildMicrosoftLogo(buttonStyle.logoSize);
-    final iconSize = buttonStyle.logoSize;
 
     // Center: center the [logo + label] group, matching the native Apple
     // button's centered layout.
@@ -193,24 +193,16 @@ class MicrosoftSignInButton extends StatelessWidget {
       );
     }
 
-    // Left: logo at the left column, with the label left-aligned starting where
-    // the native Apple button's centered label starts, so the labels line up.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final raw =
-            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
-            signInLeftLogoIndent -
-            iconSize;
-        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
-        return Row(
-          children: [
-            const SizedBox(width: signInLeftLogoIndent),
-            logo,
-            SizedBox(width: gap),
-            Flexible(child: textWidget),
-          ],
-        );
-      },
+    // Left: logo pinned to the left column with the label centered in the
+    // button, matching the native Apple button's left layout. The trailing
+    // gap balances the leading logo so the label stays centered.
+    return Row(
+      children: [
+        const SizedBox(width: signInLeftLogoIndent),
+        logo,
+        Expanded(child: textWidget),
+        SizedBox(width: signInLeftLogoIndent + buttonStyle.logoSize),
+      ],
     );
   }
 
@@ -237,37 +229,37 @@ class MicrosoftSignInButton extends StatelessWidget {
   }
 }
 
-// Microsoft has no small size; it falls back to medium.
-MicrosoftButtonSize? _toMicrosoftSize(SignInButtonSize? size) => switch (size) {
-  null => null,
-  SignInButtonSize.large => MicrosoftButtonSize.large,
-  SignInButtonSize.medium => MicrosoftButtonSize.medium,
-  SignInButtonSize.small => MicrosoftButtonSize.medium,
-};
+extension on SignInButtonSize {
+  // Microsoft has no small size; it falls back to medium.
+  MicrosoftButtonSize toMicrosoft() => switch (this) {
+    SignInButtonSize.large => MicrosoftButtonSize.large,
+    SignInButtonSize.medium => MicrosoftButtonSize.medium,
+    SignInButtonSize.small => MicrosoftButtonSize.medium,
+  };
+}
 
-MicrosoftButtonShape? _toMicrosoftShape(SignInButtonShape? shape) =>
-    switch (shape) {
-      null => null,
-      SignInButtonShape.rectangular => MicrosoftButtonShape.rectangular,
-      SignInButtonShape.rounded => MicrosoftButtonShape.rounded,
-      SignInButtonShape.pill => MicrosoftButtonShape.pill,
-    };
+extension on SignInButtonShape {
+  MicrosoftButtonShape toMicrosoft() => switch (this) {
+    SignInButtonShape.rectangular => MicrosoftButtonShape.rectangular,
+    SignInButtonShape.rounded => MicrosoftButtonShape.rounded,
+    SignInButtonShape.pill => MicrosoftButtonShape.pill,
+  };
+}
 
-MicrosoftButtonLogoAlignment? _toMicrosoftLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => MicrosoftButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => MicrosoftButtonLogoAlignment.center,
-};
+extension on SignInButtonLogoAlignment {
+  MicrosoftButtonLogoAlignment toMicrosoft() => switch (this) {
+    SignInButtonLogoAlignment.left => MicrosoftButtonLogoAlignment.left,
+    SignInButtonLogoAlignment.center => MicrosoftButtonLogoAlignment.center,
+  };
+}
 
-// Microsoft always appends its name, so the bare "sign in" maps to "Sign in
-// with".
-MicrosoftButtonText? _toMicrosoftText(SignInButtonTextVariant? text) =>
-    switch (text) {
-      null => null,
-      SignInButtonTextVariant.signInWith => MicrosoftButtonText.signIn,
-      SignInButtonTextVariant.signUpWith => MicrosoftButtonText.signUp,
-      SignInButtonTextVariant.continueWith => MicrosoftButtonText.continueWith,
-      SignInButtonTextVariant.signIn => MicrosoftButtonText.signIn,
-    };
+extension on SignInButtonTextVariant {
+  // Microsoft always appends its name, so the bare "sign in" maps to "Sign in
+  // with".
+  MicrosoftButtonText toMicrosoft() => switch (this) {
+    SignInButtonTextVariant.signInWith => MicrosoftButtonText.signIn,
+    SignInButtonTextVariant.signUpWith => MicrosoftButtonText.signUp,
+    SignInButtonTextVariant.continueWith => MicrosoftButtonText.continueWith,
+    SignInButtonTextVariant.signIn => MicrosoftButtonText.signIn,
+  };
+}

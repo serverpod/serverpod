@@ -232,6 +232,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         ).merge(textStyle ?? shared?.textStyle),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
       ),
     );
 
@@ -254,26 +255,16 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
               Flexible(child: text),
             ],
           )
-        // Left: logo at the left column, with the label left-aligned starting
-        // where the native Apple button's centered label starts.
-        : LayoutBuilder(
-            builder: (context, constraints) {
-              final raw =
-                  (constraints.maxWidth - signInLeftLabelWidth) / 2 -
-                  signInLeftLogoIndent -
-                  iconSize;
-              final gap = raw < signInCenteredLogoGap
-                  ? signInCenteredLogoGap
-                  : raw;
-              return Row(
-                children: [
-                  const SizedBox(width: signInLeftLogoIndent),
-                  logo,
-                  SizedBox(width: gap),
-                  Flexible(child: text),
-                ],
-              );
-            },
+        // Left: logo pinned to the left column with the label centered in the
+        // button, matching the native Apple button's left layout. The trailing
+        // gap balances the leading logo so the label stays centered.
+        : Row(
+            children: [
+              const SizedBox(width: signInLeftLogoIndent),
+              logo,
+              Expanded(child: text),
+              SizedBox(width: signInLeftLogoIndent + iconSize),
+            ],
           );
 
     return ConstrainedBox(

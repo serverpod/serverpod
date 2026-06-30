@@ -10,14 +10,6 @@ const double signInCenteredLogoGap = 6;
 /// wider icon box, sitting a few pixels in from the edge).
 const double signInLeftLogoIndent = 21;
 
-/// The width of the native Apple button's centered label ("Continue with
-/// Apple").
-///
-/// A left-aligned sign-in button starts its label at `(buttonWidth - this) / 2`
-/// so the label lines up with the Apple button's centered label at any width.
-/// Tune this to line the labels up with Apple.
-const double signInLeftLabelWidth = 146;
-
 /// Sign-in button size. Providers without [small] fall back to [medium].
 enum SignInButtonSize {
   /// Large button (recommended).

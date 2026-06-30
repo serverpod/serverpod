@@ -70,11 +70,11 @@ class AppleSignInButton extends StatelessWidget {
     final localizations = context.appleSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final type = _toAppleText(shared?.text) ?? this.type;
-    final size = _toAppleSize(shared?.size) ?? this.size;
-    final shape = _toAppleShape(shared?.shape) ?? this.shape;
+    final type = shared?.text?.toApple() ?? this.type;
+    final size = shared?.size?.toApple() ?? this.size;
+    final shape = shared?.shape?.toApple() ?? this.shape;
     final logoAlignment =
-        _toAppleLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+        shared?.logoAlignment?.toApple() ?? this.logoAlignment;
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
 
     // Inside a shared style, Apple's native button can't take arbitrary colors,
@@ -147,32 +147,34 @@ class AppleSignInButton extends StatelessWidget {
   }
 }
 
-AppleButtonSize? _toAppleSize(SignInButtonSize? size) => switch (size) {
-  null => null,
-  SignInButtonSize.large => AppleButtonSize.large,
-  SignInButtonSize.medium => AppleButtonSize.medium,
-  SignInButtonSize.small => AppleButtonSize.small,
-};
+extension on SignInButtonSize {
+  AppleButtonSize toApple() => switch (this) {
+    SignInButtonSize.large => AppleButtonSize.large,
+    SignInButtonSize.medium => AppleButtonSize.medium,
+    SignInButtonSize.small => AppleButtonSize.small,
+  };
+}
 
-AppleButtonShape? _toAppleShape(SignInButtonShape? shape) => switch (shape) {
-  null => null,
-  SignInButtonShape.rectangular => AppleButtonShape.rectangular,
-  SignInButtonShape.rounded => AppleButtonShape.rounded,
-  SignInButtonShape.pill => AppleButtonShape.pill,
-};
+extension on SignInButtonShape {
+  AppleButtonShape toApple() => switch (this) {
+    SignInButtonShape.rectangular => AppleButtonShape.rectangular,
+    SignInButtonShape.rounded => AppleButtonShape.rounded,
+    SignInButtonShape.pill => AppleButtonShape.pill,
+  };
+}
 
-AppleButtonLogoAlignment? _toAppleLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => AppleButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => AppleButtonLogoAlignment.center,
-};
+extension on SignInButtonLogoAlignment {
+  AppleButtonLogoAlignment toApple() => switch (this) {
+    SignInButtonLogoAlignment.left => AppleButtonLogoAlignment.left,
+    SignInButtonLogoAlignment.center => AppleButtonLogoAlignment.center,
+  };
+}
 
-AppleButtonText? _toAppleText(SignInButtonTextVariant? text) => switch (text) {
-  null => null,
-  SignInButtonTextVariant.signInWith => AppleButtonText.signinWith,
-  SignInButtonTextVariant.signUpWith => AppleButtonText.signupWith,
-  SignInButtonTextVariant.continueWith => AppleButtonText.continueWith,
-  SignInButtonTextVariant.signIn => AppleButtonText.signin,
-};
+extension on SignInButtonTextVariant {
+  AppleButtonText toApple() => switch (this) {
+    SignInButtonTextVariant.signInWith => AppleButtonText.signinWith,
+    SignInButtonTextVariant.signUpWith => AppleButtonText.signupWith,
+    SignInButtonTextVariant.continueWith => AppleButtonText.continueWith,
+    SignInButtonTextVariant.signIn => AppleButtonText.signin,
+  };
+}

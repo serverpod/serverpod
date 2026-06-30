@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import 'test_utils.dart';
+
 void main() {
   // Resolves the rendered native Apple button.
   SignInWithAppleButton appleButtonOf(WidgetTester tester) {
@@ -11,31 +13,29 @@ void main() {
     );
   }
 
-  group('Given an AppleSignInButton with no shared style and no arguments', () {
-    testWidgets(
-      'when built then it uses Apple built-in defaults',
-      (tester) async {
-        await tester.pumpWidget(
-          const _Host(
-            child: AppleSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-            ),
+  testWidgets(
+    'Given an AppleSignInButton with no shared style and no arguments when built then it uses Apple built-in defaults',
+    (tester) async {
+      await tester.pumpWidget(
+        const SignInButtonHost(
+          child: AppleSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
           ),
-        );
+        ),
+      );
 
-        expect(appleButtonOf(tester).text, 'Continue with Apple');
-      },
-    );
-  });
+      expect(appleButtonOf(tester).text, 'Continue with Apple');
+    },
+  );
 
   group('Given a shared SignInButtonStyle in scope', () {
     testWidgets(
-      'when the button sets no arguments then the shared text variant is used',
+      'when built then the shared text variant is used',
       (tester) async {
         await tester.pumpWidget(
-          const _Host(
+          const SignInButtonHost(
             style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
             child: AppleSignInButton(
               onPressed: null,
@@ -53,7 +53,7 @@ void main() {
       'when both the button and the shared style set the text then the shared style wins',
       (tester) async {
         await tester.pumpWidget(
-          const _Host(
+          const SignInButtonHost(
             style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
             child: AppleSignInButton(
               onPressed: null,
@@ -72,7 +72,7 @@ void main() {
       'when the shared style sets a rectangular shape then the button border radius follows it',
       (tester) async {
         await tester.pumpWidget(
-          const _Host(
+          const SignInButtonHost(
             style: SignInButtonStyle(shape: SignInButtonShape.rectangular),
             child: AppleSignInButton(
               onPressed: null,
@@ -95,7 +95,7 @@ void main() {
       'when the shared style sets a rounded shape then the button uses the shared 8px radius',
       (tester) async {
         await tester.pumpWidget(
-          const _Host(
+          const SignInButtonHost(
             style: SignInButtonStyle(shape: SignInButtonShape.rounded),
             child: AppleSignInButton(
               onPressed: null,
@@ -113,22 +113,4 @@ void main() {
       },
     );
   });
-}
-
-/// Hosts a widget with an optional shared [SignInButtonStyle].
-class _Host extends StatelessWidget {
-  const _Host({required this.child, this.style});
-
-  final Widget child;
-  final SignInButtonStyle? style;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget tree = SignInLocalizationProvider(child: child);
-    final style = this.style;
-    if (style != null) {
-      tree = SignInButtonStyleProvider(style: style, child: tree);
-    }
-    return MaterialApp(home: Scaffold(body: tree));
-  }
 }

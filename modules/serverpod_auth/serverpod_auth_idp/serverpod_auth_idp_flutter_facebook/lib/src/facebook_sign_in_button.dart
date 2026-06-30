@@ -72,11 +72,11 @@ class FacebookSignInButton extends StatelessWidget {
     final localizations = context.facebookSignInTexts;
     final shared = SignInButtonStyleProvider.maybeOf(context);
 
-    final type = _toFacebookText(shared?.text) ?? this.type;
-    final size = _toFacebookSize(shared?.size) ?? this.size;
-    final shape = _toFacebookShape(shared?.shape) ?? this.shape;
+    final type = shared?.text?.toFacebook() ?? this.type;
+    final size = shared?.size?.toFacebook() ?? this.size;
+    final shape = shared?.shape?.toFacebook() ?? this.shape;
     final logoAlignment =
-        _toFacebookLogoAlignment(shared?.logoAlignment) ?? this.logoAlignment;
+        shared?.logoAlignment?.toFacebook() ?? this.logoAlignment;
     final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
     final textStyle = this.textStyle ?? shared?.textStyle;
 
@@ -178,6 +178,7 @@ class FacebookSignInButton extends StatelessWidget {
       style: textStyle != null ? baseTextStyle.merge(textStyle) : baseTextStyle,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
     );
 
     // Center: center the [logo + label] group, matching the native Apple
@@ -193,24 +194,16 @@ class FacebookSignInButton extends StatelessWidget {
       );
     }
 
-    // Left: logo at the left column, with the label left-aligned starting where
-    // the native Apple button's centered label starts, so the labels line up.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final raw =
-            (constraints.maxWidth - signInLeftLabelWidth) / 2 -
-            signInLeftLogoIndent -
-            logoSize;
-        final gap = raw < signInCenteredLogoGap ? signInCenteredLogoGap : raw;
-        return Row(
-          children: [
-            const SizedBox(width: signInLeftLogoIndent),
-            logo,
-            SizedBox(width: gap),
-            Flexible(child: textWidget),
-          ],
-        );
-      },
+    // Left: logo pinned to the left column with the label centered in the
+    // button, matching the native Apple button's left layout. The trailing
+    // gap balances the leading logo so the label stays centered.
+    return Row(
+      children: [
+        const SizedBox(width: signInLeftLogoIndent),
+        logo,
+        Expanded(child: textWidget),
+        SizedBox(width: signInLeftLogoIndent + logoSize),
+      ],
     );
   }
 
@@ -224,34 +217,34 @@ class FacebookSignInButton extends StatelessWidget {
   }
 }
 
-FacebookButtonSize? _toFacebookSize(SignInButtonSize? size) => switch (size) {
-  null => null,
-  SignInButtonSize.large => FacebookButtonSize.large,
-  SignInButtonSize.medium => FacebookButtonSize.medium,
-  SignInButtonSize.small => FacebookButtonSize.small,
-};
+extension on SignInButtonSize {
+  FacebookButtonSize toFacebook() => switch (this) {
+    SignInButtonSize.large => FacebookButtonSize.large,
+    SignInButtonSize.medium => FacebookButtonSize.medium,
+    SignInButtonSize.small => FacebookButtonSize.small,
+  };
+}
 
-FacebookButtonShape? _toFacebookShape(SignInButtonShape? shape) =>
-    switch (shape) {
-      null => null,
-      SignInButtonShape.rectangular => FacebookButtonShape.rectangular,
-      SignInButtonShape.rounded => FacebookButtonShape.rounded,
-      SignInButtonShape.pill => FacebookButtonShape.pill,
-    };
+extension on SignInButtonShape {
+  FacebookButtonShape toFacebook() => switch (this) {
+    SignInButtonShape.rectangular => FacebookButtonShape.rectangular,
+    SignInButtonShape.rounded => FacebookButtonShape.rounded,
+    SignInButtonShape.pill => FacebookButtonShape.pill,
+  };
+}
 
-FacebookButtonLogoAlignment? _toFacebookLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => FacebookButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => FacebookButtonLogoAlignment.center,
-};
+extension on SignInButtonLogoAlignment {
+  FacebookButtonLogoAlignment toFacebook() => switch (this) {
+    SignInButtonLogoAlignment.left => FacebookButtonLogoAlignment.left,
+    SignInButtonLogoAlignment.center => FacebookButtonLogoAlignment.center,
+  };
+}
 
-FacebookButtonText? _toFacebookText(SignInButtonTextVariant? text) =>
-    switch (text) {
-      null => null,
-      SignInButtonTextVariant.signInWith => FacebookButtonText.signinWith,
-      SignInButtonTextVariant.signUpWith => FacebookButtonText.signupWith,
-      SignInButtonTextVariant.continueWith => FacebookButtonText.continueWith,
-      SignInButtonTextVariant.signIn => FacebookButtonText.signIn,
-    };
+extension on SignInButtonTextVariant {
+  FacebookButtonText toFacebook() => switch (this) {
+    SignInButtonTextVariant.signInWith => FacebookButtonText.signinWith,
+    SignInButtonTextVariant.signUpWith => FacebookButtonText.signupWith,
+    SignInButtonTextVariant.continueWith => FacebookButtonText.continueWith,
+    SignInButtonTextVariant.signIn => FacebookButtonText.signIn,
+  };
+}
