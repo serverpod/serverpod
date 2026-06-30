@@ -33,9 +33,13 @@ void run(List<String> args) async {
     ],
     identityProviderBuilders: [
       // Configure the email identity provider for email/password authentication.
-      EmailIdpConfigFromPasswords(
-        sendRegistrationVerificationCode: _sendRegistrationCode,
-        sendPasswordResetVerificationCode: _sendPasswordResetCode,
+      // The default setup works with Serverpod Cloud without configuration. In
+      // development the verification codes are logged to the console, and in
+      // staging and production they are sent through the Serverpod Cloud email
+      // service. If you want to use a custom provider for sending emails, use
+      // `EmailIdpConfigFromPasswords`.
+      ServerpodCloudEmailIdpConfig(
+        appDisplayName: 'projectname',
       ),
     ],
   );
@@ -94,34 +98,3 @@ void run(List<String> args) async {
   // Start the server.
   await pod.start();
 }
-
-// {{#auth}}
-void _sendRegistrationCode(
-  Session session, {
-  required String email,
-  required UuidValue accountRequestId,
-  required String verificationCode,
-  required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the code to the user. For
-  // testing, we just log it. `session.alert` shows this as a copyable alert in
-  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
-  // the clipboard. Other log destinations treat it as a regular log message.
-  session.alert('Registration code for $email: <$verificationCode>');
-}
-
-void _sendPasswordResetCode(
-  Session session, {
-  required String email,
-  required UuidValue passwordResetRequestId,
-  required String verificationCode,
-  required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the code to the user. For
-  // testing, we just log it. `session.alert` shows this as a copyable alert in
-  // the `serverpod` CLI's terminal UI and auto-copies the `<...>` segment to
-  // the clipboard. Other log destinations treat it as a regular log message.
-  session.alert('Password reset code for $email: <$verificationCode>');
-}
-
-// {{/auth}}
