@@ -777,6 +777,7 @@ jobs:
   migration_e2e_tests:
     name: Migration e2e tests
     runs-on: ubuntu-latest
+    needs: seed_embedded_pg
     strategy:
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
@@ -786,6 +787,24 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
+      # Run against the embedded PostgreSQL postmaster (built once by
+      # seed_embedded_pg) instead of a Docker postgres - pulled in as an artifact
+      # and unpacked into SERVERPOD_PG_CACHE_DIR. Redis is disabled on the server
+      # (SERVERPOD_REDIS_ENABLED=false in the run script), so unlike the
+      # integration suite no Redis is needed.
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
 

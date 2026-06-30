@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Runs the serverpod_test_server migration e2e tests on the host - no Docker
+# required. They run against an embedded PostgreSQL postmaster (built once by
+# seed_embedded_pg, like the other host integration suites) instead of a Docker
+# postgres. The tests inspect and reset the live database through the insights
+# API, so a server is started in the background; it shares the embedded
+# postmaster with the create-migration and apply-migrations steps the tests
+# spawn. The migration tests neither use nor are tagged `redis`, so Redis is
+# disabled on the server (SERVERPOD_REDIS_ENABLED=false) and none is needed.
+
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests_migrations_e2e"
@@ -8,11 +17,46 @@ fi
 
 # Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+export SERVERPOD_REDIS_ENABLED="false"
+# The Dockerised suites reach the server as `serverpod_test_server`; on the host
+# it runs on localhost (see test_util/service_client.dart).
+export SERVERPOD_TEST_SERVICE_URL="http://localhost:8081/"
+# Embedded PG runs the server in the host timezone; pin UTC so timezone-sensitive
+# behaviour matches the former container (which ran UTC).
+export TZ="UTC"
 
-cd tests/docker/tests_e2e_migrations
+cd tests/serverpod_test_server
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 
-docker compose --progress quiet up \
-  --abort-on-container-exit \
-  --exit-code-from tests \
-  --build \
-  --remove-orphans
+# Start the server in the background; it applies migrations on boot and serves
+# the insights API the tests use to inspect/reset the live database. Ensure it is
+# stopped when this script exits (tests pass, fail, or are interrupted).
+echo "### Starting test server"
+dart run bin/main.dart -m production --apply-migrations &
+SERVER_PID=$!
+# `dart run` spawns the server in a child VM that can outlive the wrapper, so
+# stop it by what is still listening on the server ports (and the wrapper too).
+cleanup() {
+    kill "$SERVER_PID" 2>/dev/null || true
+    for port in 8080 8081 8082; do
+        lsof -ti "tcp:$port" 2>/dev/null | xargs -r kill 2>/dev/null || true
+    done
+}
+trap cleanup EXIT
+
+# Wait for the insights server (localhost:8081) to accept connections.
+echo "### Waiting for the insights server on localhost:8081"
+for _ in $(seq 1 60); do
+    if (exec 3<>/dev/tcp/localhost/8081) 2>/dev/null; then
+        exec 3>&- 3<&-
+        echo "### Server is up"
+        break
+    fi
+    sleep 1
+done
+
+# Run the migration e2e tests.
+echo "### Running migration e2e tests"
+dart test test_e2e_migrations --concurrency=1 --reporter=failures-only
