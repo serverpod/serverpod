@@ -24,6 +24,16 @@ export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
 # cron-scheduled future calls) behave identically regardless of host/runner tz.
 export TZ="UTC"
 
+# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index). Defaults to a single shard, so non-sharded callers are
+# unchanged.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+shard_args=()
+if [ "$total_shards" -gt 1 ]; then
+    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
+fi
+
 REPO_ROOT="$(pwd)"
 
 cd "tests/serverpod_test_server"
@@ -49,7 +59,7 @@ fi
 # Each withServerpod group / IntegrationTestServer suite provisions its own
 # database (and binds ephemeral ports), so these run concurrently.
 echo "### Running integration tests"
-dart test test_integration -x integration $REDIS_TAG_FILTER --reporter=failures-only
+dart test test_integration -x integration $REDIS_TAG_FILTER --reporter=failures-only "${shard_args[@]}"
 
 # Verify the embedded data path was created, then clean up.
 if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
