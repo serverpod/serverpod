@@ -8,8 +8,8 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ServerpodCloudEmailClient', () {
     test(
-      'when sending a sign-up email then it posts a well-formed request and '
-      'completes on a 200 response',
+      'when sending a sign-up email '
+      'then it posts a well-formed request and completes on a 200 response',
       () async {
         late http.Request captured;
         final client = ServerpodCloudEmailClient(
@@ -45,8 +45,8 @@ void main() {
     );
 
     test(
-      'when sending a password-reset email then it uses the lostpassword '
-      'emailType',
+      'when sending a password-reset email '
+      'then it uses the lostpassword emailType',
       () async {
         late http.Request captured;
         final client = ServerpodCloudEmailClient(
