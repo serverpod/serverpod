@@ -1,3 +1,9 @@
+## 3.5.0-beta.12
+
+- feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
+- fix: Improves the "Flutter web app not built" page on the template.
+- fix: Fixes missing `web` directory for projects created with only the Flutter app.
+
 ## 3.5.0-beta.11
 
 - feat: Adds PostGIS geography types support with GiST and SP-GiST indexes. ([@charlesarchibong](https://github.com/charlesarchibong))
