@@ -138,7 +138,6 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       redis: true,
       postgres: true,
       webapp: true,
-      flutterApp: template != ServerpodTemplateType.server,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 

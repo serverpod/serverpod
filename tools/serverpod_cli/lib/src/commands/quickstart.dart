@@ -130,7 +130,6 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       redis: true,
       postgres: true,
       webapp: true,
-      flutterApp: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
@@ -149,7 +148,6 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
           redis: true,
           postgres: true,
           webapp: true,
-          flutterApp: true,
         ),
       );
       return;

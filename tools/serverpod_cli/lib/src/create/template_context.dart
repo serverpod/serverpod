@@ -62,7 +62,10 @@ class TemplateContext {
       'webapp': webapp,
       'webserver': webserver,
       'website': website,
-      'flutterApp': flutterApp || template == ServerpodTemplateType.fullstack,
+      'flutterApp':
+          flutterApp ||
+          template == ServerpodTemplateType.fullstack ||
+          template == ServerpodTemplateType.mini,
     };
   }
 }
