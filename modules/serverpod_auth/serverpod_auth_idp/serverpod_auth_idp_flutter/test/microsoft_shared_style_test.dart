@@ -19,7 +19,9 @@ void main() {
   // size because the long "Continue with Microsoft" label overflows the button
   // by ~2px at large size under the test font.
   testWidgets(
-    'Given a MicrosoftSignInButton with no shared style and no arguments when built then it uses Microsoft built-in defaults',
+    'Given a MicrosoftSignInButton with no shared style and no arguments, '
+    'when building the button, '
+    'then it uses Microsoft built-in defaults.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(
@@ -37,12 +39,13 @@ void main() {
   );
 
   group(
-    'Given a shared SignInButtonStyle with the signUpWith text variant in scope',
+    'Given a shared SignInButtonStyle with the signUpWith text variant in scope,',
     () {
       const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
 
       testWidgets(
-        'when built then the button uses it',
+        'when building the button, '
+        'then the button uses it.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -61,7 +64,8 @@ void main() {
       );
 
       testWidgets(
-        'when the button sets its own text then the shared style still wins',
+        'when building the button with its own text, '
+        'then the shared style still wins.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -84,7 +88,9 @@ void main() {
   );
 
   testWidgets(
-    'Given a shared SignInButtonStyle with a custom textStyle in scope when built then the label adopts its font weight',
+    'Given a shared SignInButtonStyle with a custom textStyle in scope, '
+    'when building the button, '
+    'then the label adopts its font weight.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(

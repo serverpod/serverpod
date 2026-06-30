@@ -14,7 +14,9 @@ void main() {
   }
 
   testWidgets(
-    'Given an AppleSignInButton with no shared style and no arguments when built then it uses Apple built-in defaults',
+    'Given an AppleSignInButton with no shared style and no arguments, '
+    'when building the button, '
+    'then it uses Apple built-in defaults.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(
@@ -31,12 +33,13 @@ void main() {
   );
 
   group(
-    'Given a shared SignInButtonStyle with the signUpWith text variant in scope',
+    'Given a shared SignInButtonStyle with the signUpWith text variant in scope,',
     () {
       const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
 
       testWidgets(
-        'when built then the button uses it',
+        'when building the button, '
+        'then the button uses it.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -54,7 +57,8 @@ void main() {
       );
 
       testWidgets(
-        'when the button sets its own text then the shared style still wins',
+        'when building the button with its own text, '
+        'then the shared style still wins.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -75,7 +79,9 @@ void main() {
   );
 
   testWidgets(
-    'Given a shared SignInButtonStyle with a rectangular shape in scope when built then the border radius follows it',
+    'Given a shared SignInButtonStyle with a rectangular shape in scope, '
+    'when building the button, '
+    'then the border radius follows it.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(
@@ -98,7 +104,9 @@ void main() {
   );
 
   testWidgets(
-    'Given a shared SignInButtonStyle with a rounded shape in scope when built then the button uses the shared 8px radius',
+    'Given a shared SignInButtonStyle with a rounded shape in scope, '
+    'when building the button, '
+    'then the button uses the shared 8px radius.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(

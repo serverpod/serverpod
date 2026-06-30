@@ -15,7 +15,9 @@ void main() {
   }
 
   testWidgets(
-    'Given a FacebookSignInButton with no shared style and no arguments when built then it uses Facebook built-in defaults',
+    'Given a FacebookSignInButton with no shared style and no arguments, '
+    'when building the button, '
+    'then it uses Facebook built-in defaults.',
     (tester) async {
       await tester.pumpWidget(
         const _Host(
@@ -34,12 +36,13 @@ void main() {
   // The shared style is provided by the main package; these tests confirm it
   // crosses the package boundary into this separate Facebook package.
   group(
-    'Given a shared SignInButtonStyle from the main package with the signUpWith text variant',
+    'Given a shared SignInButtonStyle from the main package with the signUpWith text variant,',
     () {
       const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
 
       testWidgets(
-        'when built then the button uses it',
+        'when building the button, '
+        'then the button uses it.',
         (tester) async {
           await tester.pumpWidget(
             const _Host(
@@ -57,7 +60,8 @@ void main() {
       );
 
       testWidgets(
-        'when the button sets its own text then the shared style still wins',
+        'when building the button with its own text, '
+        'then the shared style still wins.',
         (tester) async {
           await tester.pumpWidget(
             const _Host(
@@ -81,7 +85,9 @@ void main() {
   // The shared style is provided by the main package; this test confirms it
   // crosses the package boundary into this separate Facebook package.
   testWidgets(
-    'Given a shared SignInButtonStyle from the main package with a custom textStyle when built then the label adopts its font weight',
+    'Given a shared SignInButtonStyle from the main package with a custom textStyle, '
+    'when building the button, '
+    'then the label adopts its font weight.',
     (tester) async {
       await tester.pumpWidget(
         const _Host(

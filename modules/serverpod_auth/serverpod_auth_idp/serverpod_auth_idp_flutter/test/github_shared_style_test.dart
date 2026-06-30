@@ -16,7 +16,9 @@ void main() {
   }
 
   testWidgets(
-    'Given a GitHubSignInButton with no shared style and no arguments when built then it uses GitHub built-in defaults',
+    'Given a GitHubSignInButton with no shared style and no arguments, '
+    'when building the button, '
+    'then it uses GitHub built-in defaults.',
     (tester) async {
       await tester.pumpWidget(
         const SignInButtonHost(
@@ -33,12 +35,13 @@ void main() {
   );
 
   group(
-    'Given a shared SignInButtonStyle with the signUpWith text variant in scope',
+    'Given a shared SignInButtonStyle with the signUpWith text variant in scope,',
     () {
       const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
 
       testWidgets(
-        'when built then the button uses it',
+        'when building the button, '
+        'then the button uses it.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -56,7 +59,8 @@ void main() {
       );
 
       testWidgets(
-        'when the button sets its own text then the shared style still wins',
+        'when building the button with its own text, '
+        'then the shared style still wins.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -78,14 +82,15 @@ void main() {
   );
 
   group(
-    'Given a shared SignInButtonStyle with a custom textStyle in scope',
+    'Given a shared SignInButtonStyle with a custom textStyle in scope,',
     () {
       const style = SignInButtonStyle(
         textStyle: TextStyle(fontWeight: FontWeight.bold),
       );
 
       testWidgets(
-        'when built then the label adopts its font weight',
+        'when building the button, '
+        'then the label adopts its font weight.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -103,7 +108,8 @@ void main() {
       );
 
       testWidgets(
-        'when built then GitHub size-based fontSize is preserved',
+        'when building the button at large size, '
+        'then GitHub size-based fontSize is preserved.',
         (tester) async {
           await tester.pumpWidget(
             const SignInButtonHost(
@@ -124,48 +130,50 @@ void main() {
     },
   );
 
-  group('Given a GitHubSignInButton', () {
-    Color? backgroundOf(WidgetTester tester) {
-      final button = tester.widget<ElevatedButton>(
-        find.byType(ElevatedButton),
+  testWidgets(
+    'Given a GitHubSignInButton with no shared style in scope, '
+    'when building the button, '
+    'then it keeps its GitHub brand colors.',
+    (tester) async {
+      await tester.pumpWidget(
+        const SignInButtonHost(
+          child: GitHubSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
+          ),
+        ),
       );
-      return button.style?.backgroundColor?.resolve({});
-    }
 
-    testWidgets(
-      'when there is no shared style then it keeps its GitHub brand colors',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-            ),
+      // The brand background is not the common (light theme) white.
+      expect(githubButtonBackgroundOf(tester), isNot(const Color(0xFFFFFFFF)));
+    },
+  );
+
+  testWidgets(
+    'Given a GitHubSignInButton with a shared style in scope, '
+    'when building the button, '
+    'then it adopts the common colors.',
+    (tester) async {
+      await tester.pumpWidget(
+        const SignInButtonHost(
+          style: SignInButtonStyle(),
+          child: GitHubSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
           ),
-        );
+        ),
+      );
 
-        // The brand background is not the common (light theme) white.
-        expect(backgroundOf(tester), isNot(const Color(0xFFFFFFFF)));
-      },
-    );
+      expect(githubButtonBackgroundOf(tester), const Color(0xFFFFFFFF));
+    },
+  );
+}
 
-    testWidgets(
-      'when a shared style is in scope then it adopts the common colors',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(),
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-            ),
-          ),
-        );
-
-        expect(backgroundOf(tester), const Color(0xFFFFFFFF));
-      },
-    );
-  });
+Color? githubButtonBackgroundOf(WidgetTester tester) {
+  final button = tester.widget<ElevatedButton>(
+    find.byType(ElevatedButton),
+  );
+  return button.style?.backgroundColor?.resolve({});
 }
