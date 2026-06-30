@@ -102,6 +102,7 @@ void main() {
         webapp: true,
         website: true,
         sqlite: true,
+        flutterApp: true,
       );
       expect(
         context.toMustacheMap(),
@@ -115,6 +116,7 @@ void main() {
           'webserver': true,
           'docker': true,
           'database': true,
+          'flutterApp': true,
         },
       );
     },

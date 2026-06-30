@@ -11,6 +11,7 @@ class TemplateContext {
     this.sqlite = false,
     this.website = false,
     this.webapp = false,
+    this.flutterApp = false,
     this.ides = const [],
   });
 
@@ -35,6 +36,9 @@ class TemplateContext {
   /// True if web app is enabled.
   final bool webapp;
 
+  /// True if companion Flutter app is enabled.
+  final bool flutterApp;
+
   /// The configured IDEs.
   final List<TemplateIde> ides;
 
@@ -58,6 +62,7 @@ class TemplateContext {
       'webapp': webapp,
       'webserver': webserver,
       'website': website,
+      'flutterApp': flutterApp,
     };
   }
 }

@@ -26,18 +26,22 @@ enum QuickstartOption<V> implements OptionDefinition<V> {
   template(
     EnumOption(
       enumParser: EnumParser([
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ]),
       argName: 'template',
       argAbbrev: 't',
-      defaultsTo: ServerpodTemplateType.server,
+      defaultsTo: ServerpodTemplateType.fullstack,
       helpText: 'Template to use when creating a new project',
       allowedValues: [
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ],
       allowedHelp: {
+        'fullstack':
+            'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },
@@ -126,6 +130,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       redis: true,
       postgres: true,
       webapp: true,
+      flutterApp: true,
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
@@ -144,6 +149,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
           redis: true,
           postgres: true,
           webapp: true,
+          flutterApp: true,
         ),
       );
       return;
