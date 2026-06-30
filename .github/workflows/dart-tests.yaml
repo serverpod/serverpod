@@ -47,7 +47,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run pub get
         run: dart pub get
       - name: Bootstrap
@@ -68,7 +68,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -87,7 +87,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -107,7 +107,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -129,7 +129,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Install Melos
         run: dart pub global activate melos
       - name: Install dependencies
@@ -158,7 +158,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
@@ -496,7 +496,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run unit tests
         run: bash util/run_tests_unit
 
@@ -523,7 +523,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
       - name: Run unit tests
         run: >-
@@ -546,7 +546,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run unit tests
         run: flutter test
         working-directory: ${{ matrix.path }}
@@ -562,7 +562,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run e2e tests
         run: util/run_tests_e2e
 
@@ -577,7 +577,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run e2e tests
         run: util/run_tests_e2e firefox
 
@@ -593,7 +593,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run integration tests
         run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
@@ -612,7 +612,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Start containers
         run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
@@ -651,7 +651,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       # Run against an embedded PostgreSQL postmaster (built once by
       # seed_embedded_pg) instead of a Docker postgres - pulled in as an
       # artifact and unpacked into the workflow-wide SERVERPOD_PG_CACHE_DIR.
@@ -697,7 +697,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       # withServerpod provisions a per-group embedded database (no up-front
       # apply-migrations); matches the other *_integration_embedded suites.
       - name: Download the seeded embedded PG bundle
@@ -739,7 +739,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run SQLite integration tests
         run: util/run_tests_sqlite_integration
 
@@ -757,7 +757,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       # Built once by seed_embedded_pg (this job `needs:` it); pulled in as an
       # artifact (reliable within a run, unlike a cross-job cache restore).
       - name: Download the seeded embedded PG bundle
@@ -786,7 +786,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       # Run against the embedded PostgreSQL postmaster (built once by
       # seed_embedded_pg) instead of a Docker postgres - pulled in as an artifact
       # and unpacked into SERVERPOD_PG_CACHE_DIR. Redis is disabled on the server
@@ -819,7 +819,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run SQLite e2e migration tests
         run: util/run_tests_sqlite_migrations_e2e
 
@@ -838,7 +838,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -875,7 +875,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Run version change test
@@ -986,7 +986,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -1003,7 +1003,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Run publish check
