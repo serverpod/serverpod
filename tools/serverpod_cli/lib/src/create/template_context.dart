@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/create/ide.dart';
 /// Context containing values for rendering templates.
 class TemplateContext {
   TemplateContext({
-    this.template = ServerpodTemplateType.server,
+    this.template = ServerpodTemplateType.fullstack,
     this.auth = false,
     this.redis = false,
     this.postgres = false,
@@ -62,7 +62,7 @@ class TemplateContext {
       'webapp': webapp,
       'webserver': webserver,
       'website': website,
-      'flutterApp': flutterApp,
+      'flutterApp': flutterApp || template == ServerpodTemplateType.fullstack,
     };
   }
 }

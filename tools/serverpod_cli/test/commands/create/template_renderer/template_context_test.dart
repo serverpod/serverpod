@@ -102,7 +102,6 @@ void main() {
         webapp: true,
         website: true,
         sqlite: true,
-        flutterApp: true,
       );
       expect(
         context.toMustacheMap(),
