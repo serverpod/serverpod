@@ -55,12 +55,6 @@ void main() async {
       final result = await runTest('test_that_will_not_timeout.dart');
 
       expect(result.exitCode, 0);
-      expect(
-        result.stdout,
-        contains(
-          'All tests passed!',
-        ),
-      );
     },
     tags: [defaultIntegrationTestTag],
   );

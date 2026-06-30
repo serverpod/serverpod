@@ -113,6 +113,14 @@ class IntegrationTestServer extends TestServerpod {
   /// [start] does not forward (e.g. `runInGuardedZone: false`). Idempotent per
   /// isolate.
   static Future<void> ensureDatabase(Serverpod serverpod) async {
+    // Only a server pointed at the embedded per-suite database needs
+    // provisioning. A server with no database, or one deliberately pointed at
+    // an unreachable host (the diagnostics "missing database" suite), is left
+    // alone so its own start() exercises the real connection path.
+    final database = serverpod.config.database;
+    if (database is! PostgresDatabaseConfig || database.dataPath == null) {
+      return;
+    }
     await _IsolateTestDatabase.ensureReady(
       runMode: serverpod.runMode,
       serverDirectory: serverpod.serverDirectory.path,
@@ -228,6 +236,44 @@ class TestServerpod {
   }
 }
 
+/// The embedded PostgreSQL data path the run points at, from
+/// `ServerpodEnv.databaseDataPath` (set by the integration run script). Empty
+/// or unset means a non-embedded run (e.g. an external server).
+final String? _embeddedDataPath = () {
+  final path = Platform.environment['SERVERPOD_DATABASE_DATA_PATH']?.trim();
+  return (path == null || path.isEmpty) ? null : path;
+}();
+
+/// Returns [database] targeting this isolate's per-suite database on the shared
+/// embedded postmaster.
+///
+/// A config loaded from disk already carries the embedded `dataPath`; one built
+/// in-Dart (as several suites do, to set custom logging/future-call/etc.
+/// options) with the Docker-era 'postgres' host does not, so the pool would
+/// fail to resolve that host. Inject the run's `dataPath` so those configs
+/// launch/attach the managed postmaster instead. A config on another host (e.g.
+/// the diagnostics "missing database" suite's `localhost`) is left untouched so
+/// its connection still fails as intended.
+PostgresDatabaseConfig _embeddedDatabase(PostgresDatabaseConfig database) {
+  final named = database.withName(_IsolateTestDatabase.name);
+  final dataPath = _embeddedDataPath;
+  if (dataPath == null || named.dataPath != null || named.host != 'postgres') {
+    return named;
+  }
+  return PostgresDatabaseConfig(
+    host: named.host,
+    port: named.port,
+    user: named.user,
+    password: named.password,
+    name: named.name,
+    requireSsl: named.requireSsl,
+    isUnixSocket: named.isUnixSocket,
+    searchPaths: named.searchPaths,
+    maxConnectionCount: named.maxConnectionCount,
+    dataPath: dataPath,
+  );
+}
+
 /// Points a test server at this isolate's own database (see
 /// [_IsolateTestDatabase]) so test files run concurrently without sharing
 /// committed state. PostgreSQL only; other configs (e.g. SQLite) are left
@@ -236,7 +282,7 @@ ServerpodConfig _useIsolateDatabase(ServerpodConfig config) {
   final database = config.database;
   if (database is! PostgresDatabaseConfig) return config;
   return config.copyWith(
-    database: database.withName(_IsolateTestDatabase.name),
+    database: _embeddedDatabase(database),
   );
 }
 
@@ -256,7 +302,7 @@ ServerpodConfig _isolatedTestConfig(ServerpodConfig config, {int? apiPort}) {
     insightsServer: insightsServer == null ? null : _boundTo(insightsServer),
     webServer: webServer == null ? null : _boundTo(webServer),
     database: database is PostgresDatabaseConfig
-        ? database.withName(_IsolateTestDatabase.name)
+        ? _embeddedDatabase(database)
         : database,
   );
 }
