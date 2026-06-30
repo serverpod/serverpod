@@ -734,19 +734,21 @@ Future<void> _copyClientUpgrade(
   required TemplateContext context,
   String? customServerpodPath,
 }) async {
-  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'serverpod_auth_idp_client',
-        source: DependencySource.version(
-          VersionConstraint.parse(templateVersion),
+  if (context.auth) {
+    log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
-        type: DependencyType.normal,
-      ),
-    ],
-  );
+      ],
+    );
+  }
 
   if (customServerpodPath != null && context.auth) {
     log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
