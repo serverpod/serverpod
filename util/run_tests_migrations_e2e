@@ -23,6 +23,10 @@ export SERVERPOD_REDIS_ENABLED="false"
 # The Dockerised suites reach the server as `serverpod_test_server`; on the host
 # it runs on localhost (see test_util/service_client.dart).
 export SERVERPOD_TEST_SERVICE_URL="http://localhost:8081/"
+# create-repair-migration fetches the live schema from the server's insights API,
+# building the URL from the server config's insightsServer.publicHost (which
+# defaults to the Docker hostname). Override it to localhost too.
+export SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST="localhost"
 # Embedded PG runs the server in the host timezone; pin UTC so timezone-sensitive
 # behaviour matches the former container (which ran UTC).
 export TZ="UTC"
