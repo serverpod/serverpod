@@ -15,6 +15,11 @@ fi
 # Makes script exit on first non-zero error code
 set -e
 export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+# create-repair-migration fetches the live schema from the server's insights API,
+# building the URL from the server config's insightsServer.publicHost (which
+# defaults to the Docker hostname). Override it to localhost so the in-repo CLI
+# reaches the host server.
+export SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST="localhost"
 
 # Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
 # (0-based index). Defaults to a single shard, so non-sharded callers are
