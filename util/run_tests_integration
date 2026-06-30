@@ -26,16 +26,6 @@ export TZ="UTC"
 
 REPO_ROOT="$(pwd)"
 
-# Activate the serverpod CLI so tests that spawn it as a subprocess
-# (e.g. MigrationTestUtils.createMigrationFromProtocols) find it on PATH.
-# CI=true skips the CLI's flutter-on-PATH check (not needed to create-migration).
-export PATH="$PATH:$HOME/.pub-cache/bin"
-export CI=true
-(
-  cd "$REPO_ROOT/tools/serverpod_cli"
-  dart pub global activate -s path .
-)
-
 cd "tests/serverpod_test_server"
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 

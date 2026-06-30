@@ -1,3 +1,13 @@
+/// Runs the in-repo serverpod CLI (`tools/serverpod_cli`) for tests, built once
+/// per `dart test` run (lock-guarded, shared across isolates) so nothing needs
+/// a globally-activated `serverpod`.
+///
+/// The build helper below is kept identical to `serverpod_cli_e2e_test`'s
+/// `run_serverpod.dart`; the two cannot share a file without a common internal
+/// package.
+library;
+
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -89,71 +99,20 @@ Future<String> _compileServerpodCli() async {
   return exePath;
 }
 
-final _activatedServerpodCliExe = _activateServerpodCli();
-Future<String> _activateServerpodCli() async {
-  final result = await Process.run(
-    'dart',
-    ['pub', 'global', 'activate', '--overwrite', '--source', 'path', _cliRoot],
-  );
-  if (result.exitCode != 0) {
-    throw StateError('Failed to activate serverpod_cli:\n${result.stderr}');
-  }
-  return 'serverpod';
-}
-
-enum RunType {
-  dartRun,
-  activated,
-  compiled,
-  installed, // 3.10 feature
-}
-
-Future<(String exe, List<String> args)> _resolveCommand(
-  List<String> args,
-  RunType runType,
-) async {
-  return switch (runType) {
-    RunType.dartRun => ('dart', ['run', _cliPath, ...args]),
-    RunType.compiled => (await compiledServerpodCliExe, args),
-    RunType.activated => (await _activatedServerpodCliExe, args),
-    RunType.installed => throw UnimplementedError(), // 3.10 feature
-  };
-}
-
-/// Runs `serverpod` with the given arguments.
-Future<ProcessResult> runServerpod(
+/// Runs the serverpod CLI with [args] in [workingDirectory] (defaults to the
+/// current directory), streaming its output, and returns the exit code.
+Future<int> runServerpodCli(
   List<String> args, {
-  String? workingDirectory,
-  RunType runType = RunType.compiled,
-  List<String> implicitArgs = const ['--verbose', '--no-analytics'],
+  Directory? workingDirectory,
 }) async {
-  workingDirectory ??= Directory.current.path;
-  final (exe, fullArgs) = await _resolveCommand([
-    ...args,
-    ...implicitArgs,
-  ], runType);
-  return Process.run(
-    exe,
-    fullArgs,
-    workingDirectory: workingDirectory,
+  final executable = await compiledServerpodCliExe;
+  final process = await Process.start(
+    executable,
+    args,
+    workingDirectory: (workingDirectory ?? Directory.current).path,
     environment: {'SERVERPOD_HOME': serverpodHome},
   );
-}
-
-/// Starts `serverpod` with the given arguments.
-///
-/// Unlike [runServerpod], this returns a [Process] that can be interacted with
-/// (e.g., to send signals or read stdout/stderr incrementally).
-Future<Process> startServerpod(
-  List<String> args, {
-  required String workingDirectory,
-  RunType runType = RunType.compiled,
-}) async {
-  final (exe, fullArgs) = await _resolveCommand(args, runType);
-  return Process.start(
-    exe,
-    fullArgs,
-    workingDirectory: workingDirectory,
-    environment: {'SERVERPOD_HOME': serverpodHome},
-  );
+  process.stdout.transform(utf8.decoder).listen(print);
+  process.stderr.transform(utf8.decoder).listen(print);
+  return process.exitCode;
 }
