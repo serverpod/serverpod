@@ -84,23 +84,29 @@ void main() {
       );
 
       test(
-        'then the build Flutter app page uses a non-WASM build by default',
+        'then the build Flutter app page instructs users to run serverpod run flutter_build',
         () async {
           final buildFlutterAppPage = File(
             p.join(project.serverDir, 'web', 'pages', 'build_flutter_app.html'),
           );
           final content = await buildFlutterAppPage.readAsString();
 
+          expect(content, contains('Flutter web app not built'));
           expect(
             content,
             contains(
-              'flutter build web --base-href /app/ '
-              '-o ../${project.name}_server/web/app',
+              'The production version of your Flutter web app has not yet been '
+              'built. The app is automatically built before deploying to '
+              'Serverpod Cloud. If you want to manually build it, run the '
+              'following command:',
             ),
           );
+          expect(content, contains('serverpod run flutter_build'));
           expect(
             content,
-            isNot(contains('flutter build web --base-href /app/ --wasm')),
+            contains(
+              'After the app has been built, restart the server and revisit this page.',
+            ),
           );
         },
       );
