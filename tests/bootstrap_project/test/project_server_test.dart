@@ -73,7 +73,10 @@ void main() async {
           });
 
           test('then a flutter project folder is not created', () {
-            expect(Directory(flutterDir).existsSync(), isFalse);
+            expect(
+              Directory(path.join(tempPath, flutterDir)).existsSync(),
+              isFalse,
+            );
           });
 
           test('then the workspace has a root pubspec.yaml file', () {
@@ -312,7 +315,7 @@ void main() async {
             'then the server pubspec does not contain the flutter_build script',
             () {
               final content = File(
-                path.join(serverDir, 'pubspec.yaml'),
+                path.join(tempPath, serverDir, 'pubspec.yaml'),
               ).readAsStringSync();
               expect(content, contains('scripts:'));
               expect(content, isNot(contains('flutter_build:')));
@@ -323,7 +326,7 @@ void main() async {
             'then the server pubspec does not contain the flutter_apps section',
             () {
               final content = File(
-                path.join(serverDir, 'pubspec.yaml'),
+                path.join(tempPath, serverDir, 'pubspec.yaml'),
               ).readAsStringSync();
               expect(content, isNot(contains('flutter_apps:')));
             },
