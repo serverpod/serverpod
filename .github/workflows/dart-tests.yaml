@@ -645,13 +645,13 @@ jobs:
     needs: seed_embedded_pg
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        dart-version: ["3.10.3", "3.12.2"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # In-process withServerpod suite - Dart SDK only, no Flutter.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.dart-version }}
       # Run against an embedded PostgreSQL postmaster (built once by
       # seed_embedded_pg) instead of a Docker postgres - pulled in as an
       # artifact and unpacked into the workflow-wide SERVERPOD_PG_CACHE_DIR.
@@ -691,13 +691,13 @@ jobs:
     needs: seed_embedded_pg
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        dart-version: ["3.10.3", "3.12.2"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # In-process withServerpod suite - Dart SDK only, no Flutter.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.dart-version }}
       # withServerpod provisions a per-group embedded database (no up-front
       # apply-migrations); matches the other *_integration_embedded suites.
       - name: Download the seeded embedded PG bundle
@@ -733,13 +733,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        dart-version: ["3.10.3", "3.12.2"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      # In-process withServerpod suite (SQLite) - Dart SDK only, no Flutter.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.dart-version }}
       - name: Run SQLite integration tests
         run: util/run_tests_sqlite_integration
 
