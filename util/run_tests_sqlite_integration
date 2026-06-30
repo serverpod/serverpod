@@ -17,6 +17,16 @@ fi
 set -e
 export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
 
+# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index). Defaults to a single shard, so non-sharded callers are
+# unchanged.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+shard_args=()
+if [ "$total_shards" -gt 1 ]; then
+    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
+fi
+
 cd tests/serverpod_test_sqlite/serverpod_test_sqlite_server
 
 # Reset the database (SQLite files under sqlite_data/).
@@ -29,4 +39,4 @@ dart run bin/main.dart -m production -r maintenance --apply-migrations
 
 # Run tests.
 echo "### Running integration tests"
-dart test test_integration --concurrency=1 --reporter=failures-only
+dart test test_integration --concurrency=1 --reporter=failures-only "${shard_args[@]}"

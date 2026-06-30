@@ -8,6 +8,18 @@ fi
 
 export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
 
+# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index). Defaults to a single shard, so non-sharded callers are
+# unchanged. The shard args are applied to EACH package's `dart test`, so a
+# shard runs its slice of every package's unit tests (every shard still pays
+# each package's compile cost, but the heavy packages parallelise).
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+shard_args=()
+if [ "$total_shards" -gt 1 ]; then
+    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
+fi
+
 # List of directories to exclude from the search (relative to repo root)
 EXCLUDE_DIRS=(
   "tests/bootstrap_project"
@@ -52,7 +64,7 @@ do
    fi
 
    echo "==== Running tests in $i ===="
-   dart test -x integration --reporter=failures-only
+   dart test -x integration --reporter=failures-only "${shard_args[@]}"
    last_exit_code=$?
 
   if [ $last_exit_code != 0 ] && [ $last_exit_code != 79 ]; then
