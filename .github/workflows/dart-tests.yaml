@@ -131,16 +131,22 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # serverpod_cli is a Dart-only tool - no Flutter needed. `dart build cli`
+      # (not `dart compile exe`) handles its sqlite3 native-asset build hooks, so
+      # the bare Dart SDK is enough.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: "3.44.4"
-          cache: false
+          sdk: "3.12.2"
+      - name: Install Melos
+        run: dart pub global activate melos
+      # Scoped bootstrap resolves serverpod_cli + its Dart-only path deps without
+      # pulling the workspace's Flutter packages.
+      - name: Bootstrap serverpod_cli
+        run: melos bootstrap --scope='serverpod_cli' --include-dependencies
       - name: Build the serverpod CLI bundle
         shell: bash
         working-directory: tools/serverpod_cli
-        run: |
-          dart pub get
-          dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
+        run: dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
       - name: Pack the CLI bundle (preserves exec bit + adjacent native libs)
         shell: bash
         run: tar -C "$GITHUB_WORKSPACE/.cli-build/bundle" -czf serverpod-cli.tgz .
@@ -964,7 +970,7 @@ jobs:
   migration_e2e_tests:
     name: Migration e2e tests
     runs-on: ubuntu-latest
-    needs: seed_embedded_pg
+    needs: [seed_embedded_pg, build_cli]
     strategy:
       fail-fast: false
       matrix:
@@ -994,12 +1000,24 @@ jobs:
         run: dart pub global activate melos
       - name: Bootstrap
         run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      - name: Download the prebuilt serverpod CLI bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: cli-bundle
+      - name: Reuse the prebuilt CLI (skip recompiling serverpod_cli in tests)
+        shell: bash
+        run: |
+          mkdir -p .cli
+          tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+          echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e ${{ matrix.shard }} 4
 
   migration_e2e_tests_sqlite:
     name: Migration e2e tests (SQLite)
     runs-on: ubuntu-latest
+    needs: build_cli
     strategy:
       fail-fast: false
       matrix:
@@ -1011,12 +1029,24 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      - name: Download the prebuilt serverpod CLI bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: cli-bundle
+      - name: Reuse the prebuilt CLI (skip recompiling serverpod_cli in tests)
+        shell: bash
+        run: |
+          mkdir -p .cli
+          tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+          echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
       - name: Run SQLite e2e migration tests
         run: util/run_tests_sqlite_migrations_e2e ${{ matrix.shard }} 4
 
   cli_e2e_tests:
     name: CLI e2e tests
     runs-on: ${{ matrix.os }}
+    needs: build_cli
     strategy:
       fail-fast: false
       matrix:
@@ -1040,6 +1070,17 @@ jobs:
           ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
 
           colima start
+      - name: Download the prebuilt serverpod CLI bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: cli-bundle
+      - name: Reuse the prebuilt CLI (skip recompiling serverpod_cli in tests)
+        shell: bash
+        run: |
+          mkdir -p .cli
+          tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+          echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
       - name: Run unit tests
         run: >-
           dart test
