@@ -7,8 +7,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
+
+// This suite runs the server in-process on the host (no Docker), so it is
+// reachable at localhost - unlike the Dockerised e2e suites' config.dart URLs.
+const _serverUrl = 'http://localhost:8080/';
 
 const _startupLifecycleMessages = [
   'SERVERPOD version:',
@@ -171,7 +174,7 @@ Future<void> _waitForServerToStart({
     final client = HttpClient();
 
     try {
-      final request = await client.getUrl(Uri.parse(serverUrl));
+      final request = await client.getUrl(Uri.parse(_serverUrl));
       final response = await request.close();
       await response.drain<void>();
       return;

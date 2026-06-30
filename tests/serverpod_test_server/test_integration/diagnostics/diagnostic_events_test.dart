@@ -8,6 +8,8 @@ import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/src/futureCalls/test_exception_call.dart';
+import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as p;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
 import 'test_exception_handler.dart';
@@ -31,28 +33,39 @@ void main() {
     setUpAll(() async {
       exceptionHandler = TestExceptionHandler();
 
+      // The api and web servers share a port on purpose, to force a bind
+      // collision. Use a fixed port distinct from other suites' (8080 is held
+      // by the startup/shutdown subprocess) so this binds first and it is the
+      // web server that collides, deterministically, even when run concurrently.
+      const sharedPort = 8077;
       final config = ServerpodConfig(
         apiServer: ServerConfig(
-          port: 8080,
+          port: sharedPort,
           publicHost: 'localhost',
-          publicPort: 8080,
+          publicPort: sharedPort,
           publicScheme: 'http',
         ),
         webServer: ServerConfig(
-          port: 8080,
+          port: sharedPort,
           publicHost: 'localhost',
           publicPort: 8081,
           publicScheme: 'http',
         ),
       );
-      pod = IntegrationTestServer.create(
+      // Built directly rather than via IntegrationTestServer.create so the
+      // configured ports are kept: this suite binds the api and web servers to
+      // the same port on purpose, to force a bind collision. It has no
+      // database, so it needs none of the per-suite harness.
+      pod = Serverpod(
+        ['-m', 'production'],
+        p.Protocol(),
+        e.Endpoints(),
         config: config,
         experimentalFeatures: ExperimentalFeatures(
           diagnosticEventHandlers: [exceptionHandler],
         ),
       );
       pod.webServer.addRoute(ExceptionRoute(), '/exception');
-      await IntegrationTestServer.ensureDatabase(pod);
       final result = pod
           .start(runInGuardedZone: false)
           .timeout(const Duration(seconds: 5));
