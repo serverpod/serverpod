@@ -257,6 +257,11 @@ Future<CreateResult> performCreate(
               customServerpodPath: productionMode ? null : serverpodHome,
             ),
         ]);
+        await _copyClientUpgrade(
+          serverpodDirs,
+          context: context,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        );
         return true;
       },
     );
@@ -544,6 +549,11 @@ Future<CreateResult> _performUpgrade({
             customServerpodPath: productionMode ? null : serverpodHome,
           ),
       ]);
+      await _copyClientUpgrade(
+        serverpodDir,
+        context: context,
+        customServerpodPath: productionMode ? null : serverpodHome,
+      );
       return true;
     },
   );
@@ -719,6 +729,49 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
+Future<void> _copyClientUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required TemplateContext context,
+  String? customServerpodPath,
+}) async {
+  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+  _addDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+    additions: [
+      (
+        name: 'serverpod_auth_idp_client',
+        source: DependencySource.version(
+          VersionConstraint.parse(templateVersion),
+        ),
+        type: DependencyType.normal,
+      ),
+    ],
+  );
+
+  if (customServerpodPath != null && context.auth) {
+    log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+      additions: [
+        (
+          name: 'serverpod_auth_core_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
+    );
+  }
+}
+
 Future<List<String>> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
@@ -769,20 +822,6 @@ Future<List<String>> _copyFlutterUpgrade(
         ),
       ],
     );
-
-    log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
-    _addDependenciesToPubspec(
-      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-      additions: [
-        (
-          name: 'serverpod_auth_idp_client',
-          source: DependencySource.version(
-            VersionConstraint.parse(templateVersion),
-          ),
-          type: DependencyType.normal,
-        ),
-      ],
-    );
   }
 
   if (customServerpodPath != null && context.auth) {
@@ -798,23 +837,9 @@ Future<List<String>> _copyFlutterUpgrade(
           type: DependencyType.override,
         ),
         (
-          name: 'serverpod_auth_core_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
-          ),
-          type: DependencyType.override,
-        ),
-        (
           name: 'serverpod_auth_core_flutter',
           source: DependencySourcePath(
             '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter',
-          ),
-          type: DependencyType.override,
-        ),
-        (
-          name: 'serverpod_auth_idp_client',
-          source: DependencySourcePath(
-            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
           ),
           type: DependencyType.override,
         ),
