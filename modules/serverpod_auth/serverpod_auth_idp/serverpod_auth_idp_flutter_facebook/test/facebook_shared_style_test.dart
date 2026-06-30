@@ -33,65 +33,72 @@ void main() {
 
   // The shared style is provided by the main package; these tests confirm it
   // crosses the package boundary into this separate Facebook package.
-  group('Given a shared SignInButtonStyle from the main package', () {
-    testWidgets(
-      'when built then the shared text variant is used',
-      (tester) async {
-        await tester.pumpWidget(
-          const _Host(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: FacebookSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
+  group(
+    'Given a shared SignInButtonStyle from the main package with the signUpWith text variant',
+    () {
+      const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
+
+      testWidgets(
+        'when built then the button uses it',
+        (tester) async {
+          await tester.pumpWidget(
+            const _Host(
+              style: style,
+              child: FacebookSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+              ),
             ),
+          );
+
+          expect(find.text('Sign up with Facebook'), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'when the button sets its own text then the shared style still wins',
+        (tester) async {
+          await tester.pumpWidget(
+            const _Host(
+              style: style,
+              child: FacebookSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                type: FacebookButtonText.continueWith,
+              ),
+            ),
+          );
+
+          expect(find.text('Sign up with Facebook'), findsOneWidget);
+          expect(find.text('Continue with Facebook'), findsNothing);
+        },
+      );
+    },
+  );
+
+  // The shared style is provided by the main package; this test confirms it
+  // crosses the package boundary into this separate Facebook package.
+  testWidgets(
+    'Given a shared SignInButtonStyle from the main package with a custom textStyle when built then the label adopts its font weight',
+    (tester) async {
+      await tester.pumpWidget(
+        const _Host(
+          style: SignInButtonStyle(
+            textStyle: TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
-
-        expect(find.text('Sign up with Facebook'), findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'when both the button and the shared style set the text then the shared style wins',
-      (tester) async {
-        await tester.pumpWidget(
-          const _Host(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: FacebookSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              type: FacebookButtonText.continueWith,
-            ),
+          child: FacebookSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
           ),
-        );
+        ),
+      );
 
-        expect(find.text('Sign up with Facebook'), findsOneWidget);
-        expect(find.text('Continue with Facebook'), findsNothing);
-      },
-    );
-
-    testWidgets(
-      'when the shared style sets a textStyle then the label adopts its font weight',
-      (tester) async {
-        await tester.pumpWidget(
-          const _Host(
-            style: SignInButtonStyle(
-              textStyle: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            child: FacebookSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-            ),
-          ),
-        );
-
-        expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
-      },
-    );
-  });
+      expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
+    },
+  );
 }
 
 /// Hosts a widget with an optional shared [SignInButtonStyle].

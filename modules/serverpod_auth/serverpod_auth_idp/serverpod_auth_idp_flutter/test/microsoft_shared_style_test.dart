@@ -36,66 +36,71 @@ void main() {
     },
   );
 
-  group('Given a shared SignInButtonStyle in scope', () {
-    testWidgets(
-      'when built then the shared text variant is used',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: MicrosoftSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              size: MicrosoftButtonSize.medium,
+  group(
+    'Given a shared SignInButtonStyle with the signUpWith text variant in scope',
+    () {
+      const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
+
+      testWidgets(
+        'when built then the button uses it',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: MicrosoftSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                size: MicrosoftButtonSize.medium,
+              ),
             ),
+          );
+
+          expect(find.text('Sign up with Microsoft'), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'when the button sets its own text then the shared style still wins',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: MicrosoftSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                size: MicrosoftButtonSize.medium,
+                text: MicrosoftButtonText.continueWith,
+              ),
+            ),
+          );
+
+          expect(find.text('Sign up with Microsoft'), findsOneWidget);
+          expect(find.text('Continue with Microsoft'), findsNothing);
+        },
+      );
+    },
+  );
+
+  testWidgets(
+    'Given a shared SignInButtonStyle with a custom textStyle in scope when built then the label adopts its font weight',
+    (tester) async {
+      await tester.pumpWidget(
+        const SignInButtonHost(
+          style: SignInButtonStyle(
+            textStyle: TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
-
-        expect(find.text('Sign up with Microsoft'), findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'when both the button and the shared style set the text then the shared style wins',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: MicrosoftSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              size: MicrosoftButtonSize.medium,
-              text: MicrosoftButtonText.continueWith,
-            ),
+          child: MicrosoftSignInButton(
+            onPressed: null,
+            isLoading: false,
+            isDisabled: false,
+            size: MicrosoftButtonSize.medium,
           ),
-        );
+        ),
+      );
 
-        expect(find.text('Sign up with Microsoft'), findsOneWidget);
-        expect(find.text('Continue with Microsoft'), findsNothing);
-      },
-    );
-
-    testWidgets(
-      'when the shared style sets a textStyle then the label adopts its font weight',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(
-              textStyle: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            child: MicrosoftSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              size: MicrosoftButtonSize.medium,
-            ),
-          ),
-        );
-
-        expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
-      },
-    );
-  });
+      expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
+    },
+  );
 }

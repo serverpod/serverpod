@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 import 'common/button.dart';
+import 'common/enum_mapping.dart';
 import 'common/style.dart';
 import 'google_auth_controller.dart';
 import 'google_web_sign_in_service.dart';
@@ -233,17 +234,17 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
   Widget build(BuildContext context) {
     final shared = context.signInButtonStyle;
 
-    final size = _toGoogleSize(shared.size) ?? widget.size;
-    final shape = _toGoogleShape(shared.shape) ?? widget.shape;
-    final text = _toGoogleText(shared.text) ?? widget.text;
+    final size = shared.size?.toGoogle() ?? widget.size;
+    final shape = shared.shape?.toGoogle() ?? widget.shape;
+    final text = shared.text?.toGoogle() ?? widget.text;
     final logoAlignment =
-        _toGoogleLogoAlignment(shared.logoAlignment) ?? widget.logoAlignment;
+        shared.logoAlignment?.toGoogle() ?? widget.logoAlignment;
     final minimumWidth = shared.minimumWidth ?? widget.minimumWidth;
     final textStyle = widget.textStyle ?? shared.textStyle;
 
     // The web GSIButtonShape has no rounded option, so the native Flutter button
     // gets an explicit radius for the shared rounded shape. The web iframe
-    // keeps its pill fallback (see _toGoogleShape).
+    // keeps its pill fallback (see the shape mapping).
     final borderRadius = shared.shape == SignInButtonShape.rounded
         ? BorderRadius.circular(8)
         : null;
@@ -304,37 +305,3 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
     }
   }
 }
-
-// Google buttons disallow the small size (Material/HIG minimum target size), so
-// it falls back to medium.
-GSIButtonSize? _toGoogleSize(SignInButtonSize? size) => switch (size) {
-  null => null,
-  SignInButtonSize.large => GSIButtonSize.large,
-  SignInButtonSize.medium => GSIButtonSize.medium,
-  SignInButtonSize.small => GSIButtonSize.medium,
-};
-
-// The web GSIButtonShape has no rounded option, so rounded maps to pill here;
-// the native button applies the rounded radius via a borderRadius override.
-GSIButtonShape? _toGoogleShape(SignInButtonShape? shape) => switch (shape) {
-  null => null,
-  SignInButtonShape.rectangular => GSIButtonShape.rectangular,
-  SignInButtonShape.rounded => GSIButtonShape.pill,
-  SignInButtonShape.pill => GSIButtonShape.pill,
-};
-
-GSIButtonLogoAlignment? _toGoogleLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => GSIButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => GSIButtonLogoAlignment.center,
-};
-
-GSIButtonText? _toGoogleText(SignInButtonTextVariant? text) => switch (text) {
-  null => null,
-  SignInButtonTextVariant.signInWith => GSIButtonText.signinWith,
-  SignInButtonTextVariant.signUpWith => GSIButtonText.signupWith,
-  SignInButtonTextVariant.continueWith => GSIButtonText.continueWith,
-  SignInButtonTextVariant.signIn => GSIButtonText.signin,
-};

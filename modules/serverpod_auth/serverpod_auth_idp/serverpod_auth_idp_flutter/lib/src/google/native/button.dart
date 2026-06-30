@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/sign_in_button_style.dart';
 import '../../localization/sign_in_localization_provider.dart';
 import '../common/button.dart';
+import '../common/enum_mapping.dart';
 import '../common/style.dart';
 import 'icon.dart';
 
@@ -158,8 +159,8 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     // Resolve the shared style so the standalone native button honors it too
     // (GoogleSignInWidget passes explicit values, which win when provided).
     final effectiveLogoAlignment =
-        _toGoogleLogoAlignment(shared?.logoAlignment) ?? logoAlignment;
-    final effectiveShape = _toGoogleShape(shared?.shape) ?? shape;
+        shared?.logoAlignment?.toGoogle() ?? logoAlignment;
+    final effectiveShape = shared?.shape?.toGoogle() ?? shape;
     // Inside a shared style, apply its common (theme-aware) colors; on its own
     // the button uses its Google brand theme.
     final sharedColors = shared?.resolveColors(context);
@@ -293,20 +294,3 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     };
   }
 }
-
-GSIButtonLogoAlignment? _toGoogleLogoAlignment(
-  SignInButtonLogoAlignment? alignment,
-) => switch (alignment) {
-  null => null,
-  SignInButtonLogoAlignment.left => GSIButtonLogoAlignment.left,
-  SignInButtonLogoAlignment.center => GSIButtonLogoAlignment.center,
-};
-
-// The web GSIButtonShape has no rounded option, so rounded maps to pill here;
-// the native button applies the rounded radius via a borderRadius override.
-GSIButtonShape? _toGoogleShape(SignInButtonShape? shape) => switch (shape) {
-  null => null,
-  SignInButtonShape.rectangular => GSIButtonShape.rectangular,
-  SignInButtonShape.rounded => GSIButtonShape.pill,
-  SignInButtonShape.pill => GSIButtonShape.pill,
-};

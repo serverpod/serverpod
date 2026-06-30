@@ -32,87 +32,97 @@ void main() {
     },
   );
 
-  group('Given a shared SignInButtonStyle in scope', () {
-    testWidgets(
-      'when built then the shared text variant is used',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
+  group(
+    'Given a shared SignInButtonStyle with the signUpWith text variant in scope',
+    () {
+      const style = SignInButtonStyle(text: SignInButtonTextVariant.signUpWith);
+
+      testWidgets(
+        'when built then the button uses it',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+              ),
             ),
-          ),
-        );
+          );
 
-        expect(find.text('Sign up with GitHub'), findsOneWidget);
-      },
-    );
+          expect(find.text('Sign up with GitHub'), findsOneWidget);
+        },
+      );
 
-    testWidgets(
-      'when both the button and the shared style set the text then the shared style wins',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(text: SignInButtonTextVariant.signUpWith),
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              text: GitHubButtonText.continueWith,
+      testWidgets(
+        'when the button sets its own text then the shared style still wins',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                text: GitHubButtonText.continueWith,
+              ),
             ),
-          ),
-        );
+          );
 
-        expect(find.text('Sign up with GitHub'), findsOneWidget);
-        expect(find.text('Continue with GitHub'), findsNothing);
-      },
-    );
+          expect(find.text('Sign up with GitHub'), findsOneWidget);
+          expect(find.text('Continue with GitHub'), findsNothing);
+        },
+      );
+    },
+  );
 
-    testWidgets(
-      'when the shared style sets a textStyle then the label adopts its font weight',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(
-              textStyle: TextStyle(fontWeight: FontWeight.bold),
+  group(
+    'Given a shared SignInButtonStyle with a custom textStyle in scope',
+    () {
+      const style = SignInButtonStyle(
+        textStyle: TextStyle(fontWeight: FontWeight.bold),
+      );
+
+      testWidgets(
+        'when built then the label adopts its font weight',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+              ),
             ),
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-            ),
-          ),
-        );
+          );
 
-        expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
-      },
-    );
+          expect(labelOf(tester).style?.fontWeight, FontWeight.bold);
+        },
+      );
 
-    testWidgets(
-      'when the shared style sets a textStyle then GitHub size-based fontSize is preserved',
-      (tester) async {
-        await tester.pumpWidget(
-          const SignInButtonHost(
-            style: SignInButtonStyle(
-              textStyle: TextStyle(fontWeight: FontWeight.bold),
+      testWidgets(
+        'when built then GitHub size-based fontSize is preserved',
+        (tester) async {
+          await tester.pumpWidget(
+            const SignInButtonHost(
+              style: style,
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                size: GitHubButtonSize.large,
+              ),
             ),
-            child: GitHubSignInButton(
-              onPressed: null,
-              isLoading: false,
-              isDisabled: false,
-              size: GitHubButtonSize.large,
-            ),
-          ),
-        );
+          );
 
-        // Large keeps its 16px default since the shared style did not set one.
-        expect(labelOf(tester).style?.fontSize, 16);
-      },
-    );
-  });
+          // Large keeps its 16px default since the shared style did not set one.
+          expect(labelOf(tester).style?.fontSize, 16);
+        },
+      );
+    },
+  );
 
   group('Given a GitHubSignInButton', () {
     Color? backgroundOf(WidgetTester tester) {
