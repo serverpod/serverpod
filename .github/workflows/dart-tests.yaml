@@ -137,12 +137,14 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Install Melos
-        run: dart pub global activate melos
+      # melos is a root dev-dependency (Dart-only), so resolve the root and run it
+      # via `dart run melos` - the globally-activated exe isn't on PATH on Windows.
+      - name: Resolve melos
+        run: dart pub get
       # Scoped bootstrap resolves serverpod_cli + its Dart-only path deps without
       # pulling the workspace's Flutter packages.
       - name: Bootstrap serverpod_cli
-        run: melos bootstrap --scope='serverpod_cli' --include-dependencies
+        run: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
       - name: Build the serverpod CLI bundle
         shell: bash
         working-directory: tools/serverpod_cli
@@ -194,13 +196,13 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Install Melos
-        run: dart pub global activate melos
+      - name: Resolve melos
+        run: dart pub get
       - name: Bootstrap (resolve just this project)
         shell: bash
         env:
           PROJECT: ${{ matrix.project }}
-        run: melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
+        run: dart run melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
@@ -240,10 +242,10 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Install Melos
-        run: dart pub global activate melos
+      - name: Resolve melos
+        run: dart pub get
       - name: Bootstrap (resolve the template servers)
-        run: melos bootstrap --scope='projectname_server' --scope='modulename_server' --include-dependencies
+        run: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
