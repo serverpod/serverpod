@@ -189,14 +189,18 @@ jobs:
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # serverpod_cli is prebuilt by build_cli, so generate only needs THIS
+      # project resolved - a scoped, Dart-only bootstrap (no Flutter).
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: "3.44.4"
-          cache: false
+          sdk: "3.12.2"
       - name: Install Melos
         run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
+      - name: Bootstrap (resolve just this project)
+        shell: bash
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
@@ -231,14 +235,15 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # The CLI is prebuilt; resolve only the template servers (Dart-only). The
+      # upgrade template borrows projectname_server's resolution at generate time.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: "3.44.4"
-          cache: false
+          sdk: "3.12.2"
       - name: Install Melos
         run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
+      - name: Bootstrap (resolve the template servers)
+        run: melos bootstrap --scope='projectname_server' --scope='modulename_server' --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
