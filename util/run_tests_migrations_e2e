@@ -30,14 +30,25 @@ export TZ="UTC"
 cd tests/serverpod_test_server
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 
-# Start the server in the background; it applies migrations on boot and serves
-# the insights API the tests use to inspect/reset the live database. Ensure it is
-# stopped when this script exits (tests pass, fail, or are interrupted).
+# Build the server into a standalone bundle so it carries its OWN copy of the
+# sqlite3 native library. (serverpod_test_server pulls in sqlite3 for SQLite
+# support even though this suite runs on Postgres.) Running it via `dart run`
+# shares .dart_tool/native_assets with the `dart test` run below, and `dart test`
+# re-links sqlite3 there while the server holds the old copy mapped - which
+# segfaults the running server (SEGV_MAPERR). The bundle's lib/ is isolated from
+# those rebuilds.
+echo "### Building the test server bundle"
+rm -rf .dart_tool/server_bundle
+dart build cli -t bin/main.dart -o .dart_tool/server_bundle
+SERVER_EXE="$(echo .dart_tool/server_bundle/bundle/bin/*)"
+
+# Start the bundled server in the background; it applies migrations on boot and
+# serves the insights API the tests use to inspect/reset the live database.
 echo "### Starting test server"
-dart run bin/main.dart -m production --apply-migrations &
+"$SERVER_EXE" -m production --apply-migrations &
 SERVER_PID=$!
-# `dart run` spawns the server in a child VM that can outlive the wrapper, so
-# stop it by what is still listening on the server ports (and the wrapper too).
+# The bundled exe is the server process directly (no `dart run` wrapper), so
+# killing it suffices; the port sweep is a belt-and-suspenders fallback.
 cleanup() {
     kill "$SERVER_PID" 2>/dev/null || true
     for port in 8080 8081 8082; do
