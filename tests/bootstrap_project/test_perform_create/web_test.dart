@@ -167,6 +167,30 @@ void main() {
           webapp: true,
         ),
       );
+      late Directory webDir;
+      setUpAll(() {
+        webDir = Directory(p.join(project.serverDir, 'web'));
+      });
+
+      test(
+        'then the server contains a web directory',
+        () async {
+          await expectLater(webDir.exists(), completion(true));
+        },
+      );
+
+      test(
+        'then the server web directory contains web templates',
+        () async {
+          final templatesDir = Directory(p.join(webDir.path, 'templates'));
+          await expectLater(templatesDir.exists(), completion(true));
+
+          final html = File(
+            p.join(templatesDir.path, 'built_with_serverpod.html'),
+          );
+          await expectLater(html.exists(), completion(true));
+        },
+      );
 
       test(
         'then the server server.dart contains correct imports',
@@ -187,10 +211,36 @@ void main() {
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('pod.webServer.addRoute('));
           expect(
             content,
-            contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+            contains(
+              "final root = Directory(Uri(path: 'web/static').toFilePath());",
+            ),
+          );
+          expect(
+            content,
+            contains('pod.webServer.addRoute(StaticRoute.directory(root));'),
+          );
+          expect(
+            content,
+            contains('AppConfigRoute(apiConfig: pod.config.apiServer),'),
+          );
+          expect(
+            content,
+            contains('/app/assets/assets/config.json'),
+          );
+          expect(
+            content,
+            contains(
+              "final appDir = Directory(Uri(path: 'web/app').toFilePath());",
+            ),
+          );
+          expect(content, contains('FlutterRoute('));
+          expect(
+            content,
+            contains(
+              "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+            ),
           );
         },
       );
