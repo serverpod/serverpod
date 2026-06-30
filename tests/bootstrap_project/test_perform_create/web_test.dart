@@ -167,6 +167,30 @@ void main() {
           webapp: true,
         ),
       );
+      late Directory webDir;
+      setUpAll(() {
+        webDir = Directory(p.join(project.serverDir, 'web'));
+      });
+
+      test(
+        'then the server contains a web directory',
+        () async {
+          await expectLater(webDir.exists(), completion(true));
+        },
+      );
+
+      test(
+        'then the server web directory contains web templates',
+        () async {
+          final templatesDir = Directory(p.join(webDir.path, 'templates'));
+          await expectLater(templatesDir.exists(), completion(true));
+
+          final html = File(
+            p.join(templatesDir.path, 'built_with_serverpod.html'),
+          );
+          await expectLater(html.exists(), completion(true));
+        },
+      );
 
       test(
         'then the server server.dart contains correct imports',
@@ -187,10 +211,55 @@ void main() {
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('pod.webServer.addRoute('));
           expect(
             content,
-            contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+            matches(
+              r'  // Serve all files in the web/static relative directory under /.\n'
+              r'  // These are used by the default web page.\n'
+              r"  final root = Directory\(Uri\(path: 'web/static'\).toFilePath\(\)\);\n"
+              r'  pod.webServer.addRoute\(StaticRoute.directory\(root\)\);\n',
+            ),
+          );
+
+          expect(
+            content,
+            matches(
+              r'  pod.webServer.addRoute\(\n'
+              r'    AppConfigRoute\(apiConfig: pod.config.apiServer\),\n'
+              r"    '/app/assets/assets/config.json',\n"
+              r'  \);\n',
+            ),
+          );
+
+          expect(
+            content,
+            matches(
+              r"  final appDir = Directory\(Uri\(path: 'web/app'\).toFilePath\(\)\);\n"
+              r'  if \(appDir.existsSync\(\)\) \{\n'
+              r'    // Serve the flutter web app under the /app path.\n'
+              r'    pod.webServer.addRoute\(\n'
+              r'      FlutterRoute\(\n'
+              r'        appDir,\n'
+              r'        // If building the Flutter app with WASM, set the below parameter to\n'
+              r'        // true and add the --wasm flag to the flutter build command.\n'
+              r'        enableWasmHeaders: false,\n'
+              r'      \),\n'
+              r"      '/app',\n"
+              r'    \);\n'
+              r'  \} else \{\n'
+              r'    // If the flutter web app has not been built, serve the build app page.\n'
+              r'    pod.webServer.addRoute\(\n'
+              r'      StaticRoute.file\(\n'
+              r'        File\(\n'
+              r"          Uri\(path: 'web/pages/build_flutter_app.html'\).toFilePath\(\),\n"
+              r'        \),\n'
+              r'      \),\n'
+              r"      '/app/\*\*',\n"
+              r'    \);\n'
+              r'  \}\n',
+            ),
+            reason:
+                'server.dart does not contain webapp configurations with fallback page when app has not been built',
           );
         },
       );
