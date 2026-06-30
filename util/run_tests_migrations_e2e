@@ -31,15 +31,14 @@ export SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST="localhost"
 # behaviour matches the former container (which ran UTC).
 export TZ="UTC"
 
-# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
-# (0-based index). Defaults to a single shard, so non-sharded callers are
-# unchanged.
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level, which breaks migration tests that build on the
+# live schema across cases in a file. We assign whole files to a shard (below) so
+# each file's sequence runs together (in order, --concurrency=1) against this
+# shard's own server + database.
 shard_index="${1:-0}"
 total_shards="${2:-1}"
-shard_args=()
-if [ "$total_shards" -gt 1 ]; then
-    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
-fi
 
 cd tests/serverpod_test_server
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
@@ -82,6 +81,21 @@ for _ in $(seq 1 60); do
     sleep 1
 done
 
+# Assign whole test files to this shard, round-robin, so a file's coupled
+# migration sequence always runs together.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test_e2e_migrations -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
+
 # Run the migration e2e tests.
-echo "### Running migration e2e tests"
-dart test test_e2e_migrations --concurrency=1 --reporter=failures-only "${shard_args[@]}"
+echo "### Running migration e2e tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" --concurrency=1 --reporter=failures-only

@@ -24,15 +24,14 @@ export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
 # cron-scheduled future calls) behave identically regardless of host/runner tz.
 export TZ="UTC"
 
-# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
-# (0-based index). Defaults to a single shard, so non-sharded callers are
-# unchanged.
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level, which breaks tests that intentionally share
+# state across cases in a group (e.g. test_tools/session_copy_with_test). We
+# assign whole files to a shard instead (see below), so each file's tests always
+# run together in one isolate - and a shard loads only its own files.
 shard_index="${1:-0}"
 total_shards="${2:-1}"
-shard_args=()
-if [ "$total_shards" -gt 1 ]; then
-    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
-fi
 
 REPO_ROOT="$(pwd)"
 
@@ -56,10 +55,25 @@ else
     echo "### Redis not reachable at redis:6379 - skipping redis-tagged tests"
 fi
 
+# Assign whole test files to this shard, round-robin. The tag filters below still
+# decide which tests within those files actually run.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test_integration -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
+
 # Each withServerpod group / IntegrationTestServer suite provisions its own
 # database (and binds ephemeral ports), so these run concurrently.
-echo "### Running integration tests"
-dart test test_integration -x integration $REDIS_TAG_FILTER --reporter=failures-only "${shard_args[@]}"
+echo "### Running integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" -x integration $REDIS_TAG_FILTER --reporter=failures-only
 
 # Verify the embedded data path was created, then clean up.
 if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
