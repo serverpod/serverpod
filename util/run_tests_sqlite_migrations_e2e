@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Runs the serverpod_test_sqlite_server migration e2e tests on the host - no
+# Docker required. The tests inspect and reset the live database through the
+# insights API, so a server is started in the background; SQLite is file-based,
+# so that server shares the sqlite_data/ database files with the
+# create-migration and apply-migrations steps the tests spawn.
+
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
     echo "I.e. util/run_tests_sqlite_migrations_e2e"
@@ -8,14 +14,43 @@ fi
 
 # Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
 
-# Bind mount targets must exist (directory for sqlite_data so WAL/SHM stay shared).
-mkdir -p tests/serverpod_test_sqlite/serverpod_test_sqlite_server/sqlite_data
+cd tests/serverpod_test_sqlite/serverpod_test_sqlite_server
 
-cd tests/docker/tests_sqlite_e2e_migrations
+# Reset the database (SQLite files under sqlite_data/).
+echo "### Resetting SQLite database"
+mkdir -p sqlite_data
+rm -f sqlite_data/*.db*
 
-docker compose --progress quiet up \
-  --abort-on-container-exit \
-  --exit-code-from tests \
-  --build \
-  --remove-orphans
+# Start the server in the background; it applies migrations on boot and serves
+# the insights API the tests use to inspect/reset the live database. Ensure it is
+# stopped when this script exits (tests pass, fail, or are interrupted).
+echo "### Starting test server"
+dart run bin/main.dart -m production --apply-migrations &
+SERVER_PID=$!
+# `dart run` spawns the server in a child VM that can outlive the wrapper, so
+# stop it by what is still listening on the server ports (and the wrapper too),
+# otherwise a stray server would hold the ports across runs.
+cleanup() {
+    kill "$SERVER_PID" 2>/dev/null || true
+    for port in 8080 8081 8082; do
+        lsof -ti "tcp:$port" 2>/dev/null | xargs -r kill 2>/dev/null || true
+    done
+}
+trap cleanup EXIT
+
+# Wait for the insights server (localhost:8081) to accept connections.
+echo "### Waiting for the insights server on localhost:8081"
+for _ in $(seq 1 60); do
+    if (exec 3<>/dev/tcp/localhost/8081) 2>/dev/null; then
+        exec 3>&- 3<&-
+        echo "### Server is up"
+        break
+    fi
+    sleep 1
+done
+
+# Run the migration e2e tests.
+echo "### Running migration e2e tests"
+dart test test_e2e_migrations --concurrency=1 --reporter=failures-only
