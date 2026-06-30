@@ -484,8 +484,64 @@ jobs:
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
 
+  # One CI job per Dart-only package (mirrors `melos test_unit`'s package set),
+  # so a failure points at the exact package in the Actions UI. serverpod_cli is
+  # ~half of all unit tests (too slow for a single job) and runs sharded in
+  # cli_unit_tests below.
   unit_io_tests:
-    name: Unit tests IO
+    name: Unit tests IO (${{ matrix.project }}, ${{ matrix.os }}, ${{ matrix.flutter-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.38.4", "3.44.4"]
+        os: [windows-latest, ubuntu-latest]
+        project:
+          - packages/serverpod
+          - packages/serverpod_client
+          - packages/serverpod_database
+          - packages/serverpod_embedded_postgres
+          - packages/serverpod_serialization
+          - packages/serverpod_shared
+          - packages/serverpod_test
+          - modules/legacy/serverpod_auth/serverpod_auth_server
+          - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+          - modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - integrations/serverpod_cloud_storage_gcp
+          - integrations/serverpod_cloud_storage_r2
+          - integrations/serverpod_cloud_storage_s3
+          - integrations/serverpod_cloud_storage_s3_compat
+          - tests/serverpod_auth_test/serverpod_auth_test_server
+          - tests/serverpod_test_client
+          - tests/serverpod_test_module/serverpod_test_module_server
+          - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+          - tests/serverpod_test_server
+          - tests/serverpod_test_shared
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_client
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: false
+      - name: Run unit tests
+        shell: bash
+        working-directory: ${{ matrix.project }}
+        run: |
+          dart test -x integration --reporter=failures-only || {
+            status=$?
+            # 79 = "no tests ran" (this package's tests are all integration-tagged);
+            # treat as success, as the old run_tests_unit script did.
+            [ "$status" -eq 79 ] && exit 0
+            exit "$status"
+          }
+
+  cli_unit_tests:
+    name: Unit tests IO (serverpod_cli shard ${{ matrix.shard }}, ${{ matrix.os }}, ${{ matrix.flutter-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -499,8 +555,18 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      # serverpod_cli's unit suite is ~half of all unit tests (~27min run whole),
+      # so split it across shards with dart test --total-shards.
       - name: Run unit tests
-        run: bash util/run_tests_unit ${{ matrix.shard }} 4
+        shell: bash
+        working-directory: tools/serverpod_cli
+        run: |
+          dart test -x integration --reporter=failures-only \
+            --total-shards 4 --shard-index ${{ matrix.shard }} || {
+            status=$?
+            [ "$status" -eq 79 ] && exit 0
+            exit "$status"
+          }
 
   unit_web_tests:
     name: Unit tests Web
