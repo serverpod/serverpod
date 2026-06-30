@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# This script runs the SQLite integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
-# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+# Runs the serverpod_test_sqlite_server integration tests on the host - no Docker
+# required. SQLite is file-based, so the apply-migrations step and the
+# withServerpod tests share the database files under sqlite_data/ on the same
+# filesystem. These tests are not safe to run concurrently, hence
+# `--concurrency=1`; all tests tagged 'integration' (the test-tools default) are
+# excluded here.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -11,11 +15,18 @@ fi
 
 # Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
 
-cd tests/docker/tests_sqlite_integration
+cd tests/serverpod_test_sqlite/serverpod_test_sqlite_server
 
-docker compose --progress quiet up \
-  --abort-on-container-exit \
-  --exit-code-from serverpod_test_sqlite_server \
-  --build \
-  --remove-orphans
+# Reset the database (SQLite files under sqlite_data/).
+echo "### Resetting SQLite database"
+rm -f sqlite_data/*.db*
+
+# Apply migrations to the database (maintenance role applies and exits).
+echo "### Apply migrations"
+dart run bin/main.dart -m production -r maintenance --apply-migrations
+
+# Run tests.
+echo "### Running integration tests"
+dart test test_integration --concurrency=1 --reporter=failures-only
