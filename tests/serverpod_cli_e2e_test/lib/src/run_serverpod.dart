@@ -42,6 +42,14 @@ final _cliPath = p.join(
 /// Path to the compiled serverpod executable.
 final compiledServerpodCliExe = _compileServerpodCli();
 Future<String> _compileServerpodCli() async {
+  // A prebuilt CLI bundle can be supplied via SERVERPOD_CLI_EXE (the build_cli
+  // CI job builds serverpod_cli once for the whole workflow). When set and
+  // present, reuse it so tests don't each recompile the CLI.
+  final prebuiltExe = Platform.environment['SERVERPOD_CLI_EXE'];
+  if (prebuiltExe != null && File(prebuiltExe).existsSync()) {
+    return prebuiltExe;
+  }
+
   // Build the CLI once for all tests.
   final bundleDir = p.join(sharedTestDir.path, 'serverpod_cli_build');
   // `dart build cli -o <dir>` writes the bundle to <dir>/bundle/bin/<exe>.

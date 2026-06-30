@@ -117,35 +117,149 @@ jobs:
       - name: Run lint
         run: melos lint_loose
 
-  serverpod_generate:
-    name: serverpod generate
+  # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
+  # jobs below don't each re-resolve and compile it. `dart build cli` (not
+  # `dart compile exe`) because serverpod_cli pulls sqlite3, whose native-asset
+  # build hooks the bare-SDK `dart compile exe` rejects; flutter-bundled Dart
+  # tolerates them.
+  build_cli:
+    name: Build serverpod CLI bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
+          flutter-version: "3.44.4"
+          cache: false
+      - name: Build the serverpod CLI bundle
+        shell: bash
+        working-directory: tools/serverpod_cli
+        run: |
+          dart pub get
+          dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
+      - name: Pack the CLI bundle (preserves exec bit + adjacent native libs)
+        shell: bash
+        run: tar -C "$GITHUB_WORKSPACE/.cli-build/bundle" -czf serverpod-cli.tgz .
+      - name: Upload the CLI bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: serverpod-cli.tgz
+          retention-days: 1
+
+  # One job per server project so a red job names the project. The CLI is
+  # prebuilt by build_cli, so generate output is deterministic regardless of the
+  # Dart/Flutter version - no need to also matrix the SDK here (CLI/SDK compat is
+  # covered by cli_unit_tests). serverpod_cli's own unit tests live in unit_io;
+  # the template servers + from-scratch check run in serverpod_generate_templates.
+  serverpod_generate:
+    name: serverpod generate (${{ matrix.project }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: build_cli
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        project:
+          - packages/serverpod
+          - examples/auth/auth_server
+          - examples/middleware/middleware_server
+          - examples/legacy/auth_example/auth_example_server
+          - examples/legacy/chat/chat_server
+          - modules/legacy/serverpod_auth/serverpod_auth_server
+          - modules/legacy/serverpod_chat/serverpod_chat_server
+          - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+          - modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - tests/serverpod_auth_test/serverpod_auth_test_server
+          - tests/serverpod_test_module/serverpod_test_module_server
+          - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+          - tests/serverpod_test_server
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: "3.44.4"
           cache: false
       - name: Install Melos
         run: dart pub global activate melos
-      - name: Install dependencies
+      - name: Bootstrap
         run: melos bootstrap
-      - name: Run serverpod generate
+      - name: Download the prebuilt serverpod CLI bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: cli-bundle
+      - name: Unpack the CLI bundle (restores exec bit + native libs)
+        shell: bash
+        run: |
+          mkdir -p .cli
+          tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+      - name: Generate and verify no changes
+        shell: bash
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          git config core.safecrlf false
+          CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
+          ( cd "$PROJECT" && "$CLI" generate --no-analytics )
+          git diff --ignore-cr-at-eol --exit-code -- "$PROJECT" || {
+            echo "::error::serverpod generate produced uncommitted changes in $PROJECT - run util/generate_all and commit."
+            git diff --ignore-cr-at-eol -- "$PROJECT"
+            exit 1
+          }
+
+  serverpod_generate_templates:
+    name: serverpod generate (templates + from scratch, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: build_cli
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: "3.44.4"
+          cache: false
+      - name: Install Melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap
+      - name: Download the prebuilt serverpod CLI bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: cli-bundle
+      - name: Unpack the CLI bundle (restores exec bit + native libs)
+        shell: bash
+        run: |
+          mkdir -p .cli
+          tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
+      - name: Generate template servers and verify no changes
         shell: bash
         run: |
           git config core.safecrlf false
-          util/run_tests_serverpod_generate
-      - name: Verify generate from scratch
+          export SERVERPOD_CLI_CMD="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
+          util/generate_templates
+          git diff --ignore-cr-at-eol --exit-code -- templates/serverpod_templates || {
+            echo "::error::serverpod generate produced uncommitted changes in templates/serverpod_templates - run util/generate_all and commit."
+            git diff --ignore-cr-at-eol -- templates/serverpod_templates
+            exit 1
+          }
+      - name: Verify generate from scratch (serverpod_test_server)
         shell: bash
         run: |
+          CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
           rm -rf tests/serverpod_test_server/lib/src/generated
-          export SERVERPOD_HOME=$(pwd)
-          cd tests/serverpod_test_server
-          dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
+          ( cd tests/serverpod_test_server && SERVERPOD_HOME="$GITHUB_WORKSPACE" "$CLI" generate --no-analytics )
 
   update_pubspecs:
     name: update pubspecs
