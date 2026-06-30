@@ -90,12 +90,6 @@ class CreateConfigState extends TuiState {
       fallback: defaults.website,
     );
 
-    final serverAndApp = _isOptionSelected(
-      ServerpodCreateConfig.template,
-      TemplateTypeOption.serverAndApp,
-      fallback: defaults.flutterApp,
-    );
-
     return TemplateContext(
       template: template,
       auth: _isOptionSelected(
@@ -113,7 +107,6 @@ class CreateConfigState extends TuiState {
         DatabaseConfigOption.database,
         fallback: defaults.postgres,
       ),
-      flutterApp: serverAndApp,
       webapp: webapp || appAndWebsite,
       website: website || appAndWebsite,
       ides: selectedIdes.toTemplateIdes,
