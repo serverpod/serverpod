@@ -675,7 +675,7 @@ jobs:
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -689,7 +689,7 @@ jobs:
         working-directory: tools/serverpod_cli
         run: |
           dart test -x integration --reporter=failures-only \
-            --total-shards 4 --shard-index ${{ matrix.shard }} || {
+            --total-shards 10 --shard-index ${{ matrix.shard }} || {
             status=$?
             [ "$status" -eq 79 ] && exit 0
             exit "$status"
@@ -842,7 +842,7 @@ jobs:
       fail-fast: false
       matrix:
         dart-version: ["3.10.3", "3.12.2"]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       # In-process withServerpod suite - Dart SDK only, no Flutter.
@@ -879,7 +879,7 @@ jobs:
           sudo systemctl stop redis-server 2>/dev/null || true
           redis-server --daemonize yes --requirepass password
       - name: Run integration tests
-        run: util/run_tests_integration ${{ matrix.shard }} 4
+        run: util/run_tests_integration ${{ matrix.shard }} 10
         timeout-minutes: 15
 
   integration_test_server_concurrent:
@@ -890,7 +890,7 @@ jobs:
       fail-fast: false
       matrix:
         dart-version: ["3.10.3", "3.12.2"]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       # In-process withServerpod suite - Dart SDK only, no Flutter.
@@ -924,7 +924,7 @@ jobs:
           sudo systemctl stop redis-server 2>/dev/null || true
           redis-server --daemonize yes --requirepass password
       - name: Run integration tests
-        run: util/run_tests_integration_concurrently ${{ matrix.shard }} 4
+        run: util/run_tests_integration_concurrently ${{ matrix.shard }} 10
         timeout-minutes: 15
 
   integration_test_sqlite_server:
@@ -951,7 +951,7 @@ jobs:
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -972,7 +972,7 @@ jobs:
           tar -C .pg-cache -xpzf pg-bundle.tgz
       - name: Run unit tests
         shell: bash
-        run: util/run_tests_bootstrap ${{ matrix.shard }} 4
+        run: util/run_tests_bootstrap ${{ matrix.shard }} 10
 
   migration_e2e_tests:
     name: Migration e2e tests
@@ -982,7 +982,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -1019,7 +1019,7 @@ jobs:
           tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
           echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
       - name: Run e2e migration tests
-        run: util/run_tests_migrations_e2e ${{ matrix.shard }} 4
+        run: util/run_tests_migrations_e2e ${{ matrix.shard }} 10
 
   migration_e2e_tests_sqlite:
     name: Migration e2e tests (SQLite)
@@ -1029,7 +1029,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-version: ["3.38.4", "3.44.4"]
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -1048,7 +1048,7 @@ jobs:
           tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
           echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
       - name: Run SQLite e2e migration tests
-        run: util/run_tests_sqlite_migrations_e2e ${{ matrix.shard }} 4
+        run: util/run_tests_sqlite_migrations_e2e ${{ matrix.shard }} 10
 
   cli_e2e_tests:
     name: CLI e2e tests
