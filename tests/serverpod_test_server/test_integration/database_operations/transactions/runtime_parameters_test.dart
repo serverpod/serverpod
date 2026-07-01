@@ -189,8 +189,11 @@ void main() async {
       var row = result.first.toColumnMap();
       expect(row['hnsw_ef_search'], '80');
       expect(row['hnsw_scan_mem_multiplier'], '4');
-      // When not yet set, parameters return an empty string
-      expect(row['hnsw_iterative_scan'], isEmpty);
+      // hnsw.iterative_scan is a registered pgvector GUC (>= 0.8.0) with a
+      // default of 'off'. The null value is not applied, so it stays at that
+      // default. (Pre-0.8.0 it was an unregistered custom GUC, which read back
+      // as an empty string - the embedded bundle ships pgvector 0.8.3.)
+      expect(row['hnsw_iterative_scan'], 'off');
     });
   });
 
