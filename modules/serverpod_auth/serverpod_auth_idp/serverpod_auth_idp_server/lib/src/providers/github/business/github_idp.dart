@@ -118,7 +118,7 @@ class GitHubIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromUrl(
                 session,
                 account.authUserId,
