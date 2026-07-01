@@ -777,24 +777,57 @@ jobs:
         run: flutter test
         working-directory: ${{ matrix.path }}
 
+  # De-dockerized: the Dart client suite run on the VM against a host server on
+  # embedded PostgreSQL (build_pod bundle), sharded across jobs. Redis-free (see
+  # util/run_tests_e2e_host). Was: `docker compose`.
   e2e_io_tests:
-    name: Serverpod E2E IO tests
+    name: Serverpod E2E IO tests (${{ matrix.sdk }}, ${{ matrix.shard }})
     runs-on: ubuntu-latest
+    needs: [seed_embedded_pg, build_pod]
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        sdk: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
-      - name: Run e2e tests
-        run: util/run_tests_e2e
+          sdk: ${{ matrix.sdk }}
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
+      - name: Download the prebuilt server pod bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pod-serverpod_test_server
+          path: pod-bundle
+      - name: Unpack the server pod bundle (restores exec bit + native lib symlinks)
+        run: |
+          mkdir -p .pod
+          tar -C .pod -xpzf pod-bundle/pod.tgz
+          echo "SERVERPOD_POD_BUNDLE=$GITHUB_WORKSPACE/.pod" >> "$GITHUB_ENV"
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap
+        run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      # The e2e client's URLs (test_util/config.dart) hardcode host
+      # `serverpod_test_server` (the former compose service name); alias to localhost.
+      - name: Alias serverpod_test_server to localhost
+        run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
+      - name: Run e2e IO tests
+        run: util/run_tests_e2e_host vm ${{ matrix.shard }} 5
+        timeout-minutes: 15
 
   # De-dockerized: the Dart client suite compiled to JS and run in Firefox against
   # a host server on embedded PostgreSQL (build_pod bundle), sharded across jobs.
-  # Redis-free (see util/run_tests_e2e_web). Was: `docker compose` (Firefox).
+  # Redis-free (see util/run_tests_e2e_host). Was: `docker compose` (Firefox).
   e2e_web_tests:
     name: Serverpod E2E web tests (${{ matrix.sdk }}, ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -844,7 +877,7 @@ jobs:
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
       - name: Run e2e web tests
-        run: util/run_tests_e2e_web ${{ matrix.shard }} 5
+        run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
         timeout-minutes: 15
 
   integration_tests:
