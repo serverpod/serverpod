@@ -33,7 +33,11 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
   ),
   webserver<WebServerConfigOption>(
     label: 'Web server',
-    options: WebServerConfigOption.values,
+    options: [
+      WebServerConfigOption.appOnly,
+      WebServerConfigOption.appAndWebsite,
+      WebServerConfigOption.none,
+    ],
     defaultOptions: {WebServerConfigOption.appOnly},
     description: FormDescription(
       label:
@@ -44,7 +48,24 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
-        configOption: TemplateTypeOption.server,
+        configOptions: {TemplateTypeOption.serverAndApp},
+      ),
+    ],
+  ),
+  serverOnlyWebserver<WebServerConfigOption>(
+    label: 'Web server',
+    options: [WebServerConfigOption.website, WebServerConfigOption.none],
+    defaultOptions: {WebServerConfigOption.website},
+    description: FormDescription(
+      label:
+          'Serverpod can serve web pages (e.g., a landing page or a companion '
+          'HTML site) in addition to your app\'s API.',
+      spacing: 2,
+    ),
+    requirements: [
+      FormRequirement<TemplateTypeOption>(
+        config: ServerpodCreateConfig.template,
+        configOptions: {TemplateTypeOption.server},
       ),
     ],
   ),
@@ -61,11 +82,14 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
-        configOption: TemplateTypeOption.server,
+        configOptions: {
+          TemplateTypeOption.server,
+          TemplateTypeOption.serverAndApp,
+        },
       ),
       FormRequirement<DatabaseConfigOption>(
         config: ServerpodCreateConfig.database,
-        configOption: DatabaseConfigOption.database,
+        configOptions: {DatabaseConfigOption.database},
       ),
     ],
   ),
@@ -125,7 +149,8 @@ enum DatabaseConfigOption implements FormConfigOption {
 
 /// [FormConfigOption] for supported template types.
 enum TemplateTypeOption implements FormConfigOption {
-  server('Server & Flutter app'),
+  serverAndApp('Server & Flutter app'),
+  server('Server only'),
   module('Module')
   ;
 
@@ -139,6 +164,7 @@ enum TemplateTypeOption implements FormConfigOption {
 enum WebServerConfigOption implements FormConfigOption {
   appOnly('Flutter app only (recommended)'),
   appAndWebsite('App and website'),
+  website('Website'),
   none('None')
   ;
 
@@ -167,6 +193,7 @@ enum IdeOption implements FormConfigOption {
 extension TemplateTypeOptionExtension on TemplateTypeOption {
   ServerpodTemplateType get toTemplate => switch (this) {
     TemplateTypeOption.server => ServerpodTemplateType.server,
+    TemplateTypeOption.serverAndApp => ServerpodTemplateType.fullstack,
     TemplateTypeOption.module => ServerpodTemplateType.module,
   };
 }
@@ -174,6 +201,7 @@ extension TemplateTypeOptionExtension on TemplateTypeOption {
 extension ServerpodTemplateTypeExtension on ServerpodTemplateType {
   TemplateTypeOption get toConfigOption => switch (this) {
     ServerpodTemplateType.server => TemplateTypeOption.server,
+    ServerpodTemplateType.fullstack => TemplateTypeOption.serverAndApp,
     ServerpodTemplateType.module => TemplateTypeOption.module,
     ServerpodTemplateType.mini => throw UnsupportedError(
       'Mini template is not supported in the config.',

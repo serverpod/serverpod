@@ -22,11 +22,11 @@ void main() {
 
   group(
     'Given a TemplateContext with redis enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           redis: true,
         ),
       );
@@ -86,11 +86,11 @@ void main() {
 
   group(
     'Given a TemplateContext with redis disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           redis: false,
         ),
       );
