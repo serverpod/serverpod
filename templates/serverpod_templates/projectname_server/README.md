@@ -7,4 +7,4 @@ Start your server by running:
     cd projectname
     serverpod start
 
-When you are finished, you can shut down Serverpod with `Q`.
+When you are finished, you can shut down the running server with `Q`.
