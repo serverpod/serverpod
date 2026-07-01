@@ -596,12 +596,15 @@ jobs:
   # ~half of all unit tests (too slow for a single job) and runs sharded in
   # cli_unit_tests below.
   unit_io_tests:
-    name: Unit tests IO (${{ matrix.project }}, ${{ matrix.os }}, ${{ matrix.flutter-version }})
+    name: Unit tests IO (${{ matrix.project }}, ${{ matrix.os }}, ${{ matrix.sdk }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        # Every project here is Dart (no Flutter deps); the Flutter packages are
+        # covered by flutter_unit_tests. So bare Dart suffices - cover the SDK
+        # floor (^3.10.3) and latest.
+        sdk: ["3.10.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         project:
           - packages/serverpod
@@ -631,10 +634,9 @@ jobs:
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.sdk }}
       - name: Run unit tests
         shell: bash
         working-directory: ${{ matrix.project }}
