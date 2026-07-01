@@ -113,7 +113,7 @@ class MicrosoftIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromBytes(
                 session,
                 account.authUserId,
