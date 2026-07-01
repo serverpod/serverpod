@@ -15,8 +15,8 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   serverpod_test: SERVERPOD_VERSION
   test: ^1.25.5
-# {{#flutterApp}}
 
+# {{#flutterApp}}
 serverpod:
   scripts:
     # Build the Flutter web app and copy it to the server's web directory.
