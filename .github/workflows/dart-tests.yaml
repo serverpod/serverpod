@@ -138,6 +138,42 @@ jobs:
           path: serverpod-cli.tgz
           retention-days: 1
 
+  # Build each test-server "pod" bundle once so the migration e2e shards download
+  # it instead of every shard spending ~1.5min on `dart build cli`. Runs in
+  # parallel with build_cli. The bundle is a standalone AOT exe (SDK-version
+  # independent), so one artifact per server project serves every shard/SDK.
+  build_pod:
+    name: Build test server pod (${{ matrix.pod }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pod: serverpod_test_server
+            path: tests/serverpod_test_server
+          - pod: serverpod_test_sqlite_server
+            path: tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap ${{ matrix.pod }}
+        run: dart run melos bootstrap --scope='${{ matrix.pod }}' --include-dependencies
+      - name: Build the server bundle
+        working-directory: ${{ matrix.path }}
+        run: dart build cli -t bin/main.dart -o "$GITHUB_WORKSPACE/.pod-build"
+      - name: Pack the pod bundle (preserves exec bit + adjacent native libs)
+        run: tar -C "$GITHUB_WORKSPACE/.pod-build/bundle" -czf pod.tgz .
+      - name: Upload the pod bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: pod-${{ matrix.pod }}
+          path: pod.tgz
+          retention-days: 1
+
   # One job per server project so a red job names the project. The CLI is
   # prebuilt by build_cli, so generate output is deterministic regardless of the
   # Dart/Flutter version - no need to also matrix the SDK here (CLI/SDK compat is
@@ -972,7 +1008,7 @@ jobs:
   migration_e2e_tests:
     name: Migration e2e tests
     runs-on: ubuntu-latest
-    needs: [seed_embedded_pg, build_cli]
+    needs: [seed_embedded_pg, build_cli, build_pod]
     strategy:
       fail-fast: false
       matrix:
@@ -1017,13 +1053,24 @@ jobs:
           mkdir -p .cli
           tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
           echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
+      - name: Download the prebuilt server pod bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pod-serverpod_test_server
+          path: pod-bundle
+      - name: Unpack the server pod bundle (restores exec bit + native lib symlinks)
+        shell: bash
+        run: |
+          mkdir -p .pod
+          tar -C .pod -xpzf pod-bundle/pod.tgz
+          echo "SERVERPOD_POD_BUNDLE=$GITHUB_WORKSPACE/.pod" >> "$GITHUB_ENV"
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e ${{ matrix.shard }} 10
 
   migration_e2e_tests_sqlite:
     name: Migration e2e tests (SQLite)
     runs-on: ubuntu-latest
-    needs: build_cli
+    needs: [build_cli, build_pod]
     strategy:
       fail-fast: false
       matrix:
@@ -1048,6 +1095,17 @@ jobs:
           mkdir -p .cli
           tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
           echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
+      - name: Download the prebuilt server pod bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pod-serverpod_test_sqlite_server
+          path: pod-bundle
+      - name: Unpack the server pod bundle (restores exec bit + native lib symlinks)
+        shell: bash
+        run: |
+          mkdir -p .pod
+          tar -C .pod -xpzf pod-bundle/pod.tgz
+          echo "SERVERPOD_POD_BUNDLE=$GITHUB_WORKSPACE/.pod" >> "$GITHUB_ENV"
       - name: Run SQLite e2e migration tests
         run: util/run_tests_sqlite_migrations_e2e ${{ matrix.shard }} 10
 
