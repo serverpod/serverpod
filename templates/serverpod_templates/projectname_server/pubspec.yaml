@@ -34,8 +34,6 @@ serverpod:
       posix: |
         cd ../projectname_flutter
         flutter build web --base-href /app/ --output ../projectname_server/web/app
-    # {{/flutterApp}}
-  # {{#flutterApp}}
   
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
