@@ -21,9 +21,8 @@
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
     }
-  ]
   // {{#flutterApp}}
-  ,
+  ],
   "compounds": [
     {
       "name": "projectname (full stack)",
@@ -37,6 +36,6 @@
         "order": 1
       }
     }
-  ]
   // {{/flutterApp}}
+  ]
 }
