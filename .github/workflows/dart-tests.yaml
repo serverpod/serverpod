@@ -974,14 +974,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        # serverpod_test_server resolves Dart-only (no *_flutter deps) and the
+        # migration tests scaffold migrations, not projects - so bare Dart with a
+        # scoped bootstrap works. Cover the SDK floor (^3.10.3) and latest.
+        sdk: ["3.10.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.sdk }}
       # Run against the embedded PostgreSQL postmaster (built once by
       # seed_embedded_pg) instead of a Docker postgres - pulled in as an artifact
       # and unpacked into SERVERPOD_PG_CACHE_DIR. Redis is disabled on the server
@@ -996,10 +998,12 @@ jobs:
         run: |
           mkdir -p .pg-cache
           tar -C .pg-cache -xpzf pg-bundle.tgz
-      - name: Install melos
-        run: dart pub global activate melos
+      # dart pub get pulls the root's pinned melos; dart run melos avoids relying
+      # on a global install being on PATH.
+      - name: Get root workspace deps (melos)
+        run: dart pub get
       - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+        run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
