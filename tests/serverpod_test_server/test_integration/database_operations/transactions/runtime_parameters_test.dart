@@ -169,6 +169,17 @@ void main() async {
       'when setting parameters using transaction.setRuntimeParameters '
       'then only non-null values are applied to the transaction', () async {
     await session.db.transaction((transaction) async {
+      // pgvector registers its hnsw.* GUCs only once its library is loaded into
+      // the backend, which happens lazily on the first vector operation. Force
+      // that here so current_setting('hnsw.iterative_scan', true) below returns
+      // the 'off' default rather than a null placeholder on a pooled connection
+      // that hasn't touched a vector yet - otherwise this assertion is flaky
+      // depending on which connection the pool hands out.
+      await session.db.unsafeQuery(
+        "select '[1]'::vector",
+        transaction: transaction,
+      );
+
       await transaction.setRuntimeParameters(
         (params) => [
           MapRuntimeParameters({
@@ -189,10 +200,8 @@ void main() async {
       var row = result.first.toColumnMap();
       expect(row['hnsw_ef_search'], '80');
       expect(row['hnsw_scan_mem_multiplier'], '4');
-      // hnsw.iterative_scan is a registered pgvector GUC (>= 0.8.0) with a
-      // default of 'off'. The null value is not applied, so it stays at that
-      // default. (Pre-0.8.0 it was an unregistered custom GUC, which read back
-      // as an empty string - the embedded bundle ships pgvector 0.8.3.)
+      // The null value is not applied, so hnsw.iterative_scan stays at
+      // pgvector's default of 'off' (registered by the vector load above).
       expect(row['hnsw_iterative_scan'], 'off');
     });
   });
