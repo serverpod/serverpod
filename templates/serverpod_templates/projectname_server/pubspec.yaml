@@ -18,8 +18,6 @@ dev_dependencies:
 
 serverpod:
   scripts:
-    # Starts the server and applies migrations
-    start: dart bin/main.dart --apply-migrations
     # {{#flutterApp}}
     
     # Build the Flutter web app and copy it to the server's web directory.
