@@ -43,10 +43,19 @@ rm -f sqlite_data/*.db*
 # re-links sqlite3 there while the server holds the old copy mapped - which
 # segfaults the running server (SEGV_MAPERR). The bundle's lib/ is isolated from
 # those rebuilds.
-echo "### Building the test server bundle"
-rm -rf .dart_tool/server_bundle
-dart build cli -t bin/main.dart -o .dart_tool/server_bundle
-SERVER_EXE="$(echo .dart_tool/server_bundle/bundle/bin/*)"
+#
+# CI prebuilds the bundle once in the build_pod job and points SERVERPOD_POD_BUNDLE
+# at the unpacked bundle dir, so the shards skip the ~1.5min `dart build cli`; a
+# local run with no such env builds it here.
+if [ -n "$SERVERPOD_POD_BUNDLE" ]; then
+    echo "### Using prebuilt server bundle from $SERVERPOD_POD_BUNDLE"
+    SERVER_EXE="$(echo "$SERVERPOD_POD_BUNDLE"/bin/*)"
+else
+    echo "### Building the test server bundle"
+    rm -rf .dart_tool/server_bundle
+    dart build cli -t bin/main.dart -o .dart_tool/server_bundle
+    SERVER_EXE="$(echo .dart_tool/server_bundle/bundle/bin/*)"
+fi
 
 # Start the bundled server in the background; it applies migrations on boot and
 # serves the insights API the tests use to inspect/reset the live database.
