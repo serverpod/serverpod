@@ -68,7 +68,10 @@ class MicrosoftSignInWidget extends StatefulWidget {
   /// The button type: icon or standard button.
   final MicrosoftButtonType type;
 
-  /// The button style (light or dark).
+  /// The brand color preset (light or dark).
+  ///
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final MicrosoftButtonStyle style;
 
   /// The button size (large or medium).
@@ -88,6 +91,11 @@ class MicrosoftSignInWidget extends StatefulWidget {
   /// The maximum width is 400 pixels.
   final double minimumWidth;
 
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
+
   /// Creates a Microsoft Sign-In widget.
   const MicrosoftSignInWidget({
     this.controller,
@@ -102,6 +110,7 @@ class MicrosoftSignInWidget extends StatefulWidget {
     this.shape = MicrosoftButtonShape.pill,
     this.logoAlignment = MicrosoftButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -110,7 +119,7 @@ class MicrosoftSignInWidget extends StatefulWidget {
        ),
        assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
@@ -158,6 +167,7 @@ class _MicrosoftSignInWidgetState extends State<MicrosoftSignInWidget> {
       shape: widget.shape,
       logoAlignment: widget.logoAlignment,
       minimumWidth: widget.minimumWidth,
+      textStyle: widget.textStyle,
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide IconAlignment;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../common/sign_in_button_style.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'apple_sign_in_style.dart';
 
@@ -8,6 +9,11 @@ import 'apple_sign_in_style.dart';
 ///
 /// This widget wraps the official Sign in with Apple button from the
 /// `sign_in_with_apple` package and adds loading and disabled states.
+///
+/// The [type], [size], [shape], [logoAlignment], and [minimumWidth] arguments
+/// fall back to the shared [SignInButtonStyle] in scope when left null, then to
+/// Apple's own defaults. The shared `textStyle` does not apply: the button is
+/// rendered natively and always uses the system font.
 class AppleSignInButton extends StatelessWidget {
   /// Callback when the button is pressed.
   final VoidCallback? onPressed;
@@ -18,22 +24,20 @@ class AppleSignInButton extends StatelessWidget {
   /// Whether the button is disabled.
   final bool isDisabled;
 
-  /// The button type: icon, or standard button.
+  /// The button text variant.
   final AppleButtonText type;
 
-  /// The button style.
+  /// The brand color preset (black, white, or white-outlined).
   ///
-  /// For example, black or white.
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead,
+  /// approximated with Apple's nearest preset.
   final AppleButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large.
   final AppleButtonSize size;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill.
   final AppleButtonShape shape;
 
   /// The Apple logo alignment: left or center.
@@ -58,17 +62,69 @@ class AppleSignInButton extends StatelessWidget {
     super.key,
   }) : assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.appleSignInTexts;
+    final localizations = context.appleSignInTexts;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
+
+    final type = shared?.text?.toApple() ?? this.type;
+    final size = shared?.size?.toApple() ?? this.size;
+    final shape = shared?.shape?.toApple() ?? this.shape;
+    final logoAlignment =
+        shared?.logoAlignment?.toApple() ?? this.logoAlignment;
+    final minimumWidth = shared?.minimumWidth ?? this.minimumWidth;
+
+    // Inside a shared style, Apple's native button can't take arbitrary colors,
+    // so map the resolved background to its nearest borderless preset and
+    // overlay the shared border; on its own the button uses its brand preset.
+    // [colors] is non-null only when a shared style is in scope.
+    final colors = shared?.resolveColors(context);
+    final AppleButtonStyle effectiveStyle;
+    if (colors != null) {
+      effectiveStyle = colors.background.computeLuminance() > 0.5
+          ? AppleButtonStyle.white
+          : AppleButtonStyle.black;
+    } else {
+      effectiveStyle = style;
+    }
+
     final buttonStyle = AppleSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
       width: minimumWidth,
     );
+
+    Widget button = SignInWithAppleButton(
+      onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
+      text: localizations.signInButton ?? _getButtonText(type),
+      height: buttonStyle.size.height,
+      style: effectiveStyle,
+      borderRadius: buttonStyle.borderRadius,
+      iconAlignment: logoAlignment,
+    );
+
+    if (colors != null) {
+      // Apple's native button only offers no border or a black outline, so
+      // overlay the shared border to match the other buttons.
+      button = Stack(
+        children: [
+          button,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: buttonStyle.borderRadius,
+                  border: Border.all(color: colors.border),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -77,18 +133,11 @@ class AppleSignInButton extends StatelessWidget {
         minHeight: buttonStyle.size.height,
         maxHeight: buttonStyle.size.height,
       ),
-      child: SignInWithAppleButton(
-        onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-        text: texts.signInButton ?? _getButtonText(),
-        height: buttonStyle.size.height,
-        style: style,
-        borderRadius: buttonStyle.borderRadius,
-        iconAlignment: logoAlignment,
-      ),
+      child: button,
     );
   }
 
-  String _getButtonText() {
+  String _getButtonText(AppleButtonText type) {
     return switch (type) {
       AppleButtonText.signinWith => 'Sign in with Apple',
       AppleButtonText.continueWith => 'Continue with Apple',
@@ -96,4 +145,36 @@ class AppleSignInButton extends StatelessWidget {
       AppleButtonText.signin => 'Sign in',
     };
   }
+}
+
+extension on SignInButtonSize {
+  AppleButtonSize toApple() => switch (this) {
+    SignInButtonSize.large => AppleButtonSize.large,
+    SignInButtonSize.medium => AppleButtonSize.medium,
+    SignInButtonSize.small => AppleButtonSize.small,
+  };
+}
+
+extension on SignInButtonShape {
+  AppleButtonShape toApple() => switch (this) {
+    SignInButtonShape.rectangular => AppleButtonShape.rectangular,
+    SignInButtonShape.rounded => AppleButtonShape.rounded,
+    SignInButtonShape.pill => AppleButtonShape.pill,
+  };
+}
+
+extension on SignInButtonLogoAlignment {
+  AppleButtonLogoAlignment toApple() => switch (this) {
+    SignInButtonLogoAlignment.left => AppleButtonLogoAlignment.left,
+    SignInButtonLogoAlignment.center => AppleButtonLogoAlignment.center,
+  };
+}
+
+extension on SignInButtonTextVariant {
+  AppleButtonText toApple() => switch (this) {
+    SignInButtonTextVariant.signInWith => AppleButtonText.signinWith,
+    SignInButtonTextVariant.signUpWith => AppleButtonText.signupWith,
+    SignInButtonTextVariant.continueWith => AppleButtonText.continueWith,
+    SignInButtonTextVariant.signIn => AppleButtonText.signin,
+  };
 }

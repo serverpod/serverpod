@@ -65,6 +65,12 @@ class GitHubSignInStyle {
   /// The size of the button.
   final Size size;
 
+  /// The size of the provider logo.
+  final double logoSize;
+
+  /// The font size of the label.
+  final double labelFontSize;
+
   /// The foreground color (text and icon).
   final Color foregroundColor;
 
@@ -80,6 +86,8 @@ class GitHubSignInStyle {
     required this.foregroundColor,
     required this.backgroundColor,
     required this.borderRadius,
+    this.logoSize = 20,
+    this.labelFontSize = 16,
   });
 
   /// Gets the border side for the button.
@@ -99,9 +107,19 @@ class GitHubSignInStyle {
     required GitHubButtonStyle style,
     required double width,
   }) {
-    final buttonSize = switch (size) {
-      GitHubButtonSize.large => const Size(0, 40),
-      GitHubButtonSize.medium => const Size(0, 32),
+    final height = switch (size) {
+      GitHubButtonSize.large => 40.0,
+      GitHubButtonSize.medium => 32.0,
+    };
+
+    final logoSize = switch (size) {
+      GitHubButtonSize.large => 20.0,
+      GitHubButtonSize.medium => 16.0,
+    };
+
+    final labelFontSize = switch (size) {
+      GitHubButtonSize.large => 16.0,
+      GitHubButtonSize.medium => 14.0,
     };
 
     final foregroundColor = switch (style) {
@@ -115,13 +133,15 @@ class GitHubSignInStyle {
     };
 
     final borderRadius = switch (shape) {
-      GitHubButtonShape.rectangular => BorderRadius.zero,
-      GitHubButtonShape.pill => BorderRadius.circular(buttonSize.height / 2),
+      GitHubButtonShape.rectangular => BorderRadius.circular(4),
+      GitHubButtonShape.pill => BorderRadius.circular(height / 2),
       GitHubButtonShape.rounded => BorderRadius.circular(8),
     };
 
     return GitHubSignInStyle(
-      size: Size(width, buttonSize.height),
+      size: Size(width, height),
+      logoSize: logoSize,
+      labelFontSize: labelFontSize,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       borderRadius: borderRadius,

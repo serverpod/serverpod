@@ -68,22 +68,20 @@ class AppleSignInWidget extends StatefulWidget {
   /// retrieving the user's email and full name.
   final List<AppleIDAuthorizationScopes> scopes;
 
-  /// The button type: icon, or standard button.
+  /// The button text variant.
   final AppleButtonText type;
 
-  /// The button style.
+  /// The brand color preset (black, white, or white-outlined).
   ///
-  /// For example, black or white.
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead,
+  /// approximated with Apple's nearest preset.
   final AppleButtonStyle style;
 
   /// The button size.
-  ///
-  /// For example, small or large.
   final AppleButtonSize size;
 
   /// The button shape.
-  ///
-  /// For example, rectangular or pill.
   final AppleButtonShape shape;
 
   /// The Apple logo alignment: left or center.
@@ -120,7 +118,7 @@ class AppleSignInWidget extends StatefulWidget {
        ),
        assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override

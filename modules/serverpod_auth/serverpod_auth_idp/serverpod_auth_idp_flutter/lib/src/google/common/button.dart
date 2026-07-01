@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../common/sign_in_button_style.dart';
 import 'style.dart';
 
 /// Base class for Google Sign-In buttons with shared wrapping logic.
@@ -9,7 +10,8 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
 
   /// The button theme.
   ///
-  /// For example, filledBlue or filledBlack.
+  /// For example, filledBlue or filledBlack. Applies when the button is used on
+  /// its own; inside a [SignInButtonStyle] the shared common style applies.
   final GSIButtonTheme theme;
 
   /// The button size.
@@ -66,7 +68,7 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
     super.key,
   }) : assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        ),
        assert(
          size != GSIButtonSize.small,

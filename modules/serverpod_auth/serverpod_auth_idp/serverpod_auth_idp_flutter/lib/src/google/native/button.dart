@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../../common/sign_in_button_style.dart';
 import '../../localization/sign_in_localization_provider.dart';
 import '../common/button.dart';
+import '../common/enum_mapping.dart';
 import '../common/style.dart';
 import 'icon.dart';
 
@@ -24,6 +25,27 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
   /// A function to generate the button text based on the current configuration.
   final String Function({bool isLoading})? getButtonText;
 
+  /// The text style applied to the button label.
+  ///
+  /// Merged over the default label style, so it can override the font while
+  /// keeping the defaults for any unset properties.
+  final TextStyle? textStyle;
+
+  /// Overrides the shape-derived border radius when provided.
+  ///
+  /// Used to render shapes the web [GSIButtonShape] cannot express (e.g.
+  /// rounded), since the native button is drawn in Flutter.
+  final BorderRadius? borderRadius;
+
+  /// Overrides the theme-derived background color when provided.
+  final Color? backgroundColor;
+
+  /// Overrides the theme-derived foreground color when provided.
+  final Color? foregroundColor;
+
+  /// Overrides the background-derived border color when provided.
+  final Color? borderColor;
+
   /// Creates a Google Sign-In button for native platforms.
   const GoogleSignInNativeButton({
     required this.onPressed,
@@ -37,6 +59,11 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     super.logoAlignment,
     super.minimumWidth,
     this.getButtonText,
+    this.textStyle,
+    this.borderRadius,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
     super.buttonWrapper,
     super.key,
   });
@@ -126,12 +153,33 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.googleSignInTexts;
+    final localizations = context.googleSignInTexts;
+    final shared = SignInButtonStyleProvider.maybeOf(context);
+
+    // Resolve the shared style so the standalone native button honors it too
+    // (GoogleSignInWidget passes explicit values, which win when provided).
+    final effectiveLogoAlignment =
+        shared?.logoAlignment?.toGoogle() ?? logoAlignment;
+    final effectiveShape = shared?.shape?.toGoogle() ?? shape;
+    // Inside a shared style, apply its common (theme-aware) colors; on its own
+    // the button uses its Google brand theme.
+    final sharedColors = shared?.resolveColors(context);
+    // The web GSIButtonShape has no rounded option, so render the shared rounded
+    // shape with an explicit radius.
+    final effectiveBorderRadius =
+        borderRadius ??
+        (shared?.shape == SignInButtonShape.rounded
+            ? BorderRadius.circular(8)
+            : null);
     final buttonStyle = GoogleSignInStyle.fromConfiguration(
       theme: theme,
-      shape: shape,
+      shape: effectiveShape,
       size: size,
       width: minimumWidth,
+      borderRadius: effectiveBorderRadius,
+      backgroundColor: backgroundColor ?? sharedColors?.background,
+      foregroundColor: foregroundColor ?? sharedColors?.foreground,
+      borderColor: borderColor ?? sharedColors?.border,
     );
 
     if (type == GSIButtonType.icon) {
@@ -153,18 +201,15 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       );
     }
 
-    final logo = Padding(
-      padding: const EdgeInsets.only(left: 2),
-      child: GoogleSignInIcon(
-        isLoading: isLoading,
-        isDisabled: isDisabled,
-        isCentered: logoAlignment == GSIButtonLogoAlignment.center,
-        size: size,
-        borderRadius: theme == GSIButtonTheme.outline
-            ? null
-            : buttonStyle.borderRadius,
-        backgroundColor: theme == GSIButtonTheme.outline ? null : Colors.white,
-      ),
+    final logo = GoogleSignInIcon(
+      isLoading: isLoading,
+      isDisabled: isDisabled,
+      isCentered: true,
+      size: size,
+      borderRadius: theme == GSIButtonTheme.outline
+          ? null
+          : buttonStyle.borderRadius,
+      backgroundColor: theme == GSIButtonTheme.outline ? null : Colors.white,
     );
 
     final text = Padding(
@@ -175,48 +220,51 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
       },
       child: Text(
         getButtonText?.call(isLoading: isLoading) ??
-            texts.signInButton ??
+            localizations.signInButton ??
             _getButtonText(),
-        style: GoogleFonts.roboto(
-          fontSize: 14,
-          letterSpacing: 0.7,
-        ),
+        // No font family, so the label inherits the theme font like the other
+        // buttons; the shared textStyle is merged on top.
+        style: TextStyle(
+          fontSize: switch (size) {
+            GSIButtonSize.large => 16.0,
+            GSIButtonSize.medium => 14.0,
+            GSIButtonSize.small => 12.0,
+          },
+        ).merge(textStyle ?? shared?.textStyle),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
       ),
     );
 
-    final buttonContents = (logoAlignment == GSIButtonLogoAlignment.center)
+    final iconSize = switch (size) {
+      GSIButtonSize.large => 20.0,
+      GSIButtonSize.medium => 16.0,
+      GSIButtonSize.small => 12.0,
+    };
+
+    final buttonContents =
+        (effectiveLogoAlignment == GSIButtonLogoAlignment.center)
+        // Center: center the [logo + label] group, matching the native Apple
+        // button's centered layout. Google's logo doesn't fill its box (scaled
+        // SVG), so tighten the gap a little to match the other buttons.
         ? Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               logo,
-              const SizedBox(width: 12),
-              text,
+              const SizedBox(width: signInCenteredLogoGap - 2),
+              Flexible(child: text),
             ],
           )
-        : Stack(
+        // Left: logo pinned to the left column with the label centered in the
+        // button, matching the native Apple button's left layout. The trailing
+        // gap balances the leading logo so the label stays centered.
+        : Row(
             children: [
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: logo,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: switch (size) {
-                      GSIButtonSize.small => 12.0,
-                      GSIButtonSize.medium => 18.0,
-                      GSIButtonSize.large => 24.0,
-                    },
-                  ),
-                  Center(
-                    child: text,
-                  ),
-                ],
-              ),
+              const SizedBox(width: signInLeftLogoIndent),
+              logo,
+              Expanded(child: text),
+              SizedBox(width: signInLeftLogoIndent + iconSize),
             ],
           );
 

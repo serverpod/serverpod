@@ -68,7 +68,10 @@ class GitHubSignInWidget extends StatefulWidget {
   /// The button type: icon or standard button.
   final GitHubButtonType type;
 
-  /// The button style (black or white).
+  /// The brand color preset (black or white).
+  ///
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final GitHubButtonStyle style;
 
   /// The button size (large or medium).
@@ -88,6 +91,11 @@ class GitHubSignInWidget extends StatefulWidget {
   /// The maximum width is 400 pixels.
   final double minimumWidth;
 
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null.
+  final TextStyle? textStyle;
+
   /// Creates a GitHub Sign-In widget.
   const GitHubSignInWidget({
     this.controller,
@@ -102,6 +110,7 @@ class GitHubSignInWidget extends StatefulWidget {
     this.shape = GitHubButtonShape.pill,
     this.logoAlignment = GitHubButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     super.key,
   }) : assert(
          (controller == null) != (client == null),
@@ -110,7 +119,7 @@ class GitHubSignInWidget extends StatefulWidget {
        ),
        assert(
          minimumWidth > 0 && minimumWidth <= 400,
-         'Invalid minimumWidth. Must be between 0 and 400.',
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
@@ -159,6 +168,7 @@ class _GitHubSignInWidgetState extends State<GitHubSignInWidget> {
       shape: widget.shape,
       minimumWidth: widget.minimumWidth,
       logoAlignment: widget.logoAlignment,
+      textStyle: widget.textStyle,
     );
   }
 

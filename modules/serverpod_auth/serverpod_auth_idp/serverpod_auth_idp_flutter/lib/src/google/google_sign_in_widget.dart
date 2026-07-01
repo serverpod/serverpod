@@ -4,11 +4,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 import 'common/button.dart';
+import 'common/enum_mapping.dart';
 import 'common/style.dart';
 import 'google_auth_controller.dart';
 import 'google_web_sign_in_service.dart';
 import 'native/button.dart';
 import 'web/button.dart';
+import '../common/sign_in_button_style.dart';
 import '../common/sign_in_flow_coordinator.dart';
 
 export 'native/button.dart';
@@ -89,9 +91,10 @@ class GoogleSignInWidget extends StatefulWidget {
   /// The button type: icon, or standard button.
   final GSIButtonType type;
 
-  /// The button theme.
+  /// The brand color theme (outline, filledBlue, or filledBlack).
   ///
-  /// For example, filledBlue or filledBlack.
+  /// Applies when the button is used on its own. Inside a [SignInWidget] (or any
+  /// [SignInButtonStyle] in scope) the shared common style applies instead.
   final GSIButtonTheme theme;
 
   /// The button size.
@@ -116,6 +119,13 @@ class GoogleSignInWidget extends StatefulWidget {
   ///
   /// The maximum width is 400 pixels.
   final double minimumWidth;
+
+  /// The text style applied to the button label.
+  ///
+  /// Falls back to the shared [SignInButtonStyle] when null. Only applies to
+  /// the native button; the web button is rendered by Google and uses its own
+  /// font.
+  final TextStyle? textStyle;
 
   /// A function to generate the button text based on the current configuration.
   ///
@@ -166,6 +176,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.shape = GSIButtonShape.pill,
     this.logoAlignment = GSIButtonLogoAlignment.center,
     this.minimumWidth = 240,
+    this.textStyle,
     this.getButtonText,
     this.locale,
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
@@ -179,6 +190,10 @@ class GoogleSignInWidget extends StatefulWidget {
          (onAuthenticated == null && onError == null) || controller == null,
          'Do not provide onAuthenticated or onError when using a controller '
          'as they will be handled by the controller and will be ignored.',
+       ),
+       assert(
+         minimumWidth > 0 && minimumWidth <= 400,
+         'Invalid minimumWidth. Must be greater than 0 and at most 400.',
        );
 
   @override
@@ -217,6 +232,23 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final shared = context.signInButtonStyle;
+
+    final size = shared.size?.toGoogle() ?? widget.size;
+    final shape = shared.shape?.toGoogle() ?? widget.shape;
+    final text = shared.text?.toGoogle() ?? widget.text;
+    final logoAlignment =
+        shared.logoAlignment?.toGoogle() ?? widget.logoAlignment;
+    final minimumWidth = shared.minimumWidth ?? widget.minimumWidth;
+    final textStyle = widget.textStyle ?? shared.textStyle;
+
+    // The web GSIButtonShape has no rounded option, so the native Flutter button
+    // gets an explicit radius for the shared rounded shape. The web iframe
+    // keeps its pill fallback (see the shape mapping).
+    final borderRadius = shared.shape == SignInButtonShape.rounded
+        ? BorderRadius.circular(8)
+        : null;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -230,24 +262,28 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             isDisabled: !_controller.isInitialized || _controller.isLoading,
             type: widget.type,
             theme: widget.theme,
-            size: widget.size,
-            text: widget.text,
-            shape: widget.shape,
-            logoAlignment: widget.logoAlignment,
-            minimumWidth: widget.minimumWidth,
+            size: size,
+            text: text,
+            shape: shape,
+            logoAlignment: logoAlignment,
+            minimumWidth: minimumWidth,
+            textStyle: textStyle,
+            borderRadius: borderRadius,
             getButtonText: widget.getButtonText,
             buttonWrapper: widget.buttonWrapper,
           )
         else if (_controller.isInitialized)
-          // Google-hosted iFrame button, self-managed.
+          // Google-hosted iFrame button, self-managed. The web button is
+          // rendered by Google and uses its own font, so textStyle is not
+          // forwarded here.
           GoogleSignInWebButton(
             type: widget.type,
             theme: widget.theme,
-            size: widget.size,
-            text: widget.text,
-            shape: widget.shape,
-            logoAlignment: widget.logoAlignment,
-            minimumWidth: widget.minimumWidth,
+            size: size,
+            text: text,
+            shape: shape,
+            logoAlignment: logoAlignment,
+            minimumWidth: minimumWidth,
             locale: widget.locale,
             buttonWrapper: widget.buttonWrapper,
           ),
