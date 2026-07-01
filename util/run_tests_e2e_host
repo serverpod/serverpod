@@ -1,24 +1,25 @@
 #!/bin/bash
 
-# De-dockerized Serverpod e2e WEB tests: the client suite compiled to JS and run
-# in Firefox (headless via xvfb) against a host server on embedded PostgreSQL -
-# replacing the Docker compose stack in tests/docker/tests_e2e.
+# De-dockerized Serverpod e2e tests: the Dart client suite run against a host
+# server on embedded PostgreSQL (reusing the build_pod bundle) - replacing the
+# Docker compose stack in tests/docker/tests_e2e. One runner for both platforms:
+#   util/run_tests_e2e_host vm       <shard> <total>   # IO   (was: run_tests_e2e)
+#   util/run_tests_e2e_host firefox  <shard> <total>   # web  (browser via xvfb)
 #
 # The CI job (see .github/workflows/dart-tests.yaml) provides:
 #   - the seeded embedded PostgreSQL bundle (SERVERPOD_PG_CACHE_DIR),
 #   - the prebuilt server bundle (SERVERPOD_POD_BUNDLE, from build_pod), and
 #   - an /etc/hosts alias mapping `serverpod_test_server` to 127.0.0.1, so the
-#     hardcoded client URLs (test_util/config.dart) resolve to the host server
-#     with no source changes.
+#     hardcoded client URLs (test_util/config.dart) - and the browser - resolve to
+#     the host server with no source changes.
 #
-# Redis is disabled here and redis_test.dart is excluded: it is the only e2e file
-# that uses Redis, and its cache round-trip is a server-side behaviour already
-# covered by the IO e2e suite - not worth provisioning a Redis just to re-check it
-# over the browser transport.
+# Redis is disabled and redis_test.dart is excluded: it is the only e2e file that
+# uses Redis, and its cache round-trip is a server-side behaviour already covered
+# by the integration suite's redis-tagged tests - not worth provisioning a Redis.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
-    echo "I.e. util/run_tests_e2e_web"
+    echo "I.e. util/run_tests_e2e_host vm"
     exit 1
 fi
 
@@ -30,12 +31,15 @@ export SERVERPOD_REDIS_ENABLED="false"
 # container (which ran UTC).
 export TZ="UTC"
 
+# <platform> is a `dart test` platform: `vm` (IO) or a browser (`firefox`).
+platform="${1:-vm}"
+
 # Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
 # (0-based index, default 0 1 = a single shard). The e2e suite shares one server
 # + database (--concurrency=1 below), so we parallelise across shards - each shard
 # is its own job with its own server + embedded database.
-shard_index="${1:-0}"
-total_shards="${2:-1}"
+shard_index="${2:-0}"
+total_shards="${3:-1}"
 
 cd tests/serverpod_test_server
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
@@ -92,7 +96,11 @@ if [ ${#shard_test_files[@]} -eq 0 ]; then
     exit 0
 fi
 
-# Run the e2e tests in Firefox, headless via xvfb. --concurrency=1: the suite
-# shares the one server + database.
-echo "### Running e2e web tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
-xvfb-run -a dart test "${shard_test_files[@]}" --concurrency=1 -p firefox --reporter=failures-only
+# The suite shares the one server + database, so --concurrency=1. Browser
+# platforms need a virtual display; wrap them in xvfb-run. `vm` (IO) needs none.
+echo "### Running e2e tests on '$platform' (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+if [ "$platform" = "vm" ]; then
+    dart test "${shard_test_files[@]}" --concurrency=1 -p "$platform" --reporter=failures-only
+else
+    xvfb-run -a dart test "${shard_test_files[@]}" --concurrency=1 -p "$platform" --reporter=failures-only
+fi
