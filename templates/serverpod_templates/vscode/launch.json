@@ -21,15 +21,15 @@
       "preLaunchTask": "serverpod_start",
       "internalConsoleOptions": "neverOpen"
     }
-  ],
+  ]
+  // {{#flutterApp}}
+  ,
   "compounds": [
     {
       "name": "projectname (full stack)",
       "configurations": [
         "projectname_server",
-        // {{#flutterApp}}
         "projectname_flutter"
-        // {{/flutterApp}}
       ],
       // Stopping one session stops both; the orphan blocks re-attach.
       "stopAll": true,
@@ -38,4 +38,5 @@
       }
     }
   ]
+  // {{/flutterApp}}
 }
