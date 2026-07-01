@@ -34,9 +34,35 @@ REPO_ROOT="$(pwd)"
 
 cd "$SERVER_DIR"
 
+# Optional whole-file sharding for a large suite fanned across parallel CI jobs
+# via SHARD_INDEX/TOTAL_SHARDS (see the auth_idp entries in
+# embedded_integration_tests). We assign whole files to a shard rather than dart
+# test's --total-shards, which case-splits coupled tests and compiles every file
+# in every shard. Default TOTAL_SHARDS=1 runs the whole suite unchanged.
+#
 # Any arguments after <server-directory> are forwarded to `dart test`, e.g.
 # `-x email` to exclude the live-service email test from a DB-focused suite.
-dart test -t integration "${@:2}" --reporter=failures-only
+shard_index="${SHARD_INDEX:-0}"
+total_shards="${TOTAL_SHARDS:-1}"
+if [ "$total_shards" -gt 1 ]; then
+    shard_test_files=()
+    file_i=0
+    while IFS= read -r test_file; do
+        if [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+            shard_test_files+=("$test_file")
+        fi
+        file_i=$(( file_i + 1 ))
+    done < <(find test -name '*_test.dart' | sort)
+    if [ ${#shard_test_files[@]} -eq 0 ]; then
+        echo "### No test files assigned to shard $shard_index/$total_shards"
+        cd "$REPO_ROOT"
+        exit 0
+    fi
+    echo "### Running ${#shard_test_files[@]} files (shard $shard_index/$total_shards)"
+    dart test "${shard_test_files[@]}" -t integration "${@:2}" --reporter=failures-only
+else
+    dart test -t integration "${@:2}" --reporter=failures-only
+fi
 
 # Verify that the database data path exists
 if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
