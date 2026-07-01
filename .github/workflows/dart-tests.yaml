@@ -1025,14 +1025,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        # serverpod_test_sqlite_server is Dart-only; the runner just does
+        # dart build cli + dart test (no bootstrap, no flutter create), so bare
+        # Dart suffices. Cover the SDK floor (^3.10.3) and latest.
+        sdk: ["3.10.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.sdk }}
       - name: Download the prebuilt serverpod CLI bundle
         uses: actions/download-artifact@v4
         with:
