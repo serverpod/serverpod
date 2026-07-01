@@ -32,7 +32,13 @@ const _lifecycleMessages = [
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
-  const startupTimeout = Duration(seconds: 30);
+  // The first `dart bin/main.dart` spawn compiles the kernel and builds its
+  // native assets (sqlite3) cold - and `dart test` is concurrently rebuilding
+  // those for its own isolates - so under sharded, CPU-saturated CI that first
+  // boot can exceed 30s (later spawns reuse the build and start fast). This
+  // suite assumes non-concurrent execution; give the cold start headroom so it
+  // doesn't flake. Still well under the 3-minute @Timeout.
+  const startupTimeout = Duration(seconds: 90);
   const verbose = false;
 
   group(
