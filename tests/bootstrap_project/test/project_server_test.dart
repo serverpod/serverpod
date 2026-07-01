@@ -312,12 +312,12 @@ void main() async {
           });
 
           test(
-            'then the server pubspec does not contain the flutter_build script',
+            'then the server pubspec does not contain the serverpod scripts section',
             () {
               final content = File(
                 path.join(tempPath, serverDir, 'pubspec.yaml'),
               ).readAsStringSync();
-              expect(content, contains('scripts:'));
+              expect(content, isNot(contains('scripts:')));
               expect(content, isNot(contains('flutter_build:')));
             },
           );
@@ -641,7 +641,7 @@ void main() async {
           );
 
           test(
-            'then the .vscode launch.json has compound configuration for full stack',
+            'then the .vscode launch.json does not have compound configuration for full stack',
             () {
               final launchJson = File(
                 path.join(
@@ -654,15 +654,15 @@ void main() async {
 
               expect(
                 launchJson.contains('"compounds"'),
-                isTrue,
-                reason: 'launch.json does not contain compounds section.',
+                isFalse,
+                reason: 'launch.json contains compounds section.',
               );
 
               expect(
                 launchJson.contains('"${projectName} (full stack)"'),
-                isTrue,
+                isFalse,
                 reason:
-                    'launch.json does not contain full stack compound configuration.',
+                    'launch.json contains full stack compound configuration.',
               );
             },
           );
