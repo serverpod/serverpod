@@ -328,6 +328,63 @@ void main() {
   );
 
   group(
+    'Given a TemplateContext with webapp enabled and website disabled, '
+    'when performCreate is called with the context and a server template type',
+    () {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          webapp: true,
+          website: false,
+        ),
+      );
+
+      test(
+        'then the server server.dart serves the Flutter web app under /',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('// Serve the flutter web app under /.'));
+          expect(content, contains("'/'"));
+          expect(content, contains("'/**'"));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a TemplateContext with webapp and website enabled, '
+    'when performCreate is called with the context and a server template type',
+    () {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.server,
+          webapp: true,
+          website: true,
+        ),
+      );
+
+      test(
+        'then the server server.dart serves the Flutter web app under the /app path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(
+            content,
+            contains('// Serve the flutter web app under the /app path.'),
+          );
+          expect(content, contains("'/app'"));
+          expect(content, contains("'/app/**'"));
+        },
+      );
+    },
+  );
+
+  group(
     'Given a TemplateContext with webapp and website disabled, '
     'when performCreate is called with the context and a fullstack template type',
     () {
