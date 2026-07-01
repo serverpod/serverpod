@@ -54,4 +54,4 @@ serverpod:
       path: ../projectname_flutter
       auto_launch: true
       target: lib/driver.dart
-  # {{/flutterApp}}
+# {{/flutterApp}}
