@@ -1050,6 +1050,10 @@ jobs:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
     needs: seed_embedded_pg
+    # Land every pub get (including the scaffolds' server/client/flutter ones) in
+    # one workspace dir so it caches consistently across Windows and Ubuntu.
+    env:
+      PUB_CACHE: ${{ github.workspace }}/.pub-cache
     strategy:
       fail-fast: false
       matrix:
@@ -1062,6 +1066,17 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
+      # Warm PUB_CACHE so the scaffolds' repeated `pub get`s stop re-downloading
+      # serverpod + Flutter deps (the bootstrap bottleneck). Keyed on os + Flutter
+      # + the template/bootstrap pubspecs; the restore-keys prefix picks up the
+      # latest cache when the exact key misses.
+      - name: Cache PUB_CACHE
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .pub-cache
+          key: pub-${{ runner.os }}-${{ matrix.flutter-version }}-${{ hashFiles('templates/**/pubspec.yaml', 'tests/bootstrap_project/pubspec.yaml') }}
+          restore-keys: |
+            pub-${{ runner.os }}-${{ matrix.flutter-version }}-
       # Built once by seed_embedded_pg (this job `needs:` it); pulled in as an
       # artifact (reliable within a run, unlike a cross-job cache restore).
       - name: Download the seeded embedded PG bundle
