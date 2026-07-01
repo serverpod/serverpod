@@ -648,20 +648,22 @@ jobs:
           }
 
   cli_unit_tests:
-    name: Unit tests IO (serverpod_cli shard ${{ matrix.shard }}, ${{ matrix.os }}, ${{ matrix.flutter-version }})
+    name: Unit tests IO (serverpod_cli shard ${{ matrix.shard }}, ${{ matrix.os }}, ${{ matrix.sdk }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        # serverpod_cli is pure Dart (dart test auto-resolves its path deps), so
+        # it needs Dart, not Flutter. Cover the SDK floor (^3.10.3) and latest -
+        # the same Dart-version axis the flutter 3.38.4/3.44.4 matrix stood in for.
+        sdk: ["3.10.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.sdk }}
       # serverpod_cli's unit suite is ~half of all unit tests (~27min run whole),
       # so split it across shards by whole FILE. (dart test --total-shards
       # compiles all ~378 test files on every shard, which exhausts the runner
