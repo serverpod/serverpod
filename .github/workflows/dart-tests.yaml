@@ -776,14 +776,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        # serverpod_shared is Dart; dart test resolves it on bare Dart.
+        sdk: ["3.10.3", "3.12.2"]
         path: ["packages/serverpod_shared"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
+          sdk: ${{ matrix.sdk }}
       - name: Run integration tests
         run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
