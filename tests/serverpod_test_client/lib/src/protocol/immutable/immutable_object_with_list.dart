@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 
 @_i1.immutable
 abstract class ImmutableObjectWithList implements _i1.SerializableModel {
@@ -44,7 +45,7 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithList &&
-            const _i1.DeepCollectionEquality().equals(
+            const _i3.DeepCollectionEquality().equals(
               other.listVariable,
               listVariable,
             );
@@ -54,7 +55,7 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i1.DeepCollectionEquality().hash(listVariable),
+      const _i3.DeepCollectionEquality().hash(listVariable),
     );
   }
 
