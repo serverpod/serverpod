@@ -55,27 +55,6 @@ jobs:
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
-  dart_analyze:
-    name: dart analyze
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.38.4"]
-        os: [windows-latest, ubuntu-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
-      - name: Run lint
-        run: melos lint_strict
-
   dart_analyze_latest:
     name: dart analyze latest
     runs-on: ubuntu-latest
