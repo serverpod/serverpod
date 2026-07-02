@@ -55,6 +55,43 @@ void main() {
     );
   });
 
+  group('Given buildPostgresConfBody and max_connections', () {
+    test('when maxConnections is omitted then the default is used.', () {
+      var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
+      try {
+        var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
+        Directory(p.join(tmp.path, 'run')).createSync();
+
+        var body = buildPostgresConfBody(
+          transport: const UnixTransport(),
+          pgDataDir: pgData,
+        );
+
+        expect(body, contains('max_connections = $defaultMaxConnections'));
+      } finally {
+        tmp.deleteSync(recursive: true);
+      }
+    });
+
+    test('when maxConnections is set then it overrides the default.', () {
+      var tmp = Directory.systemTemp.createTempSync('conf_builder_test_');
+      try {
+        var pgData = Directory(p.join(tmp.path, 'pgdata'))..createSync();
+        Directory(p.join(tmp.path, 'run')).createSync();
+
+        var body = buildPostgresConfBody(
+          transport: const UnixTransport(),
+          pgDataDir: pgData,
+          maxConnections: 42,
+        );
+
+        expect(body, contains('max_connections = 42'));
+      } finally {
+        tmp.deleteSync(recursive: true);
+      }
+    });
+  });
+
   group('Given rewriteManagedBlock', () {
     test(
       'when the original has no markers then the managed block is appended.',

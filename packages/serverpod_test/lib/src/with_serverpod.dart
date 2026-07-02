@@ -85,6 +85,10 @@ buildWithServerpod<T extends InternalTestEndpoints>(
   required Duration? maybeServerpodStartTimeout,
   required TestServerOutputMode? maybeTestServerOutputMode,
 }) {
+  // Every group runs against its own database, so `RollbackDatabase` only
+  // decides the transaction strategy within that database: afterEach/afterAll
+  // wrap a transaction that is rolled back; disabled commits for real (the
+  // database is dropped when the group finishes).
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
   var rollbacksEnabled = rollbackDatabase != RollbackDatabase.disabled;

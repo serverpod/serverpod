@@ -24,9 +24,9 @@ void main() async {
   );
 
   test(
-    'Given that withServerpod can not find the database and does not have timeout set '
+    'Given that withServerpod can not reach the database '
     'when running the test '
-    'then should timeout after the 30 seconds default timeout',
+    'then fails fast with a clear database error',
     () async {
       var timer = Stopwatch()..start();
       final result = await runTest('test_that_will_timeout_after_default.dart');
@@ -34,14 +34,11 @@ void main() async {
       expect(result.exitCode, 1);
       expect(
         result.stdout,
-        contains(
-          'Serverpod did not start within the timeout of 0:00:30.000000',
-        ),
+        contains('Failed to set up the test database'),
       );
-      expect(
-        timer.elapsed.inSeconds,
-        greaterThanOrEqualTo(30),
-      );
+      // Each group's database is created up front, so an unreachable database
+      // fails immediately instead of waiting out the default start timeout.
+      expect(timer.elapsed.inSeconds, lessThan(30));
     },
     timeout: Timeout(Duration(seconds: 40)),
     tags: [defaultIntegrationTestTag],

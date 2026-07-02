@@ -25,6 +25,15 @@ concurrency:
 
 env:
   SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+  # Stage/restore the embedded PG bundle in a fixed, workspace-relative dir so
+  # seed_embedded_pg can hand it to the test jobs as an artifact (reliable
+  # within a run, unlike a cross-job actions/cache restore). Only the embedded
+  # PG jobs read it; other jobs ignore it.
+  SERVERPOD_PG_CACHE_DIR: ${{ github.workspace }}/.pg-cache
+  # TEMPORARY diagnostic: mirror the embedded postmaster log to stderr so the
+  # macOS auth-suite crash (recovery-mode cascade) reveals its cause (signal/
+  # PANIC/OOM) inline in CI. Remove once understood.
+  SERVERPOD_PG_LOG_STDERR: "1"
 
 jobs:
   dart_format:
@@ -69,11 +78,10 @@ jobs:
 
   dart_analyze_latest:
     name: dart analyze latest
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.41.5"]
-        os: [windows-latest, ubuntu-latest]
+        flutter-version: ["3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -89,12 +97,11 @@ jobs:
 
   dart_analyze_downgrade:
     name: dart analyze downgrade
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        os: [windows-latest, ubuntu-latest]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -115,7 +122,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -145,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -155,64 +162,288 @@ jobs:
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
-  nonvector_integration_tests_embedded:
-    name: Nonvector integration tests (embedded PG, ${{ matrix.os }})
+  # Build the bundle ONCE per platform, then hand it to the embedded PG test
+  # jobs below (which `needs:` this) as an artifact - so a cold cache doesn't
+  # make every parallel suite-cell rebuild the same bundle. A cross-run
+  # actions/cache (keyed on the build-recipe hash) skips the rebuild when the
+  # recipe is unchanged; force a fresh build by deleting that cache, e.g.:
+  #   gh cache delete pg-bundle-Linux-<hash> --repo <owner>/<repo>
+  seed_embedded_pg:
+    name: Seed embedded PG bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest]
+        # Build every published <os>-<arch> (what ServerpodBundleArtifact serves via
+        # Abi.current()): x64 + arm64 on Linux/macOS, x64 on Windows. macos-15-intel
+        # is the Intel image, macos-15 Apple Silicon - both Apple clang, so the
+        # arm64-backend INSERT segfault that once kept arm64 out (zig-only; macOS no
+        # longer uses zig) no longer applies. runner.arch is in the cache key/artifact,
+        # so each arch builds, caches, and uploads independently.
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # Cross-run cache FIRST. On a hit (recipe hash unchanged) this is the fast
+      # path: every step below - the toolchain installs AND the build - is gated
+      # on a cache MISS, so a warm run just restores .pg-cache and packs/uploads
+      # it (no Dart, no zig, no MSYS2/brew, no build). Path = SERVERPOD_PG_CACHE_DIR.
+      - name: Cache embedded PostgreSQL bundle (cross-run)
+        id: pgcache
+        # restore-ONLY; the matching save below runs only after a fresh, complete
+        # build. A plain actions/cache (restore+save) auto-saves at job end even
+        # when the build FAILED - and the job is green via continue-on-error on
+        # Windows - which poisoned this cache with an empty 183-byte .pg-cache.
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run nonvector integration tests against embedded PG
-        run: bash util/run_tests_nonvector_integration_embedded
-        timeout-minutes: 10
+          path: .pg-cache
+          # No restore-keys: a build artifact must match the recipe EXACTLY. A
+          # prefix match would restore a stale bundle and - since ensure()
+          # short-circuits on the existing meta - skip the rebuild, shipping a
+          # bundle for the wrong recipe.
+          key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
+      # The build needs only the Dart SDK (dart pub get + prefetch), no Flutter.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        if: steps.pgcache.outputs.cache-hit != 'true'
+        with:
+          sdk: stable
+      # Per-OS build toolchain (zig / clang+brew / MSYS2), shared with the
+      # release workflow via a composite action so the two can't drift.
+      - name: Set up build toolchain
+        if: steps.pgcache.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-pg-build-toolchain
+      # Force build (prebuilt bundle not published); no-op on a cache hit.
+      - name: Build + seed bundle (Unix)
+        if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+        env:
+          SERVERPOD_PG_SOURCE: build
+        timeout-minutes: 60
+        working-directory: packages/serverpod_embedded_postgres
+        run: |
+          dart pub get
+          dart run serverpod_embedded_postgres:prefetch --version 16.13.0
+      # Windows builds with native MSYS2 mingw-w64 gcc (the wrapper execs gcc
+      # there; zig's lld can't satisfy postgres's win32 build). Still being
+      # brought up, so continue-on-error keeps a Windows build failure from
+      # blocking the macOS/Linux test jobs (which `needs:` this); the Windows
+      # test job then fails its artifact download until the build is green.
+      - name: Build + seed bundle (Windows / MSYS2)
+        id: build_win
+        if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        continue-on-error: true
+        shell: msys2 {0}
+        env:
+          SERVERPOD_PG_SOURCE: build
+          # Some source tarballs (e.g. json-c's test fixtures) carry symlinks;
+          # MSYS2 tar can't create them on Windows by default and aborts
+          # extraction. Have the MSYS2 runtime make real (native) symlinks -
+          # GH runners are privileged enough. Inherited by the dart->bash build.
+          MSYS: winsymlinks:nativestrict
+        timeout-minutes: 90
+        working-directory: packages/serverpod_embedded_postgres
+        run: |
+          # dart is a native Windows process, so its Process.start('bash')
+          # resolves to System32\bash.exe (the WSL launcher), not MSYS2 bash.
+          # Point the builder at THIS shell's bash explicitly (Windows path).
+          export SERVERPOD_PG_BUILD_BASH="$(cygpath -w "$(command -v bash)")"
+          dart pub get
+          rc=0
+          dart run serverpod_embedded_postgres:prefetch --version 16.13.0 || rc=$?
+          if [ "$rc" != 0 ]; then
+            # Windows builds are slow to iterate, so surface the cause inline:
+            # the per-dep build logs + deps/lib (BundleBuilder leaves its scratch
+            # under /tmp on failure). The ::error:: annotation flags it red even
+            # though the step is continue-on-error (kept green so it doesn't block
+            # the macOS/Linux test jobs).
+            echo "::error title=Windows seed build::failed (exit $rc) - see dep logs below"
+            for f in $(find /tmp -path '*serverpod-pg-build-*/logs/dep-*.log' 2>/dev/null | sort); do
+              echo "----- $f (last 40 lines) -----"; tail -n 40 "$f"
+            done
+            echo "----- deps/lib contents -----"
+            find /tmp -path '*serverpod-pg-build-*/deps/lib/*' 2>/dev/null | sed 's#.*/deps/lib/#deps/lib/#' | sort
+            exit "$rc"
+          fi
+      # Hand the freshly-built bundle to the test jobs via an artifact (reliable
+      # within a run; a cross-job actions/cache restore often can't see a cache a
+      # sibling job just saved). Pack into a tar FIRST: GitHub artifacts are zips
+      # that drop the Unix executable bit (initdb/postgres -> "Permission denied")
+      # and mangle the geo-lib symlinks; tar preserves both.
+      #
+      # CRITICAL: only pack/upload when the build actually succeeded. The Windows
+      # build is continue-on-error (so its failure can't block macOS/Linux), but
+      # a failed build leaves .pg-cache empty - and `tar .` of an empty dir still
+      # makes a valid tiny .tgz that `if-no-files-found` won't catch, so an empty
+      # "bundle" would upload and make the Windows test job pass WITHOUT a real
+      # PG. Gating on the build step's `outcome` (failure even when masked by
+      # continue-on-error) means a broken build uploads nothing -> the Windows
+      # test job's download fails -> it correctly goes red.
+      # Save the cross-run cache ONLY after a fresh, complete build (cache miss +
+      # the build succeeded). Never save a failed/empty build - that's what
+      # poisoned the Windows cache. continue-on-error: the cache is an
+      # optimization, and a "key already exists" race shouldn't fail the seed.
+      - name: Save embedded PostgreSQL bundle cache
+        if: steps.pgcache.outputs.cache-hit != 'true' && (matrix.os != 'windows-latest' || steps.build_win.outcome == 'success')
+        continue-on-error: true
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .pg-cache
+          key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
+      - name: Pack bundle for test jobs
+        if: steps.pgcache.outputs.cache-hit == 'true' || matrix.os != 'windows-latest' || steps.build_win.outcome == 'success'
+        shell: bash
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}
+        run: tar -C .pg-cache -czf pg-bundle.tgz .
+      - name: Upload bundle for test jobs
+        if: steps.pgcache.outputs.cache-hit == 'true' || matrix.os != 'windows-latest' || steps.build_win.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: pg-bundle.tgz
+          retention-days: 1
+          if-no-files-found: error
+          # The payload is already a gzip'd .tgz - store it, don't re-zip.
+          compression-level: 0
 
-  module_integration_tests_embedded:
-    name: Module integration tests (embedded PG, ${{ matrix.os }})
+  # The Windows seed build is non-blocking (its step is continue-on-error) so a
+  # failure can't skip the macOS/Linux test jobs that `needs:` the seed - but
+  # that leaves seed_embedded_pg green even when Windows fails. This check turns
+  # that into an honest signal: red iff the Windows bundle wasn't produced.
+  # Nothing depends on it, so it never blocks anything.
+  windows_bundle_built:
+    name: Windows bundle built
+    needs: seed_embedded_pg
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert the Windows bundle artifact exists
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-Windows-X64
+          path: pg-bundle-check
+
+  embedded_integration_tests:
+    name: Integration tests (embedded PG, ${{ matrix.suite.name }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
+        # Each suite bootstraps only its leaf package; melos pulls in the
+        # transitive path-dependencies via --include-dependencies.
+        suite:
+          - name: serverpod_test
+            scope: serverpod_test
+            run: cd packages/serverpod_test && dart test --tags=integration --reporter=failures-only
+          - name: nonvector
+            scope: serverpod_test_nonvector_server
+            run: bash util/run_tests_nonvector_integration_embedded
+          - name: module
+            scope: serverpod_test_module_server
+            run: bash util/run_tests_module_integration_embedded
+          - name: auth
+            scope: serverpod_auth_test_server
+            run: bash util/run_tests_auth_integration_embedded
+          - name: auth_legacy
+            scope: serverpod_auth_server
+            run: bash util/run_tests_integration_embedded modules/legacy/serverpod_auth/serverpod_auth_server
+          - name: auth_core
+            scope: serverpod_auth_core_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - name: auth_bridge
+            scope: serverpod_auth_bridge_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - name: auth_migration
+            scope: serverpod_auth_migration_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - name: auth_idp
+            scope: serverpod_auth_idp_server
+            # `-x email` keeps the live-service email integration test out of
+            # this DB-focused suite; it runs only in email_integration_tests.
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # Embedded-PG suites are server-side Dart tests (`dart test`, no Flutter) -
+      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: stable
+      # The bundle is built once by seed_embedded_pg (this job `needs:` it); pull
+      # it in as an artifact - reliable within a run, unlike a cross-job cache
+      # restore. No build toolchain needed here.
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        shell: bash
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run module integration tests against embedded PG
-        run: bash util/run_tests_module_integration_embedded
-        timeout-minutes: 10
+        run: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
+      # windows-latest runs as runneradmin (elevated), and Postgres refuses to
+      # start under an Administrators-group token. Run the suite under a limited
+      # token via PsExec -l (same trick as embedded_postgres_integration_tests).
+      # PsExec drops the inner process's stdout in GHA, so the suite command
+      # redirects to a log file that the outer step prints; the exit code still
+      # propagates. The suite's own command (bash script or `cd && dart test`)
+      # goes verbatim into the .cmd wrapper.
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-suite.cmd <<'EOF'
+          @echo off
+          ${{ matrix.suite.run }} > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+      - name: Run integration tests against embedded PG (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-suite.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
+        timeout-minutes: 15
+      - name: Run integration tests against embedded PG
+        if: matrix.os != 'windows-latest'
+        run: ${{ matrix.suite.run }}
+        timeout-minutes: 15
 
   embedded_postgres_integration_tests:
     name: serverpod_embedded_postgres integration (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      # serverpod_embedded_postgres is a Dart package (`dart test`, no Flutter) -
+      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: stable
+      # Built once by seed_embedded_pg (this job `needs:` it); pulled in as an
+      # artifact (reliable within a run, unlike a cross-job cache restore).
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        shell: bash
+        run: |
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
       - name: Resolve dependencies
         run: dart pub get
         working-directory: packages/serverpod_embedded_postgres
@@ -237,7 +468,7 @@ jobs:
           exit /b %errorlevel%
           EOF
         working-directory: packages/serverpod_embedded_postgres
-      - name: Run integration tests against real Zonky PG (Windows, non-admin)
+      - name: Run integration tests against the embedded PG bundle (Windows, non-admin)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
@@ -247,7 +478,7 @@ jobs:
           exit /b %RC%
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
-      - name: Run integration tests against real Zonky PG
+      - name: Run integration tests against the embedded PG bundle
         if: matrix.os != 'windows-latest'
         run: dart test --tags=integration --reporter=failures-only
         working-directory: packages/serverpod_embedded_postgres
@@ -258,7 +489,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -275,7 +506,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -283,7 +514,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.41.5"
+          - flutter-version: "3.44.4"
             platform: chrome
             compiler: dart2wasm
 
@@ -307,7 +538,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -325,7 +556,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -340,7 +571,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -355,7 +586,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         path: ["packages/serverpod_shared"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -367,60 +598,12 @@ jobs:
         run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
 
-  module_integration_tests:
-    name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        module:
-          [
-            "tests/serverpod_test_module/serverpod_test_module_server",
-            "tests/serverpod_test_nonvector/serverpod_test_nonvector_server",
-            "tests/serverpod_auth_test/serverpod_auth_test_server",
-            "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server",
-            "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server",
-            "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server",
-            "modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server",
-            "modules/legacy/serverpod_auth/serverpod_auth_server",
-          ]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Start containers
-        run: docker compose --progress quiet up --build -V -d
-        working-directory: ${{ matrix.module }}
-      - name: Wait for services to be ready
-        run: |
-          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
-          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
-        working-directory: tests/docker/tests_integration
-      - name: Run integration tests (concurrently)
-        # `-x email` keeps the live-service email integration test out of this
-        # DB-focused job; it runs only in the dedicated email_integration_tests
-        # job. The tag is undefined in other matrix modules, where it is a no-op.
-        run: dart test -t integration -x concurrency_one -x email --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Run integration tests (sequentially)
-        if: always()
-        # Exit code `79` means that no tests were found for the tags
-        run: dart test -t integration -t concurrency_one -x email --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Stop containers
-        if: always()
-        run: docker compose down -v
-        working-directory: ${{ matrix.module }}
-
   module_e2e_tests:
     name: Module E2E tests in ${{ matrix.module.client }} with Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -461,7 +644,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -476,7 +659,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -491,7 +674,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -504,10 +687,11 @@ jobs:
   bootstrap_tests:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -515,16 +699,18 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - name: Setup docker (missing on MacOS)
-        if: runner.os == 'macos'
+      # Built once by seed_embedded_pg (this job `needs:` it); pulled in as an
+      # artifact (reliable within a run, unlike a cross-job cache restore).
+      - name: Download the seeded embedded PG bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: .
+      - name: Unpack the seeded embedded PG bundle (restores exec bits + symlinks)
+        shell: bash
         run: |
-          brew install docker docker-compose
-
-          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
-          mkdir -p ~/.docker/cli-plugins
-          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
-
-          colima start
+          mkdir -p .pg-cache
+          tar -C .pg-cache -xpzf pg-bundle.tgz
       - name: Run unit tests
         shell: bash
         run: util/run_tests_bootstrap
@@ -534,7 +720,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -549,7 +735,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -565,7 +751,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]

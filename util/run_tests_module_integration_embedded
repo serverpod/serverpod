@@ -17,7 +17,7 @@ REPO_ROOT="$(pwd)"
 
 cd "tests/serverpod_test_module/serverpod_test_module_server"
 
-dart test -t integration --concurrency=1 --reporter=failures-only
+dart test -t integration --reporter=failures-only
 
 # Verify that the database data path exists
 if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
@@ -30,4 +30,3 @@ fi
 rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
 
 cd "$REPO_ROOT"
-

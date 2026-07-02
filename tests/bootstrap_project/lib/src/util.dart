@@ -34,16 +34,6 @@ String createClientFolderPath(String projectName) {
   return path.join(projectName, '${projectName}_client');
 }
 
-Future<bool> isNetworkPortAvailable(int port) async {
-  try {
-    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
-    await socket.close();
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 Future<ProcessResult> runProcess(
   String command,
   List<String> arguments, {

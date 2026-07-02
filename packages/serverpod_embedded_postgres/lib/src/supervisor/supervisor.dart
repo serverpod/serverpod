@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../binary/executable.dart';
 import '../exceptions.dart';
 import '../transport.dart';
@@ -84,15 +86,33 @@ class Supervisor implements SupervisedProcess {
       '\n=== supervisor start @ ${DateTime.now().toIso8601String()} ===',
     );
 
+    // Serverpod bundles ship PostGIS, whose PROJ has the build-time data dir
+    // baked in. Point PROJ_LIB at the bundle's own copy so coordinate
+    // transforms resolve after the install tree was relocated by the cache.
+    // (No-op for bundles without a share/proj, e.g. plain Zonky binaries.)
+    var projData = Directory(p.join(installDir.path, 'share', 'proj'));
+    var environment = <String, String>{
+      ...Platform.environment,
+      if (projData.existsSync()) 'PROJ_LIB': projData.path,
+    };
+
     var process = await Process.start(
       executable,
       ['-D', dataDir.path],
       mode: ProcessStartMode.normal,
+      environment: environment,
     );
 
+    // Diagnostic: when SERVERPOD_PG_LOG_STDERR=1, mirror the postmaster log to
+    // this process's stderr so a backend crash ("server process ... was
+    // terminated by signal N", PANIC, out-of-memory, etc.) shows up inline in
+    // CI output. Otherwise it only lands in the per-datadir postgres.log, which
+    // a test runner never surfaces.
+    var mirrorLog = Platform.environment['SERVERPOD_PG_LOG_STDERR'] == '1';
     void handleLine(String line) {
       logSink.writeln(line);
       ring.add(line);
+      if (mirrorLog) stderr.writeln('[pg] $line');
     }
 
     process.stdout

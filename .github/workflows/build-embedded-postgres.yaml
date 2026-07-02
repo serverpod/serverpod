@@ -1,0 +1,157 @@
+name: Build embedded postgres bundles
+
+# Builds the Serverpod PostgreSQL bundles (PostgreSQL + PostGIS + pgvector)
+# consumed by serverpod_embedded_postgres at runtime, via the shared
+# tool/build_postgres/build-all.sh. Per-platform compiler: Zig on Linux, Apple
+# clang on macOS (zig's bundled clang miscompiled the backend into an
+# intermittent segfault), mingw-w64 gcc on Windows (zig's lld can't satisfy
+# postgres's win32 build). Native per-runner build, no cross-compile.
+#
+# Each built bundle is smoke-tested (initdb + load pgvector/PostGIS + write/read)
+# before it is eligible for release - this catches a bundle that unpacks but
+# can't run (unresolved libs, a backend that faults on a query). A single publish
+# job then creates/updates the GitHub Release `embedded-postgres-v<bom>` (matches
+# ServerpodBundleArtifact's URL) from the validated platforms only.
+#
+# Status: macOS x64 + arm64 are validated and published. Linux and Windows build
+# and (Linux) smoke-test but are NOT published yet (validated: false) pending
+# end-to-end validation; their artifacts upload for inspection.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pg_version:
+        description: 'PG version (bom), e.g. 16.13.0'
+        default: '16.13.0'
+  push:
+    tags: ['embedded-postgres-v*']
+
+# Build jobs only read the repo; the publish job elevates to contents: write for
+# the release. Keeps the write token off the matrix legs that run the build.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15-intel,   os: macos,   arch: x64,   validated: true }
+          - { runner: macos-15,         os: macos,   arch: arm64, validated: true }
+          - { runner: ubuntu-22.04,     os: linux,   arch: x64,   validated: false }
+          - { runner: ubuntu-22.04-arm, os: linux,   arch: arm64, validated: false }
+          - { runner: windows-2022,     os: windows, arch: x64,   validated: false }
+    env:
+      PGBUILD: ${{ runner.temp }}/pgbuild
+      BUNDLE_OS: ${{ matrix.os }}
+      BUNDLE_ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      # Per-OS build toolchain (zig / clang+brew / MSYS2), shared with the CI
+      # seed job via a composite action so the two can't drift.
+      - name: Set up build toolchain
+        uses: ./.github/actions/setup-pg-build-toolchain
+
+      # On a tag push the workflow_dispatch input is empty, so derive the version
+      # from the tag (embedded-postgres-v<bom>) - otherwise assets would always be
+      # named 16.13.0 regardless of the release tag.
+      - name: Resolve PG version
+        id: pgver
+        shell: bash
+        run: |
+          v="${{ github.event.inputs.pg_version }}"
+          [ -n "$v" ] || v="${GITHUB_REF_NAME#embedded-postgres-v}"
+          echo "value=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Build + package + assert version (Unix)
+        if: matrix.os != 'windows'
+        env:
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+        run: |
+          bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
+          echo "verified bundle: $(basename "$f")"
+
+      - name: Build + package + assert version (Windows / MSYS2)
+        if: matrix.os == 'windows'
+        shell: msys2 {0}
+        env:
+          PG_VERSION: ${{ steps.pgver.outputs.value }}
+        run: |
+          # cygpath bridges the Windows RUNNER_TEMP to an MSYS path pointing at
+          # the same dir, so the upload step (Windows path) finds the artifacts.
+          export PGBUILD="$(cygpath -u "$RUNNER_TEMP")/pgbuild"
+          bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
+          f="$PGBUILD/dist/serverpod-postgres-${PG_VERSION}-${BUNDLE_OS}-${BUNDLE_ARCH}.tar.xz"
+          [ -f "$f" ] || { echo "::error::expected bundle $f not produced; dist has: $(ls "$PGBUILD"/dist 2>/dev/null)"; exit 1; }
+          echo "verified bundle: $(basename "$f")"
+
+      # Inspection artifact for every platform, uploaded BEFORE the smoke gate so
+      # a failing bundle is still downloadable for debugging.
+      - name: Upload bundle artifact (inspection)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: serverpod-postgres-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
+
+      # Real run: initdb + load pgvector/PostGIS + write/read. On a validated
+      # platform a failure fails the job and so blocks publish; on a not-yet-
+      # validated one it's informational (the inspection artifact is already up).
+      # Unix only - the script uses unix sockets; Windows is validated separately.
+      - name: Smoke-test the bundle (Unix)
+        if: matrix.os != 'windows'
+        continue-on-error: ${{ !matrix.validated }}
+        run: |
+          d="$(mktemp -d)"
+          tar -C "$d" -xf "$PGBUILD"/dist/serverpod-postgres-*.tar.xz
+          bash packages/serverpod_embedded_postgres/tool/smoke_bundle.sh "$d"
+
+      # Publish-eligible copy: only validated platforms, and only reached if the
+      # smoke gate above passed (a failed gate fails the job, skipping this). The
+      # publish job consumes exactly these `release-*` artifacts.
+      - name: Stage validated bundle for release
+        if: matrix.validated
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz
+            ${{ runner.temp }}/pgbuild/dist/*.tar.xz.sha256
+
+  # One release create/update for the whole matrix, instead of each build job
+  # racing softprops/action-gh-release on the same tag. Only the validated
+  # platforms staged a `release-*` artifact, so this publishes exactly those.
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    # always(): a not-yet-validated leg (Linux/Windows) failing its build must not
+    # block publishing the validated bundles that built and passed the smoke gate.
+    if: ${{ always() && startsWith(github.ref, 'refs/tags/embedded-postgres-v') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download validated bundles
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+      - name: Fail if no validated bundle was produced
+        run: |
+          ls release/*.tar.xz >/dev/null 2>&1 || {
+            echo "::error::no validated bundle to publish (all validated builds failed the smoke gate?)"; exit 1;
+          }
+      - name: Publish to the GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+        with:
+          files: |
+            release/*.tar.xz
+            release/*.tar.xz.sha256
