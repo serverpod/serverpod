@@ -6,7 +6,6 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
-import 'package:web_socket/web_socket.dart';
 
 /// This class is used by the [Server] to handle incoming websocket requests
 /// to an endpoint. It is not intended to be used directly by the user.
