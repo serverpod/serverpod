@@ -99,7 +99,7 @@ Below is a list of tools required to contribute to Serverpod.
 
 - **Dart**: Serverpod is written in Dart, so you need to have Dart installed on your machine. You can download Dart from the [Dart website](https://dart.dev/get-dart).
 - **Flutter**: Some parts of the project require Flutter to be installed on your machine. You can download Flutter from the [Flutter website](https://flutter.dev/docs/get-started/install).
-- **Docker**: Docker is used to run Postgres and Redis for the development environment. You can download Docker from the [Docker website](https://www.docker.com/get-started).
+- **Docker** (optional): The test suites provision an embedded PostgreSQL on demand, so Docker is not needed for them. A few suites (e.g. the module e2e tests) still use Docker to host Postgres and Redis. You can download Docker from the [Docker website](https://www.docker.com/get-started).
 - **Git**: Serverpod is hosted on GitHub, so you need to have Git installed on your machine. You can download Git from the [Git website](https://git-scm.com/downloads).
 - **Melos**: Serverpod uses Melos to manage the monorepo. You can install Melos by running `pub global activate melos`.
 - **bash**: Some scripts require bash to be installed on your machine. If you are on Windows, you can install Git Bash from the [Git website](https://git-scm.com/downloads).
@@ -152,29 +152,31 @@ We try to follow the [Effective Dart](https://dart.dev/guides/language/effective
 
 Serverpod has a comprehensive test suite that covers the core functionality of the project. The tests are run as part of the CI checks, but to speed up development it can be good to run the tests locally before submitting a pull request.
 
-To ensure all tests work as expected, it is recommended to add an entry for the test server, postgres and redis at the end of your `/etc/hosts file`.
+The database-backed suites provision their own embedded PostgreSQL on demand (the first run downloads or builds the bundle, which can take a while), so no database server needs to be running. Two `/etc/hosts` entries unlock the remaining suites: `serverpod_test_server` is the e2e client's hardcoded server host, and `redis` is where the redis-tagged integration tests look for a Redis (they are skipped when none is reachable there).
+
 ```text
 127.0.0.1 serverpod_test_server
-127.0.0.1 postgres
 127.0.0.1 redis
 ```
 
 #### Test scripts
 
+The `melos test` script runs the host (no-Docker) suites - unit, bootstrap, and integration tests - and is the quickest way to validate a change across packages (see `melos.yaml` for the individual `test_*` scripts).
+
 Scripts that run groups of tests are located in the `util` directory and their name start with `run_tests`. The following test scripts are available:
 
-| Script                               | Description                                                      |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `run_tests_unit`                     | Run all unit tests.                                              |
-| `run_tests_integration`              | Run all non concurrent integration tests in the test project.    |
-| `run_tests_integration_concurrently` | Run all concurrent integration tests in the test project.        |
-| `run_tests_flutter_integration`      | Run all Flutter integration tests in the flutter test project.   |
-| `run_tests_e2e`                      | Run all server end to end tests in the test project.             |
-| `run_tests_migrations_e2e`           | Run all migration end to end tests.                              |
-| `run_tests_bootstrap`                | Run all bootstrap tests.                                         |
-| `run_tests_update_pubspecs`          | Ensure that all pubspec files are up to date with the templates. |
-| `run_tests_analyze`                  | Run the code analysis tests.                                     |
-| `run_tests_update_pubspecs`          | Ensure that all pubspec files are up to date with the templates. |
+| Script                               | Description                                                       |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| `run_tests_integration`              | Run all non concurrent integration tests in the test project.     |
+| `run_tests_integration_concurrently` | Run all concurrent integration tests in the test project.         |
+| `run_tests_integration_embedded`     | Run a single server package's integration tests against embedded PostgreSQL (also `run_tests_{auth,module,nonvector}_integration_embedded`). |
+| `run_tests_sqlite_integration`       | Run the SQLite test project's integration tests.                  |
+| `run_tests_flutter_integration`      | Run all Flutter integration tests in the flutter test project.    |
+| `run_tests_e2e_host`                 | Run the end to end tests against a host server (`vm` or `firefox`). |
+| `run_tests_migrations_e2e`           | Run all migration end to end tests (also `run_tests_sqlite_migrations_e2e`). |
+| `run_tests_bootstrap`                | Run all bootstrap tests.                                          |
+| `run_tests_update_pubspecs`          | Ensure that all pubspec files are up to date with the templates.  |
+| `run_tests_analyze`                  | Run the code analysis tests.                                      |
 
 To run any script, navigate to the root of the repository and run the script, e.g.:
 
@@ -188,41 +190,36 @@ All unit tests can be run with the `test` command. But for some tests, you may n
 
 ##### Running integration tests
 
-To run any integration test in the `tests/serverpod_test_server/test_integration` directory you will need to follow these steps:
+The tests in `tests/serverpod_test_server/test_integration` run against an embedded PostgreSQL in `.serverpod/test/pgdata`. The `withServerpod`-based tests (tagged `integration`) provision their own database and need no setup. The remaining tests share one pre-migrated database, so apply migrations once before running them:
 
-1. Start the Docker container for the test server.
-
-    ```bash
-    $ cd tests/serverpod_test_server/docker-local
-    $ docker compose up --build --detach
-    ```
-
-2. Start the test server and apply migrations.
+1. Apply migrations to the embedded database.
 
     ```bash
     $ cd tests/serverpod_test_server
-    $ dart bin/main.dart --apply-migrations
+    $ export SERVERPOD_DATABASE_DATA_PATH=.serverpod/test/pgdata
+    $ dart run bin/main.dart -m production -r maintenance --apply-migrations
+    ```
+
+2. Run an individual test.
+
+    ```bash
+    $ dart test test_integration/database/database_test.dart
     ```
 
 ##### Running the test project's end to end tests
 
-To run end to end tests in the `tests/serverpod_test_server/test_e2e` directory, you will need to follow these steps:
+The e2e tests in `tests/serverpod_test_server/test_e2e` expect a running server (the `serverpod_test_server` `/etc/hosts` alias from above points the client at it):
 
-1. Start the Docker container for the test server.
-
-    ```bash
-    $ cd tests/serverpod_test_server/docker-local
-    $ docker compose up --build --detach
-    ```
-
-2. Start the test server and apply migrations.
+1. Start the test server on the embedded database and apply migrations.
 
     ```bash
     $ cd tests/serverpod_test_server
-    $ dart bin/main.dart --apply-migrations
+    $ export SERVERPOD_DATABASE_DATA_PATH=.serverpod/test/pgdata
+    $ export SERVERPOD_REDIS_ENABLED=false
+    $ dart run bin/main.dart --apply-migrations
     ```
 
-3. Run an individual test
+2. Run an individual test (in a second terminal).
 
     ```bash
     $ cd tests/serverpod_test_server
@@ -231,21 +228,11 @@ To run end to end tests in the `tests/serverpod_test_server/test_e2e` directory,
 
 ##### Running the test project's migration tests
 
-To run migration tests in the `tests/serverpod_test_server/test_e2e_migrations` directory, you will need to follow these steps:
+The migration tests in `tests/serverpod_test_server/test_e2e_migrations` are run through `util/run_tests_migrations_e2e`, which resets the embedded database and builds the server bundle itself. To reset the embedded database manually, delete its data directory:
 
-1. Remove any existing test database.
-
-    ```bash
-    $ cd tests/serverpod_test_server/docker-local
-    $ docker compose down -v
-    ```
-
-2. Start a new Docker container for the test server.
-
-    ```bash
-    $ cd tests/serverpod_test_server/docker-local
-    $ docker compose up --build --detach
-    ```
+```bash
+$ rm -rf tests/serverpod_test_server/.serverpod/test/pgdata
+```
 
 ### Introducing new dependencies
 
