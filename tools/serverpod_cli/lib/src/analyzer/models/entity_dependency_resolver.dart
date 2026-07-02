@@ -194,6 +194,10 @@ class ModelDependencyResolver {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
+    if (classDefinition.tableName == null && !classDefinition.isTableBase) {
+      return;
+    }
+
     var referenceClass = modelDefinitions
         .cast<SerializableModelDefinition?>()
         .firstWhere(
@@ -207,10 +211,6 @@ class ModelDependencyResolver {
 
     var tableName = referenceClass.tableName;
     if (tableName is! String) return;
-
-    // Skip resolution if the class defining the relation doesn't have a table.
-    // The validation layer will report the appropriate error message.
-    if (classDefinition.tableName == null) return;
 
     var foreignField = _findForeignFieldByRelationName(
       classDefinition,
@@ -258,6 +258,8 @@ class ModelDependencyResolver {
     String tableName,
     SerializableModelFieldDefinition foreignField,
   ) {
+    if (classDefinition.tableName == null) return;
+
     String? foreignFieldName;
 
     SerializableModelFieldDefinition? foreignContainerField;
@@ -298,6 +300,8 @@ class ModelDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
+    if (classDefinition.tableName == null) return;
+
     var relationFieldType = relation.nullableRelation
         ? referenceDefinition.idField.type.asNullable
         : referenceDefinition.idField.type.asNonNullable;
@@ -391,7 +395,9 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
-      parentTableIdType: classDefinition.idField.type,
+      parentTableIdType: classDefinition.tableName != null
+          ? classDefinition.idField.type
+          : field.type.asNonNullable,
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       foreignContainerField: foreignContainerField,

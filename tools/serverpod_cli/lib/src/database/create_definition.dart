@@ -104,7 +104,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
 List<ForeignKeyDefinition> _createForeignKeys(
   ModelClassDefinition classDefinition,
 ) {
-  var fields = classDefinition.fields
+  var fields = classDefinition.fieldsIncludingInherited
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
 
