@@ -290,6 +290,12 @@ bool _probeDartPubFlutter() {
 }
 
 String _getCommandToRun(String command, bool ignorePlatform) {
+  // The real SDK binary, so kill()/signals reach the process: a PATH 'dart'
+  // may be a version-manager shell shim (puro, fvm) that neither forwards
+  // signals nor dies with its child - leaking spawned servers that keep
+  // their ports (e.g. 8080) bound for subsequent tests.
+  if (command == 'dart') return dartExecutablePath;
+
   if (ignorePlatform) {
     return command;
   }
