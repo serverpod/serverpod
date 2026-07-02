@@ -453,8 +453,8 @@ class MainScreen extends StatelessComponent {
     };
   }
 
-  /// Breadcrumb for a Flutter app tab: a muted label and the URL or startup
-  /// stage, with a pinned `press X to stop`/`close` hint. Only the status text
+  /// Breadcrumb for a Flutter app tab: a muted app id and the URL or startup
+  /// stage, with a pinned `X Stop App`/`X Close Tab` hint. Only the status text
   /// shimmers while launching, and it is truncated when the line is too narrow
   /// so the hint always stays visible.
   Component? _buildFlutterStatusLine(ServerpodThemeData st, AppLogTab tab) {
@@ -483,7 +483,7 @@ class MainScreen extends StatelessComponent {
     }
 
     final xLabel = tab.stopped ? 'Close Tab' : 'Stop App';
-    final labelPart = tab.label;
+    final labelPart = tab.appId;
     const labelSep = ' │ ';
     final xHintPlain = 'X $xLabel';
 

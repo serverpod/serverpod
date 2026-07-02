@@ -91,6 +91,128 @@ serverpod:
     );
   });
 
+  group('Given a server pubspec with flutter_apps displayName', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    todo:
+      path: ../my_project_flutter
+      displayName: "Todo app"
+''',
+        includeFlutterApps: true,
+      );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then displayName is used as the app name',
+      () {
+        final apps = _loadApps();
+
+        expect(apps[0].id, 'todo');
+        expect(apps[0].name, 'Todo app');
+        expect(apps[0].extraRunArgs, isEmpty);
+      },
+    );
+  });
+
+  group('Given a server pubspec without flutter_apps displayName', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    todo:
+      path: ../my_project_flutter
+''',
+        includeFlutterApps: true,
+      );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then the app id is used as the app name',
+      () {
+        final apps = _loadApps();
+
+        expect(apps[0].id, 'todo');
+        expect(apps[0].name, 'todo');
+      },
+    );
+  });
+
+  group('Given a server pubspec with an empty displayName', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      displayName: ""
+''',
+      );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "Admin" flutter app "displayName" property must be a '
+                  'non-empty string. Or remove the property to use the app id '
+                  'as the display name.',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('Given a server pubspec with a non-string displayName', () {
+    setUpAll(() async {
+      var projectDir = _createProject(
+        pubspecServerpodSection: '''
+serverpod:
+  flutter_apps:
+    Admin:
+      path: ../my_project_flutter
+      displayName: true
+''',
+      );
+      await projectDir.create();
+    });
+
+    test(
+      'when loading flutter apps '
+      'then SourceSpanFormatException is thrown',
+      () {
+        expect(
+          _loadApps,
+          throwsA(
+            isA<SourceSpanFormatException>().having(
+              (e) => e.message,
+              'message',
+              'The "Admin" flutter app "displayName" property must be a '
+                  'non-empty string. Or remove the property to use the app id '
+                  'as the display name.',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
   group(
     'Given a server pubspec with flutter_apps device and forwarded options',
     () {
@@ -358,6 +480,51 @@ serverpod:
       },
     );
   });
+
+  test(
+    'Given a simple flutter app id, '
+    'when formatFlutterAppDisplayName is called '
+    'then the name is capitalized with " app" appended',
+    () {
+      expect(formatFlutterAppDisplayName('todo'), 'Todo app');
+    },
+  );
+
+  test(
+    'Given a flutter app id with underscores, '
+    'when formatFlutterAppDisplayName is called '
+    'then underscores are replaced with spaces',
+    () {
+      expect(formatFlutterAppDisplayName('my_project'), 'My project app');
+    },
+  );
+
+  test(
+    'Given a flutter app id with mixed casing, '
+    'when formatFlutterAppDisplayName is called '
+    'then only the first letter is capitalized',
+    () {
+      expect(formatFlutterAppDisplayName('adminPortal'), 'AdminPortal app');
+    },
+  );
+
+  test(
+    'Given a flutter app id that already ends with "_app", '
+    'when formatFlutterAppDisplayName is called '
+    'then " app" is not appended again',
+    () {
+      expect(formatFlutterAppDisplayName('todo_app'), 'Todo app');
+    },
+  );
+
+  test(
+    'Given a flutter app id that already ends with "app", '
+    'when formatFlutterAppDisplayName is called '
+    'then " app" is not appended again',
+    () {
+      expect(formatFlutterAppDisplayName('todoapp'), 'Todoapp');
+    },
+  );
 }
 
 d.DirectoryDescriptor _createProject({
