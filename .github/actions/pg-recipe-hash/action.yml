@@ -1,0 +1,21 @@
+name: Compute embedded PG recipe hash
+description: >-
+  Hash of the embedded PostgreSQL build recipe and source tree
+
+outputs:
+  hash:
+    description: SHA-256 hash of fileset
+    value: ${{ steps.hash.outputs.hash }}
+
+runs:
+  using: composite
+  steps:
+    - id: hash
+      shell: bash
+      run: |
+        h="${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}"
+        if [ -z "$h" ]; then
+          echo "::error::recipe hash is empty - fileset moved? A degenerate hash would let stale bundles match."
+          exit 1
+        fi
+        echo "hash=$h" >> "$GITHUB_OUTPUT"
