@@ -297,11 +297,13 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// One launch-panel row: the app's name with a running marker.
+  /// One launch-panel row: the app's name with a status indicator.
   ///
-  /// Stopped apps are dimmed, launching apps show an orange marker, running
-  /// apps show a green marker, and the cursor row gets a background highlight
-  /// (matching the `serverpod create` selection style).
+  /// The indicator matches the tab strip (via [TabActivityIndicator]): a
+  /// spinner while launching, a green dot when running, a muted circle
+  /// otherwise. Unfocused stopped apps are dimmed, and the cursor row's name
+  /// gets a background highlight (matching the `serverpod create` selection
+  /// style).
   Component _buildLaunchAppRow(
     ServerpodThemeData st,
     int i,
@@ -473,7 +475,7 @@ class MainScreen extends StatelessComponent {
     } else if (tab.stopped) {
       statusText = 'App stopped';
     } else {
-      var value = tab.startupStage ?? '';
+      var value = tab.startupStage ?? 'Launching';
       if (value.contains('.')) {
         value = value.replaceFirst(RegExp(r'\.+$'), '');
       }

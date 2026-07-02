@@ -362,6 +362,9 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     // 0 apps inert; >0 toggle launch panel.
     if (event.logicalKey == LogicalKey.keyR && event.isControlPressed) {
       if (!state.canLaunchApps) return true;
+      // Toggling the panel resets any pending auto-close so a freshly opened
+      // panel is never dismissed by a timer from a previous launch.
+      _launchPanelCloseTimer?.cancel();
       state.showLaunchPanel = !state.showLaunchPanel;
       if (state.showLaunchPanel) {
         state.launchPanelIndex = state.activeLaunchableIndex;
