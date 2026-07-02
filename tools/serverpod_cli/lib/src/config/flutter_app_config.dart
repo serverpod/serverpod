@@ -29,7 +29,7 @@ class FlutterAppConfig {
   /// This is the key under `serverpod: flutter_apps:` in the server pubspec.
   final String id;
 
-  /// Display name used for tab labels and breadcrumbs.
+  /// Display name used for tab labels in the start TUI.
   final String name;
 
   /// Whether `serverpod start` launches this app automatically on startup
