@@ -97,10 +97,7 @@ jobs:
         run: melos lint_loose
 
   # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
-  # jobs below don't each re-resolve and compile it. `dart build cli` (not
-  # `dart compile exe`) because serverpod_cli pulls sqlite3, whose native-asset
-  # build hooks the bare-SDK `dart compile exe` rejects; flutter-bundled Dart
-  # tolerates them.
+  # jobs below don't each re-resolve and compile it.
   build_cli:
     name: Build serverpod CLI bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -110,9 +107,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # serverpod_cli is a Dart-only tool - no Flutter needed. `dart build cli`
-      # (not `dart compile exe`) handles its sqlite3 native-asset build hooks, so
-      # the bare Dart SDK is enough.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
@@ -124,6 +118,8 @@ jobs:
       # pulling the workspace's Flutter packages.
       - name: Bootstrap serverpod_cli
         run: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
+      # `dart build cli` (not `dart compile exe`) because serverpod_cli pulls
+      # sqlite3, whose native-asset build hooks `dart compile exe` rejects.
       - name: Build the serverpod CLI bundle
         shell: bash
         working-directory: tools/serverpod_cli
@@ -213,7 +209,7 @@ jobs:
           sdk: "3.12.2"
       - name: Resolve melos
         run: dart pub get
-      - name: Bootstrap (resolve just this project)
+      - name: Bootstrap the project
         shell: bash
         env:
           PROJECT: ${{ matrix.project }}
@@ -250,7 +246,7 @@ jobs:
           sdk: "3.12.2"
       - name: Resolve melos
         run: dart pub get
-      - name: Bootstrap (resolve the template servers + serverpod_test_server)
+      - name: Bootstrap the template servers + serverpod_test_server
         # serverpod_test_server is needed by the "verify generate from scratch" step.
         run: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --scope='serverpod_test_server' --include-dependencies
       - uses: ./.github/actions/use-cli-bundle
@@ -306,13 +302,11 @@ jobs:
         # longer uses zig) no longer applies. runner.arch is in the cache key/artifact,
         # so each arch builds, caches, and uploads independently.
         os:
-          [
-            ubuntu-latest,
-            ubuntu-24.04-arm,
-            macos-15-intel,
-            macos-15,
-            windows-latest,
-          ]
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       # Cross-run cache FIRST. On a hit (recipe hash unchanged) this is the fast
@@ -333,7 +327,6 @@ jobs:
           # short-circuits on the existing meta - skip the rebuild, shipping a
           # bundle for the wrong recipe.
           key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
-      # The build needs only the Dart SDK (dart pub get + prefetch), no Flutter.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         if: steps.pgcache.outputs.cache-hit != 'true'
         with:
@@ -460,15 +453,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          [
-            ubuntu-latest,
-            ubuntu-24.04-arm,
-            macos-15-intel,
-            macos-15,
-            windows-latest,
-          ]
-        # Each suite bootstraps only its leaf package; melos pulls in the
-        # transitive path-dependencies via --include-dependencies.
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
         suite:
           - name: serverpod_test
             scope: serverpod_test
@@ -516,8 +505,6 @@ jobs:
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # Embedded-PG suites are server-side Dart tests (`dart test`, no Flutter) -
-      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
@@ -575,17 +562,13 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          [
-            ubuntu-latest,
-            ubuntu-24.04-arm,
-            macos-15-intel,
-            macos-15,
-            windows-latest,
-          ]
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # serverpod_embedded_postgres is a Dart package (`dart test`, no Flutter) -
-      # and Flutter ships no Linux-arm64 SDK, so use Dart directly to run on arm64.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
@@ -595,12 +578,9 @@ jobs:
         working-directory: packages/serverpod_embedded_postgres
       # windows-latest runs as runneradmin (elevated), but Postgres refuses
       # to start under an Administrators-group token. Strip admin via
-      # PsExec -l. Two non-obvious bits the rest of this block handles:
-      #   - PsExec -l drops the inner process's stdout in GHA (exit code
-      #     propagates fine), so dart test redirects to a file inside
-      #     run-test.cmd and we type that file from the outer step.
-      #   - The limited token still needs read+execute on the Flutter SDK
-      #     to find dart.bat / dart.exe.
+      # PsExec -l. PsExec -l drops the inner process's stdout in GHA (exit code
+      # propagates fine), so dart test redirects to a file inside run-test.cmd
+      # and we type that file from the outer step.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install pstools --no-progress -y --limit-output
@@ -640,9 +620,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Every project here is Dart (no Flutter deps); the Flutter packages are
-        # covered by flutter_unit_tests. So bare Dart suffices - cover the SDK
-        # floor (^3.10.3) and latest.
         sdk: ["3.10.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         project:
@@ -694,9 +671,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # serverpod_cli is pure Dart (dart test auto-resolves its path deps), so
-        # it needs Dart, not Flutter. Cover the SDK floor (^3.10.3) and latest -
-        # the same Dart-version axis the flutter 3.38.4/3.44.4 matrix stood in for.
         sdk: ["3.10.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -780,9 +754,6 @@ jobs:
         run: flutter test
         working-directory: ${{ matrix.path }}
 
-  # De-dockerized: the Dart client suite run on the VM against a host server on
-  # embedded PostgreSQL (build_pod bundle), sharded across jobs. Redis-free (see
-  # util/run_tests_e2e_host). Was: `docker compose`.
   e2e_io_tests:
     name: Serverpod E2E IO tests (${{ matrix.sdk }}, ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -813,9 +784,6 @@ jobs:
         run: util/run_tests_e2e_host vm ${{ matrix.shard }} 5
         timeout-minutes: 15
 
-  # De-dockerized: the Dart client suite compiled to JS and run in Firefox against
-  # a host server on embedded PostgreSQL (build_pod bundle), sharded across jobs.
-  # Redis-free (see util/run_tests_e2e_host). Was: `docker compose` (Firefox).
   e2e_web_tests:
     name: Serverpod E2E web tests (${{ matrix.sdk }}, ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -827,7 +795,6 @@ jobs:
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # The e2e client suite is Dart (serverpod_client) compiled to JS - no Flutter.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -858,7 +825,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # serverpod_shared is Dart; dart test resolves it on bare Dart.
         sdk: ["3.10.3", "3.12.2"]
         path: ["packages/serverpod_shared"]
     steps:
@@ -922,7 +888,6 @@ jobs:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # In-process withServerpod suite - Dart SDK only, no Flutter.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
@@ -959,7 +924,6 @@ jobs:
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # In-process withServerpod suite - Dart SDK only, no Flutter.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
@@ -993,7 +957,6 @@ jobs:
         dart-version: ["3.10.3", "3.12.2"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # In-process withServerpod suite (SQLite) - Dart SDK only, no Flutter.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
@@ -1043,9 +1006,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # serverpod_test_server resolves Dart-only (no *_flutter deps) and the
-        # migration tests scaffold migrations, not projects - so bare Dart with a
-        # scoped bootstrap works. Cover the SDK floor (^3.10.3) and latest.
         sdk: ["3.10.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
@@ -1076,9 +1036,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # serverpod_test_sqlite_server is Dart-only; the runner just does
-        # dart build cli + dart test (no bootstrap, no flutter create), so bare
-        # Dart suffices. Cover the SDK floor (^3.10.3) and latest.
         sdk: ["3.10.3", "3.12.2"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
