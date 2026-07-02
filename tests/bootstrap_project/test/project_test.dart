@@ -1027,11 +1027,13 @@ void main() async {
   });
 
   group('Given a created project', () {
-    final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+    late String projectName;
+    late String commandRoot;
 
     late Process createProcess;
 
     setUp(() async {
+      (:projectName, :commandRoot) = createRandomProjectName(tempPath);
       createProcess = await startServerpodCli(
         [
           'create',
