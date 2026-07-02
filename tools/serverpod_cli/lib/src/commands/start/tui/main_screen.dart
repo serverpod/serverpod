@@ -105,17 +105,25 @@ class MainScreen extends StatelessComponent {
                                   ),
                                   if (state.activeOperations.isNotEmpty)
                                     ...state.activeOperations.values.map(
-                                      (op) => TrackedOperationWidget(
-                                        key: ValueKey(op.id),
-                                        operation: op,
+                                      (op) => Padding(
+                                        padding: const EdgeInsets.only(left: 1),
+                                        child: TrackedOperationWidget(
+                                          key: ValueKey(op.id),
+                                          operation: op,
+                                        ),
                                       ),
                                     ),
                                   if (state.alert case final alert?) ...[
                                     const SizedBox(height: 1),
                                     Divider(color: st.subtleDivider),
-                                    AlertLine(
-                                      alert: alert,
-                                      time: state.alertTime,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 1,
+                                      ),
+                                      child: AlertLine(
+                                        alert: alert,
+                                        time: state.alertTime,
+                                      ),
                                     ),
                                   ],
                                 ],
@@ -211,7 +219,7 @@ class MainScreen extends StatelessComponent {
               Padding(
                 padding: const EdgeInsets.only(left: 1),
                 child: Text(
-                  'Apps',
+                  'App Launcher',
                   style: TextStyle(
                     color: st.brightText,
                     fontWeight: FontWeight.normal,
@@ -250,7 +258,6 @@ class MainScreen extends StatelessComponent {
                     for (final (key, desc, enabled) in [
                       ('↑↓', 'Navigate', true),
                       ('Enter', enterAction, true),
-                      ('X', 'Stop app', focusedRunning),
                       ('Esc', 'Close', true),
                     ])
                       Row(
@@ -290,11 +297,13 @@ class MainScreen extends StatelessComponent {
     );
   }
 
-  /// One launch-panel row: the app's name with a running marker.
+  /// One launch-panel row: the app's name with a status indicator.
   ///
-  /// Stopped apps are dimmed, launching apps show an orange marker, running
-  /// apps show a green marker, and the cursor row gets a background highlight
-  /// (matching the `serverpod create` selection style).
+  /// The indicator matches the tab strip (via [TabActivityIndicator]): a
+  /// spinner while launching, a green dot when running, a muted circle
+  /// otherwise. Unfocused stopped apps are dimmed, and the cursor row's name
+  /// gets a background highlight (matching the `serverpod create` selection
+  /// style).
   Component _buildLaunchAppRow(
     ServerpodThemeData st,
     int i,
@@ -311,11 +320,13 @@ class MainScreen extends StatelessComponent {
     final background = focused ? st.activationKey : null;
     final weight = muted ? FontWeight.dim : FontWeight.normal;
     final foreground = muted ? st.debugLevel : st.brightText;
-    final markerColor = launching
-        ? st.warningLevel
+    // Show the same status indicator as the tab strip: a spinner while
+    // launching, a green dot when running, a muted circle otherwise.
+    final activity = launching
+        ? TabActivity.loading
         : running
-        ? st.success
-        : st.debugLevel;
+        ? TabActivity.running
+        : TabActivity.stopped;
 
     return GestureDetector(
       onTap: () {
@@ -326,37 +337,29 @@ class MainScreen extends StatelessComponent {
         padding: const EdgeInsets.only(left: 1),
         child: Row(
           children: [
-            Text(
-              '${active ? '●' : '○'} ',
-              style: TextStyle(color: markerColor, fontWeight: weight),
-            ),
-            Expanded(
-              child: Container(
-                color: background,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 3,
-                      child: Text(
-                        '${i + 1}',
-                        style: TextStyle(
-                          color: focused ? st.brightText : st.debugLevel,
-                          fontWeight: weight,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      app.name,
-                      style: TextStyle(
-                        color: foreground,
-                        fontWeight: weight,
-                      ),
-                    ),
-                    Expanded(child: const SizedBox.shrink()),
-                  ],
+            TabActivityIndicator(activity),
+            const Text(' '),
+            SizedBox(
+              width: 3,
+              child: Text(
+                '${i + 1}',
+                style: TextStyle(
+                  color: focused ? st.brightText : st.debugLevel,
+                  fontWeight: weight,
                 ),
               ),
             ),
+            Container(
+              color: background,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 1),
+                child: Text(
+                  app.name,
+                  style: TextStyle(color: foreground, fontWeight: weight),
+                ),
+              ),
+            ),
+            Expanded(child: const SizedBox.shrink()),
           ],
         ),
       ),
@@ -376,6 +379,7 @@ class MainScreen extends StatelessComponent {
       children: [
         TabBar(
           labels: [for (final tab in area.tabs) tab.label],
+          states: [for (final tab in area.tabs) _tabActivity(tab)],
           selectedTab: area.selectedIndex.clamp(0, area.tabs.length - 1),
           onTabChanged: (index) {
             area.selectedIndex = index;
@@ -400,6 +404,7 @@ class MainScreen extends StatelessComponent {
       children: [
         TabBar(
           labels: [for (final tab in all) tab.label],
+          states: [for (final tab in all) _tabActivity(tab)],
           selectedTab: selected,
           onTabChanged: (index) {
             state.tabs.focusTab(all[index]);
@@ -409,6 +414,17 @@ class MainScreen extends StatelessComponent {
         Expanded(child: _buildTabContent(st, all[selected])),
       ],
     );
+  }
+
+  /// Maps a tab to the activity indicator shown in its tab-strip entry. Only
+  /// Flutter app tabs carry state: stopped wins over ready (a stopped app may
+  /// still hold a published URL), then ready means running, otherwise it is
+  /// still launching. The server log tab has no indicator.
+  TabActivity _tabActivity(PaneTab tab) {
+    if (tab is! AppLogTab) return TabActivity.none;
+    if (tab.stopped) return TabActivity.stopped;
+    if (tab.ready) return TabActivity.running;
+    return TabActivity.loading;
   }
 
   Component _buildEmptyAppsPlaceholder(ServerpodThemeData st) {
@@ -437,8 +453,10 @@ class MainScreen extends StatelessComponent {
     };
   }
 
-  /// Breadcrumb for a Flutter app tab: horizontal rules, muted label, and URL
-  /// or startup stage.
+  /// Breadcrumb for a Flutter app tab: a muted label and the URL or startup
+  /// stage, with a pinned `press X to stop`/`close` hint. Only the status text
+  /// shimmers while launching, and it is truncated when the line is too narrow
+  /// so the hint always stays visible.
   Component? _buildFlutterStatusLine(ServerpodThemeData st, AppLogTab tab) {
     final mutedText = TextStyle(
       color: st.debugLevel,
@@ -449,55 +467,86 @@ class MainScreen extends StatelessComponent {
       fontWeight: FontWeight.dim,
     );
 
-    Component indicator = const SizedBox.shrink();
+    final loading = !tab.ready && !tab.stopped;
 
+    String statusText;
     if (tab.ready) {
-      indicator = Text(tab.url ?? 'App running', style: mutedText);
+      statusText = tab.url ?? 'App running';
     } else if (tab.stopped) {
-      indicator = RichText(
-        text: TextSpan(
-          text: 'App stopped. Press ',
-          style: mutedText,
-          children: [
-            TextSpan(
-              text: 'X',
-              style: TextStyle(
-                color: st.activationKey,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            const TextSpan(text: ' to close tab'),
-          ],
-        ),
-      );
+      statusText = 'App stopped';
     } else {
-      var value = tab.startupStage;
-      if (value != null) {
-        if (value.contains('.')) {
-          value = value.replaceFirst(RegExp(r'\.+$'), '');
-        }
-        indicator = Text(value, style: mutedText);
+      var value = tab.startupStage ?? 'Launching';
+      if (value.contains('.')) {
+        value = value.replaceFirst(RegExp(r'\.+$'), '');
       }
+      statusText = value;
     }
 
-    Component child = Row(
-      children: [
-        Text(' ${tab.label}', style: mutedText),
-        Text(' │ ', style: separatorStyle),
-        indicator,
-      ],
-    );
-
-    if (!tab.ready & !tab.stopped) {
-      child = Shimmer(child: child);
-    }
+    final xLabel = tab.stopped ? 'Close Tab' : 'Close App';
+    final labelPart = tab.label;
+    const labelSep = ' │ ';
+    final xHintPlain = 'X $xLabel';
 
     return Column(
       children: [
-        Padding(padding: const EdgeInsets.only(left: 1), child: child),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth.isFinite
+                  ? constraints.maxWidth.floor()
+                  : labelPart.length +
+                        labelSep.length +
+                        statusText.length +
+                        xHintPlain.length +
+                        2;
+              final reserved =
+                  labelPart.length + labelSep.length + xHintPlain.length + 1;
+              final shownStatus = _fit(statusText, maxWidth - reserved);
+
+              Component status = Text(shownStatus, style: mutedText);
+              if (loading) status = Shimmer(child: status);
+
+              return Row(
+                children: [
+                  Text(labelPart, style: mutedText),
+                  Text(labelSep, style: separatorStyle),
+                  status,
+                  Expanded(child: const SizedBox.shrink()),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'X',
+                          style: TextStyle(
+                            color: st.activationKey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' $xLabel',
+                          style: TextStyle(color: st.brightText),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
         Divider(color: st.subtleDivider),
       ],
     );
+  }
+
+  /// Truncates [text] to [width] columns, appending an ellipsis when it does
+  /// not fit. Returns empty when there is no room.
+  String _fit(String text, int width) {
+    if (width <= 0) return '';
+    if (text.length <= width) return text;
+    if (width == 1) return '…';
+    return '${text.substring(0, width - 1)}…';
   }
 
   /// The raw server logs "dev console", shown as a full-area overlay when
@@ -543,31 +592,34 @@ class MainScreen extends StatelessComponent {
   Component _buildStructuredLogView(ScrollController logScrollController) {
     final items = state.logHistory;
 
-    return SelectionArea(
-      onSelectionCompleted: (text) {
-        if (text.isNotEmpty) ClipboardManager.copy(text);
-      },
-      child: Scrollbar(
-        controller: logScrollController,
-        thumbVisibility: true,
-        child: ListView.builder(
+    return Padding(
+      padding: const EdgeInsets.only(left: 1),
+      child: SelectionArea(
+        onSelectionCompleted: (text) {
+          if (text.isNotEmpty) ClipboardManager.copy(text);
+        },
+        child: Scrollbar(
           controller: logScrollController,
-          reverse: true,
-          keyboardScrollable: false,
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[items.length - 1 - index];
-            if (item is LogEntry) {
-              return _buildLogEntry(context, item, index);
-            }
-            if (item is CompletedOperation) {
-              return CompletedOperationWidget(
-                key: ValueKey(index),
-                operation: item,
-              );
-            }
-            return const SizedBox.shrink();
-          },
+          thumbVisibility: true,
+          child: ListView.builder(
+            controller: logScrollController,
+            reverse: true,
+            keyboardScrollable: false,
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[items.length - 1 - index];
+              if (item is LogEntry) {
+                return _buildLogEntry(context, item, index);
+              }
+              if (item is CompletedOperation) {
+                return CompletedOperationWidget(
+                  key: ValueKey(index),
+                  operation: item,
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
@@ -606,22 +658,25 @@ class MainScreen extends StatelessComponent {
     BoundedQueueList<String> lines,
     ScrollController controller,
   ) {
-    return SelectionArea(
-      onSelectionCompleted: (text) {
-        if (text.isNotEmpty) ClipboardManager.copy(text);
-      },
-      child: Scrollbar(
-        controller: controller,
-        thumbVisibility: true,
-        child: ListView.builder(
+    return Padding(
+      padding: const EdgeInsets.only(left: 1),
+      child: SelectionArea(
+        onSelectionCompleted: (text) {
+          if (text.isNotEmpty) ClipboardManager.copy(text);
+        },
+        child: Scrollbar(
           controller: controller,
-          reverse: true,
-          keyboardScrollable: false,
-          itemCount: lines.length,
-          itemBuilder: (context, index) {
-            final line = lines[lines.length - 1 - index];
-            return Text(line, key: ValueKey(index));
-          },
+          thumbVisibility: true,
+          child: ListView.builder(
+            controller: controller,
+            reverse: true,
+            keyboardScrollable: false,
+            itemCount: lines.length,
+            itemBuilder: (context, index) {
+              final line = lines[lines.length - 1 - index];
+              return Text(line, key: ValueKey(index));
+            },
+          ),
         ),
       ),
     );

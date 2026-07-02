@@ -257,20 +257,21 @@ void main() {
       tester = await _pumpLaunchPanel(focus: 1, launchingAppId: 'portal');
     });
 
-    test('then its marker is orange, apart from a running app\'s', () {
-      final ts = tester.terminalState;
-      final launchingMarker = ts.getStyledText().firstWhere(
-        (s) =>
-            s.text.contains('●') &&
-            s.style.color == ServerpodThemeData.dark.warningLevel,
-      );
-      final runningMarker = ts.getStyledText().firstWhere(
-        (s) =>
-            s.text.contains('●') &&
-            s.style.color == ServerpodThemeData.dark.success,
-      );
+    test(
+      'then its marker uses the spinner colour, apart from a running app\'s',
+      () {
+        final ts = tester.terminalState;
+        final launchingMarker = ts.getStyledText().firstWhere(
+          (s) => s.style.color == ServerpodThemeData.dark.spinner,
+        );
+        final runningMarker = ts.getStyledText().firstWhere(
+          (s) =>
+              s.text.contains('●') &&
+              s.style.color == ServerpodThemeData.dark.success,
+        );
 
-      expect(launchingMarker.style.color, isNot(runningMarker.style.color));
-    });
+        expect(launchingMarker.style.color, isNot(runningMarker.style.color));
+      },
+    );
   });
 }
