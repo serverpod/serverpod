@@ -10,9 +10,7 @@ import '../../serverpod_test_server/lib/test_util/custom_matcher.dart';
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = Directory.systemTemp
-      .createTempSync('serverpod_bootstrap_')
-      .path;
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
     final pubGetProcess = await startProcess('dart', [

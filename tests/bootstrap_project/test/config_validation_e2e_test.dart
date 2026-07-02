@@ -9,9 +9,7 @@ import '../lib/src/util.dart';
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final tempPath = Directory.systemTemp
-      .createTempSync('serverpod_bootstrap_')
-      .path;
+  final tempPath = Directory.systemTemp.createTempSync('spb_').path;
 
   setUpAll(() async {
     final pubGetProcess = await startProcess('dart', [

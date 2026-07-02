@@ -9,7 +9,11 @@ import 'package:uuid/uuid.dart';
 ({String projectName, String commandRoot}) createRandomProjectName(
   String root,
 ) {
-  final projectName = 'test_${Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+  // Short on purpose: the name appears twice in the created project's
+  // absolute temp path, and macOS install_name_tool rejects install names
+  // longer than sqlite3_connection_pool's precompiled (headerpad-less)
+  // dylibs can absorb (~170 chars) when dartdev patches them in .dart_tool.
+  final projectName = 't_${Uuid().v4().replaceAll('-', '').substring(0, 8)}';
   final commandRoot = path.join(root, projectName, '${projectName}_server');
 
   return (projectName: projectName, commandRoot: commandRoot);
