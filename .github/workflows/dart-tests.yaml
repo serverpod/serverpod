@@ -155,49 +155,67 @@ jobs:
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
-  nonvector_integration_tests_embedded:
-    name: Nonvector integration tests (embedded PG, ${{ matrix.os }})
+  embedded_integration_tests:
+    name: Integration tests (embedded PG, ${{ matrix.suite.name }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         flutter-version: ["3.41.5"]
         os: [ubuntu-latest, macos-latest]
+        # Each suite bootstraps only its leaf package; melos pulls in the
+        # transitive path-dependencies via --include-dependencies.
+        suite:
+          - name: serverpod_test
+            scope: serverpod_test
+            run: cd packages/serverpod_test && dart test --tags=integration --reporter=failures-only
+          - name: nonvector
+            scope: serverpod_test_nonvector_server
+            run: bash util/run_tests_nonvector_integration_embedded
+          - name: module
+            scope: serverpod_test_module_server
+            run: bash util/run_tests_module_integration_embedded
+          - name: auth
+            scope: serverpod_auth_test_server
+            run: bash util/run_tests_auth_integration_embedded
+          - name: auth_legacy
+            scope: serverpod_auth_server
+            run: bash util/run_tests_integration_embedded modules/legacy/serverpod_auth/serverpod_auth_server
+          - name: auth_core
+            scope: serverpod_auth_core_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - name: auth_bridge
+            scope: serverpod_auth_bridge_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - name: auth_migration
+            scope: serverpod_auth_migration_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - name: auth_idp
+            scope: serverpod_auth_idp_server
+            # `-x email` keeps the live-service email integration test out of
+            # this DB-focused suite; it runs only in email_integration_tests.
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run nonvector integration tests against embedded PG
-        run: bash util/run_tests_nonvector_integration_embedded
-        timeout-minutes: 10
-
-  module_integration_tests_embedded:
-    name: Module integration tests (embedded PG, ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - name: Cache embedded PostgreSQL binaries
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          path: |
+            ~/.cache/serverpod/pg-binaries
+            ~/Library/Caches/serverpod/pg-binaries
+          key: pg-binaries-${{ runner.os }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/lib/src/binary/maven_url.dart') }}
+          restore-keys: pg-binaries-${{ runner.os }}-
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run module integration tests against embedded PG
-        run: bash util/run_tests_module_integration_embedded
-        timeout-minutes: 10
+        run: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
+      - name: Run integration tests against embedded PG
+        run: ${{ matrix.suite.run }}
+        timeout-minutes: 15
 
   embedded_postgres_integration_tests:
     name: serverpod_embedded_postgres integration (${{ matrix.os }})
@@ -213,6 +231,15 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
+      - name: Cache embedded PostgreSQL binaries
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cache/serverpod/pg-binaries
+            ~/Library/Caches/serverpod/pg-binaries
+            ~/AppData/Local/serverpod/Cache/pg-binaries
+          key: pg-binaries-${{ runner.os }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/lib/src/binary/maven_url.dart') }}
+          restore-keys: pg-binaries-${{ runner.os }}-
       - name: Resolve dependencies
         run: dart pub get
         working-directory: packages/serverpod_embedded_postgres
@@ -366,54 +393,6 @@ jobs:
       - name: Run integration tests
         run: dart test test_integration --reporter=failures-only
         working-directory: ${{ matrix.path }}
-
-  module_integration_tests:
-    name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        module:
-          [
-            "tests/serverpod_test_module/serverpod_test_module_server",
-            "tests/serverpod_test_nonvector/serverpod_test_nonvector_server",
-            "tests/serverpod_auth_test/serverpod_auth_test_server",
-            "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server",
-            "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server",
-            "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server",
-            "modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server",
-            "modules/legacy/serverpod_auth/serverpod_auth_server",
-          ]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Start containers
-        run: docker compose --progress quiet up --build -V -d
-        working-directory: ${{ matrix.module }}
-      - name: Wait for services to be ready
-        run: |
-          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
-          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
-        working-directory: tests/docker/tests_integration
-      - name: Run integration tests (concurrently)
-        # `-x email` keeps the live-service email integration test out of this
-        # DB-focused job; it runs only in the dedicated email_integration_tests
-        # job. The tag is undefined in other matrix modules, where it is a no-op.
-        run: dart test -t integration -x concurrency_one -x email --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Run integration tests (sequentially)
-        if: always()
-        # Exit code `79` means that no tests were found for the tags
-        run: dart test -t integration -t concurrency_one -x email --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Stop containers
-        if: always()
-        run: docker compose down -v
-        working-directory: ${{ matrix.module }}
 
   module_e2e_tests:
     name: Module E2E tests in ${{ matrix.module.client }} with Flutter ${{ matrix.flutter-version }}

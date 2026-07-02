@@ -4,7 +4,6 @@ import 'package:serverpod_auth_core_server/src/session/business/server_side_sess
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../../test_tags.dart';
 
 void main() {
   final serverSideSessions = ServerSideSessions(
@@ -14,7 +13,6 @@ void main() {
   withServerpod(
     'Given an auth sessions for a user,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

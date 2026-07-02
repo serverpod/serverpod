@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 final tokenManagerConfig = ServerSideSessionsConfig(
@@ -156,14 +155,12 @@ void main() {
         });
       });
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
     'Given a pending account request,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late UuidValue receivedAccountRequestId;
       late String receivedVerificationCode;
@@ -315,7 +312,6 @@ void main() {
   withServerpod(
     'Given an invalid account request id,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       tearDown(() async {
         await _cleanUpDatabase(sessionBuilder.build());
@@ -476,14 +472,12 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
     'Given an email authentication for a blocked `AuthUser`,',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -691,7 +685,6 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 
@@ -870,13 +863,11 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
     'Given an invalid password reset request id,',
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       tearDown(() async {
@@ -1016,7 +1007,6 @@ void main() {
         },
       );
     },
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
 }
