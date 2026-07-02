@@ -90,17 +90,12 @@ No manual tearDown needed — by default each test runs in a transaction that is
 Default: `RollbackDatabase.afterEach` — each test in a rolled-back transaction.
 
 - `afterAll` — roll back after all tests in the group. Useful for scenario tests where consecutive tests depend on each other and setup is expensive.
-- `disabled` — no automatic rollback. Required when endpoint code uses concurrent `session.db.transaction(...)` calls (nested transactions would throw `InvalidConfigurationException`). Clean up manually in `tearDownAll`; consider `--concurrency=1`.
+- `disabled` — no automatic rollback. Required when endpoint code uses concurrent `session.db.transaction(...)` calls (nested transactions would throw `InvalidConfigurationException`). Each `withServerpod` group gets its own database, so committed data never leaks into other groups and no manual cleanup or `--concurrency=1` is needed; clean up in `tearDown` only if later tests in the same group need a clean slate.
 
 ```dart
 withServerpod(
   'Given concurrent transactions',
   (sessionBuilder, endpoints) {
-    tearDownAll(() async {
-      var session = sessionBuilder.build();
-      await Product.db.deleteWhere(session, where: (_) => Constant.bool(true));
-    });
-
     test('then should commit all', () async {
       await endpoints.products.concurrentTransactionCalls(sessionBuilder);
     });
@@ -172,11 +167,10 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 ## Running tests
 
 ```bash
-docker compose up -d          # Start DB and Redis
+docker compose up -d          # Start DB and Redis (not needed for embedded PostgreSQL/SQLite)
 dart test                     # All tests
 dart test -t integration      # Only integration tests
 dart test -x integration      # Only unit tests
-dart test -t integration --concurrency=1  # Sequential (for rollback disabled)
 ```
 
 ## DB connection limits
