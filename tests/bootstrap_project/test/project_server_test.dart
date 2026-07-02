@@ -1,6 +1,7 @@
 @Timeout(Duration(minutes: 15))
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -350,6 +351,98 @@ void main() async {
             );
           });
 
+          test(
+            'then the server.dart contains website configurations',
+            () {
+              final file = File(
+                path.join(tempPath, serverDir, 'lib', 'server.dart'),
+              );
+
+              final content = file.readAsStringSync();
+
+              expect(
+                content,
+                contains("import 'src/web/routes/root.dart';"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
+                contains("pod.webServer.addRoute(RootRoute(), '/')"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
+                contains("pod.webServer.addRoute(RootRoute(), '/index.html')"),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
+                contains(
+                  "final root = Directory(Uri(path: 'web/static').toFilePath())",
+                ),
+                reason: 'server.dart does not contain website configurations.',
+              );
+
+              expect(
+                content,
+                contains(
+                  "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+                ),
+                reason: 'server.dart does not contain website configurations.',
+              );
+            },
+          );
+
+          test(
+            'then the server.dart does not contain Flutter web app configurations',
+            () {
+              final file = File(
+                path.join(tempPath, serverDir, 'lib', 'server.dart'),
+              );
+
+              final content = file.readAsStringSync();
+
+              expect(
+                content,
+                isNot(
+                  contains("import 'src/web/routes/app_config_route.dart';"),
+                ),
+                reason: 'server.dart contains Flutter web app configurations.',
+              );
+
+              expect(
+                content,
+                isNot(
+                  contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+                ),
+                reason: 'server.dart contains Flutter web app configurations.',
+              );
+
+              expect(
+                content,
+                isNot(
+                  contains(
+                    "final appDir = Directory(Uri(path: 'web/app').toFilePath())",
+                  ),
+                ),
+                reason: 'server.dart contains Flutter web app configurations.',
+              );
+
+              expect(
+                content,
+                isNot(
+                  contains(
+                    "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+                  ),
+                ),
+                reason: 'server.dart contains Flutter web app configurations.',
+              );
+            },
+          );
+
           test('then the server project has a Dockerfile', () {
             expect(
               File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync(),
@@ -669,5 +762,63 @@ void main() async {
         },
       );
     },
+  );
+
+  group(
+    'Given a created project with the server template and a running pod',
+    () {
+      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+      late Process createProcess;
+      late Process startProjectProcess;
+
+      setUpAll(() async {
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '--template',
+            'server',
+            '-v',
+            '--no-analytics',
+            '--no-interactive',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        assert((await createProcess.exitCode) == 0);
+
+        startProjectProcess = await startProcessAndWaitForKeywords(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: commandRoot,
+          keywords: ['Webserver listening on'],
+        );
+      });
+
+      tearDownAll(() async {
+        createProcess.kill();
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the static website under / then it is is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Built with Serverpod</title>'),
+          );
+          expect(response.body, isNot(contains('Open Flutter app')));
+        },
+      );
+    },
+    skip: Platform.isWindows
+        ? 'Windows does not support postgres in github actions'
+        : null,
   );
 }

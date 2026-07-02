@@ -230,9 +230,9 @@ class TemplateRenderer {
     }
   }
 
-  /// Preprocesses [content] by stripping `// ` / `# ` comment prefixes
-  /// from Mustache directives, so that templates can embed directives
-  /// inside otherwise-valid source files.
+  /// Preprocesses [content] by stripping `// ` / `# ` / `<!-- `
+  /// comment prefixes from Mustache directives, so that templates
+  /// can embed directives inside otherwise-valid source files.
   String _preprocessContent(String content) {
     var result = content;
     result = result.replaceAllMapped(
@@ -241,6 +241,10 @@ class TemplateRenderer {
     );
     result = result.replaceAllMapped(
       RegExp(r'#\s*(\{\{[^}]+\}\})'),
+      (match) => match.group(1)!,
+    );
+    result = result.replaceAllMapped(
+      RegExp(r'<!--\s*(\{\{[^}]+\}\})\s*-->'),
       (match) => match.group(1)!,
     );
     return result;

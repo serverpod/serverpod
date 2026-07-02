@@ -338,4 +338,128 @@ import 'auth.web';
       await expectLater(file.exists(), completion(false));
     },
   );
+
+  group(
+    'Given a HTML file with template directives in its content',
+    () {
+      late File file;
+
+      setUp(() async {
+        file = File(p.join(testDir.path, 'test.html'));
+        await file.writeAsString('''
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Built with Serverpod</title>
+    <link rel="stylesheet" href="/web/css/style.css">
+  </head>
+  <body>
+    <!-- {{#webapp}} -->
+      <div>
+        <a class="cta" href="/app">
+            Open Flutter app 
+          </a>
+      </div>
+    <!-- {{/webapp}} -->
+    <!-- {{#website}} -->
+      <div>
+        <a class="cta" href="/">
+            Open Website 
+          </a>
+      </div>
+    <!-- {{/website}} -->
+  </body>
+</html>
+''');
+      });
+
+      test(
+        'when rendering the template with true context values, '
+        'then all the sections with conditional directives are retained in the file',
+        () async {
+          await renderTestDir(TemplateContext(website: true, webapp: true));
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/app">\n'
+              r'            Open Flutter app \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/">\n'
+              r'            Open Website \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when rendering the template with a mix of true and false context values, '
+        'then only the sections with true conditional directives are retained in the file',
+        () async {
+          await renderTestDir(TemplateContext(website: true, webapp: false));
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'      <div>\n'
+              r'        <a class="cta" href="/">\n'
+              r'            Open Website \n'
+              r'          </a>\n'
+              r'      </div>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when rendering the template with empty context, '
+        'then all conditional sections are removed from the file',
+        () async {
+          await renderTestDir(TemplateContext());
+          final content = await file.readAsString();
+          expect(
+            content,
+            matches(
+              r'<!DOCTYPE html>\n'
+              r'<html lang="en">\n'
+              r'  <head>\n'
+              r'    <meta charset="utf-8">\n'
+              r'    <title>Built with Serverpod</title>\n'
+              r'    <link rel="stylesheet" href="/web/css/style.css">\n'
+              r'  </head>\n'
+              r'  <body>\n'
+              r'  </body>\n'
+              r'</html>\n',
+            ),
+          );
+        },
+      );
+    },
+  );
 }

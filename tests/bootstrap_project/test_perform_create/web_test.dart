@@ -1,6 +1,8 @@
+@Timeout(Duration(minutes: 5))
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -78,7 +80,9 @@ void main() {
           expect(content, contains('pod.webServer.addRoute(RootRoute()'));
           expect(
             content,
-            contains('pod.webServer.addRoute(StaticRoute.directory(root))'),
+            contains(
+              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+            ),
           );
         },
       );
@@ -219,7 +223,9 @@ void main() {
           );
           expect(
             content,
-            contains('pod.webServer.addRoute(StaticRoute.directory(root));'),
+            contains(
+              "pod.webServer.addRoute(StaticRoute.directory(root), '/web')",
+            ),
           );
           expect(
             content,
@@ -276,7 +282,7 @@ void main() {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
 
-          expect(content, contains('flutter build web --base-href /app/'));
+          expect(content, contains('flutter build web'));
           expect(content, isNot(contains('--wasm')));
         },
       );
@@ -322,6 +328,127 @@ void main() {
           );
           final content = await config.readAsString();
           expect(content, contains('webServer:'));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a TemplateContext with webapp enabled and website disabled, '
+    'when performCreate is called with the context and a fullstack template type',
+    () {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: false,
+        ),
+      );
+
+      test(
+        'then the server server.dart serves the Flutter web app under /',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('// Serve the flutter web app under /.'));
+          expect(content, contains("'/'"));
+          expect(content, contains("'/**'"));
+        },
+      );
+
+      test(
+        'then the server.dart has a fallback middleware for the default route',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, contains('pod.webServer.addMiddleware('));
+          expect(content, contains('FallbackMiddleware('));
+          expect(
+            content,
+            contains('on: (response) => response.statusCode == 404'),
+          );
+        },
+      );
+
+      test(
+        'then the server pubspec contains Flutter build script with base-href /',
+        () async {
+          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /'));
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href / --output ../${project.name}_server/web/app',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a TemplateContext with webapp and website enabled, '
+    'when performCreate is called with the context and a fullstack template type',
+    () {
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: true,
+        ),
+      );
+
+      test(
+        'then the server server.dart serves the Flutter web app under the /app path',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(
+            content,
+            contains('// Serve the flutter web app under the /app path.'),
+          );
+          expect(content, contains("'/app'"));
+          expect(content, contains("'/app/**'"));
+        },
+      );
+
+      test(
+        'then the server.dart does not have a fallback middleware for the default route',
+        () async {
+          final serverFile = File(
+            p.join(project.serverDir, 'lib', 'server.dart'),
+          );
+          final content = await serverFile.readAsString();
+          expect(content, isNot(contains('pod.webServer.addMiddleware(')));
+          expect(content, isNot(contains('FallbackMiddleware(')));
+          expect(
+            content,
+            isNot(contains('on: (response) => response.statusCode == 404')),
+          );
+        },
+      );
+
+      test(
+        'then the server pubspec contains Flutter build script with base-href /app',
+        () async {
+          final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
+          final content = await pubspec.readAsString();
+
+          expect(content, contains('flutter build web --base-href /app'));
+          expect(
+            content,
+            contains(
+              'flutter build web --base-href /app/ --output ../${project.name}_server/web/app',
+            ),
+          );
         },
       );
     },
@@ -445,5 +572,116 @@ void main() {
         },
       );
     },
+  );
+
+  group(
+    'Given a project is created with fullstack template and webapp and website enabled, '
+    'and the pod is running',
+    () {
+      late Process startProjectProcess;
+
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: true,
+        ),
+      );
+
+      setUpAll(() async {
+        startProjectProcess = await startProcessAndWaitForKeywords(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: project.serverDir,
+          keywords: ['Webserver listening on'],
+        );
+      });
+
+      tearDownAll(() {
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the static website under / then it is is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Built with Serverpod</title>'),
+          );
+          expect(response.body, contains('Open Flutter app'));
+        },
+      );
+
+      test(
+        'when requesting the Flutter web app under /app before it is built, '
+        'then the "Flutter web app not built" page is served',
+        () async {
+          final response = await http.get(
+            Uri.parse('http://localhost:8082/app'),
+          );
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Flutter web app not built</title>'),
+          );
+          expect(
+            response.body,
+            isNot(
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            ),
+          );
+        },
+      );
+
+      group('Given the Flutter web app is built and the pod is restarted', () {
+        setUp(() async {
+          final flutterBuildProcess = await startServerpodCli(
+            ['run', 'flutter_build'],
+            rootPath: rootPath,
+            workingDirectory: project.serverDir,
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
+          );
+          expect(await flutterBuildProcess.exitCode, 0);
+
+          startProjectProcess.kill();
+          startProjectProcess = await startProcessAndWaitForKeywords(
+            'dart',
+            ['bin/main.dart', '--apply-migrations'],
+            workingDirectory: project.serverDir,
+            keywords: ['Webserver listening on'],
+          );
+        });
+
+        test(
+          'when requesting the Flutter web app under /app, '
+          'then the web app is served successfully',
+          () async {
+            final response = await http.get(
+              Uri.parse('http://localhost:8082/app'),
+            );
+            expect(response.statusCode, equals(200));
+            expect(
+              response.body,
+              isNot(contains('<title>Flutter web app not built</title>')),
+            );
+            expect(
+              response.body,
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            );
+          },
+        );
+      });
+    },
+    skip: Platform.isWindows
+        ? 'Windows does not support postgres in github actions'
+        : null,
   );
 }
