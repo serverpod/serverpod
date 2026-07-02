@@ -43,6 +43,7 @@ void main() {
             projectName,
             '-v',
             '--no-analytics',
+            '--no-interactive',
           ],
           rootPath: rootPath,
           workingDirectory: tempPath,
