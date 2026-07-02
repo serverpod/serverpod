@@ -102,6 +102,8 @@ jobs:
       - name: Bootstrap serverpod_cli
         run: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
       - name: Build the serverpod CLI bundle
+        # bash also on Windows: pwsh expands $GITHUB_WORKSPACE to empty.
+        shell: bash
         working-directory: tools/serverpod_cli
         run: dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
       - name: Pack the CLI bundle
