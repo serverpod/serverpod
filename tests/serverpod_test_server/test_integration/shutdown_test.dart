@@ -17,6 +17,22 @@ void main() {
   const terminationTimeout = Duration(seconds: 10);
   const verbose = false;
 
+  setUpAll(() async {
+    // Migrate the main config database once
+    final result = await Process.run(dartExecutablePath, [
+      'bin/main.dart',
+      '--mode=test',
+      '--role',
+      'maintenance',
+      '--apply-migrations',
+    ]);
+    if (result.exitCode != 0) {
+      throw StateError(
+        'Pre-migrating the config database failed: ${result.stderr}',
+      );
+    }
+  });
+
   test('Given a serverpod server with db '
       'when run in maintenance mode '
       'then it automatically exits with exit code 0', () async {
