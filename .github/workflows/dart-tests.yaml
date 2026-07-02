@@ -55,46 +55,42 @@ jobs:
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
-  dart_analyze_latest:
-    name: dart analyze latest
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ["3.44.4"]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: false
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
-      - name: Run lint
-        run: melos lint
-
-  dart_analyze_downgrade:
-    name: dart analyze downgrade
+  dart_analyze:
+    name: dart analyze (${{ matrix.check.name }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        check:
+          - name: strict, floor
+            flutter-version: "3.38.4"
+            lint: lint_strict
+          - name: latest
+            flutter-version: "3.44.4"
+            lint: lint
+          - name: downgrade, floor
+            flutter-version: "3.38.4"
+            downgrade: true
+            lint: lint_loose
+          - name: downgrade, latest
+            flutter-version: "3.44.4"
+            downgrade: true
+            lint: lint_loose
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
+          flutter-version: ${{ matrix.check.flutter-version }}
           cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
         run: melos bootstrap
       - name: Downgrade dependencies
+        if: matrix.check.downgrade
         run: melos downgrade
       - name: Run lint
-        run: melos lint_loose
+        run: melos ${{ matrix.check.lint }}
 
   # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
   # jobs below don't each re-resolve and compile it.
@@ -110,21 +106,13 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      # melos is a root dev-dependency (Dart-only), so resolve the root and run it
-      # via `dart run melos` - the globally-activated exe isn't on PATH on Windows.
-      - name: Resolve melos
-        run: dart pub get
-      # Scoped bootstrap resolves serverpod_cli + its Dart-only path deps without
-      # pulling the workspace's Flutter packages.
+      - run: dart pub get
       - name: Bootstrap serverpod_cli
         run: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
-      # `dart build cli` (not `dart compile exe`) because serverpod_cli pulls
-      # sqlite3, whose native-asset build hooks `dart compile exe` rejects.
       - name: Build the serverpod CLI bundle
-        shell: bash
         working-directory: tools/serverpod_cli
         run: dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
-      - name: Pack the CLI bundle (preserves exec bit + adjacent native libs)
+      - name: Pack the CLI bundle
         shell: bash
         run: tar -C "$GITHUB_WORKSPACE/.cli-build/bundle" -czf serverpod-cli.tgz .
       - name: Upload the CLI bundle
@@ -132,12 +120,10 @@ jobs:
         with:
           name: serverpod-cli-${{ runner.os }}
           path: serverpod-cli.tgz
-          retention-days: 1
+          retention-days: 1 # just needed for this build
 
   # Build each test-server "pod" bundle once so the migration e2e shards download
-  # it instead of every shard spending ~1.5min on `dart build cli`. Runs in
-  # parallel with build_cli. The bundle is a standalone AOT exe (SDK-version
-  # independent), so one artifact per server project serves every shard/SDK.
+  # it instead of every shard spending ~1.5min on `dart build cli`.
   build_pod:
     name: Build test server pod (${{ matrix.pod }})
     runs-on: ubuntu-latest
@@ -154,14 +140,13 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
-      - name: Resolve melos
-        run: dart pub get
+      - run: dart pub get
       - name: Bootstrap ${{ matrix.pod }}
         run: dart run melos bootstrap --scope='${{ matrix.pod }}' --include-dependencies
       - name: Build the server bundle
         working-directory: ${{ matrix.path }}
         run: dart build cli -t bin/main.dart -o "$GITHUB_WORKSPACE/.pod-build"
-      - name: Pack the pod bundle (preserves exec bit + adjacent native libs)
+      - name: Pack the pod bundle
         run: tar -C "$GITHUB_WORKSPACE/.pod-build/bundle" -czf pod.tgz .
       - name: Upload the pod bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -170,11 +155,6 @@ jobs:
           path: pod.tgz
           retention-days: 1
 
-  # One job per server project so a red job names the project. The CLI is
-  # prebuilt by build_cli, so generate output is deterministic regardless of the
-  # Dart/Flutter version - no need to also matrix the SDK here (CLI/SDK compat is
-  # covered by cli_unit_tests). serverpod_cli's own unit tests live in unit_io;
-  # the template servers + from-scratch check run in serverpod_generate_templates.
   serverpod_generate:
     name: serverpod generate (${{ matrix.project }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -202,8 +182,6 @@ jobs:
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # serverpod_cli is prebuilt by build_cli, so generate only needs THIS
-      # project resolved - a scoped, Dart-only bootstrap (no Flutter).
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
@@ -239,8 +217,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # The CLI is prebuilt; resolve only the template servers (Dart-only). The
-      # upgrade template borrows projectname_server's resolution at generate time.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: "3.12.2"
