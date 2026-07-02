@@ -257,12 +257,10 @@ void main() {
       tester = await _pumpLaunchPanel(focus: 1, launchingAppId: 'portal');
     });
 
-    test('then its marker is orange, apart from a running app\'s', () {
+    test('then its marker uses the spinner colour, apart from a running app\'s', () {
       final ts = tester.terminalState;
       final launchingMarker = ts.getStyledText().firstWhere(
-        (s) =>
-            s.text.contains('●') &&
-            s.style.color == ServerpodThemeData.dark.warningLevel,
+        (s) => s.style.color == ServerpodThemeData.dark.spinner,
       );
       final runningMarker = ts.getStyledText().firstWhere(
         (s) =>

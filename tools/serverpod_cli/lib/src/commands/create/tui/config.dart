@@ -44,7 +44,7 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
-        configOption: TemplateTypeOption.server,
+        configOptions: {TemplateTypeOption.server},
       ),
     ],
   ),
@@ -61,11 +61,11 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
     requirements: [
       FormRequirement<TemplateTypeOption>(
         config: ServerpodCreateConfig.template,
-        configOption: TemplateTypeOption.server,
+        configOptions: {TemplateTypeOption.server},
       ),
       FormRequirement<DatabaseConfigOption>(
         config: ServerpodCreateConfig.database,
-        configOption: DatabaseConfigOption.database,
+        configOptions: {DatabaseConfigOption.database},
       ),
     ],
   ),

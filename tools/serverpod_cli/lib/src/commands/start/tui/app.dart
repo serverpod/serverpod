@@ -243,41 +243,38 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       return true;
     }
 
-    late final appCount = state.launchableApps.length;
-
-    // 'x' stops the focused app when it is running. The panel stays open so
-    // the row's marker flips to stopped and the app can be relaunched.
-    // Pressing 'x' when the focused app is already stopped closes its tab.
-    if (event.logicalKey == LogicalKey.keyX &&
-        state.launchPanelIndex < appCount) {
-      final app = state.launchableApps[state.launchPanelIndex];
-      final appRunning = state.isAppRunning?.call(app.id) ?? false;
-      if (state.showLaunchPanel && appRunning) {
-        onStopApp?.call(state.launchPanelIndex);
-        _rebuild();
-        return true;
-      }
-
-      // Remove the focused tab if it is in a stopped state.
+    // 'x' acts on the active Flutter app tab: while the app is running (or
+    // launching) it stops the app - the tab stays so its marker flips to
+    // stopped and it can be relaunched - and once stopped it closes the tab.
+    if (event.logicalKey == LogicalKey.keyX) {
       final appsArea = state.appsTabArea;
-      final focusedTab = appsArea?.selected as AppLogTab?;
-      if (focusedTab != null && focusedTab.stopped) {
-        state.removeAppLogTab(focusedTab.appId);
-        final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
+      final activeTab = appsArea?.selected;
+      if (activeTab is AppLogTab) {
+        final appId = activeTab.appId;
+        final running = state.isAppRunning?.call(appId) ?? false;
+        final launching = state.isAppLaunching?.call(appId) ?? false;
 
-        if (lastTab == null) {
-          state.launchPanelIndex = 0;
+        if (running || launching) {
+          final index = state.launchableApps.indexWhere((a) => a.id == appId);
+          if (index >= 0) {
+            onStopApp?.call(index);
+            _rebuild();
+            return true;
+          }
+        } else if (activeTab.stopped) {
+          state.removeAppLogTab(appId);
+          final lastTab = appsArea?.tabs.whereType<AppLogTab>().lastOrNull;
+          if (lastTab == null) {
+            state.launchPanelIndex = 0;
+          } else {
+            state.tabs.focusTab(lastTab);
+            state.launchPanelIndex = state.launchableApps.indexWhere(
+              (a) => a.id == lastTab.appId,
+            );
+          }
           _rebuild();
           return true;
         }
-        state.tabs.focusTab(lastTab);
-
-        final index = state.launchableApps.indexWhere(
-          (app) => app.id == lastTab.appId,
-        );
-        state.launchPanelIndex = index;
-        _rebuild();
-        return true;
       }
     }
 

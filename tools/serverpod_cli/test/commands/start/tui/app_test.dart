@@ -410,32 +410,34 @@ void main() {
     );
 
     test(
-      'when x is pressed on a running app then it stops and the panel stays open',
+      'when x is pressed while the active tab is running then that app stops',
       () async {
         var stopIndex = -1;
         holder.onStopApp = (index) => stopIndex = index;
-        state.showLaunchPanel = true;
-        state.launchPanelIndex = 0; // 'a' is running
+        final admin = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
+        state.tabs.focusTab(admin); // 'a' is running
 
         await _sendKey(tester, LogicalKey.keyX);
 
         expect(stopIndex, 0);
-        expect(state.showLaunchPanel, isTrue);
       },
     );
 
     test(
-      'when x is pressed on a stopped app then onStopApp is not called',
+      'when x is pressed while the active tab is neither running nor stopped '
+      'then onStopApp is not called',
       () async {
         var stopCalls = 0;
         holder.onStopApp = (_) => stopCalls++;
-        state.showLaunchPanel = true;
-        state.launchPanelIndex = 1; // 'b' is not running
+        final customer = state.getOrCreateAppLogTab(
+          appId: 'b',
+          label: 'Customer',
+        );
+        state.tabs.focusTab(customer); // 'b' is not running
 
         await _sendKey(tester, LogicalKey.keyX);
 
         expect(stopCalls, 0);
-        expect(state.showLaunchPanel, isTrue);
       },
     );
   });
