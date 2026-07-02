@@ -640,31 +640,17 @@ class PostgresDatabaseConfig extends DatabaseConfig {
 
   /// Returns a copy of this config that targets the database [name], keeping
   /// every other setting (including the connection mode).
-  PostgresDatabaseConfig withName(String name) => _copyWith(name: name);
-
-  /// Returns a copy of this config with the given fields replaced.
-  PostgresDatabaseConfig _copyWith({
-    String? host,
-    int? port,
-    String? user,
-    String? password,
-    String? name,
-    bool? requireSsl,
-    bool? isUnixSocket,
-    List<String>? searchPaths,
-    int? maxConnectionCount,
-    String? dataPath,
-  }) => PostgresDatabaseConfig(
-    host: host ?? this.host,
-    port: port ?? this.port,
-    user: user ?? this.user,
-    password: password ?? this.password,
-    name: name ?? this.name,
-    requireSsl: requireSsl ?? this.requireSsl,
-    isUnixSocket: isUnixSocket ?? this.isUnixSocket,
-    searchPaths: searchPaths ?? this.searchPaths,
-    maxConnectionCount: maxConnectionCount ?? this.maxConnectionCount,
-    dataPath: dataPath ?? this.dataPath,
+  PostgresDatabaseConfig withName(String name) => PostgresDatabaseConfig(
+    host: host,
+    port: port,
+    user: user,
+    password: password,
+    name: name,
+    requireSsl: requireSsl,
+    isUnixSocket: isUnixSocket,
+    searchPaths: searchPaths,
+    maxConnectionCount: maxConnectionCount,
+    dataPath: dataPath,
   );
 
   factory PostgresDatabaseConfig._fromJson(

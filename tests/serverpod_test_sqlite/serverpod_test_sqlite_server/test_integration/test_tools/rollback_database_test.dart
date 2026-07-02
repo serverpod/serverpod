@@ -381,7 +381,7 @@ void main() {
         var session = sessionBuilder.build();
 
         test(
-          'then the data does not carry over (each group has its own database)',
+          'then there is no data because each group has its own database',
           () async {
             final result = await SimpleData.db.find(session);
 

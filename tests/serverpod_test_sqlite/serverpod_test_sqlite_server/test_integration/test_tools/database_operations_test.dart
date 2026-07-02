@@ -360,8 +360,7 @@ void main() {
           var session = sessionBuilder.build();
 
           test(
-            'then the committed data does not carry over (each group has its '
-            'own database)',
+            'then there is no data because each group has its own database',
             () async {
               var simpleDatas = await SimpleData.db.find(session);
 
@@ -407,8 +406,7 @@ void main() {
           var session = sessionBuilder.build();
 
           test(
-            'then the committed data does not carry over (each group has its '
-            'own database)',
+            'then there is no data because each group has its own database',
             () async {
               var simpleDatas = await SimpleData.db.find(session);
 
