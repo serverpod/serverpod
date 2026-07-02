@@ -33,10 +33,9 @@ void main() {
     setUpAll(() async {
       exceptionHandler = TestExceptionHandler();
 
-      // The api and web servers share a port on purpose, to force a bind
-      // collision. Use a fixed port distinct from other suites' (8080 is held
-      // by the startup/shutdown subprocess) so this binds first and it is the
-      // web server that collides, deterministically, even when run concurrently.
+      // Fixed port distinct from other suites' (8080 is held by the
+      // startup/shutdown subprocess) so it is the web server that collides,
+      // deterministically, even when run concurrently.
       const sharedPort = 8077;
       final config = ServerpodConfig(
         apiServer: ServerConfig(
