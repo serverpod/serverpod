@@ -64,6 +64,79 @@ class S3Client {
     return _doSignedRequest(key: key, method: 'DELETE');
   }
 
+  /// Generates a presigned URL for the given [key] and HTTP [method].
+  ///
+  /// The URL embeds AWS Signature V4 query-string parameters so the
+  /// recipient can access the object without any other credentials.
+  /// [expiration] controls how long the URL remains valid.
+  Uri getPresignedUrl({
+    required String key,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) {
+    final bucketUri = _endpoints.buildBucketUri(_bucket, _region);
+    final objectPath = bucketUri.path.endsWith('/')
+        ? '${bucketUri.path}$key'
+        : '${bucketUri.path}/$key';
+
+    final host = _buildHostHeader(bucketUri);
+    final datetime = SigV4.generateDatetime();
+    final credentialScope = SigV4.buildCredentialScope(
+      datetime,
+      _region,
+      _service,
+    );
+
+    final queryParams = <String, String>{
+      'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+      'X-Amz-Credential': '$_accessKey/$credentialScope',
+      'X-Amz-Date': datetime,
+      'X-Amz-Expires': expiration.inSeconds.toString(),
+      'X-Amz-SignedHeaders': 'host',
+    };
+
+    final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+    final normalizedPath = objectPath.startsWith('/')
+        ? objectPath
+        : '/$objectPath';
+    final encodedPath = normalizedPath
+        .split('/')
+        .map(Uri.encodeComponent)
+        .join('/');
+
+    final canonicalRequest =
+        '$method\n'
+        '$encodedPath\n'
+        '$canonicalQuery\n'
+        'host:$host\n'
+        '\n'
+        'host\n'
+        'UNSIGNED-PAYLOAD';
+
+    final stringToSign = SigV4.buildStringToSign(
+      datetime,
+      credentialScope,
+      SigV4.hashCanonicalRequest(canonicalRequest),
+    );
+    final signingKey = SigV4.calculateSigningKey(
+      _secretKey,
+      datetime,
+      _region,
+      _service,
+    );
+    final signature = SigV4.calculateSignature(signingKey, stringToSign);
+
+    queryParams['X-Amz-Signature'] = signature;
+
+    return Uri(
+      scheme: bucketUri.scheme,
+      host: bucketUri.host,
+      port: bucketUri.port,
+      path: objectPath,
+      queryParameters: queryParams,
+    );
+  }
+
   /// Builds signed request parameters without executing the request.
   ///
   /// Useful for integrating with custom HTTP clients.
