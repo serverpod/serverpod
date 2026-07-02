@@ -18,4 +18,11 @@ runs:
       run: |
         mkdir -p .cli
         tar -C .cli -xpzf cli-bundle/serverpod-cli.tgz
-        echo "SERVERPOD_CLI_EXE=$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)" >> "$GITHUB_ENV"
+        # The executable name is platform-dependent (serverpod_cli[.exe|.bat]);
+        # resolve it here, once, so consumers just use $SERVERPOD_CLI_EXE.
+        CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
+        if [ ! -x "$CLI" ]; then
+          echo "::error::no CLI executable found under .cli/bin after unpacking the bundle"
+          exit 1
+        fi
+        echo "SERVERPOD_CLI_EXE=$CLI" >> "$GITHUB_ENV"

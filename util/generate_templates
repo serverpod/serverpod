@@ -5,9 +5,9 @@
 # CI "serverpod generate (templates)" job, so the bespoke upgrade-template logic
 # lives in one place.
 #
-# The serverpod CLI to run is taken from $SERVERPOD_CLI_CMD - in CI that points at
-# the prebuilt CLI bundle from the build_cli job; it defaults to running the CLI
-# from source for local use.
+# The serverpod CLI to run is taken from $SERVERPOD_CLI_EXE (exported by the
+# use-cli-bundle action in CI to point at the prebuilt bundle); it defaults to
+# running the CLI from source for local use.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -19,7 +19,7 @@ fi
 set -e
 
 BASE=$(pwd)
-CLI_CMD="${SERVERPOD_CLI_CMD:-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart}"
+CLI_CMD="${SERVERPOD_CLI_EXE:-dart $BASE/tools/serverpod_cli/bin/serverpod_cli.dart}"
 
 echo "### modulename_server"
 cd "$BASE/templates/serverpod_templates/modulename_server"
