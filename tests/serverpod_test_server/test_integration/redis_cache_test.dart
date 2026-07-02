@@ -7,11 +7,18 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' hide Protocol;
 import 'package:test/test.dart';
 
 void main() async {
+  final redisSkip = await redisSkipReason();
+  if (redisSkip != null) {
+    test('redis cache suite', () => markTestSkipped(redisSkip));
+    return;
+  }
+
   var session = await IntegrationTestServer().session();
 
   late RedisCache cache;

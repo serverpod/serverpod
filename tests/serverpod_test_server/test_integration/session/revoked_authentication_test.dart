@@ -5,11 +5,14 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/redis_probe.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  group('Given redis is enabled', () {
+  final redisSkip = await redisSkipReason();
+
+  group('Given redis is enabled', skip: redisSkip, () {
     late Session session;
     late Serverpod server;
     setUp(() async {
