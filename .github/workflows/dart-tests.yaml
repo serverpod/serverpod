@@ -199,8 +199,7 @@ jobs:
           PROJECT: ${{ matrix.project }}
         run: |
           git config core.safecrlf false
-          CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
-          ( cd "$PROJECT" && "$CLI" generate --no-analytics )
+          ( cd "$PROJECT" && "$SERVERPOD_CLI_EXE" generate --no-analytics )
           git diff --ignore-cr-at-eol --exit-code -- "$PROJECT" || {
             echo "::error::serverpod generate produced uncommitted changes in $PROJECT - run util/generate_all and commit."
             git diff --ignore-cr-at-eol -- "$PROJECT"
@@ -230,7 +229,6 @@ jobs:
         shell: bash
         run: |
           git config core.safecrlf false
-          export SERVERPOD_CLI_CMD="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
           util/generate_templates
           git diff --ignore-cr-at-eol --exit-code -- templates/serverpod_templates || {
             echo "::error::serverpod generate produced uncommitted changes in templates/serverpod_templates - run util/generate_all and commit."
@@ -240,9 +238,8 @@ jobs:
       - name: Verify generate from scratch (serverpod_test_server)
         shell: bash
         run: |
-          CLI="$(echo "$GITHUB_WORKSPACE"/.cli/bin/serverpod_cli*)"
           rm -rf tests/serverpod_test_server/lib/src/generated
-          ( cd tests/serverpod_test_server && SERVERPOD_HOME="$GITHUB_WORKSPACE" "$CLI" generate --no-analytics )
+          ( cd tests/serverpod_test_server && SERVERPOD_HOME="$GITHUB_WORKSPACE" "$SERVERPOD_CLI_EXE" generate --no-analytics )
 
   update_pubspecs:
     name: update pubspecs
