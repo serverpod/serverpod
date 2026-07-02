@@ -1,6 +1,7 @@
 @Timeout(Duration(minutes: 15))
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -758,6 +759,63 @@ void main() async {
               );
             },
           );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a created project with the server template and a running pod',
+    () {
+      final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
+
+      late Process createProcess;
+      late Process startProjectProcess;
+
+      setUpAll(() async {
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '--template',
+            'server',
+            '-v',
+            '--no-analytics',
+            '--no-interactive',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+        assert((await createProcess.exitCode) == 0);
+
+        startProjectProcess = await startProcess(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: commandRoot,
+        );
+
+        // Wait for web server to be up
+        await Future.delayed(const Duration(seconds: 10));
+      });
+
+      tearDownAll(() async {
+        createProcess.kill();
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the static website under / then it is is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Built with Serverpod</title>'),
+          );
+          expect(response.body, isNot(contains('Open Flutter app')));
         },
       );
     },

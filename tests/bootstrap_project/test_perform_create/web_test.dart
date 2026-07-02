@@ -1,6 +1,8 @@
+@Timeout(Duration(minutes: 5))
 import 'dart:io';
 
 import 'package:bootstrap_project/src/util.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
@@ -569,6 +571,115 @@ void main() {
           expect(content, contains('webServer:'));
         },
       );
+    },
+  );
+
+  group(
+    'Given a project is created with fullstack template and webapp and website enabled, '
+    'and the pod is running',
+    () {
+      late Process startProjectProcess;
+
+      final project = setUpPerformCreateInTempDir(
+        context: TemplateContext(
+          template: ServerpodTemplateType.fullstack,
+          webapp: true,
+          website: true,
+        ),
+      );
+
+      setUpAll(() async {
+        startProjectProcess = await startProcess(
+          'dart',
+          ['bin/main.dart', '--apply-migrations'],
+          workingDirectory: project.serverDir,
+        );
+
+        // Wait for web server to be up
+        await Future.delayed(const Duration(seconds: 10));
+      });
+
+      tearDownAll(() {
+        startProjectProcess.kill();
+      });
+
+      test(
+        'when requesting the static website under / then it is is served',
+        () async {
+          final response = await http.get(Uri.parse('http://localhost:8082'));
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Built with Serverpod</title>'),
+          );
+          expect(response.body, contains('Open Flutter app'));
+        },
+      );
+
+      test(
+        'when requesting the Flutter web app under /app before it is built, '
+        'then the "Flutter web app not built" page is served',
+        () async {
+          final response = await http.get(
+            Uri.parse('http://localhost:8082/app'),
+          );
+          expect(response.statusCode, equals(200));
+          expect(
+            response.body,
+            contains('<title>Flutter web app not built</title>'),
+          );
+          expect(
+            response.body,
+            isNot(
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            ),
+          );
+        },
+      );
+
+      group('Given the Flutter web app is built and the pod is restarted', () {
+        setUp(() async {
+          final flutterBuildProcess = await startProcess(
+            'serverpod',
+            ['run', 'flutter_build'],
+            workingDirectory: project.serverDir,
+          );
+          expect(await flutterBuildProcess.exitCode, 0);
+
+          startProjectProcess.kill();
+          startProjectProcess = await startProcess(
+            'dart',
+            ['bin/main.dart', '--apply-migrations'],
+            workingDirectory: project.serverDir,
+          );
+
+          // Wait for web server to be up
+          await Future.delayed(const Duration(seconds: 10));
+        });
+
+        test(
+          'when requesting the Flutter web app under /app, '
+          'then the web app is served successfully',
+          () async {
+            final response = await http.get(
+              Uri.parse('http://localhost:8082/app'),
+            );
+            expect(response.statusCode, equals(200));
+            expect(
+              response.body,
+              isNot(contains('<title>Flutter web app not built</title>')),
+            );
+            expect(
+              response.body,
+              contains(
+                '<meta name="description" content="A new Flutter project.">',
+              ),
+            );
+          },
+        );
+      });
     },
   );
 }
