@@ -1102,34 +1102,6 @@ void main() async {
           ? 'Windows does not support Docker builds in GitHub Actions.'
           : null,
     );
-  });
-
-  group('Given a created project', () {
-    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
-
-    late Process createProcess;
-
-    setUp(() async {
-      createProcess = await startServerpodCli(
-        [
-          'create',
-          projectName,
-          '-v',
-          '--no-analytics',
-          '--no-interactive',
-        ],
-        rootPath: rootPath,
-        workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
-      assert((await createProcess.exitCode) == 0);
-    });
-
-    tearDown(() {
-      createProcess.kill();
-    });
 
     test(
       'when running tests then example unit and integration tests passes',
@@ -1153,6 +1125,56 @@ void main() async {
       // embedded PG is verified on Windows CI.
       skip: Platform.isWindows
           ? 'Pending: verify embedded PostgreSQL on Windows CI'
+          : null,
+    );
+
+    test(
+      'when starting the server against its docker compose stack '
+      'then migrations apply and the server boots',
+      () async {
+        // Existing projects commonly run against the compose-hosted Postgres
+        // rather than embedded PostgreSQL; simulate one by dropping the
+        // generated `dataPath` so the config's compose coordinates
+        // (localhost:8090) take effect.
+        final configFile = File(
+          path.join(commandRoot, 'config', 'development.yaml'),
+        );
+        configFile.writeAsStringSync(
+          configFile.readAsStringSync().replaceFirst(
+            RegExp(r'\n\s*dataPath:[^\n]*'),
+            '',
+          ),
+        );
+
+        final docker = await startProcess(
+          'docker',
+          ['compose', 'up', '--detach', '--wait'],
+          workingDirectory: commandRoot,
+          ignorePlatform: true,
+        );
+        addTearDown(() async {
+          await runProcess(
+            'docker',
+            ['compose', 'down', '-v'],
+            workingDirectory: commandRoot,
+            skipBatExtentionOnWindows: true,
+          );
+        });
+        expect(
+          await docker.exitCode,
+          0,
+          reason: 'docker compose failed to start the database services.',
+        );
+
+        final startProjectProcess = await startProcess(
+          'dart',
+          ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
+          workingDirectory: commandRoot,
+        );
+        expect(await startProjectProcess.exitCode, 0);
+      },
+      skip: Platform.isWindows
+          ? 'Windows does not support Docker in GitHub Actions.'
           : null,
     );
   });
