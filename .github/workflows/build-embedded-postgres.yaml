@@ -45,7 +45,6 @@ jobs:
           - { runner: ubuntu-22.04-arm, os: linux,   arch: arm64, validated: false }
           - { runner: windows-2022,     os: windows, arch: x64,   validated: false }
     env:
-      PGBUILD: ${{ runner.temp }}/pgbuild
       BUNDLE_OS: ${{ matrix.os }}
       BUNDLE_ARCH: ${{ matrix.arch }}
     steps:
@@ -70,6 +69,7 @@ jobs:
       - name: Build + package + assert version (Unix)
         if: matrix.os != 'windows'
         env:
+          PGBUILD: ${{ runner.temp }}/pgbuild
           PG_VERSION: ${{ steps.pgver.outputs.value }}
         run: |
           bash packages/serverpod_embedded_postgres/tool/build_postgres/build-all.sh
@@ -108,6 +108,8 @@ jobs:
       - name: Smoke-test the bundle (Unix)
         if: matrix.os != 'windows'
         continue-on-error: ${{ !matrix.validated }}
+        env:
+          PGBUILD: ${{ runner.temp }}/pgbuild
         run: |
           d="$(mktemp -d)"
           tar -C "$d" -xf "$PGBUILD"/dist/serverpod-postgres-*.tar.xz
