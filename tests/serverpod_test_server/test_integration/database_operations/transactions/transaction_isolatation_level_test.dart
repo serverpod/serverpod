@@ -13,7 +13,8 @@ void main() async {
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -81,7 +82,8 @@ void main() async {
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
@@ -207,7 +209,8 @@ void main() async {
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
 
       tearDown(() async {
         await SimpleData.db.deleteWhere(
