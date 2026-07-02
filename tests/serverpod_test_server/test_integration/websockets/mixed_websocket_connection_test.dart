@@ -12,12 +12,12 @@ void main() {
       late WebSocket endpointWebSocketConnection;
 
       setUp(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         methodWebSocketConnection = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
         endpointWebSocketConnection = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.endpointWebSocketUrl(server)),
+          Uri.parse(server.endpointWebSocketUrl),
         );
       });
 

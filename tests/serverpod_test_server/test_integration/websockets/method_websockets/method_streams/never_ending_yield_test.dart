@@ -36,9 +36,9 @@ void main() {
         });
 
         server = IntegrationTestServer.create();
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
         var streamOpened = Completer<void>();
 

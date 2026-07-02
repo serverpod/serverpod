@@ -36,11 +36,11 @@ void main() {
 
         // Provision this suite's database before clearing health checks, a
         // pre-start write that would otherwise hit a not-yet-created database.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession();
         await server.clearHealthChecks(session);
-        await IntegrationTestServer.start(server);
-        client = Client(IntegrationTestServer.apiUrl(server));
+        await server.startWithDatabase();
+        client = Client(server.apiUrl);
 
         // Await the first health check to be performed.
         await Future.delayed(const Duration(seconds: 3));
@@ -123,10 +123,10 @@ void main() {
 
       // Provision this suite's database before clearing health checks, a
       // pre-start write that would otherwise hit a not-yet-created database.
-      await IntegrationTestServer.ensureDatabase(server);
+      await server.ensureDatabase();
       session = await server.createSession();
       await server.clearHealthChecks(session);
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
 
       // Await the first health check to be performed.
       await Future.delayed(const Duration(seconds: 3));

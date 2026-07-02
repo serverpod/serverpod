@@ -22,7 +22,7 @@ void main() {
           ),
         );
 
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -59,7 +59,7 @@ void main() {
       setUpAll(() async {
         serverpod = IntegrationTestServer.create();
 
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -102,7 +102,7 @@ void main() {
           ),
         );
 
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -139,7 +139,7 @@ void main() {
       setUpAll(() async {
         serverpod = IntegrationTestServer.create();
 
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -180,7 +180,7 @@ void main() {
           ),
         );
         serverpod.webServer.addRoute(RootRoute(), '/');
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -220,7 +220,7 @@ void main() {
         serverpod = IntegrationTestServer.create();
 
         serverpod.webServer.addRoute(RootRoute(), '/');
-        await IntegrationTestServer.start(serverpod);
+        await serverpod.startWithDatabase();
       });
 
       tearDownAll(() async {

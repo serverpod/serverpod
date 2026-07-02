@@ -15,10 +15,10 @@ void main() {
     // port must be stable: a fixed port below the OS ephemeral range, so it
     // does not collide with the concurrent port-0 suites.
     server = IntegrationTestServer.create(apiPort: 8099);
-    await IntegrationTestServer.start(server);
+    await server.startWithDatabase();
 
     client = c.Client(
-      IntegrationTestServer.apiUrl(server),
+      server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: TestAuthKeyManager(),
     );
@@ -52,7 +52,7 @@ void main() {
       await valueReceivedCompleter.future;
       await server.shutdown(exitProcess: false);
       await errorReceivedCompleter.future;
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
     }
 
     outStream = client.methodStreaming.neverEndingStreamWithDelay(100);

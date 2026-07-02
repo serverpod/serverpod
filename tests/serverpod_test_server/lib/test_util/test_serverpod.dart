@@ -10,7 +10,6 @@ import 'package:serverpod_database/embedded.dart'
     show startOrAttachEmbeddedPostgres;
 import 'package:serverpod_shared/serverpod_shared.dart' show PasswordManager;
 import 'package:serverpod_test/serverpod_test.dart' show TestDatabaseManager;
-import 'package:serverpod_test_client/serverpod_test_client.dart' as client;
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -99,45 +98,51 @@ class IntegrationTestServer extends TestServerpod {
 
     return server;
   }
+}
 
-  /// Starts [serverpod] for an integration test, first provisioning this
+/// Instance-style test helpers for servers built by
+/// [IntegrationTestServer.create]. URLs address the server by its BOUND port
+/// ([Server.port]), so they work with an ephemeral (0) configured port.
+extension IntegrationTestServerExtension on Serverpod {
+  /// Starts this server for an integration test, first provisioning the
   /// suite's own database (created + migrated) so the per-suite-named,
-  /// ephemeral-port server that [create] configures can connect to it.
-  static Future<void> start(Serverpod serverpod) async {
-    await ensureDatabase(serverpod);
-    await serverpod.start();
+  /// ephemeral-port server that [IntegrationTestServer.create] configures can
+  /// connect to it.
+  Future<void> startWithDatabase() async {
+    await ensureDatabase();
+    await start();
   }
 
   /// Provisions this suite's database (create + migrate) without starting the
-  /// server - for tests that need a manual `serverpod.start(...)` with options
-  /// [start] does not forward (e.g. `runInGuardedZone: false`). Idempotent per
-  /// isolate.
-  static Future<void> ensureDatabase(Serverpod serverpod) async {
+  /// server - for tests that need a manual `start(...)` with options
+  /// [startWithDatabase] does not forward (e.g. `runInGuardedZone: false`).
+  /// Idempotent per isolate.
+  Future<void> ensureDatabase() async {
     // Only a server pointed at the embedded per-suite database needs
     // provisioning. A server with no database, or one deliberately pointed at
     // an unreachable host (the diagnostics "missing database" suite), is left
     // alone so its own start() exercises the real connection path.
-    final database = serverpod.config.database;
+    final database = config.database;
     if (database is! PostgresDatabaseConfig || database.dataPath == null) {
       return;
     }
     await _IsolateTestDatabase.ensureReady(
-      runMode: serverpod.runMode,
-      serverDirectory: serverpod.serverDirectory.path,
-      migrate: () => _migrateDatabaseFor(serverpod),
+      runMode: runMode,
+      serverDirectory: serverDirectory.path,
+      migrate: _migrateDatabase,
     );
   }
 
-  /// Applies migrations to this suite's freshly-created database using a session
-  /// from [serverpod] (pointed at it via [_isolatedTestConfig]). Runs once per
-  /// isolate, via [_IsolateTestDatabase.ensureReady].
-  static Future<void> _migrateDatabaseFor(Serverpod serverpod) async {
-    final session = await serverpod.createSession();
+  /// Applies migrations to this suite's freshly-created database using a
+  /// session from this server (pointed at it via [_isolatedTestConfig]). Runs
+  /// once per isolate, via [_IsolateTestDatabase.ensureReady].
+  Future<void> _migrateDatabase() async {
+    final session = await createSession();
     try {
       await applyMigrationsAndVerify(
         session: session,
-        projectDirectory: serverpod.serverDirectory,
-        runMode: serverpod.runMode,
+        projectDirectory: serverDirectory,
+        runMode: runMode,
         applyMigrations: true,
         applyRepairMigration: false,
       );
@@ -146,32 +151,17 @@ class IntegrationTestServer extends TestServerpod {
     }
   }
 
-  /// A client for [serverpod]'s API server, addressed by its bound port
-  /// ([Server.port]) so it works with an ephemeral (0) configured port.
-  static client.Client clientFor(Serverpod serverpod) =>
-      client.Client(apiUrl(serverpod));
+  /// `http://localhost:<bound api port>/`.
+  String get apiUrl => 'http://localhost:${server.port}/';
 
-  /// `http://localhost:<bound api port>/` for [serverpod].
-  static String apiUrl(Serverpod serverpod) =>
-      'http://localhost:${serverpod.server.port}/';
+  /// `http://localhost:<bound web-server port>/`.
+  String get webUrl => 'http://localhost:${webServer.port}/';
 
-  /// `http://localhost:<bound web-server port>/` for [serverpod].
-  static String webUrl(Serverpod serverpod) =>
-      'http://localhost:${serverpod.webServer.port}/';
+  /// `ws://localhost:<bound api port>/websocket` (endpoint streaming).
+  String get endpointWebSocketUrl => 'ws://localhost:${server.port}/websocket';
 
-  /// `http://localhost:<bound insights/service port>/` for [serverpod].
-  static String serviceUrl(Serverpod serverpod) =>
-      'http://localhost:${serverpod.serviceServer.port}/';
-
-  /// `ws://localhost:<bound api port>/websocket` (endpoint streaming) for
-  /// [serverpod].
-  static String endpointWebSocketUrl(Serverpod serverpod) =>
-      'ws://localhost:${serverpod.server.port}/websocket';
-
-  /// `ws://localhost:<bound api port>/v1/websocket` (method streaming) for
-  /// [serverpod].
-  static String methodWebSocketUrl(Serverpod serverpod) =>
-      'ws://localhost:${serverpod.server.port}/v1/websocket';
+  /// `ws://localhost:<bound api port>/v1/websocket` (method streaming).
+  String get methodWebSocketUrl => 'ws://localhost:${server.port}/v1/websocket';
 }
 
 class TestServerpod {
@@ -289,7 +279,7 @@ ServerpodConfig _useIsolateDatabase(ServerpodConfig config) {
 /// Names a per-isolate database (like [_useIsolateDatabase]) and binds every
 /// user-facing server to an ephemeral port (0), so servers that bind sockets do
 /// not collide on a fixed port. Tests read the bound port via
-/// [IntegrationTestServer.apiUrl] etc.
+/// [IntegrationTestServerExtension.apiUrl] etc.
 ServerpodConfig _isolatedTestConfig(ServerpodConfig config, {int? apiPort}) {
   final database = config.database;
   final insightsServer = config.insightsServer;

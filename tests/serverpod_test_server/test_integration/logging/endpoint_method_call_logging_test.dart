@@ -21,8 +21,8 @@ void main() async {
   group('Database logger -', () {
     setUp(() async {
       server = IntegrationTestServer.create();
-      await IntegrationTestServer.start(server);
-      client = Client(IntegrationTestServer.apiUrl(server));
+      await server.startWithDatabase();
+      client = Client(server.apiUrl);
 
       session = await server.createSession(enableLogging: false);
       await LoggingUtil.clearAllLogs(session);
@@ -444,9 +444,9 @@ void main() async {
       );
 
       await IOOverrides.runZoned(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
       }, stdout: () => record);
-      client = Client(IntegrationTestServer.apiUrl(server));
+      client = Client(server.apiUrl);
     });
 
     tearDown(() async {
@@ -508,9 +508,9 @@ void main() async {
       );
 
       await IOOverrides.runZoned(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
       }, stdout: () => record);
-      client = Client(IntegrationTestServer.apiUrl(server));
+      client = Client(server.apiUrl);
     });
 
     tearDown(() async {

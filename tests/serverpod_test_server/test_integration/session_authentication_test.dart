@@ -32,7 +32,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -47,7 +47,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            IntegrationTestServer.apiUrl(server),
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -98,7 +98,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            IntegrationTestServer.apiUrl(server),
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -143,7 +143,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            IntegrationTestServer.apiUrl(server),
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -185,7 +185,7 @@ void main() {
         setUp(() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
-            IntegrationTestServer.apiUrl(server),
+            server.apiUrl,
             // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
@@ -219,7 +219,7 @@ void main() {
 
       setUp(() async {
         response = await http.get(
-          Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+          Uri.parse('${server.webUrl}session-test'),
           headers: {
             'Authorization': 'Bearer $validTestToken',
           },
@@ -245,7 +245,7 @@ void main() {
 
       setUp(() async {
         response = await http.get(
-          Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+          Uri.parse('${server.webUrl}session-test'),
           headers: {
             'Authorization': 'Bearer $invalidTestToken',
           },
@@ -270,7 +270,7 @@ void main() {
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
-          IntegrationTestServer.apiUrl(server),
+          server.apiUrl,
           // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
@@ -300,7 +300,7 @@ void main() {
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
-          IntegrationTestServer.apiUrl(server),
+          server.apiUrl,
           // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
@@ -331,7 +331,7 @@ void main() {
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
-          IntegrationTestServer.apiUrl(server),
+          server.apiUrl,
           // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
@@ -367,7 +367,7 @@ void main() {
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
-          IntegrationTestServer.apiUrl(server),
+          server.apiUrl,
           // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
@@ -410,7 +410,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -423,7 +423,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(IntegrationTestServer.apiUrl(server));
+          client = Client(server.apiUrl);
         });
 
         tearDown(() {
@@ -452,7 +452,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(IntegrationTestServer.apiUrl(server));
+          client = Client(server.apiUrl);
         });
 
         tearDown(() {
@@ -480,7 +480,7 @@ void main() {
       'when accessing web route then session.authenticated is null',
       () async {
         final response = await http.get(
-          Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+          Uri.parse('${server.webUrl}session-test'),
         );
 
         expect(response.statusCode, equals(200));
@@ -495,7 +495,7 @@ void main() {
     test(
       'when opening WebSocket connection then session.authenticated is null',
       () async {
-        final client = Client(IntegrationTestServer.apiUrl(server));
+        final client = Client(server.apiUrl);
 
         // ignore: deprecated_member_use
         await client.openStreamingConnection(

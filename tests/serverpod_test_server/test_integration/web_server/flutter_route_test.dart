@@ -36,7 +36,7 @@ void main() {
         FlutterRoute(webDir),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -45,7 +45,7 @@ void main() {
 
     test('when requesting file then WASM headers are present', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}main.dart.js'),
+        Uri.parse('${pod.webUrl}main.dart.js'),
       );
       expect(response.statusCode, 200);
       expect(response.headers['cross-origin-opener-policy'], 'same-origin');
@@ -54,7 +54,7 @@ void main() {
 
     test('when requesting index.html then served with WASM headers', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}index.html'),
+        Uri.parse('${pod.webUrl}index.html'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('Flutter App'));
@@ -66,7 +66,7 @@ void main() {
       'when requesting non-existent file then fallback with WASM headers',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}app/route/123'),
+          Uri.parse('${pod.webUrl}app/route/123'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('Flutter App'));
@@ -82,7 +82,7 @@ void main() {
       'when FlutterRoute uses default index then index.html is used',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}non-existent-route'),
+          Uri.parse('${pod.webUrl}non-existent-route'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('Flutter App'));
@@ -93,7 +93,7 @@ void main() {
       'when requesting / then index.html is used',
       () async {
         final response = await client.get(
-          Uri.parse(IntegrationTestServer.webUrl(pod)),
+          Uri.parse(pod.webUrl),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('Flutter App'));
@@ -113,7 +113,7 @@ void main() {
           FlutterRoute(webDir, enableWasmHeaders: false),
         );
 
-        await IntegrationTestServer.start(pod);
+        await pod.startWithDatabase();
       });
 
       tearDown(() async {
@@ -122,7 +122,7 @@ void main() {
 
       test('when requesting file, then WASM headers are not present', () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}main.dart.js'),
+          Uri.parse('${pod.webUrl}main.dart.js'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cross-origin-opener-policy'], isNull);
@@ -133,7 +133,7 @@ void main() {
         'when requesting non-existent file, then fallback does not have WASM headers',
         () async {
           final response = await client.get(
-            Uri.parse('${IntegrationTestServer.webUrl(pod)}app/route/123'),
+            Uri.parse('${pod.webUrl}app/route/123'),
           );
           expect(response.statusCode, 200);
           expect(response.body, contains('Flutter App'));
@@ -160,7 +160,7 @@ void main() {
         FlutterRoute(webDir, indexFile: customIndex),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -174,7 +174,7 @@ void main() {
       'when FlutterRoute uses custom index then custom file is used',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}non-existent-route'),
+          Uri.parse('${pod.webUrl}non-existent-route'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('Custom Flutter'));
@@ -202,7 +202,7 @@ void main() {
         ),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -211,7 +211,7 @@ void main() {
 
     test('when cache control is set then headers are applied', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}main.dart.js'),
+        Uri.parse('${pod.webUrl}main.dart.js'),
       );
       expect(response.statusCode, 200);
       expect(response.headers['cache-control'], contains('public'));
@@ -242,7 +242,7 @@ void main() {
         FlutterRoute(testWebDir),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -253,7 +253,7 @@ void main() {
       'when index.html is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}index.html'),
+          Uri.parse('${pod.webUrl}index.html'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));
@@ -266,7 +266,7 @@ void main() {
       () async {
         final response = await client.get(
           Uri.parse(
-            '${IntegrationTestServer.webUrl(pod)}flutter_service_worker.js',
+            '${pod.webUrl}flutter_service_worker.js',
           ),
         );
         expect(response.statusCode, 200);
@@ -279,7 +279,7 @@ void main() {
       'when flutter_bootstrap.js is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}flutter_bootstrap.js'),
+          Uri.parse('${pod.webUrl}flutter_bootstrap.js'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));
@@ -291,7 +291,7 @@ void main() {
       'when manifest.json is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}manifest.json'),
+          Uri.parse('${pod.webUrl}manifest.json'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));
@@ -303,7 +303,7 @@ void main() {
       'when version.json is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}version.json'),
+          Uri.parse('${pod.webUrl}version.json'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));
@@ -315,7 +315,7 @@ void main() {
       'when main.dart.js is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}main.dart.js'),
+          Uri.parse('${pod.webUrl}main.dart.js'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));
@@ -327,7 +327,7 @@ void main() {
       'when assets/image.png is requested then no-cache headers are present',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}assets/image.png'),
+          Uri.parse('${pod.webUrl}assets/image.png'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['cache-control'], contains('no-cache'));

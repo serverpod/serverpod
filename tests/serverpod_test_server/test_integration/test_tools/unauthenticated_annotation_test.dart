@@ -12,11 +12,11 @@ void main() {
 
   setUpAll(() async {
     server = IntegrationTestServer.create();
-    await IntegrationTestServer.start(server);
+    await server.startWithDatabase();
 
     authKeyManager = TestAuthKeyManager();
     client = Client(
-      IntegrationTestServer.apiUrl(server),
+      server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );

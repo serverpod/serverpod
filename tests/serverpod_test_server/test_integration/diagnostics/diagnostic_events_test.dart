@@ -132,8 +132,8 @@ void main() {
           ),
         );
         pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
-        await IntegrationTestServer.start(pod);
-        client = Client(IntegrationTestServer.apiUrl(pod));
+        await pod.startWithDatabase();
+        client = Client(pod.apiUrl);
       });
 
       tearDown(() async {
@@ -172,8 +172,8 @@ void main() {
           diagnosticEventHandlers: [exceptionHandler],
         ),
       );
-      await IntegrationTestServer.start(pod);
-      client = Client(IntegrationTestServer.apiUrl(pod));
+      await pod.startWithDatabase();
+      client = Client(pod.apiUrl);
     });
 
     tearDown(() async {
@@ -202,7 +202,7 @@ void main() {
           contains('remoteInfo'),
           containsPair(
             'uri',
-            '${IntegrationTestServer.apiUrl(pod)}exceptionTest/throwNormalException',
+            '${pod.apiUrl}exceptionTest/throwNormalException',
           ),
           containsPair('endpoint', 'exceptionTest'),
           containsPair('methodName', 'throwNormalException'),
@@ -267,7 +267,7 @@ void main() {
     test('when a client calls method url with malformed json '
         'then the diagnostic event handler gets called', () async {
       var response = http.post(
-        Uri.parse('${IntegrationTestServer.apiUrl(pod)}simple/hello'),
+        Uri.parse('${pod.apiUrl}simple/hello'),
         body: '{"name": [42]}',
       );
       await response;
@@ -292,7 +292,7 @@ void main() {
           ),
         );
         pod.webServer.addRoute(ExceptionRoute(), '/exception');
-        await IntegrationTestServer.start(pod);
+        await pod.startWithDatabase();
       });
 
       tearDown(() async {
@@ -303,7 +303,7 @@ void main() {
       test('when a client calls web url with malformed json '
           'then the diagnostic event handler gets called', () async {
         var response = http.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}exception'),
+          Uri.parse('${pod.webUrl}exception'),
         );
         await response;
 
@@ -347,7 +347,7 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
-        await IntegrationTestServer.ensureDatabase(pod);
+        await pod.ensureDatabase();
         final result = pod
             .start(runInGuardedZone: false)
             .timeout(const Duration(seconds: 2));

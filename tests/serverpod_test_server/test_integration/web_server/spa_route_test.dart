@@ -38,7 +38,7 @@ void main() {
         SpaRoute(webDir, fallback: indexFile),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -47,7 +47,7 @@ void main() {
 
     test('when requesting existing file then file is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}app.js'),
+        Uri.parse('${pod.webUrl}app.js'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('console.log'));
@@ -55,7 +55,7 @@ void main() {
 
     test('when requesting index.html then index is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}index.html'),
+        Uri.parse('${pod.webUrl}index.html'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('SPA Index'));
@@ -65,7 +65,7 @@ void main() {
       'when requesting non-existent file then fallback is served',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}users/123'),
+          Uri.parse('${pod.webUrl}users/123'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -77,7 +77,7 @@ void main() {
       () async {
         final response = await client.get(
           Uri.parse(
-            '${IntegrationTestServer.webUrl(pod)}app/users/profile/settings',
+            '${pod.webUrl}app/users/profile/settings',
           ),
         );
         expect(response.statusCode, 200);
@@ -89,7 +89,7 @@ void main() {
       'when requesting / then fallback is served',
       () async {
         final response = await client.get(
-          Uri.parse(IntegrationTestServer.webUrl(pod)),
+          Uri.parse(pod.webUrl),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -111,7 +111,7 @@ void main() {
 
       pod.webServer.addRoute(SpaRoute(webDir, fallback: customFallback));
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -123,7 +123,7 @@ void main() {
 
     test('when fallback is triggered then custom fallback is used', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}non-existent'),
+        Uri.parse('${pod.webUrl}non-existent'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('Custom Fallback'));
@@ -138,7 +138,7 @@ void main() {
 
       pod.webServer.addRoute(SpaRoute(webDir, fallback: indexFile), '/app');
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -147,7 +147,7 @@ void main() {
 
     test('when requesting existing file then file is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}app/app.js'),
+        Uri.parse('${pod.webUrl}app/app.js'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('console.log'));
@@ -157,7 +157,7 @@ void main() {
       'when requesting non-existent nested path then fallback is served',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}app/nested/deep/path'),
+          Uri.parse('${pod.webUrl}app/nested/deep/path'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -168,7 +168,7 @@ void main() {
       'when requesting existing file without prefix then 404 is returned',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}app.js'),
+          Uri.parse('${pod.webUrl}app.js'),
         );
         expect(response.statusCode, 404);
       },
@@ -197,7 +197,7 @@ void main() {
 
       pod.webServer.addRoute(SpaRoute(webDir, fallback: indexFile));
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -206,7 +206,7 @@ void main() {
 
     test('when requesting admin path then admin fallback is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}admin/users'),
+        Uri.parse('${pod.webUrl}admin/users'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('Admin SPA'));
@@ -216,7 +216,7 @@ void main() {
       'when requesting public path then public fallback is served',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}users'),
+          Uri.parse('${pod.webUrl}users'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -238,7 +238,7 @@ void main() {
         ),
       );
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -247,7 +247,7 @@ void main() {
 
     test('when cache control is set then headers are applied', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}app.js'),
+        Uri.parse('${pod.webUrl}app.js'),
       );
       expect(response.statusCode, 200);
       expect(response.headers['cache-control'], contains('public'));

@@ -27,9 +27,9 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       client = Client(
-        IntegrationTestServer.apiUrl(server),
+        server.apiUrl,
         // ignore: deprecated_member_use
         authenticationKeyManager: authKeyManager,
       );
@@ -118,9 +118,9 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       client = Client(
-        IntegrationTestServer.apiUrl(server),
+        server.apiUrl,
         // ignore: deprecated_member_use
         authenticationKeyManager: incorrectAuthKeyManager,
       );
@@ -166,9 +166,9 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       client = Client(
-        IntegrationTestServer.apiUrl(server),
+        server.apiUrl,
         // ignore: deprecated_member_use
         authenticationKeyManager: authKeyManager,
       );

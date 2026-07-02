@@ -27,9 +27,9 @@ void main() {
     setUp(() async {
       testInProgress = true;
       server = IntegrationTestServer.create();
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+        Uri.parse(server.methodWebSocketUrl),
       );
 
       closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
@@ -147,9 +147,9 @@ void main() {
       setUp(() async {
         testInProgress = true;
         server = IntegrationTestServer.create();
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
@@ -268,9 +268,9 @@ void main() {
       setUp(() async {
         testInProgress = true;
         server = IntegrationTestServer.create();
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();

@@ -23,7 +23,7 @@ void main() {
   group('Given a Serverpod instance with no database configured', () {
     // A minimal server with no database: starting it must not create a pool, so
     // the encoder stays unavailable. Start it directly rather than via
-    // IntegrationTestServer.start, which would provision a database.
+    // startWithDatabase, which would provision a database.
     late final pod = Serverpod(
       [],
       Protocol(),
@@ -81,7 +81,7 @@ void main() {
     );
 
     setUp(() async {
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {

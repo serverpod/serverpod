@@ -31,7 +31,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -61,7 +61,7 @@ void main() {
       test(
         'when starting Serverpod, then no errors are logged',
         () async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -91,7 +91,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -120,7 +120,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
         });
 
         test(
@@ -182,7 +182,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -211,7 +211,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
         });
 
         test(
@@ -275,7 +275,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -304,7 +304,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
         });
 
         test(
@@ -364,7 +364,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -394,7 +394,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not logged',
         () async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -428,7 +428,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -458,7 +458,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not deleted from the database',
         () async {
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
           final entries = await FutureCallEntry.db.find(session);
           expect(entries, hasLength(futureCallsCount));
         },
@@ -484,7 +484,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -522,7 +522,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();
@@ -551,7 +551,7 @@ void main() {
         // Provision this suite's database before the pre-start writes below;
         // `start()` (called inside the test) would otherwise be the first to
         // create it, so these inserts would hit a database that doesn't exist.
-        await IntegrationTestServer.ensureDatabase(server);
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -589,7 +589,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await IntegrationTestServer.start(server);
+          await server.startWithDatabase();
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();

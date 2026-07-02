@@ -63,7 +63,7 @@ void main() {
 
         server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
       });
 
       tearDownAll(() async {
@@ -81,7 +81,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(IntegrationTestServer.apiUrl(server))
+          client = Client(server.apiUrl)
             ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
         });
 
@@ -102,7 +102,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(IntegrationTestServer.apiUrl(server))
+          client = Client(server.apiUrl)
             ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
         });
 
@@ -125,7 +125,7 @@ void main() {
         late Client client;
 
         setUp(() {
-          client = Client(IntegrationTestServer.apiUrl(server))
+          client = Client(server.apiUrl)
             ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
         });
 
@@ -149,7 +149,7 @@ void main() {
           'then request should fail with 400',
           () async {
             final response = await http.get(
-              Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+              Uri.parse('${server.webUrl}session-test'),
               headers: {
                 'Authorization': _testToken,
               },
@@ -196,7 +196,7 @@ void main() {
 
       server.webServer.addRoute(SessionTestRoute(), '/session-test');
 
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
     });
 
     tearDownAll(() async {
@@ -207,7 +207,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(IntegrationTestServer.apiUrl(server))
+        client = Client(server.apiUrl)
           ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
       });
 
@@ -228,7 +228,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(IntegrationTestServer.apiUrl(server))
+        client = Client(server.apiUrl)
           ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
       });
 
@@ -252,7 +252,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(IntegrationTestServer.apiUrl(server))
+        client = Client(server.apiUrl)
           ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
       });
 
@@ -273,7 +273,7 @@ void main() {
       late Client client;
 
       setUp(() {
-        client = Client(IntegrationTestServer.apiUrl(server))
+        client = Client(server.apiUrl)
           ..authKeyProvider = _BasicTokenAuthProvider(_testToken);
       });
 
@@ -295,7 +295,7 @@ void main() {
         'then session should be authenticated',
         () async {
           final response = await http.get(
-            Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+            Uri.parse('${server.webUrl}session-test'),
             headers: {
               'Authorization': _testToken,
             },
@@ -314,7 +314,7 @@ void main() {
         'then session should be authenticated',
         () async {
           final response = await http.get(
-            Uri.parse('${IntegrationTestServer.webUrl(server)}session-test'),
+            Uri.parse('${server.webUrl}session-test'),
             headers: {
               'Authorization': 'Bearer $_testToken',
             },
