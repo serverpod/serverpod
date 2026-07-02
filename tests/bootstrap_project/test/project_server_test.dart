@@ -791,14 +791,12 @@ void main() async {
         );
         assert((await createProcess.exitCode) == 0);
 
-        startProjectProcess = await startProcess(
+        startProjectProcess = await startProcessAndWaitForKeywords(
           'dart',
           ['bin/main.dart', '--apply-migrations'],
           workingDirectory: commandRoot,
+          keywords: ['Webserver listening on'],
         );
-
-        // Wait for web server to be up
-        await Future.delayed(const Duration(seconds: 10));
       });
 
       tearDownAll(() async {
