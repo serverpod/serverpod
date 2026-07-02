@@ -2,9 +2,9 @@
 # Assemble a relocatable bundle: postgres install tree + the shared geo deps +
 # PROJ data, named serverpod-postgres-<bom>-<os>-<arch>.tar.xz (+ .sha256).
 #
-# Per-OS layout: macOS rewrites install_names/rpaths (verified); Windows drops
-# the geo DLLs beside postgres.exe (no rpath); Linux ($ORIGIN rpath) is TODO.
-# Windows + Linux are UNVALIDATED - pending CI.
+# Per-OS layout: macOS rewrites install_names/rpaths; Windows drops the geo
+# DLLs beside postgres.exe (bin/ is on the default DLL search path, no rpath
+# needed); Linux rewrites every ELF's rpath to $ORIGIN-relative.
 set -euo pipefail
 B="${PGBUILD:-$HOME/pgzig}"; PREFIX="$B/out/pg"; DEPS="$B/deps"; OUT="$B/dist"
 VER="${PG_VERSION:-16.13.0}"
@@ -64,8 +64,16 @@ MINGW*|MSYS*|CYGWIN*)
   # mangled by make/cmake at link time.
   cp -P "$DEPS"/lib/libgeos_c.so* "$DEPS"/lib/libgeos.so* "$DEPS"/lib/libproj.so* "$STAGE/lib/" 2>/dev/null || true
   command -v patchelf >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq patchelf; }
-  # geo libs in lib/ resolve their siblings via $ORIGIN
-  for f in "$STAGE"/lib/libgeos*.so* "$STAGE"/lib/libproj*.so*; do
+  # bin/ executables reach postgres's own libs (libpq) + geo deps in lib/.
+  # Without this they keep configure's absolute build-tree rpath, which only
+  # resolves on the build host (or is masked by a system libpq elsewhere).
+  for f in "$STAGE"/bin/*; do
+    if [ -f "$f" ] && [ ! -L "$f" ] && file "$f" | grep -q ELF; then
+      patchelf --set-rpath '$ORIGIN/../lib' "$f"
+    fi
+  done
+  # shared libs in lib/ (libpq, libgeos, libproj, ...) resolve siblings via $ORIGIN
+  for f in "$STAGE"/lib/*.so*; do
     if [ -f "$f" ] && [ ! -L "$f" ]; then patchelf --set-rpath '$ORIGIN' "$f"; fi
   done
   # extensions in lib/postgresql/ reach the geo deps + postgres libs in lib/

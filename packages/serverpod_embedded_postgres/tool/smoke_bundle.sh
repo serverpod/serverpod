@@ -22,6 +22,32 @@ BIN="$BUNDLE/bin"
 # LD_LIBRARY_PATH / DYLD_* needed; if that is broken, CREATE EXTENSION fails here.
 export PROJ_LIB="$BUNDLE/share/proj"
 
+# Relocatability gate (Linux): a run-the-server check alone can lie - a host
+# with system libpq/libgeos (GitHub runners have both) resolves what a missing
+# $ORIGIN rpath doesn't, and on the build host the baked absolute build-tree
+# rpath still exists. Assert every dep resolves AND the bundled ones resolve
+# into THIS bundle.
+if [ "$(uname -s)" = Linux ]; then
+  echo "smoke: relocatability (ldd)"
+  check_reloc() {
+    local out
+    out="$(ldd "$1")"
+    if echo "$out" | grep -q 'not found'; then
+      echo "smoke: $1 has unresolved libs:" >&2
+      echo "$out" | grep 'not found' >&2
+      return 1
+    fi
+    if echo "$out" | grep -E 'libpq|libgeos|libproj' | grep -qv "$BUNDLE"; then
+      echo "smoke: $1 resolves bundled libs outside the bundle:" >&2
+      echo "$out" | grep -E 'libpq|libgeos|libproj' | grep -v "$BUNDLE" >&2
+      return 1
+    fi
+  }
+  check_reloc "$BIN/initdb"
+  check_reloc "$BIN/postgres"
+  check_reloc "$BUNDLE/lib/postgresql/postgis-3.so"
+fi
+
 WORK="$(mktemp -d)"
 DATA="$WORK/data"
 # A long temp path overflows the ~104-char unix-socket sun_path; keep it short.
