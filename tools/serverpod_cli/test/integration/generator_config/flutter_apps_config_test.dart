@@ -507,6 +507,24 @@ serverpod:
       expect(formatFlutterAppDisplayName('adminPortal'), 'AdminPortal app');
     },
   );
+
+  test(
+    'Given a flutter app id that already ends with "_app", '
+    'when formatFlutterAppDisplayName is called '
+    'then " app" is not appended again',
+    () {
+      expect(formatFlutterAppDisplayName('todo_app'), 'Todo app');
+    },
+  );
+
+  test(
+    'Given a flutter app id that already ends with "app", '
+    'when formatFlutterAppDisplayName is called '
+    'then " app" is not appended again',
+    () {
+      expect(formatFlutterAppDisplayName('todoapp'), 'Todoapp');
+    },
+  );
 }
 
 d.DirectoryDescriptor _createProject({

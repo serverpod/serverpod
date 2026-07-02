@@ -236,13 +236,20 @@ const _reservedFlutterAppKeys = {
 /// Formats an app id into a human-readable display name for new projects.
 ///
 /// Capitalizes the first letter, replaces underscores with spaces, and appends
-/// ` app` — e.g. `todo` → `Todo app`, `my_project` → `My project app`.
+/// ` app` when the id does not already end with `app` — e.g. `todo` → `Todo app`,
+/// `my_project` → `My project app`, `todo_app` → `Todo app`.
 String formatFlutterAppDisplayName(String appId) {
   if (appId.isEmpty) return ' app';
 
   final withSpaces = appId.replaceAll('_', ' ');
   final capitalized =
       '${withSpaces[0].toUpperCase()}${withSpaces.substring(1)}';
+
+  final lower = capitalized.toLowerCase();
+  if (lower.endsWith(' app') || lower.endsWith('app')) {
+    return capitalized;
+  }
+
   return '$capitalized app';
 }
 
