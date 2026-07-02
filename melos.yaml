@@ -78,7 +78,7 @@ scripts:
       set -e
       dart test test_integration -x integration --reporter=failures-only
       # Warm libsqlite3's native-asset build hooks so start_timeout_test's spawned
-      # `dart test` does not recompile them inside its 4s start budget.
+      # dart test does not recompile them inside its 4s start budget.
       dart test test_integration/test_tools/start_timeout_test/test_that_will_not_timeout.dart --name "__warmup_no_match__" > /dev/null 2>&1 || true
       INTEGRATION_TEST_SERVERPOD_MODE=test dart test test_integration -t integration --reporter=failures-only
     exec:
