@@ -306,7 +306,8 @@ bool _isReady(Supervisor supervisor) {
 bool _logTailIndicatesLockBusy(List<String> logTail) {
   for (var line in logTail) {
     var lower = line.toLowerCase();
-    if (lower.contains('postmaster.pid') && lower.contains('already exists')) {
+    if (lower.contains('already exists') &&
+        (lower.contains('postmaster.pid') || lower.contains('.s.pgsql'))) {
       return true;
     }
   }

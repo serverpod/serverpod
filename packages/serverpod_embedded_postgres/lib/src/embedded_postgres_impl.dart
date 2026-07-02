@@ -254,7 +254,14 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       File(p.join(runDir.path, '.s.PGSQL.$_pgDefaultPort.lock')),
     );
     if (socketLockPid != null && isProcessAlive(socketLockPid)) {
-      await waitForPidExit(socketLockPid, options.startTimeout);
+      var exited = await waitForPidExit(socketLockPid, options.startTimeout);
+      if (!exited) {
+        throw PostmasterLockBusyException(
+          '.s.PGSQL.$_pgDefaultPort.lock in ${runDir.path} is still held by '
+          'live PID $socketLockPid after ${options.startTimeout.inSeconds}s',
+          existingPid: socketLockPid,
+        );
+      }
     }
 
     var supervisor = await _startSupervisorWithPortRetry(
