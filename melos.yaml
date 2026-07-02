@@ -76,6 +76,8 @@ scripts:
     description: serverpod_test_server integration tests (real-server-boot + withServerpod).
     run: |
       set -e
+      # Pre-warm: launch the embedded postmaster and apply migrations once
+      dart run bin/main.dart -m production -r maintenance --apply-migrations > /dev/null
       dart test test_integration -x integration --reporter=failures-only
       # Warm libsqlite3's native-asset build hooks so start_timeout_test's spawned
       # dart test does not recompile them inside its 4s start budget.
