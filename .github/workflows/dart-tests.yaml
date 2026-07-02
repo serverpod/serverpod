@@ -25,15 +25,7 @@ concurrency:
 
 env:
   SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
-  # Stage/restore the embedded PG bundle in a fixed, workspace-relative dir so
-  # seed_embedded_pg can hand it to the test jobs as an artifact (reliable
-  # within a run, unlike a cross-job actions/cache restore). Only the embedded
-  # PG jobs read it; other jobs ignore it.
   SERVERPOD_PG_CACHE_DIR: ${{ github.workspace }}/.pg-cache
-  # TEMPORARY diagnostic: mirror the embedded postmaster log to stderr so the
-  # macOS auth-suite crash (recovery-mode cascade) reveals its cause (signal/
-  # PANIC/OOM) inline in CI. Remove once understood.
-  SERVERPOD_PG_LOG_STDERR: "1"
 
 jobs:
   dart_format:
@@ -256,24 +248,14 @@ jobs:
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
-  # Build the bundle ONCE per platform, then hand it to the embedded PG test
-  # jobs below (which `needs:` this) as an artifact - so a cold cache doesn't
-  # make every parallel suite-cell rebuild the same bundle. A cross-run
-  # actions/cache (keyed on the build-recipe hash) skips the rebuild when the
-  # recipe is unchanged; force a fresh build by deleting that cache, e.g.:
-  #   gh cache delete pg-bundle-Linux-<hash> --repo <owner>/<repo>
+  # Build the bundle ONCE per platform, and only if needed.
+  # Then hand it to the embedded PG test jobs below (which `needs:` this) as an artifact
   seed_embedded_pg:
     name: Seed embedded PG bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # Build every published <os>-<arch> (what ServerpodBundleArtifact serves via
-        # Abi.current()): x64 + arm64 on Linux/macOS, x64 on Windows. macos-15-intel
-        # is the Intel image, macos-15 Apple Silicon - both Apple clang, so the
-        # arm64-backend INSERT segfault that once kept arm64 out (zig-only; macOS no
-        # longer uses zig) no longer applies. runner.arch is in the cache key/artifact,
-        # so each arch builds, caches, and uploads independently.
         os:
           - ubuntu-latest
           - ubuntu-24.04-arm
@@ -282,34 +264,22 @@ jobs:
           - windows-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      # Cross-run cache FIRST. On a hit (recipe hash unchanged) this is the fast
-      # path: every step below - the toolchain installs AND the build - is gated
-      # on a cache MISS, so a warm run just restores .pg-cache and packs/uploads
-      # it (no Dart, no zig, no MSYS2/brew, no build). Path = SERVERPOD_PG_CACHE_DIR.
       - name: Cache embedded PostgreSQL bundle (cross-run)
         id: pgcache
-        # restore-ONLY; the matching save below runs only after a fresh, complete
-        # build. A plain actions/cache (restore+save) auto-saves at job end even
-        # when the build FAILED - and the job is green via continue-on-error on
-        # Windows - which poisoned this cache with an empty 183-byte .pg-cache.
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: .pg-cache
-          # No restore-keys: a build artifact must match the recipe EXACTLY. A
-          # prefix match would restore a stale bundle and - since ensure()
-          # short-circuits on the existing meta - skip the rebuild, shipping a
-          # bundle for the wrong recipe.
+          # No restore-keys! A build artifact must match the recipe EXACTLY.
           key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         if: steps.pgcache.outputs.cache-hit != 'true'
         with:
           sdk: stable
-      # Per-OS build toolchain (zig / clang+brew / MSYS2), shared with the
-      # release workflow via a composite action so the two can't drift.
       - name: Set up build toolchain
         if: steps.pgcache.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-pg-build-toolchain
-      # Force build (prebuilt bundle not published); no-op on a cache hit.
+      # Force build (prebuilt bundle not published), so a PG version bump or
+      # recipe change is tested before release. No-op on a cache hit.
       - name: Build + seed bundle (Unix)
         if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
         env:
@@ -319,11 +289,6 @@ jobs:
         run: |
           dart pub get
           dart run serverpod_embedded_postgres:prefetch --version 16.13.0
-      # Windows builds with native MSYS2 mingw-w64 gcc (the wrapper execs gcc
-      # there; zig's lld can't satisfy postgres's win32 build). Still being
-      # brought up, so continue-on-error keeps a Windows build failure from
-      # blocking the macOS/Linux test jobs (which `needs:` this); the Windows
-      # test job then fails its artifact download until the build is green.
       - name: Build + seed bundle (Windows / MSYS2)
         id: build_win
         if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
@@ -331,10 +296,9 @@ jobs:
         shell: msys2 {0}
         env:
           SERVERPOD_PG_SOURCE: build
-          # Some source tarballs (e.g. json-c's test fixtures) carry symlinks;
-          # MSYS2 tar can't create them on Windows by default and aborts
-          # extraction. Have the MSYS2 runtime make real (native) symlinks -
-          # GH runners are privileged enough. Inherited by the dart->bash build.
+          # Some source tarballs (fx json-c) carry symlinks.
+          # MSYS2 tar can't create them by default and aborts extraction.
+          # Have the MSYS2 runtime make real (native) symlinks.
           MSYS: winsymlinks:nativestrict
         timeout-minutes: 90
         working-directory: packages/serverpod_embedded_postgres
@@ -360,27 +324,8 @@ jobs:
             find /tmp -path '*serverpod-pg-build-*/deps/lib/*' 2>/dev/null | sed 's#.*/deps/lib/#deps/lib/#' | sort
             exit "$rc"
           fi
-      # Hand the freshly-built bundle to the test jobs via an artifact (reliable
-      # within a run; a cross-job actions/cache restore often can't see a cache a
-      # sibling job just saved). Pack into a tar FIRST: GitHub artifacts are zips
-      # that drop the Unix executable bit (initdb/postgres -> "Permission denied")
-      # and mangle the geo-lib symlinks; tar preserves both.
-      #
-      # CRITICAL: only pack/upload when the build actually succeeded. The Windows
-      # build is continue-on-error (so its failure can't block macOS/Linux), but
-      # a failed build leaves .pg-cache empty - and `tar .` of an empty dir still
-      # makes a valid tiny .tgz that `if-no-files-found` won't catch, so an empty
-      # "bundle" would upload and make the Windows test job pass WITHOUT a real
-      # PG. Gating on the build step's `outcome` (failure even when masked by
-      # continue-on-error) means a broken build uploads nothing -> the Windows
-      # test job's download fails -> it correctly goes red.
-      # Save the cross-run cache ONLY after a fresh, complete build (cache miss +
-      # the build succeeded). Never save a failed/empty build - that's what
-      # poisoned the Windows cache. continue-on-error: the cache is an
-      # optimization, and a "key already exists" race shouldn't fail the seed.
       - name: Save embedded PostgreSQL bundle cache
         if: steps.pgcache.outputs.cache-hit != 'true' && (matrix.os != 'windows-latest' || steps.build_win.outcome == 'success')
-        continue-on-error: true
         uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: .pg-cache
@@ -456,11 +401,7 @@ jobs:
           - name: auth_migration
             scope: serverpod_auth_migration_server
             run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
-          # auth_idp is the largest suite here (~44 integration files), the slow
-          # outlier. Split it into 3 whole-file shards (each fans across the os
-          # list like any suite) via SHARD_INDEX/TOTAL_SHARDS. `-x email` keeps the
-          # live-service email integration test out of this DB-focused suite; it
-          # runs only in email_integration_tests.
+          # auth_idp is the largest suite here (~44 integration files), so we shard it
           - name: auth_idp (1/3)
             scope: serverpod_auth_idp_server
             shard-index: 0
@@ -549,15 +490,12 @@ jobs:
       - name: Resolve dependencies
         run: dart pub get
         working-directory: packages/serverpod_embedded_postgres
-      # windows-latest runs as runneradmin (elevated), but Postgres refuses
-      # to start under an Administrators-group token. Strip admin via
-      # PsExec -l. PsExec -l drops the inner process's stdout in GHA (exit code
-      # propagates fine), so dart test redirects to a file inside run-test.cmd
-      # and we type that file from the outer step.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install pstools --no-progress -y --limit-output
       - name: Prep run script (Windows)
+        # Postgres refuses to run with Administrators-group token. Strip admin via PsExec -l.
+        # Do weird tricks to recover stdout/stderr.
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
@@ -583,10 +521,6 @@ jobs:
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
 
-  # One CI job per Dart-only package (mirrors `melos test_unit`'s package set),
-  # so a failure points at the exact package in the Actions UI. serverpod_cli is
-  # ~half of all unit tests (too slow for a single job) and runs sharded in
-  # cli_unit_tests below.
   unit_io_tests:
     name: Unit tests IO (${{ matrix.project }}, ${{ matrix.os }}, ${{ matrix.sdk }})
     runs-on: ${{ matrix.os }}
@@ -652,11 +586,6 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
-      # serverpod_cli's unit suite is ~half of all unit tests (~27min run whole),
-      # so split it across shards by whole FILE. (dart test --total-shards
-      # compiles all ~378 test files on every shard, which exhausts the runner
-      # disk; this compiles only this shard's slice.) Keep the divisor in sync
-      # with the shard matrix size.
       - name: Run unit tests
         shell: bash
         working-directory: tools/serverpod_cli
@@ -749,8 +678,7 @@ jobs:
         run: dart pub get
       - name: Bootstrap
         run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # The e2e client's URLs (test_util/config.dart) hardcode host
-      # `serverpod_test_server` (the former compose service name); alias to localhost.
+      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       - name: Run e2e IO tests
@@ -779,9 +707,7 @@ jobs:
         run: dart pub get
       - name: Bootstrap
         run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # The e2e client's URLs (test_util/config.dart) hardcode host
-      # `serverpod_test_server` (the former compose service name); alias it so both
-      # the test harness and the browser reach the host server.
+      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       # Firefox for the browser run; xvfb provides the virtual display (xvfb-run).
@@ -868,12 +794,9 @@ jobs:
         run: dart pub global activate melos
       - name: Bootstrap
         run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # serverpod_test_server's config uses redis host 'redis' (Docker DNS in the
-      # container suites, /etc/hosts on dev machines); alias it to localhost and
-      # host a Redis whose password matches config/passwords.yaml. The run script
-      # then detects redis at redis:6379 and includes the redis-tagged tests.
       - name: Start Redis
         run: |
+          # serverpod_test_server's config uses redis host 'redis'
           echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
           sudo apt-get update
           sudo apt-get install -y redis-server
@@ -899,17 +822,14 @@ jobs:
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
-      # withServerpod provisions a per-group embedded database (no up-front
-      # apply-migrations); matches the other *_integration_embedded suites.
       - uses: ./.github/actions/use-embedded-pg
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
         run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
-      # The concurrent (withServerpod) suite's auth tests use the redis-backed
-      # cache (config redis host 'redis'); alias it to localhost and host a Redis.
       - name: Start Redis
         run: |
+          # serverpod_test_server's config uses redis host 'redis'
           echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
           sudo apt-get update
           sudo apt-get install -y redis-server
@@ -939,8 +859,7 @@ jobs:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
     needs: seed_embedded_pg
-    # Land every pub get (including the scaffolds' server/client/flutter ones) in
-    # one workspace dir so it caches consistently across Windows and Ubuntu.
+    # Land every pub get in one workspace dir so it caches consistently across Windows and Ubuntu.
     env:
       PUB_CACHE: ${{ github.workspace }}/.pub-cache
     strategy:
@@ -955,10 +874,6 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
-      # Warm PUB_CACHE so the scaffolds' repeated `pub get`s stop re-downloading
-      # serverpod + Flutter deps (the bootstrap bottleneck). Keyed on os + Flutter
-      # + the template/bootstrap pubspecs; the restore-keys prefix picks up the
-      # latest cache when the exact key misses.
       - name: Cache PUB_CACHE
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
@@ -988,10 +903,7 @@ jobs:
       # Redis is disabled on the server (SERVERPOD_REDIS_ENABLED=false in the run
       # script), so unlike the integration suite no Redis is needed.
       - uses: ./.github/actions/use-embedded-pg
-      # dart pub get pulls the root's pinned melos; dart run melos avoids relying
-      # on a global install being on PATH.
-      - name: Get root workspace deps (melos)
-        run: dart pub get
+      - run: dart pub get
       - name: Bootstrap
         run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       - uses: ./.github/actions/use-cli-bundle
