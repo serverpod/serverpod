@@ -22,11 +22,11 @@ void main() {
 
   group(
     'Given a TemplateContext with website enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           website: true,
         ),
       );
@@ -84,23 +84,29 @@ void main() {
       );
 
       test(
-        'then the build Flutter app page uses a non-WASM build by default',
+        'then the build Flutter app page instructs users to run serverpod run flutter_build',
         () async {
           final buildFlutterAppPage = File(
             p.join(project.serverDir, 'web', 'pages', 'build_flutter_app.html'),
           );
           final content = await buildFlutterAppPage.readAsString();
 
+          expect(content, contains('Flutter web app not built'));
           expect(
             content,
             contains(
-              'flutter build web --base-href /app/ '
-              '-o ../${project.name}_server/web/app',
+              'The production version of your Flutter web app has not yet been '
+              'built. The app is automatically built before deploying to '
+              'Serverpod Cloud. If you want to manually build it, run the '
+              'following command:',
             ),
           );
+          expect(content, contains('serverpod run flutter_build'));
           expect(
             content,
-            isNot(contains('flutter build web --base-href /app/ --wasm')),
+            contains(
+              'After the app has been built, restart the server and revisit this page.',
+            ),
           );
         },
       );
@@ -153,13 +159,37 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp enabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           webapp: true,
         ),
+      );
+      late Directory webDir;
+      setUpAll(() {
+        webDir = Directory(p.join(project.serverDir, 'web'));
+      });
+
+      test(
+        'then the server contains a web directory',
+        () async {
+          await expectLater(webDir.exists(), completion(true));
+        },
+      );
+
+      test(
+        'then the server web directory contains web templates',
+        () async {
+          final templatesDir = Directory(p.join(webDir.path, 'templates'));
+          await expectLater(templatesDir.exists(), completion(true));
+
+          final html = File(
+            p.join(templatesDir.path, 'built_with_serverpod.html'),
+          );
+          await expectLater(html.exists(), completion(true));
+        },
       );
 
       test(
@@ -181,10 +211,36 @@ void main() {
             p.join(project.serverDir, 'lib', 'server.dart'),
           );
           final content = await serverFile.readAsString();
-          expect(content, contains('pod.webServer.addRoute('));
           expect(
             content,
-            contains('AppConfigRoute(apiConfig: pod.config.apiServer)'),
+            contains(
+              "final root = Directory(Uri(path: 'web/static').toFilePath());",
+            ),
+          );
+          expect(
+            content,
+            contains('pod.webServer.addRoute(StaticRoute.directory(root));'),
+          );
+          expect(
+            content,
+            contains('AppConfigRoute(apiConfig: pod.config.apiServer),'),
+          );
+          expect(
+            content,
+            contains('/app/assets/assets/config.json'),
+          );
+          expect(
+            content,
+            contains(
+              "final appDir = Directory(Uri(path: 'web/app').toFilePath());",
+            ),
+          );
+          expect(content, contains('FlutterRoute('));
+          expect(
+            content,
+            contains(
+              "Uri(path: 'web/pages/build_flutter_app.html').toFilePath()",
+            ),
           );
         },
       );
@@ -273,11 +329,11 @@ void main() {
 
   group(
     'Given a TemplateContext with webapp and website disabled, '
-    'when performCreate is called with the context and a server template type',
+    'when performCreate is called with the context and a fullstack template type',
     () {
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           webapp: false,
           website: false,
         ),

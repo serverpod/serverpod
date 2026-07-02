@@ -1,0 +1,50 @@
+#!/bin/bash
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_integration_email"
+    exit 1
+fi
+
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
+# Load local credentials if available (shared with the cloud storage tests).
+if [ -f "integrations/.env.test" ]; then
+    echo "Loading credentials from integrations/.env.test"
+    set -a
+    source integrations/.env.test
+    set +a
+fi
+
+PACKAGE="modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server"
+TEST_PATH="test/integration/serverpod_cloud_email_integration_test.dart"
+
+echo "============== Transactional Email Integration Tests =============="
+echo ""
+
+if [ -z "$SERVERPOD_TEST_SCLOUD_EMAIL_KEY" ] || [ -z "$SERVERPOD_TEST_SCLOUD_EMAIL_RECIPIENT" ]; then
+    echo "SERVERPOD_TEST_SCLOUD_EMAIL_KEY / SERVERPOD_TEST_SCLOUD_EMAIL_RECIPIENT not set."
+    echo "Only the negative (400/401) paths will run; email delivery is skipped."
+    echo "Set both variables to also exercise sending email."
+else
+    echo "Credentials found. Running negative paths and email delivery."
+fi
+echo ""
+
+BASE=`pwd`
+if ! cd "$BASE/$PACKAGE"; then
+    echo "Failed to enter directory: $BASE/$PACKAGE"
+    exit 1
+fi
+
+dart test "$TEST_PATH" --reporter=failures-only
+exit_code=$?
+
+# Treat "no tests ran" (exit code 79) as success.
+if [ $exit_code == 79 ]; then
+    exit_code=0
+fi
+
+echo ""
+echo "=================================================================="
+exit $exit_code

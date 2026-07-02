@@ -26,18 +26,22 @@ enum QuickstartOption<V> implements OptionDefinition<V> {
   template(
     EnumOption(
       enumParser: EnumParser([
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ]),
       argName: 'template',
       argAbbrev: 't',
-      defaultsTo: ServerpodTemplateType.server,
+      defaultsTo: ServerpodTemplateType.fullstack,
       helpText: 'Template to use when creating a new project',
       allowedValues: [
+        ServerpodTemplateType.fullstack,
         ServerpodTemplateType.server,
         ServerpodTemplateType.module,
       ],
       allowedHelp: {
+        'fullstack':
+            'Fullstack project including a server and a companion Flutter app',
         'server': 'Server project with standard features including database',
         'module': 'Serverpod Module project',
       },

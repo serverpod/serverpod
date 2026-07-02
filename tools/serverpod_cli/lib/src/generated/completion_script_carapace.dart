@@ -53,7 +53,7 @@ commands:
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
     completion:
       flag:
-        template: ["mini", "server", "module"]
+        template: ["mini", "fullstack", "server", "module"]
 
   - name: quickstart
     flags:
@@ -62,7 +62,7 @@ commands:
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
     completion:
       flag:
-        template: ["server", "module"]
+        template: ["fullstack", "server", "module"]
 
   - name: generate
     flags:

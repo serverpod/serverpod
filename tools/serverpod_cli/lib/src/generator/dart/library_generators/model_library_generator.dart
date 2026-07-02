@@ -1088,7 +1088,7 @@ class SerializableModelLibraryGenerator {
             var otherProperty = refer('other').property(name);
 
             if (field.type.isCollectionType) {
-              return refer('DeepCollectionEquality', serverpodUrl(serverCode))
+              return refer('DeepCollectionEquality', serverpodSerializationUrl)
                   .constInstance([])
                   .property('equals')
                   .call([otherProperty, thisProperty]);
@@ -1140,7 +1140,7 @@ class SerializableModelLibraryGenerator {
             if (field.type.isCollectionType) {
               return refer(
                 'DeepCollectionEquality',
-                serverpodUrl(serverCode),
+                serverpodSerializationUrl,
               ).constInstance([]).property('hash').call([refer(field.name)]);
             }
 

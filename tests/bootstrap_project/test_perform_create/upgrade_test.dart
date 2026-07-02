@@ -44,7 +44,7 @@ void main() {
         result = await getCreateConfigState(
           name: '.',
           force: false,
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           interactive: false,
           configs: ServerpodCreateConfig.values,
           workingDirectory: Directory(project.projectRoot),
@@ -86,7 +86,7 @@ void main() {
 
       final project = setUpPerformCreateInTempDir(
         context: TemplateContext(
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           auth: true,
           redis: true,
           postgres: true,
@@ -99,7 +99,7 @@ void main() {
         result = await getCreateConfigState(
           name: '.',
           force: false,
-          template: ServerpodTemplateType.server,
+          template: ServerpodTemplateType.fullstack,
           interactive: false,
           configs: ServerpodCreateConfig.values,
           workingDirectory: Directory(project.projectRoot),

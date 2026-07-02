@@ -2,30 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Flutter App Not Built</title>
+    <title>Flutter web app not built</title>
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
     <div class="content">
       <div class="logo-box">
         <img src="/images/serverpod-logo.svg" width="160" style="margin-top: 8px; margin-bottom: 12px;">
-        <p><a href="https://serverpod.dev/">The missing server for Flutter</a></p>
       </div>
       <hr>
       <div class="info-box">
-        <p style="margin-bottom: 12px; font-weight: 600; color: #333;">Flutter app not built</p>
+        <p style="margin-bottom: 12px; font-weight: 600; color: #333;">Flutter web app not built</p>
         <p>
-          The Flutter web app has not been built yet.
-        </p>
-        <p>
-          To build the app, run the following command in your Flutter project directory:
+          The production version of your Flutter web app has not yet been built. The app is automatically built before deploying to Serverpod Cloud. If you want to manually build it, run the following command:
         </p>
         <div style="background-color: #f5f5f5; padding: 12px; border-radius: 6px; margin-top: 12px; margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 13px; color: #333; overflow-x: auto;">
-          flutter build web --base-href /app/ -o ../projectname_server/web/app
+          serverpod run flutter_build
         </div>
 
         <p>
-          After building, restart the Serverpod server to serve the app.
+          After the app has been built, restart the server and revisit this page.
         </p>
       </div>
       <hr>

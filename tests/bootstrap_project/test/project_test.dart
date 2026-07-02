@@ -1111,10 +1111,18 @@ void main() async {
         const wasmHeaders = 'enableWasmHeaders: false,';
         // TODO: Remove once Session.alert is published.
         const sessionAlert = 'session.alert(';
+        // TODO: Remove once ServerpodCloudEmailIdpConfig is published. The
+        // published serverpod_auth_idp_server does not have it yet, so swap it
+        // for the published-compatible EmailIdpConfigFromPasswords (its send
+        // callbacks are optional, so the no-argument form compiles).
+        final cloudEmailConfig = RegExp(
+          r'ServerpodCloudEmailIdpConfig\([^)]*\)',
+        );
         serverFile.writeAsStringSync(
           serverSource
               .replaceAll(wasmHeaders, '')
-              .replaceAll(sessionAlert, 'session.log('),
+              .replaceAll(sessionAlert, 'session.log(')
+              .replaceAll(cloudEmailConfig, 'EmailIdpConfigFromPasswords()'),
         );
 
         final dockerBuildProcess = await startProcess(

@@ -208,7 +208,7 @@ Future<void> _preExit({
       type: TextLogType.success,
     );
 
-    if (template.isServer) logStartInstructions(projectPath);
+    if (template.hasServer) logStartInstructions(projectPath);
     if (template.isMini) logMiniStartInstructions(projectPath);
   }
 

@@ -84,6 +84,12 @@ class CreateConfigState extends TuiState {
       fallback: defaults.website,
     );
 
+    final website = _isOptionSelected(
+      ServerpodCreateConfig.serverOnlyWebserver,
+      WebServerConfigOption.website,
+      fallback: defaults.website,
+    );
+
     return TemplateContext(
       template: template,
       auth: _isOptionSelected(
@@ -102,7 +108,7 @@ class CreateConfigState extends TuiState {
         fallback: defaults.postgres,
       ),
       webapp: webapp || appAndWebsite,
-      website: appAndWebsite,
+      website: website || appAndWebsite,
       ides: selectedIdes.toTemplateIdes,
     );
   }
