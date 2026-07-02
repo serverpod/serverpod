@@ -26,12 +26,22 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\projectname_flutter
+        # {{#website}}
         && flutter build web --base-href /app/
+        # {{/website}}
+        # {{^website}}
+        && flutter build web --base-href /
+        # {{/website}}
         && xcopy /E /I /Y build\web ..\projectname_server\web\app
       posix: |
         cd ../projectname_flutter
+        # {{#website}}
         flutter build web --base-href /app/ --output ../projectname_server/web/app
-
+        # {{/website}}
+        # {{^website}}
+        flutter build web --base-href / --output ../projectname_server/web/app
+        # {{/website}}
+  
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
   # machine's default browser when ready. All non-reserved properties are
