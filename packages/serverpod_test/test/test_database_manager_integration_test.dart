@@ -13,41 +13,41 @@ import 'package:test/test.dart';
 /// group gets its own empty database, isolated from the others, and dropped
 /// afterwards.
 void main() {
-  late Directory tmpRoot;
-  late ResolvedEmbeddedPostgres resolved;
-  late TestDatabaseManager manager;
-
-  setUp(() async {
-    tmpRoot = Directory.systemTemp.createTempSync('sp_test_db_manager_');
-    var config = PostgresDatabaseConfig.embedded(
-      dataPath: '.serverpod/pgdata',
-      name: 'serverpod_test',
-    );
-    resolved = (await startOrAttachEmbeddedPostgres(
-      config,
-      baseDirectory: tmpRoot,
-    ))!;
-    manager = TestDatabaseManager(resolved.connectivity);
-  });
-
-  tearDown(() async {
-    await resolved.stop?.call();
-    if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
-  });
-
-  Future<pg.Connection> connect(String name) => pg.Connection.open(
-    pg.Endpoint(
-      host: resolved.connectivity.host,
-      port: resolved.connectivity.port,
-      database: name,
-      username: resolved.connectivity.user,
-      password: resolved.connectivity.password,
-      isUnixSocket: resolved.connectivity.isUnixSocket,
-    ),
-    settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
-  );
-
   group('Given a freshly resolved embedded postmaster', () {
+    late Directory tmpRoot;
+    late ResolvedEmbeddedPostgres resolved;
+    late TestDatabaseManager manager;
+
+    setUp(() async {
+      tmpRoot = Directory.systemTemp.createTempSync('sp_test_db_manager_');
+      var config = PostgresDatabaseConfig.embedded(
+        dataPath: '.serverpod/pgdata',
+        name: 'serverpod_test',
+      );
+      resolved = (await startOrAttachEmbeddedPostgres(
+        config,
+        baseDirectory: tmpRoot,
+      ))!;
+      manager = TestDatabaseManager(resolved.connectivity);
+    });
+
+    tearDown(() async {
+      await resolved.stop?.call();
+      if (tmpRoot.existsSync()) tmpRoot.deleteSync(recursive: true);
+    });
+
+    Future<pg.Connection> connect(String name) => pg.Connection.open(
+      pg.Endpoint(
+        host: resolved.connectivity.host,
+        port: resolved.connectivity.port,
+        database: name,
+        username: resolved.connectivity.user,
+        password: resolved.connectivity.password,
+        isUnixSocket: resolved.connectivity.isUnixSocket,
+      ),
+      settings: const pg.ConnectionSettings(sslMode: pg.SslMode.disable),
+    );
+
     test(
       'when createEmptyDatabase runs twice '
       'then each database is empty and isolated from the other.',
