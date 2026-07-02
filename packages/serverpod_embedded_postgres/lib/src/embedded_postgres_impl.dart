@@ -160,6 +160,7 @@ class EmbeddedPostgresImpl extends EmbeddedPostgres {
       staleWhen: const StaleLockPolicy.processLiveness(
         staleAfter: Duration(minutes: 2),
       ),
+      timeout: const Duration(minutes: 60), // may require rebuild
       heartbeatInterval: const Duration(seconds: 30),
     );
     try {
