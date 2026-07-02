@@ -7,8 +7,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
+
+// This suite runs the server in-process on the host (no Docker), so it is
+// reachable at localhost - unlike the Dockerised e2e suites' config.dart URLs.
+const _serverUrl = 'http://localhost:8080/';
 
 const _startupLifecycleMessages = [
   'SERVERPOD version:',
@@ -29,7 +32,13 @@ const _lifecycleMessages = [
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
-  const startupTimeout = Duration(seconds: 30);
+  // The first `dart bin/main.dart` spawn compiles the kernel and builds its
+  // native assets (sqlite3) cold - and `dart test` is concurrently rebuilding
+  // those for its own isolates - so under sharded, CPU-saturated CI that first
+  // boot can exceed 30s (later spawns reuse the build and start fast). This
+  // suite assumes non-concurrent execution; give the cold start headroom so it
+  // doesn't flake. Still well under the 3-minute @Timeout.
+  const startupTimeout = Duration(seconds: 90);
   const verbose = false;
 
   group(
@@ -171,7 +180,7 @@ Future<void> _waitForServerToStart({
     final client = HttpClient();
 
     try {
-      final request = await client.getUrl(Uri.parse(serverUrl));
+      final request = await client.getUrl(Uri.parse(_serverUrl));
       final response = await request.close();
       await response.drain<void>();
       return;

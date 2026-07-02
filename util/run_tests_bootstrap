@@ -11,11 +11,31 @@ export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
 # Makes script exit on first non-zero error code
 set -e
 
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level and would over-shard this small suite into empty
+# shards; we assign whole files to a shard instead, so each file runs together
+# and a shard with no files exits cleanly.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+
 export SERVERPOD_HOME=$(pwd)
 cd tests/bootstrap_project
 
-# Run bootstrap tests
-dart test --concurrency=1 --reporter=failures-only
+# Assign whole test files to this shard, round-robin - covers both the default
+# test/ suite and the performCreate suite.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test test_perform_create -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
 
-# Run performCreate tests
-dart test test_perform_create --reporter=failures-only
+echo "### Running bootstrap tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" --reporter=failures-only

@@ -618,6 +618,41 @@ class PostgresDatabaseConfig extends DatabaseConfig {
     this.dataPath,
   }) : super._(dialect: DatabaseDialect.postgres);
 
+  /// Creates a config for an embedded PostgreSQL launched in [dataPath].
+  ///
+  /// The postmaster is started on demand and reached over a local unix socket
+  /// with trust authentication, so host, port and password do not apply; the
+  /// connection coordinates are resolved at runtime from [dataPath].
+  PostgresDatabaseConfig.embedded({
+    required String dataPath,
+    String user = 'postgres',
+    required String name,
+    int? maxConnectionCount,
+  }) : this(
+         host: '',
+         port: 0,
+         user: user,
+         password: '',
+         name: name,
+         maxConnectionCount: maxConnectionCount,
+         dataPath: dataPath,
+       );
+
+  /// Returns a copy of this config that targets the database [name], keeping
+  /// every other setting (including the connection mode).
+  PostgresDatabaseConfig withName(String name) => PostgresDatabaseConfig(
+    host: host,
+    port: port,
+    user: user,
+    password: password,
+    name: name,
+    requireSsl: requireSsl,
+    isUnixSocket: isUnixSocket,
+    searchPaths: searchPaths,
+    maxConnectionCount: maxConnectionCount,
+    dataPath: dataPath,
+  );
+
   factory PostgresDatabaseConfig._fromJson(
     Map dbSetup,
     Map passwords,

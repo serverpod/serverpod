@@ -52,6 +52,7 @@ void main() {
         var label = switch (any) {
           BinaryFetchException() => 'fetch',
           BinaryVerificationException() => 'verify',
+          BinaryBuildException() => 'build',
           UnsupportedPlatformException() => 'platform',
           InitdbException() => 'initdb',
           StartupTimeoutException() => 'timeout',

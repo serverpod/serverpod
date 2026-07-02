@@ -25,6 +25,7 @@ concurrency:
 
 env:
   SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+  SERVERPOD_PG_CACHE_DIR: ${{ github.workspace }}/.pg-cache
 
 jobs:
   dart_format:
@@ -38,7 +39,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run pub get
         run: dart pub get
       - name: Bootstrap
@@ -47,187 +48,454 @@ jobs:
         run: dart format --output=none --set-exit-if-changed .
 
   dart_analyze:
-    name: dart analyze
-    runs-on: ${{ matrix.os }}
+    name: dart analyze (${{ matrix.check.name }})
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4"]
-        os: [windows-latest, ubuntu-latest]
+        check:
+          - name: strict, floor
+            flutter-version: "3.38.4"
+            lint: lint_strict
+          - name: latest
+            flutter-version: "3.44.4"
+            lint: lint
+          - name: downgrade, floor
+            flutter-version: "3.38.4"
+            downgrade: true
+            lint: lint_loose
+          - name: downgrade, latest
+            flutter-version: "3.44.4"
+            downgrade: true
+            lint: lint_loose
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
-      - name: Run lint
-        run: melos lint_strict
-
-  dart_analyze_latest:
-    name: dart analyze latest
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        flutter-version: ["3.41.5"]
-        os: [windows-latest, ubuntu-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap
-      - name: Run lint
-        run: melos lint
-
-  dart_analyze_downgrade:
-    name: dart analyze downgrade
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        os: [windows-latest, ubuntu-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          flutter-version: ${{ matrix.check.flutter-version }}
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
         run: melos bootstrap
       - name: Downgrade dependencies
+        if: matrix.check.downgrade
         run: melos downgrade
       - name: Run lint
-        run: melos lint_loose
+        run: melos ${{ matrix.check.lint }}
 
-  serverpod_generate:
-    name: serverpod generate
+  # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
+  # jobs below don't each re-resolve and compile it.
+  build_cli:
+    name: Build serverpod CLI bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install Melos
-        run: dart pub global activate melos
-      - name: Install dependencies
-        run: melos bootstrap
-      - name: Run serverpod generate
+          sdk: "3.12.2"
+      - run: dart pub get
+      - name: Bootstrap serverpod_cli
+        run: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
+      - name: Build the serverpod CLI bundle
+        working-directory: tools/serverpod_cli
+        run: dart build cli -t bin/serverpod_cli.dart -o "$GITHUB_WORKSPACE/.cli-build"
+      - name: Pack the CLI bundle
+        shell: bash
+        run: tar -C "$GITHUB_WORKSPACE/.cli-build/bundle" -czf serverpod-cli.tgz .
+      - name: Upload the CLI bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: serverpod-cli-${{ runner.os }}
+          path: serverpod-cli.tgz
+          retention-days: 1 # just needed for this build
+
+  # Build each test-server "pod" bundle once so the migration e2e shards download
+  # it instead of every shard spending ~1.5min on `dart build cli`.
+  build_pod:
+    name: Build test server pod (${{ matrix.pod }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pod: serverpod_test_server
+            path: tests/serverpod_test_server
+          - pod: serverpod_test_sqlite_server
+            path: tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - run: dart pub get
+      - name: Bootstrap ${{ matrix.pod }}
+        run: dart run melos bootstrap --scope='${{ matrix.pod }}' --include-dependencies
+      - name: Build the server bundle
+        working-directory: ${{ matrix.path }}
+        run: dart build cli -t bin/main.dart -o "$GITHUB_WORKSPACE/.pod-build"
+      - name: Pack the pod bundle
+        run: tar -C "$GITHUB_WORKSPACE/.pod-build/bundle" -czf pod.tgz .
+      - name: Upload the pod bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pod-${{ matrix.pod }}
+          path: pod.tgz
+          retention-days: 1
+
+  serverpod_generate:
+    name: serverpod generate (${{ matrix.project }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: build_cli
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        project:
+          - packages/serverpod
+          - examples/auth/auth_server
+          - examples/middleware/middleware_server
+          - examples/legacy/auth_example/auth_example_server
+          - examples/legacy/chat/chat_server
+          - modules/legacy/serverpod_auth/serverpod_auth_server
+          - modules/legacy/serverpod_chat/serverpod_chat_server
+          - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+          - modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - tests/serverpod_auth_test/serverpod_auth_test_server
+          - tests/serverpod_test_module/serverpod_test_module_server
+          - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+          - tests/serverpod_test_server
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap the project
+        shell: bash
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: dart run melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
+      - uses: ./.github/actions/use-cli-bundle
+      - name: Generate and verify no changes
+        shell: bash
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          git config core.safecrlf false
+          ( cd "$PROJECT" && "$SERVERPOD_CLI_EXE" generate --no-analytics )
+          git diff --ignore-cr-at-eol --exit-code -- "$PROJECT" || {
+            echo "::error::serverpod generate produced uncommitted changes in $PROJECT - run util/generate_all and commit."
+            git diff --ignore-cr-at-eol -- "$PROJECT"
+            exit 1
+          }
+
+  serverpod_generate_templates:
+    name: serverpod generate (templates + from scratch, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: build_cli
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap the template servers + serverpod_test_server
+        # serverpod_test_server is needed by the "verify generate from scratch" step.
+        run: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --scope='serverpod_test_server' --include-dependencies
+      - uses: ./.github/actions/use-cli-bundle
+      - name: Generate template servers and verify no changes
         shell: bash
         run: |
           git config core.safecrlf false
-          util/run_tests_serverpod_generate
-      - name: Verify generate from scratch
+          util/generate_templates
+          git diff --ignore-cr-at-eol --exit-code -- templates/serverpod_templates || {
+            echo "::error::serverpod generate produced uncommitted changes in templates/serverpod_templates - run util/generate_all and commit."
+            git diff --ignore-cr-at-eol -- templates/serverpod_templates
+            exit 1
+          }
+      - name: Verify generate from scratch (serverpod_test_server)
         shell: bash
         run: |
           rm -rf tests/serverpod_test_server/lib/src/generated
-          export SERVERPOD_HOME=$(pwd)
-          cd tests/serverpod_test_server
-          dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
+          ( cd tests/serverpod_test_server && SERVERPOD_HOME="$GITHUB_WORKSPACE" "$SERVERPOD_CLI_EXE" generate --no-analytics )
 
   update_pubspecs:
     name: update pubspecs
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run serverpod update pubspecs
         run: bash util/run_tests_update_pubspecs
 
-  nonvector_integration_tests_embedded:
-    name: Nonvector integration tests (embedded PG, ${{ matrix.os }})
+  # Build the bundle ONCE per platform, and only if needed.
+  # Then hand it to the embedded PG test jobs below (which `needs:` this) as an artifact
+  seed_embedded_pg:
+    name: Seed embedded PG bundle (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest]
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - name: Cache embedded PostgreSQL bundle (cross-run)
+        id: pgcache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_nonvector_server,serverpod_test_nonvector_client,serverpod_test_nonvector,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run nonvector integration tests against embedded PG
-        run: bash util/run_tests_nonvector_integration_embedded
-        timeout-minutes: 10
-
-  module_integration_tests_embedded:
-    name: Module integration tests (embedded PG, ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+          path: .pg-cache
+          # No restore-keys! A build artifact must match the recipe EXACTLY.
+          key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        if: steps.pgcache.outputs.cache-hit != 'true'
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Install melos
-        run: dart pub global activate melos
-      - name: Bootstrap
-        run: melos bootstrap --scope='serverpod_embedded_postgres,serverpod_cli,serverpod_test_module_server,serverpod_test_module_client,serverpod_test_module,modulename,modulename_client,modulename_server,serverpod,serverpod_database,serverpod_serialization,serverpod_shared,serverpod_test,serverpod_client,serverpod_lints,serverpod_service_client'
-      - name: Run module integration tests against embedded PG
-        run: bash util/run_tests_module_integration_embedded
-        timeout-minutes: 10
-
-  embedded_postgres_integration_tests:
-    name: serverpod_embedded_postgres integration (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-version: ["3.41.5"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Resolve dependencies
-        run: dart pub get
+          sdk: stable
+      - name: Set up build toolchain
+        if: steps.pgcache.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-pg-build-toolchain
+      # Force build (prebuilt bundle not published), so a PG version bump or
+      # recipe change is tested before release. No-op on a cache hit.
+      - name: Build + seed bundle (Unix)
+        if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os != 'windows-latest'
+        env:
+          SERVERPOD_PG_SOURCE: build
+        timeout-minutes: 60
         working-directory: packages/serverpod_embedded_postgres
-      # windows-latest runs as runneradmin (elevated), but Postgres refuses
-      # to start under an Administrators-group token. Strip admin via
-      # PsExec -l. Two non-obvious bits the rest of this block handles:
-      #   - PsExec -l drops the inner process's stdout in GHA (exit code
-      #     propagates fine), so dart test redirects to a file inside
-      #     run-test.cmd and we type that file from the outer step.
-      #   - The limited token still needs read+execute on the Flutter SDK
-      #     to find dart.bat / dart.exe.
+        run: |
+          dart pub get
+          dart run serverpod_embedded_postgres:prefetch --version 16.13.0
+      - name: Build + seed bundle (Windows / MSYS2)
+        id: build_win
+        if: steps.pgcache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        continue-on-error: true
+        shell: msys2 {0}
+        env:
+          SERVERPOD_PG_SOURCE: build
+          # Some source tarballs (fx json-c) carry symlinks.
+          # MSYS2 tar can't create them by default and aborts extraction.
+          # Have the MSYS2 runtime make real (native) symlinks.
+          MSYS: winsymlinks:nativestrict
+        timeout-minutes: 90
+        working-directory: packages/serverpod_embedded_postgres
+        run: |
+          # dart is a native Windows process, so its Process.start('bash')
+          # resolves to System32\bash.exe (the WSL launcher), not MSYS2 bash.
+          # Point the builder at THIS shell's bash explicitly (Windows path).
+          export SERVERPOD_PG_BUILD_BASH="$(cygpath -w "$(command -v bash)")"
+          dart pub get
+          rc=0
+          dart run serverpod_embedded_postgres:prefetch --version 16.13.0 || rc=$?
+          if [ "$rc" != 0 ]; then
+            # Windows builds are slow to iterate, so surface the cause inline:
+            # the per-dep build logs + deps/lib (BundleBuilder leaves its scratch
+            # under /tmp on failure). The ::error:: annotation flags it red even
+            # though the step is continue-on-error (kept green so it doesn't block
+            # the macOS/Linux test jobs).
+            echo "::error title=Windows seed build::failed (exit $rc) - see dep logs below"
+            for f in $(find /tmp -path '*serverpod-pg-build-*/logs/dep-*.log' 2>/dev/null | sort); do
+              echo "----- $f (last 40 lines) -----"; tail -n 40 "$f"
+            done
+            echo "----- deps/lib contents -----"
+            find /tmp -path '*serverpod-pg-build-*/deps/lib/*' 2>/dev/null | sed 's#.*/deps/lib/#deps/lib/#' | sort
+            exit "$rc"
+          fi
+      - name: Save embedded PostgreSQL bundle cache
+        if: steps.pgcache.outputs.cache-hit != 'true' && (matrix.os != 'windows-latest' || steps.build_win.outcome == 'success')
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .pg-cache
+          key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('packages/serverpod_embedded_postgres/lib/src/options.dart', 'packages/serverpod_embedded_postgres/tool/build_postgres/**') }}
+      - name: Pack bundle for test jobs
+        if: steps.pgcache.outputs.cache-hit == 'true' || matrix.os != 'windows-latest' || steps.build_win.outcome == 'success'
+        shell: bash
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}
+        run: tar -C .pg-cache -czf pg-bundle.tgz .
+      - name: Upload bundle for test jobs
+        if: steps.pgcache.outputs.cache-hit == 'true' || matrix.os != 'windows-latest' || steps.build_win.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}
+        with:
+          name: pg-bundle-${{ runner.os }}-${{ runner.arch }}
+          path: pg-bundle.tgz
+          retention-days: 1
+          if-no-files-found: error
+          # The payload is already a gzip'd .tgz - store it, don't re-zip.
+          compression-level: 0
+
+  # The Windows seed build is non-blocking (its step is continue-on-error) so a
+  # failure can't skip the macOS/Linux test jobs that `needs:` the seed - but
+  # that leaves seed_embedded_pg green even when Windows fails. This check turns
+  # that into an honest signal: red iff the Windows bundle wasn't produced.
+  # Nothing depends on it, so it never blocks anything.
+  windows_bundle_built:
+    name: Windows bundle built
+    needs: seed_embedded_pg
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert the Windows bundle artifact exists
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pg-bundle-Windows-X64
+          path: pg-bundle-check
+
+  embedded_integration_tests:
+    name: Integration tests (embedded PG, ${{ matrix.suite.name }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
+        suite:
+          - name: serverpod_test
+            scope: serverpod_test
+            run: cd packages/serverpod_test && dart test --tags=integration --reporter=failures-only
+          - name: nonvector
+            scope: serverpod_test_nonvector_server
+            run: bash util/run_tests_nonvector_integration_embedded
+          - name: module
+            scope: serverpod_test_module_server
+            run: bash util/run_tests_module_integration_embedded
+          - name: auth
+            scope: serverpod_auth_test_server
+            run: bash util/run_tests_auth_integration_embedded
+          - name: auth_legacy
+            scope: serverpod_auth_server
+            run: bash util/run_tests_integration_embedded modules/legacy/serverpod_auth/serverpod_auth_server
+          - name: auth_core
+            scope: serverpod_auth_core_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - name: auth_bridge
+            scope: serverpod_auth_bridge_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - name: auth_migration
+            scope: serverpod_auth_migration_server
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          # auth_idp is the largest suite here (~44 integration files), so we shard it
+          - name: auth_idp (1/3)
+            scope: serverpod_auth_idp_server
+            shard-index: 0
+            total-shards: 3
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
+          - name: auth_idp (2/3)
+            scope: serverpod_auth_idp_server
+            shard-index: 1
+            total-shards: 3
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
+          - name: auth_idp (3/3)
+            scope: serverpod_auth_idp_server
+            shard-index: 2
+            total-shards: 3
+            run: bash util/run_tests_integration_embedded modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server -x email
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: stable
+      - uses: ./.github/actions/use-embedded-pg
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
+      # windows-latest runs as runneradmin (elevated), and Postgres refuses to
+      # start under an Administrators-group token. Run the suite under a limited
+      # token via PsExec -l (same trick as serverpod_embedded_postgres_tests).
+      # PsExec drops the inner process's stdout in GHA, so the suite command
+      # redirects to a log file that the outer step prints; the exit code still
+      # propagates. The suite's own command (bash script or `cd && dart test`)
+      # goes verbatim into the .cmd wrapper.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install pstools --no-progress -y --limit-output
       - name: Prep run script (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cat > run-suite.cmd <<'EOF'
+          @echo off
+          ${{ matrix.suite.run }} > "%TEMP%\inner.log" 2>&1
+          exit /b %errorlevel%
+          EOF
+      - name: Run integration tests against embedded PG (Windows, non-admin)
+        if: matrix.os == 'windows-latest'
+        # Sharding env (empty for non-sharded suites); PsExec inherits it into the
+        # limited-token process, where the run script reads SHARD_INDEX/TOTAL_SHARDS.
+        env:
+          SHARD_INDEX: ${{ matrix.suite.shard-index }}
+          TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
+        shell: cmd
+        run: |
+          psexec -accepteula -nobanner -l cmd /c "%CD%\run-suite.cmd"
+          set RC=%errorlevel%
+          if exist "%TEMP%\inner.log" type "%TEMP%\inner.log"
+          exit /b %RC%
+        timeout-minutes: 15
+      - name: Run integration tests against embedded PG
+        if: matrix.os != 'windows-latest'
+        env:
+          SHARD_INDEX: ${{ matrix.suite.shard-index }}
+          TOTAL_SHARDS: ${{ matrix.suite.total-shards }}
+        run: ${{ matrix.suite.run }}
+        timeout-minutes: 15
+
+  serverpod_embedded_postgres_tests:
+    name: serverpod_embedded_postgres integration (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-15-intel
+          - macos-15
+          - windows-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: stable
+      - uses: ./.github/actions/use-embedded-pg
+      - name: Resolve dependencies
+        run: dart pub get
+        working-directory: packages/serverpod_embedded_postgres
+      - name: Install PsExec (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install pstools --no-progress -y --limit-output
+      - name: Prep run script (Windows)
+        # Postgres refuses to run with Administrators-group token. Strip admin via PsExec -l.
+        # Do weird tricks to recover stdout/stderr.
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
@@ -237,7 +505,7 @@ jobs:
           exit /b %errorlevel%
           EOF
         working-directory: packages/serverpod_embedded_postgres
-      - name: Run integration tests against real Zonky PG (Windows, non-admin)
+      - name: Run integration tests against the embedded PG bundle (Windows, non-admin)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
@@ -247,27 +515,95 @@ jobs:
           exit /b %RC%
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
-      - name: Run integration tests against real Zonky PG
+      - name: Run integration tests against the embedded PG bundle
         if: matrix.os != 'windows-latest'
         run: dart test --tags=integration --reporter=failures-only
         working-directory: packages/serverpod_embedded_postgres
         timeout-minutes: 10
 
   unit_io_tests:
-    name: Unit tests IO
+    name: Unit tests IO (${{ matrix.project }}, ${{ matrix.os }}, ${{ matrix.sdk }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        sdk: ["3.10.3", "3.12.2"]
         os: [windows-latest, ubuntu-latest]
+        project:
+          - packages/serverpod
+          - packages/serverpod_client
+          - packages/serverpod_database
+          - packages/serverpod_embedded_postgres
+          - packages/serverpod_serialization
+          - packages/serverpod_shared
+          - packages/serverpod_test
+          - modules/legacy/serverpod_auth/serverpod_auth_server
+          - modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+          - modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+          - modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+          - modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
+          - integrations/serverpod_cloud_storage_gcp
+          - integrations/serverpod_cloud_storage_r2
+          - integrations/serverpod_cloud_storage_s3
+          - integrations/serverpod_cloud_storage_s3_compat
+          - tests/serverpod_auth_test/serverpod_auth_test_server
+          - tests/serverpod_test_client
+          - tests/serverpod_test_module/serverpod_test_module_server
+          - tests/serverpod_test_nonvector/serverpod_test_nonvector_server
+          - tests/serverpod_test_server
+          - tests/serverpod_test_shared
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_client
+          - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.sdk }}
       - name: Run unit tests
-        run: bash util/run_tests_unit
+        shell: bash
+        working-directory: ${{ matrix.project }}
+        run: |
+          dart test -x integration --reporter=failures-only || {
+            status=$?
+            # 79 = "no tests ran" (this package's tests are all integration-tagged);
+            # treat as success, as the old run_tests_unit script did.
+            [ "$status" -eq 79 ] && exit 0
+            exit "$status"
+          }
+
+  cli_unit_tests:
+    name: Unit tests IO (serverpod_cli shard ${{ matrix.shard }}, ${{ matrix.os }}, ${{ matrix.sdk }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: ["3.10.3", "3.12.2"]
+        os: [windows-latest, ubuntu-latest]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: Run unit tests
+        shell: bash
+        working-directory: tools/serverpod_cli
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          shard_files=()
+          i=0
+          while IFS= read -r f; do
+            [ $(( i % 10 )) -eq "$SHARD" ] && shard_files+=("$f")
+            i=$(( i + 1 ))
+          done < <(find test -name '*_test.dart' | sort)
+          [ ${#shard_files[@]} -eq 0 ] && exit 0
+          dart test "${shard_files[@]}" -x integration --reporter=failures-only || {
+            status=$?
+            [ "$status" -eq 79 ] && exit 0
+            exit "$status"
+          }
 
   unit_web_tests:
     name: Unit tests Web
@@ -275,7 +611,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -283,7 +619,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.41.5"
+          - flutter-version: "3.44.4"
             platform: chrome
             compiler: dart2wasm
 
@@ -292,7 +628,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
       - name: Run unit tests
         run: >-
@@ -307,7 +643,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -315,112 +651,95 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Run unit tests
         run: flutter test
         working-directory: ${{ matrix.path }}
 
   e2e_io_tests:
-    name: Serverpod E2E IO tests
+    name: Serverpod E2E IO tests (${{ matrix.sdk }}, ${{ matrix.shard }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Run e2e tests
-        run: util/run_tests_e2e
-
-  e2e_web_tests:
-    name: Serverpod E2E web tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Run e2e tests
-        run: util/run_tests_e2e firefox
-
-  integration_tests:
-    name: Serverpod integration tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        path: ["packages/serverpod_shared"]
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Run integration tests
-        run: dart test test_integration --reporter=failures-only
-        working-directory: ${{ matrix.path }}
-
-  module_integration_tests:
-    name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
-    runs-on: ubuntu-latest
+    needs: [seed_embedded_pg, build_pod]
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
-        module:
-          [
-            "tests/serverpod_test_module/serverpod_test_module_server",
-            "tests/serverpod_test_nonvector/serverpod_test_nonvector_server",
-            "tests/serverpod_auth_test/serverpod_auth_test_server",
-            "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server",
-            "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server",
-            "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server",
-            "modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server",
-            "modules/legacy/serverpod_auth/serverpod_auth_server",
-          ]
+        sdk: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Start containers
-        run: docker compose --progress quiet up --build -V -d
-        working-directory: ${{ matrix.module }}
-      - name: Wait for services to be ready
-        run: |
-          ./wait-for-it.sh localhost:9090 -t 60 -- echo "### Postgres is UP at :9090"
-          ./wait-for-it.sh localhost:9091 -t 60 -- echo "### Redis is UP at :9091"
-        working-directory: tests/docker/tests_integration
-      - name: Run integration tests (concurrently)
-        # `-x email` keeps the live-service email integration test out of this
-        # DB-focused job; it runs only in the dedicated email_integration_tests
-        # job. The tag is undefined in other matrix modules, where it is a no-op.
-        run: dart test -t integration -x concurrency_one -x email --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Run integration tests (sequentially)
-        if: always()
-        # Exit code `79` means that no tests were found for the tags
-        run: dart test -t integration -t concurrency_one -x email --concurrency=1 --reporter=failures-only || [ $? -eq 79 ]
-        working-directory: ${{ matrix.module }}
-      - name: Stop containers
-        if: always()
-        run: docker compose down -v
-        working-directory: ${{ matrix.module }}
+          sdk: ${{ matrix.sdk }}
+      - uses: ./.github/actions/use-embedded-pg
+      - uses: ./.github/actions/use-pod-bundle
+        with:
+          pod: serverpod_test_server
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap
+        run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
+      - name: Alias serverpod_test_server to localhost
+        run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
+      - name: Run e2e IO tests
+        run: util/run_tests_e2e_host vm ${{ matrix.shard }} 5
+        timeout-minutes: 15
+
+  e2e_web_tests:
+    name: Serverpod E2E web tests (${{ matrix.sdk }}, ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    needs: [seed_embedded_pg, build_pod]
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: ${{ matrix.sdk }}
+      - uses: ./.github/actions/use-embedded-pg
+      - uses: ./.github/actions/use-pod-bundle
+        with:
+          pod: serverpod_test_server
+      - name: Resolve melos
+        run: dart pub get
+      - name: Bootstrap
+        run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
+      - name: Alias serverpod_test_server to localhost
+        run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
+      # Firefox for the browser run; xvfb provides the virtual display (xvfb-run).
+      - uses: browser-actions/setup-firefox@0bc507ddf224827e3b1af68e014d5e42ab93e795 # v1.7.2
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+      - name: Run e2e web tests
+        run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
+        timeout-minutes: 15
+
+  serverpod_shared_integration_tests:
+    name: serverpod_shared integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ["3.10.3", "3.12.2"]
+        path: ["packages/serverpod_shared"]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: Run integration tests
+        run: dart test test_integration --reporter=failures-only
+        working-directory: ${{ matrix.path }}
 
   module_e2e_tests:
     name: Module E2E tests in ${{ matrix.module.client }} with Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -429,7 +748,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Start containers
         run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
@@ -459,113 +778,170 @@ jobs:
   integration_test_server:
     name: Serverpod integration tests (server)
     runs-on: ubuntu-latest
+    needs: seed_embedded_pg
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        dart-version: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.dart-version }}
+      - uses: ./.github/actions/use-embedded-pg
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      - name: Start Redis
+        run: |
+          # serverpod_test_server's config uses redis host 'redis'
+          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+          # apt auto-starts a password-less redis on 6379; stop it so our
+          # password-protected instance can bind the port.
+          sudo systemctl stop redis-server 2>/dev/null || true
+          redis-server --daemonize yes --requirepass password
       - name: Run integration tests
-        run: util/run_tests_integration
+        run: util/run_tests_integration ${{ matrix.shard }} 10
+        timeout-minutes: 15
 
   integration_test_server_concurrent:
     name: Serverpod concurrent integration tests (server)
     runs-on: ubuntu-latest
+    needs: seed_embedded_pg
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        dart-version: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.dart-version }}
+      - uses: ./.github/actions/use-embedded-pg
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Bootstrap
+        run: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      - name: Start Redis
+        run: |
+          # serverpod_test_server's config uses redis host 'redis'
+          echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+          sudo apt-get update
+          sudo apt-get install -y redis-server
+          # apt auto-starts a password-less redis on 6379; stop it so our
+          # password-protected instance can bind the port.
+          sudo systemctl stop redis-server 2>/dev/null || true
+          redis-server --daemonize yes --requirepass password
       - name: Run integration tests
-        run: util/run_tests_integration_concurrently
+        run: util/run_tests_integration_concurrently ${{ matrix.shard }} 10
+        timeout-minutes: 15
 
   integration_test_sqlite_server:
     name: Serverpod SQLite integration tests (server)
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        dart-version: ["3.10.3", "3.12.2"]
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.dart-version }}
       - name: Run SQLite integration tests
         run: util/run_tests_sqlite_integration
 
   bootstrap_tests:
     name: Bootstrap tests
     runs-on: ${{ matrix.os }}
+    needs: seed_embedded_pg
+    # Land every pub get in one workspace dir so it caches consistently across Windows and Ubuntu.
+    env:
+      PUB_CACHE: ${{ github.workspace }}/.pub-cache
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [windows-latest, ubuntu-latest]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
-      - name: Setup docker (missing on MacOS)
-        if: runner.os == 'macos'
-        run: |
-          brew install docker docker-compose
-
-          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
-          mkdir -p ~/.docker/cli-plugins
-          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
-
-          colima start
+          cache: false
+      - name: Cache PUB_CACHE
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .pub-cache
+          key: pub-${{ runner.os }}-${{ matrix.flutter-version }}-${{ hashFiles('templates/**/pubspec.yaml', 'tests/bootstrap_project/pubspec.yaml') }}
+          restore-keys: |
+            pub-${{ runner.os }}-${{ matrix.flutter-version }}-
+      - uses: ./.github/actions/use-embedded-pg
       - name: Run unit tests
         shell: bash
-        run: util/run_tests_bootstrap
+        run: util/run_tests_bootstrap ${{ matrix.shard }} 17
 
   migration_e2e_tests:
     name: Migration e2e tests
     runs-on: ubuntu-latest
+    needs: [seed_embedded_pg, build_cli, build_pod]
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        sdk: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.sdk }}
+      # Redis is disabled on the server (SERVERPOD_REDIS_ENABLED=false in the run
+      # script), so unlike the integration suite no Redis is needed.
+      - uses: ./.github/actions/use-embedded-pg
+      - run: dart pub get
+      - name: Bootstrap
+        run: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
+      - uses: ./.github/actions/use-cli-bundle
+      - uses: ./.github/actions/use-pod-bundle
+        with:
+          pod: serverpod_test_server
       - name: Run e2e migration tests
-        run: util/run_tests_migrations_e2e
+        run: util/run_tests_migrations_e2e ${{ matrix.shard }} 10
 
   migration_e2e_tests_sqlite:
     name: Migration e2e tests (SQLite)
     runs-on: ubuntu-latest
+    needs: [build_cli, build_pod]
     strategy:
+      fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        sdk: ["3.10.3", "3.12.2"]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
-      - uses: actions/checkout@v7
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          sdk: ${{ matrix.sdk }}
+      - uses: ./.github/actions/use-cli-bundle
+      - uses: ./.github/actions/use-pod-bundle
+        with:
+          pod: serverpod_test_sqlite_server
       - name: Run SQLite e2e migration tests
-        run: util/run_tests_sqlite_migrations_e2e
+        run: util/run_tests_sqlite_migrations_e2e ${{ matrix.shard }} 10
 
   cli_e2e_tests:
     name: CLI e2e tests
     runs-on: ${{ matrix.os }}
+    needs: build_cli
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.41.5"]
+        flutter-version: ["3.38.4", "3.44.4"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
@@ -574,7 +950,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
-          cache: true
+          cache: false
       - name: Setup docker (missing on MacOS)
         if: runner.os == 'macos'
         run: |
@@ -585,6 +961,7 @@ jobs:
           ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
 
           colima start
+      - uses: ./.github/actions/use-cli-bundle
       - name: Run unit tests
         run: >-
           dart test
@@ -611,7 +988,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Run version change test
@@ -722,7 +1099,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Bootstrap
@@ -739,7 +1116,7 @@ jobs:
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: "3.38.4"
-          cache: true
+          cache: false
       - name: Install melos
         run: dart pub global activate melos
       - name: Run publish check

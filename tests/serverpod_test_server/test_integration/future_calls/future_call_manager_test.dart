@@ -5,7 +5,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_tags.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -261,7 +260,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with registered future call that is not due',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
@@ -552,7 +550,6 @@ void main() async {
 
   withServerpod(
     'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled',
-    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late Session session;
@@ -744,7 +741,7 @@ void main() async {
 
       setUp(() async {
         server = IntegrationTestServer.create();
-        await server.start();
+        await server.startWithDatabase();
 
         session = await server.createSession(enableLogging: false);
         logSession = await server.createSession();

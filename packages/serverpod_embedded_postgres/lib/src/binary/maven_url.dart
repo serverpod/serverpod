@@ -1,8 +1,12 @@
 import 'dart:ffi' show Abi;
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:pub_semver/pub_semver.dart';
 
 import '../exceptions.dart';
+import 'binary_artifact.dart';
+import 'zonky_archive.dart';
 
 /// Base URL of Zonky's Maven Central group.
 ///
@@ -39,13 +43,14 @@ String platformSuffixForAbi(Abi abi) {
 ///
 /// Combines the inputs needed to fetch the JAR and verify it. Stateless;
 /// safe to share across calls.
-class ZonkyArtifact {
+class ZonkyArtifact implements BinaryArtifact {
   /// Major.minor.patch PG version (Zonky calls this the "BOM").
   final Version version;
 
   /// Platform suffix in Zonky's naming, e.g. `darwin-amd64`,
   /// `linux-arm64v8`. Use [ZonkyArtifact.forCurrentPlatform] to derive this
   /// from [Abi.current].
+  @override
   final String platform;
 
   /// Direct constructor. Most callers should prefer
@@ -61,6 +66,7 @@ class ZonkyArtifact {
   }
 
   /// Maven BOM, e.g. `16.13.0`.
+  @override
   String get bom => '${version.major}.${version.minor}.${version.patch}';
 
   /// Maven artifact ID, e.g. `embedded-postgres-binaries-darwin-amd64`.
@@ -75,7 +81,23 @@ class ZonkyArtifact {
       Uri.parse('$mavenZonkyBaseUrl/$artifactId/$bom/$jarFileName');
 
   /// Full URL to the JAR's `.sha256` sidecar on Maven Central.
+  @override
   Uri get sha256Url => Uri.parse('${jarUrl.toString()}.sha256');
+
+  @override
+  Uri get archiveUrl => jarUrl;
+
+  @override
+  String get archiveFileName => jarFileName;
+
+  @override
+  void extractInto(
+    Uint8List archiveBytes,
+    Directory destination, {
+    void Function(double fraction)? onProgress,
+  }) {
+    ZonkyArchive.extractInto(archiveBytes, destination, onProgress: onProgress);
+  }
 
   @override
   String toString() => '$artifactId@$bom';

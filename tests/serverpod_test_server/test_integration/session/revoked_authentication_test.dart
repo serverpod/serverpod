@@ -1,3 +1,6 @@
+@Tags(['redis'])
+library;
+
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
@@ -11,7 +14,7 @@ void main() async {
     late Serverpod server;
     setUp(() async {
       server = IntegrationTestServer.create();
-      await server.start();
+      await server.startWithDatabase();
       session = await server.createSession();
     });
 
@@ -69,7 +72,7 @@ void main() async {
         ),
       );
 
-      await server.start();
+      await server.startWithDatabase();
       session = await server.createSession();
     });
 

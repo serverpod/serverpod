@@ -7,6 +7,8 @@ import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/file_system_entity_helpers.dart';
+
 String _shimPath(String name) => p.join(
   Directory.current.path,
   'test',
@@ -138,7 +140,7 @@ serverpod:
 
     tearDown(() async {
       await manager.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(
@@ -360,7 +362,7 @@ serverpod:
 
     tearDown(() async {
       await manager.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(
@@ -451,7 +453,7 @@ serverpod:
 
       tearDown(() async {
         await manager.dispose();
-        await tempDir.delete(recursive: true);
+        await tempDir.deleteBestEffort(recursive: true);
       });
 
       test(
@@ -567,7 +569,7 @@ serverpod:
 
       tearDown(() async {
         await manager.dispose();
-        await tempDir.delete(recursive: true);
+        await tempDir.deleteBestEffort(recursive: true);
       });
 
       test(
@@ -646,7 +648,7 @@ serverpod:
 
     tearDown(() async {
       await manager.dispose();
-      await tempDir.delete(recursive: true);
+      await tempDir.deleteBestEffort(recursive: true);
     });
 
     test(

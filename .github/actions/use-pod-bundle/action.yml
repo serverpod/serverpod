@@ -1,0 +1,29 @@
+name: Use prebuilt server pod bundle
+description: >-
+  Downloads the standalone server bundle built once by the build_pod job for the
+  given server project and unpacks it into .pod, exporting SERVERPOD_POD_BUNDLE so
+  the test runners use it instead of running `dart build cli`. tar restores the
+  exec bit + native-lib symlinks. Requires the repo checked out and the calling
+  job to `needs: build_pod`.
+
+inputs:
+  pod:
+    description: >-
+      The server project to fetch: serverpod_test_server or
+      serverpod_test_sqlite_server.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Download the prebuilt server pod bundle
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: pod-${{ inputs.pod }}
+        path: pod-bundle
+    - name: Unpack the server pod bundle
+      shell: bash
+      run: |
+        mkdir -p .pod
+        tar -C .pod -xpzf pod-bundle/pod.tgz
+        echo "SERVERPOD_POD_BUNDLE=$GITHUB_WORKSPACE/.pod" >> "$GITHUB_ENV"

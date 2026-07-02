@@ -139,9 +139,9 @@ Future<void> _tryPgCtlStop(File pgCtl, Directory pgDataDir) async {
 /// `rm -rf .serverpod/pgdata` or a real `pg_ctl stop`.
 Future<void> _killPostmaster(int pid) async {
   _signalPid(pid, ProcessSignal.sigterm);
-  if (await _waitForPidExit(pid, const Duration(seconds: 3))) return;
+  if (await waitForPidExit(pid, const Duration(seconds: 3))) return;
   _signalPid(pid, ProcessSignal.sigkill);
-  await _waitForPidExit(pid, const Duration(seconds: 3));
+  await waitForPidExit(pid, const Duration(seconds: 3));
 }
 
 void _signalPid(int pid, ProcessSignal sig) {
@@ -150,7 +150,10 @@ void _signalPid(int pid, ProcessSignal sig) {
   } catch (_) {}
 }
 
-Future<bool> _waitForPidExit(int pid, Duration budget) async {
+/// Polls until [pid] is gone, up to [budget] (80ms cadence). Returns whether
+/// the process had exited by the deadline. Shared by stale-lock cleanup and the
+/// pre-launch wait for a previous postmaster to release its socket lock.
+Future<bool> waitForPidExit(int pid, Duration budget) async {
   final deadline = DateTime.now().add(budget);
   while (DateTime.now().isBefore(deadline)) {
     if (!isProcessAlive(pid)) return true;

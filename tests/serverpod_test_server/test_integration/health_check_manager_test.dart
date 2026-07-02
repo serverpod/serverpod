@@ -1,23 +1,19 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_server/src/generated/endpoints.dart' as e;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as p;
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
   group(
     'Given a running server',
     () {
-      var client = Client('http://localhost:8065/');
+      late Client client;
       late Serverpod server;
       late Session session;
 
       setUp(() async {
-        server = Serverpod(
-          ['-m', 'production'],
-          p.Protocol(),
-          e.Endpoints(),
+        server = IntegrationTestServer.create(
           config: ServerpodConfig(
             runMode: ServerpodRunMode.production,
             serverId: Uuid().v4(),
@@ -38,9 +34,13 @@ void main() {
           ),
         );
 
+        // Provision this suite's database before clearing health checks, a
+        // pre-start write that would otherwise hit a not-yet-created database.
+        await server.ensureDatabase();
         session = await server.createSession();
         await server.clearHealthChecks(session);
-        await server.start();
+        await server.startWithDatabase();
+        client = Client(server.apiUrl);
 
         // Await the first health check to be performed.
         await Future.delayed(const Duration(seconds: 3));
@@ -100,10 +100,7 @@ void main() {
     late Session session;
 
     setUp(() async {
-      server = Serverpod(
-        ['-m', 'production'],
-        p.Protocol(),
-        e.Endpoints(),
+      server = IntegrationTestServer.create(
         config: ServerpodConfig(
           runMode: ServerpodRunMode.production,
           serverId: Uuid().v4(),
@@ -124,9 +121,12 @@ void main() {
         ),
       );
 
+      // Provision this suite's database before clearing health checks, a
+      // pre-start write that would otherwise hit a not-yet-created database.
+      await server.ensureDatabase();
       session = await server.createSession();
       await server.clearHealthChecks(session);
-      await server.start();
+      await server.startWithDatabase();
 
       // Await the first health check to be performed.
       await Future.delayed(const Duration(seconds: 3));

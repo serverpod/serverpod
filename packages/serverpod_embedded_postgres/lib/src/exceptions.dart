@@ -19,8 +19,13 @@ sealed class EmbeddedPostgresException implements Exception {
 /// HTTP failure or unexpected payload while fetching the Zonky JAR or its
 /// `.sha256` sidecar from Maven Central.
 final class BinaryFetchException extends EmbeddedPostgresException {
-  /// Creates a [BinaryFetchException] with [message].
-  const BinaryFetchException(super.message);
+  /// HTTP status code when the failure was a non-200 response (else `null`,
+  /// e.g. a timeout). `404` means the prebuilt bundle isn't published - the
+  /// trigger for the build-from-source fallback in [BinarySource.auto].
+  final int? statusCode;
+
+  /// Creates a [BinaryFetchException] with [message] and optional [statusCode].
+  const BinaryFetchException(super.message, {this.statusCode});
 }
 
 /// SHA-256 mismatch on a downloaded Zonky JAR. The cached download is
@@ -31,10 +36,19 @@ final class BinaryVerificationException extends EmbeddedPostgresException {
   const BinaryVerificationException(super.message);
 }
 
-/// Current `(os, arch)` tuple isn't covered by Zonky's binary distribution.
+/// Current `(os, arch)` tuple isn't covered by the binary distribution.
 final class UnsupportedPlatformException extends EmbeddedPostgresException {
   /// Creates an [UnsupportedPlatformException] with [message].
   const UnsupportedPlatformException(super.message);
+}
+
+/// Building the bundle from source failed, or the build toolchain
+/// (zig/cmake/make/bison/flex/perl, plus `bash`/MSYS2 on Windows) is missing.
+/// Raised when the prebuilt bundle is unavailable and a local build was
+/// attempted (or forced via [EmbeddedPostgresOptions.binarySource]).
+final class BinaryBuildException extends EmbeddedPostgresException {
+  /// Creates a [BinaryBuildException] with [message].
+  const BinaryBuildException(super.message);
 }
 
 /// `initdb` returned a non-zero exit code. [message] embeds the captured

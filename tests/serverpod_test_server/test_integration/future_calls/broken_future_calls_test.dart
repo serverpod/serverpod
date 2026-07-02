@@ -28,6 +28,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -57,7 +61,7 @@ void main() {
       test(
         'when starting Serverpod, then no errors are logged',
         () async {
-          await server.start();
+          await server.startWithDatabase();
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -84,6 +88,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -112,7 +120,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await server.startWithDatabase();
         });
 
         test(
@@ -171,6 +179,10 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -199,7 +211,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await server.startWithDatabase();
         });
 
         test(
@@ -260,6 +272,10 @@ void main() {
             futureCall: FutureCallConfig(checkBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -288,7 +304,7 @@ void main() {
 
       group('when starting Serverpod', () {
         setUp(() async {
-          await server.start();
+          await server.startWithDatabase();
         });
 
         test(
@@ -345,6 +361,10 @@ void main() {
             futureCall: FutureCallConfig(checkBrokenCalls: false),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -374,7 +394,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not logged',
         () async {
-          await server.start();
+          await server.startWithDatabase();
           await server.internalLoggingSession.close();
 
           final logs = await LoggingUtil.findAllLogs(session);
@@ -405,6 +425,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: false),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -434,7 +458,7 @@ void main() {
       test(
         'when starting Serverpod, then unregistered and broken future calls are not deleted from the database',
         () async {
-          await server.start();
+          await server.startWithDatabase();
           final entries = await FutureCallEntry.db.find(session);
           expect(entries, hasLength(futureCallsCount));
         },
@@ -457,6 +481,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -494,7 +522,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await server.start();
+          await server.startWithDatabase();
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();
@@ -520,6 +548,10 @@ void main() {
             futureCall: FutureCallConfig(deleteBrokenCalls: true),
           ),
         );
+        // Provision this suite's database before the pre-start writes below;
+        // `start()` (called inside the test) would otherwise be the first to
+        // create it, so these inserts would hit a database that doesn't exist.
+        await server.ensureDatabase();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
@@ -557,7 +589,7 @@ void main() {
             containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
 
-          await server.start();
+          await server.startWithDatabase();
 
           entries = await FutureCallEntry.db.find(session);
           entryNames = entries.map((e) => e.name).toList();

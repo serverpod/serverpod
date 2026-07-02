@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# Compiler wrapper for building postgres + extensions.
+#
+# zig is the compiler on Linux only; macOS uses Apple clang (zig's bundled clang
+# miscompiled the backend - see the Darwin case below) and Windows uses native
+# MSYS2 mingw-w64 gcc/g++ (postgres's win32 build relies on GNU-ld semantics zig's
+# lld lacks, e.g. --allow-multiple-definition). The accommodations below are zig-only.
+#
+# 1. C++ via the C driver. PostGIS compiles .cpp with `$(CC) -x c++`. Plain
+#    `zig cc` does NOT wire up the libc++ header/lib search path (<cmath>,
+#    <algorithm> go missing); `zig c++` does. So we detect a C++ compile
+#    (`-x c++`, a C++ source, or `-std=c++/gnu++`) and route it to `zig c++`.
+#
+# 2. Mach-O loadable modules. Zig's Mach-O linker doesn't implement `-bundle`
+#    (links in executable mode and demands `_main`). dlopen() loads an
+#    MH_DYLIB fine, so rewrite the pair postgres/PGXS emit on macOS:
+#      -bundle              -> -dynamiclib -Wl,-undefined,dynamic_lookup
+#      -bundle_loader <exe> -> (dropped; dynamic_lookup covers the symbols)
+#    On Linux/Windows postgres uses plain `-shared`, so nothing is rewritten.
+set -euo pipefail
+sub="$1"; shift
+
+cpp=0; prev=""
+for a in "$@"; do
+  case "$a" in
+    c++)                       [ "$prev" = "-x" ] && cpp=1 ;;
+    *.cpp|*.cc|*.cxx|*.c++|*.C) cpp=1 ;;
+    -std=c++*|-std=gnu++*)      cpp=1 ;;
+  esac
+  prev="$a"
+done
+[ "$cpp" = 1 ] && sub="c++"
+
+# Windows hands off to native mingw-w64 gcc/g++; macOS hands off to Apple clang
+# (Xcode). Both handle their platform's linking natively, so none of the zig
+# accommodations below apply — those are for the Linux zig path ONLY.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    # gcc handles -shared, .o, getopt-vs-CRT dups, and the win32 LDFLAGS natively.
+    # Use sub (set to c++ when invoked as cxx OR a C++ source is present) so
+    # C++ LINK steps (.o inputs, no .cpp arg) still get g++ for libstdc++.
+    if [ "$sub" = "c++" ]; then exec g++ "$@"; else exec gcc "$@"; fi
+    ;;
+  Darwin)
+    # Apple clang implements -bundle/-bundle_loader and -export_dynamic natively,
+    # defaults UBSan off, and doesn't GC exported symbols — so the force-keep
+    # relink and the -bundle->dynamic_lookup rewrite the zig path needs are both
+    # unnecessary on macOS. We don't use zig here at all: zig's bundled clang
+    # (21.1.0) miscompiled postgres into intermittent heap corruption that
+    # segfaulted the backend (Apple clang 21.0.0 builds it crash-free). Keep
+    # -headerpad_max_install_names on link steps so package.sh can rewrite
+    # install_names/rpaths; route C++ through clang++ for libc++.
+    dlink=1
+    for a in "$@"; do case "$a" in -c|-E|-S) dlink=0 ;; esac; done
+    pad=()
+    [ "$dlink" = 1 ] && pad=(-Wl,-headerpad_max_install_names)
+    # With MACOSX_DEPLOYMENT_TARGET below the build SDK (build-all.sh pins macOS
+    # 12), make using an API newer than the target a hard error rather than a
+    # bundle that segfaults on older macOS. Harmless when unset (target == SDK, no
+    # gap) and on pure link steps; also lets configure/cmake probes detect what is
+    # actually available on the target.
+    avail=(-Werror=unguarded-availability)
+    # sub (not cpp): a C++ LINK has .o inputs and no .cpp arg, but is invoked as
+    # cxx -> sub=c++ -> clang++ so libc++ (___gxx_personality_v0, dynamic_cast,
+    # std::__throw_*) is linked. Plain clang for C would miss those.
+    if [ "$sub" = "c++" ]; then exec clang++ ${pad[@]+"${pad[@]}"} "${avail[@]}" "$@"; else exec clang ${pad[@]+"${pad[@]}"} "${avail[@]}" "$@"; fi
+    ;;
+esac
+
+# zig enables UBSan by default; it must be OFF for every compile, C and C++.
+# postgres and PostGIS deliberately do pointer/type-punning that UBSan's checks
+# flag, and on the zig build that instrumentation corrupts the binary: on macOS
+# it smashes plpgsql's dynahash function cache and segfaults the backend
+# (signal 11) the first time a plpgsql function is created and then called in a
+# forked backend (e.g. any INSERT whose column DEFAULT calls a plpgsql function).
+# The handler calls (__ubsan_handle_*) are also left unresolved in dlopen'd
+# modules / static libs (e.g. PostGIS's flatgeobuf .a). So disable it everywhere.
+sanitize=(-fno-sanitize=undefined)
+
+# macOS link steps: reserve load-command space so the bundle can be made
+# relocatable afterwards (postgres bakes absolute install_names + build-tree
+# rpaths; install_name_tool needs headerpad to rewrite them). Linker-only flag,
+# so skip it on compile (-c/-E/-S) and on non-Darwin targets (ELF/PE reject it).
+link=1
+for a in "$@"; do case "$a" in -c|-E|-S) link=0 ;; esac; done
+headerpad=()
+[ "$link" = 1 ] && [ "$(uname)" = Darwin ] && headerpad=(-Wl,-headerpad_max_install_names)
+
+# Quiet clang's cosmetic "unknown warning option" notes for GCC-style flags
+# postgres's configure bakes into CFLAGS (e.g. -Wimplicit-fallthrough=3,
+# -Wno-stringop-truncation), which PostGIS/pgvector inherit. Apply ONLY to real
+# compiles, NOT to autoconf/cmake probe compiles (conftest.*, CMakeScratch/…,
+# *CompilerId.c) — so those probes stay discriminating about which flags clang
+# actually supports.
+probe=0
+case " $* " in *conftest*|*CMakeScratch*|*CMakeTmp*|*CompilerId*) probe=1 ;; esac
+nowarn=()
+if [ "$link" = 0 ] && [ "$probe" = 0 ]; then nowarn=(-Wno-unknown-warning-option); fi
+
+# Link the Linux bundle against the oldest glibc Flutter/Dart supports (Debian
+# 10 = 2.28; Ubuntu 20.04 = 2.31), not the build runner's much newer glibc, so
+# it runs on any Dart-capable Linux. zig ships the matching glibc stubs; native
+# arch. This is the redistribution win plain gcc can't give (it bakes the host's
+# glibc as the floor).
+target=()
+case "$(uname -s)" in
+  Linux) target=(-target "$(uname -m)-linux-gnu.2.28") ;;
+esac
+
+args=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -bundle)        args+=(-dynamiclib -Wl,-undefined,dynamic_lookup) ;;
+    -bundle_loader) if [ "$#" -ge 2 ]; then shift; fi ;;  # consume the loader path
+    *)              args+=("$1") ;;
+  esac
+  shift
+done
+# Optional version pin for anyzig (https://github.com/marler8997/anyzig). With
+# anyzig as `zig`, the version must be given as the first arg — there is no
+# build.zig.zon for it to read minimum_zig_version from, since we use zig only
+# as a C/C++ compiler. Set ZIG_VERSION=0.16.0 for that; leave it unset for a
+# plain zig install (e.g. CI's setup-zig), where `zig <version> ...` is invalid.
+pin=()
+[ -n "${ZIG_VERSION:-}" ] && pin=("$ZIG_VERSION")
+
+exec zig ${pin[@]+"${pin[@]}"} "$sub" ${target[@]+"${target[@]}"} ${sanitize[@]+"${sanitize[@]}"} ${headerpad[@]+"${headerpad[@]}"} ${nowarn[@]+"${nowarn[@]}"} "${args[@]}"
