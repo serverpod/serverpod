@@ -98,7 +98,7 @@ buildWithServerpod<T extends InternalTestEndpoints>(
     );
   }
 
-  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 30);
+  var startTimeout = maybeServerpodStartTimeout ?? const Duration(seconds: 120);
 
   var mainServerpodSession = testServerpod.createSession(
     rollbackDatabase: rollbackDatabase,
@@ -150,8 +150,7 @@ buildWithServerpod<T extends InternalTestEndpoints>(
               onTimeout: () {
                 throw InitializationException(
                   'Serverpod did not start within the timeout of $startTimeout. '
-                  'This might indicate that Serverpod cannot connect to the database. '
-                  'Ensure that you have run `docker compose up` and check the logs for more information.',
+                  'This might indicate that Serverpod cannot connect to the database.',
                 );
               },
             );
