@@ -159,4 +159,38 @@ void main() {
       expect(registryContents, contains('_Migration$v2()'));
     },
   );
+
+  test(
+    'when the last client migration directory is completely empty, '
+    'listVersions removes it and refreshes migration_registry.dart',
+    () async {
+      final libMigrations = Directory(
+        path.join(tempDirectory.path, 'lib', 'migrations'),
+      );
+      await libMigrations.create(recursive: true);
+
+      final first = Directory(path.join(libMigrations.path, '10000000000000'));
+      await first.create();
+      await File(path.join(first.path, 'marker')).writeAsString('');
+
+      final second = Directory(path.join(libMigrations.path, '20000000000000'));
+      await second.create();
+
+      await artifactStore.writeVersionRegistry([
+        '10000000000000',
+        '20000000000000',
+      ]);
+
+      final versions = await artifactStore.listVersions();
+
+      expect(versions, ['10000000000000']);
+      expect(second.existsSync(), isFalse);
+
+      final registryContents = await File(
+        path.join(libMigrations.path, 'migration_registry.dart'),
+      ).readAsString();
+      expect(registryContents, contains('10000000000000'));
+      expect(registryContents, isNot(contains('20000000000000')));
+    },
+  );
 }
