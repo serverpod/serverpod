@@ -31,7 +31,7 @@ serverpod:
       posix: |
         cd ../projectname_flutter
         flutter build web --base-href /app/ --output ../projectname_server/web/app
-  
+
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed
   # by a display alias. The default device is the web server, opening the
   # machine's default browser when ready. All non-reserved properties are
@@ -39,6 +39,7 @@ serverpod:
   #
   # Admin:
   #   path: ../apps/admin_flutter
+  #   displayName: "Admin app"
   #   auto_launch: true
   #   device: chrome
   #   target: lib/main.dart
@@ -52,6 +53,7 @@ serverpod:
   flutter_apps:
     projectname:
       path: ../projectname_flutter
+      displayName: "flutter_app_display_name"
       auto_launch: true
       target: lib/driver.dart
 # {{/flutterApp}}
