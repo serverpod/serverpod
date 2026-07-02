@@ -1125,7 +1125,6 @@ Future<void> _runTuiBackend({
         tab.ready = false;
         tab.stopped = false;
         tab.url = null;
-        holder.state.tabs.focusTab(tab);
         holder.markDirty();
       },
       onFlutterProgress: (app, stage) {

@@ -128,6 +128,12 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   bool _minSplashElapsed = false;
 
+  /// Auto-closes the launch panel a short while after the last launch, so a
+  /// user launching several apps in a row keeps the panel open until they stop.
+  Timer? _launchPanelCloseTimer;
+
+  static const _launchPanelCloseDelay = Duration(milliseconds: 1500);
+
   @override
   void initState() {
     super.initState();
@@ -144,6 +150,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
   @override
   void dispose() {
+    _launchPanelCloseTimer?.cancel();
     component.holder.detach(this);
     rawScrollController.dispose();
     helpScrollController.dispose();
@@ -168,6 +175,22 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     if (!mounted) return;
     _tryDismissSplash();
     setState(() {});
+  }
+
+  /// Launches the [index]th app and schedules the launch panel to close after
+  /// a short delay, resetting the delay on each launch so several apps can be
+  /// started in a row before it dismisses.
+  void _launchApp(int index) {
+    onLaunchApp?.call(index);
+    _launchPanelCloseTimer?.cancel();
+    _launchPanelCloseTimer = Timer(_launchPanelCloseDelay, () {
+      final state = component.holder.state;
+      if (state.showLaunchPanel) {
+        state.showLaunchPanel = false;
+        _rebuild();
+      }
+    });
+    _rebuild();
   }
 
   @override
@@ -214,10 +237,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
             state.clearLogs();
             _rebuild();
           },
-          onLaunchApp: (index) {
-            onLaunchApp?.call(index);
-            _rebuild();
-          },
+          onLaunchApp: _launchApp,
           onQuit: onQuit,
         ),
       ),
@@ -283,6 +303,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
 
       if (event.logicalKey == LogicalKey.escape ||
           (event.logicalKey == LogicalKey.keyR && event.isControlPressed)) {
+        _launchPanelCloseTimer?.cancel();
         state.showLaunchPanel = false;
         _rebuild();
         return true;
@@ -306,15 +327,13 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
       // Enter launches the focused row.
       if (event.logicalKey == LogicalKey.enter &&
           state.launchPanelIndex < appCount) {
-        onLaunchApp?.call(state.launchPanelIndex);
-        _rebuild();
+        _launchApp(state.launchPanelIndex);
         return true;
       }
       // Number keys remain shortcuts for the first nine apps.
       final digitIndex = _digitIndex(event.logicalKey);
       if (digitIndex != null && digitIndex < appCount && digitIndex < 9) {
-        onLaunchApp?.call(digitIndex);
-        _rebuild();
+        _launchApp(digitIndex);
         return true;
       }
     }

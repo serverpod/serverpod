@@ -219,7 +219,7 @@ class MainScreen extends StatelessComponent {
               Padding(
                 padding: const EdgeInsets.only(left: 1),
                 child: Text(
-                  'Apps',
+                  'App Launcher',
                   style: TextStyle(
                     color: st.brightText,
                     fontWeight: FontWeight.normal,
@@ -480,10 +480,10 @@ class MainScreen extends StatelessComponent {
       statusText = value;
     }
 
-    final xVerb = tab.stopped ? 'close' : 'stop';
+    final xLabel = tab.stopped ? 'Close Tab' : 'Close App';
     final labelPart = tab.label;
     const labelSep = ' │ ';
-    final xHintPlain = 'press X to $xVerb';
+    final xHintPlain = 'X $xLabel';
 
     return Column(
       children: [
@@ -513,17 +513,18 @@ class MainScreen extends StatelessComponent {
                   Expanded(child: const SizedBox.shrink()),
                   RichText(
                     text: TextSpan(
-                      style: mutedText,
                       children: [
-                        const TextSpan(text: 'press '),
                         TextSpan(
                           text: 'X',
                           style: TextStyle(
                             color: st.activationKey,
-                            fontWeight: FontWeight.normal,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        TextSpan(text: ' to $xVerb'),
+                        TextSpan(
+                          text: ' $xLabel',
+                          style: TextStyle(color: st.brightText),
+                        ),
                       ],
                     ),
                   ),
