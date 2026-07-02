@@ -7,6 +7,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod_shared/process_io.dart';
+
 import 'package:test/test.dart';
 
 // This suite runs the server in-process on the host (no Docker), so it is
@@ -234,10 +236,10 @@ Future<ProcessOutput> startProcess(
   bool verbose = false,
 }) async {
   final process = await Process.start(
-    // Spawn the VM binary directly: a PATH 'dart' may be a version-manager
-    // shell shim (puro, fvm) that does not forward signals, so the SIGINT/
-    // SIGTERM assertions would time out and leak the spawned server.
-    executable == 'dart' ? Platform.resolvedExecutable : executable,
+    // Spawn the real SDK binary (resolved through version-manager shims like
+    // puro/fvm): shell shims do not forward the signals these tests send, so
+    // the exit-code assertions would time out and leak the spawned server.
+    executable == 'dart' ? dartExecutablePath : executable,
     arguments,
     environment: environment,
   );

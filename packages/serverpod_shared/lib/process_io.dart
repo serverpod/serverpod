@@ -11,3 +11,4 @@ library;
 
 export 'src/utils/interprocess_lock.dart';
 export 'src/utils/process_alive.dart';
+export 'src/utils/sdk_path.dart';
