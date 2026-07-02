@@ -13,14 +13,15 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/legacy_admin_endpoint.dart' as _i2;
 import '../endpoints/legacy_email_endpoint.dart' as _i3;
-import '../endpoints/legacy_status_endpoint.dart' as _i4;
-import '../endpoints/legacy_user_endpoint.dart' as _i5;
-import '../endpoints/session_migration_endpoint.dart' as _i6;
-import 'dart:typed_data' as _i7;
+import '../endpoints/legacy_google_endpoint.dart' as _i4;
+import '../endpoints/legacy_status_endpoint.dart' as _i5;
+import '../endpoints/legacy_user_endpoint.dart' as _i6;
+import '../endpoints/session_migration_endpoint.dart' as _i7;
+import 'dart:typed_data' as _i8;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i8;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i9;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i10;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -38,19 +39,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'legacyEmail',
           'serverpod_auth_bridge',
         ),
-      'legacyStatus': _i4.LegacyStatusEndpoint()
+      'legacyGoogle': _i4.LegacyGoogleEndpoint()
+        ..initialize(
+          server,
+          'legacyGoogle',
+          'serverpod_auth_bridge',
+        ),
+      'legacyStatus': _i5.LegacyStatusEndpoint()
         ..initialize(
           server,
           'legacyStatus',
           'serverpod_auth_bridge',
         ),
-      'legacyUser': _i5.LegacyUserEndpoint()
+      'legacyUser': _i6.LegacyUserEndpoint()
         ..initialize(
           server,
           'legacyUser',
           'serverpod_auth_bridge',
         ),
-      'sessionMigration': _i6.SessionMigrationEndpoint()
+      'sessionMigration': _i7.SessionMigrationEndpoint()
         ..initialize(
           server,
           'sessionMigration',
@@ -276,6 +283,56 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['legacyGoogle'] = _i1.EndpointConnector(
+      name: 'legacyGoogle',
+      endpoint: endpoints['legacyGoogle']!,
+      methodConnectors: {
+        'authenticateWithServerAuthCode': _i1.MethodConnector(
+          name: 'authenticateWithServerAuthCode',
+          params: {
+            'authenticationCode': _i1.ParameterDescription(
+              name: 'authenticationCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'redirectUri': _i1.ParameterDescription(
+              name: 'redirectUri',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['legacyGoogle'] as _i4.LegacyGoogleEndpoint)
+                  .authenticateWithServerAuthCode(
+                    session,
+                    params['authenticationCode'],
+                    params['redirectUri'],
+                  ),
+        ),
+        'authenticateWithIdToken': _i1.MethodConnector(
+          name: 'authenticateWithIdToken',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['legacyGoogle'] as _i4.LegacyGoogleEndpoint)
+                  .authenticateWithIdToken(
+                    session,
+                    params['idToken'],
+                  ),
+        ),
+      },
+    );
     connectors['legacyStatus'] = _i1.EndpointConnector(
       name: 'legacyStatus',
       endpoint: endpoints['legacyStatus']!,
@@ -287,7 +344,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
+              ) async => (endpoints['legacyStatus'] as _i5.LegacyStatusEndpoint)
                   .isSignedIn(session),
         ),
         'signOutDevice': _i1.MethodConnector(
@@ -297,7 +354,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
+              ) async => (endpoints['legacyStatus'] as _i5.LegacyStatusEndpoint)
                   .signOutDevice(session),
         ),
         'signOutAllDevices': _i1.MethodConnector(
@@ -307,7 +364,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
+              ) async => (endpoints['legacyStatus'] as _i5.LegacyStatusEndpoint)
                   .signOutAllDevices(session),
         ),
         'getUserInfo': _i1.MethodConnector(
@@ -317,7 +374,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
+              ) async => (endpoints['legacyStatus'] as _i5.LegacyStatusEndpoint)
                   .getUserInfo(session),
         ),
         'getUserSettingsConfig': _i1.MethodConnector(
@@ -327,7 +384,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
+              ) async => (endpoints['legacyStatus'] as _i5.LegacyStatusEndpoint)
                   .getUserSettingsConfig(session),
         ),
       },
@@ -343,7 +400,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
+              ) async => (endpoints['legacyUser'] as _i6.LegacyUserEndpoint)
                   .removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
@@ -351,7 +408,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i7.ByteData>(),
+              type: _i1.getType<_i8.ByteData>(),
               nullable: false,
             ),
           },
@@ -359,7 +416,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
+              ) async => (endpoints['legacyUser'] as _i6.LegacyUserEndpoint)
                   .setUserImage(
                     session,
                     params['image'],
@@ -378,7 +435,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
+              ) async => (endpoints['legacyUser'] as _i6.LegacyUserEndpoint)
                   .changeUserName(
                     session,
                     params['userName'],
@@ -397,7 +454,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
+              ) async => (endpoints['legacyUser'] as _i6.LegacyUserEndpoint)
                   .changeFullName(
                     session,
                     params['fullName'],
@@ -424,7 +481,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionMigration']
-                          as _i6.SessionMigrationEndpoint)
+                          as _i7.SessionMigrationEndpoint)
                       .convertSession(
                         session,
                         sessionKey: params['sessionKey'],
@@ -432,9 +489,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i8.Endpoints()
+    modules['serverpod_auth_core'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
   }
 }
