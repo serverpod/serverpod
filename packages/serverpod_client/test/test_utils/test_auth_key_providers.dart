@@ -25,6 +25,20 @@ class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   }
 }
 
+/// Test auth key provider that authenticates via an `HttpOnly` cookie rather
+/// than the `Authorization` header. Mirrors a real cookie-mode client: it
+/// reports [usesCookies] and never yields a header value (the credential rides
+/// in the browser-managed cookie).
+class TestCookieAuthKeyProvider implements CookieAuthKeyProvider {
+  @override
+  final bool usesCookies;
+
+  TestCookieAuthKeyProvider({this.usesCookies = true});
+
+  @override
+  Future<String?> get authHeaderValue async => null;
+}
+
 /// Test auth key provider that does not support refresh functionality.
 class TestNonRefresherAuthKeyProvider implements ClientAuthKeyProvider {
   final String? _authKey;

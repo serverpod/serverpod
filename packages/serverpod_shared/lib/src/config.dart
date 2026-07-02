@@ -95,6 +95,33 @@ class ServerpodConfig {
   /// Default is 30 seconds.
   final Duration websocketPingInterval;
 
+  /// Browser origins trusted by the server.
+  ///
+  /// Used in two places:
+  /// - WebSocket handshakes: a browser connection whose `Origin` is not in this
+  ///   list is rejected with HTTP 403 (a defense against cross-site WebSocket
+  ///   hijacking).
+  /// - Credentialed CORS (when [authCookie] is set): the matching `Origin` is
+  ///   echoed in `Access-Control-Allow-Origin` together with
+  ///   `Access-Control-Allow-Credentials: true`, since the wildcard `*` is
+  ///   invalid for credentialed requests.
+  ///
+  /// Requests without an `Origin` header (e.g. native, mobile, or
+  /// server-to-server clients, which don't send one) are always allowed for
+  /// WebSocket. When null or empty (the default), all origins are allowed for
+  /// WebSocket and no per-origin CORS echo is emitted.
+  ///
+  /// Entries are normalized to lowercase and matched against the (also
+  /// lowercased) request `Origin`, so they must be serialized origins with no
+  /// trailing slash, e.g. `https://app.example.com` or
+  /// `https://app.example.com:8443` (browsers send a canonical, lowercase
+  /// origin without a path); casing in the configured value does not matter.
+  final List<String>? allowedOrigins;
+
+  /// Configuration for the web authentication cookie. Null (the default) when
+  /// no `authCookie` section is configured.
+  final WebAuthCookieConfig? authCookie;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -117,6 +144,8 @@ class ServerpodConfig {
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
     this.websocketPingInterval = const Duration(seconds: 30),
+    this.allowedOrigins,
+    this.authCookie,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -127,6 +156,36 @@ class ServerpodConfig {
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
     sessionLogs?._validate(databaseEnabled: database != null);
+
+    // Cookie-based web auth depends on an origin allow-list: it backs the
+    // cross-site WebSocket hijacking guard and credentialed CORS (which cannot
+    // use the wildcard origin). Enabling it without one would silently leave
+    // those protections off, so require allowedOrigins when authCookie is set.
+    if (authCookie != null &&
+        (allowedOrigins == null || allowedOrigins!.isEmpty)) {
+      throw ArgumentError(
+        'allowedOrigins must be set to a non-empty list of trusted browser '
+        'origins when authCookie is configured. Cookie-based web auth requires '
+        'an origin allow-list for cross-site WebSocket protection and '
+        'credentialed CORS.',
+      );
+    }
+
+    // Browsers ignore (drop) a SameSite=None cookie that is not also Secure, so
+    // the combination would silently disable the auth cookie.
+    if (authCookie != null &&
+        authCookie!.sameSite == CookieSameSite.none &&
+        !authCookie!.secure) {
+      throw ArgumentError(
+        'authCookie.sameSite "none" requires authCookie.secure to be true; '
+        'browsers ignore a SameSite=None cookie that is not Secure.',
+      );
+    }
+
+    // Fail fast on a malformed cookie domain or path so the error surfaces at
+    // startup with a clear message, rather than deep in the first sign-in when
+    // relic parses these into the Set-Cookie header.
+    authCookie?._validate();
   }
 
   /// Creates a default bare bone configuration.
@@ -244,6 +303,19 @@ class ServerpodConfig {
       environment,
     );
 
+    var allowedOrigins = _readAllowedOrigins(
+      configMap,
+      environment,
+    );
+
+    var authCookieConfigJson = _buildAuthCookieConfigMap(
+      configMap,
+      environment,
+    );
+    var authCookie = authCookieConfigJson != null
+        ? WebAuthCookieConfig._fromJson(authCookieConfigJson)
+        : null;
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -263,6 +335,8 @@ class ServerpodConfig {
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
       websocketPingInterval: websocketPingInterval,
+      allowedOrigins: allowedOrigins,
+      authCookie: authCookie,
     );
   }
 
@@ -322,6 +396,9 @@ class ServerpodConfig {
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
+    Duration? websocketPingInterval,
+    List<String>? allowedOrigins,
+    WebAuthCookieConfig? authCookie,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -346,6 +423,10 @@ class ServerpodConfig {
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
       validateHeaders: validateHeaders ?? this.validateHeaders,
+      websocketPingInterval:
+          websocketPingInterval ?? this.websocketPingInterval,
+      allowedOrigins: allowedOrigins ?? this.allowedOrigins,
+      authCookie: authCookie ?? this.authCookie,
     );
   }
 
@@ -899,6 +980,167 @@ class FutureCallConfig {
   }
 }
 
+/// Configuration for the cookie used to carry the web authentication token.
+///
+/// [domain] and [path] are plain strings. [sameSite] controls cross-site
+/// behaviour. Defaults are suitable for first-party web apps over HTTPS:
+/// host-only domain, `path: /`, `secure: true`, `sameSite: lax`.
+class WebAuthCookieConfig {
+  /// The name of the cookie.
+  final String name;
+
+  /// The domain the cookie applies to. Null (the default) makes it host-only;
+  /// set a registrable domain (e.g. `.example.com`) to share across subdomains.
+  final String? domain;
+
+  /// The path the cookie applies to. Defaults to `/`.
+  final String path;
+
+  /// Whether the cookie is only sent over secure (HTTPS) connections. Defaults
+  /// to true.
+  final bool secure;
+
+  /// The `SameSite` attribute. Defaults to [CookieSameSite.lax].
+  final CookieSameSite sameSite;
+
+  /// The default cookie name.
+  static const String defaultName = 'serverpod_auth';
+
+  /// Creates a new [WebAuthCookieConfig].
+  const WebAuthCookieConfig({
+    this.name = defaultName,
+    this.domain,
+    this.path = '/',
+    this.secure = true,
+    this.sameSite = CookieSameSite.lax,
+  });
+
+  factory WebAuthCookieConfig._fromJson(Map json) {
+    return WebAuthCookieConfig(
+      name:
+          _parseOptionalString(
+            json[ServerpodEnv.authCookieName.configKey],
+            ServerpodEnv.authCookieName.configKey,
+          ) ??
+          defaultName,
+      domain: _parseOptionalString(
+        json[ServerpodEnv.authCookieDomain.configKey],
+        ServerpodEnv.authCookieDomain.configKey,
+      ),
+      path:
+          _parseOptionalString(
+            json[ServerpodEnv.authCookiePath.configKey],
+            ServerpodEnv.authCookiePath.configKey,
+          ) ??
+          '/',
+      secure: _parseSecure(json[ServerpodEnv.authCookieSecure.configKey]),
+      sameSite: _parseSameSite(json[ServerpodEnv.authCookieSameSite.configKey]),
+    );
+  }
+
+  /// Reads an optional string cookie attribute. Returns null when unset (null
+  /// or empty, so the field falls back to its default) and the value when it is
+  /// a non-empty string. A non-string value (e.g. a YAML number or bool) throws
+  /// rather than silently falling back to the default, mirroring [_parseSecure]
+  /// so every attribute reports a misconfiguration the same way.
+  static String? _parseOptionalString(Object? value, String configKey) {
+    return switch (value) {
+      null => null,
+      String s => s.isEmpty ? null : s,
+      _ => throw ArgumentError.value(value, configKey, 'Expected a string'),
+    };
+  }
+
+  /// Parses the `secure` [value], accepting a [bool] or a [String].
+  ///
+  /// A string is trimmed and matched case-insensitively, so `"True"` or `" true "` is accepted.
+  static bool _parseSecure(Object? value) {
+    return switch (value) {
+      null => true,
+      bool b => b,
+      String s =>
+        bool.tryParse(s.trim(), caseSensitive: false) ??
+            (throw ArgumentError.value(
+              s,
+              ServerpodEnv.authCookieSecure.configKey,
+              'Expected a boolean (true or false)',
+            )),
+      _ => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSecure.configKey,
+        'Expected a boolean (true or false)',
+      ),
+    };
+  }
+
+  /// Parses the `sameSite` [value].
+  ///
+  /// Fall back to [CookieSameSite.lax] on `null`. Throws on wrong type
+  static CookieSameSite _parseSameSite(Object? value) {
+    if (value == null) return CookieSameSite.lax;
+
+    final name = switch (value) {
+      String s => s.toLowerCase(),
+      _ => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSameSite.configKey,
+        'Expected one of: ${CookieSameSite.values.map((s) => s.name).join(', ')}',
+      ),
+    };
+
+    return CookieSameSite.values.firstWhere(
+      (s) => s.name == name,
+      orElse: () => throw ArgumentError.value(
+        value,
+        ServerpodEnv.authCookieSameSite.configKey,
+        'Expected one of: ${CookieSameSite.values.map((s) => s.name).join(', ')}',
+      ),
+    );
+  }
+
+  /// Checks the [domain] and [path] formats, throwing [ArgumentError] on an
+  /// obviously malformed value (a scheme, port, stray separator, etc.) so a
+  /// misconfiguration fails fast at startup instead of only on the first cookie
+  /// sign-in. This is a cheap, dependency-free pre-check; relic performs the
+  /// authoritative parse when the `Set-Cookie` header is built.
+  void _validate() {
+    final domain = this.domain;
+    if (domain != null) {
+      // A cookie Domain is a bare host (RFC 6265 5.2.3): no scheme, port, path
+      // or whitespace. A leading dot is allowed (normalized away at build time).
+      final bare = domain.startsWith('.') ? domain.substring(1) : domain;
+      if (bare.isEmpty || RegExp(r'[\s:/\\]').hasMatch(domain)) {
+        throw ArgumentError.value(
+          domain,
+          ServerpodEnv.authCookieDomain.configKey,
+          'Expected a bare host such as "example.com" or ".example.com" '
+          '(no scheme, port, path or whitespace)',
+        );
+      }
+    }
+    // A cookie Path is an RFC 6265 path-value: reject whitespace and ";"
+    // here; relic validates the full grammar when the cookie is built.
+    if (RegExp(r'[\s;]').hasMatch(path)) {
+      throw ArgumentError.value(
+        path,
+        ServerpodEnv.authCookiePath.configKey,
+        'Must not contain whitespace or ";"',
+      );
+    }
+  }
+
+  @override
+  String toString() {
+    var output = StringBuffer()
+      ..writeln('auth cookie name: $name')
+      ..writeln('auth cookie domain: ${domain ?? '(host-only)'}')
+      ..writeln('auth cookie path: $path')
+      ..writeln('auth cookie secure: $secure')
+      ..writeln('auth cookie sameSite: ${sameSite.name}');
+    return output.toString();
+  }
+}
+
 /// Valid values for console log format.
 enum ConsoleLogFormat {
   /// JSON format.
@@ -1185,6 +1427,23 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.futureCallScanInterval, int.parse),
     (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
     (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
+  ]);
+}
+
+Map? _buildAuthCookieConfigMap(Map configMap, Map<String, String> environment) {
+  var authCookieConfig = configMap[ServerpodConfigMap.authCookie] ?? {};
+
+  // `secure` is intentionally passed through unconverted (null) so that
+  // WebAuthCookieConfig._parseSecure owns all boolean coercion and reports a
+  // bad value the same way (ArgumentError) whether it came from an env var or
+  // a YAML string, rather than splitting parsing across two layers with
+  // divergent error types.
+  return _buildConfigMap(authCookieConfig, environment, [
+    (ServerpodEnv.authCookieName, null),
+    (ServerpodEnv.authCookieDomain, null),
+    (ServerpodEnv.authCookiePath, null),
+    (ServerpodEnv.authCookieSecure, null),
+    (ServerpodEnv.authCookieSameSite, null),
   ]);
 }
 
@@ -1533,4 +1792,48 @@ void _validateJsonConfig(
 List<String>? _parseList(String? value) {
   if (value == null) return null;
   return value.split(',').map((e) => e.trim()).toList();
+}
+
+List<String>? _readAllowedOrigins(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  final envVariable = ServerpodEnv.allowedOrigins.envVariable;
+  final configKey = ServerpodEnv.allowedOrigins.configKey;
+
+  // The environment variable (a comma-separated string) takes precedence over
+  // the config file value (which may be a YAML list or a comma-separated
+  // string). An empty or whitespace-only env var is treated as unset so a
+  // blank value injected by a deployment template cannot silently override a
+  // configured allow-list and disable the origin guard.
+  Object? value = configMap[configKey];
+  final envValue = environment[envVariable];
+  if (envValue != null && envValue.trim().isNotEmpty) {
+    value = envValue;
+  }
+
+  List<String>? origins;
+  if (value is List) {
+    origins = value.map((e) => e.toString().trim()).toList();
+  } else if (value is String) {
+    origins = _parseList(value);
+  }
+
+  // Normalize to lowercase and drop a trailing slash: origins (scheme + host)
+  // are case-insensitive and a browser sends a canonical lowercase origin with
+  // no path, so a mis-cased entry ("https://App.Example.com") or one copied
+  // from a URL bar with a trailing slash ("https://app.example.com/") must
+  // still match the request origin.
+  origins = origins
+      ?.map((origin) => origin.toLowerCase())
+      .map((origin) => origin.replaceFirst(RegExp(r'/+$'), ''))
+      .toList();
+
+  // Drop blank entries so an empty env var ("") or a trailing comma
+  // ("https://a.com,") does not become a deny-all [''] list.
+  origins = origins?.where((origin) => origin.isNotEmpty).toList();
+
+  // Treat an empty list as "no restriction" (same as null) so an empty config
+  // value doesn't accidentally reject every browser connection.
+  return (origins == null || origins.isEmpty) ? null : origins;
 }

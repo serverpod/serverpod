@@ -1,3 +1,4 @@
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
@@ -27,18 +28,28 @@ class ServerpodClientRequestDelegateImpl
   }
 
   @override
+  bool get supportsCookieAuth => true;
+
+  @override
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool useCookieAuth = false,
   }) async {
     try {
+      if (useCookieAuth) {
+        // Send the auth cookie with the request and accept Set-Cookie back.
+        var client = _httpClient;
+        if (client is BrowserClient) client.withCredentials = true;
+      }
       var response = await _httpClient
           .post(
             url,
             body: body,
             headers: {
               'authorization': ?authenticationValue,
+              if (useCookieAuth) webAuthModeHeaderName: webAuthModeCookie,
             },
           )
           .timeout(connectionTimeout);

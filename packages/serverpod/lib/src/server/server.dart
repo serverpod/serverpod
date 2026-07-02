@@ -8,6 +8,7 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health/health_routes.dart';
+import 'package:serverpod/src/server/response_output.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
@@ -220,18 +221,36 @@ class Server implements RouterInjectable {
     return (req) async {
       try {
         return await next(req);
-      } on MaxBodySizeExceeded catch (e) {
+      } catch (e, stackTrace) {
+        return await _toErrorResponse(e, stackTrace, request: req);
+      }
+    };
+  }
+
+  /// Builds the HTTP [Response] for an [error] thrown while handling a request.
+  ///
+  /// Shared by [_reportException] and the method-call error path so a faulted
+  /// call's queued response output (e.g. a sign-out cookie clear) can be
+  /// applied to the same error response instead of being dropped. An
+  /// unrecognized error is reported as a framework exception and becomes a 500.
+  Future<Response> _toErrorResponse(
+    Object error,
+    StackTrace stackTrace, {
+    Request? request,
+  }) async {
+    switch (error) {
+      case MaxBodySizeExceeded():
         return Response.contentTooLarge(
           body: Body.fromString(
-            'Request size exceeds the maximum allowed size of ${e.maxLength} bytes.',
+            'Request size exceeds the maximum allowed size of ${error.maxLength} bytes.',
           ),
         );
-      } on EndpointDispatchException catch (e) {
-        return switch (e) {
+      case EndpointDispatchException():
+        return switch (error) {
           EndpointNotFoundException() => Response.notFound(
-            body: Body.fromString(e.message),
+            body: Body.fromString(error.message),
           ),
-          NotAuthorizedException() => Response(switch (e.reason) {
+          NotAuthorizedException() => Response(switch (error.reason) {
             AuthenticationFailureReason.unauthenticated =>
               io.HttpStatus.unauthorized,
             AuthenticationFailureReason.insufficientAccess =>
@@ -240,33 +259,34 @@ class Server implements RouterInjectable {
           MethodNotFoundException() ||
           InvalidEndpointMethodTypeException() ||
           InvalidParametersException() => Response.badRequest(
-            body: Body.fromString(e.message),
+            body: Body.fromString(error.message),
           ),
         };
-      } on SerializableException catch (e) {
+      case SerializableException():
         return Response.badRequest(
           body: Body.fromString(
-            serializationManager.encodeWithTypeForProtocol(e),
+            serializationManager.encodeWithTypeForProtocol(error),
             mimeType: MimeType.json,
           ),
         );
-      } on HeaderException catch (e) {
-        return Response.badRequest(body: Body.fromString(e.httpResponseBody));
-      } on AuthHeaderEncodingException catch (_) {
+      case HeaderException():
+        return Response.badRequest(
+          body: Body.fromString(error.httpResponseBody),
+        );
+      case AuthHeaderEncodingException():
         return Response.badRequest(
           body: Body.fromString('Request has invalid "authorization" header'),
         );
-      } catch (e, stackTrace) {
+      default:
         await _reportFrameworkException(
-          e,
+          error,
           stackTrace,
           message:
               'Internal server error. Request handler failed with exception.',
-          request: req,
+          request: request,
         );
         return Response.internalServerError();
-      }
-    };
+    }
   }
 
   Handler _headers(Handler next) {
@@ -277,26 +297,136 @@ class Server implements RouterInjectable {
               for (final h in httpOptionsResponseHeaders.entries) {
                 mh[h.key] = h.value;
               }
+              // Cookie-auth web clients send the marker header on every request,
+              // so a cross-origin preflight must allow-list it or the browser
+              // blocks the request before it reaches the server.
+              //
+              // The default OPTIONS headers include it,
+              // but a custom httpOptionsResponseHeaders may not.
+              //
+              // Ensure it is present whenever cookie auth is enabled so
+              // the feature can't be silently disabled by a header override.
+              if (serverpod.config.authCookie != null) {
+                final allow = mh.accessControlAllowHeaders;
+                if (allow == null) {
+                  mh.accessControlAllowHeaders =
+                      AccessControlAllowHeadersHeader.headers(
+                        const [webAuthModeHeaderName],
+                      );
+                } else if (!allow.isWildcard &&
+                    !allow.headers.contains(webAuthModeHeaderName)) {
+                  mh.accessControlAllowHeaders =
+                      AccessControlAllowHeadersHeader.headers(
+                        [...allow.headers, webAuthModeHeaderName],
+                      );
+                }
+              }
             })
           : httpResponseHeaders;
 
       // early exit on Method.options
-      if (isOptions) return Response.ok(headers: headers);
+      if (isOptions) {
+        return Response.ok(
+          headers: _applyCredentialedCorsHeaders(headers, req),
+        );
+      }
 
       final result = await next(req);
-      return switch (result) {
-        Response() => result.copyWith(
-          headers: result.headers.isEmpty
-              ? headers
-              : result.headers.transform((mh) {
-                  for (final h in headers.entries) {
-                    mh[h.key] ??= h.value;
-                  }
-                }),
-        ),
-        _ => result,
-      };
+      if (result is! Response) return result;
+
+      // Merge default headers under any the response already set, then apply
+      // credentialed CORS to the merged result so its Origin echo / Vary land
+      // on the actual response (and append to a Vary the endpoint may have set).
+      var merged = result.headers.isEmpty
+          ? headers
+          : result.headers.transform((mh) {
+              for (final h in headers.entries) {
+                mh[h.key] ??= h.value;
+              }
+            });
+      return result.copyWith(
+        headers: _applyCredentialedCorsHeaders(merged, req),
+      );
     };
+  }
+
+  /// The `Origin` header of [req] normalized to lowercase with any trailing
+  /// slash dropped, or null if absent.
+  String? _requestOrigin(Request req) => req
+      .headers[Headers.originHeader]
+      ?.firstOrNull
+      ?.trim()
+      .toLowerCase()
+      .replaceFirst(RegExp(r'/+$'), '');
+
+  /// Whether [req] carries an `Origin` that is present but not in
+  /// [ServerpodConfig.allowedOrigins].
+  ///
+  /// A missing `Origin` (native / mobile / server-to-server, which don't send
+  /// one) or an unset allow-list is not rejected. Shared by the WebSocket
+  /// handshake and the HTTP cookie-auth origin gates so the two cannot drift.
+  bool _isOriginDisallowed(Request req) {
+    var allowedOrigins = serverpod.config.allowedOrigins;
+    if (allowedOrigins == null) return false;
+    var origin = _requestOrigin(req);
+    return origin != null && !allowedOrigins.contains(origin);
+  }
+
+  /// When cookie-based web auth is enabled, credentialed CORS requires echoing
+  /// the specific request `Origin` (the wildcard `*` is invalid with
+  /// credentials) plus `Access-Control-Allow-Credentials: true`. Applied only
+  /// for requests whose `Origin` is in [ServerpodConfig.allowedOrigins];
+  /// otherwise [headers] is returned unchanged.
+  Headers _applyCredentialedCorsHeaders(Headers headers, Request req) {
+    if (serverpod.config.authCookie == null) return headers;
+
+    var allowedOrigins = serverpod.config.allowedOrigins;
+    var origin = _requestOrigin(req);
+
+    // Echo the specific origin (the wildcard `*` is invalid with credentials)
+    // only for an allow-listed origin. Guard the parse so a
+    // malformed-but-allow-listed entry can't turn every response into a 500
+    // from inside this response-building middleware.
+    Origin? parsedOrigin;
+    if (origin != null &&
+        allowedOrigins != null &&
+        allowedOrigins.contains(origin)) {
+      try {
+        parsedOrigin = Origin.parse(origin);
+      } on FormatException {
+        parsedOrigin = null;
+      }
+    }
+
+    return headers.transform((mh) {
+      if (parsedOrigin != null) {
+        mh.accessControlAllowOrigin = AccessControlAllowOriginHeader.origin(
+          origin: parsedOrigin,
+        );
+        mh.accessControlAllowCredentials = true;
+      } else if (origin != null) {
+        // A browser request from a non-allow-listed origin.
+        // Drop the Allow-Origin header so the browser blocks cleanly.
+        mh.accessControlAllowOrigin = null;
+      }
+      // The credentialed-CORS response varies by Origin: an allow-listed origin
+      // gets a specific Access-Control-Allow-Origin while every other request
+      // keeps the default wildcard. A shared cache must therefore key on Origin
+      // for *all* responses while authCookie is enabled - not only the ones
+      // that echo a specific origin - otherwise it could serve a cached
+      // wildcard (or another origin's) response to an allow-listed credentialed
+      // request, which the browser then rejects. VaryHeader canonicalizes field
+      // names to lowercase; a wildcard Vary already covers Origin.
+      var vary = mh.vary;
+      if (vary == null) {
+        mh.vary = VaryHeader.headers(fields: const [Headers.originHeader]);
+      } else if (!vary.isWildcard &&
+          !vary.fields.contains(Headers.originHeader)) {
+        mh.vary = VaryHeader.headers(
+          fields: [...vary.fields, Headers.originHeader],
+        );
+      }
+    });
   }
 
   FutureOr<Result> _cloudStorage(Request req) async {
@@ -321,6 +451,15 @@ class Server implements RouterInjectable {
     requestHandler,
   ) {
     return (req) async {
+      // Reject cross-site WebSocket handshakes when an origin allow-list is
+      // configured. Only browsers send an `Origin` header; native, mobile and
+      // server-to-server clients don't, and are always allowed.
+      if (_isOriginDisallowed(req)) {
+        return Response.forbidden(
+          body: Body.fromString('WebSocket origin not allowed.'),
+        );
+      }
+
       return WebSocketUpgrade((webSocket) async {
         try {
           webSocket.pingInterval = serverpod.config.websocketPingInterval;
@@ -391,9 +530,9 @@ class Server implements RouterInjectable {
       }
     }
 
-    // Get the authentication key, if any
-    // If it is provided in the HTTP authorization header we use that,
-    // otherwise we look for it in the query parameters (the old method).
+    // Get the authentication key, if any, from the HTTP authorization header.
+    // Auth tokens are no longer accepted via the `?auth=` query parameter, so
+    // they never appear in request URLs (and thus server/proxy access logs).
     String? authenticationKey;
     String? authenticationHeaderValue;
 
@@ -401,7 +540,26 @@ class Server implements RouterInjectable {
       serverpod.config.validateHeaders,
     );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    authenticationKey ??= queryParameters['auth'] as String?;
+
+    // Fall back to the web auth cookie for requests that opted into cookie mode
+    // via the marker header (layer 3 CSRF defense). A cross-site form or simple
+    // request cannot set this custom header without a CORS preflight, which
+    // fails for non-allow-listed origins.
+    if (authenticationKey == null &&
+        serverpod.config.authCookie != null &&
+        request.headers[webAuthModeHeaderName]?.firstOrNull ==
+            webAuthModeCookie) {
+      // Reject a cookie-mode request whose `Origin` is present but not in the
+      // allow-list (Layer 2 CSRF defense).
+      if (_isOriginDisallowed(request)) {
+        return Response.forbidden(
+          body: Body.fromString('Request origin not allowed.'),
+        );
+      }
+      authenticationKey = request.getAuthCookieValue(
+        serverpod.config.authCookie,
+      );
+    }
 
     MethodCallSession? maybeSession;
     try {
@@ -445,12 +603,18 @@ class Server implements RouterInjectable {
           session,
           methodCallContext.arguments,
         );
-        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
-        return Response.ok(
-          body: Body.fromString(
-            SerializationManager.encodeForProtocol(result),
-            mimeType: MimeType.json,
-          ),
+        var response = methodCallContext.endpoint.sendAsRaw
+            ? _toResponse(result)
+            : Response.ok(
+                body: Body.fromString(
+                  SerializationManager.encodeForProtocol(result),
+                  mimeType: MimeType.json,
+                ),
+              );
+        return applyResponseOutput(
+          response,
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
@@ -461,7 +625,20 @@ class Server implements RouterInjectable {
           context: contextFromSession(session, request: request),
         );
         await session.close(error: e, stackTrace: stackTrace);
-        rethrow;
+
+        // Apply response output queued before the failure (e.g. a sign-out's
+        // cookie clear) to the error response, so it still reaches the client
+        // instead of being dropped when the call throws. With nothing queued,
+        // defer to _reportException for identical handling.
+        if (session.responseHeaders.isEmpty &&
+            session.responseCookies.isEmpty) {
+          rethrow;
+        }
+        return applyResponseOutput(
+          await _toErrorResponse(e, stackTrace, request: request),
+          headers: session.responseHeaders,
+          cookies: session.responseCookies,
+        );
       }
     } finally {
       await maybeSession?.close(); // safe to close twice
