@@ -19,7 +19,8 @@ void main() {
       () async {
         await server.startWithDatabase();
       },
-      timeout: Timeout(Duration(seconds: 10)),
+      // Covers first-use provisioning: embedded-PG launch + create + migrate.
+      timeout: Timeout(Duration(seconds: 120)),
     );
 
     test(
@@ -29,7 +30,8 @@ void main() {
         await server.shutdown(exitProcess: false);
         await server.startWithDatabase();
       },
-      timeout: Timeout(Duration(seconds: 10)),
+      // Covers first-use provisioning: embedded-PG launch + create + migrate.
+      timeout: Timeout(Duration(seconds: 120)),
     );
   });
 }
