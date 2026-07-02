@@ -243,7 +243,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onHotReload: onHotReload,
           onHotRestart: onHotRestart,
           onCreateMigration: onCreateMigration,
-          onCreateRepairMigration: onCreateRepairMigration,
           onApplyMigration: onApplyMigration,
           onClearLogs: () {
             state.clearLogs();
@@ -430,6 +429,18 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
         event.logicalKey == LogicalKey.keyS) {
       state.showRawServerLogs = true;
       _rebuild();
+      return true;
+    }
+
+    // Repair migration (Shift for force). Not shown in the bottom bar; it is
+    // documented on the help screen instead.
+    if (event.logicalKey == LogicalKey.keyP &&
+        !event.isControlPressed &&
+        !event.isAltPressed &&
+        !event.isMetaPressed &&
+        state.serverReady &&
+        !state.actionBusy) {
+      onCreateRepairMigration?.call(force: event.isShiftPressed);
       return true;
     }
 

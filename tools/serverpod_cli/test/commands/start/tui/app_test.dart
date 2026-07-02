@@ -474,6 +474,26 @@ void main() {
     });
   });
 
+  group('Given a ready TUI start app', () {
+    setUp(() {
+      state.serverReady = true;
+    });
+
+    test('when P is pressed then a repair migration is invoked', () async {
+      var repairCalls = 0;
+      var forced = true;
+      holder.onCreateRepairMigration = ({bool force = false}) {
+        repairCalls++;
+        forced = force;
+      };
+
+      await _sendKey(tester, LogicalKey.keyP);
+
+      expect(repairCalls, 1);
+      expect(forced, isFalse);
+    });
+  });
+
   group('Given a running TUI start app with exactly one launchable app', () {
     late int restartCalls;
 

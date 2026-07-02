@@ -23,7 +23,6 @@ class MainScreen extends StatelessComponent {
     this.onHotReload,
     this.onHotRestart,
     this.onCreateMigration,
-    this.onCreateRepairMigration,
     this.onApplyMigration,
     this.onClearLogs,
     this.onLaunchApp,
@@ -40,7 +39,6 @@ class MainScreen extends StatelessComponent {
   final VoidCallback? onHotReload;
   final VoidCallback? onHotRestart;
   final void Function({bool force})? onCreateMigration;
-  final void Function({bool force})? onCreateRepairMigration;
   final VoidCallback? onApplyMigration;
   final VoidCallback? onClearLogs;
   final ValueChanged<int>? onLaunchApp;
@@ -67,6 +65,7 @@ class MainScreen extends StatelessComponent {
             state.launchableApps.length == 1 ? 'Launch app' : 'Launch apps',
           ),
         ('Shift+M', 'Force Create migration'),
+        ('P', 'Repair migration'),
         ('Shift+P', 'Force Repair migration'),
         ('E', 'Expand / collapse stack traces'),
         ('S', 'Show raw server logs'),
@@ -727,14 +726,6 @@ class MainScreen extends StatelessComponent {
           onActivate: (_) => onCreateMigration?.call(),
           onShiftActivate: (_) => onCreateMigration?.call(force: true),
           enabled: actionsEnabled && onCreateMigration != null,
-        ),
-        Button(
-          name: 'Repair migration',
-          activationChar: 'P',
-          activationKeys: const [LogicalKey.keyP],
-          onActivate: (_) => onCreateRepairMigration?.call(),
-          onShiftActivate: (_) => onCreateRepairMigration?.call(force: true),
-          enabled: actionsEnabled && onCreateRepairMigration != null,
         ),
         Button(
           name: 'Apply migrations',
