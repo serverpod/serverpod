@@ -266,7 +266,10 @@ Future<ProcessOutput> startProcess(
   bool verbose = false,
 }) async {
   final process = await Process.start(
-    executable,
+    // Spawn the VM binary directly: a PATH 'dart' may be a version-manager
+    // shell shim (puro, fvm) that does not forward signals, so the SIGINT/
+    // SIGTERM assertions would time out and leak the spawned server.
+    executable == 'dart' ? Platform.resolvedExecutable : executable,
     arguments,
     environment: environment,
   );
