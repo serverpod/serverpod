@@ -118,6 +118,8 @@ in the server `pubspec.yaml` under `serverpod: flutter_apps:`, a map of display
 alias to properties (alongside `serverpod: scripts:`):
 
 - `path`: path to the Flutter package, relative to the server package.
+- `displayName`: optional human-readable label for TUI tab names and
+  breadcrumbs. When omitted, the app id is used.
 - `auto_launch`: launch this app automatically on `serverpod start`. Apps
   without it are launched on demand with `Ctrl+R`.
 - `device`: the `flutter run -d` target. Defaults to the web server (opening a
@@ -136,6 +138,7 @@ serverpod:
   flutter_apps:
     Admin:
       path: ../apps/admin
+      displayName: "Admin app"
       auto_launch: true
       device: chrome
       target: lib/main.dart

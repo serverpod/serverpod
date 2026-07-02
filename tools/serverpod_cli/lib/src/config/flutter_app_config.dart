@@ -9,9 +9,9 @@ import '../util/yaml_util.dart';
 /// One configured companion Flutter app.
 ///
 /// Configured under the `serverpod: flutter_apps:` map in the server's
-/// `pubspec.yaml`, keyed by app id. Reserved properties (`path`, `auto_launch`,
-/// `device`) are interpreted directly; any other property is forwarded to
-/// `flutter run` via [extraRunArgs].
+/// `pubspec.yaml`, keyed by app id. Reserved properties (`path`, `displayName`,
+/// `auto_launch`, `device`) are interpreted directly; any other property is
+/// forwarded to `flutter run` via [extraRunArgs].
 class FlutterAppConfig {
   /// Creates a [FlutterAppConfig].
   const FlutterAppConfig({
@@ -43,7 +43,7 @@ class FlutterAppConfig {
 
   /// Extra arguments forwarded verbatim to `flutter run`, derived from any
   /// non-reserved properties on the app's entry — e.g. `target: lib/main.dart`
-  /// becomes `--target=lib/main.dart`. The reserved keys (`path`,
+  /// becomes `--target=lib/main.dart`. The reserved keys (`path`, `displayName`,
   /// `auto_launch`, `device`) are excluded.
   final List<String> extraRunArgs;
 
@@ -89,8 +89,9 @@ String? computeFlutterAppsFingerprint(File serverPubspecFile) {
 ///
 /// Apps are configured under `serverpod: flutter_apps:` (a sibling of
 /// `serverpod: scripts:`), a map keyed by app id whose entries are maps of
-/// properties. The reserved properties (`path`, `auto_launch`, `device`) are
-/// interpreted directly; every other property is forwarded to `flutter run`
+/// properties. The reserved properties (`path`, `displayName`, `auto_launch`,
+/// `device`) are interpreted directly; every other property is forwarded to
+/// `flutter run`
 /// (see [_flutterRunArgsFromProps]). When the section is absent the default
 /// sibling `../<projectName>_flutter` app is synthesized (only if it exists).
 List<FlutterAppConfig> loadFlutterApps({
@@ -162,12 +163,23 @@ List<FlutterAppConfig> loadFlutterApps({
       );
     }
 
+    final displayNameNode = propsNode.nodes['displayName'];
+    final displayNameValue = displayNameNode?.value;
+    if (displayNameValue != null &&
+        (displayNameValue is! String || displayNameValue.isEmpty)) {
+      throw SourceSpanFormatException(
+        'The "$id" flutter app "displayName" property must be a non-empty '
+        'string. Or remove the property to use the app id as the display name.',
+        displayNameNode!.span,
+      );
+    }
+
     final relativePathParts = p.split(pathValue);
 
     apps.add(
       FlutterAppConfig(
         id: id,
-        name: id,
+        name: displayNameValue as String? ?? id,
         relativePathParts: relativePathParts,
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
         autoLaunch: autoLaunchValue ?? false,
@@ -214,7 +226,25 @@ List<FlutterAppConfig> _synthesizeDefaultFlutterApps({
 
 /// Properties the parser interprets itself; every other key under an app's
 /// entry is forwarded to `flutter run`.
-const _reservedFlutterAppKeys = {'path', 'auto_launch', 'device'};
+const _reservedFlutterAppKeys = {
+  'path',
+  'displayName',
+  'auto_launch',
+  'device',
+};
+
+/// Formats an app id into a human-readable display name for new projects.
+///
+/// Capitalizes the first letter, replaces underscores with spaces, and appends
+/// ` app` — e.g. `todo` → `Todo app`, `my_project` → `My project app`.
+String formatFlutterAppDisplayName(String appId) {
+  if (appId.isEmpty) return ' app';
+
+  final withSpaces = appId.replaceAll('_', ' ');
+  final capitalized =
+      '${withSpaces[0].toUpperCase()}${withSpaces.substring(1)}';
+  return '$capitalized app';
+}
 
 /// Builds `flutter run` arguments from the non-reserved properties of
 /// [propsNode], preserving the order they appear in the pubspec.
