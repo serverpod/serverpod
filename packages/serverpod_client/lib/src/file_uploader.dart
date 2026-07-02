@@ -46,7 +46,6 @@ class FileUploader {
           final method = _uploadDescription.method ?? 'POST';
           final request = http.StreamedRequest(method, _uploadDescription.url);
 
-          // Apply custom headers from description, with defaults
           final headers = {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
@@ -54,11 +53,9 @@ class FileUploader {
           };
           request.headers.addAll(headers);
           request.contentLength = length;
+          unawaited(stream.pipe(request.sink));
 
-          final (_, response) = await (
-            stream.pipe(request.sink),
-            request.send(),
-          ).wait;
+          var response = await request.send();
           await response.stream.drain();
 
           // Accept both 200 and 204 as success (PUT uploads often return 200)

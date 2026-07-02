@@ -1,11 +1,15 @@
+# Optional .env (see env.example): SERVERPOD_TEST_POSTGRES_PORT / _REDIS_PORT
+# when 8090 / 8091 are already in use. Match database.port / redis.port in
+# config/development.yaml.
 services:
   postgres:
     build:
       context: ../../docker
       dockerfile: Dockerfile.postgres
     ports:
-      - '8090:5432'
-      - '5432:5432'
+      # Avoid 5432:5432 so this compose file does not conflict with a local
+      # PostgreSQL install on the host.
+      - '${SERVERPOD_TEST_POSTGRES_PORT:-8090}:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test
@@ -15,8 +19,7 @@ services:
   redis:
     image: redis:6.2.6
     ports:
-      - '8091:6379'
-      - '6379:6379'
+      - '${SERVERPOD_TEST_REDIS_PORT:-8091}:6379'
     command: redis-server --requirepass password
     environment:
       - REDIS_REPLICATION_MODE=master
