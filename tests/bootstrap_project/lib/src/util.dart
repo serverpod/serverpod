@@ -257,6 +257,38 @@ String getServerpodCliEntrypointPath({required final String rootPath}) {
   );
 }
 
+bool? _dartPubSeesFlutter;
+
+/// Whether this environment's plain `dart pub` can resolve `flutter from sdk`.
+///
+/// false if dart shim is not the Flutter-embedded binary (fx puro).
+///
+/// When false, any `dart test` or implicit re-resolve inside a created
+/// project's workspace (which contains the Flutter app) fails with
+/// 'version solving failed'. Callers should skip those tests.
+bool dartPubSeesFlutter() => _dartPubSeesFlutter ??= _probeDartPubFlutter();
+
+bool _probeDartPubFlutter() {
+  final dir = Directory.systemTemp.createTempSync('spb_flutter_probe_');
+  try {
+    File(
+      path.join(dir.path, 'pubspec.yaml'),
+    ).writeAsStringSync(
+      'name: flutter_probe\nenvironment:\n  sdk: ^3.0.0\ndependencies:\n  flutter:\n    sdk: flutter\n',
+    );
+    final result = Process.runSync('dart', [
+      'pub',
+      'get',
+      '--offline',
+    ], workingDirectory: dir.path);
+    return result.exitCode == 0;
+  } finally {
+    try {
+      dir.deleteSync(recursive: true);
+    } catch (_) {}
+  }
+}
+
 String _getCommandToRun(String command, bool ignorePlatform) {
   if (ignorePlatform) {
     return command;

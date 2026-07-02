@@ -1121,10 +1121,8 @@ void main() async {
 
         await expectLater(testProcess.exitCode, completion(0));
       },
-      // The generated server now uses embedded PostgreSQL; drop this skip once
-      // embedded PG is verified on Windows CI.
-      skip: Platform.isWindows
-          ? 'Pending: verify embedded PostgreSQL on Windows CI'
+      skip: !dartPubSeesFlutter()
+          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
           : null,
     );
 

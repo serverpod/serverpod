@@ -830,10 +830,8 @@ void main() async {
 
         expect(testProcess.exitCode, 0, reason: 'Tests are failing.');
       },
-      // The generated server now uses embedded PostgreSQL; drop this skip once
-      // embedded PG is verified on Windows CI.
-      skip: Platform.isWindows
-          ? 'Pending: verify embedded PostgreSQL on Windows CI'
+      skip: !dartPubSeesFlutter()
+          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
           : null,
     );
   });
@@ -876,6 +874,9 @@ void main() async {
 
         expect(testProcess.exitCode, 0);
       },
+      skip: !dartPubSeesFlutter()
+          ? 'dart pub cannot resolve the Flutter SDK here (version-manager shim)'
+          : null,
     );
   });
 }
