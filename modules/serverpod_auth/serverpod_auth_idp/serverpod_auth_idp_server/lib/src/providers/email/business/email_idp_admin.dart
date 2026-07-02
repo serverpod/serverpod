@@ -5,6 +5,8 @@ import '../util/email_string_extension.dart';
 import 'email_idp_server_exceptions.dart';
 import 'email_idp_utils.dart';
 
+// UserProfile and EmailAccount are imported from core.dart above
+
 /// Collection of email-account admin methods.
 class EmailIdpAdmin {
   final EmailIdpUtils _utils;
@@ -257,6 +259,71 @@ class EmailIdpAdmin {
           password: password,
           transaction: transaction,
         );
+      },
+    );
+  }
+
+  /// Updates the email address for an existing email authentication account.
+  ///
+  /// Atomically updates both the [EmailAccount] and associated [UserProfile]
+  /// to ensure data consistency. Both [oldEmail] and [newEmail] are normalized
+  /// before processing.
+  ///
+  /// Throws [EmailAccountNotFoundException] if no account exists for [oldEmail]
+  /// and [EmailAuthenticationInvalidCredentialsException] if [newEmail] is
+  /// already registered.
+  Future<void> updateEmail(
+    final Session session, {
+    required String oldEmail,
+    required String newEmail,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        oldEmail = oldEmail.normalizedEmail;
+        newEmail = newEmail.normalizedEmail;
+
+        final account = (await _utils.account.listAccounts(
+          session,
+          email: oldEmail,
+          transaction: transaction,
+        )).singleOrNull;
+
+        if (account == null) {
+          throw EmailAccountNotFoundException();
+        }
+
+        final existingAccount = await findAccount(
+          session,
+          email: newEmail,
+          transaction: transaction,
+        );
+
+        if (existingAccount != null) {
+          throw EmailAuthenticationInvalidCredentialsException();
+        }
+
+        await EmailAccount.db.updateRow(
+          session,
+          account.copyWith(email: newEmail),
+          transaction: transaction,
+        );
+
+        final profile = await UserProfile.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(account.authUserId),
+          transaction: transaction,
+        );
+
+        if (profile != null) {
+          await UserProfile.db.updateRow(
+            session,
+            profile.copyWith(email: newEmail),
+            transaction: transaction,
+          );
+        }
       },
     );
   }
