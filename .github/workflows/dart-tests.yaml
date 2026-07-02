@@ -515,7 +515,7 @@ jobs:
         run: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
       # windows-latest runs as runneradmin (elevated), and Postgres refuses to
       # start under an Administrators-group token. Run the suite under a limited
-      # token via PsExec -l (same trick as embedded_postgres_integration_tests).
+      # token via PsExec -l (same trick as serverpod_embedded_postgres_tests).
       # PsExec drops the inner process's stdout in GHA, so the suite command
       # redirects to a log file that the outer step prints; the exit code still
       # propagates. The suite's own command (bash script or `cd && dart test`)
@@ -554,7 +554,7 @@ jobs:
         run: ${{ matrix.suite.run }}
         timeout-minutes: 15
 
-  embedded_postgres_integration_tests:
+  serverpod_embedded_postgres_tests:
     name: serverpod_embedded_postgres integration (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs: seed_embedded_pg
@@ -812,16 +812,15 @@ jobs:
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       # Firefox for the browser run; xvfb provides the virtual display (xvfb-run).
-      # TODO: pin to a SHA before merge (repo convention).
-      - uses: browser-actions/setup-firefox@v1
+      - uses: browser-actions/setup-firefox@0bc507ddf224827e3b1af68e014d5e42ab93e795 # v1.7.2
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
       - name: Run e2e web tests
         run: util/run_tests_e2e_host firefox ${{ matrix.shard }} 5
         timeout-minutes: 15
 
-  integration_tests:
-    name: Serverpod integration tests
+  serverpod_shared_integration_tests:
+    name: serverpod_shared integration tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
