@@ -54,38 +54,50 @@ class BundleBuilder {
     var arch = dash < 0 ? '' : platform.substring(dash + 1);
 
     var scratch = Directory.systemTemp.createTempSync('serverpod-pg-build-');
-    // The build runs under bash (MSYS2 on Windows). bash needs forward slashes:
-    // a backslashed `D:\...\build-all.sh` makes the script's own
-    // `dirname "$BASH_SOURCE"` collapse to "." (no `/`), and a backslashed
-    // PGBUILD mixes separators in every `$B/...` path. The forward-slash form
-    // (`D:/...`) is accepted by the native tooling too. No-op off Windows.
-    String fwd(String path) =>
-        Platform.isWindows ? path.replaceAll(r'\', '/') : path;
-    var proc = await Process.start(
-      bash,
-      [fwd(script.path)],
-      environment: {
-        ...Platform.environment,
-        'PGBUILD': fwd(scratch.path),
-        'BUNDLE_OS': os,
-        'BUNDLE_ARCH': arch,
-        'PG_VERSION': bom,
-      },
-      mode: ProcessStartMode.inheritStdio,
-    );
-    var code = await proc.exitCode;
-    if (code != 0) {
-      throw BinaryBuildException('local bundle build failed (exit $code).');
-    }
-    var bundle = File(
-      p.join(scratch.path, 'dist', 'serverpod-postgres-$bom-$platform.tar.xz'),
-    );
-    if (!bundle.existsSync()) {
-      throw BinaryBuildException(
-        'build completed but produced no bundle at ${bundle.path}.',
+    try {
+      // The build runs under bash (MSYS2 on Windows). bash needs forward slashes:
+      // a backslashed `D:\...\build-all.sh` makes the script's own
+      // `dirname "$BASH_SOURCE"` collapse to "." (no `/`), and a backslashed
+      // PGBUILD mixes separators in every `$B/...` path. The forward-slash form
+      // (`D:/...`) is accepted by the native tooling too. No-op off Windows.
+      String fwd(String path) =>
+          Platform.isWindows ? path.replaceAll(r'\', '/') : path;
+      var proc = await Process.start(
+        bash,
+        [fwd(script.path)],
+        environment: {
+          ...Platform.environment,
+          'PGBUILD': fwd(scratch.path),
+          'BUNDLE_OS': os,
+          'BUNDLE_ARCH': arch,
+          'PG_VERSION': bom,
+        },
+        mode: ProcessStartMode.inheritStdio,
       );
+      var code = await proc.exitCode;
+      if (code != 0) {
+        throw BinaryBuildException('local bundle build failed (exit $code).');
+      }
+      var bundle = File(
+        p.join(
+          scratch.path,
+          'dist',
+          'serverpod-postgres-$bom-$platform.tar.xz',
+        ),
+      );
+      if (!bundle.existsSync()) {
+        throw BinaryBuildException(
+          'build completed but produced no bundle at ${bundle.path}.',
+        );
+      }
+      // Copy the archive out so the multi-GB build tree can be deleted
+      var out = Directory.systemTemp.createTempSync('serverpod-pg-bundle-');
+      return bundle.copySync(p.join(out.path, p.basename(bundle.path)));
+    } finally {
+      try {
+        scratch.deleteSync(recursive: true);
+      } catch (_) {} // Best effort
     }
-    return bundle;
   }
 
   Future<Directory> _toolDir() async {

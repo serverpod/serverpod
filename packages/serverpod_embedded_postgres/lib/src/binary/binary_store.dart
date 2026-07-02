@@ -425,6 +425,10 @@ class BinaryStore {
       platform: artifact.platform,
     );
     var bytes = await file.readAsBytes();
+    try {
+      await file.parent.delete(recursive: true);
+    } catch (_) {} // Best effort.
+
     onProgress?.call(1.0, 'build');
     return (
       bytes,
