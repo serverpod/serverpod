@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_shared/process_io.dart';
 import 'package:uuid/uuid.dart';
 
 ({String projectName, String commandRoot}) createRandomProjectName(
@@ -130,13 +131,13 @@ Future<Process> startServerpodCli(
   Map<String, String>? environment,
   bool ignorePlatform = false,
 }) async {
-  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
+  final exe = await compiledServerpodCli(rootPath: rootPath);
   return startProcess(
-    'dart',
-    ['run', cliDartEntrypoint, ...arguments],
+    exe,
+    arguments,
     workingDirectory: workingDirectory,
     environment: environment,
-    ignorePlatform: ignorePlatform,
+    ignorePlatform: true,
   );
 }
 
@@ -147,14 +148,93 @@ Future<ProcessResult> runServerpodCli(
   Map<String, String>? environment,
   bool skipBatExtentionOnWindows = false,
 }) async {
-  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
+  final exe = await compiledServerpodCli(rootPath: rootPath);
   return runProcess(
-    'dart',
-    ['run', cliDartEntrypoint, ...arguments],
+    exe,
+    arguments,
     workingDirectory: workingDirectory,
     environment: environment,
-    skipBatExtentionOnWindows: skipBatExtentionOnWindows,
+    skipBatExtentionOnWindows: true,
   );
+}
+
+Future<String>? _compiledServerpodCli;
+
+/// Path to the compiled in-repo serverpod CLI, built once per `dart test` run.
+///
+/// A prebuilt CLI can be supplied via SERVERPOD_CLI_EXE.
+Future<String> compiledServerpodCli({required String rootPath}) =>
+    _compiledServerpodCli ??= _compileServerpodCli(rootPath);
+
+Future<String> _compileServerpodCli(String rootPath) async {
+  final prebuilt = Platform.environment['SERVERPOD_CLI_EXE'];
+  if (prebuilt != null && File(prebuilt).existsSync()) return prebuilt;
+
+  // Keyed on `dart test` run pid. Shared by its isolates.
+  const prefix = 'serverpod_bootstrap_cli_';
+  final buildRoot = path.join(Directory.systemTemp.path, '$prefix$pid');
+  final exePath = path.join(
+    buildRoot,
+    'bundle',
+    'bin',
+    Platform.isWindows ? 'serverpod_cli.exe' : 'serverpod_cli',
+  );
+  if (File(exePath).existsSync()) return exePath;
+
+  _cleanupStaleBuildDirs(prefix);
+
+  final cliRoot = getServerpodCliProjectPath(rootPath: rootPath);
+  await InterProcessLock.withLock(
+    '$buildRoot.lock',
+    staleWhen: const StaleLockPolicy.processLiveness(
+      staleAfter: Duration(minutes: 2),
+    ),
+    timeout: const Duration(minutes: 10),
+    heartbeatInterval: const Duration(seconds: 30),
+    () async {
+      if (File(exePath).existsSync()) return;
+
+      var result = await runProcess(
+        'dart',
+        ['pub', 'get'],
+        workingDirectory: cliRoot,
+      );
+      assert(result.exitCode == 0, 'pub get in tools/serverpod_cli failed');
+
+      result = await runProcess(
+        'dart',
+        [
+          'build',
+          'cli',
+          '-t',
+          getServerpodCliEntrypointPath(rootPath: rootPath),
+          '-o',
+          buildRoot,
+        ],
+        workingDirectory: cliRoot,
+      );
+      assert(result.exitCode == 0, 'dart build cli failed');
+    },
+  );
+
+  return exePath;
+}
+
+/// Deletes CLI build dirs left behind by previous runs (older than a day).
+void _cleanupStaleBuildDirs(String prefix) {
+  final now = DateTime.now();
+  for (final entity in Directory.systemTemp.listSync()) {
+    if (entity is! Directory) continue;
+    final name = path.basename(entity.path);
+    if (!name.startsWith(prefix)) continue;
+    if (name == '$prefix$pid') continue;
+    if (now.difference(entity.statSync().modified).inDays < 1) continue;
+    try {
+      entity.deleteSync(recursive: true);
+    } catch (_) {
+      // Might be in use by a concurrent run.
+    }
+  }
 }
 
 String getServerpodCliProjectPath({required final String rootPath}) {
