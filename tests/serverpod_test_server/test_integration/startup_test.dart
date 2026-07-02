@@ -6,8 +6,9 @@ void main() {
   group('Given a Serverpod server instance', () {
     late Serverpod server;
 
-    setUp(() {
+    setUp(() async {
       server = IntegrationTestServer.create();
+      await server.ensureDatabase();
     });
 
     tearDown(() async {
@@ -17,20 +18,22 @@ void main() {
     test(
       'when starting Serverpod on any platform, then no error occurs.',
       () async {
-        await server.startWithDatabase();
+        await server.start();
       },
-      // Covers first-use provisioning: embedded-PG launch + create + migrate.
+      // Covers first-use provisioning in setUp: embedded-PG launch + create +
+      // migrate.
       timeout: Timeout(Duration(seconds: 120)),
     );
 
     test(
       'when starting Serverpod multiple times, then no error occurs.',
       () async {
-        await server.startWithDatabase();
+        await server.start();
         await server.shutdown(exitProcess: false);
-        await server.startWithDatabase();
+        await server.start();
       },
-      // Covers first-use provisioning: embedded-PG launch + create + migrate.
+      // Covers first-use provisioning in setUp: embedded-PG launch + create +
+      // migrate.
       timeout: Timeout(Duration(seconds: 120)),
     );
   });
