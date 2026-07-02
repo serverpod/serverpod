@@ -15,7 +15,7 @@ void main() async {
 
   setUp(() async {
     server = IntegrationTestServer.create();
-    await IntegrationTestServer.start(server);
+    await server.startWithDatabase();
     session = await server.createSession();
     messageCentral = session.messages;
   });

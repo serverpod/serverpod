@@ -14,7 +14,7 @@ void main() async {
     late Serverpod server;
     setUp(() async {
       server = IntegrationTestServer.create();
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       session = await server.createSession();
     });
 
@@ -72,7 +72,7 @@ void main() async {
         ),
       );
 
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       session = await server.createSession();
     });
 

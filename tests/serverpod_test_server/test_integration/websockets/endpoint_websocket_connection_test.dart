@@ -9,9 +9,9 @@ void main() {
     late WebSocket webSocket;
 
     setUp(() async {
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(IntegrationTestServer.endpointWebSocketUrl(server)),
+        Uri.parse(server.endpointWebSocketUrl),
       );
     });
 
@@ -46,12 +46,12 @@ void main() {
       late WebSocket webSocket2;
 
       setUp(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket1 = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.endpointWebSocketUrl(server)),
+          Uri.parse(server.endpointWebSocketUrl),
         );
         webSocket2 = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.endpointWebSocketUrl(server)),
+          Uri.parse(server.endpointWebSocketUrl),
         );
       });
 

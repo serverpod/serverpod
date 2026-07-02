@@ -25,7 +25,7 @@ void main() {
       pod.webServer.addMiddleware(const WasmHeadersMiddleware(), '/test');
       pod.webServer.addRoute(_TestRoute('test response'), '/test/route');
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -34,7 +34,7 @@ void main() {
 
     test('when Response is returned then WASM headers are added', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}test/route'),
+        Uri.parse('${pod.webUrl}test/route'),
       );
       expect(response.statusCode, 200);
       expect(response.body, 'test response');
@@ -46,7 +46,7 @@ void main() {
       'when Response has existing headers then WASM headers are added preserving existing',
       () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}test/route'),
+          Uri.parse('${pod.webUrl}test/route'),
         );
         expect(response.statusCode, 200);
         expect(response.headers['content-type'], contains('text/plain'));
@@ -69,7 +69,7 @@ void main() {
       pod.webServer.addRoute(_TestRoute('route1'), '/route1');
       pod.webServer.addRoute(_TestRoute('route2'), '/route2');
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -78,14 +78,14 @@ void main() {
 
     test('when applied to route then all responses get headers', () async {
       final response1 = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}route1'),
+        Uri.parse('${pod.webUrl}route1'),
       );
       expect(response1.statusCode, 200);
       expect(response1.headers['cross-origin-opener-policy'], 'same-origin');
       expect(response1.headers['cross-origin-embedder-policy'], 'require-corp');
 
       final response2 = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}route2'),
+        Uri.parse('${pod.webUrl}route2'),
       );
       expect(response2.statusCode, 200);
       expect(response2.headers['cross-origin-opener-policy'], 'same-origin');

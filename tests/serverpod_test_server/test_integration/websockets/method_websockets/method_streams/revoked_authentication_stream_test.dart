@@ -26,12 +26,12 @@ void main() {
         authId: 'token-${tokenCounter++}',
       ),
     );
-    await IntegrationTestServer.start(server);
+    await server.startWithDatabase();
     session = await server.createSession();
 
     authKeyManager = TestAuthKeyManager();
     client = c.Client(
-      IntegrationTestServer.apiUrl(server),
+      server.apiUrl,
       // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );

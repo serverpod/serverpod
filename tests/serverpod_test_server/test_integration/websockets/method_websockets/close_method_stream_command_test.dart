@@ -15,9 +15,9 @@ void main() {
 
     setUp(() async {
       server = IntegrationTestServer.create();
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+        Uri.parse(server.methodWebSocketUrl),
       );
     });
 
@@ -249,9 +249,9 @@ void main() {
           },
         );
 
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         webSocket.sendText(
@@ -323,9 +323,9 @@ void main() {
           ),
         );
 
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         webSocket.sendText(
@@ -395,9 +395,9 @@ void main() {
           ),
         );
 
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         webSocket.sendText(
@@ -456,9 +456,9 @@ void main() {
 
       setUp(() async {
         server = IntegrationTestServer.create();
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
       });
 

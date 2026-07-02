@@ -10,9 +10,9 @@ void main() {
     late WebSocket webSocket;
 
     setUp(() async {
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+        Uri.parse(server.methodWebSocketUrl),
       );
     });
 
@@ -43,9 +43,9 @@ void main() {
     var endpoint = 'methodStreaming';
 
     setUp(() async {
-      await IntegrationTestServer.start(server);
+      await server.startWithDatabase();
       webSocket = await WebSocket.connect(
-        Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+        Uri.parse(server.methodWebSocketUrl),
       );
 
       webSocket.sendText(
@@ -94,9 +94,9 @@ void main() {
       var endpoint = 'methodStreaming';
 
       setUp(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         webSocket.sendText(
@@ -146,9 +146,9 @@ void main() {
       var endpoint = 'methodStreaming';
 
       setUp(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
 
         webSocket.sendText(
@@ -198,12 +198,12 @@ void main() {
       late WebSocket webSocket2;
 
       setUp(() async {
-        await IntegrationTestServer.start(server);
+        await server.startWithDatabase();
         webSocket1 = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
         webSocket2 = await WebSocket.connect(
-          Uri.parse(IntegrationTestServer.methodWebSocketUrl(server)),
+          Uri.parse(server.methodWebSocketUrl),
         );
       });
 

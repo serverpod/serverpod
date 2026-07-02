@@ -45,7 +45,7 @@ void main() {
         );
         pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-        await IntegrationTestServer.start(pod);
+        await pod.startWithDatabase();
       });
 
       tearDown(() async {
@@ -54,7 +54,7 @@ void main() {
 
       test('when requesting existing file then file is served', () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}app.js'),
+          Uri.parse('${pod.webUrl}app.js'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('console.log'));
@@ -62,7 +62,7 @@ void main() {
 
       test('when requesting index.html then index is served', () async {
         final response = await client.get(
-          Uri.parse('${IntegrationTestServer.webUrl(pod)}index.html'),
+          Uri.parse('${pod.webUrl}index.html'),
         );
         expect(response.statusCode, 200);
         expect(response.body, contains('SPA Index'));
@@ -72,7 +72,7 @@ void main() {
         'when requesting non-existent file then index.html is served',
         () async {
           final response = await client.get(
-            Uri.parse('${IntegrationTestServer.webUrl(pod)}users/123'),
+            Uri.parse('${pod.webUrl}users/123'),
           );
           expect(response.statusCode, 200);
           expect(response.body, contains('SPA Index'));
@@ -84,7 +84,7 @@ void main() {
         () async {
           final response = await client.get(
             Uri.parse(
-              '${IntegrationTestServer.webUrl(pod)}app/users/profile/settings',
+              '${pod.webUrl}app/users/profile/settings',
             ),
           );
           expect(response.statusCode, 200);
@@ -109,7 +109,7 @@ void main() {
       );
       pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -118,7 +118,7 @@ void main() {
 
     test('when primary and fallback both 404 then 404 is returned', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}does-not-exist'),
+        Uri.parse('${pod.webUrl}does-not-exist'),
       );
       expect(response.statusCode, 404);
     });
@@ -160,7 +160,7 @@ void main() {
       );
       pod.webServer.addRoute(StaticRoute.directory(webDir));
 
-      await IntegrationTestServer.start(pod);
+      await pod.startWithDatabase();
     });
 
     tearDown(() async {
@@ -169,7 +169,7 @@ void main() {
 
     test('when requesting admin path then admin index is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}admin/users'),
+        Uri.parse('${pod.webUrl}admin/users'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('Admin SPA'));
@@ -177,7 +177,7 @@ void main() {
 
     test('when requesting public path then public index is served', () async {
       final response = await client.get(
-        Uri.parse('${IntegrationTestServer.webUrl(pod)}users'),
+        Uri.parse('${pod.webUrl}users'),
       );
       expect(response.statusCode, 200);
       expect(response.body, contains('SPA Index'));
